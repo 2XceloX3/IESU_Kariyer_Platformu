@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { User, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
 
+// IT Departmanı için Not: Firebase Kimlik Doğrulama ve Veritabanı modülleri
+import { auth, db } from '../utils/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+
 
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
@@ -10,14 +15,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     
-    // HARDCODED ADMIN CHECK
+    // HARDCODED ADMIN CHECK (Kariyer Merkezi için Arka Kapı / Backdoor)
     if (username === 'Kariyer' && password === 'Z.s.1513') {
       setUserRole('admin');
       if (setAcademicRole) setAcademicRole('super_admin');
-      
       if (setCurrentUser) {
         setCurrentUser({
           id: 'admin_1513',
@@ -32,66 +36,47 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       return;
     }
     
-    // NORMAL LOGIN LOGIC
-    if (loginRole === 'admin') {
-      // Herhangi bir şey yazarsa veya boş bırakırsa Akademik profile girsin (Kariyer şifresi hariç)
-      if (setAcademicRole) setAcademicRole('standard_academic');
-      setUserRole('academic');
-      if (setCurrentUser) setCurrentUser({ id: 'ACAD-001', name: 'Dr. Öğr. Üyesi Ahmet Yılmaz', department: 'Bilgisayar Mühendisliği', role: 'academic', avatar: 'https://ui-avatars.com/api/?name=Ahmet+Yilmaz&background=132A49&color=fff', onboardingCompleted: true });
-      setView('academic');
-    } else if (loginRole === 'alumni') {
-      const savedAlumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || '[]');
-      const alumniUser = savedAlumni.find(a => (a.studentId === username || a.email === username) && a.password === password);
-      
-      if (alumniUser) {
-        setUserRole('alumni');
-        if (setCurrentUser) setCurrentUser(alumniUser);
-        setView('alumni');
-      } else {
-        // Fallback for mock/demo
-        if (username === 'mezun' || username === '1') {
-          setUserRole('alumni');
-          if (setCurrentUser) setCurrentUser({ id: 'ALM-1', name: 'Örnek Mezun', role: 'alumni', department: 'İşletme', avatar: 'https://ui-avatars.com/api/?name=Ornek+Mezun&background=10B981&color=fff', onboardingCompleted: true });
-          setView('alumni');
+    try {
+      // 1. Firebase Auth ile giriş yap (E-posta doğrulaması)
+      // Not: Kullanıcı T.C. veya Numara girdiyse ve e-posta değilse, sahte bir domain eklenebilir veya kullanıcıdan sadece E-Posta istenebilir.
+      // Şimdilik doğrudan E-Posta olarak kabul ediyoruz.
+      const userCredential = await signInWithEmailAndPassword(auth, username, password);
+      const user = userCredential.user;
+
+      // 2. Firestore'dan kullanıcının detaylı rol ve profil bilgilerini çek
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        // Firestore'daki role göre uygulamayı yönlendir
+        setUserRole(userData.role);
+        if (setCurrentUser) setCurrentUser(userData);
+        
+        if (userData.role === 'student') setView('student');
+        else if (userData.role === 'employer') setView('company');
+        else if (userData.role === 'alumni') setView('alumni');
+        else if (userData.role === 'academic') {
+           if (setAcademicRole) setAcademicRole('standard_academic');
+           setView('academic');
         } else {
-          alert("Hatalı mezun numarası veya şifresi!");
+           setView('landing'); // Bilinmeyen rol
         }
-      }
-    } else if (loginRole === 'employer') {
-      const savedCompanies = JSON.parse(localStorage.getItem('iesu_companies_v3') || '[]');
-      const companyUser = savedCompanies.find(c => c.username === username && c.password === password);
-      
-      if (companyUser) {
-        setUserRole('employer');
-        if (setCurrentUser) {
-          setCurrentUser({
-            ...companyUser,
-            role: 'employer',
-            avatar: companyUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(companyUser.name)}&background=8B5CF6&color=fff`,
-            onboardingCompleted: true
-          });
-        }
-        setView('company');
       } else {
-        alert("Hatalı firma kullanıcı adı veya şifresi!");
+        // Eğer Firebase Auth'da var ama Firestore'da kaydı yoksa (Eski/Hatalı kayıt)
+        alert("Kullanıcı profil bilgileri bulunamadı. Lütfen yöneticiyle iletişime geçin.");
+        auth.signOut();
       }
-    } else {
-      const savedStudents = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]');
-      const studentUser = savedStudents.find(s => (s.studentId === username || s.email === username) && s.password === password);
-      
-      if (studentUser) {
-        setUserRole('student');
-        if (setCurrentUser) setCurrentUser(studentUser);
-        setView('student');
+
+    } catch (error) {
+      console.error("Firebase Giriş Hatası:", error);
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        alert("E-posta adresiniz veya şifreniz hatalı!");
+      } else if (error.code === 'auth/invalid-email') {
+        alert("Lütfen geçerli bir e-posta adresi giriniz (Örn: adiniz@esenyurt.edu.tr). Öğrenci numarası ile girişler henüz Firebase'e aktarılmadı.");
       } else {
-        // Fallback for mock/demo
-        if (username === 'ogrenci' || username === '1') {
-          setUserRole('student');
-          if (setCurrentUser) setCurrentUser({ id: 'STD-1', name: 'Öğrenci', role: 'student', department: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=Ogrenci&background=132A49&color=fff', onboardingCompleted: true });
-          setView('student');
-        } else {
-          alert("Hatalı öğrenci numarası veya şifresi!");
-        }
+        alert("Giriş sırasında bir hata oluştu: " + error.message);
       }
     }
   };

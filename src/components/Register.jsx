@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2, GraduationCap, KeyRound } from 'lucide-react';
 import Logo from './Logo';
 
+// IT Departmanı için Not: Firebase Kimlik Doğrulama (Auth) ve Veritabanı (Firestore) modülleri içeri aktarıldı.
+import { auth, db } from '../utils/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+
 export default function Register({ setView, setCurrentUser, setStudents, setCompanies, setUserRole }) {
   const [step, setStep] = useState(1); // 1: Info, 2: Success
   const [accountType, setAccountType] = useState('student'); // 'student' or 'employer'
@@ -16,50 +21,87 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (accountType === 'student') {
-      if (formData.password !== formData.passwordConfirm) {
-        alert("Şifreler eşleşmiyor! Lütfen kontrol edin.");
-        return;
+    
+    try {
+      if (accountType === 'student') {
+        if (formData.password !== formData.passwordConfirm) {
+          alert("Şifreler eşleşmiyor! Lütfen kontrol edin.");
+          return;
+        }
+        if (formData.password.length < 6) {
+          alert("Şifre en az 6 karakter olmalıdır.");
+          return;
+        }
+
+        // [FİREBASE AUTH] - Yeni Öğrenci Kullanıcısı Oluştur
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.studentEmail, formData.password);
+        const user = userCredential.user;
+
+        // [FİREBASE FIRESTORE] - Kullanıcı Detaylarını Veritabanına Kaydet
+        const newStudent = {
+          id: user.uid, // Firebase'in atadığı eşsiz UID
+          name: formData.studentName || 'Yeni Öğrenci',
+          studentId: formData.studentId,
+          email: formData.studentEmail,
+          department: 'Belirtilmedi',
+          role: 'student',
+          grade: 'Aktif',
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.studentName || 'Öğrenci')}&background=132A49&color=fff`,
+          onboardingCompleted: false,
+          createdAt: new Date().toISOString()
+        };
+
+        // users koleksiyonuna uid ile kaydet
+        await setDoc(doc(db, "users", user.uid), newStudent);
+
+        // Arayüzü güncelle (Geçici)
+        if (setStudents) setStudents(prev => [...(prev || []), newStudent]);
+        if (setCurrentUser) setCurrentUser(newStudent);
+        if (setUserRole) setUserRole('student');
+        
+      } else {
+        // [FİREBASE AUTH] - Yeni Firma Kullanıcısı Oluştur
+        // Not: Şirket ekranında şifre alanı olmadığı için şimdilik geçici bir standart şifre belirliyoruz (Güvenlik için admin onayı sonrası değiştirilmeli)
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, "FirmaTemp123!");
+        const user = userCredential.user;
+
+        // [FİREBASE FIRESTORE] - Firma Detaylarını Veritabanına Kaydet
+        const newCompany = {
+          id: user.uid,
+          name: formData.companyName,
+          username: formData.email,
+          email: formData.email,
+          phone: formData.phone,
+          contactName: formData.contactName,
+          title: formData.title,
+          website: formData.website,
+          sector: 'Belirtilmedi',
+          role: 'employer',
+          status: 'Onay Bekliyor',
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.companyName)}&background=8B5CF6&color=fff`,
+          createdAt: new Date().toISOString()
+        };
+
+        await setDoc(doc(db, "users", user.uid), newCompany);
+
+        if (setCompanies) setCompanies(prev => [...(prev || []), newCompany]);
       }
-      if (formData.password.length < 6) {
-        alert("Şifre en az 6 karakter olmalıdır.");
-        return;
+      
+      // Kayıt başarılıysa onay ekranına geç
+      setStep(2);
+
+    } catch (error) {
+      console.error("Firebase Kayıt Hatası:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        alert("Bu e-posta adresi zaten sistemde kayıtlı!");
+      } else if (error.code === 'auth/invalid-email') {
+        alert("Geçersiz e-posta adresi formatı.");
+      } else {
+        alert("Kayıt sırasında beklenmeyen bir hata oluştu: " + error.message);
       }
-      const newStudent = {
-        id: 'STD-' + Date.now(),
-        name: formData.studentName || 'Yeni Öğrenci',
-        studentId: formData.studentId,
-        email: formData.studentEmail,
-        department: 'Belirtilmedi',
-        role: 'student',
-        grade: 'Aktif',
-        password: formData.password,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.studentName || 'Öğrenci')}&background=132A49&color=fff`,
-        onboardingCompleted: false
-      };
-      if (setStudents) setStudents(prev => [...(prev || []), newStudent]);
-      if (setCurrentUser) setCurrentUser(newStudent);
-      if (setUserRole) setUserRole('student');
-    } else {
-      const newCompany = {
-        id: 'CMP-' + Date.now(),
-        name: formData.companyName,
-        username: formData.email, // using email as username
-        email: formData.email,
-        phone: formData.phone,
-        contactName: formData.contactName,
-        title: formData.title,
-        website: formData.website,
-        sector: 'Belirtilmedi',
-        role: 'employer',
-        status: 'Onay Bekliyor',
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.companyName)}&background=8B5CF6&color=fff`,
-      };
-      if (setCompanies) setCompanies(prev => [...(prev || []), newCompany]);
     }
-    setStep(2);
   };
 
   return (
