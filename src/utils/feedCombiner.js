@@ -8,6 +8,13 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
     title: 'Süper Yönetici'
   };
 
+  // Deterministik tarih üretici (Her renderda aynı ID için aynı tarihi verir)
+  const getDeterministicDate = (idStr) => {
+    const sum = String(idStr).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    // Sabit bir geçmiş tarih üzerinden deterministic saniye çıkarımı (Örn: Son 30 gün içinde)
+    return new Date(1710000000000 - (sum * 10000000)).toISOString();
+  };
+
   if (events) {
     events.filter(e => e.status !== 'Taslak' && e.status !== 'Pasif').forEach(e => {
       combined.push({
@@ -16,9 +23,9 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         content: `${e.title}\n\n${e.description || ''}\n\n📅 ${e.date || ''} ${e.time || ''}\n📍 ${e.location || ''}`,
         image: e.imageUrl || null,
         time: e.date || 'Yakın Zamanda',
-        createdAt: e.createdAt || new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-        likes: (e.id.length * 7) % 50 + 10,
-        comments: (e.id.length * 3) % 10,
+        createdAt: e.createdAt || getDeterministicDate(e.id),
+        likes: (String(e.id).length * 7) % 50 + 10,
+        comments: (String(e.id).length * 3) % 10,
       });
     });
   }
@@ -31,9 +38,9 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         content: `${n.title}\n\n${n.description || ''}`,
         image: n.imageUrl || null,
         time: n.date || 'Yakın Zamanda',
-        createdAt: n.createdAt || new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-        likes: (n.id.length * 11) % 80 + 20,
-        comments: (n.id.length * 5) % 15,
+        createdAt: n.createdAt || getDeterministicDate(n.id),
+        likes: (String(n.id).length * 11) % 80 + 20,
+        comments: (String(n.id).length * 5) % 15,
       });
     });
   }
@@ -46,8 +53,8 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         content: `📢 ${a.title}\n\n${a.description || ''}`,
         pdf: (a.attachmentData || a.attachments) ? true : false,
         time: a.date || 'Yakın Zamanda',
-        createdAt: a.createdAt || new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-        likes: (a.id.length * 4) % 30 + 5,
+        createdAt: a.createdAt || getDeterministicDate(a.id),
+        likes: (String(a.id).length * 4) % 30 + 5,
         comments: 0,
       });
     });
@@ -62,9 +69,9 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         image: j.imageUrl || j.companyLogo || null,
         isJob: true,
         time: j.date || 'Yakın Zamanda',
-        createdAt: j.createdAt || new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-        likes: (j.id.length * 6) % 40 + 5,
-        comments: (j.id.length * 2) % 5,
+        createdAt: j.createdAt || getDeterministicDate(j.id),
+        likes: (String(j.id).length * 6) % 40 + 5,
+        comments: (String(j.id).length * 2) % 5,
       });
     });
   }
