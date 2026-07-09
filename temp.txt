@@ -1,0 +1,21 @@
+  surveys, setSurveys, 
+  students, setStudents, 
+  alumni, setAlumni, 
+  companies, setCompanies, 
+  jobs, setJobs, 
+  featuredOpportunities, setFeaturedOpportunities, 
+  mentorships, setMentorships, 
+  voluntaryInternships, setVoluntaryInternships,
+  messages, setMessages,
+  applications, setApplications,
+  academicStaff, setAcademicStaff,
+  alumniCardApplications, setAlumniCardApplications,
+  alumniCardForms, setAlumniCardForms,
+  academicRole,
+  academicCatalog, setAcademicCatalog,
+  academicApprovals, setAcademicApprovals,
+  currentUser, userRole
+}) {
+  const [activeTab, setActiveTab]       = useState('overview');
+  const [alumniCards]                    = useState(ALUMNI_CARDS);
+  

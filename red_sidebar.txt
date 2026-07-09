@@ -1,0 +1,90 @@
+      {/* Sidebar - Vibrant Metallic Red Design */}
+      <div className="w-[280px] bg-gradient-to-br from-iesu-red via-red-700 to-rose-950 flex flex-col shrink-0 relative overflow-hidden shadow-2xl z-10 text-red-100">
+        
+        {/* Logo Section */}
+        <div className="p-6 border-b border-white/10 flex flex-col items-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+          <img src="https://www.esenyurt.edu.tr/uploads/2024/06/70ojf22yz63ip-esenyurt-universitesi-logo.png" alt="İESÜ Logo" className="h-12 object-contain brightness-0 invert opacity-100 drop-shadow-md mb-4 relative z-10" />
+          <p className="text-white/80 text-[10px] uppercase tracking-[0.25em] font-black relative z-10">Kariyer Merkezi Paneli</p>
+        </div>
+        
+        {/* Quick Nav */}
+        <div className="p-5 border-b border-white/10 bg-white/[0.03]">
+          <div className="grid grid-cols-2 gap-3">
+            <button onClick={() => setView('student')} className="flex flex-col items-center justify-center bg-white/5 hover:bg-white/20 hover:border-white/30 border border-white/10 p-3 rounded-2xl transition-all duration-300 text-[10px] font-bold gap-2 text-white hover:text-white shadow-sm backdrop-blur-sm">
+              <Globe size={18} /> Öğrenci Ağı
+            </button>
+            <button onClick={() => setView('company')} className="flex flex-col items-center justify-center bg-white/5 hover:bg-white/20 hover:border-white/30 border border-white/10 p-3 rounded-2xl transition-all duration-300 text-[10px] font-bold gap-2 text-white hover:text-white shadow-sm backdrop-blur-sm">
+              <Building2 size={18} /> Firma Ağı
+            </button>
+          </div>
+        </div>
+
+        {/* Main Nav */}
+        <nav className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar relative z-10">
+          
+          {/* ANALİZ & ÖZET */}
+          <div>
+            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-white/50"></div> Analiz & Özet
+            </p>
+            <SidebarButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<LayoutDashboard size={18} />} label="Gündem & İstatistikler" pendingCount={pendingPosts?.length} />
+          </div>
+
+          {/* KULLANICI HAVUZLARI */}
+          <div>
+            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-white/50"></div> Kullanıcı Havuzları
+            </p>
+            <SidebarButton active={activeTab === 'student_pool'} onClick={() => setActiveTab('student_pool')} icon={<Users size={18} />} label="Öğrenci Bilgi Havuzu" />
+            <SidebarButton active={activeTab === 'alumni_pool'} onClick={() => setActiveTab('alumni_pool')} icon={<GraduationCap size={18} />} label="Mezun Bilgi Havuzu" />
+            <SidebarButton active={activeTab === 'company'} onClick={() => setActiveTab('company')} icon={<Building2 size={18} />} label="Firma & İşveren Onayları" badge={4} />
+          </div>
+
+          {/* KARİYER & GELİŞİM */}
+          <div>
+            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-white/50"></div> Kariyer & Gelişim
+            </p>
+            <SidebarButton active={activeTab === 'mentorship'} onClick={() => setActiveTab('mentorship')} icon={<Heart size={18} />} label="Mentorluk Programı" />
+            <SidebarButton active={activeTab === 'job_intern_approvals'} onClick={() => setActiveTab('job_intern_approvals')} icon={<Briefcase size={18} />} label="İş ve Staj İlanları" />
+            <SidebarButton active={activeTab === 'volunteer_intern'} onClick={() => setActiveTab('volunteer_intern')} icon={<FileCheck size={18} />} label="Gönüllü Staj Başvuruları" />
+            <SidebarButton active={activeTab === 'sem'} onClick={() => setActiveTab('sem')} icon={<Award size={18} />} label="SEM Kurs Yönetimi" />
+          </div>
+
+          {/* MEZUNLAR OFİSİ */}
+          <div>
+            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-white/50"></div> Mezunlar Ofisi
+            </p>
+            <SidebarButton active={activeTab === 'alumni_assoc'} onClick={() => setActiveTab('alumni_assoc')} icon={<Network size={18} />} label="Mezun Derneği Paneli" />
+            <SidebarButton active={activeTab === 'alumni_card'} onClick={() => setActiveTab('alumni_card')} icon={<CreditCard size={18} />} label="Mezun Kart Başvuruları" />
+          </div>
+
+          {/* İLETİŞİM & İÇERİK */}
+          <div>
+            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-white/50"></div> İletişim & İçerik
+            </p>
+            <SidebarButton active={activeTab === 'news_events'} onClick={() => setActiveTab('news_events')} icon={<Newspaper size={18} />} label="Ana Vitrin (Haber/Etkinlik)" />
+            <SidebarButton active={activeTab === 'cms'} onClick={() => setActiveTab('cms')} icon={<Send size={18} />} label="Kariyer Ağı Gönderileri" />
+            <SidebarButton active={activeTab === 'survey'} onClick={() => setActiveTab('survey')} icon={<MessageSquareQuote size={18} />} label="Anket Yönetimi" />
+            <SidebarButton active={activeTab === 'org_chart'} onClick={() => setActiveTab('org_chart')} icon={<Users size={18} />} label="Organizasyon Şeması" />
+          </div>
+
+          {/* SİSTEM AYARLARI */}
+          <div>
+            <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-white/50"></div> Sistem
+            </p>
+            <SidebarButton active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon={<Settings size={18} />} label="Genel Ayarlar" />
+          </div>
+
+        </nav>
+        
+        <div className="p-5 border-t border-white/10 bg-black/10">
+          <button onClick={() => setView('login')} className="flex items-center justify-center gap-3 text-red-200 hover:text-white w-full px-4 py-3.5 transition-all duration-300 font-bold rounded-2xl hover:bg-white/10 border border-transparent">
+            <LogOut size={18} /> Güvenli Çıkış
+          </button>
+        </div>
+      </div>

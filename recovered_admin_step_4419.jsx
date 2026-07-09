@@ -1,0 +1,2 @@
+          <button onClick={() => setRole(null)} className="flex items-center justify-center gap-3 text-red-200 hover:text-white w-full px-4 py-3.5 transition-all duration-300 font-bold rounded-2xl hover:bg-white/10 border border-transparent">
+            <LogOut size={18} /> Güvenli Çıkış

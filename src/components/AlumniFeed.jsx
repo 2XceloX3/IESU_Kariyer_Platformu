@@ -1,0 +1,517 @@
+import React, { useState } from 'react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home } from 'lucide-react';
+import JobsAndInternships from './JobsAndInternships';
+import MessagingInterface from './MessagingInterface';
+import PostComposer from './PostComposer';
+
+import { combineFeedItems } from '../utils/feedCombiner';
+import PostCard from './PostCard';
+import CareerRadar from './CareerRadar';
+import CareerNetwork from './CareerNetwork';
+import Logo from './Logo';
+import TopProfileMenu from './TopProfileMenu';
+import CalendarPlanning from './CalendarPlanning';
+import AICVBuilder from './AICVBuilder';
+import ApplicationsPanel from './ApplicationsPanel';
+
+export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole }) {
+  const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
+
+  const [showMentorshipModal, setShowMentorshipModal] = useState(false);
+  const [mentorshipForm, setMentorshipForm] = useState({ title: '', hours: '', mode: 'Online', motivation: '' });
+
+  const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
+  const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
+
+  const handleCardSubmit = (e) => {
+    e.preventDefault();
+    const newApp = {
+      id: `KART-${Date.now()}`,
+      name: currentUser?.name || 'Mezun',
+      tc: cardForm.tc,
+      department: currentUser?.department || 'Mezun',
+      gradYear: currentUser?.graduationYear || '2023',
+      email: currentUser?.email || 'mezun@esenyurt.edu.tr',
+      phone: cardForm.phone,
+      date: new Date().toLocaleDateString('tr-TR'),
+      status: 'Bekliyor'
+    };
+    if (setAlumniCardApplications) {
+      setAlumniCardApplications([newApp, ...(alumniCardApplications || [])]);
+    }
+    setShowCardModal(false);
+  };
+
+  // Removed mock stories and defaultPosts
+
+  return (
+    <div className="min-h-screen bg-transparent font-sans">
+      {/* Hyper-Modern Navbar (Glassmorphism) */}
+      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 z-50">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+              <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
+            </div>
+            <div className="hidden md:flex relative group">
+              <Search className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={18} />
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="İlan, etkinlik, mentorluk veya firma ara..." 
+                className="bg-gray-100/80 pl-10 pr-4 py-2 rounded-2xl text-[14px] w-72 focus:outline-none focus:bg-white focus:ring-2 focus:ring-iesu-coral/20 transition-all" 
+              />
+            </div>
+          </div>
+          
+          {/* RIGHT: Navigation Icons & Profile */}
+          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+            <NavIcon icon={<Home />} label="Akış" active={activeTab === 'feed'} onClick={() => setActiveTab('feed')} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={activeTab === 'career_network'} onClick={() => setActiveTab('career_network')} />
+            <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
+            <NavIcon 
+              icon={<MessageCircle />} 
+              label="Mesajlar" 
+              badge={messages?.filter(m => m.receiverId === currentUser?.id && !m.read).length || 0} 
+              active={activeTab === 'messaging'} 
+              onClick={() => setActiveTab('messaging')} 
+            />
+            <NavIcon 
+              icon={<Bell />} 
+              label="Bildirimler" 
+              badge={(notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length || 0} 
+              active={activeTab === 'notifications'} 
+              onClick={() => setView('notifications')} 
+            />
+            
+            <TopProfileMenu currentUser={currentUser || { name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Sen&background=0F766E&color=fff' }} userRole={userRole || 'alumni'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="alumni" />
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Container - Padded for Navbar */}
+      <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-20">
+        
+        {/* LEFT PANEL: Profile (Fast Access) */}
+        <div className="hidden lg:block w-[300px] shrink-0">
+          <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
+            {userRole === 'admin' ? (
+              <div className="p-6 text-center">
+                <div className="relative inline-block mb-2">
+                  <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-gray-200 shadow-sm mx-auto p-2">
+                    <img src="/iesu-logo.svg" alt="Admin" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white p-1.5 rounded-xl shadow-md border-2 border-white">
+                    <Crown size={14} />
+                  </div>
+                </div>
+                <h2 className="text-[16px] font-black text-gray-900 mt-4 leading-tight">Kariyer Geliştirme Ofisi</h2>
+                <p className="text-[12px] font-bold text-orange-600 mt-1 uppercase tracking-wider">SÜPER YÖNETİCİ</p>
+                
+                <div className="mt-6 flex flex-col gap-2 text-left bg-gray-50 p-3 rounded-2xl">
+                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sistem Yetkileri</p>
+                  <div className="flex items-center gap-2 text-[12px] font-semibold text-gray-700">
+                    <CheckCircle2 size={14} className="text-emerald-500" /> Tüm panellere tam erişim
+                  </div>
+                  <div className="flex items-center gap-2 text-[12px] font-semibold text-gray-700">
+                    <CheckCircle2 size={14} className="text-emerald-500" /> İçerik yönetimi
+                  </div>
+                  <div className="flex items-center gap-2 text-[12px] font-semibold text-gray-700">
+                    <CheckCircle2 size={14} className="text-emerald-500" /> Kullanıcı onayları
+                  </div>
+                </div>
+
+                <button onClick={() => setView('admin')} className="mt-6 w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white text-[13px] font-bold py-3 rounded-xl transition-all shadow-md">
+                  <LayoutDashboard size={16} /> Yönetim Panelini Aç
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="h-24 bg-gradient-to-r from-teal-600 to-emerald-700 relative">
+                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
+                    <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white">
+                      <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Mezun')}&background=0F766E&color=fff`} alt="User" className="w-full h-full object-cover" />
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-14 pb-6 px-6 text-center">
+                  <h2 className="text-[18px] font-black text-gray-900 leading-none mb-1 cursor-pointer hover:text-teal-700 transition">{currentUser?.name || 'Mezun'}</h2>
+                  <p className="text-[13px] font-medium text-gray-500 mb-4">
+                    {`${currentUser?.department || 'Mezun'}${currentUser?.graduationYear ? `, ${currentUser.graduationYear}` : ''}`}
+                  </p>
+                  
+                  <div className="flex justify-center gap-6 border-y border-gray-50 py-4 mb-4">
+                    <div className="text-center cursor-pointer group">
+                      <p className="text-gray-400 text-[11px] font-bold uppercase tracking-wider mb-0.5">Ağım</p>
+                      <p className="text-[16px] font-black text-gray-900 group-hover:text-teal-700 transition">120</p>
+                    </div>
+                    <div className="w-px bg-gray-100"></div>
+                    <div className="text-center cursor-pointer group">
+                      <p className="text-gray-400 text-[11px] font-bold uppercase tracking-wider mb-0.5">Gönderi</p>
+                      <p className="text-[16px] font-black text-gray-900 group-hover:text-teal-700 transition">15</p>
+                    </div>
+                  </div>
+                  <button className="w-full py-2.5 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors">
+                    Kariyer Durumunu Güncelle
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* CENTER PANEL: Stories & Feed */}
+        <div className="w-full max-w-[600px] shrink-0 space-y-6">
+          
+          {/* PROFESSIONAL HIGHLIGHTS */}
+          <CareerRadar announcements={announcements} events={events} jobs={jobs} setView={setView} />
+
+          {/* CREATE POST (Quick Action) */}
+          <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+
+          {/* FEED POSTS */}
+          <div className="space-y-6">
+            {(() => {
+              const allItems = combineFeedItems(posts, events, news, announcements, jobs);
+              const filtered = allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+              
+              if (filtered.length === 0) {
+                return (
+                  <div className="p-10 text-center bg-white rounded-[2rem] border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
+                    <div className="w-16 h-16 bg-red-50 text-iesu-red rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
+                    <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
+                    <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
+                  </div>
+                );
+              }
+              
+              return filtered.map(post => (
+                <PostCard key={post.id} post={post} currentUser={currentUser} setMessages={setMessages} students={students || []} alumni={alumni || []} setPosts={setPosts} />
+              ));
+            })()}
+          </div>
+        </div>
+
+        {/* RIGHT PANEL: Dynamic Data */}
+        <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
+          
+          {/* Profile Completion / Quick Action */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
+            <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
+            <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
+              <div className="bg-teal-600 h-2 rounded-full" style={{ width: '80%' }}></div>
+            </div>
+            <p className="text-xs text-gray-500 font-medium mb-4">Mezun olarak tecrübelerinizi öğrencilerle paylaşın ve onlara yol gösterin.</p>
+            <button 
+              onClick={() => setShowMentorshipModal(true)}
+              className="w-full py-2 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors"
+            >
+              Mentorluk Başvurusu Yap
+            </button>
+          </div>
+
+          {/* Mezun Kartı Başvurusu Widget */}
+          <div className="bg-gradient-to-br from-iesu-red to-iesu-darkRed rounded-3xl p-6 shadow-lg text-white">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><CreditCard size={20}/></div>
+              <h3 className="font-black text-lg leading-tight">Mezun Kartı</h3>
+            </div>
+            
+            {existingApp ? (
+              <div className="mt-4 bg-white/10 p-4 rounded-2xl border border-white/20">
+                <p className="text-[11px] text-white/70 font-bold uppercase tracking-wider mb-1">Başvuru Durumu</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-black text-sm">{existingApp.status}</p>
+                  {existingApp.status === 'Onaylandı' ? <CheckCircle size={18} className="text-emerald-400" /> : <Clock size={18} className="text-orange-300" />}
+                </div>
+                <p className="text-xs text-white/60 mt-2">Başvuru Tarihi: {existingApp.date}</p>
+              </div>
+            ) : isFormActive ? (
+              <>
+                <p className="text-xs text-red-100 font-medium mb-4">Üniversite kampüsüne giriş ve kütüphane erişimi için Mezun Kartınızı hemen alın.</p>
+                <button onClick={() => setShowCardModal(true)} className="w-full py-2.5 bg-white text-iesu-red hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Hemen Başvur</button>
+              </>
+            ) : (
+              <p className="text-xs text-red-100 font-medium mt-2">Mezun kartı başvuruları şu an kapalıdır.</p>
+            )}
+          </div>
+
+          {/* Featured Opportunities */}
+          {featuredOpportunities && (featuredOpportunities || []).filter(f => f.status === 'Yayında').length > 0 && (
+            <div className="sticky top-24 bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
+              <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                <Star size={18} className="text-yellow-500 fill-current" /> Öne Çıkanlar
+              </h3>
+              <div className="space-y-4">
+                {(featuredOpportunities || []).filter(f => f.status === 'Yayında').slice(0,2).map(feat => (
+                  <div key={feat.id} className="group cursor-pointer">
+                    <div className="h-24 bg-gray-200 rounded-xl overflow-hidden mb-3 relative">
+                      {feat.banner ? <img src={feat.banner} className="w-full h-full object-cover group-hover:scale-105 transition" /> : <div className="w-full h-full bg-gradient-to-r from-red-600 to-red-800"></div>}
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition"></div>
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <p className="text-white text-[12px] font-black truncate">{feat.title}</p>
+                        <p className="text-white/80 text-[10px] font-medium truncate">{feat.organization}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Mentorships */}
+          {mentorships && (mentorships || []).filter(m => m.status === 'Aktif').length > 0 && (
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
+              <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                <UserCheck size={18} className="text-blue-500" /> Mentorluk Başvuruları
+              </h3>
+              <div className="space-y-3">
+                {(mentorships || []).filter(m => m.status === 'Aktif').slice(0,3).map(mnt => (
+                  <div key={mnt.id} className="p-3 bg-blue-50/50 rounded-xl border border-blue-100 hover:border-blue-300 transition cursor-pointer group">
+                    <p className="text-[12px] font-black text-gray-900 group-hover:text-blue-700 transition">{mnt.programTitle}</p>
+                    <p className="text-[11px] text-gray-500">{mnt.mentorName} • {mnt.department}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'career_network' && (
+            <CareerNetwork companies={companies} events={events} academicStaff={academicStaff} setView={setView} setSelectedUserId={setSelectedUserId} />
+          )}
+
+        </div>
+
+        {/* Applications Interface Overlay */}
+        {activeTab === 'applications' && (
+          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[85vh] overflow-y-auto flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <div className="p-4">
+                <ApplicationsPanel 
+                  applications={applications} 
+                  setApplications={setApplications} 
+                  jobs={jobs} 
+                  currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
+                  userRole="student" 
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Messaging Interface Overlay */}
+        {activeTab === 'messaging' && (
+          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <MessagingInterface 
+                messages={messages} 
+                setMessages={setMessages} 
+                currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
+                userRole={userRole} 
+                contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]} 
+                setView={setView}
+                setSelectedUserId={setSelectedUserId}
+                isOverlay={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Calendar Overlay */}
+        {activeTab === 'calendar' && (
+          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <CalendarPlanning events={events} jobs={jobs} userRole={userRole} />
+            </div>
+          </div>
+        )}
+
+        {/* CV Builder Overlay */}
+        {activeTab === 'cvbuilder' && (
+          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-6xl h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <div className="h-full mt-12">
+                <AICVBuilder currentUser={currentUser} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mezun Kartı Modal */}
+        {showCardModal && (
+          <div className="fixed inset-0 z-[100] bg-gray-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in">
+              <div className="bg-gradient-to-r from-iesu-red to-iesu-darkRed p-6 text-white relative">
+                <button onClick={() => setShowCardModal(false)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition"><X size={16}/></button>
+                <CreditCard size={32} className="mb-3 opacity-90"/>
+                <h2 className="text-xl font-black">Mezun Kartı Başvurusu</h2>
+                <p className="text-red-100 text-sm mt-1">Kartınızı almak için bilgilerinizi doğrulayın.</p>
+              </div>
+              <form onSubmit={handleCardSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">Ad Soyad</label>
+                  <input type="text" disabled value={currentUser?.name || 'Mezun'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">Bölüm & Mezuniyet Yılı</label>
+                  <input type="text" disabled value={`${currentUser?.department || 'Mezun'} - ${currentUser?.graduationYear || '2023'}`} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">E-posta Adresi</label>
+                  <input type="email" disabled value={currentUser?.email || 'mezun@esenyurt.edu.tr'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">TC Kimlik No (Zorunlu)</label>
+                  <input type="text" required maxLength="11" pattern="\d{11}" value={cardForm.tc} onChange={e => setCardForm({...cardForm, tc: e.target.value.replace(/\D/g,'')})} placeholder="11 Haneli TC Kimlik No" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-300 outline-none" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">Telefon Numarası</label>
+                  <input type="tel" required value={cardForm.phone} onChange={e => setCardForm({...cardForm, phone: e.target.value})} placeholder="05XX XXX XX XX" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-300 outline-none" />
+                </div>
+                
+                <div className="pt-2">
+                  <label className="flex items-start gap-3 cursor-pointer group">
+                    <div className="relative flex items-start pt-1">
+                      <input type="checkbox" required className="w-4 h-4 border-gray-300 rounded text-red-600 focus:ring-red-500 cursor-pointer" />
+                    </div>
+                    <span className="text-xs text-gray-500 font-medium leading-relaxed group-hover:text-gray-700 transition">
+                      Kişisel verilerimin Mezun Kartı basımı ve işlemleri amacıyla işlenmesine dair <a href="#" className="text-red-600 font-bold hover:underline">KVKK Aydınlatma Metni'ni</a> okudum ve onaylıyorum.
+                    </span>
+                  </label>
+                </div>
+                
+                <div className="pt-4 mt-4 border-t border-gray-100 flex gap-3">
+                  <button type="button" onClick={() => setShowCardModal(false)} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition">İptal</button>
+                  <button type="submit" className="flex-[2] bg-iesu-red text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-700 transition shadow-sm">Başvuruyu Tamamla</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Mentorship Application Modal */}
+        {showMentorshipModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100">
+              <div className="flex justify-between items-center p-5 border-b border-gray-100">
+                <h3 className="font-black text-gray-900 text-lg">Mentorluk Başvurusu</h3>
+                <button onClick={() => setShowMentorshipModal(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition"><X size={20} /></button>
+              </div>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const newMentorship = {
+                  id: Date.now(),
+                  mentorName: currentUser?.name || 'Mezun',
+                  department: currentUser?.department || 'Mezun',
+                  programTitle: mentorshipForm.title,
+                  status: 'Beklemede', // PENDING ADMIN APPROVAL
+                  avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${currentUser?.name || 'M'}&background=132A49&color=fff`,
+                  hours: mentorshipForm.hours,
+                  mode: mentorshipForm.mode,
+                  motivation: mentorshipForm.motivation
+                };
+                
+                // Direct save to localStorage for the mockup
+                try {
+                  const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2')) || [];
+                  localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
+                } catch (err) {}
+
+                alert("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Ofisi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
+                setShowMentorshipModal(false);
+                setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
+              }} className="p-5 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Uzmanlık / Program Başlığı</label>
+                  <input required type="text" value={mentorshipForm.title} onChange={e => setMentorshipForm({...mentorshipForm, title: e.target.value})} placeholder="Örn: Yazılım Mühendisliği Kariyer Rehberliği" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500" />
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Haftalık Uygunluk (Saat)</label>
+                    <input required type="number" min="1" max="20" value={mentorshipForm.hours} onChange={e => setMentorshipForm({...mentorshipForm, hours: e.target.value})} placeholder="Örn: 2" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500" />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Çalışma Şekli</label>
+                    <select value={mentorshipForm.mode} onChange={e => setMentorshipForm({...mentorshipForm, mode: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500">
+                      <option value="Online">Online</option>
+                      <option value="Yüz Yüze">Yüz Yüze</option>
+                      <option value="Hibrit">Hibrit</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Motivasyon / Kısa Özgeçmiş</label>
+                  <textarea required rows={3} value={mentorshipForm.motivation} onChange={e => setMentorshipForm({...mentorshipForm, motivation: e.target.value})} placeholder="Öğrencilerimize nasıl destek olabileceğinizi kısaca anlatın..." className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500"></textarea>
+                </div>
+                <div className="pt-2">
+                  <button type="submit" className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors">Başvuruyu Gönder</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+// Helper component for Navbar Icons
+const NavIcon = ({ icon, label, badge, active, onClick }) => {
+  const getClasses = () => {
+    switch (label) {
+      case 'Akış': return { text: 'text-blue-500', bg: 'bg-blue-50', badge: 'bg-blue-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
+      case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
+      case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
+      case 'Mesajlar': return { text: 'text-amber-500', bg: 'bg-amber-50', badge: 'bg-amber-500', glow: 'drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
+      case 'Bildirimler': return { text: 'text-rose-500', bg: 'bg-rose-50', badge: 'bg-rose-500', glow: 'drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
+      default: return { text: 'text-iesu-red', bg: 'bg-red-50', badge: 'bg-iesu-red', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
+    }
+  };
+  const c = getClasses();
+  return (
+    <button 
+      onClick={onClick}
+      className={`relative flex flex-col items-center justify-center w-12 h-12 sm:w-16 sm:h-14 rounded-2xl transition-all duration-500 group ${active ? `${c.bg} ${c.text} shadow-sm` : `text-gray-400 hover:${c.text} hover:${c.bg}`}`}
+      title={label}
+    >
+      {React.cloneElement(icon, { size: active ? 22 : 20, className: `mb-1 transition-all duration-500 ${active ? `scale-110 ${c.glow}` : `group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:${c.glow}`}` })}
+      <span className={`text-[9px] font-bold tracking-wide transition-all duration-500 ${active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hidden sm:block'}`}>
+        {label}
+      </span>
+      {badge > 0 && (
+        <span className={`absolute top-1 right-2 sm:right-3 w-4 h-4 ${c.badge} text-white text-[9px] flex items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-white`}>
+          {badge > 9 ? '9+' : badge}
+        </span>
+      )}
+    </button>
+  );
+};

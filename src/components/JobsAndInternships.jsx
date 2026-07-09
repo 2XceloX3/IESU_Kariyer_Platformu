@@ -1,0 +1,340 @@
+import React, { useState } from 'react';
+import { ArrowLeft, ExternalLink, Calendar, MapPin, Building2, Search, Filter, Briefcase, PlayCircle, FileText, CheckCircle2, Download, Home, Compass, MessageCircle, Bell } from 'lucide-react';
+import Logo from './Logo';
+import TopProfileMenu from './TopProfileMenu';
+
+// Helper component for Navbar Icons
+const NavIcon = ({ icon, label, badge, active, onClick }) => {
+  const getClasses = () => {
+    switch (label) {
+      case 'Akış': return { text: 'text-blue-500', bg: 'bg-blue-50', badge: 'bg-blue-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
+      case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
+      case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
+      case 'Mesajlar': return { text: 'text-amber-500', bg: 'bg-amber-50', badge: 'bg-amber-500', glow: 'drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
+      case 'Bildirimler': return { text: 'text-rose-500', bg: 'bg-rose-50', badge: 'bg-rose-500', glow: 'drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
+      default: return { text: 'text-iesu-red', bg: 'bg-red-50', badge: 'bg-iesu-red', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
+    }
+  };
+  const c = getClasses();
+  return (
+    <button 
+      onClick={onClick}
+      className={`relative flex flex-col items-center justify-center w-12 h-12 sm:w-16 sm:h-14 rounded-2xl transition-all duration-500 group ${active ? `${c.bg} ${c.text} shadow-sm` : `text-gray-400 hover:${c.text} hover:${c.bg}`}`}
+      title={label}
+    >
+      {React.cloneElement(icon, { size: active ? 22 : 20, className: `mb-1 transition-all duration-500 ${active ? `scale-110 ${c.glow}` : `group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:${c.glow}`}` })}
+      <span className={`text-[9px] font-bold tracking-wide transition-all duration-500 ${active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hidden sm:block'}`}>
+        {label}
+      </span>
+      {badge > 0 && (
+        <span className={`absolute top-1 right-2 sm:right-3 w-4 h-4 ${c.badge} text-white text-[9px] flex items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-white`}>
+          {badge > 9 ? '9+' : badge}
+        </span>
+      )}
+    </button>
+  );
+};
+
+export default function JobsAndInternships({ userRole, setView, jobs = [], applications = [], setApplications = () => {}, currentUser, setSelectedUserId }) {
+  const [activeTab, setActiveTab] = useState('ilanlar'); // 'ilanlar', 'ulusal', 'gonullu'
+
+  const handleApply = (job) => {
+    if (userRole !== 'student') {
+      alert("Sadece öğrenciler platform üzerinden hızlı başvuru yapabilir. Lütfen öğrenci girişi yapın.");
+      return;
+    }
+    
+    const alreadyApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser.id);
+    if (alreadyApplied) {
+      alert("Bu ilana zaten başvurdunuz.");
+      return;
+    }
+
+    const newApp = {
+      id: 'APP-' + Date.now(),
+      jobId: job.id,
+      jobTitle: job.title,
+      company: job.company,
+      applicantId: currentUser.id,
+      applicantName: currentUser.name,
+      status: 'Beklemede', // Beklemede, Mülakat, Reddedildi
+      date: new Date().toLocaleDateString('tr-TR')
+    };
+
+    setApplications([...applications, newApp]);
+    alert("Başvurunuz başarıyla iletildi!");
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+      {/* Hyper-Modern Navbar (Glassmorphism) */}
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
+          
+          {/* LEFT: Logo & Brand */}
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+            <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
+            <div className="hidden lg:block">
+              <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
+            </div>
+          </div>
+          
+          {/* MIDDLE: Search Bar */}
+          <div className="hidden md:flex relative group flex-1 max-w-md mx-auto shrink">
+            <Search className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={18} />
+            <input 
+              type="text" 
+              placeholder="İlan veya staj ara..." 
+              className="bg-gray-100/80 pl-10 pr-4 py-2 rounded-2xl text-[14px] w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-iesu-coral/20 transition-all" 
+            />
+          </div>
+          
+          {/* RIGHT: Navigation Icons & Profile */}
+          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+            <NavIcon icon={<Home />} label="Akış" active={false} onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={false} onClick={() => { /* Not active */ }} />
+            <NavIcon icon={<Briefcase />} label="İş ve Staj" active={true} onClick={() => {}} />
+            <NavIcon 
+              icon={<MessageCircle />} 
+              label="Mesajlar" 
+              active={false} 
+              onClick={() => setView('messaging')} 
+            />
+            
+            <TopProfileMenu currentUser={currentUser || { name: 'Kullanıcı' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="jobs" />
+          </div>
+        </div>
+      </nav>
+
+      {/* Content */}
+      <div className="pt-24 max-w-6xl mx-auto px-4 py-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div className="flex items-center gap-3">
+            <span className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-iesu-red shadow-sm">
+              <Briefcase size={22} />
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">İş ve Staj Olanakları</h2>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex bg-white rounded-full p-1.5 shadow-sm border border-gray-200 overflow-x-auto hide-scrollbar">
+            <button 
+              onClick={() => setActiveTab('ilanlar')} 
+              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap ${activeTab === 'ilanlar' ? 'bg-iesu-red text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              Aktif İlanlar
+            </button>
+            <button 
+              onClick={() => setActiveTab('ulusal')} 
+              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap ${activeTab === 'ulusal' ? 'bg-iesu-red text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              Ulusal Staj Programı
+            </button>
+            <button 
+              onClick={() => setActiveTab('gonullu')} 
+              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap ${activeTab === 'gonullu' ? 'bg-iesu-red text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              Gönüllü Staj
+            </button>
+          </div>
+        </div>
+        
+        {/* Tab Contents */}
+        <div className="bg-white rounded-3xl p-6 md:p-10 border border-gray-100 shadow-xl shadow-red-900/5 min-h-[500px]">
+          
+          {/* TAB 1: İlanlar */}
+          {activeTab === 'ilanlar' && (
+            <div className="animate-fade-in">
+              <h3 className="text-xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-100 pb-2 inline-block">Güncel İş ve Staj İlanları</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {(jobs || []).filter(j => j.status === 'Yayında').map(job => {
+                  const hasApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser?.id);
+                  return (
+                    <div key={job.id} className="group rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition duration-300">
+                      <div className="h-48 bg-gray-200 relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-red-50 to-white">
+                        {job.logo ? (
+                          <img src={job.logo} alt={job.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
+                        ) : (
+                          <Briefcase size={40} className="text-red-200" />
+                        )}
+                        <div className={`absolute top-3 left-3 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow ${job.type === 'STAJ' ? 'bg-iesu-coral' : 'bg-iesu-red'}`}>
+                          {job.type}
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <h4 className="font-extrabold text-lg text-gray-900 mb-2 truncate">{job.title}</h4>
+                        <p className="text-gray-500 text-[13px] mb-1 font-bold">{job.company}</p>
+                        <p className="text-gray-400 text-[12px] mb-4">{job.location} • Son Başvuru: {job.date}</p>
+                        <p className="text-gray-500 text-[13px] mb-4 line-clamp-2">{job.description}</p>
+                        
+                        <div className="flex items-center justify-between">
+                          <button 
+                            onClick={() => handleApply(job)}
+                            disabled={hasApplied}
+                            className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition ${hasApplied ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'}`}
+                          >
+                            {hasApplied ? <><CheckCircle2 size={14} /> Başvuruldu</> : 'Hızlı Başvur'}
+                          </button>
+                          {job.applicationLink && job.applicationLink !== '#' && (
+                            <a href={job.applicationLink} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-iesu-red transition" title="Dış Bağlantı (İşveren Sitesi)">
+                              <ExternalLink size={16} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: Ulusal Staj */}
+          {activeTab === 'ulusal' && (
+            <div className="animate-fade-in flex flex-col lg:flex-row gap-12">
+              <div className="lg:w-1/2">
+                <h3 className="text-2xl font-black text-gray-900 mb-6">T.C. Ulusal Staj Programı</h3>
+                <p className="text-gray-600 mb-8 leading-relaxed">
+                  Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda yürütülen Ulusal Staj Programı ile kamu kurumları ve özel sektörde staj imkanı bulabilirsiniz. 
+                </p>
+                
+                <h4 className="font-bold text-lg text-iesu-red mb-4">Nasıl Başvuru Yapılır?</h4>
+                <ul className="space-y-4">
+                  {[
+                    "Kariyer Kapısı (ulusalstajprogrami.iskur.gov.tr) adresine gidin.",
+                    "Öğrenci girişi seçeneği ile e-Devlet şifrenizi kullanarak sisteme giriş yapın.",
+                    "Staj Başvurusu menüsünden güncel yılın programına tıklayın.",
+                    "Başvuru Formunu (i) uyarılarına dikkat ederek eksiksiz doldurun.",
+                    "Başvurunuzu onaylayın ve durumunu Kariyer Kapısı üzerinden takip edin."
+                  ].map((step, i) => (
+                    <li key={i} className="flex gap-3 items-start">
+                      <span className="w-6 h-6 rounded-full bg-red-100 text-iesu-red flex items-center justify-center font-bold text-[12px] flex-shrink-0 mt-0.5">{i+1}</span>
+                      <span className="text-[14.5px] text-gray-700 font-medium">{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="lg:w-1/2 bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-100">
+                <h4 className="font-extrabold text-lg text-gray-900 mb-5 flex items-center gap-2">
+                  <FileText className="text-iesu-coral" size={20} /> İlgili Formlar ve Belgeler
+                </h4>
+                <div className="space-y-3">
+                  {[
+                    { title: "Zorunlu Staj Formu", link: "#" },
+                    { title: "Mesleki Eğitim Sözleşmesi (SHMYO-SBF)", link: "#" },
+                    { title: "İş Sağlığı ve Güvenliği Belgesi (SHMYO)", link: "#" },
+                    { title: "İş Sağlığı ve Güvenliği Belgesi (SBF)", link: "#" },
+                    { title: "Ulusal Staj Başvuru Formu", link: "#" }
+                  ].map((doc, i) => (
+                    <a key={i} href={doc.link} className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-iesu-red hover:shadow-md transition group cursor-pointer">
+                      <span className="font-semibold text-[14px] text-gray-700 group-hover:text-iesu-red transition">{doc.title}</span>
+                      <Download size={18} className="text-gray-400 group-hover:text-iesu-red transition" />
+                    </a>
+                  ))}
+                </div>
+                <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 text-[13px] text-iesu-red font-medium">
+                  <strong>Not:</strong> İstenilen evrakların eksiksiz doldurulması ve onaylatılması zorunludur. İşveren onayı olmadan staja başlanamaz.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: Gönüllü Staj */}
+          {activeTab === 'gonullu' && (
+            <div className="animate-fade-in flex flex-col lg:flex-row gap-12">
+              <div className="lg:w-3/5">
+                <h3 className="text-2xl font-black text-gray-900 mb-4 border-l-4 border-iesu-red pl-4">Gönüllü Staj Başvuru Süreci</h3>
+                <p className="text-gray-600 mb-8 leading-relaxed text-[15px]">
+                  Zorunlu stajı bulunmayan veya fazladan sektörel deneyim kazanmak isteyen öğrencilerimiz, onay dâhilinde gönüllü staj yapabilirler. Sürecin her adımını eksiksiz tamamlamanız gerekmektedir.
+                </p>
+                
+                <div className="relative border-l-2 border-gray-100 ml-4 space-y-8 pb-4">
+                  {/* Step 1 */}
+                  <div className="relative pl-8">
+                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-iesu-red font-black text-[14px] shadow-sm">1</span>
+                    <h5 className="font-extrabold text-gray-900 text-lg mb-1">Başvuru Formunun Doldurulması</h5>
+                    <p className="text-gray-600 text-[14px]">
+                      "Uygulamalı Eğitim Başvuru Formu" doldurulmalıdır. Form; <strong>öğrenci</strong>, <strong>staj yapılacak kurum yetkilisi</strong> ve <strong>bölüm staj sorumlusu</strong> tarafından ıslak imzalı olmalıdır.
+                    </p>
+                  </div>
+                  
+                  {/* Step 2 */}
+                  <div className="relative pl-8">
+                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-iesu-red font-black text-[14px] shadow-sm">2</span>
+                    <h5 className="font-extrabold text-gray-900 text-lg mb-1">SGK Müstehaklık Belgesi</h5>
+                    <p className="text-gray-600 text-[14px] mb-3">
+                      e-Devlet sistemi üzerinden barkodlu olarak güncel tarihli temin edilmelidir.
+                    </p>
+                    <a href="https://www.turkiye.gov.tr/spas-mustahaklik-sorgulama" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-[13px] font-bold text-white bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-900 transition">
+                      e-Devlet Sorgulama Ekranı <ExternalLink size={14} />
+                    </a>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="relative pl-8">
+                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-iesu-red font-black text-[14px] shadow-sm">3</span>
+                    <h5 className="font-extrabold text-gray-900 text-lg mb-1">Kimlik Fotokopisi</h5>
+                    <p className="text-gray-600 text-[14px]">
+                      Öğrencinin geçerli T.C. Kimlik Kartı fotokopisi dosyaya eklenmelidir.
+                    </p>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="relative pl-8">
+                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-green-100 border-4 border-white flex items-center justify-center text-green-600 shadow-sm"><CheckCircle2 size={16} /></span>
+                    <h5 className="font-extrabold text-gray-900 text-lg mb-1">Evrak Teslimi (3 Suret Kuralı)</h5>
+                    <p className="text-gray-600 text-[14px] mb-2">Tüm belgeler eksiksiz olarak <strong>3 takım (suret)</strong> halinde hazırlanmalıdır:</p>
+                    <div className="flex flex-col gap-2 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                      <div className="flex items-center justify-between text-[13px]"><span className="font-bold text-gray-700">1. Takım</span> <span className="text-gray-500">Bölüm Staj Sorumlusuna teslim edilir.</span></div>
+                      <div className="w-full h-px bg-gray-200"></div>
+                      <div className="flex items-center justify-between text-[13px]"><span className="font-bold text-gray-700">2. Takım</span> <span className="text-gray-500">Staj yapılacak kuruma teslim edilir.</span></div>
+                      <div className="w-full h-px bg-gray-200"></div>
+                      <div className="flex items-center justify-between text-[13px]"><span className="font-bold text-gray-700">3. Takım</span> <span className="text-gray-500">Öğrencide kalır.</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Infographic and Forms */}
+              <div className="lg:w-2/5 flex flex-col gap-6">
+                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm group">
+                  <div className="bg-red-50 px-5 py-4 border-b border-red-100">
+                    <h4 className="font-bold text-iesu-red text-[15px] flex items-center gap-2"><FileText size={18} /> Görsel Kılavuz (İnfografik)</h4>
+                  </div>
+                  <div className="p-4 flex items-center justify-center bg-gray-50 h-56 overflow-hidden">
+                     <img 
+                      src="https://www.esenyurt.edu.tr/uploads/2025/08/y2j65ag3nsq19-gonullu-staj-formu.jpg" 
+                      alt="Gönüllü Staj İnfografik" 
+                      className="w-full h-full object-contain cursor-zoom-in group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        if(e.target.src.includes('2025/08')) {
+                          e.target.src = 'https://www.esenyurt.edu.tr/uploads/2023/11/y2j65ag3nsq19-gonullu-staj-formu.jpg';
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                  <div className="absolute -right-6 -bottom-6 opacity-10">
+                    <Download size={100} />
+                  </div>
+                  <h4 className="font-bold text-lg mb-2 relative z-10">Formlar ve Şablonlar</h4>
+                  <p className="text-gray-400 text-[13px] mb-5 relative z-10 leading-relaxed">Başvuru süreci için ihtiyaç duyduğunuz tüm formlara ve belge şablonlarına Formlar sayfasından ulaşabilirsiniz.</p>
+                  <a href="https://www.esenyurt.edu.tr/icerik/4540-kariyer-gelistirme-ofisi-koordinatorlugu-formlar-ve-belgeler" target="_blank" rel="noreferrer" className="relative z-10 w-full bg-iesu-red hover:bg-white hover:text-iesu-red border-2 border-iesu-red text-white py-3 rounded-xl font-bold text-[14px] transition flex items-center justify-center gap-2">
+                    Formlar Sayfasına Git <ExternalLink size={16} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+

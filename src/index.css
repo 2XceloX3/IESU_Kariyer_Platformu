@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-red: #D72638;
+    --brand-red-dark: #9F1D2C;
+    --brand-coral: #FF5A5F;
+    --brand-pomegranate: #E63946;
+    --brand-soft-red: #FFE8EA;
+    --brand-rose-bg: #FFF4F5;
+    --surface-white: #FFFFFF;
+    --surface-soft: #F8F9FB;
+    --surface-glass: rgba(255, 255, 255, 0.72);
+    --border-soft: rgba(215, 38, 56, 0.14);
+    --shadow-soft: 0 12px 32px rgba(128, 30, 45, 0.10);
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+  html, body, #root {
+    font-family: 'Inter', sans-serif;
+  }
+  body {
+    @apply text-gray-900;
+    background-color: var(--brand-rose-bg);
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  .animate-fade-in {
+    animation: fadeIn 0.25s ease-in-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #cv-print-area, #cv-print-area * {
+    visibility: visible;
+  }
+  #cv-print-area {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    background: white !important;
+    z-index: 99999 !important;
+    transform: none !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
