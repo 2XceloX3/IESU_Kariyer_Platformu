@@ -24,6 +24,7 @@ import CMSSurveys from './admin/CMSSurveys';
 import CMSAnalytics from './admin/CMSAnalytics';
 import CMSAlumniAssoc from './admin/CMSAlumniAssoc';
 import CMSAlumniCard from './admin/CMSAlumniCard';
+import CMSGroups from './admin/CMSGroups';
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
 import {
@@ -962,7 +963,7 @@ function OrgPanel() {
 // ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'mezun_dernek', 'sem'] },
+  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'mezun_dernek', 'sem', 'cms_groups'] },
   { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'cms_jobs', 'cms_feat', 'cms_ment'] },
   { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['cleanup', 'content_import', 'analytics', 'anket', 'kart'] }
 ];
@@ -984,6 +985,7 @@ const MAIN_TABS = [
   { id:'cms_events', label:'Etkinlikler (CMS)',  icon:<Calendar size={17}/> },
   { id:'cms_ann',    label:'Duyurular (CMS)',    icon:<Megaphone size={17}/> },
   { id:'cms_feat',   label:'Öne Çıkanlar (CMS)', icon:<Star size={17}/> },
+  { id:'cms_groups', label:'Topluluklar ve Gruplar', icon:<Users size={17}/> },
   { id:'mesajlar',   label:'İletişim Havuzu (Loglar)', icon:<MessageSquare size={17}/> },
 ];
 const MORE_TABS = [
@@ -1004,7 +1006,7 @@ const MORE_TABS = [
 // ══════════════════════════════════════════════════════════════
 export default function AdminDashboard({
   currentUser, userRole, academicRole,
-  setView, 
+  setView, setSelectedUserId,
   posts, setPosts, 
   news, setNews, 
   announcements, setAnnouncements, 
@@ -1024,7 +1026,8 @@ export default function AdminDashboard({
   alumniCardApplications, setAlumniCardApplications,
   alumniCardForms, setAlumniCardForms,
   academicCatalog, setAcademicCatalog,
-  academicApprovals, setAcademicApprovals
+  academicApprovals, setAcademicApprovals,
+  groups, setGroups
 }) {
     const [activeTab, setActiveTab]       = useState('overview');
   const [activeCategory, setActiveCategory] = useState('genel');
@@ -1046,6 +1049,7 @@ export default function AdminDashboard({
       case 'cms_jobs':    return <CMSJobs jobs={jobs || []} setJobs={setJobs} applications={applications || []} />;
       case 'cms_feat':    return <CMSFeatured featuredOpportunities={featuredOpportunities || []} setFeaturedOpportunities={setFeaturedOpportunities} />;
       case 'cms_ment':    return <CMSMentorship mentorships={mentorships || []} setMentorships={setMentorships} />;
+      case 'cms_groups':  return <CMSGroups groups={groups || []} setGroups={setGroups} currentUser={currentUser} />;
       case 'overview':    return <OverviewPanel {...p}/>;
       case 'operasyon':   return <OperasyonPanel {...p}/>;
       case 'akademik':    return <AkademikPanel {...p}/>;
@@ -1167,7 +1171,7 @@ export default function AdminDashboard({
               </div>
             )}
           </div>
-          <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} academicRole={academicRole} />
+          <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} />
         </div>
       </header>
 

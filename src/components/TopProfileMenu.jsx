@@ -201,6 +201,13 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 >
                   <Calendar size={16} className="text-gray-400 group-hover:text-iesu-red" /> Takvim
                 </button>
+
+                <button 
+                  onClick={() => { setIsOpen(false); setView('groups'); }}
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-iesu-red/10 hover:text-iesu-red transition-colors flex items-center gap-3"
+                >
+                  <UsersIcon size={16} className="text-gray-400 group-hover:text-iesu-red" /> Topluluklar
+                </button>
                 
                 {(userRole === 'student' || userRole === 'alumni') && (
                   <button 

@@ -37,6 +37,7 @@ export default function AcademicStaffFeed({
         case 'Radar & Onaylar': return { text: 'text-red-500', bg: 'bg-red-50', badge: 'bg-red-500', glow: 'drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]' };
         case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
         case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
+        case 'Topluluklar': return { text: 'text-teal-500', bg: 'bg-teal-50', badge: 'bg-teal-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
         case 'Mesajlar': return { text: 'text-amber-500', bg: 'bg-amber-50', badge: 'bg-amber-500', glow: 'drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
         case 'Bildirimler': return { text: 'text-rose-500', bg: 'bg-rose-50', badge: 'bg-rose-500', glow: 'drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
         default: return { text: 'text-iesu-red', bg: 'bg-red-50', badge: 'bg-iesu-red', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
@@ -95,6 +96,7 @@ export default function AcademicStaffFeed({
             <NavIcon icon={<Home size={20} />} label="Akış" active={!isRadarOpen && activeTab === 'dashboard'} onClick={() => { setIsRadarOpen(false); setActiveTab('dashboard'); }} />
             <NavIcon icon={<Radar size={20} />} label="Radar & Onaylar" active={isRadarOpen} onClick={() => setIsRadarOpen(true)} />
             <NavIcon icon={<Compass size={20} />} label="Kariyer Ağı" active={activeTab === 'career_network'} onClick={() => { setIsRadarOpen(false); setActiveTab('career_network'); }} />
+            <NavIcon icon={<Users size={20} />} label="Topluluklar" active={false} onClick={() => setView('groups')} />
             <NavIcon icon={<Briefcase size={20} />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
             <NavIcon 
               icon={<MessageCircle size={20} />} 

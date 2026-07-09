@@ -72,6 +72,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <NavIcon icon={<Home />} label="Akış" active={activeTab === 'feed'} onClick={() => setActiveTab('feed')} />
             <NavIcon icon={<Compass />} label="Kariyer Ağı" active={activeTab === 'career_network'} onClick={() => setActiveTab('career_network')} />
+            <NavIcon icon={<Users />} label="Topluluklar" active={false} onClick={() => setView('groups')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
             <NavIcon 
               icon={<MessageCircle />} 
@@ -491,6 +492,7 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
       case 'Akış': return { text: 'text-blue-500', bg: 'bg-blue-50', badge: 'bg-blue-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
       case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
       case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
+      case 'Topluluklar': return { text: 'text-teal-500', bg: 'bg-teal-50', badge: 'bg-teal-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
       case 'Mesajlar': return { text: 'text-amber-500', bg: 'bg-amber-50', badge: 'bg-amber-500', glow: 'drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
       case 'Bildirimler': return { text: 'text-rose-500', bg: 'bg-rose-50', badge: 'bg-rose-500', glow: 'drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
       default: return { text: 'text-iesu-red', bg: 'bg-red-50', badge: 'bg-iesu-red', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };

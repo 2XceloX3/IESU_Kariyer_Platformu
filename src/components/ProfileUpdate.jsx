@@ -272,7 +272,7 @@ export default function ProfileUpdate({
                         <span>Öğrenci Numarası</span>
                         <span className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded flex items-center gap-1"><CheckCircle2 size={12}/> Onaylı</span>
                       </label>
-                      <input type="text" value={formData.studentNo || '2023123456'} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-500 cursor-not-allowed" />
+                      <input type="text" value={formData.studentId || ''} readOnly className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-500 cursor-not-allowed" />
                     </div>
                   )}
                   {userRole === 'student' && (

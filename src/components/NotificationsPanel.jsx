@@ -3,7 +3,7 @@ import { ArrowLeft, Bell, Briefcase, Calendar, CheckCircle2, MessageSquare, Star
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 
-export default function NotificationsPanel({ userRole, notifications, setNotifications, currentUser, setView }) {
+export default function NotificationsPanel({ userRole, notifications, setNotifications, currentUser, setView, setSelectedUserId }) {
   
   const myNotifications = (notifications || []).filter(n => n.userId === currentUser?.id).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   const unreadCount = (myNotifications || []).filter(n => !n.read).length;
@@ -118,6 +118,7 @@ export default function NotificationsPanel({ userRole, notifications, setNotific
               currentUser={currentUser} 
               userRole={userRole} 
               setView={setView} 
+              setSelectedUserId={setSelectedUserId} 
               setSelectedUserId={() => {}} 
               currentView="notifications" 
             />

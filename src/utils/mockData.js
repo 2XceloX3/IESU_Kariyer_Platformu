@@ -146,3 +146,35 @@ export const initialAcademicApprovals = [
     adminNote: ""
   }
 ];
+
+export const initialGroups = [
+  {
+    id: "GRP-001",
+    name: "Yazılım Geliştiricileri Kulübü",
+    description: "İstanbul Esenyurt Üniversitesi öğrencileri, mezunları ve akademisyenlerinin yer aldığı, teknoloji ve yazılım geliştirme üzerine etkinlikler düzenleyen resmi topluluk.",
+    cover: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+    logo: "https://ui-avatars.com/api/?name=YG&background=0D9488&color=fff&size=200",
+    type: "Öğrenci Kulübü",
+    memberCount: 142,
+    verified: true,
+    createdBy: "admin_1513",
+    status: "Aktif",
+    events: [
+      { id: "GEVT-1", title: "Hafta Sonu Hackathon'u", date: "15 Temmuz", time: "10:00", location: "Online (Discord)" }
+    ]
+  },
+  {
+    id: "GRP-002",
+    name: "Girişimcilik ve İnovasyon Topluluğu",
+    description: "Kendi işini kurmak isteyenlerin, melek yatırımcıların ve girişimcilik ekosistemine ilgi duyan tüm İESU'lülerin buluşma noktası.",
+    cover: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2032&q=80",
+    logo: "https://ui-avatars.com/api/?name=GI&background=E11D48&color=fff&size=200",
+    type: "Mezun Ağı",
+    memberCount: 89,
+    verified: false,
+    createdBy: 1,
+    status: "Aktif",
+    events: []
+  }
+];
+

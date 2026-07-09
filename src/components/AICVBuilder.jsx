@@ -205,7 +205,7 @@ export default function AICVBuilder({ currentUser, userRole, setView }) {
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
             <NavIcon icon={<MessageCircle />} label="Mesajlar" active={false} onClick={() => setView('messaging')} />
             
-            <TopProfileMenu currentUser={currentUser || { name: 'Kullanıcı' }} userRole={userRole || 'student'} setView={setView} />
+            <TopProfileMenu currentUser={currentUser || { name: 'Kullanıcı' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
           </div>
         </div>
       </nav>

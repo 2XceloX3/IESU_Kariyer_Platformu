@@ -48,18 +48,24 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
           department: 'Belirtilmedi',
           role: 'student',
           grade: 'Aktif',
+          status: 'Aktif',
+          internshipStatus: 'Arıyor',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.studentName || 'Öğrenci')}&background=132A49&color=fff`,
           onboardingCompleted: false,
           createdAt: new Date().toISOString()
         };
 
-        // users koleksiyonuna uid ile kaydet
-        await setDoc(doc(db, "users", user.uid), newStudent);
-
         // Arayüzü güncelle (Geçici)
         if (setStudents) setStudents(prev => [...(prev || []), newStudent]);
         if (setCurrentUser) setCurrentUser(newStudent);
         if (setUserRole) setUserRole('student');
+
+        // users koleksiyonuna uid ile kaydet (Firestore) - hata fırlatsa da uygulama devam etsin
+        try {
+          await setDoc(doc(db, "users", user.uid), newStudent);
+        } catch(err) {
+          console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
+        }
         
       } else {
         // [FİREBASE AUTH] - Yeni Firma Kullanıcısı Oluştur
@@ -84,9 +90,13 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
           createdAt: new Date().toISOString()
         };
 
-        await setDoc(doc(db, "users", user.uid), newCompany);
-
         if (setCompanies) setCompanies(prev => [...(prev || []), newCompany]);
+
+        try {
+          await setDoc(doc(db, "users", user.uid), newCompany);
+        } catch(err) {
+          console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
+        }
       }
       
       // Kayıt başarılıysa onay ekranına geç

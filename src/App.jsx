@@ -11,7 +11,7 @@ import JobsAndInternships from './components/JobsAndInternships';
 import NewsEvents from './components/NewsEvents';
 import SemPanel from './components/SemPanel';
 import StajPanel from './components/StajPanel';
-import { generateStudents, generateAlumni, generateCompanies, initialSemCourses, initialJobs, initialFeatured, initialMentorships, initialVoluntaryInternships, initialAcademicCatalog, initialAcademicApprovals, initialNews, initialEvents, initialAnnouncements, academicStaff as mockAcademicStaff, initialInternships } from './utils/mockData';
+import { generateStudents, generateAlumni, generateCompanies, initialSemCourses, initialJobs, initialFeatured, initialMentorships, initialVoluntaryInternships, initialAcademicCatalog, initialAcademicApprovals, initialNews, initialEvents, initialAnnouncements, academicStaff as mockAcademicStaff, initialInternships, initialGroups } from './utils/mockData';
 import useLocalStorageState from './utils/useLocalStorageState';
 import { contentData } from './components/NewsEvents';
 import AlumniFeed from './components/AlumniFeed';
@@ -20,6 +20,7 @@ import AcademicOnboarding from './components/AcademicOnboarding';
 import ProfileUpdate from './components/ProfileUpdate';
 import UserProfile from './components/UserProfile';
 import GroupProfile from './components/GroupProfile';
+import GroupsPanel from './components/GroupsPanel';
 import NotificationsPanel from './components/NotificationsPanel';
 import ApplicationsPanel from './components/ApplicationsPanel';
 import AICVBuilder from './components/AICVBuilder';
@@ -131,6 +132,7 @@ function App() {
   const [academicCatalog, setAcademicCatalog] = useLocalStorageState('iesu_academic_catalog_v2', initialAcademicCatalog);
   const [academicApprovals, setAcademicApprovals] = useLocalStorageState('iesu_academic_approvals_v2', initialAcademicApprovals);
   const [liveInternships, setLiveInternships] = useLocalStorageState('iesu_internships_v2', initialInternships);
+  const [groups, setGroups] = useLocalStorageState('iesu_groups_v1', initialGroups);
 
   useEffect(() => {
     if (!localStorage.getItem('iesu_likes_reset_v4')) {
@@ -157,8 +159,8 @@ function App() {
       {view === 'login' && <Login setView={setView} setUserRole={setUserRole} setAcademicRole={setAcademicRole} setCurrentUser={setCurrentUser} />}
       {view === 'register' && <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={setStudents} setCompanies={setCompanies} setUserRole={setUserRole} />}
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
-      {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} academicRole={academicRole} />}
-      {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} academicRole={academicRole} />}
+      {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} academicRole={academicRole} groups={groups} setSelectedGroupId={setSelectedGroupId} />}
+      {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} academicRole={academicRole} groups={groups} setSelectedGroupId={setSelectedGroupId} />}
       {view === 'academic' && (
         <ErrorBoundary>
           <AcademicStaffFeed 
@@ -176,12 +178,14 @@ function App() {
             news={news || []} events={events || []} announcements={announcements || []} jobs={jobs || []}
             students={liveStudents || []} alumni={liveAlumni || []} companies={liveCompanies || []} academicStaff={liveAcademicStaff || []}
             surveys={surveys || []}
+            groups={groups || []}
+            setSelectedGroupId={setSelectedGroupId}
           />
         </ErrorBoundary>
       )}
       {view === 'company' && <CompanyFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} announcements={announcements} academicStaff={liveAcademicStaff} currentUser={currentUser} userRole={userRole} academicRole={academicRole} />}
       {view === 'admin' && <AdminDashboard 
-        setView={setView} currentUser={currentUser} 
+        setView={setView} currentUser={currentUser} setSelectedUserId={setSelectedUserId}
         students={liveStudents} setStudents={setStudents} 
         alumni={liveAlumni} setAlumni={setAlumni} 
         companies={liveCompanies} setCompanies={setCompanies} 
@@ -203,6 +207,7 @@ function App() {
         surveys={surveys} setSurveys={setSurveys}
         semCourses={semCourses} setSemCourses={setSemCourses}
         userRole={userRole} academicRole={academicRole}
+        groups={groups} setGroups={setGroups}
       />}
       {view === 'organization' && <OrganizationChart setView={setView} userRole={userRole} />}
       {view === 'jobs' && <JobsAndInternships setView={setView} jobs={jobs} applications={applications} setApplications={setApplications} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
@@ -227,7 +232,7 @@ function App() {
       />}
       {view === 'user_profile' && <UserProfile 
             userId={selectedUserId} 
-            setView={setView} 
+            setView={setView} setSelectedUserId={setSelectedUserId}
             previousView={previousView}
             students={liveStudents} 
             alumni={liveAlumni} 
@@ -245,13 +250,24 @@ function App() {
             jobs={jobs}
             setDirectMessageUser={setSelectedUserId}
           />}
+      {view === 'groups' && <GroupsPanel 
+        groups={groups} 
+        setGroups={setGroups} 
+        currentUser={currentUser} 
+        userRole={userRole} 
+        setView={setView} 
+        setSelectedGroupId={setSelectedGroupId}
+        setSelectedUserId={setSelectedUserId}
+      />}
       {view === 'group_profile' && <GroupProfile
         groupId={selectedGroupId}
-        groupData={{}}
+        groupData={groups.find(g => g.id === selectedGroupId) || null}
         posts={posts}
         setPosts={setPosts}
         currentUser={currentUser}
         setView={setView}
+        userRole={userRole}
+        setSelectedUserId={setSelectedUserId}
       />}
       {view === 'notifications' && <NotificationsPanel 
         notifications={notifications} 
@@ -259,6 +275,7 @@ function App() {
         currentUser={currentUser} 
         setView={setView}
         userRole={userRole}
+        setSelectedUserId={setSelectedUserId}
       />}
       {view === 'calendar' && (
         <ErrorBoundary>
@@ -276,7 +293,7 @@ function App() {
           />
         </ErrorBoundary>
       )}
-      {view === 'applications' && <ApplicationsPanel applications={applications} currentUser={currentUser} userRole={userRole} setView={setView} />}
+      {view === 'applications' && <ApplicationsPanel applications={applications} currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
       {view === 'cvbuilder' && <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
       {view === 'messaging' && <MessagingInterface messages={messages} setMessages={setMessages} currentUser={currentUser} userRole={userRole} contacts={[...students, ...alumni, ...companies, ...academicStaff]} setView={setView} setSelectedUserId={setSelectedUserId} />}
     </ErrorBoundary>

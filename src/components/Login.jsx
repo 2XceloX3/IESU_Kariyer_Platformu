@@ -74,7 +74,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         alert("E-posta adresiniz veya şifreniz hatalı!");
       } else if (error.code === 'auth/invalid-email') {
-        alert("Lütfen geçerli bir e-posta adresi giriniz (Örn: adiniz@esenyurt.edu.tr). Öğrenci numarası ile girişler henüz Firebase'e aktarılmadı.");
+        alert("Lütfen sisteme kayıt olurken kullandığınız geçerli bir E-Posta adresini giriniz.");
       } else {
         alert("Giriş sırasında bir hata oluştu: " + error.message);
       }
@@ -160,8 +160,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             <div className="relative">
               <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
               <input 
-                type="text" 
-                placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : "Kullanıcı Adı / E-Posta"} 
+                type="email" 
+                placeholder={loginRole === 'student' ? "Öğrenci E-Posta Adresi" : "Kayıtlı E-Posta Adresi"} 
                 className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 focus:border-iesu-coral outline-none transition text-[14px] font-medium placeholder:font-normal" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}

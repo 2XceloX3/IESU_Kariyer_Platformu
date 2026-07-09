@@ -6,7 +6,7 @@ import PostCard from './PostCard';
 import TopProfileMenu from './TopProfileMenu';
 import { combineFeedItems } from '../utils/feedCombiner';
 
-export default function UserProfile({ userId, setView, previousView, students, alumni, companies, academicStaff, currentUser, setDirectMessageUser, userRole, posts = [], setPosts, messages = [], notifications = [], news = [], events = [], announcements = [], jobs = [] }) {
+export default function UserProfile({ userId, setView, setSelectedUserId, previousView, students, alumni, companies, academicStaff, currentUser, setDirectMessageUser, userRole, posts = [], setPosts, messages = [], notifications = [], news = [], events = [], announcements = [], jobs = [] }) {
   const [user, setUser] = useState(null);
   const [userType, setUserType] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -401,6 +401,7 @@ export default function UserProfile({ userId, setView, previousView, students, a
               currentUser={currentUser} 
               userRole={userRole} 
               setView={setView} 
+              setSelectedUserId={setSelectedUserId} 
               setSelectedUserId={() => {}} 
               currentView="user_profile" 
             />
