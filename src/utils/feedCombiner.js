@@ -24,8 +24,8 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         image: e.imageUrl || null,
         time: e.date || 'Yakın Zamanda',
         createdAt: e.createdAt || getDeterministicDate(e.id),
-        likes: (String(e.id).length * 7) % 50 + 10,
-        comments: (String(e.id).length * 3) % 10,
+        likes: e.likes || 0,
+        comments: e.comments || 0,
       });
     });
   }
@@ -39,8 +39,8 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         image: n.imageUrl || null,
         time: n.date || 'Yakın Zamanda',
         createdAt: n.createdAt || getDeterministicDate(n.id),
-        likes: (String(n.id).length * 11) % 80 + 20,
-        comments: (String(n.id).length * 5) % 15,
+        likes: n.likes || 0,
+        comments: n.comments || 0,
       });
     });
   }
@@ -54,8 +54,8 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         pdf: (a.attachmentData || a.attachments) ? true : false,
         time: a.date || 'Yakın Zamanda',
         createdAt: a.createdAt || getDeterministicDate(a.id),
-        likes: (String(a.id).length * 4) % 30 + 5,
-        comments: 0,
+        likes: a.likes || 0,
+        comments: a.comments || 0,
       });
     });
   }
@@ -70,8 +70,8 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         isJob: true,
         time: j.date || 'Yakın Zamanda',
         createdAt: j.createdAt || getDeterministicDate(j.id),
-        likes: (String(j.id).length * 6) % 40 + 5,
-        comments: (String(j.id).length * 2) % 5,
+        likes: j.likes || 0,
+        comments: j.comments || 0,
       });
     });
   }
