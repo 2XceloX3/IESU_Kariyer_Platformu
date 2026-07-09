@@ -122,72 +122,71 @@ export default function UserProfile({ userId, setView, previousView, students, a
 
   const renderStudentProfile = () => (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-      <div className="h-48 bg-gradient-to-r from-iesu-red to-red-900 relative">
+      <div className="h-32 sm:h-48 bg-gradient-to-r from-iesu-red to-red-900 relative">
         <div className="absolute inset-0 bg-black/10"></div>
       </div>
-      <div className="px-8 pb-8 relative">
-        <div className="w-32 h-32 rounded-full border-4 border-white bg-white shadow-lg absolute -top-16 left-8 overflow-hidden">
+      <div className="px-6 sm:px-8 pb-8 relative">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white shadow-lg absolute -top-12 sm:-top-16 left-6 sm:left-8 overflow-hidden">
           <img src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}&background=132A49&color=fff&size=200`} alt={user?.name} className="w-full h-full object-cover" />
         </div>
         
-        <div className="ml-40 pt-4 flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-black text-gray-900 flex items-center gap-2">
+        <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
               {user?.name}
             </h1>
-            <p className="text-lg text-gray-600 font-medium mt-1">{user?.department}</p>
-            {user?.faculty && <p className="text-sm text-gray-500 font-medium">{user?.faculty}</p>}
-            {user?.program && <p className="text-sm text-gray-500">{user?.program}</p>}
-            <p className="text-gray-500 text-sm mt-0.5">
+            <p className="text-sm sm:text-base text-gray-600 font-medium mt-1">{user?.department}</p>
+            {user?.faculty && <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">{user?.faculty}</p>}
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
               Sınıf: {user?.year || 'Belirtilmemiş'} 
               {user?.doubleMajor && ` • ÇAP: ${user?.doubleMajor}`}
               {user?.minor && ` • Yandal: ${user?.minor}`}
             </p>
-            <div className="flex items-center gap-4 mt-3">
-              <div className="flex items-center gap-1.5 text-sm">
+            <div className="flex flex-wrap items-center gap-4 mt-4">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                 <span className="font-black text-gray-900">0</span>
                 <span className="text-gray-500 font-medium">Takipçi</span>
               </div>
-              <div className="flex items-center gap-1.5 text-sm">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                 <span className="font-black text-gray-900">0</span>
                 <span className="text-gray-500 font-medium">Takip Edilen</span>
               </div>
             </div>
           </div>
           {currentUser?.id !== user?.id && (
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition shadow-sm border-2 ${isFollowing ? 'bg-white border-iesu-red text-iesu-red hover:bg-red-50' : 'bg-iesu-red border-iesu-red hover:bg-red-700 text-white'}`}
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-white border-iesu-red text-iesu-red hover:bg-red-50' : 'bg-iesu-red border-iesu-red hover:bg-red-700 text-white'}`}
               >
-                {isFollowing ? <><UserCheck size={18} /> Takip Ediliyor</> : <><UserPlus size={18} /> Takip Et</>}
+                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
               {isMessageAllowed && (
-                <button onClick={handleMessage} className="flex items-center gap-2 px-6 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold transition shadow-sm">
-                  <MessageSquare size={18} /> Mesaj Gönder
+                <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
+                  <MessageSquare size={16} /> Mesaj Gönder
                 </button>
               )}
             </div>
           )}
         </div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="md:col-span-2 space-y-6 sm:space-y-8">
             <section>
-              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><FileText size={20} className="text-iesu-red" /> Hakkında</h3>
-              <p className="text-gray-600 leading-relaxed bg-gray-50 p-6 rounded-2xl">{user?.bio || 'Bu kullanıcı henüz hakkında bir bilgi eklememiş.'}</p>
+              <h3 className="text-base sm:text-lg font-black text-gray-900 mb-3 sm:mb-4 flex items-center gap-2"><FileText size={18} className="text-iesu-red" /> Hakkında</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed bg-gray-50 p-4 sm:p-6 rounded-2xl">{user?.bio || 'Bu kullanıcı henüz hakkında bir bilgi eklememiş.'}</p>
             </section>
             
             <section>
-              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><GraduationCap size={20} className="text-iesu-red" /> Eğitim Bilgileri</h3>
-              <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+              <h3 className="text-base sm:text-lg font-black text-gray-900 mb-3 sm:mb-4 flex items-center gap-2"><GraduationCap size={18} className="text-iesu-red" /> Eğitim Bilgileri</h3>
+              <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-sm">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-iesu-red shrink-0">
-                    <GraduationCap size={24} />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-50 rounded-xl flex items-center justify-center text-iesu-red shrink-0">
+                    <GraduationCap size={20} className="sm:w-6 sm:h-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 text-base">İstanbul Esenyurt Üniversitesi</h4>
-                    <p className="text-gray-600 text-sm font-medium">{user?.department}</p>
+                    <h4 className="font-bold text-gray-900 text-sm sm:text-base">İstanbul Esenyurt Üniversitesi</h4>
+                    <p className="text-gray-600 text-xs sm:text-sm font-medium">{user?.department}</p>
                     <p className="text-gray-400 text-xs mt-1">Sınıf: {user?.year}</p>
                   </div>
                 </div>
@@ -201,50 +200,49 @@ export default function UserProfile({ userId, setView, previousView, students, a
 
   const renderAlumniProfile = () => (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-      <div className="h-48 bg-gradient-to-r from-teal-700 to-teal-900 relative"></div>
-      <div className="px-8 pb-8 relative">
-        <div className="w-32 h-32 rounded-full border-4 border-white bg-white shadow-lg absolute -top-16 left-8 overflow-hidden">
+      <div className="h-32 sm:h-48 bg-gradient-to-r from-teal-700 to-teal-900 relative"></div>
+      <div className="px-6 sm:px-8 pb-8 relative">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white shadow-lg absolute -top-12 sm:-top-16 left-6 sm:left-8 overflow-hidden">
           <img src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}&background=0F766E&color=fff&size=200`} alt={user?.name} className="w-full h-full object-cover" />
         </div>
         
-        <div className="ml-40 pt-4 flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-black text-gray-900 flex items-center gap-2">
+        <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
               {user?.name} <Badge type="success">Mezun</Badge>
             </h1>
-            <p className="text-lg text-gray-600 font-medium mt-1">{user?.title || 'Mezun'} {user?.company && `at ${user?.company}`}</p>
-            <p className="text-gray-500 text-sm mt-0.5">{user?.department} • {user?.gradYear} Mezunu</p>
-            {user?.faculty && <p className="text-sm text-gray-500 font-medium">{user?.faculty}</p>}
-            {user?.program && <p className="text-sm text-gray-500">{user?.program}</p>}
+            <p className="text-sm sm:text-base text-gray-600 font-medium mt-1">{user?.title || 'Mezun'} {user?.company && `at ${user?.company}`}</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-0.5">{user?.department} • {user?.gradYear} Mezunu</p>
+            {user?.faculty && <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">{user?.faculty}</p>}
             {(user?.doubleMajor || user?.minor) && (
-              <p className="text-gray-500 text-sm mt-0.5">
+              <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
                 {user?.doubleMajor && `ÇAP: ${user?.doubleMajor}`}
                 {user?.doubleMajor && user?.minor && ' • '}
                 {user?.minor && `Yandal: ${user?.minor}`}
               </p>
             )}
-            <div className="flex items-center gap-4 mt-3">
-              <div className="flex items-center gap-1.5 text-sm">
+            <div className="flex flex-wrap items-center gap-4 mt-4">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                 <span className="font-black text-gray-900">0</span>
                 <span className="text-gray-500 font-medium">Takipçi</span>
               </div>
-              <div className="flex items-center gap-1.5 text-sm">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                 <span className="font-black text-gray-900">0</span>
                 <span className="text-gray-500 font-medium">Takip Edilen</span>
               </div>
             </div>
           </div>
           {currentUser?.id !== user?.id && (
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition shadow-sm border-2 ${isFollowing ? 'bg-teal-50 border-teal-600 text-teal-600' : 'bg-teal-600 border-teal-600 text-white hover:bg-teal-700'}`}
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-teal-50 border-teal-600 text-teal-600' : 'bg-teal-600 border-teal-600 text-white hover:bg-teal-700'}`}
               >
-                {isFollowing ? <><UserCheck size={18} /> Takip Ediliyor</> : <><UserPlus size={18} /> Takip Et</>}
+                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
               {isMessageAllowed && (
-                <button onClick={handleMessage} className="flex items-center gap-2 px-6 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold transition shadow-sm">
-                  <MessageSquare size={18} /> Mesaj Gönder
+                <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
+                  <MessageSquare size={16} /> Mesaj Gönder
                 </button>
               )}
             </div>
@@ -256,35 +254,42 @@ export default function UserProfile({ userId, setView, previousView, students, a
 
   const renderCompanyProfile = () => (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-      <div className="h-48 bg-gradient-to-r from-blue-700 to-blue-900 relative"></div>
-      <div className="px-8 pb-8 relative">
-        <div className="w-32 h-32 rounded-2xl border-4 border-white bg-white shadow-lg absolute -top-16 left-8 overflow-hidden flex items-center justify-center">
-          <img src={user.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}&background=2563EB&color=fff&size=200`} alt={user?.name} className="w-full h-full object-cover" />
+      <div className="h-32 sm:h-48 bg-gradient-to-r from-blue-700 to-blue-900 relative"></div>
+      <div className="px-6 sm:px-8 pb-8 relative">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border-4 border-white bg-white shadow-lg absolute -top-12 sm:-top-16 left-6 sm:left-8 overflow-hidden flex items-center justify-center p-1 sm:p-2">
+          <img src={user.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}&background=2563EB&color=fff&size=200`} alt={user?.name} className="w-full h-full object-contain" />
         </div>
         
-        <div className="ml-40 pt-4 flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-black text-gray-900 flex items-center gap-2">
-              {user?.name} {user.status === 'Onaylı' && <CheckCircle2 className="text-blue-500" size={24} />}
+        <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
+              {user?.name} {user.status === 'Onaylı' && <CheckCircle2 className="text-blue-500" size={20} />}
             </h1>
-            <p className="text-lg text-gray-600 font-medium mt-1">{user.sector || 'Sektör Belirtilmemiş'}</p>
-            <div className="flex items-center gap-4 mt-3">
-              <div className="flex items-center gap-1.5 text-sm">
+            <p className="text-sm sm:text-base text-gray-600 font-medium mt-1 flex items-center gap-1.5">
+              <Briefcase size={14} className="text-gray-400" />
+              {user.sector || 'Sektör Belirtilmemiş'}
+            </p>
+            <div className="flex flex-wrap items-center gap-4 mt-4">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                 <span className="font-black text-gray-900">0</span>
                 <span className="text-gray-500 font-medium">Takipçi</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
+                <MapPin size={14} className="text-gray-400" />
+                <span className="text-gray-500 font-medium">Merkez</span>
               </div>
             </div>
           </div>
           {currentUser?.id !== user?.id && (
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition shadow-sm border-2 ${isFollowing ? 'bg-blue-50 border-blue-600 text-blue-600' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'}`}
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-blue-50 border-blue-600 text-blue-600' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'}`}
               >
-                {isFollowing ? <><UserCheck size={18} /> Takip Ediliyor</> : <><UserPlus size={18} /> Takip Et</>}
+                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
-              <button onClick={handleMessage} className="flex items-center gap-2 px-6 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold transition shadow-sm">
-                <MessageSquare size={18} /> İletişime Geç
+              <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
+                <MessageSquare size={16} /> İletişime Geç
               </button>
             </div>
           )}
@@ -295,41 +300,41 @@ export default function UserProfile({ userId, setView, previousView, students, a
 
   const renderAcademicProfile = () => (
     <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-      <div className="h-48 bg-gradient-to-r from-slate-700 to-slate-900 relative"></div>
-      <div className="px-8 pb-8 relative">
-        <div className="w-32 h-32 rounded-full border-4 border-white bg-white shadow-lg absolute -top-16 left-8 overflow-hidden flex items-center justify-center">
+      <div className="h-32 sm:h-48 bg-gradient-to-r from-slate-700 to-slate-900 relative"></div>
+      <div className="px-6 sm:px-8 pb-8 relative">
+        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white shadow-lg absolute -top-12 sm:-top-16 left-6 sm:left-8 overflow-hidden flex items-center justify-center p-1 sm:p-2">
           <img src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}&background=475569&color=fff&size=200`} alt={user?.name} className="w-full h-full object-cover" />
         </div>
         
-        <div className="ml-40 pt-4 flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-black text-gray-900 flex items-center gap-2">
+        <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
               {user?.name}
             </h1>
-            <p className="text-lg text-gray-600 font-medium mt-1">{user?.title || 'Akademik Personel'}</p>
-            <p className="text-gray-500 text-sm mt-0.5">{user?.department || 'Bölüm Belirtilmemiş'}</p>
-            <div className="flex items-center gap-4 mt-3">
-              <div className="flex items-center gap-1.5 text-sm">
+            <p className="text-sm sm:text-base text-gray-600 font-medium mt-1">{user?.title || 'Akademik Personel'}</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-0.5">{user?.department || 'Bölüm Belirtilmemiş'}</p>
+            <div className="flex flex-wrap items-center gap-4 mt-4">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                 <span className="font-black text-gray-900">0</span>
                 <span className="text-gray-500 font-medium">Takipçi</span>
               </div>
-              <div className="flex items-center gap-1.5 text-sm">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                 <span className="font-black text-gray-900">0</span>
                 <span className="text-gray-500 font-medium">Takip Edilen</span>
               </div>
             </div>
           </div>
           {currentUser?.id !== user?.id && (
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
                 onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition shadow-sm border-2 ${isFollowing ? 'bg-slate-50 border-slate-700 text-slate-700' : 'bg-slate-700 border-slate-700 text-white hover:bg-slate-800'}`}
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-slate-50 border-slate-700 text-slate-700' : 'bg-slate-700 border-slate-700 text-white hover:bg-slate-800'}`}
               >
-                {isFollowing ? <><UserCheck size={18} /> Takip Ediliyor</> : <><UserPlus size={18} /> Takip Et</>}
+                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
               {isMessageAllowed && (
-                <button onClick={handleMessage} className="flex items-center gap-2 px-6 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold transition shadow-sm">
-                  <MessageSquare size={18} /> Mesaj Gönder
+                <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
+                  <MessageSquare size={16} /> Mesaj Gönder
                 </button>
               )}
             </div>
