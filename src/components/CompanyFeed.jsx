@@ -24,43 +24,27 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
 
   return (
     <div className="min-h-screen bg-transparent font-sans">
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4 sm:gap-6">
-            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
-              <Logo className="h-10 w-auto text-blue-600 hover:scale-105 transition-transform" />
-            </div>
-            <div className="hidden md:flex relative group">
-              <Search className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={18} />
-              <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Paylaşım veya aday ara..." 
-                className="bg-gray-100/80 pl-10 pr-4 py-2 rounded-2xl text-[14px] w-72 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-600/20 transition-all" 
-              />
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="w-10"></div> {/* Spacer */}
+          
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+            <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
+            <div className="hidden sm:block text-center">
+              <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" active={activeTab === 'feed'} onClick={() => setActiveTab('feed')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={activeTab === 'career_network'} onClick={() => setActiveTab('career_network')} />
-            <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
-            <NavIcon 
-              icon={<MessageCircle />} 
-              label="Mesajlar" 
-              badge={messages?.filter(m => m.receiverId === (currentUser?.id || 'cmp-1') && !m.read).length || 0} 
-              active={activeTab === 'messaging'} 
-              onClick={() => setActiveTab('messaging')} 
-            />
-            <NavIcon 
-              icon={<Bell />} 
-              label="Bildirimler" 
-              badge={(notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length || 0} 
-              active={activeTab === 'notifications'} 
-              onClick={() => setView('notifications')} 
-            />
-            
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
+              <div className="relative">
+                <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
+                {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                )}
+              </div>
+            </button>
             <TopProfileMenu currentUser={currentUser || { name: 'Firma', avatar: 'https://ui-avatars.com/api/?name=Firma&background=2563EB&color=fff' }} userRole={userRole || 'company'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="company" />
           </div>
         </div>
@@ -236,6 +220,33 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
           </div>
         )}
 
+      </div>
+      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
+        <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Akış">
+            <Home size={26} strokeWidth={2} />
+          </button>
+          
+          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900" title="İlanlar">
+            <Briefcase size={24} strokeWidth={2} />
+          </button>
+          
+          {/* CENTER: SEARCH ICON */}
+          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
+            <Search size={24} strokeWidth={2.5} />
+          </button>
+          
+          {/* MESSAGES */}
+          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Mesajlar">
+            <MessageCircle size={24} strokeWidth={2} />
+          </button>
+          
+          {/* PROFILE AVATAR */}
+          <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=Firma&background=2563EB&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, Briefcase, Bookmark, Plus, Users, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, FileText, Home, Radar, Target, UserCheck, ChevronRight, MessageCircle, ChevronDown, ChevronUp, Compass } from 'lucide-react';
+import { Search, Bell, Briefcase, Bookmark, Plus, Users, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, FileText, Home, Radar, Target, UserCheck, ChevronRight, MessageCircle, ChevronDown, ChevronUp, Compass, Heart } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import PostComposer from './PostComposer';
@@ -68,51 +68,26 @@ export default function AcademicStaffFeed({
       
       {/* Hyper-Modern Navbar (Glassmorphism) - ALIGNED WITH STUDENT FEED */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="w-10"></div> {/* Spacer */}
           
-          {/* LEFT: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView('landing')}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden lg:block">
+            <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkeziüğü</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
             </div>
           </div>
-
-          {/* MIDDLE: Search Bar (Redesigned to match Student Feed) */}
-          <div className="hidden md:flex relative group flex-1 max-w-md mx-auto shrink">
-            <Search className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={18} />
-            <input 
-              type="text" 
-              placeholder="Gönderi, akademisyen veya stajyer ara..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm font-bold rounded-2xl focus:ring-4 focus:ring-red-500/10 focus:border-red-500 block pl-10 p-2.5 transition-all shadow-inner hover:bg-white focus:bg-white"
-            />
-          </div>
-
-          {/* RIGHT: Navigation Icons & Profile */}
-          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home size={20} />} label="Akış" active={!isRadarOpen && activeTab === 'dashboard'} onClick={() => { setIsRadarOpen(false); setActiveTab('dashboard'); }} />
-            <NavIcon icon={<Radar size={20} />} label="Radar & Onaylar" active={isRadarOpen} onClick={() => setIsRadarOpen(true)} />
-            <NavIcon icon={<Compass size={20} />} label="Kariyer Ağı" active={activeTab === 'career_network'} onClick={() => { setIsRadarOpen(false); setActiveTab('career_network'); }} />
-            <NavIcon icon={<Users size={20} />} label="Topluluklar" active={false} onClick={() => setView('groups')} />
-            <NavIcon icon={<Briefcase size={20} />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
-            <NavIcon 
-              icon={<MessageCircle size={20} />} 
-              label="Mesajlar" 
-              badge={(notifications || []).filter(n => n.type === 'message' && !n.read).length || 0} 
-              active={false} 
-              onClick={() => setView('messaging')} 
-            />
-            <NavIcon 
-              icon={<Bell size={20} />} 
-              label="Bildirimler" 
-              badge={(notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length || 0} 
-              active={false} 
-              onClick={() => setView('notifications')} 
-            />
-            
+          
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
+              <div className="relative">
+                <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
+                {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                )}
+              </div>
+            </button>
             <TopProfileMenu currentUser={currentUser || { name: 'Akademik Personel', avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('Akademik Personel')}&background=132A49&color=fff` }} userRole={userRole || 'academic'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="academic" />
           </div>
         </div>
@@ -372,6 +347,34 @@ export default function AcademicStaffFeed({
         </div>
 
       </main>
+
+      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
+        <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Akış">
+            <Home size={26} strokeWidth={2} />
+          </button>
+          
+          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900" title="İlanlar">
+            <Briefcase size={24} strokeWidth={2} />
+          </button>
+          
+          {/* CENTER: SEARCH ICON */}
+          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
+            <Search size={24} strokeWidth={2.5} />
+          </button>
+          
+          {/* MESSAGES */}
+          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Mesajlar">
+            <MessageCircle size={24} strokeWidth={2} />
+          </button>
+          
+          {/* PROFILE AVATAR */}
+          <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=Akademisyen&background=DC2626&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
