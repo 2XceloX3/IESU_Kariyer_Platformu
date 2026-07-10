@@ -71,7 +71,7 @@ export default function AcademicStaffFeed({
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="w-10"></div> {/* Spacer */}
           
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : 'academic')}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('feed')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
             <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
