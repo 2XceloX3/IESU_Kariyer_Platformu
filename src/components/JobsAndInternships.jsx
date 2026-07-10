@@ -71,7 +71,9 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           
-          <div className="w-10"></div> {/* Spacer for symmetry */}
+          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
+            <ArrowLeft size={24} strokeWidth={2} />
+          </button>
           
           {/* CENTER: Logo & Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
@@ -82,12 +84,16 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
             </div>
           </div>
           
-          {/* RIGHT: Heart Icon for Notifications */}
-          <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
-            <div className="relative">
-              <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
-            </div>
-          </button>
+          {/* RIGHT: Heart Icon for Notifications (ONLY INTERNAL) */}
+          {userRole ? (
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
+              <div className="relative">
+                <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
+              </div>
+            </button>
+          ) : (
+            <div className="w-10"></div>
+          )}
           
         </div>
       </nav>
@@ -319,33 +325,35 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
         </div>
       </div>
 
-      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
-        <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
-            <Home size={26} strokeWidth={2} />
-          </button>
-          
-          <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-iesu-red`} title="İlanlar">
-            <Briefcase size={24} strokeWidth={2} />
-          </button>
-          
-          {/* CENTER: SEARCH ICON */}
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
-            <Search size={24} strokeWidth={2.5} />
-          </button>
-          
-          {/* MESSAGES */}
-          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Mesajlar">
-            <MessageCircle size={24} strokeWidth={2} />
-          </button>
-          
-          {/* PROFILE AVATAR */}
-          <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Öğrenci')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
-          </button>
+      {/* FLOATING DOCK (ONLY FOR LOGGED IN USERS) */}
+      {userRole && (
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
+          <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
+            <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
+              <Home size={26} strokeWidth={2} />
+            </button>
+            
+            <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-iesu-red`} title="İlanlar">
+              <Briefcase size={24} strokeWidth={2} />
+            </button>
+            
+            {/* CENTER: SEARCH ICON */}
+            <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
+              <Search size={24} strokeWidth={2.5} />
+            </button>
+            
+            {/* MESSAGES */}
+            <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Mesajlar">
+              <MessageCircle size={24} strokeWidth={2} />
+            </button>
+            
+            {/* PROFILE AVATAR */}
+            <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
+              <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Öğrenci')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );
