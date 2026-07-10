@@ -111,6 +111,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Başvuru</p>
                   </div>
                 </div>
+
+                <div className="mt-8">
+                  <button onClick={() => setView('create_job')} className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                    <Plus size={18} /> Yeni İlan Oluştur
+                  </button>
+                </div>
               </>
             )}
           </div>

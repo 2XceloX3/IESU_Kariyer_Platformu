@@ -11,6 +11,8 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
     applicationLink: ''
   });
   const [previewImage, setPreviewImage] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,8 +31,9 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
   };
 
   const handleSubmit = () => {
+    setError(null);
     if (!formData.title || !formData.location || !formData.date || !formData.description) {
-      alert("Lütfen tüm zorunlu alanları doldurun.");
+      setError("Lütfen tüm zorunlu alanları doldurun.");
       return;
     }
 
@@ -54,10 +57,12 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
         type: 'info',
         message: 'İlanınız admin onayına gönderildi. Onaylandığında yayına alınacaktır.'
       });
-    } else {
-      alert('İlanınız admin onayına gönderildi. Onaylandığında yayına alınacaktır.');
     }
-    setView('jobs');
+    
+    setSuccess(true);
+    setTimeout(() => {
+      setView('company'); // or 'jobs', depending on the intended route
+    }, 2000);
   };
 
   return (
@@ -76,6 +81,16 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
         
         {/* LEFT: FORM (DATA ENTRY) */}
         <div className="lg:w-1/2 flex flex-col gap-6">
+          {error && (
+            <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl font-bold text-sm">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-xl font-bold text-sm">
+              İlanınız başarıyla admin onayına gönderildi! Yönlendiriliyorsunuz...
+            </div>
+          )}
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
               <Layout className="text-iesu-red" size={20} /> İlan Detayları

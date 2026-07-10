@@ -26,6 +26,7 @@ import ApplicationsPanel from './components/ApplicationsPanel';
 import AICVBuilder from './components/AICVBuilder';
 import MessagingInterface from './components/MessagingInterface';
 import CalendarView from './components/CalendarView';
+import JobCreator from './components/JobCreator';
 
 class ErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null }; }
@@ -168,6 +169,7 @@ function App() {
       {view === 'login' && <Login setView={setView} setUserRole={setUserRole} setAcademicRole={setAcademicRole} setCurrentUser={setCurrentUser} />}
       {view === 'register' && <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={setStudents} setAlumni={setAlumni} setAcademicStaff={setAcademicStaff} setCompanies={setCompanies} setUserRole={setUserRole} />}
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
+      {view === 'create_job' && <JobCreator setView={setView} currentUser={currentUser} jobs={jobs} setJobs={setJobs} />}
       {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} academicRole={academicRole} groups={groups} setSelectedGroupId={setSelectedGroupId} />}
       {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} academicRole={academicRole} groups={groups} setSelectedGroupId={setSelectedGroupId} />}
       {view === 'academic' && (
