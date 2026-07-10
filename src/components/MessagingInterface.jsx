@@ -353,9 +353,10 @@ export default function MessagingInterface({ messages = [], setMessages, current
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 flex flex-col">
+    <div className={`w-full ${isOverlay ? 'h-full bg-transparent' : 'min-h-screen bg-gray-50 pb-20 flex flex-col font-sans'}`}>
       {/* Hyper-Modern Navbar (Glassmorphism) - Replicated from Feeds */}
-      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
+      {!isOverlay && (
+        <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           
           <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
@@ -383,14 +384,16 @@ export default function MessagingInterface({ messages = [], setMessages, current
           
         </div>
       </nav>
-      <main className="max-w-[1400px] mx-auto px-4 lg:px-8 pt-24 flex-1 flex flex-col w-full">
-        <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden flex h-[700px] md:h-[80vh] w-full">
+      )}
+      <main className={`${!isOverlay ? 'max-w-[1400px] mx-auto px-4 lg:px-8 pt-24' : ''} flex-1 flex flex-col w-full h-full`}>
+        <div className={`bg-white rounded-3xl ${!isOverlay ? 'shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 h-[700px] md:h-[80vh]' : 'h-full'} overflow-hidden flex w-full`}>
           {chatUI}
         </div>
       </main>
 
       {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
+      {!isOverlay && (
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
         <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
           <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
             <Home size={26} strokeWidth={2} />
@@ -416,6 +419,7 @@ export default function MessagingInterface({ messages = [], setMessages, current
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 }
