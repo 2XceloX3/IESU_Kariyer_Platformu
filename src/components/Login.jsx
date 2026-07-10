@@ -86,46 +86,61 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center font-sans overflow-hidden bg-gray-900">
+    <div className="min-h-screen flex font-sans bg-white overflow-hidden">
       
-      {/* Full Screen Background */}
-      <img 
-        src="https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg" 
-        alt="Background" 
-        className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105 animate-pulse-slow"
-      />
-      <div className="absolute inset-0 bg-gradient-to-tr from-iesu-red/80 via-gray-900/80 to-gray-900/90 mix-blend-multiply"></div>
-      
-      {/* Floating Elements (Abstract) */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-red-500/30 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-iesu-coral/20 rounded-full blur-[120px] pointer-events-none"></div>
-
-      {/* Top Left Back Button */}
-      <button 
-        onClick={() => setView('landing')} 
-        className="absolute top-8 left-8 text-white/70 hover:text-white flex items-center gap-2 font-bold transition-all z-20 hover:-translate-x-1"
-      >
-        <ArrowLeft size={20} /> <span className="hidden sm:block">Ana Sayfaya Dön</span>
-      </button>
-
-      {/* Centered Glass Card */}
-      <div className="relative z-10 w-full max-w-lg p-4 sm:p-8">
+      {/* Left Side: Brand & Visuals (Hidden on mobile) */}
+      <div className="hidden lg:flex w-1/2 relative bg-gray-900 flex-col justify-between p-12 overflow-hidden">
+        {/* Background Image with Overlay */}
+        <img 
+          src="https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg" 
+          alt="Esenyurt University" 
+          className="absolute inset-0 w-full h-full object-cover opacity-50 scale-105 animate-pulse-slow"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent"></div>
         
-        {/* Logo outside the card */}
-        <div className="flex flex-col items-center justify-center mb-8">
-          <div className="mb-5 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <Logo className="h-20 w-auto text-white" />
+        {/* Top Logo */}
+        <div className="relative z-10 flex items-center gap-3">
+          <Logo className="h-12 w-auto text-white" />
+          <div>
+            <h1 className="text-[16px] font-black text-white tracking-tight leading-none">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
+            <p className="text-[11px] text-red-300 font-bold uppercase tracking-widest mt-1">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight drop-shadow-lg text-center">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-          <p className="text-[12px] text-red-200 font-bold uppercase tracking-widest mt-1 text-center">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
-          
-          {/* Decorative Top Bar */}
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-red via-iesu-coral to-iesu-red"></div>
+        {/* Bottom Content */}
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+            <span className="text-white text-[10px] font-bold tracking-wider">KARİYER PORTALI AKTİF</span>
+          </div>
+          <h2 className="text-4xl font-black text-white leading-tight mb-4">Geleceğinize <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-iesu-coral">Yön Verin</span></h2>
+          <p className="text-gray-300 text-[15px] max-w-md font-medium leading-relaxed">Öğrencilerimiz, mezunlarımız ve Türkiye'nin öncü kurumlarını tek bir çatı altında buluşturan yeni nesil yetenek ve kariyer ağı.</p>
+        </div>
+      </div>
 
-          <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">Portala Giriş Yapın</h2>
+      {/* Right Side: Login Form */}
+      <div className="w-full lg:w-1/2 relative flex items-center justify-center p-6 sm:p-12 bg-gray-50">
+        
+        {/* Top Left Back Button (Mobile only) */}
+        <button 
+          onClick={() => setView('landing')} 
+          className="absolute top-6 left-6 lg:top-8 lg:right-8 lg:left-auto text-gray-500 hover:text-iesu-red flex items-center gap-2 font-bold transition-all z-20 hover:-translate-x-1"
+        >
+          <ArrowLeft size={18} /> <span className="hidden sm:block">Ana Sayfaya Dön</span>
+        </button>
+
+        <div className="w-full max-w-md">
+          
+          {/* Mobile Logo */}
+          <div className="flex lg:hidden flex-col items-center justify-center mb-8">
+            <Logo className="h-14 w-auto text-iesu-red mb-4" />
+            <h1 className="text-xl font-black text-gray-900 tracking-tight text-center">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
+            <p className="text-[10px] text-iesu-coral font-bold uppercase tracking-widest mt-1 text-center">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
+          </div>
+
+          <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 p-8 sm:p-10 relative">
+            
+            <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">Portala Giriş Yapın</h2>
 
           {/* Role Selector Tabs */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1.5 bg-gray-100/80 rounded-xl mb-8">
@@ -199,17 +214,17 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </button>
           </form>
 
-          {loginRole === 'student' && (
+          {(loginRole === 'student' || loginRole === 'admin') && (
             <div className="mt-8 pt-6 border-t border-gray-100">
-              <div className="bg-gradient-to-r from-iesu-red/5 to-iesu-coral/5 rounded-2xl p-5 border border-iesu-red/10 flex flex-col sm:flex-row items-center justify-between gap-4 group hover:border-iesu-red/20 transition-all">
-                <div className="text-center sm:text-left">
+              <div className="bg-gradient-to-r from-iesu-red/5 to-iesu-coral/5 rounded-2xl p-5 border border-iesu-red/10 flex flex-col items-center text-center gap-3 group hover:border-iesu-red/20 transition-all">
+                <div>
                   <h4 className="text-iesu-red font-bold text-sm">İlk Kez Mi Giriyorsunuz?</h4>
-                  <p className="text-gray-500 text-xs mt-0.5">Sisteme kayıt olmak ve şifre belirlemek için tıklayın.</p>
+                  <p className="text-gray-500 text-[11px] mt-1 px-2">Sisteme kayıt olmak ve şifre belirlemek için tıklayın.</p>
                 </div>
                 <button 
                   onClick={() => setView('register')} 
                   type="button" 
-                  className="w-full sm:w-auto px-5 py-2.5 bg-white text-iesu-red rounded-xl font-bold text-sm shadow-sm border border-iesu-red/10 hover:bg-iesu-red hover:text-white transition-all active:scale-[0.98]"
+                  className="w-full px-5 py-2.5 bg-white text-iesu-red rounded-xl font-bold text-sm shadow-sm border border-iesu-red/10 hover:bg-iesu-red hover:text-white transition-all active:scale-[0.98]"
                 >
                   Hesabımı Aktifleştir
                 </button>
@@ -250,9 +265,10 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           )}
           
         </div>
+        </div>
         
         {/* Footer Text */}
-        <p className="text-center text-red-200/60 text-[11px] font-medium mt-8">
+        <p className="absolute bottom-6 text-center text-gray-400 text-[11px] font-medium w-full px-4">
           © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü.
         </p>
       </div>

@@ -35,25 +35,26 @@ export default function LandingPage({ setView }) {
       ).slice(0, 5)
     : [];
 
+  // Dynamically create slider items combining real career opportunities and real university events
   const heroSlides = [
     {
-      badge: "Öne Çıkan Kariyer Fırsatı",
+      badge: "Öne Çıkan Fırsat",
       title: "2026 Ulusal Staj Programı Başvuruları Başladı",
       image: "https://www.esenyurt.edu.tr/uploads/2026/01/7vnjt36bkvvot-2026-ulusal-staj.PNG",
       action: () => setView('jobs')
     },
-    {
-      badge: "Yetenek Kapısı",
-      title: "Kariyer Fuarlarına Kayıt Yaptırmayı Unutmayın",
-      image: "https://www.esenyurt.edu.tr/uploads/2025/07/puvyjwzmoe347-yetenek-kapisi.jpeg",
-      action: () => setView('jobs')
-    },
-    {
-      badge: "Yeni Mezun Programı",
-      title: "Öncü Teknoloji Firmalarında Mühendislik Fırsatları",
-      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&h=600&fit=crop",
-      action: () => setView('jobs')
-    }
+    ...((contentData?.etkinlikler || []).slice(0, 2).map(item => ({
+      badge: "Yaklaşan Etkinlik",
+      title: item.title,
+      image: item.imageUrl || "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80",
+      action: () => setSelectedItem(item)
+    }))),
+    ...((contentData?.haberler || []).slice(0, 1).map(item => ({
+      badge: "Önemli Haber",
+      title: item.title,
+      image: item.imageUrl || "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80",
+      action: () => setSelectedItem(item)
+    })))
   ];
 
   const legalData = {
@@ -231,48 +232,59 @@ export default function LandingPage({ setView }) {
             </div>
           </div>
 
-          {/* Right Floating Cards (Glassmorphism) */}
-          <div className="hidden lg:block relative h-full min-h-[400px]">
-            {/* Top Card */}
-            <div className="absolute top-10 right-10 bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl shadow-2xl animate-float w-64 transform rotate-2">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/50">
-                  <Briefcase size={20} className="text-blue-300" />
-                </div>
-                <div>
-                  <div className="text-2xl font-black text-white">5.000+</div>
-                  <div className="text-[11px] font-bold text-gray-300 uppercase">Aktif İş/Staj İlanı</div>
-                </div>
-              </div>
+          {/* Right: Dynamic Slider (Filmstrip) */}
+          <div className="hidden lg:block relative h-full min-h-[450px] perspective-1000">
+            <div className="relative w-full h-full flex items-center justify-center">
+              {heroSlides.map((slide, index) => {
+                const isActive = index === currentSlide;
+                const isPrev = index === (currentSlide - 1 + heroSlides.length) % heroSlides.length;
+                const isNext = index === (currentSlide + 1) % heroSlides.length;
+                
+                let transformStyle = "translate-x-full opacity-0 scale-75"; // Default hidden right
+                if (isActive) transformStyle = "translate-x-0 opacity-100 scale-100 z-30 drop-shadow-2xl";
+                else if (isPrev) transformStyle = "-translate-x-32 opacity-40 scale-90 z-20 blur-[2px]";
+                else if (isNext) transformStyle = "translate-x-32 opacity-40 scale-90 z-20 blur-[2px]";
+
+                return (
+                  <div 
+                    key={index}
+                    onClick={slide.action}
+                    className={`absolute w-80 h-[400px] rounded-[2rem] overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] border border-white/20 shadow-2xl ${transformStyle}`}
+                  >
+                    <img src={slide.image} alt={slide.title} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent mix-blend-multiply"></div>
+                    
+                    {isActive && (
+                      <div className="absolute inset-0 ring-2 ring-inset ring-white/20 rounded-[2rem]"></div>
+                    )}
+
+                    <div className="absolute bottom-0 left-0 p-6 w-full">
+                      <span className="inline-block px-3 py-1 mb-3 text-[10px] font-black uppercase tracking-wider text-white bg-iesu-red rounded-lg shadow-lg">
+                        {slide.badge}
+                      </span>
+                      <h3 className="text-xl font-black text-white leading-tight drop-shadow-lg">
+                        {slide.title}
+                      </h3>
+                      {isActive && (
+                        <div className="mt-4 flex items-center gap-2 text-white/80 text-sm font-bold group">
+                          İncele <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Middle Card */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-0 bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl shadow-2xl animate-float-delayed w-72 transform -rotate-3 z-20">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="w-12 h-12 rounded-full bg-iesu-coral/20 flex items-center justify-center border border-iesu-coral/50">
-                  <GraduationCap size={24} className="text-red-300" />
-                </div>
-                <div>
-                  <div className="text-3xl font-black text-white">12.000+</div>
-                  <div className="text-[11px] font-bold text-gray-300 uppercase">Kayıtlı Öğrenci & Mezun</div>
-                </div>
-              </div>
-              <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-red-400 to-red-500 w-3/4"></div>
-              </div>
-            </div>
-
-            {/* Bottom Card */}
-            <div className="absolute bottom-10 right-20 bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl shadow-2xl animate-float w-60 transform rotate-1">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/50">
-                  <Building2 size={20} className="text-emerald-300" />
-                </div>
-                <div>
-                  <div className="text-2xl font-black text-white">250+</div>
-                  <div className="text-[11px] font-bold text-gray-300 uppercase">Anlaşmalı Kurum</div>
-                </div>
-              </div>
+            {/* Slider Navigation Dots */}
+            <div className="absolute -bottom-8 left-0 right-0 flex justify-center gap-2">
+              {heroSlides.map((_, idx) => (
+                <button 
+                  key={idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentSlide ? 'w-8 bg-iesu-red' : 'w-2 bg-white/30 hover:bg-white/60'}`}
+                />
+              ))}
             </div>
           </div>
         </div>
