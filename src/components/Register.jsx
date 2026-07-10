@@ -7,7 +7,7 @@ import { auth, db } from '../utils/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
-export default function Register({ setView, setCurrentUser, setStudents, setCompanies, setUserRole }) {
+export default function Register({ setView, setCurrentUser, setStudents, setAlumni, setAcademicStaff, setCompanies, setUserRole }) {
   const [step, setStep] = useState(1); // 1: Info, 2: Success
   const [accountType, setAccountType] = useState('student'); // 'student' or 'employer'
 
@@ -126,6 +126,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
           createdAt: new Date().toISOString()
         };
 
+        if (setAcademicStaff) setAcademicStaff(prev => [...(prev || []), newAcademic]);
         if (setCurrentUser) setCurrentUser(newAcademic);
         if (setUserRole) setUserRole('academic');
 
@@ -162,6 +163,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
           createdAt: new Date().toISOString()
         };
 
+        if (setAlumni) setAlumni(prev => [...(prev || []), newAlumni]);
         if (setCurrentUser) setCurrentUser(newAlumni);
         if (setUserRole) setUserRole('alumni');
 
