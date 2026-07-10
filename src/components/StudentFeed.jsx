@@ -54,46 +54,14 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
     <div className="min-h-screen bg-transparent font-sans">
       {/* Hyper-Modern Navbar (Glassmorphism) */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          
-          {/* LEFT: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-center">
+          {/* CENTER: Logo & Brand */}
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden lg:block">
+            <div className="hidden sm:block">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkeziüğü</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
             </div>
-          </div>
-          {/* MIDDLE: Search Bar */}
-          <div className="hidden md:flex relative group flex-1 max-w-md mx-auto shrink">
-            <Search className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={18} />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={userRole === 'admin' ? "Öğrenci, mezun, firma, ilan veya başvuru ara..." : "İlan, staj, etkinlik veya mentorluk ara..."} 
-              className="bg-gray-100/80 pl-10 pr-4 py-2 rounded-2xl text-[14px] w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-iesu-coral/20 transition-all" 
-            />
-          </div>
-          
-          {/* RIGHT: Navigation Icons & Profile */}
-          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon 
-              icon={<MessageCircle />} 
-              label="Mesajlar" 
-              badge={messages?.filter(m => m.receiverId === currentUser?.id && !m.read).length || 0} 
-              active={activeTab === 'messaging'} 
-              onClick={() => setActiveTab('messaging')} 
-            />
-            <NavIcon 
-              icon={<Bell />} 
-              label="Bildirimler" 
-              badge={(notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length || 0} 
-              active={activeTab === 'notifications'} 
-              onClick={() => setView('notifications')} 
-            />
-            
-            <TopProfileMenu currentUser={currentUser || { name: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=Sen&background=132A49&color=fff' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="student" />
           </div>
         </div>
       </nav>
@@ -104,6 +72,19 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
         {/* CENTER PANEL: Stories & Feed */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 space-y-6 animate-fade-in">
+            
+            {/* MAIN SEARCH PANEL */}
+            <div className="relative group w-full mb-6">
+              <Search className="absolute left-4 top-3.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={20} />
+              <input 
+                id="main-search"
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={userRole === 'admin' ? "Öğrenci, mezun, firma, ilan veya başvuru ara..." : "İlan, staj, etkinlik veya mentorluk ara..."} 
+                className="bg-white pl-12 pr-4 py-3 rounded-2xl text-[15px] w-full focus:outline-none focus:ring-2 focus:ring-iesu-red/20 border border-gray-100 shadow-sm transition-all" 
+              />
+            </div>
             
             {/* PROFESSIONAL HIGHLIGHTS */}
           <CareerRadar announcements={announcements} events={events} jobs={jobs} setView={setView} />
@@ -202,17 +183,22 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Akış">
             <Home size={26} strokeWidth={activeTab === 'feed' ? 2.5 : 2} className={activeTab === 'feed' ? 'fill-current text-iesu-red/10' : ''} />
           </button>
+          
           <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'jobs' ? 'text-emerald-500' : 'text-gray-400 hover:text-gray-900'}`} title="İlanlar">
             <Briefcase size={24} strokeWidth={activeTab === 'jobs' ? 2.5 : 2} />
           </button>
           
-          <button onClick={() => setActiveTab('messaging')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-iesu-red to-iesu-coral text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0">
-            <MessageCircle size={24} strokeWidth={2.5} />
+          {/* CENTER: SEARCH ICON */}
+          <button onClick={() => { setActiveTab('feed'); document.getElementById('main-search')?.focus(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-iesu-red to-iesu-coral text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
+            <Search size={24} strokeWidth={2.5} />
           </button>
           
-          <button onClick={() => setActiveTab('applications')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'applications' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-900'}`} title="Başvurularım">
-            <FileText size={24} strokeWidth={activeTab === 'applications' ? 2.5 : 2} />
+          {/* MESSAGES */}
+          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-900'}`} title="Mesajlar">
+            <MessageCircle size={24} strokeWidth={activeTab === 'messaging' ? 2.5 : 2} className={activeTab === 'messaging' ? 'fill-current text-blue-500/10' : ''} />
           </button>
+          
+          {/* PROFILE AVATAR */}
           <button onClick={() => {
             if (setSelectedUserId) setSelectedUserId(currentUser?.id || 'std-1');
             setView('user_profile');
