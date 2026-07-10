@@ -54,15 +54,32 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
     <div className="min-h-screen bg-transparent font-sans">
       {/* Hyper-Modern Navbar (Glassmorphism) */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-center">
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
+          
+          {/* LEFT: Star Icon for Post Creation */}
+          <button onClick={() => setActiveTab('create_post')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 ${activeTab === 'create_post' ? 'text-iesu-red bg-red-50' : 'text-gray-600'}`} title="Gönderi Düzenle/Paylaş">
+            <Star size={24} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-iesu-red/10' : ''} />
+          </button>
+          
           {/* CENTER: Logo & Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden sm:block">
+            <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
             </div>
           </div>
+          
+          {/* RIGHT: Heart Icon for Notifications */}
+          <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600`} title="Bildirimler">
+            <div className="relative">
+              <Heart size={24} strokeWidth={2} />
+              {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+              )}
+            </div>
+          </button>
+          
         </div>
       </nav>
 
@@ -73,24 +90,8 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 space-y-6 animate-fade-in">
             
-            {/* MAIN SEARCH PANEL */}
-            <div className="relative group w-full mb-6">
-              <Search className="absolute left-4 top-3.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={20} />
-              <input 
-                id="main-search"
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={userRole === 'admin' ? "Öğrenci, mezun, firma, ilan veya başvuru ara..." : "İlan, staj, etkinlik veya mentorluk ara..."} 
-                className="bg-white pl-12 pr-4 py-3 rounded-2xl text-[15px] w-full focus:outline-none focus:ring-2 focus:ring-iesu-red/20 border border-gray-100 shadow-sm transition-all" 
-              />
-            </div>
-            
             {/* PROFESSIONAL HIGHLIGHTS */}
           <CareerRadar announcements={announcements} events={events} jobs={jobs} setView={setView} />
-
-          {/* CREATE POST (Quick Action) */}
-          <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
 
           {/* FEED POSTS */}
           <div className="space-y-6">
@@ -126,6 +127,42 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           </div>
 
         </div>
+        )}
+
+        {/* Search Native View */}
+        {activeTab === 'search' && (
+          <div className="bg-white rounded-3xl w-full p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6 min-h-[75vh]">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Search className="text-iesu-red" size={24} strokeWidth={2.5} /> Arama ve Keşfet
+            </h2>
+            <div className="relative group w-full mb-8">
+              <Search className="absolute left-4 top-3.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={20} />
+              <input 
+                id="main-search"
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={userRole === 'admin' ? "Öğrenci, mezun, firma, ilan veya başvuru ara..." : "İlan, staj, etkinlik veya mentorluk ara..."} 
+                className="bg-gray-50 pl-12 pr-4 py-3.5 rounded-2xl text-[15px] w-full focus:outline-none focus:ring-2 focus:ring-iesu-red/20 border border-gray-200 transition-all shadow-inner" 
+              />
+            </div>
+            
+            <div className="text-center text-gray-500 py-12 mt-12 border-2 border-dashed border-gray-100 rounded-3xl">
+              <Compass size={48} className="mx-auto mb-4 text-gray-300" strokeWidth={1.5} />
+              <h3 className="text-lg font-bold text-gray-700 mb-2">Keşfetmeye Başlayın</h3>
+              <p className="max-w-sm mx-auto text-sm">Öğrenciler, İlanlar, Firmalar veya Etkinlikleri aramak için yukarıdaki alanı kullanın.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Create Post Native View */}
+        {activeTab === 'create_post' && (
+          <div className="bg-white rounded-3xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
+             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+              <Star className="text-iesu-red fill-current" size={24} /> Gönderi Paylaş & Düzenle
+             </h2>
+             <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+          </div>
         )}
 
           {activeTab === 'career_network' && (
@@ -189,7 +226,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           </button>
           
           {/* CENTER: SEARCH ICON */}
-          <button onClick={() => { setActiveTab('feed'); document.getElementById('main-search')?.focus(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-iesu-red to-iesu-coral text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
+          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-iesu-red to-iesu-coral text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
             <Search size={24} strokeWidth={2.5} />
           </button>
           
