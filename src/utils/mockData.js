@@ -161,6 +161,16 @@ export const initialGroups = [
     status: "Aktif",
     events: [
       { id: "GEVT-1", title: "Hafta Sonu Hackathon'u", date: "15 Temmuz", time: "10:00", location: "Online (Discord)" }
+    ],
+    boardMembers: [
+      { role: "Kulüp Başkanı", name: "Ali Yılmaz", department: "Bilgisayar Mühendisliği" },
+      { role: "Başkan Yardımcısı", name: "Ayşe Kaya", department: "Yazılım Mühendisliği" },
+      { role: "Genel Sekreter", name: "Mehmet Demir", department: "Bilişim Sistemleri" },
+      { role: "Sayman", name: "Zeynep Çelik", department: "İşletme" },
+      { role: "Yönetim Kurulu Üyesi (Etkinlik)", name: "Caner Şahin", department: "Yazılım Mühendisliği" },
+      { role: "Yönetim Kurulu Üyesi (İletişim)", name: "Elif Aydın", department: "Halkla İlişkiler" },
+      { role: "Yönetim Kurulu Üyesi (Eğitim)", name: "Burak Yücel", department: "Bilgisayar Mühendisliği" },
+      { role: "Danışman Akademisyen", name: "Dr. Öğr. Üyesi Ahmet Kılıç", department: "Bilgisayar Mühendisliği" }
     ]
   },
   {
@@ -174,7 +184,17 @@ export const initialGroups = [
     verified: false,
     createdBy: 1,
     status: "Aktif",
-    events: []
+    events: [],
+    boardMembers: [
+      { role: "Kulüp Başkanı", name: "Kerem Tunç", department: "İşletme" },
+      { role: "Başkan Yardımcısı", name: "Selin Yılmaz", department: "Uluslararası Ticaret" },
+      { role: "Genel Sekreter", name: "Oğuzhan Tekin", department: "İktisat" },
+      { role: "Sayman", name: "Cemre Özdemir", department: "Muhasebe" },
+      { role: "Yönetim Kurulu Üyesi (Etkinlik)", name: "Kaan Arslan", department: "Pazarlama" },
+      { role: "Yönetim Kurulu Üyesi (İletişim)", name: "Buse Karaca", department: "İletişim Tasarımı" },
+      { role: "Yönetim Kurulu Üyesi (Sponsorluk)", name: "Eren Taş", department: "İşletme" },
+      { role: "Danışman Akademisyen", name: "Prof. Dr. Ayşe Yılmaz", department: "İşletme" }
+    ]
   }
 ];
 

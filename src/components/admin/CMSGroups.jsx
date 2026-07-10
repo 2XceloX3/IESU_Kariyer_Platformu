@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Search, Plus, ShieldCheck, CheckCircle2, XCircle, Eye, Trash2, Calendar, MapPin, AlignLeft } from 'lucide-react';
+import { Users, Search, Plus, ShieldCheck, CheckCircle2, XCircle, Eye, Trash2, Calendar, MapPin, AlignLeft, Download, User } from 'lucide-react';
 import PanelHeader from './PanelHeader';
 
 export default function CMSGroups({ groups, setGroups, currentUser }) {
@@ -37,7 +37,34 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Topluluklar ve Gruplar (CMS)" sub="Platformdaki öğrenci kulüpleri, mezun ağları ve çalışma gruplarının yönetimi." />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PanelHeader title="Topluluklar ve Gruplar (CMS)" sub="Platformdaki öğrenci kulüpleri, mezun ağları ve çalışma gruplarının yönetimi." />
+        <button 
+          onClick={() => {
+            const headers = ['ID', 'Topluluk Adi', 'Tur', 'Uye Sayisi', 'Onayli', 'Durum'];
+            const csvContent = [
+              headers.join(';'),
+              ...filteredGroups.map(g => [
+                g.id, 
+                g.name.replace(/;/g, ','), 
+                g.type, 
+                g.memberCount, 
+                g.verified ? 'Evet' : 'Hayir', 
+                g.status
+              ].join(';'))
+            ].join('\n');
+        
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Kulupler_Faaliyet_Raporu.csv';
+            link.click();
+          }}
+          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95"
+        >
+          <Download size={16} /> Excel'e Aktar
+        </button>
+      </div>
 
       <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -150,9 +177,31 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><AlignLeft size={18} className="text-iesu-red" /> Genel Açıklama</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                  <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-6">
                     {selectedGroup.description || 'Açıklama girilmemiş.'}
                   </p>
+
+                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><Users size={18} className="text-iesu-red" /> Yönetim Ekibi (8 Kişi)</h3>
+                  <div className="space-y-2">
+                    {selectedGroup.boardMembers?.length > 0 ? selectedGroup.boardMembers.map((member, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-iesu-red/10 flex items-center justify-center text-iesu-red shrink-0">
+                            <User size={14} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900 leading-none">{member.name}</p>
+                            <p className="text-[10px] text-gray-500 font-medium mt-1">{member.department}</p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-1 bg-gray-100 text-gray-600 rounded-md whitespace-nowrap">
+                          {member.role}
+                        </span>
+                      </div>
+                    )) : (
+                      <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded-xl border border-gray-100">Yönetim ekibi bilgisi bulunmuyor.</div>
+                    )}
+                  </div>
                 </div>
                 
                 <div>
