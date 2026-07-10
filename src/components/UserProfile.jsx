@@ -357,14 +357,10 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans">
-      {/* Hyper-Modern Navbar (Glassmorphism) - Replicated from Feeds */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           
-          {/* LEFT: Back Button to return to feed */}
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
-            <Home size={24} strokeWidth={2} />
-          </button>
+          <div className="w-10"></div> {/* Spacer for symmetry */}
           
           {/* CENTER: Logo & Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
