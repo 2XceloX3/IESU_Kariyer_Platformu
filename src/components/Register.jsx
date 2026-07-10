@@ -15,7 +15,8 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
   const [formData, setFormData] = useState({
     companyName: '', website: '', contactName: '', title: '', email: '', phone: '',
     studentName: '', studentId: '', studentEmail: '', password: '', passwordConfirm: '',
-    academicName: '', academicEmail: '', academicTitle: ''
+    academicName: '', academicEmail: '', academicTitle: '',
+    alumniName: '', alumniId: '', alumniEmail: '', graduationYear: '', alumniDepartment: ''
   });
 
   const handleChange = (e) => {
@@ -133,6 +134,42 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
         } catch(err) {
           console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
         }
+      } else if (accountType === 'alumni') {
+        if (formData.password !== formData.passwordConfirm) {
+          alert("Şifreler eşleşmiyor! Lütfen kontrol edin.");
+          return;
+        }
+        if (formData.password.length < 6) {
+          alert("Şifre en az 6 karakter olmalıdır.");
+          return;
+        }
+
+        // [FİREBASE AUTH] - Yeni Mezun Kullanıcı Oluştur
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.alumniEmail, formData.password);
+        const user = userCredential.user;
+
+        // [FİREBASE FIRESTORE] - Mezun Detayları
+        const newAlumni = {
+          id: user.uid,
+          name: formData.alumniName || 'Yeni Mezun',
+          studentId: formData.alumniId,
+          email: formData.alumniEmail,
+          department: formData.alumniDepartment || 'Belirtilmedi',
+          graduationYear: formData.graduationYear || new Date().getFullYear().toString(),
+          role: 'alumni',
+          status: 'Aktif',
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.alumniName || 'Mezun')}&background=F59E0B&color=fff`,
+          createdAt: new Date().toISOString()
+        };
+
+        if (setCurrentUser) setCurrentUser(newAlumni);
+        if (setUserRole) setUserRole('alumni');
+
+        try {
+          await setDoc(doc(db, "users", user.uid), newAlumni);
+        } catch(err) {
+          console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
+        }
       }
       
       // Kayıt başarılıysa onay ekranına geç
@@ -195,6 +232,13 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
                     className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'academic' ? 'bg-white text-iesu-red shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <User size={18} /> Akademik Personel
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setAccountType('alumni')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'alumni' ? 'bg-white text-iesu-red shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                  >
+                    <GraduationCap size={18} /> Mezun
                   </button>
                 </div>
               </div>
@@ -294,6 +338,59 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
                     </div>
                   </form>
                 </>
+              ) : accountType === 'alumni' ? (
+                <>
+                  <h2 className="text-2xl font-black text-gray-900 mb-2 text-center">Mezun İlk Giriş (Şifre Belirleme)</h2>
+                  <p className="text-center text-sm text-gray-500 font-medium mb-8">
+                    Mezuniyet bilgilerinizle hesabınızı oluşturun ve IESU Kariyer Ağına katılın.
+                  </p>
+
+                  <form className="space-y-4" onSubmit={handleSubmit}>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="relative">
+                        <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                        <input type="text" name="alumniName" value={formData.alumniName} onChange={handleChange} placeholder="Ad Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                      </div>
+                      
+                      <div className="relative">
+                        <FileText className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                        <input type="text" name="alumniId" pattern="[0-9]{9,11}" value={formData.alumniId} onChange={handleChange} placeholder="Öğrenci Numarası (Mezun olduğunuz)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="relative">
+                          <MapPin className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                          <input type="text" name="alumniDepartment" value={formData.alumniDepartment} onChange={handleChange} placeholder="Mezun Olunan Bölüm" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        </div>
+                        <div className="relative">
+                          <GraduationCap className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                          <input type="text" name="graduationYear" value={formData.graduationYear} onChange={handleChange} placeholder="Mezuniyet Yılı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                        <input type="email" name="alumniEmail" value={formData.alumniEmail} onChange={handleChange} placeholder="E-Posta Adresi" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                      </div>
+
+                      <div className="relative mt-4">
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                        <input type="password" name="password" minLength={6} value={formData.password} onChange={handleChange} placeholder="Yeni Şifre (En az 6 karakter)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                      </div>
+
+                      <div className="relative">
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                        <input type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                      </div>
+                    </div>
+
+                    <div className="pt-4">
+                      <button type="submit" className="w-full flex items-center justify-center bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98]">
+                        Mezun Hesabımı Aktifleştir
+                      </button>
+                    </div>
+                  </form>
+                </>
               ) : (
                 <>
                   <h2 className="text-2xl font-black text-gray-900 mb-2 text-center">İlk Giriş (Şifre Belirleme)</h2>
@@ -347,6 +444,8 @@ export default function Register({ setView, setCurrentUser, setStudents, setComp
                   ? "Firma kayıt talebiniz Kariyer Geliştirme Ofisine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
                   : accountType === 'academic'
                   ? "Akademik hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık kurumsal e-postanız ve şifrenizle giriş yapabilirsiniz."
+                  : accountType === 'alumni'
+                  ? "Mezun hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Aramıza tekrar hoş geldiniz, artık giriş yapabilirsiniz."
                   : "Öğrenci hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık öğrenci numaranız ve şifrenizle giriş yapabilirsiniz."}
               </p>
               <button 
