@@ -5,7 +5,7 @@ import MessagingInterface from './MessagingInterface';
 import CareerShorts from './CareerShorts';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
-import CareerRadar from './CareerRadar';
+import StoriesBar from './StoriesBar';
 import CareerNetwork from './CareerNetwork';
 import GroupProfile from './GroupProfile';
 
@@ -120,7 +120,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
           
           {activeTab === 'feed' && (
             <>
-              <CareerRadar announcements={announcements} events={events} jobs={jobs} setView={setView} />
+              <StoriesBar currentUser={currentUser} setView={setView} />
               <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
               
               <div className="space-y-6">

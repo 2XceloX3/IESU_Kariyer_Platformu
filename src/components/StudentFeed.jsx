@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, ClipboardList, Building2, Settings, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Calendar, Home, Star, UserCheck, ArrowRight, FileText, Wand2, UserPlus } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
-import CareerShorts from './CareerShorts';
+import StoriesBar from './StoriesBar';
 import MessagingInterface from './MessagingInterface';
 import ApplicationsPanel from './ApplicationsPanel';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
 
 import { combineFeedItems } from '../utils/feedCombiner';
-import CareerRadar from './CareerRadar';
 import CareerNetwork from './CareerNetwork';
+import GroupsPanel from './GroupsPanel';
+import NotificationsPanel from './NotificationsPanel';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import CalendarPlanning from './CalendarPlanning';
@@ -119,8 +120,8 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 space-y-6 animate-fade-in">
             
-            {/* PROFESSIONAL HIGHLIGHTS */}
-          <CareerRadar announcements={announcements} events={events} jobs={jobs} setView={setView} />
+            {/* STORIES MODE (Replaces Career Radar) */}
+            <StoriesBar currentUser={currentUser} setView={setView} />
 
           {/* FEED POSTS */}
           <div className="space-y-6">

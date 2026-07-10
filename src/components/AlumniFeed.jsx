@@ -4,7 +4,7 @@ import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
 import CareerShorts from './CareerShorts';
-
+import StoriesBar from './StoriesBar';
 import { combineFeedItems } from '../utils/feedCombiner';
 import PostCard from './PostCard';
 import CareerRadar from './CareerRadar';
@@ -152,8 +152,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
         {/* CENTER PANEL: Stories & Feed */}
         <div className="w-full max-w-[600px] shrink-0 space-y-6">
           
-          {/* PROFESSIONAL HIGHLIGHTS */}
-          <CareerRadar announcements={announcements} events={events} jobs={jobs} setView={setView} />
+          {/* STORIES MODE (Replaces Career Radar) */}
+          <StoriesBar currentUser={currentUser} setView={setView} />
 
           {/* CREATE POST (Quick Action) */}
           <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
