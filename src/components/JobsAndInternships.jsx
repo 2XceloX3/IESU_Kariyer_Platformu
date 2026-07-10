@@ -35,7 +35,7 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
   );
 };
 
-export default function JobsAndInternships({ userRole, setView, jobs = [], applications = [], setApplications = () => {}, currentUser, setSelectedUserId }) {
+export default function JobsAndInternships({ userRole, setView, previousView, jobs = [], applications = [], setApplications = () => {}, currentUser, setSelectedUserId }) {
   const [activeTab, setActiveTab] = useState('ilanlar'); // 'ilanlar', 'ulusal', 'gonullu'
 
   const handleApply = (job) => {
@@ -70,11 +70,6 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
       {/* Hyper-Modern Navbar (Glassmorphism) - Replicated from Feeds */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          
-          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
-            <ArrowLeft size={24} strokeWidth={2} />
-          </button>
-          
           {/* CENTER: Logo & Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
