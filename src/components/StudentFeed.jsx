@@ -78,10 +78,6 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           
           {/* RIGHT: Navigation Icons & Profile */}
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" active={activeTab === 'feed'} onClick={() => setActiveTab('feed')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={activeTab === 'career_network'} onClick={() => setActiveTab('career_network')} />
-            <NavIcon icon={<Users />} label="Topluluklar" active={false} onClick={() => setView('groups')} />
-            <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
             <NavIcon 
               icon={<MessageCircle />} 
               label="Mesajlar" 
@@ -234,23 +230,25 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
 
       </div>
 
-      {/* FLOATING DOCK (LESS IS MORE) */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up">
-        <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex items-center gap-2">
-          <button onClick={() => setActiveTab('feed')} className={`p-3.5 sm:p-4 rounded-full transition-all ${activeTab === 'feed' ? 'bg-iesu-red text-white shadow-lg shadow-iesu-red/30' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`} title="Akış">
-            <Home size={22} />
+      {/* FLOATING DOCK (INSTAGRAM STYLE - DARK PILL) */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
+        <div className="bg-[#0f1419]/95 backdrop-blur-2xl border border-gray-800 p-2 sm:p-2.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center justify-between px-3">
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-white' : 'text-gray-400 hover:text-white'}`} title="Akış">
+            <Home size={26} strokeWidth={activeTab === 'feed' ? 2.5 : 2} className={activeTab === 'feed' ? 'fill-current' : ''} />
           </button>
-          <button onClick={() => setView('jobs')} className={`p-3.5 sm:p-4 rounded-full transition-all ${activeTab === 'jobs' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`} title="İlanlar & Fırsatlar">
-            <Briefcase size={22} />
+          <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'jobs' ? 'text-white' : 'text-gray-400 hover:text-white'}`} title="İlanlar">
+            <Briefcase size={24} strokeWidth={activeTab === 'jobs' ? 2.5 : 2} />
           </button>
-          <button onClick={() => setActiveTab('career_network')} className={`p-3.5 sm:p-4 rounded-full transition-all ${activeTab === 'career_network' ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`} title="Kariyer Ağı & Mentörlük">
-            <Compass size={22} />
+          
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-orange-500 via-red-500 to-purple-600 text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0">
+            <Plus size={24} strokeWidth={3} />
           </button>
-          <button onClick={() => setActiveTab('applications')} className={`p-3.5 sm:p-4 rounded-full transition-all ${activeTab === 'applications' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`} title="Başvurularım">
-            <FileText size={22} />
+          
+          <button onClick={() => setActiveTab('applications')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'applications' ? 'text-white' : 'text-gray-400 hover:text-white'}`} title="Başvurularım">
+            <FileText size={24} strokeWidth={activeTab === 'applications' ? 2.5 : 2} />
           </button>
-          <button onClick={() => setActiveTab('cvbuilder')} className={`p-3.5 sm:p-4 rounded-full transition-all ${activeTab === 'cvbuilder' ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`} title="Yapay Zeka Destekli CV">
-            <Wand2 size={22} />
+          <button onClick={() => setView('profile_update')} className={`p-1 rounded-full transition-all flex items-center justify-center border-2 ${activeTab === 'profile' ? 'border-white' : 'border-transparent hover:border-gray-500'}`} title="Profil">
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Öğrenci')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
           </button>
         </div>
       </div>
