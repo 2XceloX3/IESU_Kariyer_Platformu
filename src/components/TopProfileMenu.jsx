@@ -146,8 +146,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               {/* NORMAL USER HEADER */}
               <div className="px-4 py-3 border-b border-gray-50">
                 <div className="flex items-center gap-1.5 mb-0.5">
-                  <p className="text-sm font-black text-gray-900 truncate">
+                  <p className="text-sm font-black text-gray-900 truncate flex items-center gap-1">
                     {currentUser?.name || 'Kullanıcı'}
+                    {currentUser?.badge && <ShieldCheck size={14} className="text-blue-500 shrink-0" title={currentUser.badge} />}
                   </p>
                 </div>
                 <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5 flex items-center gap-1">

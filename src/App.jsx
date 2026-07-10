@@ -176,7 +176,7 @@ function App() {
             setAcademicApprovals={setAcademicApprovals}
             posts={posts || []} setPosts={setPosts}
             news={news || []} events={events || []} announcements={announcements || []} jobs={jobs || []}
-            students={liveStudents || []} alumni={liveAlumni || []} companies={liveCompanies || []} academicStaff={liveAcademicStaff || []}
+            students={liveStudents || []} setStudents={setStudents} alumni={liveAlumni || []} companies={liveCompanies || []} academicStaff={liveAcademicStaff || []}
             surveys={surveys || []}
             groups={groups || []}
             setSelectedGroupId={setSelectedGroupId}

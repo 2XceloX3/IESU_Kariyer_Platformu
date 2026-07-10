@@ -106,6 +106,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
             <h3 className="font-bold text-[15px] text-gray-900 group-hover:text-iesu-red transition-colors flex items-center gap-1.5">
               {post?.author?.role === 'admin' ? 'Kariyer Geliştirme Ofisi' : (post?.author?.name || 'Kullanıcı')}
               {post?.author?.role === 'admin' && <ShieldCheck size={14} className="text-emerald-500" />}
+              {post?.author?.badge && <ShieldCheck size={14} className="text-blue-500 shrink-0" title={post.author.badge} />}
             </h3>
             <p className="text-[12px] text-gray-500 font-medium">
               {post?.author?.role === 'admin' ? 'Süper Yönetici' : (post?.author?.title || '')} • {post?.time || ''}

@@ -12,7 +12,7 @@ export default function AcademicStaffFeed({
   notifications, setNotifications, 
   initialInternships = [], academicApprovals = [], setAcademicApprovals,
   posts, setPosts, news, events, announcements, jobs,
-  students, alumni, companies, academicStaff, surveys
+  students, setStudents, alumni, companies, academicStaff, surveys
 }) {
   const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, approvals, radar
   const [isRadarOpen, setIsRadarOpen] = useState(false);
@@ -186,6 +186,7 @@ export default function AcademicStaffFeed({
               <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-2 text-sm font-bold rounded-xl transition ${activeTab === 'dashboard' ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>Genel İstatistikler</button>
               <button onClick={() => setActiveTab('approvals')} className={`px-4 py-2 text-sm font-bold rounded-xl transition ${activeTab === 'approvals' ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>Onay Havuzu ({stats.pendingApprovals})</button>
               <button onClick={() => setActiveTab('radar')} className={`px-4 py-2 text-sm font-bold rounded-xl transition ${activeTab === 'radar' ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>Stajyer Radarı</button>
+              <button onClick={() => setActiveTab('badges')} className={`px-4 py-2 text-sm font-bold rounded-xl transition ${activeTab === 'badges' ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>Rozet Merkezi</button>
             </div>
             <div className="p-4 bg-slate-50/50 rounded-2xl">
               {activeTab === 'dashboard' && (
@@ -268,6 +269,55 @@ export default function AcademicStaffFeed({
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'badges' && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 animate-fade-in">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><ShieldCheck className="text-iesu-red" size={24} /> Kurumsal Rozet Merkezi</h3>
+                      <p className="text-sm text-gray-500 mt-1">Öğrencilere Sınıf Temsilcisi, Kulüp Başkanı vb. onaylı kurumsal rozetler atayın.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {students?.map(student => (
+                      <div key={student.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-100 rounded-2xl hover:bg-slate-50 transition">
+                        <div className="flex items-center gap-4 mb-3 sm:mb-0">
+                          <img src={student.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`} className="w-12 h-12 rounded-full border border-gray-200 object-cover" alt="" />
+                          <div>
+                            <p className="font-bold text-gray-900 flex items-center gap-1.5">
+                              {student.name}
+                              {student.badge && <ShieldCheck size={16} className="text-blue-500" title={student.badge} />}
+                            </p>
+                            <p className="text-xs text-gray-500">{student.department || 'Bölüm Bilgisi Yok'} - {student.studentId || 'No Yok'}</p>
+                            {student.badge && <span className="inline-block mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold rounded-md">{student.badge}</span>}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <select 
+                            className="bg-gray-50 border border-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
+                            onChange={(e) => {
+                              if (!e.target.value) return;
+                              if (setStudents) {
+                                setStudents(students.map(s => s.id === student.id ? { ...s, badge: e.target.value } : s));
+                              }
+                              e.target.value = '';
+                            }}
+                          >
+                            <option value="">Rozet Ata...</option>
+                            <option value="Sınıf Temsilcisi">Sınıf Temsilcisi</option>
+                            <option value="Kulüp Başkanı">Kulüp Başkanı</option>
+                            <option value="Bölüm Birincisi">Bölüm Birincisi</option>
+                            <option value="Onur Öğrencisi">Onur Öğrencisi</option>
+                            <option value="">(Rozeti Kaldır)</option>
+                          </select>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
