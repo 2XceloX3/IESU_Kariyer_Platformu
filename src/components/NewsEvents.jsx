@@ -4,166 +4,118 @@ import { ArrowLeft, Calendar, FileText, ExternalLink, Bell, Newspaper, Image as 
 export const contentData = {
   haberler: [
     {
-      title: "İstanbul Esenyurt Üniversitesi 2025–2026 Akademik Yılı Mezuniyet Töreni Büyük Bir Coşkuyla Gerçekleşti",
-      date: "01/07/2026",
-      category: "Akademik",
-      description: "Üniversitemiz 2025-2026 Akademik Yılı Mezuniyet Töreni, öğrencilerimizin, ailelerinin ve akademik kadromuzun yoğun katılımıyla coşku içinde kutlandı. Tören, saygı duruşu ve İstiklal Marşı'nın ardından Rektörümüzün açılış konuşmasıyla başladı. Dereceye giren öğrencilerimize plaketleri takdim edildi. Tören sonunda binlerce öğrencimiz aynı anda kep atarak mezuniyet sevincini yaşadı. Öğrencilerimizi tebrik ediyor, kariyer yolculuklarında başarılar diliyoruz.",
-      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
-      attachments: [
-        { title: "Mezuniyet Töreni Basın Bülteni (PDF)", url: "#" },
-        { title: "Tören Fotoğraf Albümü (ZIP)", url: "#" }
-      ]
+      title: "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı!",
+      date: "09/07/2026",
+      category: "Haber",
+      description: "Gençlik ve Spor Bakanlığı tarafından geliştirilen e-Rehberlik Sistemi erişime açıldı! e-Rehberlik sistemi, kişiye uyarlanmış özel testler yoluyla, gençlerin; kişilik özelliklerini, ilgilerini, degerlerini, yeteneklerini ve becerilerini değerlendirerek kariyer ve mesleki gelişim süreçlerini desteklemek üzere tasarlanan çevrimiçi bir rehberlik sistemidir. 15-29 yaş aralığında yer alan gençler tarafından ücretsiz ve çevrimiçi olarak kullanılabilmektedir.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/hi9d2cque1ep7-21.png",
+      attachments: []
     },
     {
-      title: "Kariyer Geliştirme Ofisi'nden Yeni Nesil Yapay Zekâ Atölyesi",
-      date: "25/06/2026",
-      category: "Eğitim",
-      description: "Öğrencilerimizi geleceğin mesleklerine hazırlamak amacıyla Kariyer Geliştirme Ofisi tarafından düzenlenen 'Yapay Zekâ ve Veri Bilimi' atölyesi yoğun ilgi gördü. Uzman eğitmenler eşliğinde gerçekleşen atölyede, makine öğrenmesi temelleri ve ChatGPT gibi dil modellerinin iş hayatındaki pratik kullanımları uygulamalı olarak gösterildi.",
-      imageUrl: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&h=400&fit=crop",
+      title: "İstanbul Esenyurt Üniversitesi 2025–2026 Akademik Yılı Mezuniyet Töreni Büyük Bir Coşku ve Yoğun Katılımla Gerçekleşti !",
+      date: "09/07/2026",
+      category: "Akademik",
+      description: "Yaklaşık 5 Bin Kişinin Katıldığı Törende Mezunlarımız Diplomalarını Alarak Geleceğe Uğurlandı. İstanbul Esenyurt Üniversitesi 2025–2026 Akademik Yılı Mezuniyet Töreni, 28 Haziran 2026 tarihinde Yahya Kemal Beyatlı Gösteri Merkezi'nde yaklaşık 5.000 kişinin katılımıyla büyük bir coşku ve gurur içerisinde gerçekleştirildi.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/x88y5jc78wekt--20.jpg",
       attachments: []
     },
     {
       title: "Babalar gününüz kutlu olsun!",
-      date: "21/06/2026",
+      date: "09/07/2026",
       category: "Genel",
-      description: "Hayatımızın her anında yanımızda olan, desteklerini hiçbir zaman esirgemeyen tüm babalarımızın ve baba adaylarımızın Babalar Günü'nü en içten dileklerimizle kutlarız. İESÜ ailesi olarak, bu özel günde aile bağlarının önemini bir kez daha vurguluyoruz.",
-      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/x8tmt8wmcq3wt--19.jpg",
+      description: "Tüm babalarımızın ve baba adaylarımızın Babalar Günü'nü en içten dileklerimizle kutlarız.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/u0op1wb1gl5fd-19.png",
       attachments: []
     },
     {
-      title: "Rektörümüzden Dönem Sonu Mesajı: 'Geleceği Sizler İnşa Edeceksiniz'",
-      date: "21/06/2026",
+      title: "Rektörümüzden mesaj var.",
+      date: "09/07/2026",
       category: "Duyuru",
-      description: "Saygıdeğer akademisyenlerimiz ve sevgili öğrencilerimiz, başarılarla dolu bir akademik yılı daha geride bırakmanın gururunu yaşıyoruz. Üniversitemizin vizyonu doğrultusunda ürettiğimiz projeler ve elde ettiğimiz ulusal/uluslararası başarılar hepimizin ortak eseridir. Geleceği sizler inşa edeceksiniz. Herkese iyi tatiller dilerim.",
-      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/alr2rs8zc3576--18.png",
-      attachments: [
-        { title: "Rektörlük Dönem Sonu Değerlendirme Raporu (PDF)", url: "#" }
-      ]
+      description: "Sevgili Öğrenciler, BÜTÜNLEME SINAVI'NDA hepinize başarılar ve zihin açıklığı dilerim. Prof. Dr. Süleyman ÖZDEMİR Rektör",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/c24kzimehbxkp-18.png",
+      attachments: []
     },
     {
-      title: "Üniversitemiz TEKNOFEST 2026'da 3 Farklı Kategoride Finale Kaldı",
-      date: "10/06/2026",
-      category: "Teknoloji",
-      description: "Mühendislik ve Mimarlık Fakültesi ile Teknoloji kulüplerimizin ortaklaşa yürüttüğü projeler, TEKNOFEST 2026 Havacılık, Uzay ve Teknoloji Festivali'nde büyük bir başarıya imza atarak İnsansız Hava Araçları, Akıllı Ulaşım ve Tarım Teknolojileri olmak üzere 3 farklı kategoride finale kalmaya hak kazandı. Takımlarımıza finallerde başarılar diliyoruz.",
-      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=400&fit=crop",
-      attachments: [
-        { title: "TEKNOFEST Finalist Projeleri Detay Dosyası", url: "#" }
-      ]
+      title: "Kuruluşumuzun 14. Yıl Dönümünü Büyük Bir Gururla Kutladık!",
+      date: "09/07/2026",
+      category: "Haber",
+      description: "18 Haziran 2013 tarihinde kurulan Üniversitemiz, 14. kuruluş yıl dönümünü coşkulu bir törenle kutladı. Kutlama programı, Mütevelli Heyeti Başkanımız Orhan Özyurt, Rektörümüz Prof. Dr. Süleyman Özdemir, Dekanlarımız, Müdürlerimiz ile akademik ve idari kadromuzun yoğun katılımıyla gerçekleşti.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/f4kpont66lo7m-17.png",
+      attachments: []
     },
     {
-      title: "Sürdürülebilir Kampüs Projesi Kapsamında Yeni Adımlar Atıldı",
-      date: "05/06/2026",
-      category: "Kampüs",
-      description: "Yeşil kampüs inisiyatifi ile üniversitemizdeki karbon ayak izini %30 azaltmayı hedefleyen 'Sıfır Atık ve Sürdürülebilirlik' projemiz hızla devam ediyor. Bu kapsamda kampüs genelinde güneş enerjili şarj istasyonları kuruldu ve geri dönüşüm otomatları faaliyete geçirildi.",
-      imageUrl: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&h=400&fit=crop",
+      title: "Yükseköğretim Kurumları Sınavı'nda hepinize başarılar ve zihin açıklığı dilerim.",
+      date: "09/07/2026",
+      category: "Akademik",
+      description: "Sevgili Gençler Yükseköğretim Kurumları Sınavı'nda hepinize başarılar ve zihin açıklığı dilerim. Prof. Dr. Süleyman ÖZDEMİR Rektör",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/lw1olwriqg45y--16.jpg",
+      attachments: []
+    }
+  ],
+  etkinlikler: [
+    {
+      title: "İESU BAHAR ŞENLİĞİ 26’ BAŞLIYOR",
+      date: "11 MAYIS 2026",
+      location: "İESU 2. Kat Teras Alanı",
+      description: "11.00 – 19.00 Uluslararası Öğrenci Kültür Etkinlikleri, Renkli dans gösterileri, Çeşitli oyun ve eğlenceler, Yusuf Yusuf Show Stand-up Gösterisi",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/1hh79tp8rgliu-iesu-bahar-senligi-26’-basliyor.jpeg",
+      registrationLink: null,
+      attachments: []
+    },
+    {
+      title: "Mezunlarımızla Söyleşi serisi başlıyor!",
+      date: "15 HAZİRAN 2026",
+      location: "İstanbul Esenyurt Üniversitesi",
+      description: "Sektörde deneyim kazanan mezun iç mimarlarımızla bir araya gelerek profesyonel hayata dair merak edilenleri konuşuyoruz. Tüm öğrencilerimiz davetlidir.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/x124bn4cr3rmz-mezunlarimizla-soylesi-serisi-basliyor.jpeg",
+      registrationLink: null,
+      attachments: []
+    },
+    {
+      title: "Büyük bir emek ve özveriyle tamamladığınız üniversite hayatınızı gururla taçlandırma vakti geldi!",
+      date: "28 HAZİRAN 2026",
+      location: "Yahya Kemal Beyatlı Gösteri Merkezi",
+      description: "Üniversitemiz 2025-2026 Akademik Yılı Mezuniyet Töreni, 28 Haziran 2026 Pazar günü coşkuyla gerçekleşecek. Geleceğe güvenle adım atan mezunlarımızın bu özel gününde bir arada olmayı diliyoruz.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/x88y5jc78wekt--20.jpg",
+      registrationLink: null,
       attachments: []
     }
   ],
   duyurular: [
     {
-      title: "2025-2026 Yaz Okulu Başvuruları Resmi Olarak Başladı!",
-      date: "24/06/2026",
-      tag: "Önemli",
-      description: "Üniversitemiz 2025-2026 Akademik Yılı Yaz Okulu eğitimleri için başvurular başlamıştır. Yaz okulunda açılacak dersler, başvuru adımları ve mali yükümlülükler detaylı bir şekilde ekteki kılavuzda belirtilmiştir. Öğrencilerimizin mağduriyet yaşamaması adına belirtilen tarihler arasında OBS üzerinden ders seçimlerini tamamlamaları gerekmektedir.",
-      attachments: [
-        { title: "Yaz Okulu Başvuru Kılavuzu ve Takvimi (PDF)", url: "#" },
-        { title: "Açılması Planlanan Dersler Listesi (XLSX)", url: "#" },
-        { title: "Misafir Öğrenci Başvuru Formu (DOCX)", url: "#" }
-      ]
-    },
-    {
-      title: "2026-2027 Güz Dönemi Yüksek Lisans ve Doktora Başvuruları BAŞLADI",
-      date: "19/06/2026",
-      tag: "Lisansüstü",
-      description: "Lisansüstü Eğitim Enstitüsü bünyesinde 2026-2027 Akademik Yılı Güz Yarıyılı için Tezli/Tezsiz Yüksek Lisans ve Doktora programlarına öğrenci alımı yapılacaktır. ALES ve YDS taban puanları, kontenjanlar ve başvuru evrakları listesi aşağıda yer almaktadır. Erken kayıt avantajlarından faydalanmak için son tarihi kaçırmayınız.",
-      attachments: [
-        { title: "Lisansüstü Kabul Şartları ve Kontenjanlar Tablosu (PDF)", url: "#" },
-        { title: "Online Başvuru Sistemine Giriş Kılavuzu", url: "#" }
-      ]
-    },
-    {
-      title: "Bahar Dönemi Bütünleme Sınav Programları ve Salon Düzenleri",
-      date: "15/06/2026",
-      tag: "Akademik",
-      description: "2025-2026 Akademik Yılı Bahar Dönemi Bütünleme sınav takvimi web sitemiz üzerinden yayınlanmıştır. Sınavlara girecek öğrencilerin sınav giriş belgelerini OBS üzerinden alarak sınav saatinden 15 dakika önce ilgili salonlarda hazır bulunmaları önemle rica olunur.",
-      attachments: [
-        { title: "Mühendislik ve Mimarlık Fakültesi Sınav Takvimi (PDF)", url: "#" },
-        { title: "İşletme ve Yönetim Bilimleri Fakültesi Sınav Takvimi (PDF)", url: "#" }
-      ]
-    },
-    {
-      title: "Erasmus+ ve İkili Değişim Programları İngilizce Yeterlilik Sınavı",
-      date: "10/06/2026",
-      tag: "Uluslararası",
-      description: "2026-2027 akademik yılı yurt dışı öğrenim hareketliliği (Erasmus+ / Orhun) için yapılacak Yabancı Dil Yeterlilik sınavı tarihi, saati ve sınav salonları belli olmuştur. Sınav yazılı ve sözlü olmak üzere iki aşamalı olarak gerçekleştirilecektir.",
-      attachments: [
-        { title: "Sınav Salonları ve Öğrenci Listesi (PDF)", url: "#" }
-      ]
-    },
-    {
-      title: "Kampüs İçi Kısmi Zamanlı Öğrenci Çalıştırma Programı Başvuruları",
-      date: "01/06/2026",
-      tag: "Kariyer",
-      description: "2026 Güz döneminde üniversitemiz Kütüphane, Sağlık Kültür Daire Başkanlığı ve Kariyer Merkezinde kısmi zamanlı (part-time) olarak görev almak isteyen öğrencilerimiz için başvuru takvimi belirlenmiştir. Gerekli şartlar ektedir.",
-      attachments: [
-        { title: "Kısmi Zamanlı Çalışma Başvuru Şartları ve Formu (PDF)", url: "#" }
-      ]
-    }
-  ],
-  etkinlikler: [
-    {
-      title: "İESU BAHAR ŞENLİĞİ 26’ BAŞLIYOR: Eğlenceye Hazır Olun!",
-      date: "11 MAYIS 11:00",
-      location: "Ana Kampüs Etkinlik Alanı",
-      description: "Gelenekselleşen İESÜ Bahar Şenlikleri bu yıl çok daha renkli! Etkinlik kapsamında ünlü sanatçıların konserleri, DJ performansları, spor turnuvaları, ödüllü e-spor yarışmaları ve öğrenci kulüplerimizin stantları sizleri bekliyor. Şenlik alanına giriş için bilekliklerinizi SKS daire başkanlığından temin edebilirsiniz.",
-      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/1hh79tp8rgliu-iesu-bahar-senligi-26’-basliyor.jpeg",
-      registrationLink: null,
-      attachments: [
-        { title: "Bahar Şenliği 3 Günlük Etkinlik Programı (PDF)", url: "#" }
-      ]
-    },
-    {
-      title: "Kariyer Geliştirme Zirvesi: Sektörün Liderleri Öğrencilerle Buluşuyor",
-      date: "25 MAYIS 10:00",
-      location: "Konferans Salonu B Blok",
-      description: "Türkiye'nin önde gelen 50 kurumsal firmasının İnsan Kaynakları yöneticileri üniversitemize geliyor! Öğrencilerimiz gün boyu sürecek panellere katılabilir, mülakat simülasyonlarında yer alabilir ve staj/iş başvurularını doğrudan firma yetkililerine elden teslim edebilirler. Etkinliğe katılım ücretsizdir ve kontenjanla sınırlıdır.",
-      imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop",
-      registrationLink: "https://kariyer.esenyurt.edu.tr/etkinlik-kayit",
-      attachments: [
-        { title: "Zirve Konuşmacıları ve Oturum Saatleri", url: "#" },
-        { title: "Stant Açacak Firmalar Listesi (PDF)", url: "#" }
-      ]
-    },
-    {
-      title: "Mezunlarımızla Söyleşi Serisi: Başarı Hikayeleri",
-      date: "18 MAYIS 14:00",
-      location: "Online (Zoom)",
-      description: "Üniversitemizden mezun olup kendi sektörlerinde önemli başarılara imza atmış mezunlarımızı ağırlıyoruz. 'Girişimcilik ve Kurumsal Hayata Geçiş' konulu bu haftaki oturumda, mezunlarımızın üniversite sıralarından yöneticiliğe uzanan ilham verici hikayelerini dinleyeceğiz.",
-      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/x124bn4cr3rmz-mezunlarimizla-soylesi-serisi-basliyor.jpeg",
-      registrationLink: "https://zoom.us/webinar/register/...",
+      title: "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı!",
+      date: "09/07/2026",
+      tag: "Duyuru",
+      description: "Gençlik ve Spor Bakanlığı tarafından geliştirilen e-Rehberlik Sistemi erişime açıldı! 15-29 yaş aralığında yer alan gençler tarafından ücretsiz ve çevrimiçi olarak kullanılabilmektedir.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/hfvud8dreyy12-img_4720.jpg",
       attachments: []
     },
     {
-      title: "Girişimcilik ve İnovasyon Hackathonu 2026",
-      date: "05 HAZİRAN 09:00",
-      location: "Teknoloji Geliştirme Merkezi",
-      description: "Fikrine güvenenleri arıyoruz! 48 saat boyunca aralıksız sürecek kodlama ve fikir maratonunda, öğrencilerimiz 'Akıllı Şehirler' temalı projeler üretecekler. Dereceye giren takımlara 50.000 TL yatırım desteği, kuluçka merkezi ofis imkanı ve mentörlük ödülleri verilecektir. Takımınızı kurun ve hemen kayıt olun.",
-      imageUrl: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop",
-      registrationLink: "https://hackathon.esenyurt.edu.tr",
+      title: "Tek Ders / Not Yükseltme Sınav Programları Hk.",
+      date: "09/07/2026",
+      tag: "Akademik",
+      description: "Bilişim Teknolojileri Meslek Yüksekokulu, Meslek Yüksekokulu, Sağlık Hizmetleri Meslek Yüksekokulu, Sanat ve Sosyal Bilimler Fakültesi, Ortak Dersler Bölümü Sınav Programları",
       attachments: [
-        { title: "Hackathon Kuralları ve Değerlendirme Kriterleri (PDF)", url: "#" }
+        { title: "Bilişim Teknolojileri MYO Programı (PDF)", url: "https://www.esenyurt.edu.tr/uploads/2026/07/t1401vo9mwgr3-btmyo.pdf" },
+        { title: "Ortak Dersler Bölümü Sınav Programı (PDF)", url: "https://www.esenyurt.edu.tr/uploads/2026/07/4f0tq996fqxrn-odb-tek-ders-sinav-programi.pdf" }
       ]
     },
     {
-      title: "Uluslararası Psikoloji Öğrencileri Kongresi",
-      date: "15 TEMMUZ 09:00",
-      location: "Kültür Merkezi",
-      description: "15 farklı ülkeden akademisyen ve öğrencilerin katılacağı 'Modern Çağda İnsan Psikolojisi' temalı kongreye ev sahipliği yapıyoruz. Üç gün sürecek kongrede akademik makale sunumları, poster sergileri ve interaktif atölyeler gerçekleştirilecektir. Bildiri özetlerinin gönderimi için son tarih 1 Temmuz'dur.",
-      imageUrl: "https://images.unsplash.com/photo-1557425955-df376b5903c8?w=600&h=400&fit=crop",
-      registrationLink: "https://psikolojikongresi.esenyurt.edu.tr",
+      title: "2025-2026 Yaz Okulu Başvuruları Başladı!",
+      date: "24/06/2026",
+      tag: "Önemli",
+      description: "T.C. İSTANBUL ESENYURT ÜNİVERSİTESİ 2025-2026 AKADEMİK YILI YAZ OKULU DUYURUSU. Üniversitemiz öğrencileri OBS kullanıcıları ile giriş yapıp “Yaz Okul Ön Başvuru” alanından talepte bulunacaklardır.",
       attachments: [
-        { title: "Kongre Çağrı Metni ve Bildiri Kuralları", url: "#" }
+        { title: "Duyuru 2025-2026 Yaz Okulu (PDF)", url: "https://www.esenyurt.edu.tr/uploads/2026/06/z84w7ariwuek4-duyuru-2025-2026-yaz-okulu_23062026.pdf" }
       ]
+    },
+    {
+      title: "2026-2027 Güz Dönemi Yüksek Lisans ve Doktora Başvuruları BAŞLADI!",
+      date: "19/06/2026",
+      tag: "Lisansüstü",
+      description: "Kariyerinde Fark Yaratma Zamanı! İstanbul Esenyurt Üniversitesi’nde lisansüstü eğitim alarak akademik ve profesyonel hedeflerine bir adım daha yaklaş! Erken Başvuru Tarihleri: 15 Haziran - 3 Temmuz",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/kh7qrijo1itle--12.jpg",
+      attachments: []
     }
   ]
 };
@@ -395,9 +347,12 @@ export default function NewsEvents({ setView, category = 'haberler', news = [], 
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setSelectedItem(null)}></div>
           <div className="bg-white rounded-[2rem] w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-fade-in flex flex-col">
             {selectedItem.imageUrl && (
-              <div className="w-full h-48 md:h-64 relative flex-shrink-0">
-                <img src={selectedItem.imageUrl} alt={selectedItem.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent"></div>
+              <div className="w-full h-64 md:h-[400px] relative flex-shrink-0 bg-gray-900 overflow-hidden">
+                {/* Blurred background image */}
+                <img src={selectedItem.imageUrl} alt="Bg" className="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl scale-110" />
+                {/* Actual poster image */}
+                <img src={selectedItem.imageUrl} alt={selectedItem.title} className="absolute inset-0 w-full h-full object-contain drop-shadow-2xl z-10 p-4" />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent z-10 pointer-events-none"></div>
               </div>
             )}
             

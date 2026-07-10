@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Calendar, ArrowRight, Mail, Menu, Search, Bell, MapPin, Download, FileText, ExternalLink, CheckCircle } from 'lucide-react';
+import { ChevronRight, Calendar, ArrowRight, Mail, Menu, Search, Bell, MapPin, Download, FileText, ExternalLink, CheckCircle, GraduationCap, Briefcase, Building2, Users } from 'lucide-react';
 import { contentData } from './NewsEvents';
 import Logo from './Logo';
 
@@ -193,38 +193,124 @@ export default function LandingPage({ setView }) {
         </div>
       )}
 
-      {/* Hero Slider Area */}
-      <section className="relative h-[400px] md:h-[480px] bg-gray-900 overflow-hidden group">
-        {heroSlides.map((slide, index) => (
-          <div 
-            key={index} 
-            className={`absolute inset-0 transition-transform duration-1000 ease-in-out ${index === currentSlide ? 'translate-x-0' : index < currentSlide ? '-translate-x-full' : 'translate-x-full'}`}
-          >
-            <img 
-              src={slide.image} 
-              alt={slide.title} 
-              className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-gray-900/40 to-transparent"></div>
-            <div className="relative z-10 max-w-7xl mx-auto px-4 h-full flex flex-col justify-center items-start">
-              <span className="inline-block px-4 py-1.5 bg-iesu-red text-white text-[12px] font-black rounded-full mb-5 uppercase tracking-wider shadow-lg border border-red-500/30">{slide.badge}</span>
-              <h2 className="text-3xl md:text-5xl font-black text-white mb-6 max-w-2xl leading-tight drop-shadow-md">{slide.title}</h2>
-              <button onClick={slide.action} className="bg-white text-iesu-red px-7 py-3 rounded-full font-bold text-[15px] hover:bg-iesu-coral hover:text-white transition flex items-center gap-2 shadow-lg group-hover:scale-105 duration-300">
-                Fırsatı İncele <ChevronRight size={18} />
+      {/* Premium Hero Section */}
+      <section className="relative min-h-[500px] md:min-h-[600px] bg-gray-900 overflow-hidden flex items-center">
+        {/* Abstract Animated Background */}
+        <div className="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&h=900&fit=crop" alt="Campus" className="w-full h-full object-cover opacity-40 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent"></div>
+          {/* Animated Glow Blobs */}
+          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-iesu-red/40 rounded-full blur-[100px] animate-pulse-slow"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-red-700/20 rounded-full blur-[120px]"></div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-20">
+          {/* Left Text */}
+          <div className="flex flex-col items-start text-left">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6 shadow-xl">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+              <span className="text-white text-[12px] font-bold tracking-wider">KARİYER MERKEZİ AKTİF</span>
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight mb-6 drop-shadow-lg">
+              Kariyer Yolculuğunuz <br className="hidden sm:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-iesu-coral">Burada Başlıyor</span>
+            </h1>
+            
+            <p className="text-lg text-gray-300 font-medium max-w-xl leading-relaxed mb-8">
+              Öğrencilerimiz, mezunlarımız ve Türkiye'nin öncü kurumlarını tek bir çatı altında buluşturan yeni nesil yetenek ve kariyer ağı.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <button onClick={() => setView('login')} className="bg-gradient-to-r from-iesu-red to-red-600 text-white px-8 py-4 rounded-xl font-black text-[15px] hover:shadow-[0_0_20px_rgba(220,38,38,0.5)] transition-all hover:-translate-y-1 flex items-center justify-center gap-2 group">
+                Hemen Giriş Yap <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button onClick={() => setView('jobs')} className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-4 rounded-xl font-bold text-[15px] hover:bg-white/20 transition-all flex items-center justify-center gap-2">
+                İş ve Staj İlanları <Briefcase size={18} />
               </button>
             </div>
           </div>
-        ))}
-        
-        {/* Slider Controls */}
-        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-3 z-20">
-          {heroSlides.map((_, idx) => (
-            <button 
-              key={idx}
-              onClick={() => setCurrentSlide(idx)}
-              className={`h-2 rounded-full transition-all duration-500 ${idx === currentSlide ? 'w-10 bg-iesu-red' : 'w-2 bg-white/50 hover:bg-white'}`}
-            />
-          ))}
+
+          {/* Right Floating Cards (Glassmorphism) */}
+          <div className="hidden lg:block relative h-full min-h-[400px]">
+            {/* Top Card */}
+            <div className="absolute top-10 right-10 bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl shadow-2xl animate-float w-64 transform rotate-2">
+              <div className="flex items-center gap-4 mb-3">
+                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/50">
+                  <Briefcase size={20} className="text-blue-300" />
+                </div>
+                <div>
+                  <div className="text-2xl font-black text-white">5.000+</div>
+                  <div className="text-[11px] font-bold text-gray-300 uppercase">Aktif İş/Staj İlanı</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Middle Card */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-0 bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl shadow-2xl animate-float-delayed w-72 transform -rotate-3 z-20">
+              <div className="flex items-center gap-4 mb-3">
+                <div className="w-12 h-12 rounded-full bg-iesu-coral/20 flex items-center justify-center border border-iesu-coral/50">
+                  <GraduationCap size={24} className="text-red-300" />
+                </div>
+                <div>
+                  <div className="text-3xl font-black text-white">12.000+</div>
+                  <div className="text-[11px] font-bold text-gray-300 uppercase">Kayıtlı Öğrenci & Mezun</div>
+                </div>
+              </div>
+              <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-red-400 to-red-500 w-3/4"></div>
+              </div>
+            </div>
+
+            {/* Bottom Card */}
+            <div className="absolute bottom-10 right-20 bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl shadow-2xl animate-float w-60 transform rotate-1">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/50">
+                  <Building2 size={20} className="text-emerald-300" />
+                </div>
+                <div>
+                  <div className="text-2xl font-black text-white">250+</div>
+                  <div className="text-[11px] font-bold text-gray-300 uppercase">Anlaşmalı Kurum</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Platform Features Section */}
+      <section className="bg-gray-50 py-20 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">Kariyerinizi Şekillendiren Araçlar</h2>
+            <p className="text-gray-500 font-medium">Sizi geleceğe hazırlamak için tasarlanmış yenilikçi ve dijital çözümler.</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-shadow border border-gray-100 group">
+              <div className="w-14 h-14 bg-red-50 text-iesu-red rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <FileText size={28} />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">AI Destekli CV Oluşturucu</h3>
+              <p className="text-gray-500 text-[14px] leading-relaxed">Yapay zekâ destekli sistemimizle profesyonel özgeçmişinizi saniyeler içinde hazırlayın ve firmalarla anında paylaşın.</p>
+            </div>
+            
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-shadow border border-gray-100 group">
+              <div className="w-14 h-14 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Users size={28} />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Geniş Mezun Ağı & Topluluklar</h3>
+              <p className="text-gray-500 text-[14px] leading-relaxed">Sektördeki mezunlarımızla iletişim kurun, tecrübelerinden faydalanın ve üniversite topluluklarına dahil olun.</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm hover:shadow-xl transition-shadow border border-gray-100 group">
+              <div className="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Briefcase size={28} />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 mb-3">Staj ve Kariyer Fırsatları</h3>
+              <p className="text-gray-500 text-[14px] leading-relaxed">Zorunlu, gönüllü veya ulusal staj programlarına tek tıkla başvurun. Sektörün öncü firmalarıyla eşleşin.</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -551,9 +637,12 @@ export default function LandingPage({ setView }) {
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setSelectedItem(null)}></div>
           <div className="bg-white rounded-[2rem] w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-fade-in flex flex-col">
             {selectedItem.imageUrl ? (
-              <div className="w-full h-64 md:h-80 relative flex-shrink-0">
-                <img src={selectedItem.imageUrl} alt={selectedItem.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent"></div>
+              <div className="w-full h-64 md:h-[400px] relative flex-shrink-0 bg-gray-900 overflow-hidden">
+                {/* Blurred background image */}
+                <img src={selectedItem.imageUrl} alt="Bg" className="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl scale-110" />
+                {/* Actual poster image */}
+                <img src={selectedItem.imageUrl} alt={selectedItem.title} className="absolute inset-0 w-full h-full object-contain drop-shadow-2xl z-10 p-4" />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent z-10 pointer-events-none"></div>
                 
                 {/* Modal Close Button Over Image */}
                 <button 
