@@ -214,7 +214,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </button>
           </form>
 
-          {(loginRole === 'student' || loginRole === 'academic' || loginRole === 'alumni') && (
+          {(loginRole === 'student' || loginRole === 'admin' || loginRole === 'alumni') && (
             <div className="mt-8 pt-6 border-t border-gray-100">
               <div className="bg-gradient-to-r from-iesu-red/5 to-iesu-coral/5 rounded-2xl p-5 border border-iesu-red/10 flex flex-col sm:flex-row items-center justify-between gap-4 group hover:border-iesu-red/20 transition-all">
                 <div className="text-center sm:text-left">
