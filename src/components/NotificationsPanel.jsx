@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Bell, Briefcase, Calendar, CheckCircle2, MessageSquare, Star, Info, Trash2, CheckCircle, Home, Compass, MessageCircle, Search } from 'lucide-react';
+import { ArrowLeft, Bell, Briefcase, Calendar, CheckCircle2, MessageSquare, Star, Info, Trash2, CheckCircle, Home, Compass, MessageCircle, Search, Heart } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 
