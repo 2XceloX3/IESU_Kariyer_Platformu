@@ -34,7 +34,7 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
   );
 };
 
-export default function AICVBuilder({ currentUser, userRole, setView }) {
+export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId }) {
   const [activeSection, setActiveSection] = useState('personal'); // personal, experience, education, skills, certificates, summary
   
   // Initialize from currentUser if available — no fake data
