@@ -102,9 +102,10 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
       <div className="pt-24 max-w-2xl mx-auto px-4 flex flex-col justify-center gap-6 pb-32 relative">
 
         {/* CENTER PANEL: Stories & Feed */}
-        <div className="w-full shrink-0 space-y-6">
-          
-          {/* PROFESSIONAL HIGHLIGHTS */}
+        {activeTab === 'feed' && (
+          <div className="w-full shrink-0 space-y-6 animate-fade-in">
+            
+            {/* PROFESSIONAL HIGHLIGHTS */}
           <CareerRadar announcements={announcements} events={events} jobs={jobs} setView={setView} />
 
           {/* CREATE POST (Quick Action) */}
@@ -144,110 +145,78 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           </div>
 
         </div>
+        )}
 
           {activeTab === 'career_network' && (
             <CareerNetwork companies={companies} events={events} academicStaff={academicStaff} setView={setView} setSelectedUserId={setSelectedUserId} />
           )}
 
-        {/* Applications Interface Overlay */}
+        {/* Applications Native View */}
         {activeTab === 'applications' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[85vh] overflow-y-auto flex flex-col shadow-2xl animate-fade-in relative">
-              <button 
-                onClick={() => setActiveTab('feed')}
-                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
-              >
-                <X size={20} />
-              </button>
-              <div className="p-4">
-                <ApplicationsPanel 
-                  applications={applications} 
-                  setApplications={setApplications} 
-                  jobs={jobs} 
-                  currentUser={currentUser || { id: 'std-1', name: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=O&background=132A49&color=fff' }} 
-                  userRole="student" 
-                />
-              </div>
-            </div>
+          <div className="bg-white rounded-3xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
+            <ApplicationsPanel 
+              applications={applications} 
+              setApplications={setApplications} 
+              jobs={jobs} 
+              currentUser={currentUser || { id: 'std-1', name: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=O&background=132A49&color=fff' }} 
+              userRole="student" 
+            />
           </div>
         )}
 
-        {/* Messaging Interface Overlay */}
+        {/* Messaging Native View */}
         {activeTab === 'messaging' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
-              <button 
-                onClick={() => setActiveTab('feed')}
-                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
-              >
-                <X size={20} />
-              </button>
-              <MessagingInterface 
-                messages={messages} 
-                setMessages={setMessages} 
-                currentUser={currentUser} 
-                userRole={userRole} 
-                contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
-                setView={setView}
-                setSelectedUserId={setSelectedUserId}
-                isOverlay={true}
-              />
-            </div>
+          <div className="bg-white rounded-3xl w-full h-[75vh] overflow-hidden shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
+            <MessagingInterface 
+              messages={messages} 
+              setMessages={setMessages} 
+              currentUser={currentUser} 
+              userRole={userRole} 
+              contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
+              setView={setView}
+              setSelectedUserId={setSelectedUserId}
+              isOverlay={true}
+            />
           </div>
         )}
 
-        {/* Calendar Overlay */}
+        {/* Calendar Native View */}
         {activeTab === 'calendar' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
-              <button 
-                onClick={() => setActiveTab('feed')}
-                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
-              >
-                <X size={20} />
-              </button>
-              <CalendarPlanning events={events} jobs={jobs} userRole={userRole} />
-            </div>
+          <div className="bg-white rounded-3xl w-full h-[75vh] overflow-hidden shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
+            <CalendarPlanning events={events} jobs={jobs} userRole={userRole} />
           </div>
         )}
 
-        {/* CV Builder Overlay */}
+        {/* CV Builder Native View */}
         {activeTab === 'cvbuilder' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl w-full max-w-6xl h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
-              <button 
-                onClick={() => setActiveTab('feed')}
-                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
-              >
-                <X size={20} />
-              </button>
-              <div className="h-full mt-12">
-                <AICVBuilder currentUser={currentUser} />
-              </div>
-            </div>
+          <div className="bg-white rounded-3xl w-full min-h-[85vh] overflow-hidden shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6 p-4 sm:p-6">
+            <AICVBuilder currentUser={currentUser} />
           </div>
         )}
 
       </div>
 
-      {/* FLOATING DOCK (INSTAGRAM STYLE - DARK PILL) */}
+      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
-        <div className="bg-[#0f1419]/95 backdrop-blur-2xl border border-gray-800 p-2 sm:p-2.5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center justify-between px-3">
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-white' : 'text-gray-400 hover:text-white'}`} title="Akış">
-            <Home size={26} strokeWidth={activeTab === 'feed' ? 2.5 : 2} className={activeTab === 'feed' ? 'fill-current' : ''} />
+        <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Akış">
+            <Home size={26} strokeWidth={activeTab === 'feed' ? 2.5 : 2} className={activeTab === 'feed' ? 'fill-current text-iesu-red/10' : ''} />
           </button>
-          <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'jobs' ? 'text-white' : 'text-gray-400 hover:text-white'}`} title="İlanlar">
+          <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'jobs' ? 'text-emerald-500' : 'text-gray-400 hover:text-gray-900'}`} title="İlanlar">
             <Briefcase size={24} strokeWidth={activeTab === 'jobs' ? 2.5 : 2} />
           </button>
           
-          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-orange-500 via-red-500 to-purple-600 text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0">
-            <Plus size={24} strokeWidth={3} />
+          <button onClick={() => setActiveTab('messaging')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-iesu-red to-iesu-coral text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0">
+            <MessageCircle size={24} strokeWidth={2.5} />
           </button>
           
-          <button onClick={() => setActiveTab('applications')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'applications' ? 'text-white' : 'text-gray-400 hover:text-white'}`} title="Başvurularım">
+          <button onClick={() => setActiveTab('applications')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'applications' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-900'}`} title="Başvurularım">
             <FileText size={24} strokeWidth={activeTab === 'applications' ? 2.5 : 2} />
           </button>
-          <button onClick={() => setView('profile_update')} className={`p-1 rounded-full transition-all flex items-center justify-center border-2 ${activeTab === 'profile' ? 'border-white' : 'border-transparent hover:border-gray-500'}`} title="Profil">
+          <button onClick={() => {
+            if (setSelectedUserId) setSelectedUserId(currentUser?.id || 'std-1');
+            setView('user_profile');
+          }} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
             <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Öğrenci')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
           </button>
         </div>
