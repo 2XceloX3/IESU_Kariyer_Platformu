@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart } from 'lucide-react';
+import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart, Crown } from 'lucide-react';
 import Logo from './Logo';
 import { Badge } from './admin/AdminCMSLayout';
 import PostCard from './PostCard';
@@ -17,6 +17,25 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
   const [followersModal, setFollowersModal] = useState({ isOpen: false, title: '', users: [] });
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [uploadType, setUploadType] = useState('avatar'); // 'avatar' | 'cover'
+
+  const renderBadges = (badgeData) => {
+    let badges = [];
+    if (typeof badgeData === 'string' && badgeData.trim() !== '') badges = [badgeData];
+    else if (Array.isArray(badgeData)) badges = badgeData;
+    
+    if (badges.length === 0) return null;
+    return (
+      <div className="flex items-center gap-1.5 ml-1">
+        {badges.map((badge, idx) => {
+          if (badge === 'verified' || badge === 'Doğrulanmış') return <ShieldCheck key={idx} size={20} className="text-blue-500" title="Doğrulanmış" />;
+          if (badge === 'top_voice' || badge === 'Top Voice') return <Crown key={idx} size={20} className="text-amber-500" title="Top Voice" />;
+          if (badge === 'president' || badge === 'Kulüp Başkanı') return <Crown key={idx} size={20} className="text-purple-600" title="Kulüp Başkanı" />;
+          if (badge === 'rep' || badge === 'Sınıf Temsilcisi') return <Award key={idx} size={20} className="text-emerald-500" title="Sınıf Temsilcisi" />;
+          return <span key={idx} className="bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200 uppercase">{badge}</span>;
+        })}
+      </div>
+    );
+  };
 
   const NavIcon = ({ icon, label, badge, active, onClick }) => {
     const getClasses = () => {
@@ -133,7 +152,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
-              {user?.name}
+              {user?.name} {renderBadges(user?.badges)}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 font-medium mt-1">{user?.department}</p>
             {user?.faculty && <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">{user?.faculty}</p>}
@@ -156,10 +175,10 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-white border-iesu-red text-iesu-red hover:bg-red-50' : 'bg-iesu-red border-iesu-red hover:bg-red-700 text-white'}`}
+                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-white border-iesu-red text-iesu-red hover:bg-red-50' : 'bg-iesu-red border-iesu-red hover:bg-red-700 text-white'}`}
               >
-                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
+                {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
               {isMessageAllowed && (
                 <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
@@ -209,7 +228,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
-              {user?.name} <Badge type="success">Mezun</Badge>
+              {user?.name} <Badge type="success">Mezun</Badge> {renderBadges(user?.badge || user?.badges)}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 font-medium mt-1">{user?.title || 'Mezun'} {user?.company && `at ${user?.company}`}</p>
             <p className="text-gray-500 text-xs sm:text-sm mt-0.5">{user?.department} • {user?.gradYear} Mezunu</p>
@@ -235,10 +254,10 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-teal-50 border-teal-600 text-teal-600' : 'bg-teal-600 border-teal-600 text-white hover:bg-teal-700'}`}
+                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-teal-50 border-teal-600 text-teal-600' : 'bg-teal-600 border-teal-600 text-white hover:bg-teal-700'}`}
               >
-                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
+                {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
               {isMessageAllowed && (
                 <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
@@ -263,7 +282,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
-              {user?.name} {user.status === 'Onaylı' && <CheckCircle2 className="text-blue-500" size={20} />}
+              {user?.name} {user.status === 'Onaylı' && <CheckCircle2 className="text-blue-500" size={20} />} {renderBadges(user?.badge || user?.badges)}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 font-medium mt-1 flex items-center gap-1.5">
               <Briefcase size={14} className="text-gray-400" />
@@ -283,10 +302,10 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-blue-50 border-blue-600 text-blue-600' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'}`}
+                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-blue-50 border-blue-600 text-blue-600' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'}`}
               >
-                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
+                {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
               <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
                 <MessageSquare size={16} /> İletişime Geç
@@ -309,7 +328,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
-              {user?.name}
+              {user?.name} {renderBadges(user?.badges)}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 font-medium mt-1">{user?.title || 'Akademik Personel'}</p>
             <p className="text-gray-500 text-xs sm:text-sm mt-0.5">{user?.department || 'Bölüm Belirtilmemiş'}</p>
@@ -327,10 +346,10 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={() => setIsFollowing(!isFollowing)} 
-                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing ? 'bg-slate-50 border-slate-700 text-slate-700' : 'bg-slate-700 border-slate-700 text-white hover:bg-slate-800'}`}
+                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-slate-50 border-slate-700 text-slate-700' : 'bg-slate-700 border-slate-700 text-white hover:bg-slate-800'}`}
               >
-                {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
+                {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
               </button>
               {isMessageAllowed && (
                 <button onClick={handleMessage} className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 rounded-xl font-bold text-sm transition shadow-sm">
@@ -363,7 +382,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           <div className="w-10"></div> {/* Spacer for symmetry */}
           
           {/* CENTER: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
             <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -430,7 +449,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                 <div>
                   <h1 className="text-3xl font-black text-gray-900 flex items-center gap-2">
                     {user?.name || 'Kariyer Geliştirme Koordinatörlüğü'}
-                    <ShieldCheck size={24} className="text-emerald-500" />
+                    <ShieldCheck size={24} className="text-emerald-500" title="Süper Yönetici" />
                   </h1>
                   <p className="text-lg text-gray-600 font-medium mt-1">{user?.title || 'Süper Yönetici Hesabı'}</p>
                   
@@ -569,10 +588,11 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         </div>
       )}
 
-      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
+      {/* FLOATING DOCK (CONTEXT AWARE) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
         <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
+          
+          <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
             <Home size={26} strokeWidth={2} />
           </button>
           
@@ -581,7 +601,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           </button>
           
           {/* CENTER: SEARCH ICON */}
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
+          <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
             <Search size={24} strokeWidth={2.5} />
           </button>
           
@@ -592,7 +612,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           
           {/* PROFILE AVATAR */}
           <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-iesu-red" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Öğrenci')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanıcı')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
           </button>
         </div>
       </div>

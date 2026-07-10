@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
-import { Building2, Edit, Trash2, Plus, Search, Filter, Mail, Phone, MapPin, CheckCircle2, Clock } from 'lucide-react';
-
+import { Building2, Edit, Trash2, Plus, Search, Filter, Mail, Phone, MapPin, CheckCircle2, Clock, Download } from 'lucide-react';
+import { exportToCSV } from '../../utils/export';
 export default function CMSCompanies({ companies = [], setCompanies }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
@@ -111,6 +111,9 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
             <option value="reddedildi">Reddedildi</option>
           </select>
           <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button onClick={() => exportToCSV(filtered, 'firmalar.csv')} className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition text-sm font-bold">
+            <Download size={18} /> Excel'e Aktar
+          </button>
         </div>
       </div>
 

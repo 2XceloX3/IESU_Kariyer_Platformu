@@ -71,12 +71,12 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
+          <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
             <ArrowLeft size={24} strokeWidth={2} />
           </button>
           
           {/* CENTER: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
             <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -104,11 +104,18 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
       {/* Content */}
       <div className="pt-24 max-w-6xl mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-          <div className="flex items-center gap-3">
-            <span className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-iesu-red shadow-sm">
-              <Briefcase size={22} />
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">İş ve Staj Olanakları</h2>
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-iesu-red/10 flex items-center justify-center text-iesu-red">
+                <Briefcase size={24} strokeWidth={2.5} />
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+                {userRole === 'academic' ? 'İş ve Staj Olanakları (Akademik İzleme)' : 'İş ve Staj Olanakları'}
+              </h2>
+            </div>
+            <p className="text-gray-500 font-medium text-lg ml-15">
+              {userRole === 'academic' ? 'Öğrencileriniz için en uygun ilanları inceleyin ve önerin.' : 'Kariyer hedeflerinize uygun en güncel fırsatları keşfedin.'}
+            </p>
           </div>
 
           {/* Navigation Tabs */}
@@ -163,13 +170,22 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
                         <p className="text-gray-500 text-[13px] mb-4 line-clamp-2">{job.description}</p>
                         
                         <div className="flex items-center justify-between">
-                          <button 
-                            onClick={() => handleApply(job)}
-                            disabled={hasApplied}
-                            className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition ${hasApplied ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'}`}
-                          >
-                            {hasApplied ? <><CheckCircle2 size={14} /> Başvuruldu</> : 'Hızlı Başvur'}
-                          </button>
+                          {userRole === 'academic' ? (
+                            <button 
+                              onClick={() => alert("Bu ilan öğrencilerinize önerildi!")}
+                              className="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white"
+                            >
+                              <CheckCircle2 size={14} /> Öğrenciye Öner
+                            </button>
+                          ) : (
+                            <button 
+                              onClick={() => handleApply(job)}
+                              disabled={hasApplied}
+                              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition ${hasApplied ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'}`}
+                            >
+                              {hasApplied ? <><CheckCircle2 size={14} /> Başvuruldu</> : 'Hızlı Başvur'}
+                            </button>
+                          )}
                           {job.applicationLink && job.applicationLink !== '#' && (
                             <a href={job.applicationLink} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-iesu-red transition" title="Dış Bağlantı (İşveren Sitesi)">
                               <ExternalLink size={16} />
@@ -332,7 +348,7 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
       {userRole && (
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
           <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-            <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
+            <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
               <Home size={26} strokeWidth={2} />
             </button>
             
@@ -341,7 +357,7 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
             </button>
             
             {/* CENTER: SEARCH ICON */}
-            <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
+            <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
               <Search size={24} strokeWidth={2.5} />
             </button>
             
@@ -352,7 +368,7 @@ export default function JobsAndInternships({ userRole, setView, jobs = [], appli
             
             {/* PROFILE AVATAR */}
             <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
-              <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Öğrenci')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+              <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanici')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
             </button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award } from 'lucide-react';
 
 export default function PostCard({ post, currentUser, setPosts, setMessages }) {
   const [liked, setLiked] = useState(post?.likes > 0);
@@ -18,6 +18,25 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post?.content || '');
+
+  const renderBadges = (badgeData) => {
+    let badges = [];
+    if (typeof badgeData === 'string' && badgeData.trim() !== '') badges = [badgeData];
+    else if (Array.isArray(badgeData)) badges = badgeData;
+    
+    if (badges.length === 0) return null;
+    return (
+      <div className="flex items-center gap-1 ml-1.5">
+        {badges.map((badge, idx) => {
+          if (badge === 'verified' || badge === 'Doğrulanmış') return <ShieldCheck key={idx} size={14} className="text-blue-500" title="Doğrulanmış" />;
+          if (badge === 'top_voice' || badge === 'Top Voice') return <Crown key={idx} size={14} className="text-amber-500" title="Top Voice" />;
+          if (badge === 'president' || badge === 'Kulüp Başkanı') return <Crown key={idx} size={14} className="text-purple-600" title="Kulüp Başkanı" />;
+          if (badge === 'rep' || badge === 'Sınıf Temsilcisi') return <Award key={idx} size={14} className="text-emerald-500" title="Sınıf Temsilcisi" />;
+          return <span key={idx} className="bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-200 uppercase">{badge}</span>;
+        })}
+      </div>
+    );
+  };
 
   const handleLikeToggle = () => {
     setLiked(!liked);
@@ -102,15 +121,15 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
           ) : (
             <img src={post?.author?.avatar || `https://ui-avatars.com/api/?name=U&background=132A49&color=fff`} alt="Author" className="w-11 h-11 rounded-full object-cover shadow-sm border border-gray-100 shrink-0" />
           )}
-          <div>
-            <h3 className="font-bold text-[15px] text-gray-900 group-hover:text-iesu-red transition-colors flex items-center gap-1.5">
-              {post?.author?.role === 'admin' ? 'Kariyer Geliştirme Ofisi' : (post?.author?.name || 'Kullanıcı')}
-              {post?.author?.role === 'admin' && <ShieldCheck size={14} className="text-emerald-500" />}
-              {post?.author?.badge && <ShieldCheck size={14} className="text-blue-500 shrink-0" title={post.author.badge} />}
-            </h3>
-            <p className="text-[12px] text-gray-500 font-medium">
-              {post?.author?.role === 'admin' ? 'Süper Yönetici' : (post?.author?.title || '')} • {post?.time || ''}
-            </p>
+          <div className="flex flex-col">
+            <h4 className="font-bold text-[14px] text-gray-900 leading-tight group-hover:text-iesu-red transition-colors flex items-center flex-wrap">
+              {typeof post.author === 'string' ? post.author : (post.author?.name || 'Kullanıcı')}
+              {post.author?.role === 'admin' && <ShieldCheck size={14} className="text-blue-500 ml-1.5" title="Yönetici" />}
+              {post.author?.role === 'company' && <ShieldCheck size={14} className="text-amber-500 ml-1.5" title="Onaylı Firma" />}
+              {renderBadges(post.author?.badge || post.author?.badges)}
+            </h4>
+            <p className="text-[12px] text-gray-500 font-medium">{post.author?.title || post.author?.department}</p>
+            <p className="text-[10px] text-gray-400 font-medium">{post.time}</p>
           </div>
         </div>
         <div className="relative">

@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, CheckCircle2 } from 'lucide-react';
-
-export default function CMSStudents({ students = [], setStudents }) {
+import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, CheckCircle2, Download } from 'lucide-react';
+import { exportToCSV } from '../../utils/export';export default function CMSStudents({ students = [], setStudents }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -84,15 +83,42 @@ export default function CMSStudents({ students = [], setStudents }) {
   const listView = (
     <div className="space-y-6">
       {/* HEADER & STATS */}
-      <PanelHeader 
-        title="Aktif Öğrenciler" 
-        sub="Sisteme kayıtlı aktif öğrencileri yönetin ve staj durumlarını takip edin." 
-        action={
-          <button onClick={handleAddNew} className="bg-white text-purple-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
-            <Plus size={18} /> Öğrenci Ekle
-          </button>
-        } 
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PanelHeader 
+          title="Aktif Öğrenciler" 
+          sub="Sisteme kayıtlı aktif öğrencileri yönetin ve staj durumlarını takip edin." 
+          action={
+            <button onClick={handleAddNew} className="bg-white text-purple-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
+              <Plus size={18} /> Öğrenci Ekle
+            </button>
+          } 
+        />
+        <button 
+          onClick={() => {
+            const headers = ['Öğrenci ID', 'Ad Soyad', 'Bölüm', 'Sınıf', 'Staj Durumu'];
+            const csvContent = [
+              headers.join(';'),
+              ...filtered.map(s => [
+                s.studentId, 
+                (s.name || '').replace(/;/g, ','), 
+                s.department, 
+                s.year, 
+                s.internshipStatus
+              ].join(';'))
+            ].join('\n');
+        
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Ogrenciler.csv';
+            link.click();
+          }}
+          className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all active:scale-95"
+        >
+          <Download size={18} /> Excel'e Aktar
+        </button>
+      </div>
+
       <div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -127,6 +153,9 @@ export default function CMSStudents({ students = [], setStudents }) {
             <option value="pasif">Pasif / Mezun</option>
           </select>
           <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button onClick={() => exportToCSV(filtered, 'ogrenciler.csv')} className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition text-sm font-bold">
+            <Download size={18} /> Excel'e Aktar
+          </button>
         </div>
       </div>
 

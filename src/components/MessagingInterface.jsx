@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart } from 'lucide-react';
+import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 
@@ -247,20 +247,30 @@ export default function MessagingInterface({ messages = [], setMessages, current
       <div className={`flex-1 flex flex-col bg-white ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
         {activeContact ? (
           <>
-            <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+            <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0">
               <div className="flex items-center gap-3">
                 <button onClick={() => setActiveContactId(null)} className="md:hidden p-2 -ml-2 text-gray-400 hover:text-gray-600 transition">
                   <ChevronLeft size={20} />
                 </button>
-                <img src={activeContact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact.name)}&background=132A49&color=fff`} className="w-10 h-10 rounded-xl object-cover" alt="" />
+                <div className="relative">
+                  <img src={activeContact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact.name)}&background=132A49&color=fff`} className="w-10 h-10 rounded-full object-cover shadow-sm" alt="" />
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-sm">{activeContact.name}</h3>
-                  <p className="text-[11px] text-gray-500 font-medium">{activeContact.role}</p>
+                  <h3 className="font-bold text-gray-900 text-sm leading-tight">{activeContact.name}</h3>
+                  <p className="text-[11px] text-gray-500 font-medium">Çevrimiçi</p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button className="w-8 h-8 rounded-full hover:bg-gray-50 flex items-center justify-center text-gray-400 transition" title="Profili Gör">
-                  <UserCircle2 size={18} />
+              <div className="flex items-center gap-1 sm:gap-2">
+                <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition" title="Sesli Ara">
+                  <Phone size={18} />
+                </button>
+                <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition" title="Görüntülü Ara">
+                  <Video size={20} />
+                </button>
+                <div className="w-px h-6 bg-gray-200 mx-1"></div>
+                <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition" title="Daha Fazla">
+                  <MoreVertical size={20} />
                 </button>
               </div>
             </div>
@@ -276,10 +286,10 @@ export default function MessagingInterface({ messages = [], setMessages, current
                     const isMine = msg.senderId === currentUser?.id;
                     return (
                       <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[75%] rounded-2xl p-3 shadow-sm ${isMine ? 'bg-iesu-red text-white rounded-br-sm' : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm'}`}>
-                          <p className="text-[13.5px] leading-relaxed">{msg.content}</p>
-                          <div className={`flex items-center justify-end gap-1 mt-1.5 ${isMine ? 'text-red-200' : 'text-gray-400'}`}>
-                            <span className="text-[10px]">{formatTime(msg.timestamp)}</span>
+                        <div className={`max-w-[75%] rounded-2xl p-3.5 shadow-sm backdrop-blur-sm ${isMine ? 'bg-gradient-to-br from-iesu-red to-red-700 text-white rounded-br-sm' : 'bg-white/80 border border-gray-100/50 text-gray-800 rounded-bl-sm shadow-[0_4px_20px_rgb(0,0,0,0.03)]'}`}>
+                          <p className="text-[14px] leading-relaxed tracking-wide">{msg.content}</p>
+                          <div className={`flex items-center justify-end gap-1.5 mt-2 ${isMine ? 'text-red-200' : 'text-gray-400'}`}>
+                            <span className="text-[10px] font-medium">{formatTime(msg.timestamp)}</span>
                             {isMine && <CheckCircle2 size={12} className={msg.read ? 'text-white' : ''} />}
                           </div>
                         </div>
@@ -290,26 +300,37 @@ export default function MessagingInterface({ messages = [], setMessages, current
                 </div>
               )}
             </div>
-            <div className="p-4 bg-white border-t border-gray-100 shrink-0">
-              <div className="flex items-end gap-2 bg-gray-50 rounded-2xl p-2 border border-gray-200 focus-within:border-red-300 focus-within:ring-2 focus-within:ring-red-100 transition-all">
+            <div className="p-4 bg-white/90 backdrop-blur-md border-t border-gray-100 shrink-0 z-10">
+              <div className="flex items-end gap-2 bg-gray-50/80 rounded-3xl p-1.5 border border-gray-200/60 focus-within:border-red-300 focus-within:ring-4 focus-within:ring-red-50 transition-all shadow-inner">
+                
+                <button className="w-10 h-10 rounded-full hover:bg-gray-200/50 flex items-center justify-center text-gray-400 transition shrink-0" title="Dosya Ekle">
+                  <Paperclip size={20} />
+                </button>
+                
                 <textarea 
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
                       handleSend(e);
                     }
                   }}
-                  placeholder="Bir mesaj yazın..."
-                  className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 text-sm py-2 px-2 text-gray-800"
+                  placeholder="Mesajınızı yazın..."
+                  className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 text-[14px] py-2.5 px-2 text-gray-800 self-center placeholder-gray-400"
                   rows={1}
                 />
+                
+                <button className="w-10 h-10 rounded-full hover:bg-gray-200/50 flex items-center justify-center text-gray-400 transition shrink-0 hidden sm:flex" title="Emoji">
+                  <Smile size={20} />
+                </button>
+
                 <button 
                   onClick={handleSend}
                   disabled={!newMessage.trim()}
-                  className="w-10 h-10 rounded-xl bg-iesu-red text-white flex items-center justify-center hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed shrink-0 shadow-sm"
+                  className="w-10 h-10 rounded-full bg-gradient-to-tr from-iesu-red to-red-600 text-white flex items-center justify-center hover:shadow-md hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shrink-0 shadow-sm"
                 >
-                  <Send size={18} className="ml-1" />
+                  <Send size={18} className="ml-0.5" />
                 </button>
               </div>
             </div>
@@ -337,12 +358,12 @@ export default function MessagingInterface({ messages = [], setMessages, current
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
+          <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
             <Home size={24} strokeWidth={2} />
           </button>
           
           {/* CENTER: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
             <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -371,7 +392,7 @@ export default function MessagingInterface({ messages = [], setMessages, current
       {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
         <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
+          <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
             <Home size={26} strokeWidth={2} />
           </button>
           
@@ -380,7 +401,7 @@ export default function MessagingInterface({ messages = [], setMessages, current
           </button>
           
           {/* CENTER: SEARCH ICON */}
-          <button onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
+          <button onClick={() => setView(userRole === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'user_profile' ? (userRole || 'landing') : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
             <Search size={24} strokeWidth={2.5} />
           </button>
           
@@ -391,7 +412,7 @@ export default function MessagingInterface({ messages = [], setMessages, current
           
           {/* PROFILE AVATAR */}
           <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Öğrenci')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanici')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
           </button>
         </div>
       </div>

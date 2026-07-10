@@ -210,7 +210,7 @@ function App() {
         groups={groups} setGroups={setGroups}
       />}
       {view === 'organization' && <OrganizationChart setView={setView} userRole={userRole} />}
-      {view === 'jobs' && <JobsAndInternships setView={setView} jobs={jobs} applications={applications} setApplications={setApplications} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
+      {view === 'jobs' && <JobsAndInternships setView={setView} previousView={previousView} jobs={jobs} applications={applications} setApplications={setApplications} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
       {view === 'haberler' && <NewsEvents setView={setView} category="haberler" news={news} announcements={announcements} events={events} currentUser={currentUser} userRole={userRole} />}
       {view === 'duyurular' && <NewsEvents setView={setView} category="duyurular" news={news} announcements={announcements} events={events} currentUser={currentUser} userRole={userRole} />}
       {view === 'etkinlikler' && <NewsEvents setView={setView} category="etkinlikler" news={news} announcements={announcements} events={events} currentUser={currentUser} userRole={userRole} />}
@@ -250,7 +250,7 @@ function App() {
             jobs={jobs}
             setDirectMessageUser={setSelectedUserId}
           />}
-      {view === 'groups' && <GroupsPanel 
+      {view === 'groups' && <GroupsPanel previousView={previousView}
         groups={groups} 
         setGroups={setGroups} 
         currentUser={currentUser} 
@@ -269,7 +269,7 @@ function App() {
         userRole={userRole}
         setSelectedUserId={setSelectedUserId}
       />}
-      {view === 'notifications' && <NotificationsPanel 
+      {view === 'notifications' && <NotificationsPanel previousView={previousView}
         notifications={notifications} 
         setNotifications={setNotifications} 
         currentUser={currentUser} 
@@ -295,7 +295,7 @@ function App() {
       )}
       {view === 'applications' && <ApplicationsPanel applications={applications} currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
       {view === 'cvbuilder' && <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
-      {view === 'messaging' && <MessagingInterface messages={messages} setMessages={setMessages} currentUser={currentUser} userRole={userRole} contacts={[...students, ...alumni, ...companies, ...academicStaff]} setView={setView} setSelectedUserId={setSelectedUserId} />}
+      {view === 'messaging' && <MessagingInterface previousView={previousView} messages={messages} setMessages={setMessages} currentUser={currentUser} userRole={userRole} contacts={[...students, ...alumni, ...companies, ...academicStaff]} setView={setView} setSelectedUserId={setSelectedUserId} />}
     </ErrorBoundary>
   );
 }

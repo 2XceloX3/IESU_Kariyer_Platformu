@@ -44,7 +44,7 @@ export default function GroupProfile({ userRole, groupId, groupData, posts, setP
     <div className="min-h-screen bg-gray-50 pb-20 pt-16">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -53,8 +53,8 @@ export default function GroupProfile({ userRole, groupId, groupData, posts, setP
           </div>
           
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'admin' ? 'student' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
+            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
             <NavIcon icon={<Users />} label="Topluluklar" active={true} onClick={() => setView('groups')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" onClick={() => setView('jobs')} />
             <div className="ml-2">
@@ -111,6 +111,32 @@ export default function GroupProfile({ userRole, groupId, groupData, posts, setP
               <p className="text-sm text-gray-600 font-medium leading-relaxed">
                 {groupData.description || 'Bu topluluk henüz bir açıklama eklemedi.'}
               </p>
+            </div>
+
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                <Users className="text-iesu-red" size={20} /> Yönetim Kurulu
+              </h3>
+              <div className="space-y-3">
+                {[
+                  { title: 'Kulüp Başkanı', name: groupData.president || 'Ahmet Yılmaz', role: 'Öğrenci' },
+                  { title: 'Başkan Yardımcısı', name: groupData.vicePresident || 'Ayşe Demir', role: 'Öğrenci' },
+                  { title: 'Sayman', name: 'Can Özkan', role: 'Öğrenci' },
+                  { title: 'Sekreter', name: 'Zeynep Çelik', role: 'Öğrenci' }
+                ].map((boardMember, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition cursor-pointer" onClick={() => { setSelectedUserId('USR-3'); setView('user_profile'); }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0">
+                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(boardMember.name)}&background=132A49&color=fff`} className="w-full h-full object-cover" alt="" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 text-[13px]">{boardMember.name}</p>
+                        <p className="text-[11px] text-gray-500 font-medium">{boardMember.title}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
