@@ -350,12 +350,15 @@ export default function MessagingInterface({ messages = [], setMessages, current
             </div>
           </div>
           
-          {/* RIGHT: Heart Icon for Notifications */}
-          <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
-            <div className="relative">
-              <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
-            </div>
-          </button>
+          {/* RIGHT: Notifications & Profile Menu */}
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
+              <div className="relative">
+                <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
+              </div>
+            </button>
+            <TopProfileMenu currentUser={currentUser || { name: 'Kullanıcı' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="messaging" />
+          </div>
           
         </div>
       </nav>
