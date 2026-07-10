@@ -14,6 +14,7 @@ import TopProfileMenu from './TopProfileMenu';
 import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import ApplicationsPanel from './ApplicationsPanel';
+import NavIcon from './shared/NavIcon';
 
 export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
@@ -164,6 +165,33 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
              <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           </div>
         )}
+
+        {/* Search Native View */}
+        {activeTab === 'search' && (
+          <div className="bg-white rounded-3xl w-full p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6 min-h-[75vh]">
+            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <Search className="text-iesu-red" size={24} strokeWidth={2.5} /> Arama ve Keşfet
+            </h2>
+            <div className="relative group w-full mb-8">
+              <Search className="absolute left-4 top-3.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={20} />
+              <input 
+                id="main-search"
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={userRole === 'admin' ? "Öğrenci, mezun, firma, ilan veya başvuru ara..." : "İlan, staj, etkinlik veya mentorluk ara..."} 
+                className="bg-gray-50 pl-12 pr-4 py-3.5 rounded-2xl text-[15px] w-full focus:outline-none focus:ring-2 focus:ring-iesu-red/20 border border-gray-200 transition-all shadow-inner" 
+              />
+            </div>
+            
+            <div className="text-center text-gray-500 py-12 mt-12 border-2 border-dashed border-gray-100 rounded-3xl">
+              <Compass size={48} className="mx-auto mb-4 text-gray-300" strokeWidth={1.5} />
+              <h3 className="text-lg font-bold text-gray-700 mb-2">Keşfetmeye Başlayın</h3>
+              <p className="max-w-sm mx-auto text-sm">Öğrenciler, İlanlar, Firmalar veya Etkinlikleri aramak için yukarıdaki alanı kullanın.</p>
+            </div>
+          </div>
+        )}
+
 
         {/* FEED TAB */}
         {activeTab === 'feed' && (
@@ -514,35 +542,4 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
   );
 }
 
-// Helper component for Navbar Icons
-const NavIcon = ({ icon, label, badge, active, onClick }) => {
-  const getClasses = () => {
-    switch (label) {
-      case 'Akış': return { text: 'text-blue-500', bg: 'bg-blue-50', badge: 'bg-blue-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
-      case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
-      case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
-      case 'Topluluklar': return { text: 'text-teal-500', bg: 'bg-teal-50', badge: 'bg-teal-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
-      case 'Mesajlar': return { text: 'text-amber-500', bg: 'bg-amber-50', badge: 'bg-amber-500', glow: 'drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
-      case 'Bildirimler': return { text: 'text-rose-500', bg: 'bg-rose-50', badge: 'bg-rose-500', glow: 'drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
-      default: return { text: 'text-iesu-red', bg: 'bg-red-50', badge: 'bg-iesu-red', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
-    }
-  };
-  const c = getClasses();
-  return (
-    <button 
-      onClick={onClick}
-      className={`relative flex flex-col items-center justify-center w-12 h-12 sm:w-16 sm:h-14 rounded-2xl transition-all duration-500 group ${active ? `${c.bg} ${c.text} shadow-sm` : `text-gray-400 hover:${c.text} hover:${c.bg}`}`}
-      title={label}
-    >
-      {React.cloneElement(icon, { size: active ? 22 : 20, className: `mb-1 transition-all duration-500 ${active ? `scale-110 ${c.glow}` : `group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:${c.glow}`}` })}
-      <span className={`text-[9px] font-bold tracking-wide transition-all duration-500 ${active ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hidden sm:block'}`}>
-        {label}
-      </span>
-      {badge > 0 && (
-        <span className={`absolute top-1 right-2 sm:right-3 w-4 h-4 ${c.badge} text-white text-[9px] flex items-center justify-center rounded-full font-bold shadow-sm ring-2 ring-white`}>
-          {badge > 9 ? '9+' : badge}
-        </span>
-      )}
-    </button>
-  );
-};
+

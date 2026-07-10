@@ -148,6 +148,12 @@ function App() {
     }
   }, []);
 
+  // Modal durumları açık kaldığında veya sayfa değiştiğinde scroll kilitlenmelerini engelle
+  useEffect(() => {
+    document.body.style.overflow = '';
+    document.body.classList.remove('overflow-hidden');
+  }, [view]);
+
   // ─── LIVE DATA FILTER: Remove demo_seed records from all live-facing views ───
   const filterLive = (arr) => (arr || []).filter(item => item.source !== 'demo_seed');
   const liveStudents = filterLive(students);
@@ -224,10 +230,7 @@ function App() {
         currentUser={currentUser} setCurrentUser={setCurrentUser}
         userRole={userRole} 
         academicCatalog={academicCatalog} 
-        academicApprovals={academicApprovals} setAcademicApprovals={setAcademicApprovals} 
-        setStudents={setStudents}
-        setAlumni={setAlumni}
-        setCompanies={setCompanies}
+        academicApprovals={academicApprovals} setAcademicApprovals={setAcademicApprovals}
         students={students} setStudents={setStudents}
         alumni={alumni} setAlumni={setAlumni}
         academicStaff={liveAcademicStaff} setAcademicStaff={setAcademicStaff}
@@ -246,6 +249,7 @@ function App() {
             posts={posts}
             setPosts={setPosts}
             messages={liveMessages}
+            setMessages={setMessages}
             notifications={notifications}
             news={news}
             events={events}

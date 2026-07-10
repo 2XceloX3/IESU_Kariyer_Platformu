@@ -6,12 +6,14 @@ import Logo from './Logo';
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
   const [loginRole, setLoginRole] = useState('student');
+  const [error, setError] = useState(null);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setError(null);
     
     // HARDCODED ADMIN CHECK
     if (username === 'Kariyer' && password === 'Z.s.1513') {
@@ -54,7 +56,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           if (setCurrentUser) setCurrentUser({ id: 'ALM-1', name: 'Örnek Mezun', role: 'alumni', department: 'İşletme', avatar: 'https://ui-avatars.com/api/?name=Ornek+Mezun&background=10B981&color=fff', onboardingCompleted: true });
           setView('alumni');
         } else {
-          alert("Hatalı mezun numarası veya şifresi!");
+          setError("Hatalı mezun numarası veya şifresi!");
         }
       }
     } else if (loginRole === 'employer') {
@@ -73,7 +75,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         }
         setView('company');
       } else {
-        alert("Hatalı firma kullanıcı adı veya şifresi!");
+        setError("Hatalı firma kullanıcı adı veya şifresi!");
       }
     } else {
       const savedStudents = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]');
@@ -90,14 +92,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           if (setCurrentUser) setCurrentUser({ id: 'STD-1', name: 'Öğrenci', role: 'student', department: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=Ogrenci&background=132A49&color=fff', onboardingCompleted: true });
           setView('student');
         } else {
-          alert("Hatalı öğrenci numarası veya şifresi!");
+          setError("Hatalı öğrenci numarası veya şifresi!");
         }
       }
     }
   };
 
   const handleEDevlet = () => {
-    alert("e-Devlet Kapısı kimlik doğrulama sistemine yönlendiriliyorsunuz...");
+    setError("e-Devlet Kapısı entegrasyonu şu anda bakımda. Lütfen şifreniz ile giriş yapınız.");
   };
 
   return (
@@ -141,6 +143,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-red via-iesu-coral to-iesu-red"></div>
 
           <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">Portala Giriş Yapın</h2>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl font-bold animate-fade-in text-sm flex items-center gap-2">
+              <ShieldCheck size={18} />
+              {error}
+            </div>
+          )}
 
           {/* Role Selector Tabs */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1.5 bg-gray-100/80 rounded-xl mb-8">

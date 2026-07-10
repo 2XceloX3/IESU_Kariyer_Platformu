@@ -51,8 +51,8 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
     if (isShareModalOpen && availableUsers.length === 0) {
       // Fallback: Read from local storage if not passed via props (to ensure it works immediately)
       try {
-        const students = JSON.parse(localStorage.getItem('iesu_students_v2')) || [];
-        const alumni = JSON.parse(localStorage.getItem('iesu_alumni_v2')) || [];
+        const students = JSON.parse(localStorage.getItem('iesu_students_v3')) || [];
+        const alumni = JSON.parse(localStorage.getItem('iesu_alumni_v3')) || [];
         setAvailableUsers([...students, ...alumni].filter(u => u.source !== 'demo_seed'));
       } catch (e) { console.error(e); }
     }

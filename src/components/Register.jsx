@@ -10,6 +10,7 @@ import { doc, setDoc } from 'firebase/firestore';
 export default function Register({ setView, setCurrentUser, setStudents, setAlumni, setAcademicStaff, setCompanies, setUserRole }) {
   const [step, setStep] = useState(1); // 1: Info, 2: Success
   const [accountType, setAccountType] = useState('student'); // 'student' or 'employer'
+  const [error, setError] = useState(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -25,15 +26,16 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     
     try {
       if (accountType === 'student') {
         if (formData.password !== formData.passwordConfirm) {
-          alert("Şifreler eşleşmiyor! Lütfen kontrol edin.");
+          setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
           return;
         }
         if (formData.password.length < 6) {
-          alert("Şifre en az 6 karakter olmalıdır.");
+          setError("Şifre en az 6 karakter olmalıdır.");
           return;
         }
 
@@ -101,11 +103,11 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         }
       } else if (accountType === 'academic') {
         if (formData.password !== formData.passwordConfirm) {
-          alert("Şifreler eşleşmiyor! Lütfen kontrol edin.");
+          setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
           return;
         }
         if (formData.password.length < 6) {
-          alert("Şifre en az 6 karakter olmalıdır.");
+          setError("Şifre en az 6 karakter olmalıdır.");
           return;
         }
 
@@ -137,11 +139,11 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         }
       } else if (accountType === 'alumni') {
         if (formData.password !== formData.passwordConfirm) {
-          alert("Şifreler eşleşmiyor! Lütfen kontrol edin.");
+          setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
           return;
         }
         if (formData.password.length < 6) {
-          alert("Şifre en az 6 karakter olmalıdır.");
+          setError("Şifre en az 6 karakter olmalıdır.");
           return;
         }
 
@@ -174,17 +176,17 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         }
       }
       
-      // Kayıt başarılıysa onay ekranına geç
+      // Tüm caselerde başarılı olursa Success (Adım 2) göster
       setStep(2);
 
-    } catch (error) {
-      console.error("Firebase Kayıt Hatası:", error);
-      if (error.code === 'auth/email-already-in-use') {
-        alert("Bu e-posta adresi zaten sistemde kayıtlı!");
-      } else if (error.code === 'auth/invalid-email') {
-        alert("Geçersiz e-posta adresi formatı.");
+    } catch (err) {
+      console.error("Firebase Kayıt Hatası:", err);
+      if (err.code === 'auth/email-already-in-use') {
+        setError("Bu e-posta adresi zaten sistemde kayıtlı!");
+      } else if (err.code === 'auth/invalid-email') {
+        setError("Geçersiz e-posta adresi formatı.");
       } else {
-        alert("Kayıt sırasında beklenmeyen bir hata oluştu: " + error.message);
+        setError("Kayıt sırasında beklenmeyen bir hata oluştu: " + err.message);
       }
     }
   };
@@ -209,6 +211,12 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
       <div className="relative z-10 w-full max-w-2xl p-4 sm:p-8">
         <div className="bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-red via-iesu-coral to-iesu-red"></div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl font-bold animate-fade-in text-sm">
+              {error}
+            </div>
+          )}
 
           {step === 1 ? (
             <>

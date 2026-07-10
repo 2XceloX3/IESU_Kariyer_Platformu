@@ -5,6 +5,7 @@ import StoryViewer from './StoryViewer';
 export default function StoriesBar({ currentUser, stories = [], setStories }) {
   const scrollRef = useRef(null);
   const [viewingStoryIndex, setViewingStoryIndex] = useState(null);
+  const [isCreatingStory, setIsCreatingStory] = useState(false);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -19,6 +20,12 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
 
   // Mark story as viewed when opened
   const handleOpenStory = (index) => {
+    if (index === 'new') {
+      setIsCreatingStory(true);
+      setViewingStoryIndex(null);
+      return;
+    }
+    setIsCreatingStory(false);
     setViewingStoryIndex(index);
     if (setStories && currentUser) {
       const story = index === -1 ? myStory : otherStories[index];
@@ -103,12 +110,12 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
         </div>
       </div>
 
-      {viewingStoryIndex !== null && (
+      {(viewingStoryIndex !== null || isCreatingStory) && (
         <StoryViewer 
-          stories={viewingStoryIndex === -1 ? [myStory] : otherStories} 
-          initialIndex={viewingStoryIndex === -1 ? 0 : viewingStoryIndex}
-          onClose={() => setViewingStoryIndex(null)} 
-          isCreating={viewingStoryIndex === 'new'}
+          stories={isCreatingStory ? [] : viewingStoryIndex === -1 ? [myStory] : otherStories} 
+          initialIndex={viewingStoryIndex === -1 ? 0 : viewingStoryIndex || 0}
+          onClose={() => { setViewingStoryIndex(null); setIsCreatingStory(false); }} 
+          isCreating={isCreatingStory}
           currentUser={currentUser}
           setStories={setStories}
         />
