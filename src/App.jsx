@@ -99,6 +99,9 @@ function App() {
 
   // GLOBAL STATE: Canlı Akış Gönderileri (Feed Posts)
   const [posts, setPosts] = useLocalStorageState('iesu_posts_v2', []);
+  const [stories, setStories] = useLocalStorageState('iesu_stories_v1', [
+    { id: 1, author: { name: 'Kariyer Ofisi', avatar: '/iesu-logo.svg', role: 'admin' }, content: 'Bugün Kariyer Günleri başlıyor! 🎉', image: 'https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg', viewedBy: [], createdAt: new Date().toISOString() }
+  ]);
 
   // GLOBAL STATE: Haberler, Duyurular, Etkinlikler, SEM vs.
   const [news, setNews] = useLocalStorageState('iesu_news_v4', initialNews);
@@ -159,7 +162,7 @@ function App() {
       {view === 'login' && <Login setView={setView} setUserRole={setUserRole} setAcademicRole={setAcademicRole} setCurrentUser={setCurrentUser} />}
       {view === 'register' && <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={setStudents} setAlumni={setAlumni} setAcademicStaff={setAcademicStaff} setCompanies={setCompanies} setUserRole={setUserRole} />}
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
-      {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} academicRole={academicRole} groups={groups} setSelectedGroupId={setSelectedGroupId} />}
+      {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} academicRole={academicRole} groups={groups} setSelectedGroupId={setSelectedGroupId} />}
       {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} academicRole={academicRole} groups={groups} setSelectedGroupId={setSelectedGroupId} />}
       {view === 'academic' && (
         <ErrorBoundary>
@@ -210,7 +213,7 @@ function App() {
         groups={groups} setGroups={setGroups}
       />}
       {view === 'organization' && <OrganizationChart setView={setView} userRole={userRole} />}
-      {view === 'jobs' && <JobsAndInternships setView={setView} previousView={previousView} jobs={jobs} applications={applications} setApplications={setApplications} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
+      {view === 'jobs' && <JobsAndInternships setView={setView} previousView={previousView} jobs={jobs} setJobs={setJobs} applications={applications} setApplications={setApplications} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
       {view === 'haberler' && <NewsEvents setView={setView} category="haberler" news={news} announcements={announcements} events={events} currentUser={currentUser} userRole={userRole} />}
       {view === 'duyurular' && <NewsEvents setView={setView} category="duyurular" news={news} announcements={announcements} events={events} currentUser={currentUser} userRole={userRole} />}
       {view === 'etkinlikler' && <NewsEvents setView={setView} category="etkinlikler" news={news} announcements={announcements} events={events} currentUser={currentUser} userRole={userRole} />}

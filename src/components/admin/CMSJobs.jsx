@@ -22,7 +22,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
     logo: '',
     pdf: null,
     applicationLink: '',
-    status: 'Yayında',
+    status: 'Aktif',
     featured: false
   });
 
@@ -38,7 +38,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
       logo: '',
       pdf: null,
       applicationLink: '',
-      status: 'Yayında',
+      status: 'Aktif',
       featured: false
     });
     setCurrentId(null);
@@ -84,7 +84,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
     return matchQ && matchS;
   });
 
-  const activeCount = (jobs || []).filter(j => j.status === 'Yayında').length;
+  const activeCount = (jobs || []).filter(j => j.status === 'Aktif' || !j.status).length;
+  const pendingCount = (jobs || []).filter(j => j.status === 'Beklemede').length;
   const draftCount = (jobs || []).filter(j => j.status === 'Taslak').length;
 
   const listView = (
@@ -93,8 +94,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
       <div>
         <div className="flex justify-between items-end mb-4">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight">İş İlanları</h2>
-            <p className="text-sm font-medium text-gray-500 mt-1">Sistemdeki aktif iş fırsatlarını ve firma ilanlarını yönetin.</p>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">İş İlanları ve Onay Havuzu</h2>
+            <p className="text-sm font-medium text-gray-500 mt-1">Sistemdeki aktif iş fırsatlarını ve firma onay havuzunu yönetin.</p>
           </div>
           <button onClick={handleAddNew} className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-all hover:shadow-md">
             <Plus size={18} /> Yeni İlan Ekle
@@ -108,11 +109,11 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Yayında</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Aktif İlanlar</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center"><Edit size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Bekleyen / Taslak</p><p className="text-2xl font-black text-gray-900">{draftCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Onay Bekleyen (Havuz)</p><p className="text-2xl font-black text-gray-900">{pendingCount}</p></div>
           </div>
         </div>
       </div>
@@ -130,7 +131,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
         <div className="flex gap-2">
           <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="bg-gray-50 border-none text-sm font-medium rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-500/20 outline-none cursor-pointer">
             <option value="all">Tüm Durumlar</option>
-            <option value="yayında">Yayında</option>
+            <option value="aktif">Aktif</option>
+            <option value="beklemede">Beklemede (Onay Havuzu)</option>
             <option value="taslak">Taslak</option>
             <option value="kapalı">Kapalı</option>
           </select>
@@ -186,8 +188,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                       </td>
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-2">
-                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider ${(j.status === 'Yayında') ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
-                            {j.status}
+                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider ${(j.status === 'Aktif' || !j.status) ? 'bg-emerald-100 text-emerald-700' : j.status === 'Beklemede' ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-gray-100 text-gray-700'}`}>
+                            {j.status || 'Aktif'}
                           </span>
                           <span className="flex items-center gap-1 text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
                             <Users size={12} /> {jobApplications.length}
@@ -299,9 +301,10 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
             <div>
               <label className="text-xs font-bold text-gray-600 block mb-1.5">Durum</label>
               <select value={form.status} onChange={e=>setForm({...form, status: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
-                <option>Yayında</option>
-                <option>Taslak</option>
-                <option>Kapalı</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Beklemede">Beklemede (Onay Bekliyor)</option>
+                <option value="Taslak">Taslak</option>
+                <option value="Kapalı">Kapalı</option>
               </select>
             </div>
           </div>

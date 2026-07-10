@@ -16,7 +16,7 @@ import TopProfileMenu from './TopProfileMenu';
 import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 
-export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole }) {
+export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -121,7 +121,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           <div className="w-full shrink-0 space-y-6 animate-fade-in">
             
             {/* STORIES MODE (Replaces Career Radar) */}
-            <StoriesBar currentUser={currentUser} setView={setView} />
+            <StoriesBar currentUser={currentUser} setView={setView} stories={stories} setStories={setStories} />
 
           {/* FEED POSTS */}
           <div className="space-y-6">

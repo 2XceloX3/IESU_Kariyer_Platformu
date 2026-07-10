@@ -1,5 +1,5 @@
 export function combineFeedItems(posts, events, news, announcements, jobs) {
-  const combined = [...(posts || [])];
+  const combined = [...(posts || []).filter(p => p.status !== 'Beklemede' && p.status !== 'Reddedildi')];
 
   const adminAuthor = {
     name: 'Kariyer Geliştirme Ofisi',

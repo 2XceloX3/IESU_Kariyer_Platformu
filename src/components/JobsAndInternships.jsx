@@ -35,8 +35,15 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
   );
 };
 
-export default function JobsAndInternships({ userRole, setView, previousView, jobs = [], applications = [], setApplications = () => {}, currentUser, setSelectedUserId }) {
+import JobCreator from './JobCreator';
+
+export default function JobsAndInternships({ userRole, setView, previousView, jobs = [], applications = [], setApplications = () => {}, currentUser, setSelectedUserId, setJobs, addNotification }) {
   const [activeTab, setActiveTab] = useState('ilanlar'); // 'ilanlar', 'ulusal', 'gonullu'
+  const [isCreatingJob, setIsCreatingJob] = useState(false);
+
+  if (isCreatingJob) {
+    return <JobCreator setView={() => setIsCreatingJob(false)} currentUser={currentUser} jobs={jobs} setJobs={setJobs} addNotification={addNotification} />;
+  }
 
   const handleApply = (job) => {
     if (userRole !== 'student') {
@@ -99,14 +106,22 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
       {/* Content */}
       <div className="pt-24 max-w-6xl mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-2xl bg-iesu-red/10 flex items-center justify-center text-iesu-red">
-                <Briefcase size={24} strokeWidth={2.5} />
+          <div className="mb-8 w-full">
+            <div className="flex items-center justify-between gap-4 mb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-iesu-red/10 flex items-center justify-center text-iesu-red shrink-0">
+                  <Briefcase size={24} strokeWidth={2.5} />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+                  {userRole === 'academic' ? 'İş ve Staj Olanakları (Akademik İzleme)' : 'İş ve Staj Olanakları'}
+                </h2>
               </div>
-              <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
-                {userRole === 'academic' ? 'İş ve Staj Olanakları (Akademik İzleme)' : 'İş ve Staj Olanakları'}
-              </h2>
+              
+              {userRole === 'employer' && (
+                <button onClick={() => setIsCreatingJob(true)} className="bg-iesu-red text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-bold shadow-md hover:shadow-lg hover:bg-red-700 transition flex items-center gap-2 shrink-0">
+                  <span className="text-xl leading-none">+</span> <span className="hidden sm:inline">İlan Oluştur</span>
+                </button>
+              )}
             </div>
             <p className="text-gray-500 font-medium text-lg ml-15">
               {userRole === 'academic' ? 'Öğrencileriniz için en uygun ilanları inceleyin ve önerin.' : 'Kariyer hedeflerinize uygun en güncel fırsatları keşfedin.'}
@@ -144,7 +159,7 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
             <div className="animate-fade-in">
               <h3 className="text-xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-100 pb-2 inline-block">Güncel İş ve Staj İlanları</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {(jobs || []).filter(j => j.status === 'Yayında').map(job => {
+                {(jobs || []).filter(j => j.status === 'Aktif' || !j.status).map(job => {
                   const hasApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser?.id);
                   return (
                     <div key={job.id} className="group rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition duration-300">
