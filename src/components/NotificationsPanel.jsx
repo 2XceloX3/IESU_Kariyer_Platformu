@@ -75,54 +75,32 @@ export default function NotificationsPanel({ userRole, notifications, setNotific
     <div className="min-h-screen bg-[#F8F9FC] font-sans pb-20">
       {/* Hyper-Modern Navbar (Glassmorphism) - Replicated from Feeds */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole || 'landing'))}>
+          {/* LEFT: Back Button to return to feed */}
+          <button onClick={() => setView(userRole === 'admin' ? 'student' : (userRole || 'landing'))} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
+            <Home size={24} strokeWidth={2} />
+          </button>
+          
+          {/* CENTER: Logo & Brand */}
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'student' : (userRole || 'landing'))}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden lg:block">
+            <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
             </div>
           </div>
           
-          <div className="hidden md:flex relative group flex-1 max-w-md mx-auto shrink">
-            <Search className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={18} />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Öğrenci, mezun, firma, ilan veya başvuru ara..." 
-              className="bg-gray-100/80 pl-10 pr-4 py-2 rounded-2xl text-[14px] w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-iesu-coral/20 transition-all" 
-            />
-          </div>
+          {/* RIGHT: Heart Icon for Notifications */}
+          <button onClick={() => {}} className={`p-2 rounded-full transition-all flex items-center justify-center bg-red-50 text-iesu-red`} title="Bildirimler">
+            <div className="relative">
+              <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+              )}
+            </div>
+          </button>
           
-          <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" active={activeTab === 'feed'} onClick={() => setView(userRole === 'admin' ? 'student' : (userRole || 'landing'))} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={activeTab === 'career_network'} onClick={() => {}} />
-            <NavIcon icon={<Briefcase />} label="İş ve Staj" active={activeTab === 'jobs'} onClick={() => {}} />
-            <NavIcon 
-              icon={<MessageCircle />} 
-              label="Mesajlar" 
-              badge={0} 
-              onClick={() => setView('messaging')} 
-            />
-            <NavIcon 
-              icon={<Bell />} 
-              label="Bildirimler" 
-              badge={unreadCount} 
-              active={true}
-              onClick={() => setView('notifications')} 
-            />
-            
-            <TopProfileMenu 
-              currentUser={currentUser} 
-              userRole={userRole} 
-              setView={setView} 
-              setSelectedUserId={setSelectedUserId} 
-              setSelectedUserId={() => {}} 
-              currentView="notifications" 
-            />
-          </div>
         </div>
       </nav>
 
