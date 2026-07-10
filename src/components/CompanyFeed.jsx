@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, ChevronRight, Calendar, MapPin, X, FileText, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Home } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, ChevronRight, Calendar, MapPin, X, FileText, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Home, Wand2 } from 'lucide-react';
 import Logo from './Logo';
 import MessagingInterface from './MessagingInterface';
+import CareerShorts from './CareerShorts';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
 import CareerRadar from './CareerRadar';
@@ -14,6 +15,7 @@ import ApplicationsPanel from './ApplicationsPanel';
 
 export default function CompanyFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, surveys, news, events, students, alumni, companies, messages, setMessages, applications, setApplications, jobs, announcements, academicStaff, currentUser, userRole, academicRole }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
+  const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Sağ menü networking önerileri
@@ -248,6 +250,9 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
           </button>
         </div>
       </div>
+      
+      {/* CAREER SHORTS FULLSCREEN MODAL */}
+      {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
     </div>
   );
 }

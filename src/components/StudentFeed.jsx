@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, ClipboardList, Building2, Settings, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Calendar, Home, Star, UserCheck, ArrowRight, FileText, Wand2 } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, ClipboardList, Building2, Settings, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Calendar, Home, Star, UserCheck, ArrowRight, FileText, Wand2, UserPlus } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import CareerShorts from './CareerShorts';
 import MessagingInterface from './MessagingInterface';
@@ -243,30 +243,52 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
 
       </div> {/* END CENTER PANEL */}
 
-        {/* RIGHT PANEL: Career Shorts & Trending */}
+        {/* RIGHT PANEL: Networking & Vision */}
         <div className="hidden lg:block w-[320px] shrink-0 space-y-6">
-          <div className="bg-gradient-to-b from-gray-900 to-black rounded-3xl p-1 shadow-lg sticky top-24 overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-4 z-10 flex justify-end w-full">
-              <span className="bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded-full animate-pulse">YENİ</span>
-            </div>
-            <div className="bg-gray-900 rounded-3xl h-[420px] relative overflow-hidden flex items-end p-5 group cursor-pointer">
-              {/* Dummy video background effect */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-0"></div>
-              <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=400" className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition duration-700" alt="Shorts" />
-              
-              <div className="relative z-10 w-full">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white"></div>
-                  <span className="text-white font-bold text-sm">TechCorp A.Ş.</span>
+          
+          {/* Önerilen Bağlantılar */}
+          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
+            <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+              <Users className="text-blue-500" size={20} /> Önerilen Bağlantılar
+            </h3>
+            <div className="space-y-4">
+              {(alumni || []).slice(0, 3).map((person, index) => (
+                <div key={`alumni-${index}`} className="flex items-center gap-3 p-2 rounded-2xl hover:bg-gray-50 cursor-pointer transition">
+                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=random&color=fff`} className="w-12 h-12 rounded-full object-cover" alt={person.name} />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-[13px] text-gray-900 truncate">{person.name}</h4>
+                    <p className="text-[11px] text-gray-500 truncate">{person.department || 'Mezun'}</p>
+                  </div>
+                  <button className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition">
+                    <UserPlus size={16} />
+                  </button>
                 </div>
-                <h3 className="text-white font-black text-lg leading-tight mb-2">"Yazılım stajyerlerimiz bir gününü nasıl geçiriyor?"</h3>
-                <p className="text-gray-300 text-xs mb-4 line-clamp-2">Ofis turu, günlük stand-up toplantıları ve kahve molaları! Sen de ekibimize katılmak istersen profili incele.</p>
-                <button onClick={() => setShowShorts(true)} className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-bold py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2">
-                  <Wand2 size={16} /> Kariyer Shorts İzle
-                </button>
-              </div>
+              ))}
+            </div>
+            <button className="w-full mt-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-bold transition">Tümünü Gör</button>
+          </div>
+
+          {/* Öne Çıkan Firmalar */}
+          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+              <Building2 className="text-iesu-red" size={20} /> Öne Çıkan Firmalar
+            </h3>
+            <div className="space-y-4">
+              {(companies || []).slice(0, 3).map((company, index) => (
+                <div key={`company-${index}`} className="flex items-center gap-3 p-2 rounded-2xl hover:bg-gray-50 cursor-pointer transition">
+                  <div className="w-12 h-12 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center p-2">
+                    <Building2 className="text-gray-400" size={20} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-[13px] text-gray-900 truncate">{company.name}</h4>
+                    <p className="text-[11px] text-gray-500 truncate">{company.sector || 'Sektör Lideri'}</p>
+                  </div>
+                  <button className="text-xs font-bold text-iesu-red hover:text-red-700 transition">İncele</button>
+                </div>
+              ))}
             </div>
           </div>
+
         </div>
 
       </div>

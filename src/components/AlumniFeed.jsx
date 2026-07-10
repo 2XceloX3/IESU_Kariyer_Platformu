@@ -3,6 +3,7 @@ import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Us
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
+import CareerShorts from './CareerShorts';
 
 import { combineFeedItems } from '../utils/feedCombiner';
 import PostCard from './PostCard';
@@ -16,6 +17,7 @@ import ApplicationsPanel from './ApplicationsPanel';
 
 export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
+  const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
@@ -490,6 +492,9 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
           </button>
         </div>
       </div>
+      
+      {/* CAREER SHORTS FULLSCREEN MODAL */}
+      {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
     </div>
   );
 }
