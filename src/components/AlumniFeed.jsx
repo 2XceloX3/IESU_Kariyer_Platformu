@@ -15,7 +15,7 @@ import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import ApplicationsPanel from './ApplicationsPanel';
 
-export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole }) {
+export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -54,7 +54,10 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
       {/* Hyper-Modern Navbar (Glassmorphism) */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="w-10"></div> {/* Spacer */}
+          {/* LEFT: Star Icon for Post Creation */}
+          <button onClick={() => setActiveTab('create_post')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 ${activeTab === 'create_post' ? 'text-orange-500 bg-orange-50' : 'text-gray-600'}`} title="Gönderi Düzenle/Paylaş">
+            <Star size={24} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
+          </button>
           
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
@@ -152,11 +155,21 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
         {/* CENTER PANEL: Stories & Feed */}
         <div className="w-full max-w-[600px] shrink-0 space-y-6">
           
-          {/* STORIES MODE (Replaces Career Radar) */}
-          <StoriesBar currentUser={currentUser} setView={setView} />
+        {/* Create Post Native View */}
+        {activeTab === 'create_post' && (
+          <div className="bg-white rounded-3xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
+             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+              <Star className="text-orange-500 fill-current" size={24} /> Gönderi Paylaş & Düzenle
+             </h2>
+             <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+          </div>
+        )}
 
-          {/* CREATE POST (Quick Action) */}
-          <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+        {/* FEED TAB */}
+        {activeTab === 'feed' && (
+          <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+            {/* STORIES */}
+            <StoriesBar currentUser={currentUser} setView={setView} stories={stories} setStories={setStories} />
 
           {/* FEED POSTS */}
           <div className="space-y-6">
@@ -179,6 +192,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
               ));
             })()}
           </div>
+          </div>
+        )}
         </div>
 
         {/* RIGHT PANEL: Dynamic Data */}
