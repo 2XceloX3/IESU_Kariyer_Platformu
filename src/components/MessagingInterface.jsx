@@ -363,7 +363,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         <div className="flex justify-between items-center mb-4">
           <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
           <div className="flex gap-4">
-            <button className="text-blue-500 hover:opacity-80 transition"><Camera size={24} strokeWidth={1.5} /></button>
+            <button onClick={startCamera} className="text-blue-500 hover:opacity-80 transition"><Camera size={24} strokeWidth={1.5} /></button>
             <button onClick={() => setShowAllContacts(!showAllContacts)} className="text-blue-500 hover:opacity-80 transition"><Edit size={24} strokeWidth={1.5} /></button>
           </div>
         </div>
@@ -483,7 +483,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
             <p className="text-gray-500 text-[15px] mt-0.5">Durumuma ekle</p>
           </div>
           <div className="flex gap-3 text-gray-500 shrink-0">
-            <button className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Camera size={20}/></button>
+            <button onClick={startCamera} className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Camera size={20}/></button>
             <button className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Edit3 size={20}/></button>
           </div>
         </div>
