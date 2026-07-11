@@ -35,36 +35,38 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
     }
   };
 
-  return (
     <div className="animate-fade-in space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <PanelHeader title="Topluluklar ve Gruplar (CMS)" sub="Platformdaki öğrenci kulüpleri, mezun ağları ve çalışma gruplarının yönetimi." />
-        <button 
-          onClick={() => {
-            const headers = ['ID', 'Topluluk Adi', 'Tur', 'Uye Sayisi', 'Onayli', 'Durum'];
-            const csvContent = [
-              headers.join(';'),
-              ...filteredGroups.map(g => [
-                g.id, 
-                g.name.replace(/;/g, ','), 
-                g.type, 
-                g.memberCount, 
-                g.verified ? 'Evet' : 'Hayir', 
-                g.status
-              ].join(';'))
-            ].join('\n');
-        
-            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Kulupler_Faaliyet_Raporu.csv';
-            link.click();
-          }}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95"
-        >
-          <Download size={16} /> Excel'e Aktar
-        </button>
-      </div>
+      <PanelHeader 
+        title="Topluluklar ve Gruplar (CMS)" 
+        sub="Platformdaki öğrenci kulüpleri, mezun ağları ve çalışma gruplarının yönetimi." 
+        action={
+          <button 
+            onClick={() => {
+              const headers = ['ID', 'Topluluk Adi', 'Tur', 'Uye Sayisi', 'Onayli', 'Durum'];
+              const csvContent = [
+                headers.join(';'),
+                ...filteredGroups.map(g => [
+                  g.id, 
+                  g.name.replace(/;/g, ','), 
+                  g.type, 
+                  g.memberCount, 
+                  g.verified ? 'Evet' : 'Hayir', 
+                  g.status
+                ].join(';'))
+              ].join('\n');
+          
+              const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = 'Kulupler_Faaliyet_Raporu.csv';
+              link.click();
+            }}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95"
+          >
+            <Download size={16} /> Excel'e Aktar
+          </button>
+        }
+      />
 
       <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

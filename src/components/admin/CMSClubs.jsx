@@ -99,6 +99,11 @@ export default function CMSClubs() {
       <PanelHeader 
         title="Kulüpler Havuzu" 
         sub="Üniversite kulüplerini ve yönetim kurulu üyelerini görüntüleyin." 
+        action={
+          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition text-sm font-bold shadow-sm active:scale-95">
+            <Download size={16} /> Excel'e Aktar
+          </button>
+        }
       />
       
       <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
@@ -109,11 +114,6 @@ export default function CMSClubs() {
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
             value={searchQuery} onChange={e=>setSearchQuery(e.target.value)}
           />
-        </div>
-        <div className="flex gap-2">
-          <button onClick={handleExport} className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition text-sm font-bold">
-            <Download size={18} /> Excel'e Aktar
-          </button>
         </div>
       </div>
 

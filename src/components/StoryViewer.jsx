@@ -136,6 +136,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
               ref={videoRef} 
               autoPlay 
               playsInline 
+              muted
               className={`absolute inset-0 w-full h-full object-cover ${isCameraActive ? 'block' : 'hidden'}`} 
             />
             <canvas ref={canvasRef} className="hidden" />
