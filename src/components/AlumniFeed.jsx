@@ -16,7 +16,7 @@ import ApplicationsPanel from './ApplicationsPanel';
 import NavIcon from './shared/NavIcon';
 import AlumniSurveys from './AlumniSurveys';
 
-export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole, groups, setGroups, setSelectedGroupId }) {
+export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole, groups, setGroups, setSelectedGroupId, featureSurveys, featureCareerCheckup, featureAlumniCard }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
