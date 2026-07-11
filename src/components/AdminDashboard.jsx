@@ -808,7 +808,7 @@ export default function AdminDashboard({
       </div>
 
       {/* ── İÇERİK ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-4 lg:p-6 pb-20">
+      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-28 sm:pb-20">
         <main className="flex-1 bg-transparent">
           {renderPanel()}
         </main>

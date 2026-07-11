@@ -70,7 +70,7 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
   const isPresident = selectedClub.presidentId === currentUser?.id;
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 py-8 sm:p-8 animate-fade-in">
+    <div className="w-full max-w-4xl mx-auto p-4 sm:p-8 animate-fade-in">
       
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -96,20 +96,20 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
       </div>
 
       {/* TABS */}
-      <div className="flex flex-wrap gap-2 mb-8 bg-gray-50/50 p-1.5 rounded-2xl border border-gray-100">
-        <button onClick={() => setActiveTab('requests')} className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'requests' ? 'bg-white text-emerald-600 shadow-sm border border-gray-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'}`}>
+      <div className="flex border-b border-gray-100 mb-6 overflow-x-auto hide-scrollbar w-full">
+        <button onClick={() => setActiveTab('requests')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'requests' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
           <UserPlus size={16}/> Katılım İstekleri
           {(selectedClub.joinRequests?.length > 0) && (
             <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{selectedClub.joinRequests.length}</span>
           )}
         </button>
-        <button onClick={() => setActiveTab('members')} className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'members' ? 'bg-white text-emerald-600 shadow-sm border border-gray-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'}`}>
+        <button onClick={() => setActiveTab('members')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'members' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
           <Users size={16}/> Üyeler ve Yetkiler
         </button>
-        <button onClick={() => setActiveTab('documents')} className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'documents' ? 'bg-white text-emerald-600 shadow-sm border border-gray-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'}`}>
+        <button onClick={() => setActiveTab('documents')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'documents' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
           <FileText size={16}/> Belge Deposu
         </button>
-        <button onClick={() => setActiveTab('post')} className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'post' ? 'bg-white text-emerald-600 shadow-sm border border-gray-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'}`}>
+        <button onClick={() => setActiveTab('post')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'post' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
           <Send size={16}/> Gönderi Paylaş
         </button>
       </div>
@@ -144,11 +144,11 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
                       <p className="text-[11px] text-gray-400 font-bold mt-2">{req.date} tarihinde başvurdu.</p>
                     </div>
                     
-                    <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
-                      <button onClick={() => handleAcceptRequest(req)} className="flex-1 md:flex-none px-4 py-2 bg-emerald-100 hover:bg-emerald-600 text-emerald-700 hover:text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto shrink-0 mt-3 md:mt-0">
+                      <button onClick={() => handleAcceptRequest(req)} className="w-full md:w-auto px-4 py-2 bg-emerald-100 hover:bg-emerald-600 text-emerald-700 hover:text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
                         <CheckCircle size={16} /> Kabul Et
                       </button>
-                      <button onClick={() => handleRejectRequest(req.id)} className="flex-1 md:flex-none px-4 py-2 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+                      <button onClick={() => handleRejectRequest(req.id)} className="w-full md:w-auto px-4 py-2 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
                         <XCircle size={16} /> Reddet
                       </button>
                     </div>

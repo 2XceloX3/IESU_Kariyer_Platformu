@@ -59,7 +59,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
       />
 
       {/* Tabs */}
-      <div className="flex space-x-2 mb-8 bg-gray-50 p-1.5 rounded-2xl border border-gray-200/60 w-fit">
+      <div className="flex space-x-2 mb-8 bg-gray-50 p-1.5 rounded-2xl border border-gray-200/60 w-full sm:w-fit overflow-x-auto hide-scrollbar whitespace-nowrap">
         <button 
           onClick={() => setActiveTab('applications')} 
           className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'applications' ? 'bg-amber-100 text-amber-700 shadow-sm border border-amber-200' : 'bg-white text-gray-500 hover:bg-amber-50 hover:text-amber-600 border border-transparent'}`}
@@ -196,8 +196,8 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
 
       {/* CLUB FORMS POOL MODAL */}
       {selectedClub && (
-        <div className="fixed inset-0 z-[100] bg-gray-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative">
+        <div className="fixed inset-0 z-[100] bg-gray-900/60 flex items-center justify-center p-0 sm:p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-none sm:rounded-3xl w-full sm:w-[95%] max-w-5xl h-full sm:h-[90vh] overflow-hidden shadow-2xl flex flex-col relative">
             <div className="h-16 border-b border-gray-100 bg-gray-50/80 shrink-0 flex items-center justify-between px-6">
               <div className="flex items-center gap-3">
                 <img src={selectedClub.logo} className="w-8 h-8 rounded-lg object-cover shadow-sm" alt="Logo"/>
@@ -209,8 +209,8 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
               <button onClick={() => setSelectedClub(null)} className="p-2 hover:bg-gray-200 text-gray-500 rounded-full transition"><X size={20}/></button>
             </div>
             
-            <div className="overflow-y-auto flex-1 bg-gray-50 p-6 relative">
-              <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 h-full">
+            <div className="overflow-y-auto flex-1 bg-gray-50 p-0 sm:p-6 relative">
+              <div className="bg-white rounded-none sm:rounded-3xl overflow-hidden shadow-sm border-0 sm:border border-gray-100 h-full">
                 <ClubAdminPanel 
                   currentUser={currentUser}
                   clubs={clubs}
