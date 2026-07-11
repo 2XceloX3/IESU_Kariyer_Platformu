@@ -170,46 +170,82 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
             <CareerNetwork companies={companies} events={events} academicStaff={academicStaff} setView={setView} setSelectedUserId={setSelectedUserId} />
           )}
 
-        {/* Applications Native View */}
+        {/* Applications Interface Overlay */}
         {activeTab === 'applications' && (
-          <div className="bg-white rounded-3xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
-            <ApplicationsPanel 
-              applications={applications} 
-              setApplications={setApplications} 
-              jobs={jobs} 
-              currentUser={currentUser || { id: 'std-1', name: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=O&background=132A49&color=fff' }} 
-              userRole="student" 
-            />
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[85vh] overflow-y-auto flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <div className="p-4 sm:p-6">
+                <ApplicationsPanel 
+                  applications={applications} 
+                  setApplications={setApplications} 
+                  jobs={jobs} 
+                  currentUser={currentUser || { id: 'std-1', name: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=O&background=132A49&color=fff' }} 
+                  userRole="student" 
+                />
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Messaging Native View */}
+        {/* Messaging Interface Overlay */}
         {activeTab === 'messaging' && (
-          <div className="bg-white rounded-3xl w-full h-[75vh] overflow-hidden shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
-            <MessagingInterface 
-              messages={messages} 
-              setMessages={setMessages} 
-              currentUser={currentUser} 
-              userRole={userRole} 
-              contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
-              setView={setView}
-              setSelectedUserId={setSelectedUserId}
-              isOverlay={true}
-            />
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <MessagingInterface 
+                messages={messages} 
+                setMessages={setMessages} 
+                currentUser={currentUser} 
+                userRole={userRole} 
+                contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
+                setView={setView}
+                setSelectedUserId={setSelectedUserId}
+                isOverlay={true}
+              />
+            </div>
           </div>
         )}
 
-        {/* Calendar Native View */}
+        {/* Calendar Overlay */}
         {activeTab === 'calendar' && (
-          <div className="bg-white rounded-3xl w-full h-[75vh] overflow-hidden shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
-            <CalendarPlanning events={events} jobs={jobs} userRole={userRole} />
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <CalendarPlanning events={events} jobs={jobs} userRole={userRole} />
+            </div>
           </div>
         )}
 
-        {/* CV Builder Native View */}
+        {/* CV Builder Overlay */}
         {activeTab === 'cvbuilder' && (
-          <div className="bg-white rounded-3xl w-full min-h-[85vh] overflow-hidden shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6 p-4 sm:p-6">
-            <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('feed')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <div className="p-4 sm:p-6 flex-1 overflow-y-auto">
+                <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />
+              </div>
+            </div>
           </div>
         )}
 
