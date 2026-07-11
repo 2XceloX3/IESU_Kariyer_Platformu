@@ -5,7 +5,9 @@ export default function ClubsDirectory({ clubs, setClubs, clubApplications, setC
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClub, setSelectedClub] = useState(null);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const [applicationForm, setApplicationForm] = useState({ name: '', purpose: '', advisorName: '' });
+  const [joinForm, setJoinForm] = useState({ motivation: '', department: '' });
 
   const filteredClubs = (clubs || []).filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -31,8 +33,31 @@ export default function ClubsDirectory({ clubs, setClubs, clubApplications, setC
     alert("EK-1: Kulüp Kurulum Başvurunuz Öğrenci Dekanlığına iletilmiştir. Süreci bildirimlerinizden takip edebilirsiniz.");
   };
 
-  const handleJoinClub = (club) => {
-    alert(`${club.name} kulübüne üyelik talebiniz (EK-6) kulüp başkanına iletildi.`);
+  const handleJoinSubmit = (e) => {
+    e.preventDefault();
+    if (!selectedClub) return;
+
+    const request = {
+      id: 'REQ-' + Date.now(),
+      userId: currentUser?.id,
+      userName: currentUser?.name || 'Öğrenci',
+      department: joinForm.department,
+      motivation: joinForm.motivation,
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    const updatedClubs = (clubs || []).map(c => {
+      if (c.id === selectedClub.id) {
+        return { ...c, joinRequests: [...(c.joinRequests || []), request] };
+      }
+      return c;
+    });
+
+    setClubs(updatedClubs);
+    setSelectedClub({ ...selectedClub, joinRequests: [...(selectedClub.joinRequests || []), request] });
+    setShowJoinModal(false);
+    setJoinForm({ motivation: '', department: '' });
+    alert(`${selectedClub.name} kulübüne katılım talebiniz kulüp başkanına iletildi.`);
   };
 
   return (
@@ -145,8 +170,8 @@ export default function ClubsDirectory({ clubs, setClubs, clubApplications, setC
 
               {selectedClub.status === 'Aktif' && (
                 <div className="flex gap-3">
-                  <button onClick={() => handleJoinClub(selectedClub)} className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[14px] font-bold transition-all shadow-md flex items-center justify-center gap-2">
-                    <UserPlus size={18} /> Kulübe Katıl (EK-6)
+                  <button onClick={() => setShowJoinModal(true)} className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[14px] font-bold transition-all shadow-md flex items-center justify-center gap-2">
+                    <UserPlus size={18} /> Kulübe Katıl
                   </button>
                   <button className="px-5 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-[14px] font-bold transition-all flex items-center justify-center">
                     İletişime Geç
@@ -212,6 +237,51 @@ export default function ClubsDirectory({ clubs, setClubs, clubApplications, setC
               <div className="pt-2">
                 <button type="submit" className="w-full py-3.5 bg-gray-900 hover:bg-black text-white rounded-xl text-[14px] font-bold transition-all shadow-md">
                   Başvuruyu Gönder (Öğrenci Dekanlığına)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Join Request Modal */}
+      {showJoinModal && selectedClub && (
+        <div className="fixed inset-0 z-[110] bg-gray-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-fade-in relative">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white relative">
+              <button onClick={() => setShowJoinModal(false)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition"><X size={16}/></button>
+              <UserPlus size={32} className="mb-3 opacity-90"/>
+              <h2 className="text-xl font-black">Kulübe Katılım İsteği</h2>
+              <p className="text-emerald-50 text-sm mt-1">{selectedClub.name} kulübüne katılmak için aşağıdaki formu doldurun.</p>
+            </div>
+            
+            <form onSubmit={handleJoinSubmit} className="p-6 space-y-5">
+              <div>
+                <label className="block text-[12px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Bölüm / Program</label>
+                <input 
+                  required 
+                  value={joinForm.department} 
+                  onChange={e => setJoinForm({...joinForm, department: e.target.value})} 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-[14px]" 
+                  placeholder="Örn: Yazılım Mühendisliği" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-[12px] font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Katılım Motivasyonunuz</label>
+                <textarea 
+                  required 
+                  rows={4}
+                  value={joinForm.motivation} 
+                  onChange={e => setJoinForm({...joinForm, motivation: e.target.value})} 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-[14px] resize-none" 
+                  placeholder="Bu kulübe neden katılmak istiyorsunuz? Hangi alanlarda katkı sağlayabilirsiniz?" 
+                />
+              </div>
+
+              <div className="pt-2">
+                <button type="submit" className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[14px] font-bold transition-all shadow-md">
+                  İsteği Gönder (Kulüp Başkanına)
                 </button>
               </div>
             </form>

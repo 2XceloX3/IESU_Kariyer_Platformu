@@ -40,6 +40,17 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     }
   };
 
+  const getManagedClubs = () => {
+    try {
+      const clubsData = JSON.parse(localStorage.getItem('iesu_clubs_v1')) || [];
+      return clubsData.filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
+    } catch {
+      return [];
+    }
+  };
+
+  const isClubAdmin = getManagedClubs().length > 0;
+
   return (
     <div className="relative" ref={menuRef}>
       <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2.5 focus:outline-none group">
@@ -202,6 +213,16 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 >
                   <Calendar size={16} className="text-gray-400 group-hover:text-iesu-red" /> Takvim
                 </button>
+
+                {isClubAdmin && (
+                  <button 
+                    onClick={() => { setIsOpen(false); setView('club_admin'); }}
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 transition-colors flex items-center gap-3 border-y border-emerald-100/50"
+                  >
+                    <Crown size={16} className="text-emerald-500" /> Kulüp Yönetim Paneli
+                  </button>
+                )}
+
 
                 <button 
                   onClick={() => { setIsOpen(false); setView('groups'); }}

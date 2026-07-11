@@ -36,6 +36,16 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
     alert("Başvuru reddedildi.");
   };
 
+  const handleTransferPresident = (clubId) => {
+    const newPresident = prompt("Yeni kulüp başkanının ID'sini (örn: STU-005) girin:");
+    if (!newPresident) return;
+    
+    if (window.confirm(`Bu kulübün başkanlığını ${newPresident} ID'li öğrenciye devretmek istediğinize emin misiniz?`)) {
+      setClubs((clubs || []).map(c => c.id === clubId ? { ...c, presidentId: newPresident } : c));
+      alert("Kulüp başkanı başarıyla değiştirildi.");
+    }
+  };
+
   const pendingApps = (clubApplications || []).filter(a => a.status === 'Öğrenci Dekanlığı Onayı Bekliyor');
   const pastApps = (clubApplications || []).filter(a => a.status !== 'Öğrenci Dekanlığı Onayı Bekliyor');
 
@@ -164,12 +174,20 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
                     <span className="flex items-center gap-1.5"><FileText size={16}/> {(club.forms || []).length} Belge</span>
                   </div>
 
-                  <button 
-                    onClick={() => setSelectedClub(club)}
-                    className="w-full py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-[13px] font-bold transition-all border border-gray-200 flex items-center justify-center gap-2"
-                  >
-                    <Folder size={16} className="text-emerald-500" /> Form Havuzunu İncele
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setSelectedClub(club)}
+                      className="flex-1 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-[13px] font-bold transition-all border border-gray-200 flex items-center justify-center gap-2"
+                    >
+                      <Folder size={16} className="text-emerald-500" /> Havuz
+                    </button>
+                    <button 
+                      onClick={() => handleTransferPresident(club.id)}
+                      className="flex-1 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-[13px] font-bold transition-all border border-amber-200 flex items-center justify-center gap-2"
+                    >
+                      Devret
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

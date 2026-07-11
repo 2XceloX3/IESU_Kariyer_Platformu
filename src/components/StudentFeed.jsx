@@ -21,6 +21,16 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const getManagedClubs = () => {
+    try {
+      const clubsData = JSON.parse(localStorage.getItem('iesu_clubs_v1')) || clubs || [];
+      return clubsData.filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
+    } catch {
+      return [];
+    }
+  };
+  const isClubAdmin = getManagedClubs().length > 0;
 
 
 
@@ -364,6 +374,13 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-900'}`} title="Mesajlar">
             <MessageCircle size={24} strokeWidth={activeTab === 'messaging' ? 2.5 : 2} className={activeTab === 'messaging' ? 'fill-current text-blue-500/10' : ''} />
           </button>
+          
+          {/* CLUB ADMIN */}
+          {isClubAdmin && (
+            <button onClick={() => setView('club_admin')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'club_admin' ? 'text-emerald-500 bg-emerald-50' : 'text-emerald-400 hover:text-emerald-600'}`} title="Kulüp Yönetim Paneli">
+              <Crown size={24} strokeWidth={activeTab === 'club_admin' ? 2.5 : 2} className={activeTab === 'club_admin' ? 'fill-current text-emerald-500/20' : ''} />
+            </button>
+          )}
           
           {/* PROFILE AVATAR */}
           <button onClick={() => {

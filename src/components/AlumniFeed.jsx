@@ -639,6 +639,13 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
             <MessageCircle size={24} strokeWidth={2} />
           </button>
           
+          {/* CLUB ADMIN */}
+          {isClubAdmin && (
+            <button onClick={() => setView('club_admin')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'club_admin' ? 'text-emerald-500 bg-emerald-50' : 'text-emerald-400 hover:text-emerald-600'}`} title="Kulüp Yönetim Paneli">
+              <Crown size={24} strokeWidth={activeTab === 'club_admin' ? 2.5 : 2} className={activeTab === 'club_admin' ? 'fill-current text-emerald-500/20' : ''} />
+            </button>
+          )}
+          
           {/* PROFILE AVATAR */}
           <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
             <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=Mezun&background=EA580C&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image as ImageIcon, FileText, Video, Send, X, Plus, Calendar, Smile, Link as LinkIcon, BarChart2 } from 'lucide-react';
 
-export default function PostComposer({ currentUser, userRole, posts, setPosts }) {
+export default function PostComposer({ currentUser, userRole, posts, setPosts, asClub }) {
   const [content, setContent] = useState('');
   const [media, setMedia] = useState(null);
   const [mediaType, setMediaType] = useState(null); // 'image', 'video', 'pdf'
@@ -23,7 +23,13 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts })
 
     const newPost = {
       id: 'POST-' + Date.now(),
-      author: {
+      author: asClub ? {
+        id: asClub.id,
+        name: asClub.name,
+        avatar: asClub.logo,
+        title: 'Öğrenci Kulübü',
+        role: 'club'
+      } : {
         name: currentUser?.name || 'Kullanıcı',
         avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=132A49&color=fff`,
         title: currentUser?.title || currentUser?.department || 'Öğrenci',
@@ -52,7 +58,13 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts })
     <div className={`transition-all duration-300 bg-white rounded-3xl ${isFocused ? 'shadow-2xl ring-4 ring-gray-50 border-transparent scale-[1.01]' : 'shadow-sm border border-gray-100'} p-1`}>
       <form onSubmit={handleSubmit} className="w-full flex flex-col p-5 bg-white rounded-[1.4rem]">
         <div className="flex gap-4 items-start">
-          {(userRole === 'admin' || currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"') ? (
+          {asClub ? (
+            <img 
+              src={asClub.logo} 
+              alt={asClub.name} 
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover shrink-0 border border-gray-200 shadow-sm transition-transform hover:scale-105" 
+            />
+          ) : (userRole === 'admin' || currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"') ? (
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-50 flex items-center justify-center shrink-0 border-2 border-gray-100 shadow-sm p-1.5 transition-transform hover:scale-105">
               <img src="/iesu-logo.svg" alt="Admin Logo" className="w-full h-full object-contain" />
             </div>

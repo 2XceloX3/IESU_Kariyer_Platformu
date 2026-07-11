@@ -27,6 +27,7 @@ import AICVBuilder from './components/AICVBuilder';
 import MessagingInterface from './components/MessagingInterface';
 import CalendarView from './components/CalendarView';
 import JobCreator from './components/JobCreator';
+import ClubAdminPanel from './components/ClubAdminPanel';
 
 class ErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null }; }
@@ -43,7 +44,7 @@ class ErrorBoundary extends React.Component {
 }
 
 const initialClubs = [
-  { id: 'CLUB-001', name: 'Genç Yeşilay Kulübü', category: 'Sosyal Sorumluluk', description: 'Bağımlılıklarla mücadele ve sağlıklı yaşam bilincini artırma.', presidentId: 'STU-001', advisorId: 'ACAD-001', status: 'Aktif', memberCount: 45, coverImage: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=500&q=80', logo: 'https://ui-avatars.com/api/?name=GY&background=10B981&color=fff', forms: [] }
+  { id: 'CLUB-001', name: 'Genç Yeşilay Kulübü', category: 'Sosyal Sorumluluk', description: 'Bağımlılıklarla mücadele ve sağlıklı yaşam bilincini artırma.', presidentId: 'STU-001', advisorId: 'ACAD-001', status: 'Aktif', memberCount: 45, coverImage: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=500&q=80', logo: 'https://ui-avatars.com/api/?name=GY&background=10B981&color=fff', forms: [], admins: ['STU-002'], joinRequests: [] }
 ];
 const initialClubApplications = [];
 
@@ -185,6 +186,7 @@ function App() {
       {view === 'register' && <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={setStudents} setAlumni={setAlumni} setAcademicStaff={setAcademicStaff} setCompanies={setCompanies} setUserRole={setUserRole} />}
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
       {view === 'create_job' && <JobCreator setView={setView} currentUser={currentUser} jobs={jobs} setJobs={setJobs} />}
+      {view === 'club_admin' && <ClubAdminPanel setView={setView} currentUser={currentUser} clubs={clubs} setClubs={setClubs} posts={posts} setPosts={setPosts} />}
       {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} academicRole={academicRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} voluntaryInternships={voluntaryInternships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureClubsShowcase={featureClubsShowcase} featureClubApplications={featureClubApplications} clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} />}
       {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} academicRole={academicRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureSurveys={featureSurveys} featureCareerCheckup={featureCareerCheckup} featureAlumniCard={featureAlumniCard} featureClubsShowcase={featureClubsShowcase} featureClubApplications={featureClubApplications} clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} />}
       {view === 'academic' && (

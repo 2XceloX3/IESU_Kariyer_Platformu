@@ -139,6 +139,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
               {typeof post.author === 'string' ? post.author : (post.author?.name || 'Kullanıcı')}
               {post.author?.role === 'admin' && <ShieldCheck size={14} className="text-blue-500 ml-1.5" title="Yönetici" />}
               {post.author?.role === 'company' && <ShieldCheck size={14} className="text-amber-500 ml-1.5" title="Onaylı Firma" />}
+              {post.author?.role === 'club' && <ShieldCheck size={14} className="text-emerald-500 ml-1.5" title="Onaylı Kulüp" />}
               {renderBadges(post.author?.badge || post.author?.badges)}
             </h4>
             <p className="text-[12px] text-gray-500 font-medium">{post.author?.title || post.author?.department}</p>
