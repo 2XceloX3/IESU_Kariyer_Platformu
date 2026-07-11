@@ -197,12 +197,6 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
         {activeTab === 'messaging' && (
           <div className="fixed inset-0 z-[60] bg-gray-900/60 flex flex-col items-center justify-center pt-16 pb-4 px-4 sm:p-6 backdrop-blur-sm">
             <div className="w-full max-w-5xl h-full sm:h-[85vh] relative flex flex-col">
-              <button 
-                onClick={() => setActiveTab('feed')}
-                className="absolute -top-12 right-0 z-50 p-2 bg-white/20 text-white hover:bg-white/30 rounded-full backdrop-blur-md shadow-lg transition flex items-center justify-center"
-              >
-                <X size={24} />
-              </button>
               <div className="bg-white rounded-3xl w-full flex-1 overflow-hidden flex flex-col shadow-2xl animate-fade-in">
                 <MessagingInterface 
                 messages={messages} 
@@ -213,6 +207,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}
+                onClose={() => setActiveTab('feed')}
               />
               </div>
             </div>

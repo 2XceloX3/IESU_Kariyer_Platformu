@@ -311,16 +311,9 @@ export default function AcademicStaffFeed({
           </div>
         )}
 
-        {/* Messaging Interface Overlay */}
         {activeTab === 'messaging' && (
           <div className="fixed inset-0 z-[60] bg-gray-900/60 flex flex-col items-center justify-center pt-16 pb-4 px-4 sm:p-6 backdrop-blur-sm">
             <div className="w-full max-w-5xl h-full sm:h-[85vh] relative flex flex-col">
-              <button 
-                onClick={() => setActiveTab('dashboard')}
-                className="absolute -top-12 right-0 z-50 p-2 bg-white/20 text-white hover:bg-white/30 rounded-full backdrop-blur-md shadow-lg transition flex items-center justify-center"
-              >
-                <X size={24} />
-              </button>
               <div className="bg-white rounded-3xl w-full flex-1 overflow-hidden flex flex-col shadow-2xl animate-fade-in">
               <MessagingInterface 
                 messages={messages} 
@@ -333,6 +326,7 @@ export default function AcademicStaffFeed({
                 groups={groups}
                 setSelectedGroupId={setSelectedGroupId}
                 isOverlay={true}
+                onClose={() => setActiveTab('dashboard')}
               />
               </div>
             </div>
