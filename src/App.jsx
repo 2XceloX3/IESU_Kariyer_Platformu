@@ -11,7 +11,7 @@ import JobsAndInternships from './components/JobsAndInternships';
 import NewsEvents from './components/NewsEvents';
 import SemPanel from './components/SemPanel';
 import StajPanel from './components/StajPanel';
-import { generateStudents, generateAlumni, generateCompanies, initialSemCourses, initialJobs, initialFeatured, initialMentorships, initialVoluntaryInternships, initialAcademicCatalog, initialAcademicApprovals, initialNews, initialEvents, initialAnnouncements, academicStaff as mockAcademicStaff, initialInternships, initialGroups } from './utils/mockData';
+import { generateStudents, generateAlumni, generateCompanies, initialSemCourses, initialJobs, initialFeatured, initialMentorships, initialVoluntaryInternships, initialAcademicCatalog, initialAcademicApprovals, initialNews, initialEvents, initialAnnouncements, academicStaff as mockAcademicStaff, initialInternships, initialGroups, initialSurveys } from './utils/mockData';
 import useLocalStorageState from './utils/useLocalStorageState';
 import { contentData } from './components/NewsEvents';
 import AlumniFeed from './components/AlumniFeed';
@@ -130,7 +130,7 @@ function App() {
   const [applications, setApplications] = useLocalStorageState('iesu_applications_v3', []);
 
   // GLOBAL STATE: Anketler (Surveys)
-  const [surveys, setSurveys] = useState([]);
+  const [surveys, setSurveys] = useLocalStorageState('iesu_surveys_v2', initialSurveys);
 
   // Phase 10: Academic Data
   const [academicCatalog, setAcademicCatalog] = useLocalStorageState('iesu_academic_catalog_v2', initialAcademicCatalog);

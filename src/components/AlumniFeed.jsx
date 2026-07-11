@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -15,6 +15,7 @@ import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import ApplicationsPanel from './ApplicationsPanel';
 import NavIcon from './shared/NavIcon';
+import AlumniSurveys from './AlumniSurveys';
 
 export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
@@ -22,6 +23,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
   const [searchQuery, setSearchQuery] = useState('');
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
+  const [showCareerStatus, setShowCareerStatus] = useState(true);
+  const [careerStatusForm, setCareerStatusForm] = useState({ status: 'Çalışıyorum', company: '', isMatch: 'Evet' });
 
   const [showMentorshipModal, setShowMentorshipModal] = useState(false);
   const [mentorshipForm, setMentorshipForm] = useState({ title: '', hours: '', mode: 'Online', motivation: '' });
@@ -222,11 +225,67 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
           </div>
           </div>
         )}
+
+        {/* SURVEYS TAB */}
+        {activeTab === 'surveys' && (
+          <div className="w-full shrink-0 animate-fade-in mb-6">
+            <AlumniSurveys surveys={surveys} currentUser={currentUser} />
+          </div>
+        )}
         </div>
 
         {/* RIGHT PANEL: Dynamic Data */}
         <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
           
+          {/* Career Status Widget (Kariyer Check-up) */}
+          {showCareerStatus && (
+            <div className="bg-gradient-to-br from-indigo-50 to-white rounded-3xl border border-indigo-100 p-6 shadow-[var(--shadow-soft)] animate-fade-in">
+              <h3 className="font-black text-indigo-900 mb-2 flex items-center gap-2">
+                <Compass size={18} className="text-indigo-500" /> Kariyer Check-up
+              </h3>
+              <p className="text-xs text-indigo-700 font-medium mb-4 leading-relaxed">Üniversitemizin istatistiklerine katkıda bulunmak için güncel çalışma durumunuzu paylaşır mısınız?</p>
+              
+              <div className="space-y-3 mb-4">
+                <select 
+                  value={careerStatusForm.status} 
+                  onChange={e => setCareerStatusForm({...careerStatusForm, status: e.target.value})}
+                  className="w-full bg-white border border-indigo-100 rounded-xl px-3 py-2 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-indigo-200 outline-none"
+                >
+                  <option value="Çalışıyorum">Çalışıyorum</option>
+                  <option value="İş Arıyorum">İş Arıyorum</option>
+                  <option value="Eğitimime Devam Ediyorum">Eğitimime Devam Ediyorum</option>
+                  <option value="Çalışmıyorum">Çalışmıyorum</option>
+                </select>
+                
+                {careerStatusForm.status === 'Çalışıyorum' && (
+                  <>
+                    <input 
+                      type="text" 
+                      placeholder="Şirket Adı" 
+                      value={careerStatusForm.company}
+                      onChange={e => setCareerStatusForm({...careerStatusForm, company: e.target.value})}
+                      className="w-full bg-white border border-indigo-100 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 outline-none" 
+                    />
+                    <div>
+                      <p className="text-[11px] font-bold text-gray-500 mb-1">Kendi bölümünüzle alakalı mı çalışıyorsunuz?</p>
+                      <div className="flex gap-2">
+                        <button onClick={() => setCareerStatusForm({...careerStatusForm, isMatch: 'Evet'})} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${careerStatusForm.isMatch === 'Evet' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-indigo-100'}`}>Evet</button>
+                        <button onClick={() => setCareerStatusForm({...careerStatusForm, isMatch: 'Hayır'})} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${careerStatusForm.isMatch === 'Hayır' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-indigo-100'}`}>Hayır</button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              <button 
+                onClick={() => setShowCareerStatus(false)}
+                className="w-full py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-[13px] font-bold transition-all shadow-md flex items-center justify-center gap-2"
+              >
+                <CheckCircle2 size={16} /> Güncelle
+              </button>
+            </div>
+          )}
+
           {/* Profile Completion / Quick Action */}
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
             <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
@@ -522,6 +581,11 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
           {/* CENTER: SEARCH ICON */}
           <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
             <Search size={24} strokeWidth={2.5} />
+          </button>
+          
+          {/* SURVEYS */}
+          <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'text-fuchsia-600' : 'text-gray-400 hover:text-gray-900'}`} title="Anketler">
+            <ClipboardList size={24} strokeWidth={2} />
           </button>
           
           {/* MESSAGES */}

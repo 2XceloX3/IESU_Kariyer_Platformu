@@ -198,3 +198,32 @@ export const initialGroups = [
   }
 ];
 
+export const initialSurveys = [
+  {
+    id: 'SRV-101',
+    title: '2024 Mezun İstihdam ve Memnuniyet Anketi',
+    description: 'Üniversitemizin kalitesini artırmak için mezuniyet sonrası iş hayatınızla ilgili deneyimlerinizi öğrenmek istiyoruz.',
+    date: '2026-07-15',
+    status: 'Aktif',
+    type: 'Genel Anket',
+    targetAudience: 'Mezunlar',
+    responses: 24,
+    questions: [
+      { id: 'q1', text: 'Üniversitede aldığınız eğitimin mevcut işinize katkısı nedir?', type: 'likert' },
+      { id: 'q2', text: 'Şu anki işinizden genel olarak memnun musunuz?', type: 'likert' }
+    ]
+  },
+  {
+    id: 'SRV-102',
+    title: 'Kariyer Merkezi Hizmetleri Değerlendirmesi',
+    description: 'Kariyer merkezimizin sunduğu hizmetlerden ne kadar faydalandınız?',
+    date: '2026-07-10',
+    status: 'Aktif',
+    type: 'Etkinlik Değerlendirme',
+    targetAudience: 'Tümü',
+    responses: 112,
+    questions: [
+      { id: 'q1', text: 'Kariyer merkezimizin ilanlarını ne sıklıkla takip ediyorsunuz?', type: 'likert' }
+    ]
+  }
+];

@@ -21,7 +21,9 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
     avatar: '',
     cvData: null,
     cvName: '',
-    skills: ''
+    skills: '',
+    careerStatus: 'Belirtilmedi', // 'Çalışıyorum', 'İş Arıyorum', 'Eğitimime Devam Ediyorum', 'Çalışmıyorum', 'Belirtilmedi'
+    isMatch: 'Belirtilmedi' // 'Evet', 'Hayır', 'Belirtilmedi'
   });
 
   const handleAddNew = () => {
@@ -37,7 +39,9 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
       avatar: '',
       cvData: null,
       cvName: '',
-      skills: ''
+      skills: '',
+      careerStatus: 'Belirtilmedi',
+      isMatch: 'Belirtilmedi'
     });
     setCurrentId(null);
     setIsEditing(true);
@@ -76,7 +80,14 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
   });
 
   const mentorCount = safeAlumni.filter(a => a.isMentor).length;
-  const employedCount = safeAlumni.filter(a => a.currentCompany).length;
+  
+  // Analitikler
+  const employedCount = safeAlumni.filter(a => a.careerStatus === 'Çalışıyorum' || a.currentCompany).length;
+  const totalWithStatus = safeAlumni.filter(a => a.careerStatus && a.careerStatus !== 'Belirtilmedi').length || 1;
+  const employmentRate = Math.round((employedCount / totalWithStatus) * 100);
+  
+  const matchedCount = safeAlumni.filter(a => (a.careerStatus === 'Çalışıyorum' || a.currentCompany) && a.isMatch === 'Evet').length;
+  const matchRate = employedCount > 0 ? Math.round((matchedCount / employedCount) * 100) : 0;
 
   const listView = (
     <div className="space-y-6">
@@ -91,14 +102,18 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
         } 
       />
       <div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><GraduationCap size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Toplam Mezun</p><p className="text-2xl font-black text-gray-900">{safeAlumni.length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><Briefcase size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Çalışan Mezun</p><p className="text-2xl font-black text-gray-900">{employedCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">İstihdam Oranı</p><p className="text-2xl font-black text-gray-900">%{employmentRate}</p></div>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
+            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Alan Uyumu</p><p className="text-2xl font-black text-gray-900">%{matchRate}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center"><Star size={24}/></div>
@@ -171,10 +186,15 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
                     <p className="text-[10px] font-bold text-gray-400 mt-0.5 uppercase">{a.graduationYear ? `${a.graduationYear} Mezunu` : '-'}</p>
                   </td>
                   <td className="py-3 px-5">
-                    {a.currentCompany ? (
+                    {a.careerStatus && a.careerStatus !== 'Belirtilmedi' ? (
                       <div>
-                        <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded w-fit uppercase">{a.currentCompany}</p>
-                        <p className="text-[10px] font-bold text-gray-500 mt-1">{a.currentPosition}</p>
+                        <p className={`text-xs font-bold px-2 py-0.5 rounded w-fit uppercase ${a.careerStatus === 'Çalışıyorum' ? 'bg-emerald-50 text-emerald-700' : a.careerStatus === 'İş Arıyorum' ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'}`}>{a.careerStatus}</p>
+                        {a.currentCompany && <p className="text-[10px] font-bold text-gray-500 mt-1">{a.currentCompany} - {a.currentPosition}</p>}
+                        {a.careerStatus === 'Çalışıyorum' && (
+                          <p className="text-[9px] font-bold mt-1 uppercase" style={{color: a.isMatch === 'Evet' ? '#10B981' : '#F43F5E'}}>
+                            Alan Uyumu: {a.isMatch}
+                          </p>
+                        )}
                       </div>
                     ) : (
                       <span className="text-xs text-gray-400 font-medium">Belirtilmedi</span>
@@ -250,6 +270,27 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
               <div>
                 <label className="text-xs font-bold text-gray-600 block mb-1.5">Pozisyon / Unvan</label>
                 <input type="text" value={form.currentPosition} onChange={e=>setForm({...form, currentPosition: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1.5">Kariyer Durumu</label>
+                <select value={form.careerStatus} onChange={e=>setForm({...form, careerStatus: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
+                  <option value="Belirtilmedi">Belirtilmedi</option>
+                  <option value="Çalışıyorum">Çalışıyorum</option>
+                  <option value="İş Arıyorum">İş Arıyorum</option>
+                  <option value="Eğitimime Devam Ediyorum">Eğitimime Devam Ediyorum</option>
+                  <option value="Çalışmıyorum">Çalışmıyorum</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1.5">Bölümle Alakalı Çalışma (Alan Uyumu)</label>
+                <select value={form.isMatch} onChange={e=>setForm({...form, isMatch: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
+                  <option value="Belirtilmedi">Belirtilmedi</option>
+                  <option value="Evet">Evet</option>
+                  <option value="Hayır">Hayır</option>
+                </select>
               </div>
             </div>
           </div>
