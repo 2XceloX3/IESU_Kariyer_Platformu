@@ -231,9 +231,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
       setIsCameraActive(true);
       setShowAttachmentMenu(false);
     } catch (err) {
@@ -249,6 +246,12 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     }
     setIsCameraActive(false);
   };
+
+  useEffect(() => {
+    if (isCameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [isCameraActive]);
 
   const startRecording = () => {
     if (streamRef.current) {

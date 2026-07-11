@@ -76,9 +76,6 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
       setIsCameraActive(true);
       setNewImage(null); // Clear previous if any
     } catch (err) {
@@ -94,6 +91,12 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
     }
     setIsCameraActive(false);
   };
+
+  useEffect(() => {
+    if (isCameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [isCameraActive]);
 
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
