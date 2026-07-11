@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, ClipboardList, Building2, Settings, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Calendar, Home, Star, UserCheck, ArrowRight, FileText, Wand2, UserPlus } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, ClipboardList, Building2, Settings, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Calendar, Home, Star, UserCheck, ArrowRight, FileText, Wand2, UserPlus, Target } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import ApplicationsPanel from './ApplicationsPanel';
