@@ -40,13 +40,13 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
   const pastApps = (clubApplications || []).filter(a => a.status !== 'Öğrenci Dekanlığı Onayı Bekliyor');
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-8">
+    <div className="w-full bg-white rounded-3xl p-6 lg:p-8 border border-gray-200 shadow-xl shadow-gray-200/50 animate-fade-in relative overflow-hidden">
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+          <Target size={28} />
+        </div>
         <div>
-          <h2 className="text-3xl font-black text-gray-900 flex items-center gap-2">
-            <Target className="text-emerald-500" size={32} /> Kulüpler Havuzu Yönetimi
-          </h2>
-          <p className="text-gray-500 font-medium mt-1">Yeni kulüp başvurularını ve aktif kulüplerin resmi belge/form süreçlerini (EK-1'den EK-15'e) yönetin.</p>
+          <h2 className="text-2xl font-black text-gray-900">Kulüpler Havuzu Yönetimi</h2>
         </div>
       </div>
 
