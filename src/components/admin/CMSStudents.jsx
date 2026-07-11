@@ -83,41 +83,41 @@ import { exportToCSV } from '../../utils/export';export default function CMSStud
   const listView = (
     <div className="space-y-6">
       {/* HEADER & STATS */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <PanelHeader 
-          title="Aktif Öğrenciler" 
-          sub="Sisteme kayıtlı aktif öğrencileri yönetin ve staj durumlarını takip edin." 
-          action={
-            <button onClick={handleAddNew} className="bg-white text-purple-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
+      <PanelHeader 
+        title="Aktif Öğrenciler" 
+        sub="Sisteme kayıtlı aktif öğrencileri yönetin ve staj durumlarını takip edin." 
+        action={
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => {
+                const headers = ['Öğrenci ID', 'Ad Soyad', 'Bölüm', 'Sınıf', 'Staj Durumu'];
+                const csvContent = [
+                  headers.join(';'),
+                  ...filtered.map(s => [
+                    s.studentId, 
+                    (s.name || '').replace(/;/g, ','), 
+                    s.department, 
+                    s.year, 
+                    s.internshipStatus
+                  ].join(';'))
+                ].join('\n');
+            
+                const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'Ogrenciler.csv';
+                link.click();
+              }}
+              className="flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all active:scale-95 border border-emerald-500/30"
+            >
+              <Download size={18} /> Excel'e Aktar
+            </button>
+            <button onClick={handleAddNew} className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all backdrop-blur-md">
               <Plus size={18} /> Öğrenci Ekle
             </button>
-          } 
-        />
-        <button 
-          onClick={() => {
-            const headers = ['Öğrenci ID', 'Ad Soyad', 'Bölüm', 'Sınıf', 'Staj Durumu'];
-            const csvContent = [
-              headers.join(';'),
-              ...filtered.map(s => [
-                s.studentId, 
-                (s.name || '').replace(/;/g, ','), 
-                s.department, 
-                s.year, 
-                s.internshipStatus
-              ].join(';'))
-            ].join('\n');
-        
-            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Ogrenciler.csv';
-            link.click();
-          }}
-          className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all active:scale-95"
-        >
-          <Download size={18} /> Excel'e Aktar
-        </button>
-      </div>
+          </div>
+        } 
+      />
 
       <div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
