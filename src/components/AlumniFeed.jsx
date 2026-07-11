@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
@@ -225,7 +225,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
         )}
 
         {/* SURVEYS TAB */}
-        {activeTab === 'surveys' && (
+        {featureSurveys && activeTab === 'surveys' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
             <AlumniSurveys surveys={surveys} currentUser={currentUser} />
           </div>
@@ -591,9 +591,11 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
           </button>
           
           {/* SURVEYS */}
-          <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'text-fuchsia-600' : 'text-gray-400 hover:text-gray-900'}`} title="Anketler">
-            <ClipboardList size={24} strokeWidth={2} />
-          </button>
+          {featureSurveys && (
+            <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'text-fuchsia-600' : 'text-gray-400 hover:text-gray-900'}`} title="Anketler">
+              <ClipboardList size={24} strokeWidth={2} />
+            </button>
+          )}
           
           {/* MESSAGES */}
           <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Mesajlar">
