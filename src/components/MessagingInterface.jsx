@@ -34,6 +34,12 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [callStatus, setCallStatus] = useState(null); // 'calling', 'connected'
   const [callType, setCallType] = useState(null); // 'audio', 'video'
   const [callTimer, setCallTimer] = useState(0);
+  const [callFilter, setCallFilter] = useState('all'); // 'all', 'missed'
+  const [showNewCallModal, setShowNewCallModal] = useState(false);
+  const [callHistory, setCallHistory] = useState([
+    { id: 'ch-1', contactId: 'usr-1', name: 'Kariyer Merkezi', avatar: 'https://ui-avatars.com/api/?name=Kariyer+Merkezi', type: 'Cevapsız', time: 'Dün', missed: true },
+    { id: 'ch-2', contactId: 'usr-2', name: 'Danışman Hocam', avatar: 'https://ui-avatars.com/api/?name=Danışman+Hocam', type: 'Gelen', time: 'Salı', missed: false }
+  ]);
 
   // Advanced Camera specific states
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -355,9 +361,22 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     const targetId = contactId || activeContactId;
     if (!targetId) return;
 
+    const contact = allowedContacts.find(c => c.id === targetId) || groups?.find(g => g.id === targetId);
+
+    setCallHistory(prev => [{
+      id: 'ch-' + Date.now(),
+      contactId: targetId,
+      name: contact?.name || 'Kullanıcı',
+      avatar: contact?.avatar || contact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact?.name || 'Kullanıcı')}`,
+      type: 'Giden',
+      time: 'Şimdi',
+      missed: false
+    }, ...prev]);
+
     setCallType(type);
     setCallStatus('calling');
     setCallTimer(0);
+    setShowNewCallModal(false);
     
     callTimeoutRef.current = setTimeout(() => {
       setCallStatus('connected');
@@ -577,21 +596,24 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   );
 
   // 3. CALLS VIEW
-  const renderCallsView = () => (
+  const renderCallsView = () => {
+    const filteredCalls = callFilter === 'missed' ? callHistory.filter(c => c.missed) : callHistory;
+    
+    return (
     <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
       <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
         <div className="flex justify-between items-center mb-4">
-          <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
+          <div className="w-16"></div> {/* Spacer for alignment */}
           <div className="flex bg-gray-100 p-0.5 rounded-lg w-48">
-            <button className="flex-1 py-1.5 text-[13px] font-bold bg-white shadow-sm rounded-md text-black">Tümü</button>
-            <button className="flex-1 py-1.5 text-[13px] font-medium text-gray-500 hover:text-black">Cevapsızlar</button>
+            <button onClick={() => setCallFilter('all')} className={`flex-1 py-1.5 text-[13px] font-bold rounded-md transition ${callFilter === 'all' ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-black'}`}>Tümü</button>
+            <button onClick={() => setCallFilter('missed')} className={`flex-1 py-1.5 text-[13px] font-bold rounded-md transition ${callFilter === 'missed' ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-black'}`}>Cevapsızlar</button>
           </div>
-          <button className="text-blue-500"><Phone size={22}/></button>
+          <button className="text-[#00A884] w-16 text-right flex justify-end" onClick={() => setShowNewCallModal(true)}><Phone size={22}/></button>
         </div>
         <h1 className="text-3xl font-black text-black mb-6">Aramalar</h1>
         
         {/* New Call Button */}
-        <div className="flex items-center gap-4 mb-4 cursor-pointer bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition group">
+        <div onClick={() => setShowNewCallModal(true)} className="flex items-center gap-4 mb-4 cursor-pointer bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition group">
           <div className="w-12 h-12 rounded-full bg-[#00A884] flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
             <PhoneCall size={24} />
           </div>
@@ -603,33 +625,42 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       </div>
       
       <div className="flex-1 overflow-y-auto px-5 pb-4">
-        <h3 className="font-bold text-[18px] text-black mb-3 px-2">Kişiler</h3>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-16">
-          {contacts.filter(c => c.id !== currentUser?.id).map((contact, i, arr) => (
-            <div key={contact.id} onClick={() => { setActiveContactId(contact.id); startCall('audio'); }} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
-              <img src={contact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}`} className="w-12 h-12 rounded-full object-cover shrink-0" />
-              <div className="flex-1 flex justify-between items-center">
-                <div>
-                  <h4 className="font-bold text-[16px] text-gray-900">{contact.name}</h4>
-                  <div className="flex items-center gap-1.5 text-gray-500 text-[14px] mt-0.5">
-                    <span>{contact.title || contact.department || contact.sector || 'Kullanıcı'}</span>
+        <h3 className="font-bold text-[18px] text-black mb-3 px-2">Arama Geçmişi</h3>
+        {filteredCalls.length > 0 ? (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-16">
+            {filteredCalls.map((call, i, arr) => (
+              <div key={call.id} onClick={() => { setActiveContactId(call.contactId); startCall('audio'); }} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                <img src={call.avatar} className="w-12 h-12 rounded-full object-cover shrink-0" />
+                <div className="flex-1 flex justify-between items-center">
+                  <div>
+                    <h4 className={`font-bold text-[16px] ${call.missed ? 'text-red-500' : 'text-gray-900'}`}>{call.name}</h4>
+                    <div className="flex items-center gap-1.5 text-gray-500 text-[14px] mt-0.5">
+                      {call.type === 'Giden' ? <PhoneOutgoing size={14} /> : call.type === 'Cevapsız' ? <PhoneMissed size={14} className="text-red-500" /> : <PhoneIncoming size={14} />} 
+                      <span>{call.type}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-500 text-[14px] mr-2">{call.time}</span>
+                    <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(call.contactId); startCall('audio'); }}>
+                      <Phone size={22}/>
+                    </button>
+                    <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(call.contactId); startCall('video'); }}>
+                      <Video size={22}/>
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(contact.id); startCall('audio'); }}>
-                    <Phone size={22}/>
-                  </button>
-                  <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(contact.id); startCall('video'); }}>
-                    <Video size={22}/>
-                  </button>
-                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-500 py-10">
+            {callFilter === 'missed' ? 'Cevapsız aramanız bulunmuyor.' : 'Henüz hiç arama yapmadınız.'}
+          </div>
+        )}
       </div>
     </div>
   );
+};
 
   const renderCommunitiesView = () => (
     <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
@@ -1212,12 +1243,42 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     </div>
   );
 
+  const renderNewCallModal = () => (
+    <div className="absolute inset-0 bg-white z-[100] flex flex-col h-full overflow-hidden animate-slide-up">
+      <div className="h-16 px-4 border-b border-gray-100 flex items-center gap-4 bg-[#00A884] text-white shrink-0">
+        <button onClick={() => setShowNewCallModal(false)} className="p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>
+        <h2 className="text-xl font-bold">Yeni Arama</h2>
+      </div>
+      <div className="flex-1 overflow-y-auto px-4 pb-20 bg-white">
+        <div className="text-sm font-bold text-gray-500 uppercase px-2 mb-3 mt-4">Kişileriniz</div>
+        {contacts.filter(c => c.id !== currentUser?.id).map(contact => (
+          <div key={contact.id} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition">
+            <img src={contact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
+            <div className="flex-1">
+              <h4 className="font-bold text-gray-900">{contact.name}</h4>
+              <p className="text-sm text-gray-500 truncate">{contact.title || contact.department || contact.sector || 'Kullanıcı'}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="text-[#00A884] p-3 bg-gray-100 hover:bg-[#00A884]/20 rounded-full transition" onClick={() => { setActiveContactId(contact.id); startCall('audio'); }}>
+                <Phone size={20} />
+              </button>
+              <button className="text-[#00A884] p-3 bg-gray-100 hover:bg-[#00A884]/20 rounded-full transition" onClick={() => { setActiveContactId(contact.id); startCall('video'); }}>
+                <Video size={20} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   if (isOverlay) {
     return (
       <div className="w-full h-full flex bg-white overflow-hidden relative">
         {leftPanel}
         {rightPanel}
         {showNewGroupModal && renderNewGroupModal()}
+        {showNewCallModal && renderNewCallModal()}
       </div>
     );
   }
@@ -1231,6 +1292,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
             {leftPanel}
             {rightPanel}
             {showNewGroupModal && renderNewGroupModal()}
+            {showNewCallModal && renderNewCallModal()}
           </div>
         </div>
       </main>
