@@ -10,7 +10,7 @@ const EMOJI_LIST = [
   '🏢','🖥️','💻','📱','📚','🧠','💪','🌟','✈️','🌍','🗣️','🗣️','🙌','👋'
 ];
 
-export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setView, setSelectedUserId, selectedGroupId, isOverlay = false, onClose }) {
+export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
   // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
   
   const [activeContactId, setActiveContactId] = useState(selectedGroupId || null);
@@ -358,13 +358,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
   // 1. CHATS VIEW
   const renderChatsView = () => (
-    <div className="flex-1 flex flex-col h-full bg-white relative">
+    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
       <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
         <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2 items-center">
-            {onClose && <button onClick={onClose} className="text-red-500 font-bold text-[17px] mr-1 flex items-center gap-1 hover:opacity-80"><X size={20}/> Kapat</button>}
-            <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
-          </div>
+          <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
           <div className="flex gap-4">
             <button onClick={startCamera} className="text-blue-500 hover:opacity-80 transition"><Camera size={24} strokeWidth={1.5} /></button>
             <button onClick={() => setShowAllContacts(!showAllContacts)} className="text-blue-500 hover:opacity-80 transition"><Edit size={24} strokeWidth={1.5} /></button>
@@ -459,12 +456,9 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
   // 2. UPDATES VIEW
   const renderUpdatesView = () => (
-    <div className="flex-1 flex flex-col h-full bg-white relative">
+    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
       <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
         <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2 items-center">
-            {onClose && <button onClick={onClose} className="text-red-500 font-bold text-[17px] mr-1 flex items-center gap-1 hover:opacity-80"><X size={20}/> Kapat</button>}
-          </div>
           <button className="p-1"><MoreVertical size={20}/></button>
         </div>
         <h1 className="text-3xl font-black text-black mb-3">Güncellemeler</h1>
@@ -544,14 +538,11 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
   // 3. CALLS VIEW
   const renderCallsView = () => (
-    <div className="flex-1 flex flex-col h-full bg-white relative">
+    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
       <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
         <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2 items-center">
-            {onClose && <button onClick={onClose} className="text-red-500 font-bold text-[17px] mr-1 flex items-center gap-1 hover:opacity-80"><X size={20}/> Kapat</button>}
-            <button className="text-blue-500 font-medium text-[17px] hidden sm:block">Düzenle</button>
-          </div>
-          <div className="flex bg-gray-100 p-0.5 rounded-lg w-48 hidden md:flex">
+          <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
+          <div className="flex bg-gray-100 p-0.5 rounded-lg w-48">
             <button className="flex-1 py-1.5 text-[13px] font-bold bg-white shadow-sm rounded-md text-black">Tümü</button>
             <button className="flex-1 py-1.5 text-[13px] font-medium text-gray-500 hover:text-black">Cevapsızlar</button>
           </div>
@@ -604,13 +595,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   );
 
   const renderCommunitiesView = () => (
-    <div className="flex flex-col h-full bg-white">
-      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100">
-        {onClose && (
-          <div className="flex gap-2 items-center mb-2">
-            <button onClick={onClose} className="text-red-500 font-bold text-[17px] flex items-center gap-1 hover:opacity-80"><X size={20}/> Kapat</button>
-          </div>
-        )}
+    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
+      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100 shrink-0">
         <h2 className="text-3xl font-bold text-black mb-4 tracking-tight">Topluluklar</h2>
         <p className="text-gray-500 text-sm mb-4">Gruplarınız ve dahil olduğunuz öğrenci kulüpleri burada yer alır.</p>
       </div>
@@ -762,11 +748,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                 <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition" title="Daha Fazla">
                   <MoreVertical size={20} />
                 </button>
-                {onClose && (
-                  <button onClick={onClose} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-red-500 transition ml-1 md:hidden" title="Kapat">
-                    <X size={20} />
-                  </button>
-                )}
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6 bg-[#E5E5E5] custom-scrollbar" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}>

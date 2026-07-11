@@ -210,9 +210,17 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
         )}
 
         {activeTab === 'messaging' && (
-          <div className="fixed inset-0 z-[60] bg-gray-900/60 flex flex-col items-center justify-center pt-16 pb-4 px-4 sm:p-6 backdrop-blur-sm">
-            <div className="w-full max-w-5xl h-full sm:h-[85vh] relative flex flex-col">
-              <div className="bg-white rounded-3xl w-full flex-1 overflow-hidden flex flex-col shadow-2xl animate-fade-in">
+          <div className="fixed inset-0 z-[60] bg-gray-900/40 flex items-end sm:items-center justify-center p-0 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white w-full max-w-5xl h-[95vh] sm:h-[85vh] sm:rounded-3xl rounded-t-3xl overflow-hidden flex flex-col shadow-2xl animate-slide-up sm:animate-fade-in relative">
+              {/* Modal Native Header */}
+              <div className="h-12 w-full bg-white border-b border-gray-100 shrink-0 flex items-center justify-between px-4 z-50">
+                <div className="w-10 h-1 bg-gray-200 rounded-full absolute left-1/2 -translate-x-1/2 top-2 sm:hidden"></div>
+                <div className="font-bold text-gray-800 text-[15px] mx-auto sm:ml-2 mt-2 sm:mt-0">Mesajlar</div>
+                <button onClick={() => setActiveTab('feed')} className="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition absolute right-3 top-2">
+                  <X size={18} strokeWidth={2.5} />
+                </button>
+              </div>
+              <div className="w-full flex-1 overflow-hidden flex flex-col relative">
               <MessagingInterface 
                 messages={messages} 
                 setMessages={setMessages} 
@@ -222,7 +230,6 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}
-                onClose={() => setActiveTab('feed')}
               />
               </div>
             </div>
