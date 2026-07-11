@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity } from 'lucide-react';
+import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -14,8 +14,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
   
   const [activeContactId, setActiveContactId] = useState(selectedGroupId || null);
+  const [currentTab, setCurrentTab] = useState('chats'); // 'updates', 'calls', 'communities', 'chats', 'profile'
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [chatFilter, setChatFilter] = useState('all'); // 'all', 'unread', 'favorites', 'groups'
   const [showAllContacts, setShowAllContacts] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
@@ -368,70 +370,273 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
   };
 
-  const chatUI = (
-    <>
-      <div className={`w-full md:w-80 border-r border-gray-100 flex flex-col bg-gray-50/30 ${activeContactId ? 'hidden md:flex' : 'flex'}`}>
-        <div className="p-4 border-b border-gray-100">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-black text-gray-900">Mesajlar</h2>
-            <button 
-              onClick={() => setShowAllContacts(!showAllContacts)}
-              className={`w-8 h-8 rounded-xl flex items-center justify-center transition ${showAllContacts ? 'bg-iesu-red text-white' : 'bg-red-50 text-iesu-red hover:bg-red-100'}`}
-              title="Yeni Mesaj"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-            </button>
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input 
-              id="chat-search"
-              type="text" 
-              placeholder="Mesajlarda veya kişilerde ara..." 
-              className="bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition w-full" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+  // ---------------------------------------------------------
+  // NEW IOS WHATSAPP STYLE VIEWS
+  // ---------------------------------------------------------
+
+  // 1. CHATS VIEW
+  const renderChatsView = () => (
+    <div className="flex-1 flex flex-col h-full bg-white relative">
+      <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
+        <div className="flex justify-between items-center mb-4">
+          <button className="text-blue-500 font-medium">Düzenle</button>
+          <div className="flex gap-4">
+            <button className="text-blue-500"><Camera size={22} /></button>
+            <button onClick={() => setShowAllContacts(!showAllContacts)} className="text-blue-500 rounded-full bg-gray-100 p-1"><Plus size={18} /></button>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto">
-          {(conversations || []).length > 0 ? (
-            conversations.map(convo => (
-              <div 
-                key={convo.id}
-                onClick={() => setActiveContactId(convo.id)}
-                className={`flex items-center gap-3 p-4 cursor-pointer transition-colors border-l-4 ${activeContactId === convo.id ? 'bg-red-50/50 border-red-500' : 'border-transparent hover:bg-gray-50'}`}
-              >
-                <div className="relative">
-                  <img src={convo.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(convo.name)}&background=132A49&color=fff`} className="w-12 h-12 rounded-2xl object-cover shadow-sm" alt="" />
-                  {convo.unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                      {convo.unreadCount}
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start mb-1">
-                    <h4 className="font-bold text-gray-900 truncate text-[13px]">{convo.name}</h4>
-                    {convo.timestamp && (
-                      <span className="text-[10px] text-gray-400 whitespace-nowrap ml-2 font-medium">
-                        {formatTime(convo.timestamp)}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 truncate">{convo.lastMessage || convo.role}</p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="p-8 text-center flex flex-col items-center justify-center h-full opacity-50">
-              <MessageSquare size={32} className="text-gray-400 mb-3" />
-              <p className="text-sm font-medium text-gray-500">Henüz mesaj bulunmuyor.</p>
-            </div>
-          )}
+        <h1 className="text-3xl font-black text-black mb-3">Sohbetler</h1>
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+          <input 
+            type="text" 
+            placeholder="Mesaj veya kişi ara..." 
+            className="w-full bg-[#f2f2f7] border-none rounded-xl pl-10 pr-4 py-2 text-[15px] focus:ring-0 focus:outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {['Tümü', 'Okunmamış', 'Favoriler', 'Gruplar'].map(filter => (
+            <button 
+              key={filter}
+              onClick={() => setChatFilter(filter === 'Tümü' ? 'all' : filter === 'Okunmamış' ? 'unread' : filter === 'Favoriler' ? 'favorites' : 'groups')}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                (chatFilter === 'all' && filter === 'Tümü') || 
+                (chatFilter === 'unread' && filter === 'Okunmamış') ||
+                (chatFilter === 'favorites' && filter === 'Favoriler') ||
+                (chatFilter === 'groups' && filter === 'Gruplar')
+                  ? 'bg-green-100 text-[#00A884]' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
         </div>
       </div>
-      <div className={`flex-1 flex flex-col bg-white ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
+      
+      <div className="flex-1 overflow-y-auto bg-white px-2">
+        <div className="flex items-center gap-4 p-3 hover:bg-gray-50 cursor-pointer">
+          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+            <Archive size={20} className="text-gray-500" />
+          </div>
+          <div className="flex-1 border-b border-gray-100 pb-3 mt-3">
+            <h4 className="font-bold text-[16px]">Arşivlenmiş</h4>
+          </div>
+        </div>
+        
+        {(conversations || []).filter(c => {
+          if (chatFilter === 'unread') return c.unreadCount > 0;
+          if (chatFilter === 'groups') return c.isGroup;
+          return true;
+        }).map(convo => (
+          <div 
+            key={convo.id}
+            onClick={() => setActiveContactId(convo.id)}
+            className={`flex items-stretch gap-3 pl-3 cursor-pointer transition-colors ${activeContactId === convo.id ? 'bg-gray-100/50 rounded-xl' : 'hover:bg-gray-50'}`}
+          >
+            <div className="relative self-center py-2 shrink-0">
+              <img src={convo.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(convo.name)}&background=132A49&color=fff`} className="w-14 h-14 rounded-full object-cover" alt="" />
+              {convo.unreadCount > 0 && (
+                <div className="absolute top-1 right-0 w-5 h-5 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                  {convo.unreadCount}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0 border-b border-gray-100 py-3 pr-4 flex flex-col justify-center">
+              <div className="flex justify-between items-center mb-0.5">
+                <h4 className="font-bold text-black text-[16px] truncate">{convo.name}</h4>
+                {convo.timestamp && (
+                  <span className={`text-[13px] ${convo.unreadCount > 0 ? 'text-[#00A884] font-medium' : 'text-gray-500'} shrink-0 ml-2`}>
+                    {formatTime(convo.timestamp)}
+                  </span>
+                )}
+              </div>
+              <p className="text-[14px] text-gray-500 truncate">{convo.lastMessage || convo.role}</p>
+            </div>
+          </div>
+        ))}
+        {conversations.length === 0 && (
+          <div className="p-8 text-center flex flex-col items-center justify-center opacity-50">
+            <MessageSquare size={32} className="text-gray-400 mb-3" />
+            <p className="text-sm font-medium text-gray-500">Henüz mesaj bulunmuyor.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // 2. UPDATES VIEW
+  const renderUpdatesView = () => (
+    <div className="flex-1 flex flex-col h-full bg-white relative">
+      <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
+        <div className="flex justify-between items-center mb-4">
+          <button className="p-1"><MoreVertical size={20}/></button>
+        </div>
+        <h1 className="text-3xl font-black text-black mb-3">Güncellemeler</h1>
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+          <input type="text" placeholder="Ara" className="w-full bg-[#f2f2f7] border-none rounded-xl pl-10 pr-4 py-2 text-[15px] focus:ring-0 focus:outline-none" />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto px-5">
+        <h3 className="font-bold text-lg mb-4">Durum</h3>
+        
+        {/* My Status */}
+        <div className="flex items-center gap-3 mb-6 cursor-pointer">
+          <div className="relative shrink-0">
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Ben')}`} className="w-14 h-14 rounded-full object-cover" />
+            <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-white">
+              <Plus size={14} />
+            </div>
+          </div>
+          <div className="flex-1">
+            <h4 className="font-bold text-[16px]">Durum ekle</h4>
+            <p className="text-gray-500 text-sm">24 saat sonra kaybolur</p>
+          </div>
+          <div className="flex gap-3 text-gray-500 shrink-0">
+            <button className="bg-gray-100 p-2 rounded-full"><Camera size={18}/></button>
+            <button className="bg-gray-100 p-2 rounded-full"><Edit3 size={18}/></button>
+          </div>
+        </div>
+
+        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Son Güncellemeler</h3>
+        
+        {/* Mock Statuses */}
+        {[
+          { name: 'Kariyer Merkezi', time: '8 sa. önce', verified: true },
+          { name: 'Otomotiv Kulübü', time: '8 sa. önce' },
+          { name: 'Danışman Hocam', time: '13 sa. önce' }
+        ].map((s, i) => (
+          <div key={i} className="flex items-center gap-3 mb-4 cursor-pointer">
+            <div className="w-14 h-14 rounded-full p-[2px] bg-[#00A884] shrink-0">
+              <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-gray-200">
+                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`} className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div className="flex-1 border-b border-gray-100 pb-3 flex flex-col justify-center">
+              <h4 className="font-bold text-[16px] flex items-center gap-1">
+                {s.name} {s.verified && <CheckCircle2 size={14} className="text-blue-500" fill="currentColor"/>}
+              </h4>
+              <p className="text-gray-500 text-sm">{s.time}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // 3. CALLS VIEW
+  const renderCallsView = () => (
+    <div className="flex-1 flex flex-col h-full bg-white relative">
+      <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
+        <div className="flex justify-between items-center mb-4">
+          <button className="p-1 text-blue-500 font-medium">Düzenle</button>
+          <button className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-blue-500"><Phone size={18}/></button>
+        </div>
+        <h1 className="text-3xl font-black text-black mb-6">Aramalar</h1>
+        
+        <div className="flex justify-between px-2 mb-6">
+          <div className="flex flex-col items-center gap-1 cursor-pointer">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Phone size={20}/></div>
+            <span className="text-[11px] text-gray-500 font-medium">Ara</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 cursor-pointer">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Calendar size={20}/></div>
+            <span className="text-[11px] text-gray-500 font-medium">Planla</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 cursor-pointer">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Grid3X3 size={20}/></div>
+            <span className="text-[11px] text-gray-500 font-medium">Tuş takımı</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 cursor-pointer">
+            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Heart size={20}/></div>
+            <span className="text-[11px] text-gray-500 font-medium">Favoriler</span>
+          </div>
+        </div>
+        
+        <h3 className="font-bold text-lg mb-2">En Son</h3>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto px-5">
+        {[
+          { name: 'Kariyer Merkezi', type: 'Gelen', time: 'Dün', missed: false },
+          { name: 'Danışman Hocam', type: 'Giden', time: 'Perşembe', missed: false },
+          { name: 'Otomotiv Kulübü', type: 'Cevapsız', time: 'Perşembe', missed: true },
+          { name: 'Mezunlar Derneği', type: 'Gelen', time: 'Pazartesi', missed: false }
+        ].map((call, i) => (
+          <div key={i} className="flex items-center gap-3 mb-1 cursor-pointer">
+            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(call.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
+            <div className="flex-1 border-b border-gray-100 py-3 flex justify-between items-center">
+              <div>
+                <h4 className={`font-bold text-[16px] ${call.missed ? 'text-red-500' : 'text-black'}`}>{call.name}</h4>
+                <div className="flex items-center gap-1 text-gray-500 text-sm mt-0.5">
+                  <Phone size={12} /> {call.type}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-500 text-[15px]">{call.time}</span>
+                <button className="text-blue-500 ml-2"><Info size={20}/></button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const getActiveTabContent = () => {
+    switch (currentTab) {
+      case 'updates': return renderUpdatesView();
+      case 'calls': return renderCallsView();
+      case 'chats': return renderChatsView();
+      case 'communities': return <div className="p-8 text-center text-gray-500 h-full flex flex-col justify-center font-bold text-xl">Topluluklar özelliği yakında...</div>;
+      case 'profile': return <div className="p-8 text-center text-gray-500 h-full flex flex-col justify-center font-bold text-xl">Ayarlar ve Profil</div>;
+      default: return renderChatsView();
+    }
+  };
+
+  const iOSBottomTabBar = (
+    <div className="h-[84px] bg-[#f9f9f9]/90 backdrop-blur-md border-t border-gray-200/50 flex justify-around items-start pt-2 px-2 shrink-0 w-full z-50 relative">
+      {[
+        { id: 'updates', label: 'Güncellemeler', icon: CircleDashed, activeIcon: CircleDashed },
+        { id: 'calls', label: 'Aramalar', icon: Phone, activeIcon: Phone },
+        { id: 'communities', label: 'Topluluklar', icon: Users, activeIcon: Users },
+        { id: 'chats', label: 'Sohbetler', icon: MessageCircle, activeIcon: MessageSquare },
+        { id: 'profile', label: 'Siz', icon: UserCircle2, activeIcon: UserCircle2 }
+      ].map(tab => (
+        <button 
+          key={tab.id}
+          onClick={() => setCurrentTab(tab.id)}
+          className="flex flex-col items-center justify-center w-16 gap-1"
+        >
+          <div className={`relative flex items-center justify-center transition-transform ${currentTab === tab.id ? 'scale-110' : ''}`}>
+            {currentTab === tab.id ? (
+              <tab.activeIcon size={26} className="text-black" fill={tab.id === 'chats' || tab.id === 'communities' || tab.id === 'profile' ? "currentColor" : "none"} strokeWidth={2} />
+            ) : (
+              <tab.icon size={26} className="text-gray-400" strokeWidth={1.5} />
+            )}
+            {/* Unread dot simulation for chats */}
+            {tab.id === 'chats' && conversations.some(c => c.unreadCount > 0) && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+            )}
+          </div>
+          <span className={`text-[10px] font-medium mt-0.5 ${currentTab === tab.id ? 'text-black' : 'text-gray-500'}`}>{tab.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  const leftPanel = (
+    <div className={`w-full md:w-[420px] h-full flex flex-col bg-white border-r border-gray-200 shrink-0 ${activeContactId ? 'hidden md:flex' : 'flex'}`}>
+      {getActiveTabContent()}
+      {iOSBottomTabBar}
+    </div>
+  );
+
+  const rightPanel = (
+    <div className={`flex-1 flex flex-col bg-[#efeae2] h-full ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
         {activeContact ? (
           <>
             <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0">
@@ -814,76 +1019,73 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   );
 
   if (isOverlay) {
-    return <div className="w-full h-full flex bg-white">{chatUI}</div>;
+    return <div className="w-full h-full flex bg-white overflow-hidden">{leftPanel}{rightPanel}</div>;
   }
 
   return (
-    <div className={`w-full ${isOverlay ? 'h-full bg-transparent' : 'min-h-screen bg-gray-50 pb-20 flex flex-col font-sans'}`}>
-      {/* Hyper-Modern Navbar (Glassmorphism) - Replicated from Feeds */}
-      {!isOverlay && (
-        <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          
-          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600" title="Geri Dön">
-            <Home size={24} strokeWidth={2} />
-          </button>
-          
-          {/* CENTER: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
-            <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden sm:block text-center">
-              <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
-            </div>
+    <div className={`w-full h-[100dvh] bg-[#f0f2f5] flex flex-col font-sans overflow-hidden`}>
+      <main className={`flex-1 flex justify-center w-full h-full overflow-hidden`}>
+        {/* The main container acts like a native app shell. On desktop it has max-width, on mobile it's full screen */}
+        <div className={`w-full h-full md:py-8 flex justify-center items-center`}>
+          <div className={`w-full max-w-[1600px] h-full md:h-[calc(100vh-64px)] md:rounded-3xl shadow-2xl border border-gray-300 overflow-hidden flex bg-white`}>
+            {leftPanel}
+            {rightPanel}
           </div>
-          
-          {/* RIGHT: Notifications & Profile Menu */}
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
-              <div className="relative">
-                <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
-              </div>
-            </button>
-            <TopProfileMenu currentUser={currentUser || { name: 'Kullanıcı' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="messaging" />
-          </div>
-          
-        </div>
-      </nav>
-      )}
-      <main className={`${!isOverlay ? 'max-w-[1400px] mx-auto px-4 lg:px-8 pt-24' : ''} flex-1 flex flex-col w-full h-full`}>
-        <div className={`bg-white rounded-3xl ${!isOverlay ? 'shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 h-[700px] md:h-[80vh]' : 'h-full'} overflow-hidden flex w-full`}>
-          {chatUI}
         </div>
       </main>
 
-      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
-      {!isOverlay && (
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
-        <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
-            <Home size={26} strokeWidth={2} />
-          </button>
-          
-          <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="İlanlar">
-            <Briefcase size={24} strokeWidth={2} />
-          </button>
-          
-          {/* CENTER: SEARCH ICON */}
-          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
-            <Search size={24} strokeWidth={2.5} />
-          </button>
-          
-          {/* MESSAGES */}
-          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-iesu-red`} title="Mesajlar">
-            <MessageCircle size={24} strokeWidth={2} />
-          </button>
-          
-          {/* PROFILE AVATAR */}
-          <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanici')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
-          </button>
+        <div className="fixed inset-0 z-[250] bg-slate-900 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
+          {/* Background blurred avatar */}
+          <div className="absolute inset-0 z-0 opacity-30">
+            <img src={activeContact?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
+          </div>
+
+          <div className="z-10 flex flex-col items-center mt-10">
+            <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden mb-6 shadow-2xl relative">
+              <img src={activeContact?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover" />
+              {callStatus === 'calling' && (
+                <div className="absolute inset-0 border-4 border-white rounded-full animate-ping opacity-20"></div>
+              )}
+            </div>
+            <h2 className="text-3xl font-black text-white drop-shadow-md mb-2">{activeContact?.name}</h2>
+            <p className="text-white/80 font-medium tracking-widest uppercase text-sm">
+              {callStatus === 'calling' ? 'Aranıyor...' : formatCallTime(callTimer)}
+            </p>
+          </div>
+
+          {/* Video Placeholder (if video call and connected) */}
+          {callStatus === 'connected' && callType === 'video' && (
+             <div className="absolute inset-0 z-0 flex items-center justify-center">
+               <div className="w-full h-full bg-black flex items-center justify-center text-white/20">
+                  <Video size={64} />
+               </div>
+               {/* Small Picture in Picture of self */}
+               <div className="absolute top-8 right-8 w-32 h-48 bg-gray-800 rounded-xl overflow-hidden shadow-2xl border-2 border-white/10 flex items-center justify-center">
+                  <UserCircle2 size={32} className="text-white/20" />
+               </div>
+             </div>
+          )}
+
+          <div className="z-10 flex items-center gap-6 pb-10">
+            {callStatus === 'connected' && (
+              <>
+                <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition">
+                   <PhoneOff size={24} /> {/* Mute */}
+                </button>
+                <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition">
+                   {callType === 'video' ? <Video size={24} /> : <Phone size={24} />}
+                </button>
+              </>
+            )}
+            
+            <button 
+              onClick={endCall}
+              className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-xl shadow-red-500/20 flex items-center justify-center text-white transition hover:scale-105"
+            >
+              <PhoneOff size={28} />
+            </button>
+          </div>
         </div>
-      </div>
       )}
     </div>
   );
