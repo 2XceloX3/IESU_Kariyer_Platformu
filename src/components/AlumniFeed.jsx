@@ -375,7 +375,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
 
         {/* Applications Interface Overlay */}
         {activeTab === 'applications' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
             <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[85vh] overflow-y-auto flex flex-col shadow-2xl animate-fade-in relative">
               <button 
                 onClick={() => setActiveTab('feed')}
@@ -398,7 +398,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
 
         {/* Messaging Interface Overlay */}
         {activeTab === 'messaging' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
             <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
               <button 
                 onClick={() => setActiveTab('feed')}
@@ -422,7 +422,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
 
         {/* Calendar Overlay */}
         {activeTab === 'calendar' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
             <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
               <button 
                 onClick={() => setActiveTab('feed')}
@@ -437,7 +437,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
 
         {/* CV Builder Overlay */}
         {activeTab === 'cvbuilder' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
             <div className="bg-white rounded-3xl w-full max-w-6xl h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
               <button 
                 onClick={() => setActiveTab('feed')}

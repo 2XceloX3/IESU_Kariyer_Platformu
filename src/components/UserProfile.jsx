@@ -490,7 +490,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
       {/* Followers Modal */}
       {followersModal.isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100 flex flex-col max-h-[80vh]">
             <div className="flex justify-between items-center p-4 border-b border-gray-100">
               <h3 className="font-black text-gray-900">{followersModal.title}</h3>
@@ -528,7 +528,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
       {/* Image Upload Cropper Modal (Mock) */}
       {showImageUploadModal && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100 flex flex-col">
             <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50/50">
               <h3 className="font-black text-gray-900 text-lg flex items-center gap-2">

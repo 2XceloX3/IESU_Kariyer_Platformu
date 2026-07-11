@@ -230,73 +230,31 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   };
 
   const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      streamRef.current = stream;
-      setIsCameraActive(true);
-      setShowAttachmentMenu(false);
-    } catch (err) {
-      console.error("Camera access denied:", err);
-      alert("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
-    }
+    setIsCameraActive(true);
+    setShowAttachmentMenu(false);
   };
 
   const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
     setIsCameraActive(false);
   };
 
-  useEffect(() => {
-    if (isCameraActive && videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
-    }
-  }, [isCameraActive]);
+  // Removed useEffect for streamRef
 
   const startRecording = () => {
-    if (streamRef.current) {
-      recordedChunks.current = [];
-      try {
-        const mediaRecorder = new MediaRecorder(streamRef.current, { mimeType: 'video/webm' });
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) recordedChunks.current.push(e.data);
-        };
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(recordedChunks.current, { type: 'video/webm' });
-          const url = URL.createObjectURL(blob);
-          setCapturedMedia({ url, type: 'video' });
-          stopCamera();
-        };
-        mediaRecorderRef.current = mediaRecorder;
-        mediaRecorder.start();
-        setIsRecording(true);
-      } catch (err) {
-        console.error("MediaRecorder error", err);
-      }
-    }
+    setIsRecording(true);
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+    if (isRecording) {
       setIsRecording(false);
+      setCapturedMedia({ url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 'video' });
+      stopCamera();
     }
   };
 
   const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg');
-      setCapturedMedia({ url: dataUrl, type: 'image' });
-      stopCamera();
-    }
+    setCapturedMedia({ url: `https://picsum.photos/800/1200?random=${Date.now()}`, type: 'image' });
+    stopCamera();
   };
 
   const sendCapturedMedia = () => {
@@ -328,6 +286,27 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   }, []);
 
 
+  const callTimeoutRef = useRef(null);
+
+  const startCall = (type, contactId) => {
+    if (contactId) setActiveContactId(contactId);
+    const targetId = contactId || activeContactId;
+    if (!targetId) return;
+
+    setCallType(type);
+    setCallStatus('calling');
+    setCallTimer(0);
+    
+    callTimeoutRef.current = setTimeout(() => {
+      setCallStatus('connected');
+    }, 4000);
+  };
+
+  const endCall = () => {
+    setCallStatus(null);
+    setCallTimer(0);
+    if (callTimeoutRef.current) clearTimeout(callTimeoutRef.current);
+  };
 
   useEffect(() => {
     let interval;
@@ -338,25 +317,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     }
     return () => clearInterval(interval);
   }, [callStatus]);
-
-  const startCall = (type) => {
-    setCallType(type);
-    setCallStatus('calling');
-    setCallTimer(0);
-    // Simulate accepting call after 3 seconds
-    setTimeout(() => {
-      setCallStatus((currentStatus) => {
-        if (currentStatus === 'calling') return 'connected';
-        return currentStatus;
-      });
-    }, 3000);
-  };
-
-  const endCall = () => {
-    setCallStatus(null);
-    setCallType(null);
-    setCallTimer(0);
-  };
 
   const formatCallTime = (seconds) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -561,12 +521,12 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       
       <div className="flex-1 overflow-y-auto px-5">
         {[
-          { name: 'Kariyer Merkezi', type: 'Gelen', time: 'Dün', missed: false },
-          { name: 'Danışman Hocam', type: 'Giden', time: 'Perşembe', missed: false },
-          { name: 'Otomotiv Kulübü', type: 'Cevapsız', time: 'Perşembe', missed: true },
-          { name: 'Mezunlar Derneği', type: 'Gelen', time: 'Pazartesi', missed: false }
+          { id: 'usr-1', name: 'Kariyer Merkezi', type: 'Gelen', time: 'Dün', missed: false },
+          { id: 'usr-2', name: 'Danışman Hocam', type: 'Giden', time: 'Perşembe', missed: false },
+          { id: 'usr-3', name: 'Otomotiv Kulübü', type: 'Cevapsız', time: 'Perşembe', missed: true },
+          { id: 'usr-4', name: 'Mezunlar Derneği', type: 'Gelen', time: 'Pazartesi', missed: false }
         ].map((call, i) => (
-          <div key={i} className="flex items-center gap-3 mb-1 cursor-pointer">
+          <div key={i} onClick={() => startCall('audio', call.id)} className="flex items-center gap-3 mb-1 cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition">
             <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(call.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
             <div className="flex-1 border-b border-gray-100 py-3 flex justify-between items-center">
               <div>
@@ -577,11 +537,65 @@ export default function MessagingInterface({ previousView, messages = [], setMes
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-gray-500 text-[15px]">{call.time}</span>
-                <button className="text-blue-500 ml-2"><Info size={20}/></button>
+                <button className="text-blue-500 ml-2" onClick={(e) => { e.stopPropagation(); startCall('video', call.id); }}><Info size={20}/></button>
               </div>
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+
+  const renderCommunitiesView = () => (
+    <div className="flex flex-col h-full bg-white">
+      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100">
+        <h2 className="text-3xl font-bold text-black mb-4 tracking-tight">Topluluklar</h2>
+        <p className="text-gray-500 text-sm mb-4">Gruplarınız ve dahil olduğunuz öğrenci kulüpleri burada yer alır.</p>
+      </div>
+      <div className="flex-1 overflow-y-auto bg-gray-50">
+        {(groups || []).length > 0 ? (groups || []).map(group => (
+          <div key={group.id} onClick={() => { if (setSelectedGroupId) setSelectedGroupId(group.id); }} className="flex items-center gap-3 p-4 bg-white mb-2 cursor-pointer border-y border-gray-200/50 hover:bg-gray-50 transition">
+            <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+              <img src={group.logo} className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900">{group.name}</h4>
+              <p className="text-xs text-gray-500">{group.memberCount} Üye • {group.type}</p>
+            </div>
+          </div>
+        )) : (
+          <div className="p-8 text-center text-gray-500 flex flex-col items-center justify-center h-full">
+            <Users size={48} className="text-gray-300 mb-4" />
+            <p>Henüz hiçbir topluluğa katılmadınız.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderProfileView = () => (
+    <div className="flex flex-col h-full bg-[#f2f2f6]">
+      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100">
+        <h2 className="text-3xl font-bold text-black mb-4 tracking-tight">Siz</h2>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="bg-white p-5 mt-6 border-y border-gray-200/60 flex items-center gap-4">
+          <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || '')}`} className="w-16 h-16 rounded-full object-cover" />
+          <div className="flex-1">
+            <h3 className="font-bold text-xl text-black">{currentUser?.name || 'Kullanıcı'}</h3>
+            <p className="text-gray-500 text-sm">{currentUser?.department || 'Öğrenci'}</p>
+          </div>
+        </div>
+        
+        <div className="mt-8 bg-white border-y border-gray-200/60">
+          <button onClick={() => { if (setView) setView('profile_update'); }} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition">
+            <div className="flex items-center gap-3 text-black">
+              <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white"><UserCircle2 size={18}/></div>
+              <span className="font-medium text-[16px]">Profili Düzenle</span>
+            </div>
+            <ChevronLeft size={20} className="text-gray-400 rotate-180" />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -591,8 +605,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       case 'updates': return renderUpdatesView();
       case 'calls': return renderCallsView();
       case 'chats': return renderChatsView();
-      case 'communities': return <div className="p-8 text-center text-gray-500 h-full flex flex-col justify-center font-bold text-xl">Topluluklar özelliği yakında...</div>;
-      case 'profile': return <div className="p-8 text-center text-gray-500 h-full flex flex-col justify-center font-bold text-xl">Ayarlar ve Profil</div>;
+      case 'communities': return renderCommunitiesView();
+      case 'profile': return renderProfileView();
       default: return renderChatsView();
     }
   };
@@ -867,16 +881,11 @@ export default function MessagingInterface({ previousView, messages = [], setMes
           
           <div className="flex-1 flex flex-col items-center justify-center relative bg-black">
             {!capturedMedia ? (
-              // LIVE CAMERA FEED
-              <div className="w-full h-full relative flex items-center justify-center">
-                <video 
-                  ref={videoRef} 
-                  autoPlay 
-                  playsInline 
-                  muted
-                  className="absolute inset-0 w-full h-full object-cover" 
-                />
-                <canvas ref={canvasRef} className="hidden" />
+              // LIVE CAMERA FEED (MOCK)
+              <div className="w-full h-full relative flex items-center justify-center bg-gray-900">
+                <Camera size={64} className="text-gray-600 animate-pulse mb-20" />
+                <p className="absolute bottom-40 text-gray-400 font-medium">Kamera Simulasyonu Aktif</p>
+                <video ref={videoRef} className="hidden" />
 
                 {/* Recording indicator */}
                 {isRecording && (
@@ -978,7 +987,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
             </div>
             <h2 className="text-3xl font-black text-white drop-shadow-md mb-2">{activeContact?.name}</h2>
             <p className="text-white/80 font-medium tracking-widest uppercase text-sm">
-              {callStatus === 'calling' ? 'Aranıyor...' : formatCallTime(callTimer)}
+              {callStatus === 'calling' ? 'Yanıt Bekleniyor...' : formatCallTime(callTimer)}
             </p>
           </div>
 

@@ -191,7 +191,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
 
 
         {activeTab === 'jobs' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
             <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[85vh] overflow-y-auto flex flex-col shadow-2xl relative">
               <button onClick={() => setActiveTab('feed')} className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100">
                 <X size={20} />
@@ -210,7 +210,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
         )}
 
         {activeTab === 'messaging' && (
-          <div className="fixed inset-0 z-50 bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
             <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl relative">
               <button onClick={() => setActiveTab('feed')} className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition">
                 <X size={20} />
