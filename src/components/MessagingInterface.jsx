@@ -4,7 +4,11 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 
-const EMOJI_LIST = ['😀','😂','🥰','😎','🤔','👍','🙌','❤️','🔥','🎉','✨','👏','🚀','💡'];
+const EMOJI_LIST = [
+  '😀','😂','🥰','😎','🤔','👍','🙌','❤️','🔥','🎉','✨','👏','🚀','💡',
+  '🎓','💼','📊','📈','🤝','✅','❌','👀','🧑‍🎓','👨‍💻','🏆','🎯','💯','📝','🔔',
+  '🏢','🖥️','💻','📱','📚','🧠','💪','🌟','✈️','🌍','🗣️','🗣️','🙌','👋'
+];
 
 export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
   // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
@@ -16,8 +20,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const [viewedOnceMsgs, setViewedOnceMsgs] = useState([]);
+  const [pendingMediaType, setPendingMediaType] = useState(null);
   
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Scroll to bottom of chat
   useEffect(() => {
@@ -179,12 +185,24 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   };
 
   const handleSendMedia = (type) => {
-    let mockUrl = '';
-    if(type === 'image') mockUrl = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=80';
-    if(type === 'video') mockUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
-    if(type === 'view_once') mockUrl = 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&q=80';
+    setPendingMediaType(type);
+    if(fileInputRef.current) {
+      fileInputRef.current.setAttribute('accept', type === 'video' ? 'video/*' : 'image/*');
+      fileInputRef.current.click();
+    }
+  };
+
+  const onFileChange = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
     
-    handleSend(null, type, mockUrl);
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      handleSend(null, pendingMediaType, evt.target.result);
+      setPendingMediaType(null);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = ''; // reset
   };
 
   const markViewOnce = (msgId) => {
@@ -399,9 +417,17 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                 </div>
               )}
 
+              {/* Hidden File Input for Media Selection */}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                onChange={onFileChange} 
+              />
+
               {/* Emoji Picker */}
               {showEmojiPicker && (
-                <div className="absolute bottom-16 right-16 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 w-64 grid grid-cols-5 gap-2 animate-fade-in z-20">
+                <div className="absolute bottom-16 right-4 sm:right-16 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 w-72 max-h-64 overflow-y-auto grid grid-cols-6 gap-2 animate-fade-in z-20 custom-scrollbar">
                   {EMOJI_LIST.map(emoji => (
                     <button key={emoji} onClick={() => setNewMessage(prev => prev + emoji)} className="text-2xl hover:bg-gray-100 rounded-lg transition active:scale-95">
                       {emoji}

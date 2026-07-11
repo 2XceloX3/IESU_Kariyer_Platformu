@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, Send, Image as ImageIcon, Camera } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, ChevronLeft, ChevronRight, Send, Image as ImageIcon, Camera, Aperture } from 'lucide-react';
 
 export default function StoryViewer({ stories, initialIndex = 0, onClose, isCreating, currentUser, setStories }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
   const [newContent, setNewContent] = useState('');
   const [newImage, setNewImage] = useState(null);
+  
+  // Camera specific states
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
 
   // Auto advance stories
   useEffect(() => {
@@ -62,8 +68,50 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
     };
 
     setStories(prev => [newStory, ...(prev || [])]);
+    stopCamera();
     onClose();
   };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setIsCameraActive(true);
+      setNewImage(null); // Clear previous if any
+    } catch (err) {
+      console.error("Camera access denied:", err);
+      alert("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      setNewImage(dataUrl);
+      stopCamera();
+    }
+  };
+
+  useEffect(() => {
+    return () => stopCamera(); // Cleanup on unmount
+  }, []);
 
   const currentStory = stories?.[currentIndex];
 
@@ -72,16 +120,30 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
       <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col animate-fade-in">
         <div className="flex justify-between items-center p-4">
           <h2 className="text-white font-bold text-lg">Hikaye Oluştur</h2>
-          <button onClick={onClose} className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition">
+          <button onClick={() => { stopCamera(); onClose(); }} className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition">
             <X size={24} />
           </button>
         </div>
         
-        <div className="flex-1 flex flex-col items-center justify-center p-4">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 overflow-hidden relative">
           <div className="w-full max-w-sm aspect-[9/16] bg-gray-900 rounded-3xl overflow-hidden relative shadow-2xl border border-gray-800 flex flex-col">
-            {newImage ? (
+            
+            {/* Camera View */}
+            <video 
+              ref={videoRef} 
+              autoPlay 
+              playsInline 
+              className={`absolute inset-0 w-full h-full object-cover ${isCameraActive ? 'block' : 'hidden'}`} 
+            />
+            <canvas ref={canvasRef} className="hidden" />
+
+            {/* Captured Image View */}
+            {newImage && (
               <img src={newImage} className="absolute inset-0 w-full h-full object-cover opacity-80" />
-            ) : (
+            )}
+            
+            {/* Empty State */}
+            {!newImage && !isCameraActive && (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
                 <Camera size={48} className="text-white/20" />
               </div>
@@ -90,23 +152,42 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
             <textarea 
               value={newContent}
               onChange={e => setNewContent(e.target.value)}
-              placeholder="Hikayene bir şeyler yaz..."
+              placeholder={isCameraActive ? "" : "Hikayene bir şeyler yaz..."}
               className="relative z-10 w-full h-full bg-transparent text-white placeholder-white/50 text-center font-bold text-2xl resize-none outline-none p-8 flex items-center justify-center pt-[50%]"
             />
+
+            {/* Capture Button Overlay */}
+            {isCameraActive && (
+              <div className="absolute bottom-6 left-0 w-full flex justify-center z-20">
+                <button onClick={capturePhoto} className="w-16 h-16 rounded-full border-4 border-white/50 flex items-center justify-center bg-white/20 hover:bg-white/40 transition">
+                  <div className="w-12 h-12 rounded-full bg-white"></div>
+                </button>
+              </div>
+            )}
           </div>
         </div>
         
-        <div className="p-6 pb-10 flex justify-center gap-4">
-          <label className="flex items-center gap-2 px-6 py-4 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition cursor-pointer">
-            <ImageIcon size={20} /> Görsel Ekle
+        <div className="p-4 sm:p-6 pb-8 flex flex-wrap justify-center gap-3">
+          <button onClick={startCamera} className="flex items-center gap-2 px-4 py-3 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition">
+            <Aperture size={20} /> Kamera
+          </button>
+          
+          <label className="flex items-center gap-2 px-4 py-3 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition cursor-pointer">
+            <ImageIcon size={20} /> Galeri
             <input type="file" accept="image/*" className="hidden" onChange={e => {
-              if (e.target.files[0]) setNewImage(URL.createObjectURL(e.target.files[0]));
+              if (e.target.files[0]) {
+                stopCamera();
+                const reader = new FileReader();
+                reader.onload = (evt) => setNewImage(evt.target.result);
+                reader.readAsDataURL(e.target.files[0]);
+              }
             }} />
           </label>
+          
           <button 
             onClick={handleCreate}
             disabled={!newContent.trim() && !newImage}
-            className="flex items-center gap-2 px-8 py-4 bg-iesu-red text-white rounded-full font-bold hover:bg-red-700 transition disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-iesu-red text-white rounded-full font-bold hover:bg-red-700 transition disabled:opacity-50"
           >
             Paylaş <Send size={20} />
           </button>
