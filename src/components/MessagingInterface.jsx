@@ -1195,8 +1195,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       {/* STORY VIEWER */}
       {(viewingStoryIndex !== null || isCreatingStory) && (
         <StoryViewer 
-          story={viewingStoryIndex === -1 ? (stories?.find(s => s.author?.name === currentUser?.name)) : viewingStoryIndex !== null ? (stories?.filter(s => s.author?.name !== currentUser?.name)[viewingStoryIndex]) : null}
-          allStories={viewingStoryIndex !== null ? (viewingStoryIndex === -1 ? [stories?.find(s => s.author?.name === currentUser?.name)] : stories?.filter(s => s.author?.name !== currentUser?.name)) : []}
+          stories={isCreatingStory ? [] : viewingStoryIndex === -1 ? [stories?.find(s => s.author?.name === currentUser?.name)] : stories?.filter(s => s.author?.name !== currentUser?.name)}
           initialIndex={viewingStoryIndex !== null ? (viewingStoryIndex === -1 ? 0 : viewingStoryIndex) : 0}
           onClose={() => { setViewingStoryIndex(null); setIsCreatingStory(false); }}
           currentUser={currentUser}
