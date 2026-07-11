@@ -414,6 +414,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
                 currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
                 userRole={userRole} 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]} 
+                groups={groups}
+                setGroups={setGroups}
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}

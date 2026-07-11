@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, ChevronDown, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users, Edit, Link2, Megaphone, PhoneOutgoing, PhoneMissed, PhoneIncoming } from 'lucide-react';
+import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, ChevronDown, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users, Edit, Link2, Megaphone, PhoneOutgoing, PhoneMissed, PhoneIncoming, ArrowLeft, Check } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -10,7 +10,7 @@ const EMOJI_LIST = [
   '🏢','🖥️','💻','📱','📚','🧠','💪','🌟','✈️','🌍','🗣️','🗣️','🙌','👋'
 ];
 
-export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
+export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setGroups, setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
   // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
   
   const [activeContactId, setActiveContactId] = useState(selectedGroupId || null);
@@ -24,6 +24,11 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [viewedOnceMsgs, setViewedOnceMsgs] = useState([]);
   const [activeMessageOptions, setActiveMessageOptions] = useState(null);
   const [pendingMediaType, setPendingMediaType] = useState(null);
+
+  // Group Creation states
+  const [showNewGroupModal, setShowNewGroupModal] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [newGroupSelectedContacts, setNewGroupSelectedContacts] = useState([]);
   
   // Call states
   const [callStatus, setCallStatus] = useState(null); // 'calling', 'connected'
@@ -161,42 +166,77 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const activeContact = conversations.find(c => c.id === activeContactId) || null;
 
   const currentChatMessages = (messages || [])
-    .filter(msg => 
-      (msg.senderId === currentUser?.id && msg.receiverId === activeContactId) ||
-      (msg.receiverId === currentUser?.id && msg.senderId === activeContactId)
-    )
+    .filter(msg => {
+      const isGroupChat = activeContactId && String(activeContactId).toLowerCase().startsWith('grp');
+      if (isGroupChat) {
+        return msg.receiverId === activeContactId;
+      } else {
+        return (msg.senderId === currentUser?.id && msg.receiverId === activeContactId) ||
+               (msg.receiverId === currentUser?.id && msg.senderId === activeContactId);
+      }
+    })
     .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
   // Mark as read when opening a chat
   useEffect(() => {
     if (activeContactId && messages) {
-      const unreadMessages = currentChatMessages.filter(m => m.receiverId === currentUser?.id && !m.read);
+      const isGroupChat = String(activeContactId).toLowerCase().startsWith('grp');
+      const unreadMessages = currentChatMessages.filter(m => (m.receiverId === currentUser?.id || (isGroupChat && m.receiverId === activeContactId && m.senderId !== currentUser?.id)) && !m.read);
       if (unreadMessages.length > 0) {
         setMessages(prevMessages => (prevMessages || []).map(m => 
-          (m.receiverId === currentUser?.id && m.senderId === activeContactId) ? { ...m, read: true } : m
+          ((m.receiverId === currentUser?.id && m.senderId === activeContactId) || (isGroupChat && m.receiverId === activeContactId && m.senderId !== currentUser?.id)) ? { ...m, read: true } : m
         ));
       }
     }
   }, [activeContactId]);
 
-  const handleSend = (e, customType = 'text', mediaUrl = null) => {
+  const handleCreateGroup = () => {
+    if (!newGroupName.trim() || newGroupSelectedContacts.length === 0) return;
+    
+    const newGroupId = 'grp-' + Date.now();
+    const newGroup = {
+      id: newGroupId,
+      name: newGroupName.trim(),
+      logo: `https://ui-avatars.com/api/?name=${encodeURIComponent(newGroupName.trim())}&background=00A884&color=fff`,
+      type: 'Kullanıcı Topluluğu',
+      members: [currentUser?.id, ...newGroupSelectedContacts].filter(Boolean),
+      adminId: currentUser?.id,
+      date: 'Şimdi'
+    };
+
+    if (setGroups) {
+      setGroups(prev => [newGroup, ...(prev || [])]);
+    }
+    
+    // Reset and close
+    setNewGroupName('');
+    setNewGroupSelectedContacts([]);
+    setShowNewGroupModal(false);
+    
+    // Switch to new group chat
+    setActiveContactId(newGroupId);
+    setCurrentTab('chats');
+  };
+
+  const handleSend = (e, type = 'text', mediaUrl = null) => {
     if (e) e.preventDefault();
-    if (!activeContactId) return;
-    if (customType === 'text' && !newMessage.trim()) return;
+    if (!newMessage.trim() && !mediaUrl) return;
+
+    const isGroupChat = activeContactId && String(activeContactId).toLowerCase().startsWith('grp');
 
     const newMsg = {
-      id: 'MSG-' + Date.now(),
-      senderId: currentUser?.id,
-      senderName: currentUser.name,
-      senderAvatar: currentUser.avatar,
-      receiverId: activeContact?.id,
+      id: Date.now(),
+      senderId: currentUser?.id || 'sys-1',
+      senderName: currentUser?.name || 'Ben',
+      senderAvatar: currentUser?.avatar || '',
+      receiverId: activeContactId,
       receiverName: activeContact?.name,
-      receiverAvatar: activeContact?.avatar,
-      content: customType === 'text' ? newMessage.trim() : '',
+      content: newMessage,
       timestamp: Date.now(),
       read: false,
-      type: customType,
-      mediaUrl: mediaUrl
+      type: type,
+      mediaUrl: mediaUrl,
+      isGroupMsg: !!isGroupChat
     };
 
     setMessages([...messages, newMsg]);
@@ -601,7 +641,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         <p className="text-gray-500 text-sm mb-4">Gruplarınız ve dahil olduğunuz öğrenci kulüpleri burada yer alır.</p>
       </div>
       <div className="flex-1 overflow-y-auto bg-gray-100">
-        <div className="bg-white px-5 py-4 mb-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition border-b border-gray-200">
+        <div onClick={() => setShowNewGroupModal(true)} className="bg-white px-5 py-4 mb-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition border-b border-gray-200">
           <div className="w-14 h-14 bg-gray-200 rounded-xl flex items-center justify-center shrink-0 relative overflow-hidden">
             <Users size={28} className="text-white" fill="currentColor" />
             <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-white">
@@ -621,7 +661,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
               </div>
               <h3 className="font-bold text-[18px] text-black">{group.name}</h3>
             </div>
-            <div onClick={() => { if (setSelectedGroupId) setSelectedGroupId(group.id); }} className="px-5 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
+            <div onClick={() => { setActiveContactId(group.id); setCurrentTab('chats'); }} className="px-5 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
               <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
                 <Megaphone size={24} className="text-[#00A884]" fill="currentColor" />
               </div>
@@ -723,18 +763,26 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       <div className={`flex-1 flex flex-col bg-[#efeae2] h-full ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
         {activeContact ? (
           <>
-            <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0">
-              <div className="flex items-center gap-3">
-                <button onClick={() => setActiveContactId(null)} className="md:hidden flex items-center justify-center w-10 h-10 -ml-2 text-gray-600 hover:text-black bg-gray-100 hover:bg-gray-200 rounded-full transition shadow-sm">
+            <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0 cursor-pointer" onClick={() => {}}>
+              <div className="flex items-center gap-4 flex-1">
+                <button className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition" onClick={() => setActiveContactId(null)}>
                   <ChevronLeft size={24} />
                 </button>
                 <div className="relative">
-                  <img src={activeContact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact.name)}&background=132A49&color=fff`} className="w-10 h-10 rounded-full object-cover shadow-sm" alt="" />
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                  <img src={activeContact.avatar} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-sm" />
+                  {!activeContact.isGroup && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-sm leading-tight">{activeContact.name}</h3>
-                  <p className="text-[11px] text-gray-500 font-medium">Çevrimiçi</p>
+                  <h3 className="font-bold text-gray-900 text-[16px] leading-tight">{activeContact.name}</h3>
+                  <div className="text-[13px] text-gray-500 flex items-center gap-1">
+                    {activeContact.isGroup ? (
+                      <span>{(groups?.find(g => g.id === activeContact.id)?.members?.length || 2)} Üye</span>
+                    ) : (
+                      <>
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Çevrimiçi
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-1 sm:gap-2">
@@ -1114,8 +1162,67 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     </>
   );
 
+  const renderNewGroupModal = () => (
+    <div className="absolute inset-0 bg-white z-[100] flex flex-col h-full overflow-hidden animate-slide-up">
+      <div className="h-16 px-4 border-b border-gray-100 flex items-center gap-4 bg-[#00A884] text-white shrink-0">
+        <button onClick={() => { setShowNewGroupModal(false); setNewGroupName(''); setNewGroupSelectedContacts([]); }} className="p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>
+        <h2 className="text-xl font-bold">Yeni Topluluk</h2>
+      </div>
+      <div className="p-6 bg-gray-50 shrink-0">
+        <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center shrink-0">
+            <Camera size={24} className="text-gray-400" />
+          </div>
+          <input 
+            type="text" 
+            placeholder="Topluluk adı yazın..." 
+            className="flex-1 text-lg font-medium bg-transparent border-none focus:ring-0 px-2"
+            value={newGroupName}
+            onChange={(e) => setNewGroupName(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto px-4 pb-20 bg-white">
+        <div className="text-sm font-bold text-gray-500 uppercase px-2 mb-3 mt-4">Kişileri Seçin</div>
+        {contacts.filter(c => c.id !== currentUser?.id).map(contact => (
+          <div key={contact.id} onClick={() => {
+            if (newGroupSelectedContacts.includes(contact.id)) {
+              setNewGroupSelectedContacts(prev => prev.filter(id => id !== contact.id));
+            } else {
+              setNewGroupSelectedContacts(prev => [...prev, contact.id]);
+            }
+          }} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition">
+            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${newGroupSelectedContacts.includes(contact.id) ? 'border-[#00A884] bg-[#00A884]' : 'border-gray-300'}`}>
+              {newGroupSelectedContacts.includes(contact.id) && <Check size={14} className="text-white stroke-[3]" />}
+            </div>
+            <img src={contact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
+            <div className="flex-1">
+              <h4 className="font-bold text-gray-900">{contact.name}</h4>
+              <p className="text-sm text-gray-500 truncate">{contact.title || contact.department || contact.sector || 'Kullanıcı'}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="absolute bottom-6 right-6">
+        <button 
+          disabled={!newGroupName.trim() || newGroupSelectedContacts.length === 0}
+          onClick={handleCreateGroup}
+          className="w-14 h-14 bg-[#00A884] hover:bg-[#008f6f] text-white rounded-full flex items-center justify-center shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Check size={28} />
+        </button>
+      </div>
+    </div>
+  );
+
   if (isOverlay) {
-    return <div className="w-full h-full flex bg-white overflow-hidden">{leftPanel}{rightPanel}</div>;
+    return (
+      <div className="w-full h-full flex bg-white overflow-hidden relative">
+        {leftPanel}
+        {rightPanel}
+        {showNewGroupModal && renderNewGroupModal()}
+      </div>
+    );
   }
 
   return (
@@ -1123,9 +1230,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       <main className={`flex-1 flex justify-center w-full h-full overflow-hidden`}>
         {/* The main container acts like a native app shell. On desktop it has max-width, on mobile it's full screen */}
         <div className={`w-full h-full md:py-8 flex justify-center items-center`}>
-          <div className={`w-full max-w-[1600px] h-full md:h-[calc(100vh-64px)] md:rounded-3xl shadow-2xl border border-gray-300 overflow-hidden flex bg-white`}>
+          <div className={`w-full max-w-[1600px] h-full md:h-[calc(100vh-64px)] md:rounded-3xl shadow-2xl border border-gray-300 overflow-hidden flex bg-white relative`}>
             {leftPanel}
             {rightPanel}
+            {showNewGroupModal && renderNewGroupModal()}
           </div>
         </div>
       </main>

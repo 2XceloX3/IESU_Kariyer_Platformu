@@ -212,6 +212,8 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                 currentUser={currentUser} 
                 userRole={userRole} 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
+                groups={groups}
+                setGroups={setGroups}
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}

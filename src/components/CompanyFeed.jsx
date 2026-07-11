@@ -14,7 +14,7 @@ import TopProfileMenu from './TopProfileMenu';
 import ApplicationsPanel from './ApplicationsPanel';
 import NavIcon from './shared/NavIcon';
 
-export default function CompanyFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, news, events, students, alumni, companies, messages, setMessages, applications, setApplications, jobs, announcements, academicStaff, currentUser, userRole, academicRole }) {
+export default function CompanyFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, news, events, students, alumni, companies, messages, setMessages, applications, setApplications, jobs, announcements, academicStaff, currentUser, userRole, academicRole, groups, setGroups, setSelectedGroupId }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -227,6 +227,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
                 currentUser={currentUser || { id: 'cmp-1', name: 'Örnek Firma', avatar: 'https://ui-avatars.com/api/?name=Firma&background=2563EB&color=fff' }} 
                 userRole="company" 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
+                groups={groups}
+                setGroups={setGroups}
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}
