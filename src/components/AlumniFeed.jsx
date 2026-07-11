@@ -246,7 +246,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
           
           {/* Kulüpler Vitrini */}
           {featureClubsShowcase && (
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               <h3 className="font-black text-emerald-900 mb-4 flex items-center gap-2">
                 <Target className="text-emerald-500" size={20} /> Öğrenci Kulüpleri
               </h3>
