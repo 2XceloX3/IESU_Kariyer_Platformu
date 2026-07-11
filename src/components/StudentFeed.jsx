@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, ClipboardList, Building2, Settings, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Calendar, Home, Star, UserCheck, ArrowRight, FileText, Wand2, UserPlus } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
-import StoriesBar from './StoriesBar';
 import MessagingInterface from './MessagingInterface';
 import ApplicationsPanel from './ApplicationsPanel';
 import PostComposer from './PostComposer';
@@ -91,8 +90,8 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 space-y-6 animate-fade-in">
             
-            {/* STORIES MODE (Replaces Career Radar) */}
-            <StoriesBar currentUser={currentUser} setView={setView} stories={stories} setStories={setStories} />
+            {/* POST COMPOSER */}
+            <PostComposer currentUser={currentUser} setPosts={setPosts} />
 
           {/* FEED POSTS */}
           <div className="space-y-6">
@@ -214,6 +213,8 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
                 groups={groups}
                 setGroups={setGroups}
+                stories={stories}
+                setStories={setStories}
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}

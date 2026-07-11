@@ -4,7 +4,6 @@ import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
 import CareerShorts from './CareerShorts';
-import StoriesBar from './StoriesBar';
 import { combineFeedItems } from '../utils/feedCombiner';
 import PostCard from './PostCard';
 import CareerRadar from './CareerRadar';
@@ -199,9 +198,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
-            {/* STORIES */}
-            <StoriesBar currentUser={currentUser} setView={setView} stories={stories} setStories={setStories} />
-
+            <PostComposer currentUser={currentUser} setPosts={setPosts} />
+          
           {/* FEED POSTS */}
           <div className="space-y-6">
             {(() => {
@@ -416,6 +414,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]} 
                 groups={groups}
                 setGroups={setGroups}
+                stories={stories}
+                setStories={setStories}
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}

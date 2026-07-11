@@ -3,6 +3,7 @@ import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, ChevronDown, Mess
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
+import StoryViewer from './StoryViewer';
 
 const EMOJI_LIST = [
   '😀','😂','🥰','😎','🤔','👍','🙌','❤️','🔥','🎉','✨','👏','🚀','💡',
@@ -10,7 +11,7 @@ const EMOJI_LIST = [
   '🏢','🖥️','💻','📱','📚','🧠','💪','🌟','✈️','🌍','🗣️','🗣️','🙌','👋'
 ];
 
-export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setGroups, setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
+export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setGroups, stories = [], setStories, setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
   // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
   
   const [activeContactId, setActiveContactId] = useState(selectedGroupId || null);
@@ -40,6 +41,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     { id: 'ch-1', contactId: 'usr-1', name: 'Kariyer Merkezi', avatar: 'https://ui-avatars.com/api/?name=Kariyer+Merkezi', type: 'Cevapsız', time: 'Dün', missed: true },
     { id: 'ch-2', contactId: 'usr-2', name: 'Danışman Hocam', avatar: 'https://ui-avatars.com/api/?name=Danışman+Hocam', type: 'Gelen', time: 'Salı', missed: false }
   ]);
+
+  // Story states
+  const [viewingStoryIndex, setViewingStoryIndex] = useState(null);
+  const [isCreatingStory, setIsCreatingStory] = useState(false);
 
   // Advanced Camera specific states
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -514,9 +519,31 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   );
 
   // 2. UPDATES VIEW
-  const renderUpdatesView = () => (
+  const renderUpdatesView = () => {
+    const myStory = stories?.find(s => s.author?.name === currentUser?.name);
+    const otherStories = stories?.filter(s => s.author?.name !== currentUser?.name) || [];
+
+    const handleOpenStory = (index) => {
+      if (index === 'new') {
+        setIsCreatingStory(true);
+        setViewingStoryIndex(null);
+        return;
+      }
+      setIsCreatingStory(false);
+      setViewingStoryIndex(index);
+      if (setStories && currentUser) {
+        const story = index === -1 ? myStory : otherStories[index];
+        if (story && !story.viewedBy?.includes(currentUser.id)) {
+          setStories(prev => prev.map(s => 
+            s.id === story.id ? { ...s, viewedBy: [...(s.viewedBy || []), currentUser.id] } : s
+          ));
+        }
+      }
+    };
+
+    return (
     <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
-      <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
+      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100 shrink-0">
         <div className="flex justify-between items-center mb-4">
           <button className="p-1"><MoreVertical size={20}/></button>
         </div>
@@ -530,70 +557,58 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         <h3 className="text-[20px] font-bold text-black mb-4">Durum</h3>
         
         {/* My Status */}
-        <div className="flex items-center gap-4 mb-8 cursor-pointer group bg-white rounded-2xl p-3 shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div onClick={() => handleOpenStory(myStory ? -1 : 'new')} className="flex items-center gap-4 mb-8 cursor-pointer group bg-white rounded-2xl p-3 shadow-sm border border-gray-100 hover:shadow-md transition">
           <div className="relative shrink-0">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Ben')}`} className="w-16 h-16 rounded-full object-cover ring-2 ring-white" />
-            <div className="absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-              <Plus size={16} strokeWidth={3} />
+            <div className={`w-16 h-16 rounded-full p-[2px] ${myStory && (!myStory.viewedBy?.includes(currentUser?.id)) ? 'bg-gradient-to-tr from-[#00A884] to-[#008f6f]' : ''}`}>
+              <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Ben')}`} className="w-full h-full rounded-full object-cover ring-2 ring-white" />
             </div>
+            {!myStory && (
+              <div className="absolute bottom-0 right-0 w-6 h-6 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+                <Plus size={16} strokeWidth={3} />
+              </div>
+            )}
           </div>
           <div className="flex-1">
             <h4 className="font-bold text-[17px] text-gray-900">Durumum</h4>
-            <p className="text-gray-500 text-[15px] mt-0.5">Durumuma ekle</p>
+            <p className="text-gray-500 text-[15px] mt-0.5">{myStory ? 'Durumunuzu görüntüleyin' : 'Durumuma ekle'}</p>
           </div>
           <div className="flex gap-3 text-gray-500 shrink-0">
-            <button onClick={startCamera} className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Camera size={20}/></button>
-            <button className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Edit3 size={20}/></button>
+            <button onClick={(e) => { e.stopPropagation(); startCamera(); }} className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Camera size={20}/></button>
+            <button onClick={(e) => { e.stopPropagation(); handleOpenStory('new'); }} className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Edit3 size={20}/></button>
           </div>
         </div>
 
         <h3 className="text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-4 px-1">Son Güncellemeler</h3>
         
-        {/* Mock Statuses */}
+        {/* Real Stories */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
-          {[
-            { name: 'Kariyer Merkezi', time: '8 sa. önce', verified: true, unread: true },
-            { name: 'Otomotiv Kulübü', time: '10 sa. önce', unread: true },
-            { name: 'Danışman Hocam', time: 'Dün', unread: false }
-          ].map((s, i, arr) => (
-            <div key={i} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
-              <div className={`w-14 h-14 rounded-full p-[2px] shrink-0 ${s.unread ? 'bg-gradient-to-tr from-blue-400 to-blue-600' : 'bg-gray-300'}`}>
-                <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-white">
-                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`} className="w-full h-full object-cover" />
+          {otherStories.length > 0 ? otherStories.map((story, i, arr) => {
+            const hasUnseen = !story.viewedBy?.includes(currentUser?.id);
+            return (
+              <div key={story.id} onClick={() => handleOpenStory(i)} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                <div className={`w-14 h-14 rounded-full p-[2px] shrink-0 ${hasUnseen ? 'bg-gradient-to-tr from-[#00A884] to-[#008f6f]' : 'bg-gray-300'}`}>
+                  <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-white">
+                    <img src={story.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(story.author.name)}&background=random`} className="w-full h-full object-cover" />
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <h4 className={`font-bold text-[16px] flex items-center gap-1 ${hasUnseen ? 'text-black' : 'text-gray-600'}`}>
+                    {story.author.name} {story.author.role === 'admin' && <CheckCircle2 size={16} className="text-[#00A884]" fill="currentColor"/>}
+                  </h4>
+                  <p className="text-gray-500 text-[14px] mt-0.5">{story.timestamp || 'Yeni'}</p>
                 </div>
               </div>
-              <div className="flex-1 flex flex-col justify-center">
-                <h4 className={`font-bold text-[16px] flex items-center gap-1 ${s.unread ? 'text-black' : 'text-gray-600'}`}>
-                  {s.name} {s.verified && <CheckCircle2 size={16} className="text-blue-500" fill="currentColor"/>}
-                </h4>
-                <p className="text-gray-500 text-[14px] mt-0.5">{s.time}</p>
-              </div>
+            );
+          }) : (
+            <div className="p-6 text-center text-gray-500">
+              Şu an gösterilecek bir durum yok.
             </div>
-          ))}
-        </div>
-
-        {/* Channels Section */}
-        <div className="flex justify-between items-center mb-4 px-1">
-          <h3 className="text-[20px] font-bold text-black">Kanallar</h3>
-          <button className="text-blue-500 font-medium text-[15px] hover:underline">Tümünü Gör</button>
-        </div>
-        <div className="text-sm text-gray-500 px-1 mb-4">Önemsediğiniz konulardan haberdar olun. Sizin için kanallar bulabilirsiniz.</div>
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide px-1">
-          {[
-            { name: 'Teknoloji Bülteni', followers: '1.2B' },
-            { name: 'IESU İtiraf', followers: '840' },
-            { name: 'Kariyer Fırsatları', followers: '3.4B' }
-          ].map((ch, idx) => (
-            <div key={idx} className="w-32 shrink-0 border border-gray-200 rounded-2xl p-3 flex flex-col items-center justify-center bg-white shadow-sm">
-              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(ch.name)}`} className="w-16 h-16 rounded-full mb-2 object-cover" />
-              <h4 className="font-bold text-[14px] text-center leading-tight mb-1 truncate w-full">{ch.name}</h4>
-              <button className="w-full py-1.5 bg-[#eff2f5] text-[#1c2b33] font-bold text-[13px] rounded-full hover:bg-gray-200 transition">Takip Et</button>
-            </div>
-          ))}
+          )}
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   // 3. CALLS VIEW
   const renderCallsView = () => {
@@ -1137,43 +1152,32 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         <div className="fixed inset-0 z-[250] bg-slate-900 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
           {/* Background blurred avatar */}
           <div className="absolute inset-0 z-0 opacity-30">
-            <img src={activeContact?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
+            <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
           </div>
 
           <div className="z-10 flex flex-col items-center mt-10">
             <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden mb-6 shadow-2xl relative">
-              <img src={activeContact?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover" />
+              <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover" />
               {callStatus === 'calling' && (
-                <div className="absolute inset-0 border-4 border-white rounded-full animate-ping opacity-20"></div>
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <div className="w-full h-full animate-ping rounded-full border-4 border-white opacity-50"></div>
+                </div>
               )}
             </div>
-            <h2 className="text-3xl font-black text-white drop-shadow-md mb-2">{activeContact?.name}</h2>
-            <p className="text-white/80 font-medium tracking-widest uppercase text-sm">
-              {callStatus === 'calling' ? 'Yanıt Bekleniyor...' : formatCallTime(callTimer)}
+            <h2 className="text-3xl font-bold text-white mb-2 text-shadow-md">{activeContact?.name}</h2>
+            <p className="text-white/80 text-lg">
+              {callStatus === 'calling' ? (callType === 'video' ? 'Görüntülü aranıyor...' : 'Sesli aranıyor...') : formatCallTime(callTimer)}
             </p>
           </div>
 
-          {/* Video Placeholder (if video call and connected) */}
-          {callStatus === 'connected' && callType === 'video' && (
-             <div className="absolute inset-0 z-0 flex items-center justify-center">
-               <div className="w-full h-full bg-black flex items-center justify-center text-white/20">
-                  <Video size={64} />
-               </div>
-               {/* Small Picture in Picture of self */}
-               <div className="absolute top-8 right-8 w-32 h-48 bg-gray-800 rounded-xl overflow-hidden shadow-2xl border-2 border-white/10 flex items-center justify-center">
-                  <UserCircle2 size={32} className="text-white/20" />
-               </div>
-             </div>
-          )}
-
-          <div className="z-10 flex items-center gap-6 pb-10">
+          <div className="z-10 flex items-center gap-8 mb-10">
             {callStatus === 'connected' && (
               <>
-                <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition">
-                   <PhoneOff size={24} /> {/* Mute */}
+                <button className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white backdrop-blur-md transition border border-white/10">
+                  <Mic size={24} />
                 </button>
-                <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition">
-                   {callType === 'video' ? <Video size={24} /> : <Phone size={24} />}
+                <button className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white backdrop-blur-md transition border border-white/10">
+                  <Video size={24} />
                 </button>
               </>
             )}
@@ -1186,6 +1190,19 @@ export default function MessagingInterface({ previousView, messages = [], setMes
             </button>
           </div>
         </div>
+      )}
+
+      {/* STORY VIEWER */}
+      {(viewingStoryIndex !== null || isCreatingStory) && (
+        <StoryViewer 
+          story={viewingStoryIndex === -1 ? (stories?.find(s => s.author?.name === currentUser?.name)) : viewingStoryIndex !== null ? (stories?.filter(s => s.author?.name !== currentUser?.name)[viewingStoryIndex]) : null}
+          allStories={viewingStoryIndex !== null ? (viewingStoryIndex === -1 ? [stories?.find(s => s.author?.name === currentUser?.name)] : stories?.filter(s => s.author?.name !== currentUser?.name)) : []}
+          initialIndex={viewingStoryIndex !== null ? (viewingStoryIndex === -1 ? 0 : viewingStoryIndex) : 0}
+          onClose={() => { setViewingStoryIndex(null); setIsCreatingStory(false); }}
+          currentUser={currentUser}
+          isCreating={isCreatingStory}
+          setStories={setStories}
+        />
       )}
     </>
   );
@@ -1302,34 +1319,23 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         <div className="fixed inset-0 z-[250] bg-slate-900 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
           {/* Background blurred avatar */}
           <div className="absolute inset-0 z-0 opacity-30">
-            <img src={activeContact?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
+            <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
           </div>
 
           <div className="z-10 flex flex-col items-center mt-10">
             <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden mb-6 shadow-2xl relative">
-              <img src={activeContact?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover" />
+              <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover" />
               {callStatus === 'calling' && (
-                <div className="absolute inset-0 border-4 border-white rounded-full animate-ping opacity-20"></div>
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <div className="w-full h-full animate-ping rounded-full border-4 border-white opacity-50"></div>
+                </div>
               )}
             </div>
-            <h2 className="text-3xl font-black text-white drop-shadow-md mb-2">{activeContact?.name}</h2>
-            <p className="text-white/80 font-medium tracking-widest uppercase text-sm">
-              {callStatus === 'calling' ? 'Aranıyor...' : formatCallTime(callTimer)}
+            <h2 className="text-3xl font-bold text-white mb-2 text-shadow-md">{activeContact?.name}</h2>
+            <p className="text-white/80 text-lg">
+              {callStatus === 'calling' ? (callType === 'video' ? 'Görüntülü aranıyor...' : 'Sesli aranıyor...') : formatCallTime(callTimer)}
             </p>
           </div>
-
-          {/* Video Placeholder (if video call and connected) */}
-          {callStatus === 'connected' && callType === 'video' && (
-             <div className="absolute inset-0 z-0 flex items-center justify-center">
-               <div className="w-full h-full bg-black flex items-center justify-center text-white/20">
-                  <Video size={64} />
-               </div>
-               {/* Small Picture in Picture of self */}
-               <div className="absolute top-8 right-8 w-32 h-48 bg-gray-800 rounded-xl overflow-hidden shadow-2xl border-2 border-white/10 flex items-center justify-center">
-                  <UserCircle2 size={32} className="text-white/20" />
-               </div>
-             </div>
-          )}
 
           <div className="z-10 flex items-center gap-6 pb-10">
             {callStatus === 'connected' && (

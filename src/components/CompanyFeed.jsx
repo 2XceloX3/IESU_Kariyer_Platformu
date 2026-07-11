@@ -5,7 +5,6 @@ import MessagingInterface from './MessagingInterface';
 import CareerShorts from './CareerShorts';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
-import StoriesBar from './StoriesBar';
 import CareerNetwork from './CareerNetwork';
 import GroupProfile from './GroupProfile';
 
@@ -127,7 +126,6 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
           
           {activeTab === 'feed' && (
             <>
-              <StoriesBar currentUser={currentUser} setView={setView} stories={stories} setStories={setStories} />
               <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
               
               <div className="space-y-6">
@@ -229,6 +227,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
                 groups={groups}
                 setGroups={setGroups}
+                stories={stories}
+                setStories={setStories}
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}
