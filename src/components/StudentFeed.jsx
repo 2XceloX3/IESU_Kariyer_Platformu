@@ -17,7 +17,7 @@ import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import NavIcon from './shared/NavIcon';
 
-export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole }) {
+export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole, groups, setGroups, setSelectedGroupId }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
