@@ -35,6 +35,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
     }
   };
 
+  return (
     <div className="animate-fade-in space-y-6">
       <PanelHeader 
         title="Topluluklar ve Gruplar (CMS)" 

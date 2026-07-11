@@ -636,7 +636,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   );
 
   const rightPanel = (
-    <div className={`flex-1 flex flex-col bg-[#efeae2] h-full ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
+    <>
+      <div className={`flex-1 flex flex-col bg-[#efeae2] h-full ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
         {activeContact ? (
           <>
             <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0">
@@ -1034,6 +1035,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         </div>
       </main>
 
+      {/* CALL OVERLAY */}
+      {callStatus && (
         <div className="fixed inset-0 z-[250] bg-slate-900 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
           {/* Background blurred avatar */}
           <div className="absolute inset-0 z-0 opacity-30">
