@@ -7,15 +7,17 @@ import PostCard from './PostCard';
 import { combineFeedItems } from '../utils/feedCombiner';
 import CareerNetwork from './CareerNetwork';
 import NavIcon from './shared/NavIcon';
+import MessagingInterface from './MessagingInterface';
 
 export default function AcademicStaffFeed({ 
   setView, setSelectedUserId, currentUser, userRole, academicRole, 
   notifications, setNotifications, 
   initialInternships = [], academicApprovals = [], setAcademicApprovals,
   posts, setPosts, news, events, announcements, jobs,
-  students, setStudents, alumni, companies, academicStaff, surveys
+  students, setStudents, alumni, companies, academicStaff, surveys,
+  messages, setMessages, groups, setSelectedGroupId
 }) {
-  const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, approvals, radar
+  const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, approvals, radar, messaging
   const [isRadarOpen, setIsRadarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [internships, setInternships] = useState(initialInternships);
@@ -41,7 +43,7 @@ export default function AcademicStaffFeed({
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="w-10"></div> {/* Spacer */}
           
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('feed')}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
             <div className="hidden sm:block text-center">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -308,6 +310,32 @@ export default function AcademicStaffFeed({
             </div>
           </div>
         )}
+
+        {/* Messaging Interface Overlay */}
+        {activeTab === 'messaging' && (
+          <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in relative">
+              <button 
+                onClick={() => setActiveTab('dashboard')}
+                className="absolute top-4 right-4 z-50 p-2 bg-white text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full shadow-md transition border border-gray-100"
+              >
+                <X size={20} />
+              </button>
+              <MessagingInterface 
+                messages={messages} 
+                setMessages={setMessages} 
+                currentUser={currentUser} 
+                userRole={userRole} 
+                contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
+                setView={setView}
+                setSelectedUserId={setSelectedUserId}
+                groups={groups}
+                setSelectedGroupId={setSelectedGroupId}
+                isOverlay={true}
+              />
+            </div>
+          </div>
+        )}
         
         </div>
 
@@ -321,7 +349,7 @@ export default function AcademicStaffFeed({
       {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
         <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Akış">
+          <button onClick={() => setActiveTab('dashboard')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'dashboard' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Akış">
             <Home size={26} strokeWidth={2} />
           </button>
           
