@@ -138,6 +138,11 @@ function App() {
   const [liveInternships, setLiveInternships] = useLocalStorageState('iesu_internships_v2', initialInternships);
   const [groups, setGroups] = useLocalStorageState('iesu_groups_v1', initialGroups);
 
+  // FEATURE TOGGLES
+  const [featureSurveys, setFeatureSurveys] = useLocalStorageState('iesu_feature_surveys', true);
+  const [featureCareerCheckup, setFeatureCareerCheckup] = useLocalStorageState('iesu_feature_career_checkup', true);
+  const [featureAlumniCard, setFeatureAlumniCard] = useLocalStorageState('iesu_feature_alumni_card', true);
+
   useEffect(() => {
     if (!localStorage.getItem('iesu_likes_reset_v4')) {
       setPosts(prev => (prev || []).map(p => ({ ...p, likes: 0, comments: 0 })));
@@ -171,7 +176,7 @@ function App() {
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
       {view === 'create_job' && <JobCreator setView={setView} currentUser={currentUser} jobs={jobs} setJobs={setJobs} />}
       {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} academicRole={academicRole} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} />}
-      {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} academicRole={academicRole} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} />}
+      {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} academicRole={academicRole} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureSurveys={featureSurveys} featureCareerCheckup={featureCareerCheckup} featureAlumniCard={featureAlumniCard} />}
       {view === 'academic' && (
         <ErrorBoundary>
           <AcademicStaffFeed 
@@ -210,7 +215,14 @@ function App() {
         academicStaff={liveAcademicStaff} setAcademicStaff={setAcademicStaff}
         alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications}
         alumniCardForms={alumniCardForms} setAlumniCardForms={setAlumniCardForms}
-        academicCatalog={academicCatalog} setAcademicCatalog={setAcademicCatalog}
+        initialAcademicCatalog={academicCatalog}
+        setAcademicCatalog={setAcademicCatalog}
+        featureSurveys={featureSurveys}
+        setFeatureSurveys={setFeatureSurveys}
+        featureCareerCheckup={featureCareerCheckup}
+        setFeatureCareerCheckup={setFeatureCareerCheckup}
+        featureAlumniCard={featureAlumniCard}
+        setFeatureAlumniCard={setFeatureAlumniCard}
         academicApprovals={academicApprovals} setAcademicApprovals={setAcademicApprovals}
         posts={posts} setPosts={setPosts}
         news={news} setNews={setNews}

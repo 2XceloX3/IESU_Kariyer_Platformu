@@ -546,7 +546,7 @@ const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'operasyon', 'akademik'] },
   { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'mezun_dernek', 'sem', 'cms_groups', 'clubs_pool'] },
   { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'cms_jobs', 'cms_feat', 'cms_ment'] },
-  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['cleanup', 'content_import', 'analytics', 'anket', 'kart'] }
+  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['cleanup', 'content_import', 'analytics', 'anket', 'kart', 'platform_ayarlari'] }
 ];
 
 const MAIN_TABS = [
@@ -581,6 +581,7 @@ const MORE_TABS = [
   { id:'org',        label:'Organizasyon Şeması', icon:<Network size={17}/> },
   { id:'entegrasyon',label:'Sistem Entegrasyonları',icon:<Database size={17}/> },
   { id:'cleanup',    label:'Veri Temizliği',      icon:<ShieldAlert size={17}/> },
+  { id:'platform_ayarlari', label:'Platform Ayarları', icon:<Settings size={17}/> },
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -608,6 +609,9 @@ export default function AdminDashboard({
   alumniCardApplications, setAlumniCardApplications,
   alumniCardForms, setAlumniCardForms,
   academicCatalog, setAcademicCatalog,
+  featureSurveys, setFeatureSurveys,
+  featureCareerCheckup, setFeatureCareerCheckup,
+  featureAlumniCard, setFeatureAlumniCard,
   academicApprovals, setAcademicApprovals,
   groups, setGroups
 }) {
@@ -655,6 +659,7 @@ export default function AdminDashboard({
       case 'content_import': return <OfficialContentImport news={news || []} setNews={setNews} announcements={announcements || []} setAnnouncements={setAnnouncements} events={events || []} setEvents={setEvents} />;
       case 'org':         return <OrgPanel/>;
       case 'cleanup':     return <DataCleanup students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} companies={companies || []} setCompanies={setCompanies} messages={messages || []} setMessages={setMessages} posts={posts || []} setPosts={setPosts} jobs={jobs || []} setJobs={setJobs} />;
+      case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} />;
       default:            return <OverviewPanel {...p}/>;
     }
   };
@@ -799,6 +804,63 @@ export default function AdminDashboard({
         <main className="flex-1 bg-transparent">
           {renderPanel()}
         </main>
+      </div>
+    </div>
+  );
+}
+
+function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerCheckup, setFeatureCareerCheckup, featureAlumniCard, setFeatureAlumniCard }) {
+  return (
+    <div className="bg-white rounded-3xl p-6 lg:p-8 border border-gray-200 shadow-xl shadow-gray-200/50 animate-fade-in relative overflow-hidden">
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-500/30">
+          <Settings size={28} />
+        </div>
+        <div>
+          <h2 className="text-2xl font-black text-gray-900">Platform Ayarları</h2>
+          <p className="text-gray-500 font-medium">Modülleri aktif/pasif hale getirin.</p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
+          <div>
+            <h3 className="font-bold text-gray-900 text-[16px]">Mezun Memnuniyet & Anket Merkezi</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Mezunların görebileceği anket merkezini açar/kapatır.</p>
+          </div>
+          <button 
+            onClick={() => setFeatureSurveys(!featureSurveys)}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${featureSurveys ? 'bg-emerald-500' : 'bg-gray-300'}`}
+          >
+            <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${featureSurveys ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
+          <div>
+            <h3 className="font-bold text-gray-900 text-[16px]">Kariyer Check-up</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Mezunların kariyer durumlarını güncelleyebileceği modülü açar/kapatır.</p>
+          </div>
+          <button 
+            onClick={() => setFeatureCareerCheckup(!featureCareerCheckup)}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${featureCareerCheckup ? 'bg-emerald-500' : 'bg-gray-300'}`}
+          >
+            <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${featureCareerCheckup ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
+          <div>
+            <h3 className="font-bold text-gray-900 text-[16px]">Mezun Kart Başvurusu</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Mezunların mezun kartı başvuru modülünü açar/kapatır.</p>
+          </div>
+          <button 
+            onClick={() => setFeatureAlumniCard(!featureAlumniCard)}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${featureAlumniCard ? 'bg-emerald-500' : 'bg-gray-300'}`}
+          >
+            <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${featureAlumniCard ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
       </div>
     </div>
   );

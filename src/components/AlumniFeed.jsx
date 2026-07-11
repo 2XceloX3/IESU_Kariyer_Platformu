@@ -236,7 +236,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
         <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
           
           {/* Career Status Widget (Kariyer Check-up) */}
-          {showCareerStatus && (
+          {featureCareerCheckup && showCareerStatus && (
             <div className="bg-gradient-to-br from-indigo-50 to-white rounded-3xl border border-indigo-100 p-6 shadow-[var(--shadow-soft)] animate-fade-in">
               <h3 className="font-black text-indigo-900 mb-2 flex items-center gap-2">
                 <Compass size={18} className="text-indigo-500" /> Kariyer Check-up
@@ -300,30 +300,32 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
           </div>
 
           {/* Mezun Kartı Başvurusu Widget */}
-          <div className="bg-gradient-to-br from-iesu-red to-iesu-darkRed rounded-3xl p-6 shadow-lg text-white">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><CreditCard size={20}/></div>
-              <h3 className="font-black text-lg leading-tight">Mezun Kartı</h3>
-            </div>
-            
-            {existingApp ? (
-              <div className="mt-4 bg-white/10 p-4 rounded-2xl border border-white/20">
-                <p className="text-[11px] text-white/70 font-bold uppercase tracking-wider mb-1">Başvuru Durumu</p>
-                <div className="flex items-center justify-between">
-                  <p className="font-black text-sm">{existingApp.status}</p>
-                  {existingApp.status === 'Onaylandı' ? <CheckCircle size={18} className="text-emerald-400" /> : <Clock size={18} className="text-orange-300" />}
-                </div>
-                <p className="text-xs text-white/60 mt-2">Başvuru Tarihi: {existingApp.date}</p>
+          {featureAlumniCard && (
+            <div className="bg-gradient-to-br from-iesu-red to-iesu-darkRed rounded-3xl p-6 shadow-lg text-white">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><CreditCard size={20}/></div>
+                <h3 className="font-black text-lg leading-tight">Mezun Kartı</h3>
               </div>
-            ) : isFormActive ? (
-              <>
-                <p className="text-xs text-red-100 font-medium mb-4">Üniversite kampüsüne giriş ve kütüphane erişimi için Mezun Kartınızı hemen alın.</p>
-                <button onClick={() => setShowCardModal(true)} className="w-full py-2.5 bg-white text-iesu-red hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Hemen Başvur</button>
-              </>
-            ) : (
-              <p className="text-xs text-red-100 font-medium mt-2">Mezun kartı başvuruları şu an kapalıdır.</p>
-            )}
-          </div>
+              
+              {existingApp ? (
+                <div className="mt-4 bg-white/10 p-4 rounded-2xl border border-white/20">
+                  <p className="text-[11px] text-white/70 font-bold uppercase tracking-wider mb-1">Başvuru Durumu</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-black text-sm">{existingApp.status}</p>
+                    {existingApp.status === 'Onaylandı' ? <CheckCircle size={18} className="text-emerald-400" /> : <Clock size={18} className="text-orange-300" />}
+                  </div>
+                  <p className="text-xs text-white/60 mt-2">Başvuru Tarihi: {existingApp.date}</p>
+                </div>
+              ) : isFormActive ? (
+                <>
+                  <p className="text-xs text-red-100 font-medium mb-4">Üniversite kampüsüne giriş ve kütüphane erişimi için Mezun Kartınızı hemen alın.</p>
+                  <button onClick={() => setShowCardModal(true)} className="w-full py-2.5 bg-white text-iesu-red hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Hemen Başvur</button>
+                </>
+              ) : (
+                <p className="text-xs text-red-100 font-medium mt-2">Mezun kartı başvuruları şu an kapalıdır.</p>
+              )}
+            </div>
+          )}
 
           {/* Featured Opportunities */}
           {featuredOpportunities && (featuredOpportunities || []).filter(f => f.status === 'Yayında').length > 0 && (
