@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Crown, Users, FileText, Send, CheckCircle, XCircle, Shield, UserPlus, Target } from 'lucide-react';
 import PostComposer from './PostComposer';
 
-export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, setPosts, setView }) {
-  const managedClubs = (clubs || []).filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
+export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, setPosts, setView, overrideClubId }) {
+  const managedClubs = overrideClubId 
+    ? (clubs || []).filter(c => c.id === overrideClubId)
+    : (clubs || []).filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
   const [selectedClubId, setSelectedClubId] = useState(managedClubs[0]?.id);
   const [activeTab, setActiveTab] = useState('requests');
 
@@ -76,8 +78,8 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
           <img src={selectedClub.logo} alt={selectedClub.name} className="w-16 h-16 rounded-2xl shadow-lg border-2 border-white object-cover" />
           <div>
             <h1 className="text-2xl font-black text-gray-900">{selectedClub.name}</h1>
-            <p className="text-emerald-600 font-bold text-sm flex items-center gap-1">
-              <Crown size={14} /> {isPresident ? 'Kulüp Başkanı' : 'Kulüp Yöneticisi'} Paneli
+            <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mt-0.5 flex items-center gap-1.5">
+              <Crown size={14} /> {overrideClubId ? 'Süper Admin Paneli' : (isPresident ? 'Kulüp Başkanı' : 'Kulüp Yöneticisi Paneli')}
             </p>
           </div>
         </div>

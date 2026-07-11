@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Target, Search, Plus, CheckCircle, XCircle, Clock, FileText, X, Folder, Eye, Download, Users } from 'lucide-react';
+import ClubAdminPanel from '../ClubAdminPanel';
 
 export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApplications, currentUser }) {
   const [activeTab, setActiveTab] = useState('applications'); // 'applications' | 'active_clubs'
@@ -175,7 +176,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
                       onClick={() => setSelectedClub(club)}
                       className="flex-1 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-[13px] font-bold transition-all border border-gray-200 flex items-center justify-center gap-2"
                     >
-                      <Folder size={16} className="text-emerald-500" /> Havuz
+                      <Folder size={16} className="text-emerald-500" /> İncele & Yönet
                     </button>
                     <button 
                       onClick={() => handleTransferPresident(club.id)}
@@ -205,61 +206,23 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
                 <img src={selectedClub.logo} className="w-8 h-8 rounded-lg object-cover shadow-sm" alt="Logo"/>
                 <div>
                   <h3 className="font-bold text-gray-900">{selectedClub.name}</h3>
-                  <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">İç Form Havuzu</p>
+                  <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">İç Havuz & Yönetim Paneli</p>
                 </div>
               </div>
               <button onClick={() => setSelectedClub(null)} className="p-2 hover:bg-gray-200 text-gray-500 rounded-full transition"><X size={20}/></button>
             </div>
             
-            <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
-                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2"><Folder className="text-blue-500" size={18}/> Doldurulan ve Yüklenen Formlar</h4>
-                
-                {(selectedClub.forms || []).length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 text-sm">Bu kulübe ait henüz gönderilmiş bir form bulunmuyor.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {(selectedClub.forms || []).map(form => (
-                      <div key={form.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-blue-50/50 transition cursor-pointer group">
-                        <div className="flex items-center gap-3 mb-3 sm:mb-0">
-                          <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                            <FileText size={20} />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-black text-gray-900 text-sm">{form.type}</span>
-                              <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${form.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-700' : form.status === 'Bekliyor' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>{form.status}</span>
-                            </div>
-                            <p className="text-xs text-gray-500 font-medium mt-0.5">{form.title} • {form.date}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex gap-2 pl-12 sm:pl-0">
-                          <button className="px-3 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5">
-                            <Eye size={14}/> Görüntüle
-                          </button>
-                          <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5">
-                            <Download size={14}/> İndir
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 {/* Quick info widgets */}
-                 <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                   <h5 className="font-bold text-gray-900 text-sm mb-3">Kulüp Başkanı Bilgileri</h5>
-                   <p className="text-[13px] text-gray-600">Öğrenci ID: <span className="font-bold text-gray-900">{selectedClub.presidentId}</span></p>
-                 </div>
-                 <div className="bg-white rounded-2xl border border-gray-200 p-5">
-                   <h5 className="font-bold text-gray-900 text-sm mb-3">Danışman Bilgileri</h5>
-                   <p className="text-[13px] text-gray-600">İsim/ID: <span className="font-bold text-gray-900">{selectedClub.advisorId}</span></p>
-                 </div>
+            <div className="overflow-y-auto flex-1 bg-gray-50 p-6 relative">
+              <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 h-full">
+                <ClubAdminPanel 
+                  currentUser={currentUser}
+                  clubs={clubs}
+                  setClubs={setClubs}
+                  overrideClubId={selectedClub.id}
+                  posts={[]}
+                  setPosts={() => {}}
+                  setView={() => {}}
+                />
               </div>
             </div>
           </div>
