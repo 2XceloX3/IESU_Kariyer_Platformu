@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award } from 'lucide-react';
+import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2 } from 'lucide-react';
 
 export default function PostCard({ post, currentUser, setPosts, setMessages }) {
   const [liked, setLiked] = useState(post?.likes > 0);
@@ -18,6 +18,19 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post?.content || '');
+  
+  // Survey State
+  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
+  const [surveyAnswers, setSurveyAnswers] = useState({});
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
+
+  const handleSurveySubmit = () => {
+    // Here we would normally send surveyAnswers to the backend
+    setSurveyCompleted(true);
+    setTimeout(() => {
+      setIsSurveyModalOpen(false);
+    }, 2000);
+  };
 
   const renderBadges = (badgeData) => {
     let badges = [];
@@ -294,6 +307,97 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
           <button onClick={() => alert('Başvurunuz başarıyla kaydedildi. Firma temsilcisine iletilecektir.')} className="w-full bg-gradient-to-r from-[var(--brand-pomegranate)] to-[var(--brand-red-dark)] hover:shadow-lg text-white font-bold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-[0.98]">
             <Briefcase size={18} /> Hemen Başvur
           </button>
+        </div>
+      )}
+
+      {/* Fast Action for Surveys */}
+      {post.type === 'anket' && (
+        <div className="px-4 pb-4">
+          <button onClick={() => setIsSurveyModalOpen(true)} className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-lg text-white font-bold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-[0.98]">
+            <ClipboardList size={18} /> Ankete Katıl
+          </button>
+        </div>
+      )}
+
+      {/* Survey Modal */}
+      {isSurveyModalOpen && post.surveyData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-gray-100 overflow-hidden">
+            <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-blue-50/50">
+              <h3 className="font-black text-blue-900 flex items-center gap-2"><ClipboardList size={20} className="text-blue-600" /> {post.surveyData.title}</h3>
+              <button onClick={() => setIsSurveyModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-white transition bg-gray-50"><X size={20} /></button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+              {surveyCompleted ? (
+                <div className="py-12 flex flex-col items-center text-center animate-fade-in">
+                  <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle2 size={40} />
+                  </div>
+                  <h3 className="text-2xl font-black text-gray-900 mb-2">Teşekkürler!</h3>
+                  <p className="text-gray-500 font-medium">Anket yanıtlarınız başarıyla kaydedildi. Katkılarınız için teşekkür ederiz.</p>
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  {post.surveyData.description && (
+                    <div className="p-4 bg-gray-50 rounded-2xl text-sm text-gray-700 border border-gray-100">
+                      {post.surveyData.description}
+                    </div>
+                  )}
+                  
+                  {post.surveyData.questions?.map((q, idx) => (
+                    <div key={q.id || idx} className="space-y-4">
+                      <label className="text-sm font-bold text-gray-900 flex items-start gap-2">
+                        <span className="text-blue-600 shrink-0">{idx + 1}.</span> {q.text}
+                      </label>
+                      
+                      {q.type === 'likert' ? (
+                        <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                          <div className="flex justify-between items-center gap-2">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider w-16 text-center">Kesinlikle<br/>Katılmıyorum</span>
+                            <div className="flex-1 flex justify-between px-2">
+                              {[1, 2, 3, 4, 5].map(score => (
+                                <button
+                                  key={score}
+                                  onClick={() => setSurveyAnswers({...surveyAnswers, [q.id]: score})}
+                                  className={`w-10 h-10 rounded-full font-bold transition-all ${
+                                    surveyAnswers[q.id] === score 
+                                    ? 'bg-blue-600 text-white shadow-md scale-110' 
+                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
+                                  }`}
+                                >
+                                  {score}
+                                </button>
+                              ))}
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider w-16 text-center">Kesinlikle<br/>Katılıyorum</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <textarea 
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                          rows={3}
+                          placeholder="Yanıtınızı buraya yazın..."
+                          value={surveyAnswers[q.id] || ''}
+                          onChange={(e) => setSurveyAnswers({...surveyAnswers, [q.id]: e.target.value})}
+                        />
+                      )}
+                    </div>
+                  ))}
+                  
+                  <div className="pt-6 border-t border-gray-100">
+                    <button 
+                      onClick={handleSurveySubmit}
+                      disabled={Object.keys(surveyAnswers).length === 0}
+                      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl transition-all shadow-md active:scale-[0.98]"
+                    >
+                      Anketi Tamamla ve Gönder
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

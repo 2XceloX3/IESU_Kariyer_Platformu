@@ -115,13 +115,14 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
 
   const handleKVKKExport = (survey) => {
     const csvContent = [];
-    // KVKK İsteği: Sadece cevap skalası olsun (Kullanıcı adı, rolü YOK)
-    csvContent.push(["Tarih / Saat", ...survey.questions.map((q, i) => `Soru ${i+1} (1-5)`)].join(","));
+    // KVKK & SPSS İsteği: İsim/ID yok, sadece soruların skorları (Sütun: Q1, Q2, Q3 vb., Satır: Katılımcı Yanıtları)
+    const headerRow = ["Katilimci_No", ...survey.questions.map((q, i) => `Soru_${i+1}_Skor`)];
+    csvContent.push(headerRow.join(","));
     
     for(let i = 0; i < (survey.responses || 15); i++) {
-      const row = [new Date().toLocaleString()];
+      const row = [`K_${i+1}`]; // Katılımcı ID (Anonim)
       survey.questions.forEach(q => {
-        const score = Math.floor(Math.random() * 5) + 1; // 1-5
+        const score = Math.floor(Math.random() * 5) + 1; // 1-5 Mock data
         row.push(score);
       });
       csvContent.push(row.join(","));
@@ -131,7 +132,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `KVKK_Rapor_${survey.id}.csv`);
+    link.setAttribute("download", `SPSS_Export_${survey.id}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -147,7 +148,8 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
       likes: 0,
       comments: [],
       type: 'anket',
-      surveyId: survey.id
+      surveyId: survey.id,
+      surveyData: survey
     };
     setPosts([newPost, ...posts]);
     alert('Anket başarıyla ana akışta (Feed) paylaşıldı! Öğrenciler ve firmalar görebilir.');
@@ -283,30 +285,37 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
                           {s.responses === 0 ? (
                             <div className="text-center py-8 text-gray-400 text-sm font-medium">Henüz bu ankete yanıt verilmemiş.</div>
                           ) : (
-                            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                              <table className="w-full text-left text-sm">
-                                <thead className="bg-gray-50 text-gray-500 font-bold text-xs uppercase tracking-wider">
-                                  <tr>
-                                    <th className="px-4 py-3">Katılımcı</th>
-                                    <th className="px-4 py-3">Öğrenci No / ID</th>
-                                    <th className="px-4 py-3">Bölüm / Sınıf</th>
-                                    <th className="px-4 py-3">Cevap (Skala)</th>
-                                  </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                  {respondents.map((student, index) => (
-                                    <tr key={student.id || index} className="hover:bg-gray-50 transition">
-                                      <td className="px-4 py-3 font-bold text-gray-900">{student.name}</td>
-                                      <td className="px-4 py-3 text-gray-500 text-xs font-mono">{student.id}</td>
-                                      <td className="px-4 py-3 text-gray-500 text-xs">{student.department || 'Bölüm Yok'}, {student.year || 'Mezun'}</td>
-                                      <td className="px-4 py-3">
-                                        <span className="px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded">{(index % 3) + 3} / 5 Puan</span>
-                                      </td>
-                                    </tr>
+                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                          <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-50 text-gray-500 font-bold text-xs uppercase tracking-wider">
+                              <tr>
+                                <th className="px-4 py-3">Katılımcı (Anonim)</th>
+                                {s.questions?.slice(0, 3).map((q, i) => (
+                                  <th key={i} className="px-4 py-3" title={q.text}>Soru {i+1} Skoru</th>
+                                ))}
+                                <th className="px-4 py-3">Durum</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                              {[...Array(Math.min(5, s.responses || 0))].map((_, index) => (
+                                <tr key={index} className="hover:bg-gray-50 transition">
+                                  <td className="px-4 py-3 font-bold text-gray-900">Katılımcı {index + 1}</td>
+                                  {s.questions?.slice(0, 3).map((q, i) => (
+                                    <td key={i} className="px-4 py-3">
+                                      <span className="px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded">{(index % 3) + 3} / 5</span>
+                                    </td>
                                   ))}
-                                </tbody>
-                              </table>
+                                  <td className="px-4 py-3 text-emerald-600 font-bold text-xs">Tamamlandı</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          {(s.responses > 5) && (
+                            <div className="p-3 text-center text-xs font-bold text-gray-500 bg-gray-50/50 border-t border-gray-100">
+                              + {s.responses - 5} yanıt daha (Tümünü görmek için Excel indirin)
                             </div>
+                          )}
+                        </div>
                           )}
                         </div>
                       </td>
