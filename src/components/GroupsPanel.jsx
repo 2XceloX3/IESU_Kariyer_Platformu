@@ -65,6 +65,12 @@ export default function GroupsPanel({ groups, setGroups, currentUser, userRole, 
     setView('group_profile');
   };
 
+  const handleOpenChat = (e, id) => {
+    e.stopPropagation();
+    setSelectedGroupId(id);
+    setView('messaging');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
@@ -139,13 +145,20 @@ export default function GroupsPanel({ groups, setGroups, currentUser, userRole, 
                   </p>
                   
                   {group.events?.length > 0 && (
-                    <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50">
+                    <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50 mb-4">
                       <p className="text-xs font-bold text-blue-700 flex items-center gap-1.5 mb-1">
                         <Calendar size={12} /> Yaklaşan Etkinlik
                       </p>
                       <p className="text-sm text-gray-800 font-medium truncate">{group.events[0].title}</p>
                     </div>
                   )}
+
+                  <button 
+                    onClick={(e) => handleOpenChat(e, group.id)}
+                    className="w-full mt-2 py-2.5 bg-gray-50 hover:bg-[#DCF8C6] hover:text-[#00A884] hover:border-[#00A884] text-gray-600 font-bold text-sm rounded-xl border border-gray-200 transition-all flex items-center justify-center gap-2 group-hover:shadow-sm"
+                  >
+                    Sohbete Katıl
+                  </button>
                 </div>
               </div>
             </div>

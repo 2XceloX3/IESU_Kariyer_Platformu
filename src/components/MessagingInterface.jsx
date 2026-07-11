@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical } from 'lucide-react';
+import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 
-export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], setView, setSelectedUserId, isOverlay = false }) {
-  // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read }
+const EMOJI_LIST = ['😀','😂','🥰','😎','🤔','👍','🙌','❤️','🔥','🎉','✨','👏','🚀','💡'];
+
+export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
+  // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
   
-  const [activeContactId, setActiveContactId] = useState(null);
+  const [activeContactId, setActiveContactId] = useState(selectedGroupId || null);
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showAllContacts, setShowAllContacts] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
+  const [viewedOnceMsgs, setViewedOnceMsgs] = useState([]);
+  
   const messagesEndRef = useRef(null);
 
   // Scroll to bottom of chat
@@ -51,6 +57,21 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         name: c.name,
         avatar: c.avatar || '',
         role: c.role || 'Kullanıcı',
+        isGroup: false,
+        lastMessage: null,
+        unreadCount: 0,
+        timestamp: 0
+      });
+    });
+
+    // Add groups
+    (groups || []).forEach(g => {
+      convos.set(g.id, {
+        id: g.id,
+        name: g.name,
+        avatar: g.logo || '',
+        role: 'Topluluk',
+        isGroup: true,
         lastMessage: null,
         unreadCount: 0,
         timestamp: 0
@@ -61,40 +82,48 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     messages.forEach(msg => {
       const isSender = msg.senderId === currentUser?.id;
       const isReceiver = msg.receiverId === currentUser?.id;
+      const isGroupMsg = msg.receiverId && msg.receiverId.startsWith('GRP-');
       
-      if (!isSender && !isReceiver) return; // Not our message
-
-      const otherId = isSender ? msg.receiverId : msg.senderId;
+      let otherId;
+      if (isGroupMsg) {
+        otherId = msg.receiverId;
+      } else {
+        if (!isSender && !isReceiver) return; // Not our message
+        otherId = isSender ? msg.receiverId : msg.senderId;
+      }
       
-      const realContact = allowedContacts.find(c => c.id === otherId);
-      if (!realContact) return; // Skip orphan messages entirely
-
-      const otherName = realContact.name;
-      const otherAvatar = realContact.avatar || realContact.logo || '';
-      const otherRole = realContact.department ? 'Öğrenci' : realContact.sector ? 'Firma' : realContact.gradYear ? 'Mezun' : 'Akademik';
-
-      const existing = convos.get(otherId) || {
-        id: otherId,
-        name: otherName,
-        avatar: otherAvatar,
-        role: otherRole,
-        unreadCount: 0
-      };
-
-      if (!existing.timestamp || msg.timestamp > existing.timestamp) {
-        existing.lastMessage = msg?.content;
-        existing.timestamp = msg.timestamp;
+      const existing = convos.get(otherId);
+      if (!existing && !isGroupMsg) {
+        // Find real contact
+        const realContact = allowedContacts.find(c => c.id === otherId);
+        if(realContact) {
+           convos.set(otherId, {
+            id: otherId,
+            name: realContact.name,
+            avatar: realContact.avatar || realContact.logo || '',
+            role: realContact.department ? 'Öğrenci' : realContact.sector ? 'Firma' : realContact.gradYear ? 'Mezun' : 'Akademik',
+            isGroup: false,
+            unreadCount: 0,
+            timestamp: 0
+          });
+        }
       }
 
-      if (isReceiver && !msg?.read) {
-        existing.unreadCount += 1;
+      const updated = convos.get(otherId);
+      if (updated) {
+        if (!updated.timestamp || msg.timestamp > updated.timestamp) {
+          updated.lastMessage = msg.type === 'image' ? '📷 Fotoğraf' : msg.type === 'video' ? '🎥 Video' : msg.type === 'view_once' ? '👁️ 1 Kez Görüntüle' : msg.content;
+          updated.timestamp = msg.timestamp;
+        }
+        if ((isReceiver || (isGroupMsg && !isSender)) && !msg?.read) {
+          updated.unreadCount += 1;
+        }
+        convos.set(otherId, updated);
       }
-
-      convos.set(otherId, existing);
     });
 
     return Array.from(convos.values())
-      .filter(c => showAllContacts || c.lastMessage || (searchQuery && c.name.toLowerCase().includes(searchQuery.toLowerCase()))) // Show all if toggled or searched
+      .filter(c => showAllContacts || c.lastMessage || c.isGroup || (searchQuery && c.name.toLowerCase().includes(searchQuery.toLowerCase()))) // Show all if toggled or searched
       .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   };
 
@@ -123,9 +152,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     }
   }, [activeContactId]);
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !activeContactId) return;
+  const handleSend = (e, customType = 'text', mediaUrl = null) => {
+    if (e) e.preventDefault();
+    if (!activeContactId) return;
+    if (customType === 'text' && !newMessage.trim()) return;
 
     const newMsg = {
       id: 'MSG-' + Date.now(),
@@ -135,13 +165,32 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       receiverId: activeContact?.id,
       receiverName: activeContact?.name,
       receiverAvatar: activeContact?.avatar,
-      content: newMessage.trim(),
+      content: customType === 'text' ? newMessage.trim() : '',
       timestamp: Date.now(),
-      read: false
+      read: false,
+      type: customType,
+      mediaUrl: mediaUrl
     };
 
     setMessages([...messages, newMsg]);
     setNewMessage('');
+    setShowEmojiPicker(false);
+    setShowAttachmentMenu(false);
+  };
+
+  const handleSendMedia = (type) => {
+    let mockUrl = '';
+    if(type === 'image') mockUrl = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&q=80';
+    if(type === 'video') mockUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+    if(type === 'view_once') mockUrl = 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&q=80';
+    
+    handleSend(null, type, mockUrl);
+  };
+
+  const markViewOnce = (msgId) => {
+    if(!viewedOnceMsgs.includes(msgId)){
+      setViewedOnceMsgs([...viewedOnceMsgs, msgId]);
+    }
   };
 
   const formatTime = (ts) => {
@@ -243,23 +292,87 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 bg-[#FAFAFA]">
+            <div className="flex-1 overflow-y-auto p-6 bg-[#E5E5E5] custom-scrollbar" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}>
               {currentChatMessages.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-gray-400 h-full">
-                  <MessageSquare size={48} className="mb-4 opacity-20" />
-                  <p>Henüz mesaj yok. İlk mesajı siz gönderin!</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-500 h-full">
+                  <div className="bg-white/80 backdrop-blur-md px-6 py-4 rounded-2xl shadow-sm text-center">
+                    <MessageSquare size={32} className="mx-auto mb-2 text-iesu-red opacity-50" />
+                    <p className="font-medium text-sm">Mesajlaşma başlatıldı. Güvenli şekilde iletişim kurabilirsiniz.</p>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {currentChatMessages.map(msg => {
                     const isMine = msg.senderId === currentUser?.id;
+                    const isViewed = viewedOnceMsgs.includes(msg.id);
+                    
                     return (
                       <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[75%] rounded-2xl p-3.5 shadow-sm backdrop-blur-sm ${isMine ? 'bg-gradient-to-br from-iesu-red to-red-700 text-white rounded-br-sm' : 'bg-white/80 border border-gray-100/50 text-gray-800 rounded-bl-sm shadow-[0_4px_20px_rgb(0,0,0,0.03)]'}`}>
-                          <p className="text-[14px] leading-relaxed tracking-wide">{msg.content}</p>
-                          <div className={`flex items-center justify-end gap-1.5 mt-2 ${isMine ? 'text-red-200' : 'text-gray-400'}`}>
+                        <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl p-2 shadow-sm ${isMine ? 'bg-[#DCF8C6] text-gray-800 rounded-br-sm' : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-[0_2px_10px_rgb(0,0,0,0.05)]'}`}>
+                          
+                          {/* Sender Name in Group Chat */}
+                          {activeContact.isGroup && !isMine && (
+                            <div className="text-[11px] font-bold text-red-600 mb-1 px-1.5">{msg.senderName}</div>
+                          )}
+
+                          {/* Text Message */}
+                          {msg.type === 'text' && (
+                            <p className="text-[14px] leading-relaxed tracking-wide px-1.5 pt-1">{msg.content}</p>
+                          )}
+
+                          {/* Image Message */}
+                          {msg.type === 'image' && msg.mediaUrl && (
+                            <div className="rounded-xl overflow-hidden mb-1">
+                              <img src={msg.mediaUrl} alt="attachment" className="w-full max-h-64 object-cover" />
+                            </div>
+                          )}
+
+                          {/* Video Message */}
+                          {msg.type === 'video' && msg.mediaUrl && (
+                            <div className="rounded-xl overflow-hidden mb-1 bg-black">
+                              <video src={msg.mediaUrl} controls className="w-full max-h-64" />
+                            </div>
+                          )}
+
+                          {/* View Once Message */}
+                          {msg.type === 'view_once' && msg.mediaUrl && (
+                            <div className="rounded-xl overflow-hidden mb-1 bg-gray-900 border border-gray-800 p-4 w-48 text-center flex flex-col items-center justify-center relative group">
+                              {isMine ? (
+                                <>
+                                  <Eye size={24} className="text-gray-400 mb-2" />
+                                  <p className="text-xs text-gray-300 font-bold">1 Kez Görüntülenebilir Fotoğraf</p>
+                                </>
+                              ) : isViewed ? (
+                                <>
+                                  <EyeOff size={24} className="text-gray-500 mb-2" />
+                                  <p className="text-xs text-gray-500 font-bold">Açıldı</p>
+                                </>
+                              ) : (
+                                <button onClick={() => markViewOnce(msg.id)} className="w-full h-full flex flex-col items-center justify-center">
+                                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white mb-2 animate-pulse">
+                                    <Eye size={20} />
+                                  </div>
+                                  <p className="text-xs text-white font-bold">Fotoğrafı Gör</p>
+                                </button>
+                              )}
+                              
+                              {/* Overlay for viewing */}
+                              {!isMine && !isViewed && viewedOnceMsgs.includes(msg.id + '_temp') && (
+                                <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4">
+                                  <div className="relative max-w-2xl w-full">
+                                    <img src={msg.mediaUrl} className="w-full rounded-xl" />
+                                    <button onClick={() => markViewOnce(msg.id)} className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full">
+                                      <X size={24} />
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          <div className={`flex items-center justify-end gap-1.5 mt-1 px-1 ${isMine ? 'text-green-700/70' : 'text-gray-400'}`}>
                             <span className="text-[10px] font-medium">{formatTime(msg.timestamp)}</span>
-                            {isMine && <CheckCircle2 size={12} className={msg.read ? 'text-white' : ''} />}
+                            {isMine && <CheckCircle2 size={12} className={msg.read ? 'text-blue-500' : ''} />}
                           </div>
                         </div>
                       </div>
@@ -269,38 +382,69 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                 </div>
               )}
             </div>
-            <div className="p-4 bg-white/90 backdrop-blur-md border-t border-gray-100 shrink-0 z-10">
-              <div className="flex items-end gap-2 bg-gray-50/80 rounded-3xl p-1.5 border border-gray-200/60 focus-within:border-red-300 focus-within:ring-4 focus-within:ring-red-50 transition-all shadow-inner">
-                
-                <button className="w-10 h-10 rounded-full hover:bg-gray-200/50 flex items-center justify-center text-gray-400 transition shrink-0" title="Dosya Ekle">
+            <div className="p-3 bg-[#F0F2F5] border-t border-gray-200 shrink-0 z-10 relative">
+              
+              {/* Attachment Menu */}
+              {showAttachmentMenu && (
+                <div className="absolute bottom-16 left-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 flex flex-col gap-1 animate-fade-in z-20">
+                  <button onClick={() => handleSendMedia('image')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><ImageIcon size={16} /></div> Fotoğraf
+                  </button>
+                  <button onClick={() => handleSendMedia('video')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center"><Film size={16} /></div> Video
+                  </button>
+                  <button onClick={() => handleSendMedia('view_once')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
+                    <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center"><Eye size={16} /></div> 1 Kez Görüntüle
+                  </button>
+                </div>
+              )}
+
+              {/* Emoji Picker */}
+              {showEmojiPicker && (
+                <div className="absolute bottom-16 right-16 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 w-64 grid grid-cols-5 gap-2 animate-fade-in z-20">
+                  {EMOJI_LIST.map(emoji => (
+                    <button key={emoji} onClick={() => setNewMessage(prev => prev + emoji)} className="text-2xl hover:bg-gray-100 rounded-lg transition active:scale-95">
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <button onClick={() => {setShowAttachmentMenu(!showAttachmentMenu); setShowEmojiPicker(false);}} className={`w-10 h-10 rounded-full flex items-center justify-center transition shrink-0 ${showAttachmentMenu ? 'bg-gray-200 text-gray-700' : 'text-gray-500 hover:bg-gray-200'}`} title="Dosya Ekle">
                   <Paperclip size={20} />
                 </button>
                 
-                <textarea 
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSend(e);
-                    }
-                  }}
-                  placeholder="Mesajınızı yazın..."
-                  className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 text-[14px] py-2.5 px-2 text-gray-800 self-center placeholder-gray-400"
-                  rows={1}
-                />
-                
-                <button className="w-10 h-10 rounded-full hover:bg-gray-200/50 flex items-center justify-center text-gray-400 transition shrink-0 hidden sm:flex" title="Emoji">
-                  <Smile size={20} />
-                </button>
+                <div className="flex-1 bg-white rounded-full border border-gray-300 flex items-center px-4 py-2 shadow-sm focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+                  <input 
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend(e);
+                      }
+                    }}
+                    placeholder="Bir mesaj yazın..."
+                    className="flex-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-gray-400 outline-none"
+                  />
+                  <button onClick={() => {setShowEmojiPicker(!showEmojiPicker); setShowAttachmentMenu(false);}} className={`w-8 h-8 rounded-full flex items-center justify-center transition ml-2 ${showEmojiPicker ? 'text-emerald-500' : 'text-gray-400 hover:text-gray-600'}`} title="Emoji">
+                    <Smile size={22} />
+                  </button>
+                </div>
 
-                <button 
-                  onClick={handleSend}
-                  disabled={!newMessage.trim()}
-                  className="w-10 h-10 rounded-full bg-gradient-to-tr from-iesu-red to-red-600 text-white flex items-center justify-center hover:shadow-md hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shrink-0 shadow-sm"
-                >
-                  <Send size={18} className="ml-0.5" />
-                </button>
+                {newMessage.trim() ? (
+                  <button 
+                    onClick={handleSend}
+                    className="w-10 h-10 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#008f6f] active:scale-95 transition-all shrink-0 shadow-md"
+                  >
+                    <Send size={18} className="ml-0.5" />
+                  </button>
+                ) : (
+                  <button className="w-10 h-10 rounded-full text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-all shrink-0">
+                    <Phone size={20} />
+                  </button>
+                )}
               </div>
             </div>
           </>

@@ -304,7 +304,7 @@ function App() {
       )}
       {view === 'applications' && <ApplicationsPanel applications={applications} currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
       {view === 'cvbuilder' && <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
-      {view === 'messaging' && <MessagingInterface previousView={previousView} messages={messages} setMessages={setMessages} currentUser={currentUser} userRole={userRole} contacts={[...students, ...alumni, ...companies, ...academicStaff]} setView={setView} setSelectedUserId={setSelectedUserId} />}
+      {view === 'messaging' && <MessagingInterface previousView={previousView} messages={messages} setMessages={setMessages} currentUser={currentUser} userRole={userRole} contacts={[...students, ...alumni, ...companies, ...academicStaff]} groups={groups} setView={setView} setSelectedUserId={setSelectedUserId} selectedGroupId={selectedGroupId} />}
     </ErrorBoundary>
   );
 }
