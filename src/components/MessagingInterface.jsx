@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users } from 'lucide-react';
+import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users, Edit, Link2, Megaphone, PhoneOutgoing, PhoneMissed, PhoneIncoming } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -339,10 +339,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     <div className="flex-1 flex flex-col h-full bg-white relative">
       <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
         <div className="flex justify-between items-center mb-4">
-          <button className="text-blue-500 font-medium">Düzenle</button>
+          <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
           <div className="flex gap-4">
-            <button className="text-blue-500"><Camera size={22} /></button>
-            <button onClick={() => setShowAllContacts(!showAllContacts)} className="text-blue-500 rounded-full bg-gray-100 p-1"><Plus size={18} /></button>
+            <button className="text-blue-500 hover:opacity-80 transition"><Camera size={24} strokeWidth={1.5} /></button>
+            <button onClick={() => setShowAllContacts(!showAllContacts)} className="text-blue-500 hover:opacity-80 transition"><Edit size={24} strokeWidth={1.5} /></button>
           </div>
         </div>
         <h1 className="text-3xl font-black text-black mb-3">Sohbetler</h1>
@@ -377,12 +377,17 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       </div>
       
       <div className="flex-1 overflow-y-auto bg-white px-2">
+        <div className="flex justify-between px-4 py-2 border-b border-gray-100 mb-2">
+          <button className="text-blue-500 font-medium text-[15px]">Toplu Mesaj Listeleri</button>
+          <button className="text-blue-500 font-medium text-[15px]">Yeni Grup</button>
+        </div>
+
         <div className="flex items-center gap-4 p-3 hover:bg-gray-50 cursor-pointer">
-          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-            <Archive size={20} className="text-gray-500" />
+          <div className="w-12 h-12 flex items-center justify-center shrink-0">
+            <Archive size={22} className="text-gray-500" />
           </div>
           <div className="flex-1 border-b border-gray-100 pb-3 mt-3">
-            <h4 className="font-bold text-[16px]">Arşivlenmiş</h4>
+            <h4 className="font-bold text-[16px] text-gray-900">Arşivlenmiş</h4>
           </div>
         </div>
         
@@ -441,48 +446,70 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         </div>
       </div>
       <div className="flex-1 overflow-y-auto px-5">
-        <h3 className="font-bold text-lg mb-4">Durum</h3>
+        <h3 className="text-[20px] font-bold text-black mb-4">Durum</h3>
         
         {/* My Status */}
-        <div className="flex items-center gap-3 mb-6 cursor-pointer">
+        <div className="flex items-center gap-4 mb-8 cursor-pointer group bg-white rounded-2xl p-3 shadow-sm border border-gray-100 hover:shadow-md transition">
           <div className="relative shrink-0">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Ben')}`} className="w-14 h-14 rounded-full object-cover" />
-            <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-white">
-              <Plus size={14} />
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Ben')}`} className="w-16 h-16 rounded-full object-cover ring-2 ring-white" />
+            <div className="absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+              <Plus size={16} strokeWidth={3} />
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="font-bold text-[16px]">Durum ekle</h4>
-            <p className="text-gray-500 text-sm">24 saat sonra kaybolur</p>
+            <h4 className="font-bold text-[17px] text-gray-900">Durumum</h4>
+            <p className="text-gray-500 text-[15px] mt-0.5">Durumuma ekle</p>
           </div>
           <div className="flex gap-3 text-gray-500 shrink-0">
-            <button className="bg-gray-100 p-2 rounded-full"><Camera size={18}/></button>
-            <button className="bg-gray-100 p-2 rounded-full"><Edit3 size={18}/></button>
+            <button className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Camera size={20}/></button>
+            <button className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Edit3 size={20}/></button>
           </div>
         </div>
 
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Son Güncellemeler</h3>
+        <h3 className="text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-4 px-1">Son Güncellemeler</h3>
         
         {/* Mock Statuses */}
-        {[
-          { name: 'Kariyer Merkezi', time: '8 sa. önce', verified: true },
-          { name: 'Otomotiv Kulübü', time: '8 sa. önce' },
-          { name: 'Danışman Hocam', time: '13 sa. önce' }
-        ].map((s, i) => (
-          <div key={i} className="flex items-center gap-3 mb-4 cursor-pointer">
-            <div className="w-14 h-14 rounded-full p-[2px] bg-[#00A884] shrink-0">
-              <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-gray-200">
-                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`} className="w-full h-full object-cover" />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
+          {[
+            { name: 'Kariyer Merkezi', time: '8 sa. önce', verified: true, unread: true },
+            { name: 'Otomotiv Kulübü', time: '10 sa. önce', unread: true },
+            { name: 'Danışman Hocam', time: 'Dün', unread: false }
+          ].map((s, i, arr) => (
+            <div key={i} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
+              <div className={`w-14 h-14 rounded-full p-[2px] shrink-0 ${s.unread ? 'bg-gradient-to-tr from-blue-400 to-blue-600' : 'bg-gray-300'}`}>
+                <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-white">
+                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`} className="w-full h-full object-cover" />
+                </div>
+              </div>
+              <div className="flex-1 flex flex-col justify-center">
+                <h4 className={`font-bold text-[16px] flex items-center gap-1 ${s.unread ? 'text-black' : 'text-gray-600'}`}>
+                  {s.name} {s.verified && <CheckCircle2 size={16} className="text-blue-500" fill="currentColor"/>}
+                </h4>
+                <p className="text-gray-500 text-[14px] mt-0.5">{s.time}</p>
               </div>
             </div>
-            <div className="flex-1 border-b border-gray-100 pb-3 flex flex-col justify-center">
-              <h4 className="font-bold text-[16px] flex items-center gap-1">
-                {s.name} {s.verified && <CheckCircle2 size={14} className="text-blue-500" fill="currentColor"/>}
-              </h4>
-              <p className="text-gray-500 text-sm">{s.time}</p>
+          ))}
+        </div>
+
+        {/* Channels Section */}
+        <div className="flex justify-between items-center mb-4 px-1">
+          <h3 className="text-[20px] font-bold text-black">Kanallar</h3>
+          <button className="text-blue-500 font-medium text-[15px] hover:underline">Tümünü Gör</button>
+        </div>
+        <div className="text-sm text-gray-500 px-1 mb-4">Önemsediğiniz konulardan haberdar olun. Sizin için kanallar bulabilirsiniz.</div>
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide px-1">
+          {[
+            { name: 'Teknoloji Bülteni', followers: '1.2B' },
+            { name: 'IESU İtiraf', followers: '840' },
+            { name: 'Kariyer Fırsatları', followers: '3.4B' }
+          ].map((ch, idx) => (
+            <div key={idx} className="w-32 shrink-0 border border-gray-200 rounded-2xl p-3 flex flex-col items-center justify-center bg-white shadow-sm">
+              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(ch.name)}`} className="w-16 h-16 rounded-full mb-2 object-cover" />
+              <h4 className="font-bold text-[14px] text-center leading-tight mb-1 truncate w-full">{ch.name}</h4>
+              <button className="w-full py-1.5 bg-[#eff2f5] text-[#1c2b33] font-bold text-[13px] rounded-full hover:bg-gray-200 transition">Takip Et</button>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -492,56 +519,55 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     <div className="flex-1 flex flex-col h-full bg-white relative">
       <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
         <div className="flex justify-between items-center mb-4">
-          <button className="p-1 text-blue-500 font-medium">Düzenle</button>
-          <button className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-blue-500"><Phone size={18}/></button>
+          <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
+          <div className="flex bg-gray-100 p-0.5 rounded-lg w-48">
+            <button className="flex-1 py-1.5 text-[13px] font-bold bg-white shadow-sm rounded-md text-black">Tümü</button>
+            <button className="flex-1 py-1.5 text-[13px] font-medium text-gray-500 hover:text-black">Cevapsızlar</button>
+          </div>
+          <button className="text-blue-500"><Phone size={22}/></button>
         </div>
         <h1 className="text-3xl font-black text-black mb-6">Aramalar</h1>
         
-        <div className="flex justify-between px-2 mb-6">
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Phone size={20}/></div>
-            <span className="text-[11px] text-gray-500 font-medium">Ara</span>
+        {/* Create Call Link */}
+        <div className="flex items-center gap-4 mb-8 cursor-pointer bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 shrink-0">
+            <Link2 size={24} />
           </div>
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Calendar size={20}/></div>
-            <span className="text-[11px] text-gray-500 font-medium">Planla</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Grid3X3 size={20}/></div>
-            <span className="text-[11px] text-gray-500 font-medium">Tuş takımı</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 cursor-pointer">
-            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><Heart size={20}/></div>
-            <span className="text-[11px] text-gray-500 font-medium">Favoriler</span>
+          <div>
+            <h4 className="font-bold text-[17px] text-blue-500">Arama Bağlantısı Oluştur</h4>
+            <p className="text-gray-500 text-[14px]">WhatsApp aramanız için bir bağlantı paylaşın</p>
           </div>
         </div>
         
-        <h3 className="font-bold text-lg mb-2">En Son</h3>
+        <h3 className="font-bold text-[18px] text-black mb-2 px-2">En Son</h3>
       </div>
       
-      <div className="flex-1 overflow-y-auto px-5">
-        {[
-          { id: 'usr-1', name: 'Kariyer Merkezi', type: 'Gelen', time: 'Dün', missed: false },
-          { id: 'usr-2', name: 'Danışman Hocam', type: 'Giden', time: 'Perşembe', missed: false },
-          { id: 'usr-3', name: 'Otomotiv Kulübü', type: 'Cevapsız', time: 'Perşembe', missed: true },
-          { id: 'usr-4', name: 'Mezunlar Derneği', type: 'Gelen', time: 'Pazartesi', missed: false }
-        ].map((call, i) => (
-          <div key={i} onClick={() => startCall('audio', call.id)} className="flex items-center gap-3 mb-1 cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition">
-            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(call.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
-            <div className="flex-1 border-b border-gray-100 py-3 flex justify-between items-center">
-              <div>
-                <h4 className={`font-bold text-[16px] ${call.missed ? 'text-red-500' : 'text-black'}`}>{call.name}</h4>
-                <div className="flex items-center gap-1 text-gray-500 text-sm mt-0.5">
-                  <Phone size={12} /> {call.type}
+      <div className="flex-1 overflow-y-auto px-5 pb-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          {[
+            { id: 'usr-1', name: 'Kariyer Merkezi', type: 'Gelen', time: 'Dün', missed: false },
+            { id: 'usr-2', name: 'Danışman Hocam', type: 'Giden', time: 'Perşembe', missed: false },
+            { id: 'usr-3', name: 'Otomotiv Kulübü', type: 'Cevapsız', time: 'Perşembe', missed: true },
+            { id: 'usr-4', name: 'Mezunlar Derneği', type: 'Gelen', time: 'Pazartesi', missed: false }
+          ].map((call, i, arr) => (
+            <div key={i} onClick={() => startCall('audio', call.id)} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
+              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(call.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
+              <div className="flex-1 flex justify-between items-center">
+                <div>
+                  <h4 className={`font-bold text-[16px] ${call.missed ? 'text-red-500' : 'text-gray-900'}`}>{call.name}</h4>
+                  <div className="flex items-center gap-1.5 text-gray-500 text-[14px] mt-0.5">
+                    {call.type === 'Giden' ? <PhoneOutgoing size={14} /> : call.type === 'Cevapsız' ? <PhoneMissed size={14} className="text-red-500" /> : <PhoneIncoming size={14} />} 
+                    <span>{call.type}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-500 text-[14px]">{call.time}</span>
+                  <button className="text-blue-500 p-2 hover:bg-blue-50 rounded-full transition" onClick={(e) => { e.stopPropagation(); startCall('video', call.id); }}><Info size={22}/></button>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-500 text-[15px]">{call.time}</span>
-                <button className="text-blue-500 ml-2" onClick={(e) => { e.stopPropagation(); startCall('video', call.id); }}><Info size={20}/></button>
-              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -552,21 +578,44 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         <h2 className="text-3xl font-bold text-black mb-4 tracking-tight">Topluluklar</h2>
         <p className="text-gray-500 text-sm mb-4">Gruplarınız ve dahil olduğunuz öğrenci kulüpleri burada yer alır.</p>
       </div>
-      <div className="flex-1 overflow-y-auto bg-gray-50">
-        {(groups || []).length > 0 ? (groups || []).map(group => (
-          <div key={group.id} onClick={() => { if (setSelectedGroupId) setSelectedGroupId(group.id); }} className="flex items-center gap-3 p-4 bg-white mb-2 cursor-pointer border-y border-gray-200/50 hover:bg-gray-50 transition">
-            <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
-              <img src={group.logo} className="w-full h-full object-cover" />
+      <div className="flex-1 overflow-y-auto bg-gray-100">
+        <div className="bg-white px-5 py-4 mb-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition border-b border-gray-200">
+          <div className="w-14 h-14 bg-gray-200 rounded-xl flex items-center justify-center shrink-0 relative overflow-hidden">
+            <Users size={28} className="text-white" fill="currentColor" />
+            <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-white">
+              <Plus size={14} />
             </div>
-            <div>
-              <h4 className="font-bold text-gray-900">{group.name}</h4>
-              <p className="text-xs text-gray-500">{group.memberCount} Üye • {group.type}</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-[17px] text-gray-900">Yeni Topluluk</h4>
+          </div>
+        </div>
+
+        {(groups || []).length > 0 ? (groups || []).map(group => (
+          <div key={group.id} className="bg-white mb-3 border-y border-gray-200 shadow-sm">
+            <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden shrink-0">
+                <img src={group.logo} className="w-full h-full object-cover" />
+              </div>
+              <h3 className="font-bold text-[18px] text-black">{group.name}</h3>
+            </div>
+            <div onClick={() => { if (setSelectedGroupId) setSelectedGroupId(group.id); }} className="px-5 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
+              <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+                <Megaphone size={24} className="text-[#00A884]" fill="currentColor" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-bold text-[16px] text-gray-900">Duyurular</h4>
+                <p className="text-[14px] text-gray-500 truncate">Topluluk yöneticilerinden son haberler.</p>
+              </div>
+              <div className="text-[12px] text-gray-400">Dün</div>
             </div>
           </div>
         )) : (
-          <div className="p-8 text-center text-gray-500 flex flex-col items-center justify-center h-full">
-            <Users size={48} className="text-gray-300 mb-4" />
-            <p>Henüz hiçbir topluluğa katılmadınız.</p>
+          <div className="p-10 text-center text-gray-500 flex flex-col items-center justify-center">
+            <Users size={64} className="text-gray-300 mb-6" />
+            <p className="text-lg font-medium text-gray-800 mb-2">Henüz hiçbir topluluğa katılmadınız.</p>
+            <p className="text-sm text-gray-500 mb-6">Topluluklar, birden fazla grubu bir araya getirerek okulunuzu, kulüplerinizi veya iş ağlarınızı düzenlemenize yardımcı olur.</p>
+            <button className="bg-[#00A884] text-white font-bold py-3 px-6 rounded-full w-full hover:bg-[#008f6f] transition">Topluluklarınızı Görün</button>
           </div>
         )}
       </div>
