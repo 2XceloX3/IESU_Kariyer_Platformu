@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Target, Search, Plus, CheckCircle, XCircle, Clock, FileText, X, Folder, Eye, Download, Users } from 'lucide-react';
 import ClubAdminPanel from '../ClubAdminPanel';
+import PanelHeader from './PanelHeader';
 
 export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApplications, currentUser }) {
   const [activeTab, setActiveTab] = useState('applications'); // 'applications' | 'active_clubs'
@@ -52,14 +53,10 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
 
   return (
     <div className="w-full bg-white rounded-3xl p-6 lg:p-8 border border-gray-200 shadow-xl shadow-gray-200/50 animate-fade-in relative overflow-hidden">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-          <Target size={28} />
-        </div>
-        <div>
-          <h2 className="text-2xl font-black text-gray-900">Kulüpler Havuzu Yönetimi</h2>
-        </div>
-      </div>
+      <PanelHeader 
+        title="Kulüpler Havuzu Yönetimi" 
+        sub="" 
+      />
 
       {/* Tabs */}
       <div className="flex space-x-2 mb-8 bg-gray-50 p-1.5 rounded-2xl border border-gray-200/60 w-fit">
