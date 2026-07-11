@@ -104,6 +104,9 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
         <button onClick={() => setActiveTab('members')} className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'members' ? 'bg-white text-emerald-600 shadow-sm border border-gray-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'}`}>
           <Users size={16}/> Üyeler ve Yetkiler
         </button>
+        <button onClick={() => setActiveTab('documents')} className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'documents' ? 'bg-white text-emerald-600 shadow-sm border border-gray-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'}`}>
+          <FileText size={16}/> Belge Deposu
+        </button>
         <button onClick={() => setActiveTab('post')} className={`flex-1 min-w-[120px] py-2.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'post' ? 'bg-white text-emerald-600 shadow-sm border border-gray-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100/50'}`}>
           <Send size={16}/> Gönderi Paylaş
         </button>
@@ -116,7 +119,7 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
         {activeTab === 'requests' && (
           <div>
             <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-              <UserPlus className="text-emerald-500" /> Bekleyen Katılım Talepleri (EK-6)
+              <UserPlus className="text-emerald-500" /> Bekleyen Katılım Talepleri
             </h3>
             
             {(!selectedClub.joinRequests || selectedClub.joinRequests.length === 0) ? (
@@ -216,6 +219,119 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
             <p className="text-xs text-gray-400 font-medium text-center mt-4">
               Paylaştığınız gönderiler ana sayfadaki tüm öğrencilerin akışında, kulübünüzün logosu ve ismiyle (Onaylı Kulüp rozetiyle) anında yayınlanacaktır.
             </p>
+          </div>
+        )}
+        
+        {/* DOCUMENTS TAB */}
+        {activeTab === 'documents' && (
+          <div>
+            <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+              <FileText className="text-emerald-500" /> Kulüp Belge Deposu
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* İndirilebilir Formlar */}
+              <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                <h4 className="font-bold text-gray-900 mb-4">Gerekli Formlar (Boş PDF)</h4>
+                <div className="space-y-3">
+                  {['Kulüp Kurulum Formu', 'Genel Kurul Tutanağı', 'Etkinlik Başvuru Formu', 'Sponsorluk Anlaşması', 'Faaliyet Raporu'].map((formName, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl hover:shadow-sm transition-shadow">
+                      <div className="flex items-center gap-2">
+                        <FileText size={16} className="text-emerald-600" />
+                        <span className="text-sm font-bold text-gray-800">{formName}</span>
+                      </div>
+                      <button className="text-[11px] font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors">İndir</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Belge Yükleme Alanı */}
+              <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                <h4 className="font-bold text-gray-900 mb-4">Doldurulmuş Belge Yükle</h4>
+                
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const docType = formData.get('docType');
+                    const fileInput = e.target.elements.fileInput;
+                    
+                    if (fileInput.files.length === 0) {
+                      alert("Lütfen yüklemek için bir PDF dosyası seçin.");
+                      return;
+                    }
+                    
+                    const newForm = {
+                      id: 'FORM-' + Date.now(),
+                      type: docType,
+                      status: 'Bekliyor',
+                      date: new Date().toLocaleDateString('tr-TR')
+                    };
+                    
+                    const updatedClubs = clubs.map(c => {
+                      if (c.id === selectedClub.id) {
+                        return { ...c, forms: [...(c.forms || []), newForm] };
+                      }
+                      return c;
+                    });
+                    
+                    setClubs(updatedClubs);
+                    e.target.reset();
+                    alert("Belge başarıyla Öğrenci Dekanlığı iç havuzuna iletildi!");
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label className="text-xs font-bold text-gray-600 block mb-1">Belge Türü</label>
+                    <select name="docType" required className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-emerald-500">
+                      <option value="Kulüp Kurulum Formu">Kulüp Kurulum Formu</option>
+                      <option value="Genel Kurul Tutanağı">Genel Kurul Tutanağı</option>
+                      <option value="Etkinlik Başvuru Formu">Etkinlik Başvuru Formu</option>
+                      <option value="Sponsorluk Anlaşması">Sponsorluk Anlaşması</option>
+                      <option value="Faaliyet Raporu">Faaliyet Raporu</option>
+                      <option value="Diğer (Dilekçe)">Diğer (Dilekçe)</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-xs font-bold text-gray-600 block mb-1">PDF Dosyası Seç</label>
+                    <input type="file" name="fileInput" accept=".pdf" className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
+                  </div>
+                  
+                  <button type="submit" className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors mt-2">
+                    Belgeyi Yükle ve Gönder
+                  </button>
+                </form>
+              </div>
+            </div>
+            
+            {/* Gönderilen Belgeler */}
+            <div className="mt-8">
+              <h4 className="font-bold text-gray-900 mb-4">Sisteme Yüklenmiş Belgeleriniz</h4>
+              {(!selectedClub.forms || selectedClub.forms.length === 0) ? (
+                <div className="text-center py-6 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
+                  <p className="text-sm text-gray-500">Henüz dekanlığa iletilmiş bir belgeniz bulunmuyor.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {selectedClub.forms.map(form => (
+                    <div key={form.id} className="p-4 bg-white border border-gray-200 rounded-xl flex items-center justify-between group hover:border-emerald-200 transition-colors">
+                      <div>
+                        <p className="text-sm font-bold text-gray-800">{form.type}</p>
+                        <p className="text-[10px] text-gray-400 font-medium mt-1">{form.date} - Dekanlığa İletildi</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${form.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-700' : form.status === 'Bekliyor' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
+                        {form.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
           </div>
         )}
         

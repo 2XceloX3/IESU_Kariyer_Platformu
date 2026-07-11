@@ -881,8 +881,8 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
 
         <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
           <div>
-            <h3 className="font-bold text-gray-900 text-[16px]">Yeni Kulüp Başvuruları</h3>
-            <p className="text-[13px] text-gray-500 mt-1">Yeni kulüp kurulumu başvurularını (EK-1) aktif/pasif hale getirir.</p>
+            <h3 className="font-bold text-gray-900 text-[16px]">Kulüp Başvurularını Aç / Kapat</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Öğrencilerin yeni kulüp açma başvurularını aktif/pasif hale getirir.</p>
           </div>
           <button 
             onClick={() => setFeatureClubApplications(!featureClubApplications)}

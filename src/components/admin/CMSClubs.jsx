@@ -64,20 +64,16 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
       <div className="flex space-x-2 mb-8 bg-gray-50 p-1.5 rounded-2xl border border-gray-200/60 w-fit">
         <button 
           onClick={() => setActiveTab('applications')} 
-          className={`px-6 py-2.5 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'applications' ? 'bg-white text-emerald-600 shadow-sm border border-emerald-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+          className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'applications' ? 'bg-amber-100 text-amber-700 shadow-sm border border-amber-200' : 'bg-white text-gray-500 hover:bg-amber-50 hover:text-amber-600 border border-transparent'}`}
         >
-          <div className="flex items-center gap-2">
-            <FileText size={16} /> Başvurular (EK-1)
-            {pendingApps.length > 0 && <span className="bg-emerald-100 text-emerald-700 py-0.5 px-2 rounded-full text-[11px]">{pendingApps.length}</span>}
-          </div>
+          <FileText size={16} /> Başvurular
+          {pendingApps.length > 0 && <span className="bg-amber-200 text-amber-800 py-0.5 px-2 rounded-full text-[11px]">{pendingApps.length}</span>}
         </button>
         <button 
           onClick={() => setActiveTab('active_clubs')} 
-          className={`px-6 py-2.5 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'active_clubs' ? 'bg-white text-emerald-600 shadow-sm border border-emerald-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+          className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === 'active_clubs' ? 'bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-200' : 'bg-white text-gray-500 hover:bg-emerald-50 hover:text-emerald-600 border border-transparent'}`}
         >
-          <div className="flex items-center gap-2">
-            <Users size={16} /> Aktif Kulüpler ve Form Havuzu
-          </div>
+          <Users size={16} /> Aktif Kulüpler ve Form Havuzu
         </button>
       </div>
 
@@ -86,13 +82,13 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
         <div className="space-y-6 animate-fade-in">
           {pendingApps.length > 0 ? (
             <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2"><Clock size={18} className="text-amber-500" /> Bekleyen Kurulum Başvuruları (EK-1)</h3>
+              <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2"><Clock size={18} className="text-amber-500" /> Bekleyen Kurulum Başvuruları</h3>
               <div className="space-y-4">
                 {pendingApps.map(app => (
                   <div key={app.id} className="p-5 border border-amber-100 bg-amber-50/30 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">EK-1 BAŞVURUSU</span>
+                        <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">KURULUM BAŞVURUSU</span>
                         <span className="text-xs font-bold text-gray-500">{app.date}</span>
                       </div>
                       <h4 className="text-[16px] font-bold text-gray-900">{app.name}</h4>
