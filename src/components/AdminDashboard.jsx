@@ -672,7 +672,6 @@ export default function AdminDashboard({
   const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
     if (tab.id === 'anket' && !featureSurveys) return false;
     if (tab.id === 'kart' && !featureAlumniCard) return false;
-    if (tab.id === 'clubs_pool' && !featureClubsShowcase) return false;
     return true;
   });
 
