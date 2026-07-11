@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users, Edit, Link2, Megaphone, PhoneOutgoing, PhoneMissed, PhoneIncoming } from 'lucide-react';
+import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, ChevronDown, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users, Edit, Link2, Megaphone, PhoneOutgoing, PhoneMissed, PhoneIncoming } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -22,6 +22,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const [viewedOnceMsgs, setViewedOnceMsgs] = useState([]);
+  const [activeMessageOptions, setActiveMessageOptions] = useState(null);
   const [pendingMediaType, setPendingMediaType] = useState(null);
   
   // Call states
@@ -204,6 +205,20 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     setShowAttachmentMenu(false);
   };
 
+  const handleUnsendMessage = (msgId) => {
+    if (setMessages) {
+      setMessages((messages || []).map(m => m.id === msgId ? { ...m, isDeleted: true, content: 'Bu mesaj silindi', mediaUrl: null, type: 'text' } : m));
+    }
+    setActiveMessageOptions(null);
+  };
+
+  const handleDeleteMessage = (msgId) => {
+    if (setMessages) {
+      setMessages((messages || []).filter(m => m.id !== msgId));
+    }
+    setActiveMessageOptions(null);
+  };
+
   const handleSendMedia = (type) => {
     if (type === 'camera') {
       startCamera();
@@ -259,6 +274,12 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
   const sendCapturedMedia = () => {
     if (capturedMedia) {
+      if (!activeContactId) {
+        alert("📸 Fotoğrafınız başarıyla Güncellemeler (Durum) olarak paylaşıldı!");
+        setCapturedMedia(null);
+        setIsCameraActive(false);
+        return;
+      }
       // Map 'cameraShareOption' to our message types
       let mappedType = capturedMedia.type; 
       if (cameraShareOption === 'once') mappedType = 'view_once';
@@ -266,6 +287,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       
       handleSend(null, mappedType, capturedMedia.url);
       setCapturedMedia(null);
+      setIsCameraActive(false);
     }
   };
 
@@ -703,8 +725,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
           <>
             <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0">
               <div className="flex items-center gap-3">
-                <button onClick={() => setActiveContactId(null)} className="md:hidden p-2 -ml-2 text-gray-400 hover:text-gray-600 transition">
-                  <ChevronLeft size={20} />
+                <button onClick={() => setActiveContactId(null)} className="md:hidden flex items-center justify-center w-10 h-10 -ml-2 text-gray-600 hover:text-black bg-gray-100 hover:bg-gray-200 rounded-full transition shadow-sm">
+                  <ChevronLeft size={24} />
                 </button>
                 <div className="relative">
                   <img src={activeContact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact.name)}&background=132A49&color=fff`} className="w-10 h-10 rounded-full object-cover shadow-sm" alt="" />
@@ -743,8 +765,22 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                     const isViewed = viewedOnceMsgs.includes(msg.id);
                     
                     return (
-                      <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl p-2 shadow-sm ${isMine ? 'bg-[#DCF8C6] text-gray-800 rounded-br-sm' : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-[0_2px_10px_rgb(0,0,0,0.05)]'}`}>
+                      <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'} group relative`}>
+                        {activeMessageOptions === msg.id && (
+                          <div className={`absolute top-full mt-1 ${isMine ? 'right-0' : 'left-0'} z-20 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 flex flex-col overflow-hidden animate-fade-in`}>
+                            {isMine && !msg.isDeleted && <button onClick={() => handleUnsendMessage(msg.id)} className="px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-gray-50">Herkesten Sil (Geri Çek)</button>}
+                            <button onClick={() => handleDeleteMessage(msg.id)} className="px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-50">Benden Sil</button>
+                            <button onClick={() => setActiveMessageOptions(null)} className="px-4 py-2 text-left text-sm font-medium text-gray-400 hover:bg-gray-50 border-t border-gray-100">İptal</button>
+                          </div>
+                        )}
+                        <div 
+                          onContextMenu={(e) => { e.preventDefault(); setActiveMessageOptions(msg.id); }}
+                          onClick={() => setActiveMessageOptions(activeMessageOptions === msg.id ? null : msg.id)}
+                          className={`max-w-[75%] md:max-w-[60%] rounded-2xl p-2 shadow-sm cursor-pointer relative ${isMine ? 'bg-[#DCF8C6] text-gray-800 rounded-br-sm' : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-[0_2px_10px_rgb(0,0,0,0.05)]'} ${msg.isDeleted ? 'opacity-70 italic' : ''}`}
+                        >
+                          <button onClick={(e) => { e.stopPropagation(); setActiveMessageOptions(msg.id); }} className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition p-1 text-gray-400 hover:text-gray-600 z-10 bg-white/50 rounded-full backdrop-blur-sm">
+                            <ChevronDown size={14} />
+                          </button>
                           
                           {/* Sender Name in Group Chat */}
                           {activeContact.isGroup && !isMine && (
@@ -753,7 +789,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
                           {/* Text Message */}
                           {msg.type === 'text' && (
-                            <p className="text-[14px] leading-relaxed tracking-wide px-1.5 pt-1">{msg.content}</p>
+                            <p className="text-[14px] leading-relaxed tracking-wide px-1.5 pt-1 flex items-center gap-1.5">
+                              {msg.isDeleted && <div className="text-gray-400">🚫</div>}
+                              {msg.content}
+                            </p>
                           )}
 
                           {/* Image Message */}
