@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, Star, CheckCircle2, Download } from 'lucide-react';
-import { exportToCSV } from '../../utils/export';export default function CMSAlumni({ alumni = [], setAlumni }) {
+import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, Star, CheckCircle2, Download, ClipboardList } from 'lucide-react';
+import { exportToCSV } from '../../utils/export';
+import CMSSurveys from './CMSSurveys';
+
+export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys, currentUser, setPosts, posts }) {
+  const [activeTab, setActiveTab] = useState('mezunlar');
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -93,14 +97,37 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
     <div className="space-y-6">
       {/* HEADER & STATS */}
       <PanelHeader 
-        title="Mezun Havuzu" 
-        sub="Sisteme kayıtlı mezunları yönetin ve kariyer durumlarını takip edin." 
+        title={activeTab === 'mezunlar' ? "Mezun Havuzu" : "Mezun Anketleri"} 
+        sub={activeTab === 'mezunlar' ? "Sisteme kayıtlı mezunları yönetin ve kariyer durumlarını takip edin." : "Mezunlara yönelik anketler oluşturun ve performans değerlendirmelerini takip edin."} 
         action={
-          <button onClick={handleAddNew} className="bg-white text-purple-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
-            <Plus size={18} /> Mezun Ekle
-          </button>
+          activeTab === 'mezunlar' ? (
+            <button onClick={handleAddNew} className="bg-white text-purple-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
+              <Plus size={18} /> Mezun Ekle
+            </button>
+          ) : null
         } 
       />
+
+      {/* TABS */}
+      <div className="flex gap-2 border-b border-gray-200">
+        <button 
+          onClick={() => setActiveTab('mezunlar')} 
+          className={`pb-3 px-4 font-bold text-sm transition-all border-b-2 flex items-center gap-2 ${activeTab === 'mezunlar' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+        >
+          <GraduationCap size={18} /> Mezun Yönetimi
+        </button>
+        <button 
+          onClick={() => setActiveTab('anketler')} 
+          className={`pb-3 px-4 font-bold text-sm transition-all border-b-2 flex items-center gap-2 ${activeTab === 'anketler' ? 'border-purple-600 text-purple-700' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+        >
+          <ClipboardList size={18} /> Anket Havuzu
+        </button>
+      </div>
+
+      {activeTab === 'anketler' ? (
+        <CMSSurveys surveys={surveys} setSurveys={setSurveys} currentUser={currentUser} setPosts={setPosts} posts={posts} isAlumniTab={true} />
+      ) : (
+        <>
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -218,6 +245,8 @@ import { exportToCSV } from '../../utils/export';export default function CMSAlum
           </table>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 

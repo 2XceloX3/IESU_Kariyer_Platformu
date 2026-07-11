@@ -3,7 +3,7 @@ import { ClipboardList, Edit, Trash2, Plus, Search, Filter, CheckCircle2, Downlo
 import AdminCMSLayout, { TopInfoCard, Badge } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
 
-export default function CMSSurveys({ surveys = [], setSurveys, students = [] }) {
+export default function CMSSurveys({ surveys = [], setSurveys, students = [], isAlumniTab = false }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +29,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [] }) 
       date: new Date().toISOString().split('T')[0],
       status: 'Aktif',
       type: 'Etkinlik Değerlendirme',
-      targetAudience: 'Tümü',
+      targetAudience: isAlumniTab ? 'Mezunlar' : 'Tümü',
       description: '',
       questions: [{ id: 'q1', text: 'Etkinlikten genel olarak memnun kaldınız mı?', type: 'likert' }]
     });
@@ -153,31 +153,47 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [] }) 
     alert('Anket başarıyla ana akışta (Feed) paylaşıldı! Öğrenciler ve firmalar görebilir.');
   };
 
-  const filtered = (surveys || []).filter(s => {
+  const safeSurveys = (surveys || []);
+  const filtered = safeSurveys.filter(s => {
     const matchQ = (s.title||'').toLowerCase().includes(searchQuery.toLowerCase());
     const matchS = statusFilter === 'all' || (s.status||'').toLowerCase() === statusFilter.toLowerCase();
-    return matchQ && matchS;
+    const matchAlumni = isAlumniTab ? (s.targetAudience === 'Mezunlar' || s.targetAudience === 'Tümü') : true;
+    return matchQ && matchS && matchAlumni;
   });
 
-  const activeCount = (surveys || []).filter(s => s.status === 'Aktif').length;
+  const activeCount = safeSurveys.filter(s => s.status === 'Aktif').length;
+
+  const headerView = isAlumniTab ? null : (
+    <PanelHeader 
+      title="Form ve Anket Yönetimi" 
+      sub="Öğrenci ve mezun anketlerini yönetin, SPSS uyumlu dışa aktarın." 
+      action={
+        <button onClick={handleAddNew} className="bg-white text-emerald-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
+          <Plus size={18} /> Yeni Anket
+        </button>
+      } 
+    />
+  );
+
+  const topStatsView = isAlumniTab ? (
+    <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
+      <div className="font-bold text-gray-700">Mezun Anketleri Yöneticisi</div>
+      <button onClick={handleAddNew} className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all">
+        <Plus size={18} /> Yeni Mezun Anketi Ekle
+      </button>
+    </div>
+  ) : (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <TopInfoCard icon={<ClipboardList size={20} />} title="Toplam Anket" value={safeSurveys.length} color="blue" />
+      <TopInfoCard icon={<CheckCircle2 size={20} />} title="Aktif Anketler" value={activeCount} color="emerald" />
+      <TopInfoCard icon={<BarChart3 size={20} />} title="Toplam Yanıt" value={safeSurveys.reduce((acc, s) => acc + (s.responses || 0), 0)} color="purple" />
+    </div>
+  );
 
   const listView = (
     <div className="space-y-6">
-      <PanelHeader 
-        title="Form ve Anket Yönetimi" 
-        sub="Öğrenci ve mezun anketlerini yönetin, SPSS uyumlu dışa aktarın." 
-        action={
-          <button onClick={handleAddNew} className="bg-white text-emerald-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
-            <Plus size={18} /> Yeni Anket
-          </button>
-        } 
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <TopInfoCard icon={<ClipboardList size={20} />} title="Toplam Anket" value={(surveys || []).length} color="blue" />
-        <TopInfoCard icon={<CheckCircle2 size={20} />} title="Aktif Anketler" value={activeCount} color="emerald" />
-        <TopInfoCard icon={<BarChart3 size={20} />} title="Toplam Yanıt" value={(surveys || []).reduce((acc, s) => acc + (s.responses || 0), 0)} color="purple" />
-      </div>
+      {headerView}
+      {topStatsView}
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden">
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 bg-gray-50/50">

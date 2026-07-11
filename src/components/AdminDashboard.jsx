@@ -640,7 +640,7 @@ export default function AdminDashboard({
       case 'companies':   return <CMSCompanies companies={companies || []} setCompanies={setCompanies} />;
       case 'students':    return <CMSStudents students={students || []} setStudents={setStudents} />;
       case 'academic_staff': return <CMSAcademicStaff academicStaff={academicStaff || []} setAcademicStaff={setAcademicStaff} />;
-      case 'alumni':      return <CMSAlumni alumni={alumni || []} setAlumni={setAlumni} />;
+      case 'alumni':      return <CMSAlumni alumni={alumni || []} setAlumni={setAlumni} surveys={surveys} setSurveys={setSurveys} currentUser={currentUser} setPosts={setPosts} posts={posts} />;
       case 'mezun_dernek':return <CMSAlumniAssoc posts={posts} setPosts={setPosts} currentUser={currentUser} />;
       case 'kart':        return <CMSAlumniCard alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} setAlumniCardForms={setAlumniCardForms} />;
       case 'ilan':        return <CMSJobs jobs={jobs || []} setJobs={setJobs} applications={applications || []} />;
