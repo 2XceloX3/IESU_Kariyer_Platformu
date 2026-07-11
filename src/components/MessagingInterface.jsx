@@ -606,7 +606,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       case 'calls': return renderCallsView();
       case 'chats': return renderChatsView();
       case 'communities': return renderCommunitiesView();
-      case 'profile': return renderProfileView();
       default: return renderChatsView();
     }
   };
@@ -617,8 +616,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         { id: 'updates', label: 'Güncellemeler', icon: CircleDashed, activeIcon: CircleDashed },
         { id: 'calls', label: 'Aramalar', icon: Phone, activeIcon: Phone },
         { id: 'communities', label: 'Topluluklar', icon: Users, activeIcon: Users },
-        { id: 'chats', label: 'Sohbetler', icon: MessageCircle, activeIcon: MessageSquare },
-        { id: 'profile', label: 'Siz', icon: UserCircle2, activeIcon: UserCircle2 }
+        { id: 'chats', label: 'Sohbetler', icon: MessageCircle, activeIcon: MessageSquare }
       ].map(tab => (
         <button 
           key={tab.id}
