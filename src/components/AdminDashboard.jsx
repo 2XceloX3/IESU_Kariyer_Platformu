@@ -612,6 +612,10 @@ export default function AdminDashboard({
   featureSurveys, setFeatureSurveys,
   featureCareerCheckup, setFeatureCareerCheckup,
   featureAlumniCard, setFeatureAlumniCard,
+  featureClubsShowcase, setFeatureClubsShowcase,
+  featureClubApplications, setFeatureClubApplications,
+  clubs, setClubs,
+  clubApplications, setClubApplications,
   academicApprovals, setAcademicApprovals,
   groups, setGroups
 }) {
@@ -636,7 +640,7 @@ export default function AdminDashboard({
       case 'cms_feat':    return <CMSFeatured featuredOpportunities={featuredOpportunities || []} setFeaturedOpportunities={setFeaturedOpportunities} />;
       case 'cms_ment':    return <CMSMentorship mentorships={mentorships || []} setMentorships={setMentorships} />;
       case 'cms_groups':  return <CMSGroups groups={groups || []} setGroups={setGroups} currentUser={currentUser} />;
-      case 'clubs_pool':  return <CMSClubs />;
+      case 'clubs_pool':  return <CMSClubs clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={currentUser} />;
       case 'overview':    return <OverviewPanel {...p}/>;
       case 'operasyon':   return <OperasyonPanel {...p}/>;
       case 'akademik':    return <AkademikPanel {...p}/>;
@@ -659,7 +663,7 @@ export default function AdminDashboard({
       case 'content_import': return <OfficialContentImport news={news || []} setNews={setNews} announcements={announcements || []} setAnnouncements={setAnnouncements} events={events || []} setEvents={setEvents} />;
       case 'org':         return <OrgPanel/>;
       case 'cleanup':     return <DataCleanup students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} companies={companies || []} setCompanies={setCompanies} messages={messages || []} setMessages={setMessages} posts={posts || []} setPosts={setPosts} jobs={jobs || []} setJobs={setJobs} />;
-      case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} />;
+      case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} featureClubsShowcase={featureClubsShowcase} setFeatureClubsShowcase={setFeatureClubsShowcase} featureClubApplications={featureClubApplications} setFeatureClubApplications={setFeatureClubApplications} />;
       default:            return <OverviewPanel {...p}/>;
     }
   };
@@ -809,7 +813,7 @@ export default function AdminDashboard({
   );
 }
 
-function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerCheckup, setFeatureCareerCheckup, featureAlumniCard, setFeatureAlumniCard }) {
+function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerCheckup, setFeatureCareerCheckup, featureAlumniCard, setFeatureAlumniCard, featureClubsShowcase, setFeatureClubsShowcase, featureClubApplications, setFeatureClubApplications }) {
   return (
     <div className="bg-white rounded-3xl p-6 lg:p-8 border border-gray-200 shadow-xl shadow-gray-200/50 animate-fade-in relative overflow-hidden">
       <div className="flex items-center gap-4 mb-8">
@@ -859,6 +863,32 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
             className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${featureAlumniCard ? 'bg-emerald-500' : 'bg-gray-300'}`}
           >
             <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${featureAlumniCard ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
+          <div>
+            <h3 className="font-bold text-gray-900 text-[16px]">Kulüpler Vitrini (Ana Sayfa)</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Öğrenci ve mezunların ana sayfasındaki kulüpler tanıtım bölümünü açar/kapatır.</p>
+          </div>
+          <button 
+            onClick={() => setFeatureClubsShowcase(!featureClubsShowcase)}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${featureClubsShowcase ? 'bg-emerald-500' : 'bg-gray-300'}`}
+          >
+            <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${featureClubsShowcase ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
+          <div>
+            <h3 className="font-bold text-gray-900 text-[16px]">Yeni Kulüp Başvuruları</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Yeni kulüp kurulumu başvurularını (EK-1) aktif/pasif hale getirir.</p>
+          </div>
+          <button 
+            onClick={() => setFeatureClubApplications(!featureClubApplications)}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${featureClubApplications ? 'bg-emerald-500' : 'bg-gray-300'}`}
+          >
+            <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${featureClubApplications ? 'translate-x-6' : 'translate-x-1'}`} />
           </button>
         </div>
       </div>

@@ -42,6 +42,11 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+const initialClubs = [
+  { id: 'CLUB-001', name: 'Genç Yeşilay Kulübü', category: 'Sosyal Sorumluluk', description: 'Bağımlılıklarla mücadele ve sağlıklı yaşam bilincini artırma.', presidentId: 'STU-001', advisorId: 'ACAD-001', status: 'Aktif', memberCount: 45, coverImage: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=500&q=80', logo: 'https://ui-avatars.com/api/?name=GY&background=10B981&color=fff', forms: [] }
+];
+const initialClubApplications = [];
+
 const initialRealCompanies = [
   { id: 'CMP-001', name: 'AIESEC Batı İstanbul Şubesi', username: 'aiesec', password: 'IESU2026!aiesec', sector: 'Genel', status: 'Onaylı' },
   { id: 'CMP-002', name: 'ALTERNATİF YAYINCILIK SAN.VE TİC.LTD.ŞT', username: 'alternatif', password: 'IESU2026!alternatif', sector: 'Yayıncılık', status: 'Onaylı' },
@@ -142,6 +147,11 @@ function App() {
   const [featureSurveys, setFeatureSurveys] = useLocalStorageState('iesu_feature_surveys', true);
   const [featureCareerCheckup, setFeatureCareerCheckup] = useLocalStorageState('iesu_feature_career_checkup', true);
   const [featureAlumniCard, setFeatureAlumniCard] = useLocalStorageState('iesu_feature_alumni_card', true);
+  const [featureClubsShowcase, setFeatureClubsShowcase] = useLocalStorageState('iesu_feature_clubs_showcase', true);
+  const [featureClubApplications, setFeatureClubApplications] = useLocalStorageState('iesu_feature_club_applications', false);
+
+  const [clubs, setClubs] = useLocalStorageState('iesu_clubs_v1', initialClubs);
+  const [clubApplications, setClubApplications] = useLocalStorageState('iesu_club_apps_v1', initialClubApplications);
 
   useEffect(() => {
     if (!localStorage.getItem('iesu_likes_reset_v4')) {
@@ -175,8 +185,8 @@ function App() {
       {view === 'register' && <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={setStudents} setAlumni={setAlumni} setAcademicStaff={setAcademicStaff} setCompanies={setCompanies} setUserRole={setUserRole} />}
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
       {view === 'create_job' && <JobCreator setView={setView} currentUser={currentUser} jobs={jobs} setJobs={setJobs} />}
-      {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} academicRole={academicRole} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} />}
-      {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} academicRole={academicRole} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureSurveys={featureSurveys} featureCareerCheckup={featureCareerCheckup} featureAlumniCard={featureAlumniCard} />}
+      {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} academicRole={academicRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} voluntaryInternships={voluntaryInternships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureClubsShowcase={featureClubsShowcase} featureClubApplications={featureClubApplications} clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} />}
+      {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} academicRole={academicRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureSurveys={featureSurveys} featureCareerCheckup={featureCareerCheckup} featureAlumniCard={featureAlumniCard} featureClubsShowcase={featureClubsShowcase} featureClubApplications={featureClubApplications} clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} />}
       {view === 'academic' && (
         <ErrorBoundary>
           <AcademicStaffFeed 
@@ -223,6 +233,14 @@ function App() {
         setFeatureCareerCheckup={setFeatureCareerCheckup}
         featureAlumniCard={featureAlumniCard}
         setFeatureAlumniCard={setFeatureAlumniCard}
+        featureClubsShowcase={featureClubsShowcase}
+        setFeatureClubsShowcase={setFeatureClubsShowcase}
+        featureClubApplications={featureClubApplications}
+        setFeatureClubApplications={setFeatureClubApplications}
+        clubs={clubs}
+        setClubs={setClubs}
+        clubApplications={clubApplications}
+        setClubApplications={setClubApplications}
         academicApprovals={academicApprovals} setAcademicApprovals={setAcademicApprovals}
         posts={posts} setPosts={setPosts}
         news={news} setNews={setNews}

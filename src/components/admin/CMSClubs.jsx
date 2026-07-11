@@ -1,184 +1,251 @@
 import React, { useState } from 'react';
-import PanelHeader from './PanelHeader';
-import { Users, Search, Download, ShieldCheck, X } from 'lucide-react';
-import { exportToCSV } from '../../utils/export';
+import { Target, Search, Plus, CheckCircle, XCircle, Clock, FileText, X, Folder, Eye, Download, Users } from 'lucide-react';
 
-const CLUBS_DATA = [
-  {
-    id: 'CLB-001',
-    name: 'Yazılım Kulübü',
-    memberCount: 150,
-    advisor: 'Dr. Ahmet Yılmaz',
-    status: 'Aktif',
-    board: [
-      { role: 'Başkan', name: 'Caner Doğan' },
-      { role: 'Başkan Yardımcısı', name: 'Ayşe Demir' },
-      { role: 'Genel Sekreter', name: 'Burak Şahin' },
-      { role: 'Sayman', name: 'Elif Yılmaz' },
-      { role: 'Etkinlik Sorumlusu', name: 'Kaan Çelik' },
-      { role: 'İletişim Sorumlusu', name: 'Zeynep Kaya' },
-      { role: 'Eğitim Sorumlusu', name: 'Mert Öztürk' },
-      { role: 'Üye', name: 'Selin Yıldız' },
-    ]
-  },
-  {
-    id: 'CLB-002',
-    name: 'Girişimcilik Kulübü',
-    memberCount: 120,
-    advisor: 'Prof. Dr. Mehmet Aslan',
-    status: 'Aktif',
-    board: [
-      { role: 'Başkan', name: 'Seda Korkmaz' },
-      { role: 'Başkan Yardımcısı', name: 'Ozan Ercan' },
-      { role: 'Genel Sekreter', name: 'Ece Tekin' },
-      { role: 'Sayman', name: 'Efe Çetin' },
-      { role: 'Etkinlik Sorumlusu', name: 'Ceren Koç' },
-      { role: 'İletişim Sorumlusu', name: 'Emre Yıldırım' },
-      { role: 'Eğitim Sorumlusu', name: 'İrem Şen' },
-      { role: 'Üye', name: 'Barış Bulut' },
-    ]
-  },
-  {
-    id: 'CLB-003',
-    name: 'IEEE Öğrenci Kolu',
-    memberCount: 200,
-    advisor: 'Doç. Dr. Ayhan Ak',
-    status: 'Aktif',
-    board: [
-      { role: 'Başkan', name: 'Onur Acar' },
-      { role: 'Başkan Yardımcısı', name: 'Deniz Polat' },
-      { role: 'Genel Sekreter', name: 'Pelin Işık' },
-      { role: 'Sayman', name: 'Ali Kurt' },
-      { role: 'Etkinlik Sorumlusu', name: 'Melis Taş' },
-      { role: 'İletişim Sorumlusu', name: 'Yasin Karaca' },
-      { role: 'Eğitim Sorumlusu', name: 'Gizem Kaplan' },
-      { role: 'Üye', name: 'Bora Güler' },
-    ]
-  },
-  {
-    id: 'CLB-004',
-    name: 'Robotik Kulübü',
-    memberCount: 80,
-    advisor: 'Dr. Kemal Tunç',
-    status: 'Aktif',
-    board: [
-      { role: 'Başkan', name: 'Tolga Seçkin' },
-      { role: 'Başkan Yardımcısı', name: 'Hande Mutlu' },
-      { role: 'Genel Sekreter', name: 'Cem Gül' },
-      { role: 'Sayman', name: 'Bahar Sönmez' },
-      { role: 'Etkinlik Sorumlusu', name: 'Doruk Dağ' },
-      { role: 'İletişim Sorumlusu', name: 'Buse Erdem' },
-      { role: 'Eğitim Sorumlusu', name: 'Volkan Kılıç' },
-      { role: 'Üye', name: 'Aslı Can' },
-    ]
-  }
-];
-
-export default function CMSClubs() {
+export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApplications, currentUser }) {
+  const [activeTab, setActiveTab] = useState('applications'); // 'applications' | 'active_clubs'
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedClub, setSelectedClub] = useState(null);
+  const [selectedClub, setSelectedClub] = useState(null); // For viewing a specific club's forms/pool
 
-  const filtered = CLUBS_DATA.filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    c.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleExport = () => {
-    const exportData = filtered.map(c => ({
-      'Kulüp ID': c.id,
-      'Kulüp Adı': c.name,
-      'Üye Sayısı': c.memberCount,
-      'Danışman': c.advisor,
-      'Durum': c.status
-    }));
-    exportToCSV(exportData, 'kulupler.csv');
+  const handleApproveApp = (app) => {
+    // Approve EK-1 application, move to active clubs
+    const newClub = {
+      id: 'CLUB-' + Date.now(),
+      name: app.name,
+      category: 'Genel', // Default category
+      description: app.purpose,
+      presidentId: app.userId,
+      advisorId: app.advisorName, // Store name for now or map to ID
+      status: 'Aktif',
+      memberCount: 8, // Kurucu ekip
+      coverImage: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=500&q=80',
+      logo: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name.substring(0,2))}&background=10B981&color=fff`,
+      forms: [
+        { id: 'FORM-' + Date.now(), type: 'EK-1', title: 'Yeni Kulüp Kurma Başvurusu', date: app.date, status: 'Onaylandı', pdfUrl: null }
+      ]
+    };
+    
+    setClubs([...(clubs || []), newClub]);
+    
+    // Update application status
+    setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'Onaylandı' } : a));
+    alert(`${app.name} kulübü onaylandı ve aktif kulüpler havuzuna eklendi.`);
   };
 
+  const handleRejectApp = (app) => {
+    setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'Reddedildi' } : a));
+    alert("Başvuru reddedildi.");
+  };
+
+  const pendingApps = (clubApplications || []).filter(a => a.status === 'Öğrenci Dekanlığı Onayı Bekliyor');
+  const pastApps = (clubApplications || []).filter(a => a.status !== 'Öğrenci Dekanlığı Onayı Bekliyor');
+
   return (
-    <div className="space-y-6 animate-fade-in relative">
-      <PanelHeader 
-        title="Kulüpler Havuzu" 
-        sub="Üniversite kulüplerini ve yönetim kurulu üyelerini görüntüleyin." 
-        action={
-          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition text-sm font-bold shadow-sm active:scale-95">
-            <Download size={16} /> Excel'e Aktar
-          </button>
-        }
-      />
-      
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-          <input 
-            type="text" placeholder="Kulüp Adı veya ID ara..." 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
-            value={searchQuery} onChange={e=>setSearchQuery(e.target.value)}
-          />
+    <div className="w-full">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h2 className="text-3xl font-black text-gray-900 flex items-center gap-2">
+            <Target className="text-emerald-500" size={32} /> Kulüpler Havuzu Yönetimi
+          </h2>
+          <p className="text-gray-500 font-medium mt-1">Yeni kulüp başvurularını ve aktif kulüplerin resmi belge/form süreçlerini (EK-1'den EK-15'e) yönetin.</p>
         </div>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50/50 border-b border-gray-100">
-              <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Kulüp ID</th>
-              <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Kulüp Adı</th>
-              <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Danışman</th>
-              <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Üye Sayısı</th>
-              <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Durum</th>
-              <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">İşlemler</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {filtered.map(c => (
-              <tr key={c.id} className="hover:bg-gray-50/50 transition-colors">
-                <td className="py-3 px-5 text-sm font-medium text-gray-500">{c.id}</td>
-                <td className="py-3 px-5 text-sm font-bold text-gray-900">{c.name}</td>
-                <td className="py-3 px-5 text-sm text-gray-600">{c.advisor}</td>
-                <td className="py-3 px-5 text-sm text-gray-600 font-bold">{c.memberCount}</td>
-                <td className="py-3 px-5">
-                  <span className="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-md text-xs font-bold">{c.status}</span>
-                </td>
-                <td className="py-3 px-5 text-right">
-                  <button onClick={() => setSelectedClub(c)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center ml-auto gap-1 text-xs font-bold">
-                    <ShieldCheck size={16} /> Yönetim Kurulu
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan="6" className="py-8 text-center text-sm text-gray-500">
-                  Kayıt bulunamadı.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      {/* Tabs */}
+      <div className="flex space-x-2 mb-8 bg-gray-50 p-1.5 rounded-2xl border border-gray-200/60 w-fit">
+        <button 
+          onClick={() => setActiveTab('applications')} 
+          className={`px-6 py-2.5 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'applications' ? 'bg-white text-emerald-600 shadow-sm border border-emerald-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+        >
+          <div className="flex items-center gap-2">
+            <FileText size={16} /> Başvurular (EK-1)
+            {pendingApps.length > 0 && <span className="bg-emerald-100 text-emerald-700 py-0.5 px-2 rounded-full text-[11px]">{pendingApps.length}</span>}
+          </div>
+        </button>
+        <button 
+          onClick={() => setActiveTab('active_clubs')} 
+          className={`px-6 py-2.5 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'active_clubs' ? 'bg-white text-emerald-600 shadow-sm border border-emerald-100' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+        >
+          <div className="flex items-center gap-2">
+            <Users size={16} /> Aktif Kulüpler ve Form Havuzu
+          </div>
+        </button>
       </div>
 
-      {selectedClub && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <Users size={18} className="text-blue-600" />
-                {selectedClub.name} Yönetim Kurulu
-              </h3>
-              <button onClick={() => setSelectedClub(null)} className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="p-4 overflow-y-auto">
-              <div className="space-y-3">
-                {selectedClub.board.map((member, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 border border-gray-100 rounded-xl bg-white hover:border-blue-100 transition-colors">
+      {/* APPLICATIONS TAB */}
+      {activeTab === 'applications' && (
+        <div className="space-y-6 animate-fade-in">
+          {pendingApps.length > 0 ? (
+            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2"><Clock size={18} className="text-amber-500" /> Bekleyen Kurulum Başvuruları (EK-1)</h3>
+              <div className="space-y-4">
+                {pendingApps.map(app => (
+                  <div key={app.id} className="p-5 border border-amber-100 bg-amber-50/30 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                      <p className="text-xs font-bold text-blue-600 mb-0.5">{member.role}</p>
-                      <p className="text-sm font-bold text-gray-900">{member.name}</p>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider">EK-1 BAŞVURUSU</span>
+                        <span className="text-xs font-bold text-gray-500">{app.date}</span>
+                      </div>
+                      <h4 className="text-[16px] font-bold text-gray-900">{app.name}</h4>
+                      <p className="text-[13px] text-gray-600 font-medium mt-1">Danışman: {app.advisorName} | Başvuran ID: {app.userId}</p>
+                      <p className="text-[13px] text-gray-500 mt-2 bg-white p-3 rounded-xl border border-gray-100">"{app.purpose}"</p>
+                    </div>
+                    <div className="flex gap-2 md:flex-col lg:flex-row shrink-0">
+                      <button onClick={() => handleApproveApp(app)} className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                        <CheckCircle size={16}/> Onayla
+                      </button>
+                      <button onClick={() => handleRejectApp(app)} className="px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-all">
+                        <XCircle size={16}/> Reddet
+                      </button>
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          ) : (
+             <div className="text-center py-12 bg-white rounded-3xl border border-gray-100">
+               <CheckCircle size={48} className="mx-auto text-emerald-300 mb-3" />
+               <h3 className="font-bold text-gray-900 text-lg">Bekleyen Başvuru Yok</h3>
+               <p className="text-gray-500">Tüm kulüp kurulum başvuruları değerlendirilmiş.</p>
+             </div>
+          )}
+
+          {/* Past Applications */}
+          {pastApps.length > 0 && (
+            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm mt-8">
+              <h3 className="font-bold text-gray-900 mb-6">Geçmiş Başvurular</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-gray-100 text-[12px] font-bold text-gray-500 uppercase tracking-wider">
+                      <th className="pb-3 px-4">Kulüp Adı</th>
+                      <th className="pb-3 px-4">Tarih</th>
+                      <th className="pb-3 px-4">Danışman</th>
+                      <th className="pb-3 px-4 text-right">Durum</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-[14px]">
+                    {pastApps.map(app => (
+                      <tr key={app.id} className="border-b border-gray-50 hover:bg-gray-50">
+                        <td className="py-4 px-4 font-bold text-gray-900">{app.name}</td>
+                        <td className="py-4 px-4 text-gray-500 font-medium">{app.date}</td>
+                        <td className="py-4 px-4 text-gray-500">{app.advisorName}</td>
+                        <td className="py-4 px-4 text-right">
+                          <span className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold ${app.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                            {app.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ACTIVE CLUBS TAB */}
+      {activeTab === 'active_clubs' && (
+        <div className="animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {(clubs || []).map(club => (
+              <div key={club.id} className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
+                <div className="h-20 bg-emerald-600 relative">
+                  <div className="absolute -bottom-6 left-6 w-14 h-14 bg-white rounded-2xl p-1 shadow-md">
+                    <img src={club.logo} alt={club.name} className="w-full h-full rounded-xl object-cover" />
+                  </div>
+                </div>
+                <div className="pt-10 p-6">
+                  <h3 className="font-black text-gray-900 text-lg leading-tight mb-1">{club.name}</h3>
+                  <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-4">{club.category}</p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500 font-medium mb-6">
+                    <span className="flex items-center gap-1.5"><Users size={16}/> {club.memberCount} Üye</span>
+                    <span className="flex items-center gap-1.5"><FileText size={16}/> {(club.forms || []).length} Belge</span>
+                  </div>
+
+                  <button 
+                    onClick={() => setSelectedClub(club)}
+                    className="w-full py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-[13px] font-bold transition-all border border-gray-200 flex items-center justify-center gap-2"
+                  >
+                    <Folder size={16} className="text-emerald-500" /> Form Havuzunu İncele
+                  </button>
+                </div>
+              </div>
+            ))}
+            {(clubs || []).length === 0 && (
+               <div className="col-span-full text-center py-12 bg-white rounded-3xl border border-gray-100">
+                 <p className="text-gray-500 font-medium">Henüz aktif bir kulüp bulunmuyor.</p>
+               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* CLUB FORMS POOL MODAL */}
+      {selectedClub && (
+        <div className="fixed inset-0 z-[100] bg-gray-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative">
+            <div className="h-16 border-b border-gray-100 bg-gray-50/80 shrink-0 flex items-center justify-between px-6">
+              <div className="flex items-center gap-3">
+                <img src={selectedClub.logo} className="w-8 h-8 rounded-lg object-cover shadow-sm" alt="Logo"/>
+                <div>
+                  <h3 className="font-bold text-gray-900">{selectedClub.name}</h3>
+                  <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">İç Form Havuzu</p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedClub(null)} className="p-2 hover:bg-gray-200 text-gray-500 rounded-full transition"><X size={20}/></button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2"><Folder className="text-blue-500" size={18}/> Doldurulan ve Yüklenen Formlar</h4>
+                
+                {(selectedClub.forms || []).length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 text-sm">Bu kulübe ait henüz gönderilmiş bir form bulunmuyor.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {(selectedClub.forms || []).map(form => (
+                      <div key={form.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-blue-50/50 transition cursor-pointer group">
+                        <div className="flex items-center gap-3 mb-3 sm:mb-0">
+                          <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                            <FileText size={20} />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-gray-900 text-sm">{form.type}</span>
+                              <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${form.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-700' : form.status === 'Bekliyor' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>{form.status}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 font-medium mt-0.5">{form.title} • {form.date}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2 pl-12 sm:pl-0">
+                          <button className="px-3 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5">
+                            <Eye size={14}/> Görüntüle
+                          </button>
+                          <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1.5">
+                            <Download size={14}/> İndir
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 {/* Quick info widgets */}
+                 <div className="bg-white rounded-2xl border border-gray-200 p-5">
+                   <h5 className="font-bold text-gray-900 text-sm mb-3">Kulüp Başkanı Bilgileri</h5>
+                   <p className="text-[13px] text-gray-600">Öğrenci ID: <span className="font-bold text-gray-900">{selectedClub.presidentId}</span></p>
+                 </div>
+                 <div className="bg-white rounded-2xl border border-gray-200 p-5">
+                   <h5 className="font-bold text-gray-900 text-sm mb-3">Danışman Bilgileri</h5>
+                   <p className="text-[13px] text-gray-600">İsim/ID: <span className="font-bold text-gray-900">{selectedClub.advisorId}</span></p>
+                 </div>
               </div>
             </div>
           </div>

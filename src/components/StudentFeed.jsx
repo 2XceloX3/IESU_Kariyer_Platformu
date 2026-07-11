@@ -15,8 +15,9 @@ import TopProfileMenu from './TopProfileMenu';
 import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import NavIcon from './shared/NavIcon';
+import ClubsDirectory from './ClubsDirectory';
 
-export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole, groups, setGroups, setSelectedGroupId }) {
+export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, voluntaryInternships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole, groups, setGroups, setSelectedGroupId, featureClubsShowcase, featureClubApplications, clubs, setClubs, clubApplications, setClubApplications }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -256,10 +257,45 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           </div>
         )}
 
+        {/* CLUBS TAB */}
+        {featureClubsShowcase && activeTab === 'clubs' && (
+          <div className="w-full shrink-0 animate-fade-in mb-6">
+            <ClubsDirectory clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={currentUser} featureClubApplications={featureClubApplications} />
+          </div>
+        )}
+
       </div> {/* END CENTER PANEL */}
 
         {/* RIGHT PANEL: Networking & Vision */}
         <div className="hidden lg:block w-[320px] shrink-0 space-y-6">
+          
+          {/* Kulüpler Vitrini */}
+          {featureClubsShowcase && (
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
+              <h3 className="font-black text-emerald-900 mb-4 flex items-center gap-2">
+                <Target className="text-emerald-500" size={20} /> Öğrenci Kulüpleri
+              </h3>
+              <p className="text-sm text-emerald-700 font-medium mb-4">Sosyalleşin, yeteneklerinizi geliştirin ve üniversite hayatını dolu dolu yaşayın.</p>
+              
+              <div className="flex -space-x-2 mb-5">
+                {(clubs || []).slice(0, 4).map((club, idx) => (
+                  <img key={idx} src={club.logo} alt={club.name} title={club.name} className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
+                ))}
+                {(clubs || []).length > 4 && (
+                  <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold z-10">
+                    +{clubs.length - 4}
+                  </div>
+                )}
+              </div>
+
+              <button 
+                onClick={() => { setActiveTab('clubs'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[13px] font-bold transition-all shadow-md flex justify-center"
+              >
+                Tüm Kulüpleri Gör
+              </button>
+            </div>
+          )}
           
           {/* Önerilen Bağlantılar */}
           <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
