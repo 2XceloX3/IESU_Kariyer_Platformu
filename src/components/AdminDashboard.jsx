@@ -668,8 +668,13 @@ export default function AdminDashboard({
     }
   };
 
-  // ALL_TABS birleştirilmesi
-  const ALL_TABS = [...MAIN_TABS, ...MORE_TABS];
+  // ALL_TABS birleştirilmesi ve feature toggle filtrelemesi
+  const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
+    if (tab.id === 'anket' && !featureSurveys) return false;
+    if (tab.id === 'kart' && !featureAlumniCard) return false;
+    if (tab.id === 'clubs_pool' && !featureClubsShowcase) return false;
+    return true;
+  });
 
   // Arama filtresi
   const filteredPanels = searchQuery 
