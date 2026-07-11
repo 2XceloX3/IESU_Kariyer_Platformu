@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film } from 'lucide-react';
+import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -22,6 +22,12 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [viewedOnceMsgs, setViewedOnceMsgs] = useState([]);
   const [pendingMediaType, setPendingMediaType] = useState(null);
   
+  // Camera specific states
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -118,7 +124,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       const updated = convos.get(otherId);
       if (updated) {
         if (!updated.timestamp || msg.timestamp > updated.timestamp) {
-          updated.lastMessage = msg.type === 'image' ? '📷 Fotoğraf' : msg.type === 'video' ? '🎥 Video' : msg.type === 'view_once' ? '👁️ 1 Kez Görüntüle' : msg.content;
+          updated.lastMessage = msg.type === 'image' ? '📷 Fotoğraf' : msg.type === 'video' ? '🎥 Video' : msg.content;
           updated.timestamp = msg.timestamp;
         }
         if ((isReceiver || (isGroupMsg && !isSender)) && !msg?.read) {
@@ -185,6 +191,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   };
 
   const handleSendMedia = (type) => {
+    if (type === 'camera') {
+      startCamera();
+      return;
+    }
     setPendingMediaType(type);
     if(fileInputRef.current) {
       fileInputRef.current.setAttribute('accept', type === 'video' ? 'video/*' : 'image/*');
@@ -205,11 +215,48 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     e.target.value = ''; // reset
   };
 
-  const markViewOnce = (msgId) => {
-    if(!viewedOnceMsgs.includes(msgId)){
-      setViewedOnceMsgs([...viewedOnceMsgs, msgId]);
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setIsCameraActive(true);
+      setShowAttachmentMenu(false);
+    } catch (err) {
+      console.error("Camera access denied:", err);
+      alert("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
     }
   };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      handleSend(null, 'image', dataUrl);
+      stopCamera();
+    }
+  };
+
+  useEffect(() => {
+    return () => stopCamera(); // Cleanup on unmount
+  }, []);
+
+
 
   const formatTime = (ts) => {
     if (!ts) return '';
@@ -352,42 +399,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                             </div>
                           )}
 
-                          {/* View Once Message */}
-                          {msg.type === 'view_once' && msg.mediaUrl && (
-                            <div className="rounded-xl overflow-hidden mb-1 bg-gray-900 border border-gray-800 p-4 w-48 text-center flex flex-col items-center justify-center relative group">
-                              {isMine ? (
-                                <>
-                                  <Eye size={24} className="text-gray-400 mb-2" />
-                                  <p className="text-xs text-gray-300 font-bold">1 Kez Görüntülenebilir Fotoğraf</p>
-                                </>
-                              ) : isViewed ? (
-                                <>
-                                  <EyeOff size={24} className="text-gray-500 mb-2" />
-                                  <p className="text-xs text-gray-500 font-bold">Açıldı</p>
-                                </>
-                              ) : (
-                                <button onClick={() => markViewOnce(msg.id)} className="w-full h-full flex flex-col items-center justify-center">
-                                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white mb-2 animate-pulse">
-                                    <Eye size={20} />
-                                  </div>
-                                  <p className="text-xs text-white font-bold">Fotoğrafı Gör</p>
-                                </button>
-                              )}
-                              
-                              {/* Overlay for viewing */}
-                              {!isMine && !isViewed && viewedOnceMsgs.includes(msg.id + '_temp') && (
-                                <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4">
-                                  <div className="relative max-w-2xl w-full">
-                                    <img src={msg.mediaUrl} className="w-full rounded-xl" />
-                                    <button onClick={() => markViewOnce(msg.id)} className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full">
-                                      <X size={24} />
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
                           <div className={`flex items-center justify-end gap-1.5 mt-1 px-1 ${isMine ? 'text-green-700/70' : 'text-gray-400'}`}>
                             <span className="text-[10px] font-medium">{formatTime(msg.timestamp)}</span>
                             {isMine && <CheckCircle2 size={12} className={msg.read ? 'text-blue-500' : ''} />}
@@ -411,8 +422,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                   <button onClick={() => handleSendMedia('video')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
                     <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center"><Film size={16} /></div> Video
                   </button>
-                  <button onClick={() => handleSendMedia('view_once')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center"><Eye size={16} /></div> 1 Kez Görüntüle
+                  <button onClick={() => handleSendMedia('camera')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
+                    <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center"><Aperture size={16} /></div> Kamera Aç
                   </button>
                 </div>
               )}
