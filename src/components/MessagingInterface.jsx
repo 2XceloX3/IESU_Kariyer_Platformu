@@ -590,41 +590,38 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         </div>
         <h1 className="text-3xl font-black text-black mb-6">Aramalar</h1>
         
-        {/* Create Call Link */}
-        <div className="flex items-center gap-4 mb-8 cursor-pointer bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 shrink-0">
-            <Link2 size={24} />
+        {/* New Call Button */}
+        <div className="flex items-center gap-4 mb-4 cursor-pointer bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition group">
+          <div className="w-12 h-12 rounded-full bg-[#00A884] flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
+            <PhoneCall size={24} />
           </div>
           <div>
-            <h4 className="font-bold text-[17px] text-blue-500">Arama Bağlantısı Oluştur</h4>
-            <p className="text-gray-500 text-[14px]">WhatsApp aramanız için bir bağlantı paylaşın</p>
+            <h4 className="font-bold text-[17px] text-[#00A884]">Yeni Arama Başlat</h4>
+            <p className="text-gray-500 text-[14px]">Rehberinizdeki kişilerle sesli veya görüntülü görüşün</p>
           </div>
         </div>
-        
-        <h3 className="font-bold text-[18px] text-black mb-2 px-2">En Son</h3>
       </div>
       
       <div className="flex-1 overflow-y-auto px-5 pb-4">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          {[
-            { id: 'usr-1', name: 'Kariyer Merkezi', type: 'Gelen', time: 'Dün', missed: false },
-            { id: 'usr-2', name: 'Danışman Hocam', type: 'Giden', time: 'Perşembe', missed: false },
-            { id: 'usr-3', name: 'Otomotiv Kulübü', type: 'Cevapsız', time: 'Perşembe', missed: true },
-            { id: 'usr-4', name: 'Mezunlar Derneği', type: 'Gelen', time: 'Pazartesi', missed: false }
-          ].map((call, i, arr) => (
-            <div key={i} onClick={() => startCall('audio', call.id)} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
-              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(call.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
+        <h3 className="font-bold text-[18px] text-black mb-3 px-2">Kişiler</h3>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-16">
+          {contacts.filter(c => c.id !== currentUser?.id).map((contact, i, arr) => (
+            <div key={contact.id} onClick={() => { setActiveContactId(contact.id); startCall('audio'); }} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
+              <img src={contact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}`} className="w-12 h-12 rounded-full object-cover shrink-0" />
               <div className="flex-1 flex justify-between items-center">
                 <div>
-                  <h4 className={`font-bold text-[16px] ${call.missed ? 'text-red-500' : 'text-gray-900'}`}>{call.name}</h4>
+                  <h4 className="font-bold text-[16px] text-gray-900">{contact.name}</h4>
                   <div className="flex items-center gap-1.5 text-gray-500 text-[14px] mt-0.5">
-                    {call.type === 'Giden' ? <PhoneOutgoing size={14} /> : call.type === 'Cevapsız' ? <PhoneMissed size={14} className="text-red-500" /> : <PhoneIncoming size={14} />} 
-                    <span>{call.type}</span>
+                    <span>{contact.title || contact.department || contact.sector || 'Kullanıcı'}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-gray-500 text-[14px]">{call.time}</span>
-                  <button className="text-blue-500 p-2 hover:bg-blue-50 rounded-full transition" onClick={(e) => { e.stopPropagation(); startCall('video', call.id); }}><Info size={22}/></button>
+                  <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(contact.id); startCall('audio'); }}>
+                    <Phone size={22}/>
+                  </button>
+                  <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(contact.id); startCall('video'); }}>
+                    <Video size={22}/>
+                  </button>
                 </div>
               </div>
             </div>
