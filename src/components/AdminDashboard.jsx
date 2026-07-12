@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import TopProfileMenu from './TopProfileMenu';
 import { contentData } from './NewsEvents';
 import { Megaphone, Star } from 'lucide-react';
@@ -35,23 +35,23 @@ import {
   ChevronDown, ChevronUp, Search, Bell, Bell as BellIcon,
   CheckCircle, XCircle, Plus, Trash2, Send,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
-  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2
+  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings
 } from 'lucide-react';
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 //  MOCK DATA
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 const STUDENTS = [
-  { id:'STD-001', name:'AyÅŸe Kaya',      dept:'Bilgisayar MÃ¼h.', year:3, gpa:3.4, cv:true,  status:'Aktif' },
-  { id:'STD-002', name:'Mehmet Demir',   dept:'EndÃ¼stri MÃ¼h.',   year:4, gpa:2.9, cv:false, status:'Aktif' },
-  { id:'STD-003', name:'Elif Åahin',     dept:'Ä°ÅŸletme',         year:2, gpa:3.8, cv:true,  status:'Aktif' },
-  { id:'STD-004', name:'Burak YÄ±lmaz',   dept:'YazÄ±lÄ±m MÃ¼h.',    year:3, gpa:3.1, cv:true,  status:'Pasif' },
-  { id:'STD-005', name:'Selin Ã‡elik',    dept:'Makine MÃ¼h.',     year:4, gpa:3.6, cv:false, status:'Aktif' },
-  { id:'STD-006', name:'Can Arslan',     dept:'Elektrik MÃ¼h.',   year:1, gpa:3.2, cv:false, status:'Aktif' },
-  { id:'STD-007', name:'Zeynep Kurt',    dept:'Bilgisayar MÃ¼h.', year:4, gpa:3.9, cv:true,  status:'Aktif' },
-  { id:'STD-008', name:'Emre DoÄŸan',     dept:'Ä°nÅŸaat MÃ¼h.',     year:2, gpa:2.7, cv:false, status:'Aktif' },
-  { id:'STD-009', name:'Seda TunÃ§',      dept:'Ä°ÅŸletme',         year:3, gpa:3.5, cv:true,  status:'Aktif' },
-  { id:'STD-010', name:'TarÄ±k Polat',    dept:'YazÄ±lÄ±m MÃ¼h.',    year:1, gpa:2.5, cv:false, status:'Aktif' },
+  { id:'STD-001', name:'Ayşe Kaya',      dept:'Bilgisayar Müh.', year:3, gpa:3.4, cv:true,  status:'Aktif' },
+  { id:'STD-002', name:'Mehmet Demir',   dept:'Endüstri Müh.',   year:4, gpa:2.9, cv:false, status:'Aktif' },
+  { id:'STD-003', name:'Elif Şahin',     dept:'İşletme',         year:2, gpa:3.8, cv:true,  status:'Aktif' },
+  { id:'STD-004', name:'Burak Yılmaz',   dept:'Yazılım Müh.',    year:3, gpa:3.1, cv:true,  status:'Pasif' },
+  { id:'STD-005', name:'Selin Çelik',    dept:'Makine Müh.',     year:4, gpa:3.6, cv:false, status:'Aktif' },
+  { id:'STD-006', name:'Can Arslan',     dept:'Elektrik Müh.',   year:1, gpa:3.2, cv:false, status:'Aktif' },
+  { id:'STD-007', name:'Zeynep Kurt',    dept:'Bilgisayar Müh.', year:4, gpa:3.9, cv:true,  status:'Aktif' },
+  { id:'STD-008', name:'Emre Doğan',     dept:'İnşaat Müh.',     year:2, gpa:2.7, cv:false, status:'Aktif' },
+  { id:'STD-009', name:'Seda Tunç',      dept:'İşletme',         year:3, gpa:3.5, cv:true,  status:'Aktif' },
+  { id:'STD-010', name:'Tarık Polat',    dept:'Yazılım Müh.',    year:1, gpa:2.5, cv:false, status:'Aktif' },
 ];
 
 const ALUMNI = [];
@@ -70,20 +70,20 @@ const MESSAGES_INIT = [];
 
 const SURVEYS_INIT = [
   { id:'SRV-001', title:'Kariyer Beklentileri Anketi 2026', responses:87, total:120, status:'Aktif',  date:'01.07.2026' },
-  { id:'SRV-002', title:'Staj Memnuniyet Anketi',          responses:34, total:50,  status:'KapandÄ±', date:'15.06.2026' },
-  { id:'SRV-003', title:'SEM Kurs DeÄŸerlendirmesi',        responses:12, total:30,  status:'Aktif',  date:'05.07.2026' },
+  { id:'SRV-002', title:'Staj Memnuniyet Anketi',          responses:34, total:50,  status:'Kapandı', date:'15.06.2026' },
+  { id:'SRV-003', title:'SEM Kurs Değerlendirmesi',        responses:12, total:30,  status:'Aktif',  date:'05.07.2026' },
 ];
 
 const SEM_INIT = [
-  { id:'SEM-001', title:'Python ile Veri Bilimi',      instructor:'Dr. Hasan Ã–ztÃ¼rk', quota:30, enrolled:24, date:'10.07.2026', status:'Aktif'       },
-  { id:'SEM-002', title:'Dijital Pazarlama SertifikasÄ±',instructor:'Fatma YÄ±ldÄ±z',    quota:25, enrolled:25, date:'20.07.2026', status:'Dolu'         },
-  { id:'SEM-003', title:'Kariyer KoÃ§luÄŸu ProgramÄ±',    instructor:'Ali KoÃ§',          quota:20, enrolled:8,  date:'01.08.2026', status:'KayÄ±t AÃ§Ä±k'   },
-  { id:'SEM-004', title:'Ä°ÅŸ Hukuku Temelleri',         instructor:'Av. Selin Ekici', quota:35, enrolled:18, date:'05.08.2026', status:'KayÄ±t AÃ§Ä±k'   },
+  { id:'SEM-001', title:'Python ile Veri Bilimi',      instructor:'Dr. Hasan Öztürk', quota:30, enrolled:24, date:'10.07.2026', status:'Aktif'       },
+  { id:'SEM-002', title:'Dijital Pazarlama Sertifikası',instructor:'Fatma Yıldız',    quota:25, enrolled:25, date:'20.07.2026', status:'Dolu'         },
+  { id:'SEM-003', title:'Kariyer Koçluğu Programı',    instructor:'Ali Koç',          quota:20, enrolled:8,  date:'01.08.2026', status:'Kayıt Açık'   },
+  { id:'SEM-004', title:'İş Hukuku Temelleri',         instructor:'Av. Selin Ekici', quota:35, enrolled:18, date:'05.08.2026', status:'Kayıt Açık'   },
 ];
 
 const NEWS_INIT = [
-  ...((contentData?.haberler || []) || []).map((h, i) => ({ id: 'NE-H' + i, type: 'Haber', title: h?.title, date: h?.date, status: 'YayÄ±nda' })),
-  ...((contentData?.duyurular || []) || []).map((d, i) => ({ id: 'NE-D' + i, type: 'Duyuru', title: d?.title, date: d?.date, status: 'YayÄ±nda' })),
+  ...((contentData?.haberler || []) || []).map((h, i) => ({ id: 'NE-H' + i, type: 'Haber', title: h?.title, date: h?.date, status: 'Yayında' })),
+  ...((contentData?.duyurular || []) || []).map((d, i) => ({ id: 'NE-D' + i, type: 'Duyuru', title: d?.title, date: d?.date, status: 'Yayında' })),
   ...((contentData?.etkinlikler || []) || []).map((e, i) => ({ id: 'NE-E' + i, type: 'Etkinlik', title: e?.title, date: e?.date, status: 'Beklemede' }))
 ];
 
@@ -92,37 +92,37 @@ const NEWS_INIT = [
 
 
 const EVENTS_INIT = [
-  { id:'EVT-001', title:'Kariyer FuarÄ± 2026',  category:'Kariyer', type:'YÃ¼z yÃ¼ze', date:'15.07.2026', quota:500, status:'YayÄ±nda'   },
-  { id:'EVT-002', title:'Google ile BuluÅŸma',  category:'Firma',   type:'Online',   date:'20.07.2026', quota:200, status:'Beklemede' },
-  { id:'EVT-003', title:'Mezun GÃ¼nÃ¼',          category:'Mezun',   type:'YÃ¼z yÃ¼ze', date:'01.08.2026', quota:300, status:'YayÄ±nda'   },
+  { id:'EVT-001', title:'Kariyer Fuarı 2026',  category:'Kariyer', type:'Yüz yüze', date:'15.07.2026', quota:500, status:'Yayında'   },
+  { id:'EVT-002', title:'Google ile Buluşma',  category:'Firma',   type:'Online',   date:'20.07.2026', quota:200, status:'Beklemede' },
+  { id:'EVT-003', title:'Mezun Günü',          category:'Mezun',   type:'Yüz yüze', date:'01.08.2026', quota:300, status:'Yayında'   },
 ];
 
 const ORG = {
-  name:'Prof. Dr. Ahmet Bulut', title:'RektÃ¶r',
+  name:'Prof. Dr. Ahmet Bulut', title:'Rektör',
   children:[{
-    name:'Dr. Zeynep Aksoy', title:'Kariyer Ofisi DirektÃ¶rÃ¼',
+    name:'Dr. Zeynep Aksoy', title:'Kariyer Ofisi Direktörü',
     children:[
-      { name:'Murat KoÃ§',     title:'Kariyer DanÄ±ÅŸmanÄ±',    children:[] },
-      { name:'Seda TÃ¼rkmen',  title:'Mezun Ä°liÅŸkileri',     children:[] },
-      { name:'TarÄ±k Polat',   title:'Firma Ä°liÅŸkileri',     children:[] },
+      { name:'Murat Koç',     title:'Kariyer Danışmanı',    children:[] },
+      { name:'Seda Türkmen',  title:'Mezun İlişkileri',     children:[] },
+      { name:'Tarık Polat',   title:'Firma İlişkileri',     children:[] },
     ]
   }]
 };
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 //  SHARED UI COMPONENTS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 function Badge({ status }) {
   const map = {
-    'YayÄ±nda':'bg-emerald-100 text-emerald-700 border-emerald-200',
+    'Yayında':'bg-emerald-100 text-emerald-700 border-emerald-200',
     'Aktif':'bg-emerald-100 text-emerald-700 border-emerald-200',
-    'OnaylÄ±':'bg-emerald-100 text-emerald-700 border-emerald-200',
-    'KayÄ±t AÃ§Ä±k':'bg-sky-100 text-sky-700 border-sky-200',
-    'Ä°nceleniyor':'bg-sky-100 text-sky-700 border-sky-200',
+    'Onaylı':'bg-emerald-100 text-emerald-700 border-emerald-200',
+    'Kayıt Açık':'bg-sky-100 text-sky-700 border-sky-200',
+    'İnceleniyor':'bg-sky-100 text-sky-700 border-sky-200',
     'Beklemede':'bg-amber-100 text-amber-700 border-amber-200',
     'Onay Bekliyor':'bg-amber-100 text-amber-700 border-amber-200',
-    'EÅŸleÅŸtirme Bekliyor':'bg-amber-100 text-amber-700 border-amber-200',
-    'KapandÄ±':'bg-gray-100 text-gray-500 border-gray-200',
+    'Eşleştirme Bekliyor':'bg-amber-100 text-amber-700 border-amber-200',
+    'Kapandı':'bg-gray-100 text-gray-500 border-gray-200',
     'Pasif':'bg-gray-100 text-gray-500 border-gray-200',
     'Dolu':'bg-orange-100 text-orange-700 border-orange-200',
     'PART TIME':'bg-purple-100 text-purple-700 border-purple-200',
@@ -170,7 +170,7 @@ function Progress({ value, max, color='red' }) {
 }
 
 
-function Tbl({ headers, rows, empty='KayÄ±t bulunamadÄ±' }) {
+function Tbl({ headers, rows, empty='Kayıt bulunamadı' }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -203,12 +203,12 @@ function BtnPrimary({ onClick, children, type='button', className='' }) {
   return <button type={type} onClick={onClick} className={`flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition shadow-sm ${className}`}>{children}</button>;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 //  PANELS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 
-// â”€â”€ 1. Kontrol Merkezi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [], messages = [], mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [], setView }) {
+// ── 1. Kontrol Merkezi ────────────────────────────────────────
+function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [], messages = [], mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [] }) {
   const depts = {};
   (students || []).forEach(s => { depts[s?.dept]=(depts[s?.dept]||0)+1; });
   const deptList = Object.entries(depts).sort((a,b)=>b[1]-a[1]).slice(0,5);
@@ -216,31 +216,31 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
 
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Kontrol Merkezi" sub="Sistemin genel durumu" /> <div className="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden my-4"><div className="absolute -top-10 -right-10 opacity-20 pointer-events-none"><MessageCircle size={150} /></div><div className="relative z-10"><span className="bg-white/20 px-2.5 py-1 rounded-md text-[10px] font-black tracking-widest uppercase mb-3 inline-block">YENI MODUL YAYINDA</span><h2 className="text-2xl font-black mb-1.5 tracking-tight">Yapay Zeka Mulakat ve CV Merkezi</h2><p className="text-red-100 text-sm max-w-lg mb-5 font-medium leading-relaxed">Ogrencilerinizi gercekci mulakat simulasyonlariyla gelistirin, otomatik CV olusturucu ile kariyer yolculuklarini destekleyin.</p><div className="flex flex-wrap gap-3"><button onClick={() => setView('interview_sim')} className="px-5 py-2.5 bg-white text-red-600 font-bold rounded-xl text-[13px] hover:bg-gray-50 transition-colors shadow-sm flex items-center gap-2"><MessageCircle size={16} /> Mulakat Simulasyonu</button><button onClick={() => setView('cvbuilder')} className="px-5 py-2.5 bg-red-700/50 hover:bg-red-700/70 text-white border border-red-400 font-bold rounded-xl text-[13px] transition-colors flex items-center gap-2"><Wand2 size={16} /> CV Olusturucu</button></div></div></div>
+      <PanelHeader title="Kontrol Merkezi" sub="Sistemin genel durumu" />
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        <StatCard icon={<Users size={20}/>} label="Aktif Ã–ÄŸrenci" value={(students || []).filter(s=>s?.status==='Aktif').length} sub="Toplam kayÄ±tlÄ±" color="blue" />
-        <StatCard icon={<Briefcase size={20}/>} label="AÃ§Ä±k Ä°lanlar" value={(jobs || []).filter(j=>j?.status==='YayÄ±nda').length} sub={`${(jobs || []).filter(j=>j?.status==='Beklemede').length} onay bekliyor`} color="red" />
-        <StatCard icon={<GraduationCap size={20}/>} label="Mezun KaydÄ±" value={(alumni || []).length} sub={`${(alumni || []).filter(a=>a.mentor).length} aktif mentor`} color="purple" />
+        <StatCard icon={<Users size={20}/>} label="Aktif Öğrenci" value={(students || []).filter(s=>s?.status==='Aktif').length} sub="Toplam kayıtlı" color="blue" />
+        <StatCard icon={<Briefcase size={20}/>} label="Açık İlanlar" value={(jobs || []).filter(j=>j?.status==='Yayında').length} sub={`${(jobs || []).filter(j=>j?.status==='Beklemede').length} onay bekliyor`} color="red" />
+        <StatCard icon={<GraduationCap size={20}/>} label="Mezun Kaydı" value={(alumni || []).length} sub={`${(alumni || []).filter(a=>a.mentor).length} aktif mentor`} color="purple" />
         
         {/* Education Breakdown Based on Image 1 */}
-        <StatCard icon={<Award size={20}/>} label="Ã–nlisans" value={(alumni || []).filter(a=>a?.degree === 'Ã–nlisans').length} sub="Mezunu" color="green" />
+        <StatCard icon={<Award size={20}/>} label="Önlisans" value={(alumni || []).filter(a=>a?.degree === 'Önlisans').length} sub="Mezunu" color="green" />
         <StatCard icon={<BookOpen size={20}/>} label="Lisans" value={(alumni || []).filter(a=>!a?.degree || a?.degree === 'Lisans').length} sub="Mezunu" color="blue" />
-        <StatCard icon={<Library size={20}/>} label="LisansÃ¼stÃ¼" value={(alumni || []).filter(a=>a?.degree === 'LisansÃ¼stÃ¼' || a?.degree === 'YÃ¼ksek Lisans' || a?.degree === 'Doktora').length} sub="Mezunu" color="orange" />
+        <StatCard icon={<Library size={20}/>} label="Lisansüstü" value={(alumni || []).filter(a=>a?.degree === 'Lisansüstü' || a?.degree === 'Yüksek Lisans' || a?.degree === 'Doktora').length} sub="Mezunu" color="orange" />
         
-        <StatCard icon={<MessageSquare size={20}/>} label="OkunmamÄ±ÅŸ" value={(messages || []).filter(m=>!m?.read).length} sub="Mesaj" color="orange" />
+        <StatCard icon={<MessageSquare size={20}/>} label="Okunmamış" value={(messages || []).filter(m=>!m?.read).length} sub="Mesaj" color="orange" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Pending approvals */}
         <Card className="p-6 col-span-1">
-          <h3 className="font-black text-gray-900 mb-4">Bekleyen Ä°ÅŸlemler</h3>
+          <h3 className="font-black text-gray-900 mb-4">Bekleyen İşlemler</h3>
           <div className="space-y-2.5">
             {[
-              { label:'Onay Bekleyen Ä°lan',       val: (jobs || []).filter(j=>j?.status==='Beklemede').length,              color:'amber'   },
+              { label:'Onay Bekleyen İlan',       val: (jobs || []).filter(j=>j?.status==='Beklemede').length,              color:'amber'   },
               { label:'Staj Onay Bekliyor',        val: (voluntaryInternships || []).filter(v=>v.status==='Taslak').length, color:'orange' },
-              { label:'Akademik Profil OnayÄ±',    val: (academicApprovals || []).filter(a=>a.status==='Beklemede').length, color:'red' },
-              { label:'Mentor EÅŸleÅŸme Bekliyor',  val: (mentorships || []).filter(m=>m.status==='EÅŸleÅŸtirme Bekliyor').length, color:'sky'  },
+              { label:'Akademik Profil Onayı',    val: (academicApprovals || []).filter(a=>a.status==='Beklemede').length, color:'red' },
+              { label:'Mentor Eşleşme Bekliyor',  val: (mentorships || []).filter(m=>m.status==='Eşleştirme Bekliyor').length, color:'sky'  },
               { label:'Aktif Anket',               val: (surveys || []).filter(s=>s?.status==='Aktif').length,                color:'green'  },
             ].map(item => (
               <div key={item.label} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
@@ -272,9 +272,9 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Latest jobs */}
         <Card className="p-6">
-          <h3 className="font-black text-gray-900 mb-4">Son Eklenen Ä°lanlar</h3>
+          <h3 className="font-black text-gray-900 mb-4">Son Eklenen İlanlar</h3>
           <Tbl
-            headers={['Ä°lan','Firma','TÃ¼r','Durum']}
+            headers={['İlan','Firma','Tür','Durum']}
             rows={(jobs || []).slice(0,5).map(j=>[
               <span className="font-semibold text-gray-900">{j?.title}</span>,
               j?.company, <Badge status={j?.type}/>, <Badge status={j?.status}/>
@@ -284,7 +284,7 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
 
         {/* Super Admin Activity Feed */}
         <Card className="p-6">
-          <h3 className="font-black text-gray-900 mb-4">Sistem Aktivite AkÄ±ÅŸÄ±</h3>
+          <h3 className="font-black text-gray-900 mb-4">Sistem Aktivite Akışı</h3>
           <div className="space-y-4">
             {(events || []).slice(0, 2).map(e => (
               <div key={e.id} className="flex items-start gap-3 border-b border-gray-50 pb-3">
@@ -293,7 +293,7 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900">Yeni Etkinlik Eklendi: {e?.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{e?.date || 'YakÄ±n Zamanda'}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{e?.date || 'Yakın Zamanda'}</p>
                 </div>
               </div>
             ))}
@@ -304,7 +304,7 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900">Yeni Duyuru: {a?.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{a?.date || 'YakÄ±n Zamanda'}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{a?.date || 'Yakın Zamanda'}</p>
                 </div>
               </div>
             ))}
@@ -314,7 +314,7 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
                   <UserPlus size={14} className="text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-900">Yeni Ã–ÄŸrenci KaydÄ±: {s?.name}</p>
+                  <p className="text-sm font-bold text-gray-900">Yeni Öğrenci Kaydı: {s?.name}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{s?.department}</p>
                 </div>
               </div>
@@ -326,38 +326,38 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
   );
 }
 
-// â”€â”€ 2. Operasyon Ã–zeti â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── 2. Operasyon Özeti ────────────────────────────────────────
 function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVoluntaryInternships, mentorships = [] }) {
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Operasyon Ã–zeti" sub="GÃ¼nlÃ¼k iÅŸ akÄ±ÅŸÄ± ve onay gerektiren iÅŸlemler" />
+      <PanelHeader title="Operasyon Özeti" sub="Günlük iş akışı ve onay gerektiren işlemler" />
 
       <div className="grid grid-cols-3 gap-4">
         <Card className="p-5 border-l-4 border-amber-400">
           <p className="text-3xl font-black text-gray-900">{(jobs || []).filter(j=>j?.status==='Beklemede').length}</p>
-          <p className="text-xs font-bold text-gray-500 uppercase mt-1">Onay Bekleyen Ä°lan</p>
+          <p className="text-xs font-bold text-gray-500 uppercase mt-1">Onay Bekleyen İlan</p>
         </Card>
         <Card className="p-5 border-l-4 border-blue-400">
           <p className="text-3xl font-black text-gray-900">{(voluntaryInternships || []).filter(v=>v.status==='Onay Bekliyor').length}</p>
           <p className="text-xs font-bold text-gray-500 uppercase mt-1">Staj Onay Bekliyor</p>
         </Card>
         <Card className="p-5 border-l-4 border-purple-400">
-          <p className="text-3xl font-black text-gray-900">{(mentorships || []).filter(m=>m.status==='EÅŸleÅŸtirme Bekliyor').length}</p>
-          <p className="text-xs font-bold text-gray-500 uppercase mt-1">Mentor EÅŸleÅŸme Bekliyor</p>
+          <p className="text-3xl font-black text-gray-900">{(mentorships || []).filter(m=>m.status==='Eşleştirme Bekliyor').length}</p>
+          <p className="text-xs font-bold text-gray-500 uppercase mt-1">Mentor Eşleşme Bekliyor</p>
         </Card>
       </div>
 
       <Card className="p-6">
-        <h3 className="font-black text-gray-900 mb-4">Onay Bekleyen Ä°lanlar</h3>
+        <h3 className="font-black text-gray-900 mb-4">Onay Bekleyen İlanlar</h3>
         {(jobs || []).filter(j=>j?.status==='Beklemede').length===0
-          ? <p className="text-gray-400 text-sm text-center py-6">âœ“ Onay bekleyen ilan yok</p>
+          ? <p className="text-gray-400 text-sm text-center py-6">✓ Onay bekleyen ilan yok</p>
           : <Tbl
-              headers={['Ä°lan','Firma','TÃ¼r','Tarih','Ä°ÅŸlem']}
+              headers={['İlan','Firma','Tür','Tarih','İşlem']}
               rows={(jobs || []).filter(j=>j?.status==='Beklemede').map(j=>[
                 <span className="font-bold text-gray-900">{j?.title}</span>,
                 j?.company, <Badge status={j?.type}/>, j?.date,
                 <div className="flex gap-2">
-                  <BtnGreen onClick={()=>setJobs((jobs || []).map(x=>x.id===j?.id?{...x,status:'YayÄ±nda'}:x))}>Onayla</BtnGreen>
+                  <BtnGreen onClick={()=>setJobs((jobs || []).map(x=>x.id===j?.id?{...x,status:'Yayında'}:x))}>Onayla</BtnGreen>
                   <BtnRed onClick={()=>setJobs((jobs || []).filter(x=>x.id!==j?.id))}>Reddet</BtnRed>
                 </div>
               ])}
@@ -367,14 +367,14 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
       <Card className="p-6">
         <h3 className="font-black text-gray-900 mb-4">Onay Bekleyen Stajlar</h3>
         {(voluntaryInternships || []).filter(v=>v.status==='Onay Bekliyor').length===0
-          ? <p className="text-gray-400 text-sm text-center py-6">âœ“ Onay bekleyen staj yok</p>
+          ? <p className="text-gray-400 text-sm text-center py-6">✓ Onay bekleyen staj yok</p>
           : <Tbl
-              headers={['Ã–ÄŸrenci','Firma','Pozisyon','BaÅŸlangÄ±Ã§','Ä°ÅŸlem']}
+              headers={['Öğrenci','Firma','Pozisyon','Başlangıç','İşlem']}
               rows={(voluntaryInternships || []).filter(v=>v.status==='Onay Bekliyor').map(v=>[
                 <span className="font-bold">{v.student}</span>,
                 v.company, v.position, v.startDate,
                 <div className="flex gap-2">
-                  <BtnGreen onClick={()=>setVoluntaryInternships((voluntaryInternships || []).map(x=>x.id===v.id?{...x,status:'OnaylÄ±'}:x))}>Onayla</BtnGreen>
+                  <BtnGreen onClick={()=>setVoluntaryInternships((voluntaryInternships || []).map(x=>x.id===v.id?{...x,status:'Onaylı'}:x))}>Onayla</BtnGreen>
                   <BtnRed onClick={()=>setVoluntaryInternships((voluntaryInternships || []).map(x=>x.id===v.id?{...x,status:'Reddedildi'}:x))}>Reddet</BtnRed>
                 </div>
               ])}
@@ -384,7 +384,7 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
   );
 }
 
-// â”€â”€ 3. Akademik Performans â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── 3. Akademik Performans ────────────────────────────────────
 function AkademikPanel({ students = [] }) {
   const avg = ((students || []).reduce((a,s)=>a+parseFloat(s?.gpa||0),0)/((students || []).length||1)).toFixed(2);
   const honor = (students || []).filter(s=>s?.gpa>=3.5).length;
@@ -394,23 +394,23 @@ function AkademikPanel({ students = [] }) {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Akademik Performans" sub="GPA, bÃ¶lÃ¼m daÄŸÄ±lÄ±mÄ± ve Ã¶ÄŸrenci Ã¶zeti" />
+      <PanelHeader title="Akademik Performans" sub="GPA, bölüm dağılımı ve öğrenci özeti" />
 
       <div className="grid grid-cols-3 gap-4">
-        <StatCard icon={<BarChart3 size={20}/>} label="Ortalama GPA" value={avg} sub="TÃ¼m Ã¶ÄŸrenciler" color="blue"/>
-        <StatCard icon={<Award size={20}/>} label="YÃ¼ksek Onur" value={honor} sub="GPA â‰¥ 3.5" color="green"/>
-        <StatCard icon={<FileText size={20}/>} label="CV YÃ¼klemiÅŸ" value={withCV} sub={`${(students || []).length-withCV} eksik`} color="orange"/>
+        <StatCard icon={<BarChart3 size={20}/>} label="Ortalama GPA" value={avg} sub="Tüm öğrenciler" color="blue"/>
+        <StatCard icon={<Award size={20}/>} label="Yüksek Onur" value={honor} sub="GPA ≥ 3.5" color="green"/>
+        <StatCard icon={<FileText size={20}/>} label="CV Yüklemiş" value={withCV} sub={`${(students || []).length-withCV} eksik`} color="orange"/>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="p-6 col-span-1">
-          <h3 className="font-black text-gray-900 mb-4">GPA DaÄŸÄ±lÄ±mÄ±</h3>
+          <h3 className="font-black text-gray-900 mb-4">GPA Dağılımı</h3>
           <div className="space-y-3">
             {[
-              {label:'3.5 â€“ 4.0 (YÃ¼ksek Onur)',val:(students || []).filter(s=>s?.gpa>=3.5).length,color:'green'},
-              {label:'3.0 â€“ 3.5 (Onur)',        val:(students || []).filter(s=>s?.gpa>=3.0&&s?.gpa<3.5).length,color:'blue'},
-              {label:'2.5 â€“ 3.0 (GeÃ§er)',       val:(students || []).filter(s=>s?.gpa>=2.5&&s?.gpa<3.0).length,color:'orange'},
-              {label:'2.0 â€“ 2.5 (Alt SÄ±nÄ±r)',   val:(students || []).filter(s=>s?.gpa<2.5).length,color:'red'},
+              {label:'3.5 – 4.0 (Yüksek Onur)',val:(students || []).filter(s=>s?.gpa>=3.5).length,color:'green'},
+              {label:'3.0 – 3.5 (Onur)',        val:(students || []).filter(s=>s?.gpa>=3.0&&s?.gpa<3.5).length,color:'blue'},
+              {label:'2.5 – 3.0 (Geçer)',       val:(students || []).filter(s=>s?.gpa>=2.5&&s?.gpa<3.0).length,color:'orange'},
+              {label:'2.0 – 2.5 (Alt Sınır)',   val:(students || []).filter(s=>s?.gpa<2.5).length,color:'red'},
             ].map(g=>(
               <div key={g.label}>
                 <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1">
@@ -424,18 +424,18 @@ function AkademikPanel({ students = [] }) {
 
         <Card className="p-6 col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-black text-gray-900">Ã–ÄŸrenci Listesi</h3>
+            <h3 className="font-black text-gray-900">Öğrenci Listesi</h3>
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
               <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Ara..." className="pl-8 pr-3 py-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-300"/>
             </div>
           </div>
           <Tbl
-            headers={['Ad Soyad','BÃ¶lÃ¼m','SÄ±nÄ±f','GPA','CV','Durum']}
+            headers={['Ad Soyad','Bölüm','Sınıf','GPA','CV','Durum']}
             rows={filtered.map(s=>[
               <span className="font-bold text-gray-900">{s?.name}</span>,
               s?.dept,
-              `${s?.year}. SÄ±nÄ±f`,
+              `${s?.year}. Sınıf`,
               <span className={`font-black ${s?.gpa>=3.5?'text-emerald-600':s?.gpa>=3.0?'text-blue-600':'text-orange-600'}`}>{s?.gpa}</span>,
               s?.cv?<CheckCircle size={15} className="text-emerald-500"/>:<XCircle size={15} className="text-gray-300"/>,
               <Badge status={s?.status}/>
@@ -449,54 +449,54 @@ function AkademikPanel({ students = [] }) {
 
 
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 //  SIDEBAR NAVIGATION CONFIG
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
-  { id: 'genel', label: 'Genel BakÄ±ÅŸ', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'KullanÄ±cÄ± YÃ¶netimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'mezun_dernek', 'sem', 'cms_groups', 'clubs_pool'] },
-  { id: 'icerik', label: 'Ä°Ã§erik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'cms_jobs', 'cms_feat', 'cms_ment'] },
+  { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'operasyon', 'akademik'] },
+  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'mezun_dernek', 'sem', 'cms_groups', 'clubs_pool'] },
+  { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'cms_jobs', 'cms_feat', 'cms_ment'] },
   { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['cleanup', 'content_import', 'analytics', 'anket', 'kart', 'platform_ayarlari'] }
 ];
 
 const MAIN_TABS = [
   { id:'overview',   label:'Kontrol Merkezi',    icon:<LayoutDashboard size={17}/> },
-  { id:'operasyon',  label:'Operasyon Ã–zeti',    icon:<Activity size={17}/> },
+  { id:'operasyon',  label:'Operasyon Özeti',    icon:<Activity size={17}/> },
   { id:'akademik',   label:'Akademik Performans',icon:<TrendingUp size={17}/> },
   { id:'academic_catalog', label:'Akademik Katalog', icon:<Library size={17}/> },
-  { id:'academic_approvals', label:'Akademik Bilgi OnaylarÄ±', icon:<ShieldCheck size={17}/> },
+  { id:'academic_approvals', label:'Akademik Bilgi Onayları', icon:<ShieldCheck size={17}/> },
   { id:'cms_news',    label:'Haberler (CMS)',   icon:<FileText size={17}/> },
-  { id:'students',   label:'Aktif Ã–ÄŸrenciler',   icon:<Users size={17}/> },
+  { id:'students',   label:'Aktif Öğrenciler',   icon:<Users size={17}/> },
   { id:'academic_staff', label:'Akademik Personel', icon:<BookOpen size={17}/> },
   { id:'alumni',     label:'Mezun Bilgi Havuzu', icon:<GraduationCap size={17}/> },
   { id:'companies',  label:'Firma Bilgi Havuzu', icon:<Building2 size={17}/> },
-  { id:'mezun_dernek',label:'Mezun DerneÄŸi',     icon:<Heart size={17}/> },
-  { id:'kart',       label:'Kart BaÅŸvurularÄ±',   icon:<CreditCard size={17}/> },
-  { id:'cms_jobs',   label:'Ä°lan & BaÅŸvuru Havuzu', icon:<Briefcase size={17}/> },
+  { id:'mezun_dernek',label:'Mezun Derneği',     icon:<Heart size={17}/> },
+  { id:'kart',       label:'Kart Başvuruları',   icon:<CreditCard size={17}/> },
+  { id:'cms_jobs',   label:'İlan & Başvuru Havuzu', icon:<Briefcase size={17}/> },
   { id:'cms_events', label:'Etkinlikler (CMS)',  icon:<Calendar size={17}/> },
   { id:'cms_ann',    label:'Duyurular (CMS)',    icon:<Megaphone size={17}/> },
-  { id:'cms_feat',   label:'Ã–ne Ã‡Ä±kanlar (CMS)', icon:<Star size={17}/> },
+  { id:'cms_feat',   label:'Öne Çıkanlar (CMS)', icon:<Star size={17}/> },
   { id:'cms_groups', label:'Topluluklar ve Gruplar', icon:<Users size={17}/> },
-  { id:'clubs_pool', label:'KulÃ¼pler Havuzu', icon:<Users size={17}/> },
-  { id:'mesajlar',   label:'Ä°letiÅŸim Havuzu (Loglar)', icon:<MessageSquare size={17}/> },
+  { id:'clubs_pool', label:'Kulüpler Havuzu', icon:<Users size={17}/> },
+  { id:'mesajlar',   label:'İletişim Havuzu (Loglar)', icon:<MessageSquare size={17}/> },
 ];
 const MORE_TABS = [
   { id:'cms_ment',   label:'Mentorluk (CMS)', icon:<UserCheck size={17}/> },
-  { id:'gonullu',    label:'GÃ¶nÃ¼llÃ¼ Staj',        icon:<Award size={17}/> },
-  { id:'sem',        label:'SEM Kurs YÃ¶netimi',   icon:<BookOpen size={17}/> },
+  { id:'gonullu',    label:'Gönüllü Staj',        icon:<Award size={17}/> },
+  { id:'sem',        label:'SEM Kurs Yönetimi',   icon:<BookOpen size={17}/> },
   
   { id:'anket',      label:'Anket & Veri Havuzu',      icon:<BarChart3 size={17}/> },
-  { id:'analytics',  label:'Sistem AnalitiÄŸi',    icon:<Activity size={17}/> },
-  { id:'content_import', label:'ResmÃ® Ä°Ã§erik Ä°Ã§e Aktar', icon:<Database size={17}/> },
+  { id:'analytics',  label:'Sistem Analitiği',    icon:<Activity size={17}/> },
+  { id:'content_import', label:'Resmî İçerik İçe Aktar', icon:<Database size={17}/> },
 
-  { id:'entegrasyon',label:'Sistem EntegrasyonlarÄ±',icon:<Database size={17}/> },
-  { id:'cleanup',    label:'Veri TemizliÄŸi',      icon:<ShieldAlert size={17}/> },
-  { id:'platform_ayarlari', label:'Platform AyarlarÄ±', icon:<Settings size={17}/> },
+  { id:'entegrasyon',label:'Sistem Entegrasyonları',icon:<Database size={17}/> },
+  { id:'cleanup',    label:'Veri Temizliği',      icon:<ShieldAlert size={17}/> },
+  { id:'platform_ayarlari', label:'Platform Ayarları', icon:<Settings size={17}/> },
 ];
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 //  MAIN COMPONENT
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════════════
 export default function AdminDashboard({
   currentUser, userRole, academicRole,
   setView, setSelectedUserId,
@@ -540,7 +540,7 @@ export default function AdminDashboard({
   const pending = (jobs || []).filter(j=>j?.status==='Beklemede').length + (voluntaryInternships || []).filter(v=>v.status==='Taslak').length;
 
   const renderPanel = () => {
-    const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships, messages, setMessages, surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser, setView };
+    const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships, messages, setMessages, surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser };
     switch(activeTab) {
       case 'academic_catalog': return <CMSAcademicCatalog academicCatalog={academicCatalog || []} setAcademicCatalog={setAcademicCatalog} />;
       case 'academic_approvals': return <CMSAcademicApprovals academicApprovals={academicApprovals || []} setAcademicApprovals={setAcademicApprovals} students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} />;
@@ -578,7 +578,7 @@ export default function AdminDashboard({
     }
   };
 
-  // ALL_TABS birleÅŸtirilmesi ve feature toggle filtrelemesi
+  // ALL_TABS birleştirilmesi ve feature toggle filtrelemesi
   const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
     if (tab.id === 'anket' && !featureSurveys) return false;
     if (tab.id === 'kart' && !featureAlumniCard) return false;
@@ -596,14 +596,14 @@ export default function AdminDashboard({
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans relative">
 
-      {/* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── HEADER ─────────────────────────────────────── */}
       <header className="bg-white border-b border-gray-100 px-5 py-3 flex items-center gap-4 shrink-0 sticky top-0 z-40">
         
         <div className="flex items-center gap-3 pr-4 border-r border-gray-100 shrink-0">
           <Logo className="w-9 h-9 text-red-700 bg-red-50 rounded-xl p-1.5" />
           <div className="hidden sm:block">
-            <h1 className="text-[14px] font-black text-gray-900 leading-tight">YÃ¶netici Paneli</h1>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{academicRole === 'super_admin' ? 'SÃœPER ADMÄ°N' : 'KARÄ°YER OFÄ°SÄ°'}</p>
+            <h1 className="text-[14px] font-black text-gray-900 leading-tight">Yönetici Paneli</h1>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{academicRole === 'super_admin' ? 'SÜPER ADMİN' : 'KARİYER OFİSİ'}</p>
           </div>
         </div>
 
@@ -612,7 +612,7 @@ export default function AdminDashboard({
           <input 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Panel ara... (Ã¶rn: ilan, Ã¶ÄŸrenci)" 
+            placeholder="Panel ara... (örn: ilan, öğrenci)" 
             className="w-full pl-10 pr-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-[13px] font-medium text-gray-700 focus:outline-none focus:bg-white focus:border-red-300 focus:ring-4 focus:ring-red-100 transition-all placeholder:text-gray-400"
           />
         </div>
@@ -681,11 +681,11 @@ export default function AdminDashboard({
         </div>
       </header>
 
-      {/* Alt Sekme ButonlarÄ± (seÃ§ili kategorinin panelleri) */}
+      {/* Alt Sekme Butonları (seçili kategorinin panelleri) */}
       <div className="bg-white border-b border-gray-200 shadow-sm shrink-0 sticky top-[65px] z-30">
         <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-2.5">
           <div className="flex flex-wrap gap-2">
-            {searchQuery && <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider self-center mr-1">"{searchQuery}" aramasÄ±:</span>}
+            {searchQuery && <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider self-center mr-1">"{searchQuery}" araması:</span>}
             {filteredPanels.map(tab => {
               const catId = PANEL_CATEGORIES.find(c => c.panels.includes(tab.id))?.id || 'genel';
               const theme = {
@@ -711,13 +711,13 @@ export default function AdminDashboard({
               );
             })}
             {filteredPanels.length === 0 && (
-              <p className="text-[13px] font-medium text-gray-500 p-2">EÅŸleÅŸen panel bulunamadÄ±.</p>
+              <p className="text-[13px] font-medium text-gray-500 p-2">Eşleşen panel bulunamadı.</p>
             )}
           </div>
         </div>
       </div>
 
-      {/* â”€â”€ Ä°Ã‡ERÄ°K â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── İÇERİK ─────────────────────────────────────── */}
       <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-28 sm:pb-20">
         <main className="flex-1 bg-transparent">
           {renderPanel()}
@@ -735,8 +735,8 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
           <Settings size={28} />
         </div>
         <div>
-          <h2 className="text-2xl font-black text-gray-900">Platform AyarlarÄ±</h2>
-          <p className="text-gray-500 font-medium">ModÃ¼lleri aktif/pasif hale getirin.</p>
+          <h2 className="text-2xl font-black text-gray-900">Platform Ayarları</h2>
+          <p className="text-gray-500 font-medium">Modülleri aktif/pasif hale getirin.</p>
         </div>
       </div>
 
@@ -744,7 +744,7 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
         <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
           <div>
             <h3 className="font-bold text-gray-900 text-[16px]">Mezun Memnuniyet & Anket Merkezi</h3>
-            <p className="text-[13px] text-gray-500 mt-1">MezunlarÄ±n gÃ¶rebileceÄŸi anket merkezini aÃ§ar/kapatÄ±r.</p>
+            <p className="text-[13px] text-gray-500 mt-1">Mezunların görebileceği anket merkezini açar/kapatır.</p>
           </div>
           <button 
             onClick={() => setFeatureSurveys(!featureSurveys)}
@@ -757,7 +757,7 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
         <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
           <div>
             <h3 className="font-bold text-gray-900 text-[16px]">Kariyer Check-up</h3>
-            <p className="text-[13px] text-gray-500 mt-1">MezunlarÄ±n kariyer durumlarÄ±nÄ± gÃ¼ncelleyebileceÄŸi modÃ¼lÃ¼ aÃ§ar/kapatÄ±r.</p>
+            <p className="text-[13px] text-gray-500 mt-1">Mezunların kariyer durumlarını güncelleyebileceği modülü açar/kapatır.</p>
           </div>
           <button 
             onClick={() => setFeatureCareerCheckup(!featureCareerCheckup)}
@@ -769,8 +769,8 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
 
         <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
           <div>
-            <h3 className="font-bold text-gray-900 text-[16px]">Mezun Kart BaÅŸvurusu</h3>
-            <p className="text-[13px] text-gray-500 mt-1">MezunlarÄ±n mezun kartÄ± baÅŸvuru modÃ¼lÃ¼nÃ¼ aÃ§ar/kapatÄ±r.</p>
+            <h3 className="font-bold text-gray-900 text-[16px]">Mezun Kart Başvurusu</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Mezunların mezun kartı başvuru modülünü açar/kapatır.</p>
           </div>
           <button 
             onClick={() => setFeatureAlumniCard(!featureAlumniCard)}
@@ -782,8 +782,8 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
 
         <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
           <div>
-            <h3 className="font-bold text-gray-900 text-[16px]">KulÃ¼pler Vitrini (Ana Sayfa)</h3>
-            <p className="text-[13px] text-gray-500 mt-1">Ã–ÄŸrenci ve mezunlarÄ±n ana sayfasÄ±ndaki kulÃ¼pler tanÄ±tÄ±m bÃ¶lÃ¼mÃ¼nÃ¼ aÃ§ar/kapatÄ±r.</p>
+            <h3 className="font-bold text-gray-900 text-[16px]">Kulüpler Vitrini (Ana Sayfa)</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Öğrenci ve mezunların ana sayfasındaki kulüpler tanıtım bölümünü açar/kapatır.</p>
           </div>
           <button 
             onClick={() => setFeatureClubsShowcase(!featureClubsShowcase)}
@@ -795,8 +795,8 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
 
         <div className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:bg-white transition-colors">
           <div>
-            <h3 className="font-bold text-gray-900 text-[16px]">KulÃ¼p BaÅŸvurularÄ±nÄ± AÃ§ / Kapat</h3>
-            <p className="text-[13px] text-gray-500 mt-1">Ã–ÄŸrencilerin yeni kulÃ¼p aÃ§ma baÅŸvurularÄ±nÄ± aktif/pasif hale getirir.</p>
+            <h3 className="font-bold text-gray-900 text-[16px]">Kulüp Başvurularını Aç / Kapat</h3>
+            <p className="text-[13px] text-gray-500 mt-1">Öğrencilerin yeni kulüp açma başvurularını aktif/pasif hale getirir.</p>
           </div>
           <button 
             onClick={() => setFeatureClubApplications(!featureClubApplications)}
@@ -809,4 +809,3 @@ function PlatformSettings({ featureSurveys, setFeatureSurveys, featureCareerChec
     </div>
   );
 }
-
