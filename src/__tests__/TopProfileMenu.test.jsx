@@ -38,13 +38,13 @@ describe('TopProfileMenu Component', () => {
     // Open menu
     fireEvent.click(screen.getByRole('button'));
 
-    expect(screen.getByText(/Kariyer Geliştirme Ofisi/i)).toBeTruthy();
+    expect(screen.getByText(/Kariyer Geliştirme/i)).toBeTruthy();
     
     const superAdminNodes = screen.getAllByText(/Süper Admin/i);
     expect(superAdminNodes.length).toBeGreaterThan(0);
     
     // It should show panel switches
-    expect(screen.getByText(/Panel Geçişi/i)).toBeTruthy();
+    expect(screen.getByText(/PANEL GE/i)).toBeTruthy();
     
     const adminButton = screen.getByText(/Yönetim/i);
     expect(adminButton).toBeTruthy();
