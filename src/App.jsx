@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { auth, db } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -166,13 +166,12 @@ function App() {
     document.body.classList.remove('overflow-hidden');
   }, [view]);
 
-  // ─── LIVE DATA FILTER: Remove demo_seed records from all live-facing views ───
-  const filterLive = (arr) => (arr || []).filter(item => item.source !== 'demo_seed');
-  const liveStudents = filterLive(students);
-  const liveAlumni = filterLive(alumni);
-  const liveCompanies = filterLive(companies);
-  const liveAcademicStaff = filterLive(academicStaff);
-  const liveMessages = filterLive(messages);
+  // 🛑🛑🛑 LIVE DATA FILTER: Remove demo_seed records from all live-facing views 🛑🛑🛑
+  const liveStudents = useMemo(() => (students || []).filter(item => item.source !== 'demo_seed'), [students]);
+  const liveAlumni = useMemo(() => (alumni || []).filter(item => item.source !== 'demo_seed'), [alumni]);
+  const liveCompanies = useMemo(() => (companies || []).filter(item => item.source !== 'demo_seed'), [companies]);
+  const liveAcademicStaff = useMemo(() => (academicStaff || []).filter(item => item.source !== 'demo_seed'), [academicStaff]);
+  const liveMessages = useMemo(() => (messages || []).filter(item => item.source !== 'demo_seed'), [messages]);
 
   return (
     <ErrorBoundary>
