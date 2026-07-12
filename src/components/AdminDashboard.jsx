@@ -35,7 +35,7 @@ import {
   ChevronDown, ChevronUp, Search, Bell, Bell as BellIcon,
   CheckCircle, XCircle, Plus, Trash2, Send,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
-  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings
+  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2
 } from 'lucide-react';
 
 // ══════════════════════════════════════════════════════════════
