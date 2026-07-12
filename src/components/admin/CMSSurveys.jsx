@@ -3,7 +3,7 @@ import { ClipboardList, Edit, Trash2, Plus, Search, Filter, CheckCircle2, Downlo
 import AdminCMSLayout, { TopInfoCard, Badge } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
 
-export default function CMSSurveys({ surveys = [], setSurveys, students = [], isAlumniTab = false }) {
+export default function CMSSurveys({ surveys = [], setSurveys, students = [], isAlumniTab = false, posts, setPosts, currentUser }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');

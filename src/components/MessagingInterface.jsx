@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, CircleDashed, Users, MessageCircle, MessageSquare } from 'lucide-react';
+import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -963,7 +963,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                                 ) : (
                                   <button onClick={() => {
                                       if(isReplay) markViewReplay(msg.id);
-                                      else markViewOnce(msg.id);
+                                      // markViewOnce not implemented, handled by state below
                                       setViewedOnceMsgs([...viewedOnceMsgs, msg.id + '_temp']);
                                     }} 
                                     className="w-full h-full flex flex-col items-center justify-center"

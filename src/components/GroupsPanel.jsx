@@ -26,7 +26,7 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
   );
 };
 
-export default function GroupsPanel({ groups, setGroups, currentUser, userRole, setView, setSelectedGroupId, setSelectedUserId }) {
+export default function GroupsPanel({ previousView, groups, setGroups, currentUser, userRole, setView, setSelectedGroupId, setSelectedUserId }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newGroup, setNewGroup] = useState({

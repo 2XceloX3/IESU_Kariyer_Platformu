@@ -16,6 +16,9 @@ import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import NavIcon from './shared/NavIcon';
 import ClubsDirectory from './ClubsDirectory';
+import CVBuilder from './CVBuilder';
+import StoryViewer from './StoryViewer';
+import CareerShorts from './CareerShorts';
 
 export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, voluntaryInternships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole, groups, setGroups, setSelectedGroupId, featureClubsShowcase, featureClubApplications, clubs, setClubs, clubApplications, setClubApplications }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network

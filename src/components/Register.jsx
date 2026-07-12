@@ -77,7 +77,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         // [FİREBASE AUTH] - Yeni Firma Kullanıcısı Oluştur
         if (!formData.password || formData.password.length < 6) {
           setError("Lütfen en az 6 karakterli bir şifre belirleyin.");
-          setLoading(false);
+          setIsLoading(false);
           return;
         }
         const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
