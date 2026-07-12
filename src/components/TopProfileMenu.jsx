@@ -62,7 +62,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
   return (
     <div className="relative" ref={menuRef}>
-      <button onClick={() => setIsOpen(!isOpen)} aria-expanded={isOpen} aria-haspopup="true" className="flex items-center gap-2.5 focus:outline-none group">
+      <button onClick={() => setIsOpen(!isOpen)} aria-label="Profil Menüsünü Aç/Kapat" aria-expanded={isOpen} aria-haspopup="true" className="flex items-center gap-2.5 focus:outline-none group">
         <div className="w-9 h-9 rounded-full ring-2 ring-white/20 group-hover:ring-red-400 transition-all shrink-0">
           {userRole === 'admin' ? (
             <div className="w-full h-full rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm border border-red-100">

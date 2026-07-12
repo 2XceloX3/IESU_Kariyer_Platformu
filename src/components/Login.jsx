@@ -219,6 +219,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
               <input 
                 type="text" 
+                aria-label={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci Numarası" : "Kullanıcı Adı veya E-Posta"}
                 placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : "Kullanıcı Adı / E-Posta"} 
                 className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 focus:border-iesu-coral outline-none transition text-[14px] font-medium placeholder:font-normal" 
                 value={username}
@@ -231,6 +232,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               <Lock className="absolute left-4 top-3.5 text-gray-400" size={18} />
               <input 
                 type="password" 
+                aria-label="Şifre"
                 placeholder="Şifre" 
                 className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 focus:border-iesu-coral outline-none transition text-[14px] font-medium placeholder:font-normal" 
                 value={password}

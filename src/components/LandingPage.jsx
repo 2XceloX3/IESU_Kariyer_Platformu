@@ -209,7 +209,12 @@ export default function LandingPage({ setView }) {
             >
               Portala Giriş <ArrowRight size={16} className="hidden sm:block" />
             </button>
-            <button className="lg:hidden ml-4 text-iesu-red" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button 
+              className="lg:hidden ml-4 text-iesu-red focus:outline-none" 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Mobil Menüyü Kapat" : "Mobil Menüyü Aç"}
+              aria-expanded={isMenuOpen}
+            >
               <Menu size={32} />
             </button>
           </div>
@@ -289,7 +294,9 @@ export default function LandingPage({ setView }) {
             <button 
               key={idx}
               onClick={() => setCurrentSlide(idx)}
-              className={`h-2 rounded-full transition-all duration-500 ${idx === currentSlide ? 'w-10 bg-iesu-red' : 'w-2 bg-white/50 hover:bg-white'}`}
+              aria-label={`Slayt ${idx + 1}`}
+              aria-current={idx === currentSlide ? "true" : "false"}
+              className={`h-2 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/50 ${idx === currentSlide ? 'w-10 bg-iesu-red' : 'w-2 bg-white/50 hover:bg-white'}`}
             />
           ))}
         </div>
