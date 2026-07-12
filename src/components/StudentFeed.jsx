@@ -321,13 +321,13 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                     <h4 className="font-bold text-[13px] text-gray-900 truncate">{person.name}</h4>
                     <p className="text-[11px] text-gray-500 truncate">{person.department || 'Mezun'}</p>
                   </div>
-                  <button className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition">
+                  <button onClick={(e) => { e.stopPropagation(); window.toast.success("Bağlantı isteği gönderildi!"); }} className="p-1.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition">
                     <UserPlus size={16} />
                   </button>
                 </div>
               ))}
             </div>
-            <button className="w-full mt-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-bold transition">Tümünü Gör</button>
+            <button onClick={() => window.toast.info("Tüm öneriler yakında...")} className="w-full mt-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-bold transition">Tümünü Gör</button>
           </div>
 
           {/* Öne Çıkan Firmalar */}
@@ -345,7 +345,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                     <h4 className="font-bold text-[13px] text-gray-900 truncate">{company.name}</h4>
                     <p className="text-[11px] text-gray-500 truncate">{company.sector || 'Sektör Lideri'}</p>
                   </div>
-                  <button className="text-xs font-bold text-iesu-red hover:text-red-700 transition">İncele</button>
+                  <button onClick={(e) => { e.stopPropagation(); window.toast.info("Firma profili yapım aşamasında..."); }} className="text-xs font-bold text-iesu-red hover:text-red-700 transition">İncele</button>
                 </div>
               ))}
             </div>

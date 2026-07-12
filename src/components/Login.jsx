@@ -76,7 +76,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       if (setCurrentUser) setCurrentUser({ id: 'ACAD-001', name: 'Dr. Öğr. Üyesi Ahmet Yılmaz', department: 'Bilgisayar Mühendisliği', role: 'academic', avatar: 'https://ui-avatars.com/api/?name=Ahmet+Yilmaz&background=132A49&color=fff', onboardingCompleted: true });
       setView('academic');
     } else if (loginRole === 'alumni') {
-      const savedAlumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || '[]');
+      let savedAlumni = [];
+      try { savedAlumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || '[]'); } catch(e) {}
       const alumniUser = savedAlumni.find(a => (a.studentId === username || a.email === username) && a.password === password);
       
       if (alumniUser) {
@@ -94,7 +95,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         }
       }
     } else if (loginRole === 'employer') {
-      const savedCompanies = JSON.parse(localStorage.getItem('iesu_companies_v3') || '[]');
+      let savedCompanies = [];
+      try { savedCompanies = JSON.parse(localStorage.getItem('iesu_companies_v3') || '[]'); } catch(e) {}
       const companyUser = savedCompanies.find(c => c.username === username && c.password === password);
       
       if (companyUser) {
@@ -112,7 +114,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         setError("Hatalı firma kullanıcı adı veya şifresi!");
       }
     } else {
-      const savedStudents = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]');
+      let savedStudents = [];
+      try { savedStudents = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]'); } catch(e) {}
       const studentUser = savedStudents.find(s => (s.studentId === username || s.email === username) && s.password === password);
       
       if (studentUser) {

@@ -55,6 +55,8 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+const validViews = ['landing', 'login', 'register', 'forgot_password', 'create_job', 'club_admin', 'club_portal', 'student', 'alumni', 'academic', 'company', 'admin', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging', 'interview_sim'];
+
 function App() {
   const {
     viewState, setViewState, previousView, setPreviousView, userRole, setUserRole,
