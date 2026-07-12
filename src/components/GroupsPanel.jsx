@@ -86,7 +86,7 @@ export default function GroupsPanel({ previousView, groups, setGroups, currentUs
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <NavIcon icon={<Home />} label="Akış" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
             <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
-            <NavIcon icon={<Users />} label="Topluluklar" active={true} onClick={() => {}} />
+            <NavIcon icon={<Users />} label="Topluluklar" active={true} onClick={() => setView('groups')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" onClick={() => setView('jobs')} />
             <div className="ml-2">
               <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
