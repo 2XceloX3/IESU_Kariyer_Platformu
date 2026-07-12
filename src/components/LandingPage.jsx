@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Calendar, ArrowRight, Mail, Menu, Search, Bell, MapPin, Download, FileText, ExternalLink, CheckCircle, X } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Calendar, ArrowRight, Mail, Menu, Search, Bell, MapPin, Download, FileText, ExternalLink, CheckCircle, X } from 'lucide-react';
 import { contentData } from './NewsEvents';
 import Logo from './Logo';
 
@@ -224,6 +224,24 @@ export default function LandingPage({ setView }) {
         onFocus={() => setIsCarouselPaused(true)}
         onBlur={() => setIsCarouselPaused(false)}
       >
+        {/* Arrow Left */}
+        <button 
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+          onClick={(e) => { e.preventDefault(); setCurrentSlide(p => p === 0 ? heroSlides.length - 1 : p - 1); }}
+          aria-label="Önceki Slayt"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        
+        {/* Arrow Right */}
+        <button 
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+          onClick={(e) => { e.preventDefault(); setCurrentSlide(p => (p + 1) % heroSlides.length); }}
+          aria-label="Sonraki Slayt"
+        >
+          <ChevronRight size={24} />
+        </button>
+
         {heroSlides.map((slide, index) => (
           <div 
             key={index} 

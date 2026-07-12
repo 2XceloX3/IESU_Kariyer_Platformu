@@ -58,7 +58,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           {/* RIGHT: Heart Icon for Notifications */}
           <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 text-gray-600`} title="Bildirimler">
             <div className="relative">
-              <Heart size={24} strokeWidth={2} />
+              <Bell size={24} strokeWidth={2} />
               {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
               )}

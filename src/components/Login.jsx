@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { User, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
+import { auth, db } from '../utils/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
   const [loginRole, setLoginRole] = useState('student');
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+    setIsLoading(true);
     
     // HARDCODED ADMIN CHECK
     if (username === 'Kariyer' && password === 'Z.s.1513') {
@@ -31,10 +36,39 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         });
       }
       setView('admin');
+      setIsLoading(false);
       return;
     }
+
+    try {
+      // FIREBASE AUTHENTICATION (The New Way)
+      const userCredential = await signInWithEmailAndPassword(auth, username, password);
+      const user = userCredential.user;
+      
+      // Fetch user role and data from Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUserRole(userData.role || loginRole);
+        if (setCurrentUser) setCurrentUser({ id: user.uid, ...userData });
+        setView(userData.role || loginRole);
+        setIsLoading(false);
+        return; // Success!
+      } else {
+        // If no Firestore document, fallback to basic auth info
+        setUserRole(loginRole);
+        if (setCurrentUser) setCurrentUser({ id: user.uid, email: user.email, name: user.displayName || 'Kullanıcı', role: loginRole, onboardingCompleted: true });
+        setView(loginRole);
+        setIsLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.log("Firebase Login Failed, falling back to mock logic:", err.message);
+    }
     
-    // NORMAL LOGIN LOGIC
+    // NORMAL MOCK LOGIN LOGIC (Legacy Fallback)
     if (loginRole === 'admin') {
       // Herhangi bir şey yazarsa veya boş bırakırsa Akademik profile girsin (Kariyer şifresi hariç)
       if (setAcademicRole) setAcademicRole('standard_academic');
@@ -217,9 +251,10 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             
             <button 
               type="submit" 
-              className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2 group"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2 group disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Giriş Yap <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              {isLoading ? 'Giriş Yapılıyor...' : 'Giriş Yap'} {!isLoading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
             </button>
           </form>
 
@@ -267,7 +302,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               <p className="text-gray-500 text-sm font-medium">
                 Sistemde kaydınız yok mu?
               </p>
-              <button onClick={() => setView('register')} className="mt-2 px-6 py-2 bg-red-50 text-iesu-red rounded-xl font-black hover:bg-red-100 transition-colors inline-block">
+              <button onClick={() => setView('register')} type="button" className="mt-2 px-6 py-2 bg-red-50 text-iesu-red rounded-xl font-black hover:bg-red-100 transition-colors inline-block">
                 Kayıt Ol
               </button>
             </div>

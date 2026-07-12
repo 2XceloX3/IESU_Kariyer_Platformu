@@ -44,7 +44,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
               <div className="relative">
-                <Heart size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
                 {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                 )}

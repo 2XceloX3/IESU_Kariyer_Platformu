@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { auth, db } from './utils/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -102,6 +105,32 @@ function App() {
       localStorage.setItem('iesu_mock_user', JSON.stringify(currentUser));
     }
   }, [currentUser]);
+
+  // Firebase Real User Hydration
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in to Firebase.
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setCurrentUser({ id: user.uid, ...userData });
+            if (userData.role) setUserRole(userData.role);
+          } else {
+            setCurrentUser(prev => prev || { id: user.uid, email: user.email, name: user.displayName || 'Kullanıcı' });
+          }
+        } catch (err) {
+          console.error("Firebase data hydration error:", err);
+        }
+      } else {
+        // No user is signed in to Firebase.
+        // We do NOT clear currentUser here to allow the mock users (like admin) to remain logged in.
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // GLOBAL STATE: Canlı Akış Gönderileri (Feed Posts)
 

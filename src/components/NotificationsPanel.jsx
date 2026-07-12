@@ -64,7 +64,7 @@ export default function NotificationsPanel({ previousView, userRole, notificatio
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center bg-red-50 text-iesu-red`} title="Bildirimler">
               <div className="relative">
-                <Heart size={24} strokeWidth={2.5} className="fill-current" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current" />
               </div>
             </button>
             <TopProfileMenu currentUser={currentUser || { name: 'Kullanıcı' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="notifications" />
