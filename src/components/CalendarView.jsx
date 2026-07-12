@@ -101,7 +101,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
               <Plus size={16} /> <span className="hidden md:inline text-[13px]">Etkinlik Ekle</span>
             </button>
             <NavIcon icon={<Home />} label="Akış" active={false} onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={false} onClick={() => { /* Not active */ }} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={false} onClick={() => setView(userRole === 'admin' ? 'admin' : userRole || 'landing')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
             <NavIcon 
               icon={<MessageCircle />} 
