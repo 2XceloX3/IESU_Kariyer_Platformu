@@ -25,6 +25,7 @@ import GroupsPanel from './components/GroupsPanel';
 import NotificationsPanel from './components/NotificationsPanel';
 import ApplicationsPanel from './components/ApplicationsPanel';
 import AICVBuilder from './components/AICVBuilder';
+import InterviewSimulator from './components/InterviewSimulator';
 import MessagingInterface from './components/MessagingInterface';
 import CalendarView from './components/CalendarView';
 import JobCreator from './components/JobCreator';
@@ -70,7 +71,7 @@ function App() {
   const location = useLocation();
   const pathParts = location.pathname.split('/').filter(Boolean);
   const viewStr = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'landing';
-  const validViews = ['landing', 'login', 'register', 'forgot_password', 'create_job', 'club_admin', 'club_portal', 'student', 'alumni', 'academic', 'company', 'admin', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging'];
+  const validViews = ['landing', 'login', 'register', 'forgot_password', 'create_job', 'club_admin', 'club_portal', 'student', 'alumni', 'academic', 'company', 'admin', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging', 'interview_sim'];
   const view = validViews.includes(viewStr) ? viewStr : 'landing';
   const setView = (v) => {
     navigate(v === 'landing' ? '/' : '/' + v);
@@ -309,6 +310,7 @@ function App() {
       )}
       {view === 'applications' && <ApplicationsPanel applications={applications} currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
       {view === 'cvbuilder' && <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
+      {view === 'interview_sim' && <InterviewSimulator currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
       {view === 'messaging' && <MessagingInterface previousView={previousView} messages={messages} setMessages={setMessages} currentUser={currentUser} userRole={userRole} contacts={[...students, ...alumni, ...companies, ...academicStaff]} groups={groups} setView={setView} setSelectedUserId={setSelectedUserId} selectedGroupId={selectedGroupId} />}
     </ErrorBoundary>
   );
