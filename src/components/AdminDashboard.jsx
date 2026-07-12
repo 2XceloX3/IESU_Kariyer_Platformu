@@ -184,7 +184,7 @@ function Tbl({ headers, rows, empty='Kayıt bulunamadı' }) {
             <tr><td colSpan={(headers || []).length} className="py-8 text-center text-gray-400 text-sm">{empty}</td></tr>
           ) : (rows || []).map((row,i)=>(
             <tr key={i} className="hover:bg-gray-50/60 transition-colors">
-              {(row || []).map((cell,j)=><td key={j} className="py-3 pr-4 text-gray-700 align-middle first:pl-0">{cell}</td>)}
+              {(row || []).map((cell,j)=><td key={j} className="py-3 pr-4 text-gray-700 align-middle first:pl-0 break-words whitespace-normal min-w-[150px] max-w-[200px]">{cell}</td>)}
             </tr>
           ))}
         </tbody>

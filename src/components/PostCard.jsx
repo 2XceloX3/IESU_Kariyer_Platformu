@@ -188,7 +188,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
             </div>
           </div>
         ) : (
-          <p className="text-[15px] text-gray-800 font-medium leading-snug whitespace-pre-wrap">{post.content}</p>
+          <p className="text-[15px] text-gray-800 font-medium leading-snug whitespace-pre-wrap break-words">{post.content}</p>
         )}
       </div>
 
@@ -290,7 +290,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-gray-900">{post.author?.name}</p>
-                  <p className="text-[10px] font-medium text-gray-500 line-clamp-1">{post.content}</p>
+                  <p className="text-[10px] font-medium text-gray-500 line-clamp-1 break-words">{post.content}</p>
                 </div>
               </div>
 
