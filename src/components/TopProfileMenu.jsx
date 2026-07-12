@@ -171,8 +171,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <button 
                   onClick={() => { 
                     setIsOpen(false); 
-                    if (setSelectedUserId) setSelectedUserId(currentUser?.id || 1);
-                    setView('user_profile'); 
+                    setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' ? 'company' : userRole || 'student')); 
                   }}
                   className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-3"
                 >
