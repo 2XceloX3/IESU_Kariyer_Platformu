@@ -3,7 +3,6 @@ import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, Arr
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
-import StoryViewer from './StoryViewer';
 
 const EMOJI_LIST = [
   '😀','😂','🥰','😎','🤔','👍','🙌','❤️','🔥','🎉','✨','👏','🚀','💡',
@@ -11,7 +10,7 @@ const EMOJI_LIST = [
   '🏢','🖥️','💻','📱','📚','🧠','💪','🌟','✈️','🌍','🗣️','🗣️','🙌','👋'
 ];
 
-export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setGroups, stories = [], setStories, setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
+export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setGroups, setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
   // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
   
   const [activeContactId, setActiveContactId] = useState(selectedGroupId || null);
@@ -39,13 +38,9 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [showNewCallModal, setShowNewCallModal] = useState(false);
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
   const [callHistory, setCallHistory] = useState([
-    { id: 'ch-1', contactId: 'usr-1', name: 'Kariyer Merkezi', avatar: 'https://ui-avatars.com/api/?name=Kariyer+Merkezi', type: 'Cevapsız', time: 'Dün', missed: true },
-    { id: 'ch-2', contactId: 'usr-2', name: 'Danışman Hocam', avatar: 'https://ui-avatars.com/api/?name=Danışman+Hocam', type: 'Gelen', time: 'Salı', missed: false }
+    { id: 1, type: 'video', direction: 'incoming', missed: true, contact: contacts[0], timestamp: '15:30', date: 'Bugün' },
+    { id: 2, type: 'audio', direction: 'outgoing', missed: false, contact: contacts[1], timestamp: 'Dün', date: 'Dün' }
   ]);
-
-  // Story states
-  const [viewingStoryIndex, setViewingStoryIndex] = useState(null);
-  const [isCreatingStory, setIsCreatingStory] = useState(false);
 
   // Advanced Camera specific states
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -187,7 +182,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                (msg.receiverId === currentUser?.id && msg.senderId === activeContactId);
       }
     })
-    .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    .sort((a, b) => (a.timestamp || 0) - (a.timestamp || 0));
 
   // Mark as read when opening a chat
   useEffect(() => {
@@ -457,10 +452,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // ---------------------------------------------------------
-  // NEW IOS WHATSAPP STYLE VIEWS
-  // ---------------------------------------------------------
-
   // 1. CHATS VIEW
   const renderChatsView = () => (
     <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
@@ -558,98 +549,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       </div>
     </div>
   );
-
-  // 2. UPDATES VIEW
-  const renderUpdatesView = () => {
-    const myStory = stories?.find(s => s.author?.name === currentUser?.name);
-    const otherStories = stories?.filter(s => s.author?.name !== currentUser?.name) || [];
-
-    const handleOpenStory = (index) => {
-      if (index === 'new') {
-        setIsCreatingStory(true);
-        setViewingStoryIndex(null);
-        return;
-      }
-      setIsCreatingStory(false);
-      setViewingStoryIndex(index);
-      if (setStories && currentUser) {
-        const story = index === -1 ? myStory : otherStories[index];
-        if (story && !story.viewedBy?.includes(currentUser?.id)) {
-          setStories(prev => prev.map(s => 
-            s.id === story.id ? { ...s, viewedBy: [...(s.viewedBy || []), currentUser?.id] } : s
-          ));
-        }
-      }
-    };
-
-    return (
-    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
-      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100 shrink-0">
-        <div className="flex justify-between items-center mb-4">
-          <button className="p-1"><MoreVertical size={20}/></button>
-        </div>
-        <h1 className="text-3xl font-black text-black mb-3">Güncellemeler</h1>
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-          <input type="text" placeholder="Ara" className="w-full bg-[#f2f2f7] border-none rounded-xl pl-10 pr-4 py-2 text-[15px] focus:ring-0 focus:outline-none" />
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto px-5">
-        <h3 className="text-[20px] font-bold text-black mb-4">Durum</h3>
-        
-        {/* My Status */}
-        <div onClick={() => handleOpenStory(myStory ? -1 : 'new')} className="flex items-center gap-4 mb-8 cursor-pointer group bg-white rounded-2xl p-3 shadow-sm border border-gray-100 hover:shadow-md transition">
-          <div className="relative shrink-0">
-            <div className={`w-16 h-16 rounded-full p-[2px] ${myStory && (!myStory.viewedBy?.includes(currentUser?.id)) ? 'bg-gradient-to-tr from-[#00A884] to-[#008f6f]' : ''}`}>
-              <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Ben')}`} className="w-full h-full rounded-full object-cover ring-2 ring-white" />
-            </div>
-            {!myStory && (
-              <div className="absolute bottom-0 right-0 w-6 h-6 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
-                <Plus size={16} strokeWidth={3} />
-              </div>
-            )}
-          </div>
-          <div className="flex-1">
-            <h4 className="font-bold text-[17px] text-gray-900">Durumum</h4>
-            <p className="text-gray-500 text-[15px] mt-0.5">{myStory ? 'Durumunuzu görüntüleyin' : 'Durumuma ekle'}</p>
-          </div>
-          <div className="flex gap-3 text-gray-500 shrink-0">
-            <button onClick={(e) => { e.stopPropagation(); startCamera(); }} className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Camera size={20}/></button>
-            <button onClick={(e) => { e.stopPropagation(); handleOpenStory('new'); }} className="bg-gray-100/80 hover:bg-gray-200 p-2.5 rounded-full transition"><Edit3 size={20}/></button>
-          </div>
-        </div>
-
-        <h3 className="text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-4 px-1">Son Güncellemeler</h3>
-        
-        {/* Real Stories */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
-          {otherStories.length > 0 ? otherStories.map((story, i, arr) => {
-            const hasUnseen = !story.viewedBy?.includes(currentUser?.id);
-            return (
-              <div key={story.id} onClick={() => handleOpenStory(i)} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                <div className={`w-14 h-14 rounded-full p-[2px] shrink-0 ${hasUnseen ? 'bg-gradient-to-tr from-[#00A884] to-[#008f6f]' : 'bg-gray-300'}`}>
-                  <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-white">
-                    <img src={story.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(story.author.name)}&background=random`} className="w-full h-full object-cover" />
-                  </div>
-                </div>
-                <div className="flex-1 flex flex-col justify-center">
-                  <h4 className={`font-bold text-[16px] flex items-center gap-1 ${hasUnseen ? 'text-black' : 'text-gray-600'}`}>
-                    {story.author.name} {story.author.role === 'admin' && <CheckCircle2 size={16} className="text-[#00A884]" fill="currentColor"/>}
-                  </h4>
-                  <p className="text-gray-500 text-[14px] mt-0.5">{story.timestamp || 'Yeni'}</p>
-                </div>
-              </div>
-            );
-          }) : (
-            <div className="p-6 text-center text-gray-500">
-              Şu an gösterilecek bir durum yok.
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-    );
-  };
 
   // 3. CALLS VIEW
   const renderCallsView = () => {
@@ -768,36 +667,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     </div>
   );
 
-  const renderProfileView = () => (
-    <div className="flex flex-col h-full bg-[#f2f2f6]">
-      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100">
-        <h2 className="text-3xl font-bold text-black mb-4 tracking-tight">Siz</h2>
-      </div>
-      <div className="flex-1 overflow-y-auto">
-        <div className="bg-white p-5 mt-6 border-y border-gray-200/60 flex items-center gap-4">
-          <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || '')}`} className="w-16 h-16 rounded-full object-cover" />
-          <div className="flex-1">
-            <h3 className="font-bold text-xl text-black">{currentUser?.name || 'Kullanıcı'}</h3>
-            <p className="text-gray-500 text-sm">{currentUser?.department || 'Öğrenci'}</p>
-          </div>
-        </div>
-        
-        <div className="mt-8 bg-white border-y border-gray-200/60">
-          <button onClick={() => { if (setView) setView('profile_update'); }} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition">
-            <div className="flex items-center gap-3 text-black">
-              <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white"><UserCircle2 size={18}/></div>
-              <span className="font-medium text-[16px]">Profili Düzenle</span>
-            </div>
-            <ChevronLeft size={20} className="text-gray-400 rotate-180" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   const getActiveTabContent = () => {
     switch (currentTab) {
-      case 'updates': return renderUpdatesView();
       case 'calls': return renderCallsView();
       case 'chats': return renderChatsView();
       case 'communities': return renderCommunitiesView();
@@ -808,7 +679,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const iOSBottomTabBar = (
     <div className="h-[84px] bg-[#f9f9f9]/90 backdrop-blur-md border-t border-gray-200/50 flex justify-around items-start pt-2 px-2 shrink-0 w-full z-50 relative">
       {[
-        { id: 'updates', label: 'Güncellemeler', icon: CircleDashed, activeIcon: CircleDashed },
         { id: 'calls', label: 'Aramalar', icon: Phone, activeIcon: Phone },
         { id: 'communities', label: 'Topluluklar', icon: Users, activeIcon: Users },
         { id: 'chats', label: 'Sohbetler', icon: MessageCircle, activeIcon: MessageSquare }
@@ -837,6 +707,12 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
   const leftPanel = (
     <div className={`w-full md:w-[420px] h-full flex flex-col bg-white border-r border-gray-200 shrink-0 ${activeContactId ? 'hidden md:flex' : 'flex'}`}>
+      <div className="bg-[#00A884] text-white p-2.5 flex items-center shrink-0">
+        <button onClick={() => setView ? setView(previousView || 'landing') : window.history.back()} className="p-2 hover:bg-white/20 rounded-full transition mr-2" title="Geri Dön">
+          <ArrowLeft size={20} />
+        </button>
+        <span className="font-bold">Ana Sayfaya Dön</span>
+      </div>
       {getActiveTabContent()}
       {iOSBottomTabBar}
     </div>
@@ -1238,18 +1114,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
             </button>
           </div>
         </div>
-      )}
-
-      {/* STORY VIEWER */}
-      {(viewingStoryIndex !== null || isCreatingStory) && (
-        <StoryViewer 
-          stories={isCreatingStory ? [] : viewingStoryIndex === -1 ? [stories?.find(s => s.author?.name === currentUser?.name)] : stories?.filter(s => s.author?.name !== currentUser?.name)}
-          initialIndex={viewingStoryIndex !== null ? (viewingStoryIndex === -1 ? 0 : viewingStoryIndex) : 0}
-          onClose={() => { setViewingStoryIndex(null); setIsCreatingStory(false); }}
-          currentUser={currentUser}
-          isCreating={isCreatingStory}
-          setStories={setStories}
-        />
       )}
     </>
   );

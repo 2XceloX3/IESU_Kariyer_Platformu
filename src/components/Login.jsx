@@ -7,7 +7,7 @@ import { doc, getDoc } from 'firebase/firestore';
 
 
 
-export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
+export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser, students = [], alumni = [], companies = [], academicStaff = [] }) {
   const [loginRole, setLoginRole] = useState('student');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,36 +68,29 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       console.log("Firebase Login Failed, falling back to mock logic:", err.message);
     }
     
-    // NORMAL MOCK LOGIN LOGIC (Legacy Fallback)
+    // STRICT MOCK LOGIN LOGIC (No bypasses)
     if (loginRole === 'admin') {
-      // Herhangi bir şey yazarsa veya boş bırakırsa Akademik profile girsin (Kariyer şifresi hariç)
-      if (setAcademicRole) setAcademicRole('standard_academic');
-      setUserRole('academic');
-      if (setCurrentUser) setCurrentUser({ id: 'ACAD-001', name: 'Dr. Öğr. Üyesi Ahmet Yılmaz', department: 'Bilgisayar Mühendisliği', role: 'academic', avatar: 'https://ui-avatars.com/api/?name=Ahmet+Yilmaz&background=132A49&color=fff', onboardingCompleted: true });
-      setView('academic');
+      const adminUser = academicStaff.find(a => (a.email === username || a.id === username) && a.password === password);
+      if (adminUser) {
+        if (setAcademicRole) setAcademicRole(adminUser.role || 'standard_academic');
+        setUserRole('academic');
+        if (setCurrentUser) setCurrentUser({ ...adminUser, onboardingCompleted: true });
+        setView('academic');
+      } else {
+        setError("Hatalı akademik personel kullanıcı adı veya şifresi!");
+      }
     } else if (loginRole === 'alumni') {
-      let savedAlumni = [];
-      try { savedAlumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || '[]'); } catch(e) {}
-      const alumniUser = savedAlumni.find(a => (a.studentId === username || a.email === username) && a.password === password);
+      const alumniUser = alumni.find(a => (a.studentId === username || a.email === username) && a.password === password);
       
       if (alumniUser) {
         setUserRole('alumni');
-        if (setCurrentUser) setCurrentUser(alumniUser);
+        if (setCurrentUser) setCurrentUser({ ...alumniUser, onboardingCompleted: true });
         setView('alumni');
       } else {
-        // Fallback for mock/demo
-        if (username === 'mezun' || username === '1') {
-          setUserRole('alumni');
-          if (setCurrentUser) setCurrentUser({ id: 'ALM-1', name: 'Örnek Mezun', role: 'alumni', department: 'İşletme', avatar: 'https://ui-avatars.com/api/?name=Ornek+Mezun&background=10B981&color=fff', onboardingCompleted: true });
-          setView('alumni');
-        } else {
-          setError("Hatalı mezun numarası veya şifresi!");
-        }
+        setError("Hatalı mezun numarası veya şifresi!");
       }
     } else if (loginRole === 'employer') {
-      let savedCompanies = [];
-      try { savedCompanies = JSON.parse(localStorage.getItem('iesu_companies_v3') || '[]'); } catch(e) {}
-      const companyUser = savedCompanies.find(c => c.username === username && c.password === password);
+      const companyUser = companies.find(c => c.username === username && c.password === password);
       
       if (companyUser) {
         setUserRole('employer');
@@ -114,23 +107,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         setError("Hatalı firma kullanıcı adı veya şifresi!");
       }
     } else {
-      let savedStudents = [];
-      try { savedStudents = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]'); } catch(e) {}
-      const studentUser = savedStudents.find(s => (s.studentId === username || s.email === username) && s.password === password);
+      const studentUser = students.find(s => (s.studentId === username || s.email === username) && s.password === password);
       
       if (studentUser) {
         setUserRole('student');
-        if (setCurrentUser) setCurrentUser(studentUser);
+        if (setCurrentUser) setCurrentUser({ ...studentUser, onboardingCompleted: true });
         setView('student');
       } else {
-        // Fallback for mock/demo
-        if (username === 'ogrenci' || username === '1') {
-          setUserRole('student');
-          if (setCurrentUser) setCurrentUser({ id: 'STD-1', name: 'Öğrenci', role: 'student', department: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=Ogrenci&background=132A49&color=fff', onboardingCompleted: true });
-          setView('student');
-        } else {
-          setError("Hatalı öğrenci numarası veya şifresi!");
-        }
+        setError("Hatalı öğrenci numarası veya şifresi!");
       }
     }
   };

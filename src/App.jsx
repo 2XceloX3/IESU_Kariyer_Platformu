@@ -79,7 +79,11 @@ function App() {
   const viewStr = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'landing';
   const view = validViews.includes(viewStr) ? viewStr : 'landing';
   const setView = (v) => {
-    navigate(v === 'landing' ? '/' : '/' + v);
+    const nextView = typeof v === 'function' ? v(view) : v;
+    if (nextView !== view && view !== 'login' && view !== 'register') {
+      setPreviousView(view);
+    }
+    navigate(nextView === 'landing' ? '/' : '/' + nextView);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   const [currentUser, setCurrentUser] = useState(() => {
@@ -178,7 +182,7 @@ function App() {
     <ErrorBoundary>
       <ToastContainer />
       {view === 'landing' && <LandingPage setView={setView} userRole={userRole} setUserRole={setUserRole} />}
-      {view === 'login' && <Login setView={setView} setUserRole={setUserRole} setAcademicRole={setAcademicRole} setCurrentUser={setCurrentUser} />}
+      {view === 'login' && <Login setView={setView} setUserRole={setUserRole} setAcademicRole={setAcademicRole} setCurrentUser={setCurrentUser} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} academicStaff={liveAcademicStaff} />}
       {view === 'register' && <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={setStudents} setAlumni={setAlumni} setAcademicStaff={setAcademicStaff} setCompanies={setCompanies} setUserRole={setUserRole} />}
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
       {view === 'create_job' && <JobCreator setView={setView} currentUser={currentUser} jobs={jobs} setJobs={setJobs} />}

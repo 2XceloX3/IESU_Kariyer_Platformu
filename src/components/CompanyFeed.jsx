@@ -7,6 +7,7 @@ import PostComposer from './PostComposer';
 import PostCard from './PostCard';
 import CareerNetwork from './CareerNetwork';
 import GroupProfile from './GroupProfile';
+import StoriesBar from './StoriesBar';
 
 import { combineFeedItems } from '../utils/feedCombiner';
 import TopProfileMenu from './TopProfileMenu';
@@ -129,6 +130,9 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
           
           {activeTab === 'feed' && (
             <>
+              {/* STORIES */}
+              <StoriesBar currentUser={currentUser} stories={stories} setStories={setStories} />
+              
               {/* PostComposer moved to create_post tab */}
               
               <div className="space-y-6">

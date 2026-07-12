@@ -17,6 +17,7 @@ import AICVBuilder from './AICVBuilder';
 import NavIcon from './shared/NavIcon';
 import ClubsDirectory from './ClubsDirectory';
 import CareerShorts from './CareerShorts';
+import StoriesBar from './StoriesBar';
 
 export default function StudentFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, voluntaryInternships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, academicRole, groups, setGroups, setSelectedGroupId, featureClubsShowcase, featureClubApplications, clubs, setClubs, clubApplications, setClubApplications }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
@@ -101,6 +102,9 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
         <div className="w-full max-w-2xl shrink-0 flex flex-col gap-6">
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 space-y-6 animate-fade-in">
+            
+            {/* STORIES */}
+            <StoriesBar currentUser={currentUser} stories={stories} setStories={setStories} />
             
             {/* POST COMPOSER */}
             <PostComposer currentUser={currentUser} setPosts={setPosts} />
