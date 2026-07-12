@@ -108,8 +108,8 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           {/* FEED POSTS */}
           <div className="space-y-6">
             {(() => {
-              const allItems = combineFeedItems(posts, events, news, announcements, jobs);
-              const filtered = allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+              const allItems = React.useMemo(() => combineFeedItems(posts, events, news, announcements, jobs), [posts, events, news, announcements, jobs]);
+              const filtered = React.useMemo(() => allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase())), [allItems, searchQuery]);
               
               if (filtered.length === 0) {
                 return (

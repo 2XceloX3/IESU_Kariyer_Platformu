@@ -1,10 +1,11 @@
 // Mock Integration Service for OBS (Öğrenci İşleri Bilgi Sistemi) and e-Devlet
 // Prepared for real REST API integration
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.esenyurt.edu.tr/v1';
+// Proxy to internal backend to avoid exposing external API keys
+const API_BASE_URL = process.env.REACT_APP_INTERNAL_API_URL || '/api';
 
 /**
- * Fetches student data from the university's OBS system.
+ * Fetches student data from the university's OBS system via internal proxy.
  * @param {string} studentNumber 
  * @returns {Promise<Object>}
  */
@@ -14,12 +15,12 @@ export const fetchStudentFromOBS = async (studentNumber) => {
   }
 
   try {
-    // REAL API CALL PREPARATION
+    // REAL API CALL PREPARATION (Through internal proxy)
     const response = await fetch(`${API_BASE_URL}/obs/students/${studentNumber}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.REACT_APP_OBS_API_KEY}`
+        'Content-Type': 'application/json'
+        // Authentication token is handled securely on the backend server
       }
     });
 

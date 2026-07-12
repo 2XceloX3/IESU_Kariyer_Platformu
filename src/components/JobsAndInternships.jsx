@@ -231,7 +231,7 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
                     { title: "İş Sağlığı ve Güvenliği Belgesi (SBF)", link: "#" },
                     { title: "Ulusal Staj Başvuru Formu", link: "#" }
                   ].map((doc, i) => (
-                    <a key={i} href={doc.link} className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-iesu-red hover:shadow-md transition group cursor-pointer">
+                    <a key={i} href={doc.link} onClick={(e) => { if (doc.link === '#') e.preventDefault(); }} className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-iesu-red hover:shadow-md transition group cursor-pointer">
                       <span className="font-semibold text-[14px] text-gray-700 group-hover:text-iesu-red transition">{doc.title}</span>
                       <Download size={18} className="text-gray-400 group-hover:text-iesu-red transition" />
                     </a>

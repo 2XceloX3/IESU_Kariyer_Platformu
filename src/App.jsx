@@ -15,7 +15,7 @@ import JobsAndInternships from './components/JobsAndInternships';
 import NewsEvents from './components/NewsEvents';
 import SemPanel from './components/SemPanel';
 import StajPanel from './components/StajPanel';
-import { generateStudents, generateAlumni, generateCompanies, initialSemCourses, initialJobs, initialFeatured, initialMentorships, initialVoluntaryInternships, initialAcademicCatalog, initialAcademicApprovals, initialNews, initialEvents, initialAnnouncements, academicStaff as mockAcademicStaff, initialInternships, initialGroups, initialSurveys } from './utils/mockData';
+// Removed unused mockData imports to clean up App.jsx
 import useAppStore from './store/useAppStore';
 import { contentData } from './components/NewsEvents';
 import AlumniFeed from './components/AlumniFeed';
@@ -75,7 +75,6 @@ function App() {
   const location = useLocation();
   const pathParts = location.pathname.split('/').filter(Boolean);
   const viewStr = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'landing';
-  const validViews = ['landing', 'login', 'register', 'forgot_password', 'create_job', 'club_admin', 'club_portal', 'student', 'alumni', 'academic', 'company', 'admin', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging', 'interview_sim'];
   const view = validViews.includes(viewStr) ? viewStr : 'landing';
   const setView = (v) => {
     navigate(v === 'landing' ? '/' : '/' + v);
