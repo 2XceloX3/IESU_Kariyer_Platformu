@@ -12,7 +12,10 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   const [cvData, setCvData] = useState(() => {
     try {
       const saved = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
     } catch (e) {
       console.warn("Failed to load CV draft", e);
     }

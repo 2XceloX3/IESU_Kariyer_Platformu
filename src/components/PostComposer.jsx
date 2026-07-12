@@ -84,6 +84,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
           <div className="flex-1 min-w-0">
             <textarea 
               value={content}
+              maxLength={2000}
               onChange={(e) => setContent(e.target.value)}
               onFocus={() => setIsFocused(true)}
               placeholder="Ağınızdaki kişilerle yeni bir başarı, proje veya soru paylaşın..." 

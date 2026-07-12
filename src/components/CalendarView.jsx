@@ -141,7 +141,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
               <div className="grid grid-cols-7 gap-2">
                 {Array.from({ length: 35 }).map((_, i) => {
                   const day = i - 2; // offset
-                  if (day <= 0 || day > 31) return <div key={i} className="aspect-square rounded-xl bg-gray-50/50"></div>;
+                  if (day <= 0 || day > 31) return <div key={'empty-'+i} className="aspect-square rounded-xl bg-gray-50/50"></div>;
                   
                   const d = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day);
                   const dStr = d.toISOString().split('T')[0];
@@ -151,7 +151,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
 
                   return (
                     <button 
-                      key={i}
+                      key={'day-'+i}
                       onClick={() => setSelectedDate(d)}
                       className={`aspect-square rounded-xl flex flex-col items-center justify-center relative transition-all ${
                         isSelected ? 'bg-iesu-red text-white shadow-md shadow-red-600/20' : 
@@ -205,7 +205,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
                     }
 
                     return (
-                      <div key={idx} className={`p-4 rounded-2xl border relative ${item.calendarType === 'personal' ? 'bg-white shadow-sm border-gray-100' : 'bg-gray-50 border-gray-100'}`}>
+                      <div key={'event-'+idx} className={`p-4 rounded-2xl border relative ${item.calendarType === 'personal' ? 'bg-white shadow-sm border-gray-100' : 'bg-gray-50 border-gray-100'}`}>
                         <div className="flex justify-between items-start mb-2">
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${typeColor}`}>
                             {item.type || 'Etkinlik'}

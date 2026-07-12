@@ -213,7 +213,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
                 
                 <div className="space-y-4">
                   {(networkSuggestions || []).map((person, i) => (
-                    <div key={i} className="flex items-center gap-3 group">
+                    <div key={'suggestion-'+i} className="flex items-center gap-3 group">
                       <img src={`https://ui-avatars.com/api/?name=${person.name}&background=random&color=fff`} className="w-12 h-12 rounded-full object-cover" alt={person.name} />
                       <div className="flex-grow">
                         <p className="text-[13px] font-bold text-gray-900 line-clamp-1">{person.name}</p>

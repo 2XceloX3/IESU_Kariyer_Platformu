@@ -41,11 +41,11 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
     return (
       <div className="flex items-center gap-1 ml-1.5">
         {badges.map((badge, idx) => {
-          if (badge === 'verified' || badge === 'Doğrulanmış') return <ShieldCheck key={idx} size={14} className="text-blue-500" title="Doğrulanmış" />;
-          if (badge === 'top_voice' || badge === 'Top Voice') return <Crown key={idx} size={14} className="text-amber-500" title="Top Voice" />;
-          if (badge === 'president' || badge === 'Kulüp Başkanı') return <Crown key={idx} size={14} className="text-purple-600" title="Kulüp Başkanı" />;
-          if (badge === 'rep' || badge === 'Sınıf Temsilcisi') return <Award key={idx} size={14} className="text-emerald-500" title="Sınıf Temsilcisi" />;
-          return <span key={idx} className="bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-200 uppercase">{badge}</span>;
+          if (badge === 'verified' || badge === 'Doğrulanmış') return <ShieldCheck key={'badge-'+idx} size={14} className="text-blue-500" title="Doğrulanmış" />;
+          if (badge === 'top_voice' || badge === 'Top Voice') return <Crown key={'badge-'+idx} size={14} className="text-amber-500" title="Top Voice" />;
+          if (badge === 'president' || badge === 'Kulüp Başkanı') return <Crown key={'badge-'+idx} size={14} className="text-purple-600" title="Kulüp Başkanı" />;
+          if (badge === 'rep' || badge === 'Sınıf Temsilcisi') return <Award key={'badge-'+idx} size={14} className="text-emerald-500" title="Sınıf Temsilcisi" />;
+          return <span key={'badge-'+idx} className="bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded border border-amber-200 uppercase">{badge}</span>;
         })}
       </div>
     );

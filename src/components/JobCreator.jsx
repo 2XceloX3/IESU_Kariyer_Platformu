@@ -124,7 +124,7 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
 
               <div>
                 <label className="block text-xs font-bold text-gray-500 mb-1">Açıklama & Aranan Nitelikler *</label>
-                <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Adaylarda aradığınız özellikleri detaylıca yazın..." rows={5} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition resize-none"></textarea>
+                <textarea name="description" value={formData.description} maxLength={5000} onChange={handleInputChange} placeholder="Adaylarda aradığınız özellikleri detaylıca yazın..." rows={5} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition resize-none"></textarea>
               </div>
 
               <div>
