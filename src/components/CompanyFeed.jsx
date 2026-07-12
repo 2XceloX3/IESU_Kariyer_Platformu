@@ -20,10 +20,18 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
   const [searchQuery, setSearchQuery] = useState('');
 
   // Sağ menü networking önerileri
-  const networkSuggestions = [
-    ...(alumni || []).map(a => ({ name: a.name, title: a.department, badge: "Mezun" })),
-    ...(students || []).map(s => ({ name: s.name, title: s.department, badge: "Öğrenci" }))
-  ].slice(0, 5);
+  const networkSuggestions = useMemo(() => {
+    const combined = [
+      ...(alumni || []).slice(0, 5).map(a => ({ name: a.name, title: a.department, badge: "Mezun" })),
+      ...(students || []).slice(0, 5).map(s => ({ name: s.name, title: s.department, badge: "Öğrenci" }))
+    ];
+    return combined.slice(0, 5);
+  }, [alumni, students]);
+
+  const filteredItems = useMemo(() => {
+    const allItems = combineFeedItems(posts, events, news, announcements, jobs);
+    return allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [posts, events, news, announcements, jobs, searchQuery]);
 
   return (
     <div className="min-h-screen bg-transparent font-sans">
@@ -137,10 +145,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
               
               <div className="space-y-6">
             {(() => {
-              const allItems = combineFeedItems(posts, events, news, announcements, jobs);
-              const filtered = allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()));
-              
-              if (filtered.length === 0) {
+              if (filteredItems.length === 0) {
                 return (
                   <div className="p-10 text-center bg-white rounded-[2rem] border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
                     <div className="w-16 h-16 bg-red-50 text-iesu-red rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
@@ -150,7 +155,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
                 );
               }
               
-              return filtered.map(post => (
+              return filteredItems.map(post => (
                 <PostCard key={post.id} post={post} currentUser={currentUser} setMessages={setMessages} students={students || []} alumni={alumni || []} setPosts={setPosts} />
               ));
             })()}

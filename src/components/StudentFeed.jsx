@@ -24,15 +24,15 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
-  const getManagedClubs = () => {
+  const getManagedClubs = useMemo(() => {
     try {
       const clubsData = JSON.parse(localStorage.getItem('iesu_clubs_v1')) || clubs || [];
       return clubsData.filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
     } catch {
       return [];
     }
-  };
-  const isClubAdmin = getManagedClubs().length > 0;
+  }, [clubs, currentUser?.id]);
+  const isClubAdmin = getManagedClubs.length > 0;
 
 
 
