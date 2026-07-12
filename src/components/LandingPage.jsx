@@ -189,8 +189,20 @@ export default function LandingPage({ setView }) {
             </div>
           </div>
 
-          {/* Right: Login Button */}
-          <div className="flex items-center justify-end w-1/3">
+          {/* Right: Login Button & Desktop Links */}
+          <div className="flex items-center justify-end w-1/3 gap-6">
+            <button 
+              className="hidden lg:block text-gray-600 hover:text-iesu-red font-bold text-sm transition-colors"
+              onClick={() => {
+                setView('landing');
+                setTimeout(() => {
+                  const el = document.getElementById('events');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }}
+            >
+              Etkinlikler
+            </button>
             <button 
               onClick={() => setView('login')}
               className="bg-iesu-red text-white px-5 sm:px-8 py-2.5 rounded-xl font-bold text-[14px] hover:bg-iesu-darkRed transition shadow-lg flex items-center gap-2 border border-transparent hover:border-red-300"
@@ -211,6 +223,14 @@ export default function LandingPage({ setView }) {
           <button onClick={() => { setView('landing'); setIsMenuOpen(false); }} className="text-iesu-red font-bold text-[15px] text-left">Ana Sayfa</button>
           <button className="text-gray-700 font-semibold hover:text-iesu-coral text-[15px] text-left">Kariyer Danışmanlığı</button>
           <button onClick={() => { setView('jobs'); setIsMenuOpen(false); }} className="text-gray-700 font-semibold hover:text-iesu-coral text-[15px] text-left">İş ve Staj</button>
+          <button onClick={() => { 
+            setView('landing'); 
+            setIsMenuOpen(false); 
+            setTimeout(() => {
+              const el = document.getElementById('events');
+              if(el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+          }} className="text-gray-700 font-semibold hover:text-iesu-coral text-[15px] text-left">Etkinlikler</button>
           <button className="text-gray-700 font-semibold hover:text-iesu-coral text-[15px] text-left">Mezun Ağı</button>
           <button onClick={() => { setView('login'); setIsMenuOpen(false); }} className="bg-iesu-red text-white font-bold px-4 py-3 rounded-lg w-full mt-2 shadow">Portala Giriş</button>
         </div>
@@ -276,7 +296,7 @@ export default function LandingPage({ setView }) {
       </section>
 
       {/* Bento Grid News & Events Section */}
-      <section className="max-w-7xl mx-auto px-4 py-24 relative">
+      <section id="events" className="max-w-7xl mx-auto px-4 py-24 relative">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
           <div>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">Gündem <span className="text-iesu-red">&</span> Gelişmeler</h2>

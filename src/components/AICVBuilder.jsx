@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {  FileText, Wand2, Plus, Trash2, Download, Printer, User, Briefcase, GraduationCap, Award, Mail, Phone, MapPin, Search, ChevronLeft, ShieldCheck, Home, Compass, MessageCircle, Bell } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
@@ -8,21 +8,34 @@ import NavIcon from './shared/NavIcon';
 export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId }) {
   const [activeSection, setActiveSection] = useState('personal'); // personal, experience, education, skills, certificates, summary
   
-  // Initialize from currentUser if available — no fake data
-  const [cvData, setCvData] = useState({
-    name: currentUser?.name || '',
-    photo: currentUser?.avatar || '',
-    title: currentUser?.department ? `${currentUser.department} Öğrencisi` : '',
-    email: currentUser?.email || '',
-    phone: '',
-    location: 'İstanbul, Türkiye',
-    summary: '',
-    experience: [],
-    education: [],
-    skills: [],
-    languages: [],
-    certificates: []
+  // Initialize from localStorage OR currentUser if available
+  const [cvData, setCvData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn("Failed to load CV draft", e);
+    }
+    return {
+      name: currentUser?.name || '',
+      photo: currentUser?.avatar || '',
+      title: currentUser?.department ? `${currentUser.department} Öğrencisi` : '',
+      email: currentUser?.email || '',
+      phone: '',
+      location: 'İstanbul, Türkiye',
+      summary: '',
+      experience: [],
+      education: [],
+      skills: [],
+      languages: [],
+      certificates: []
+    };
   });
+
+  // Save to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
+  }, [cvData, currentUser?.id]);
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [newSkill, setNewSkill] = useState('');
