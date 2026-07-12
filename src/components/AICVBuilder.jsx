@@ -188,7 +188,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
           {/* RIGHT: Navigation Icons & Profile */}
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <NavIcon icon={<Home />} label="Akış" active={false} onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={false} onClick={() => {}} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" active={false} onClick={() => setView(userRole === 'admin' ? 'admin' : userRole || 'landing')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
             <NavIcon icon={<MessageCircle />} label="Mesajlar" active={false} onClick={() => setView('messaging')} />
             

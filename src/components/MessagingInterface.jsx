@@ -723,7 +723,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       <div className={`flex-1 flex flex-col bg-[#efeae2] h-full ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
         {activeContact ? (
           <>
-            <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0 cursor-pointer" onClick={() => {}}>
+            <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0 cursor-pointer" onClick={() => { if (!activeContact.isGroup && setView && setSelectedUserId) { setSelectedUserId(activeContact.id); setView('user_profile'); } }}>
               <div className="flex items-center gap-4 flex-1">
                 <button className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition" onClick={() => setActiveContactId(null)}>
                   <ChevronLeft size={24} />
