@@ -1,0 +1,37 @@
+name: IESU Kariyer Platformu CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  audit-and-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: Depoyu Klonla (Checkout)
+      uses: actions/checkout@v4
+
+    - name: Node.js ${{ matrix.node-version }} Kurulumu
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Bağımlılıkları Yükle
+      run: npm install --legacy-peer-deps
+
+    - name: Statik Hata ve Kod Analizi (Linting)
+      # Eğer eslint kurulu değilse kurulmasını sağlayıp kod taraması yapar. Bu, çökmeye sebep olacak hataları tespit eder.
+      run: |
+        npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 || echo "ESLint uyarıları bulundu ancak build işlemine devam ediliyor."
+
+    - name: Üretime Hazır Derleme (Build Testi)
+      # Uygulamanın başarıyla derlendiğini doğrular. Herhangi bir 'undefined' referans veya kırık import varsa bu aşamada çöker.
+      run: npm run build

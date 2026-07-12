@@ -59,7 +59,7 @@ import { exportToCSV } from '../../utils/export';export default function CMSStud
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.name || !form.studentId) return alert("Ad Soyad ve Öğrenci No zorunludur.");
+    if (!form.name || !form.studentId) return window.toast.info("Ad Soyad ve Öğrenci No zorunludur.");
 
     if (currentId) {
       setStudents(prev => (prev || []).map(s => s.id === currentId ? { ...s, ...form, updatedAt: new Date().toISOString() } : s));

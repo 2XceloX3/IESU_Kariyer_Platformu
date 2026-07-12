@@ -80,7 +80,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
       setNewImage(null); // Clear previous if any
     } catch (err) {
       console.error("Camera access denied:", err);
-      alert("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
+      window.toast.error("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
     }
   };
 

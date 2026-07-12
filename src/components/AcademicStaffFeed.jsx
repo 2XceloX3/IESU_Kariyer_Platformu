@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, Briefcase, Bookmark, Plus, Users, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, FileText, Home, Radar, Target, UserCheck, ChevronRight, MessageCircle, ChevronDown, ChevronUp, Compass, Heart } from 'lucide-react';
+import { Search, Bell, Briefcase, Bookmark, Plus, Users, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, FileText, Home, Radar, Target, UserCheck, ChevronRight, MessageCircle, ChevronDown, ChevronUp, Compass, Heart, X } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import PostComposer from './PostComposer';

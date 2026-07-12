@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { Crown, Users, FileText, Send, CheckCircle, XCircle, Shield, UserPlus, Target } from 'lucide-react';
+import { Crown, Users, FileText, Send, CheckCircle, XCircle, Shield, UserPlus, Target, Eye } from 'lucide-react';
 import PostComposer from './PostComposer';
+import PostCard from './PostCard';
 
 export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, setPosts, setView, overrideClubId }) {
+  const isAdmin = currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"';
+  
   const managedClubs = overrideClubId 
     ? (clubs || []).filter(c => c.id === overrideClubId)
-    : (clubs || []).filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
+    : isAdmin 
+      ? (clubs || []) 
+      : (clubs || []).filter(c => c.presidentId === currentUser?.id || c.president?.name === currentUser?.name || (c.admins || []).includes(currentUser?.id));
   const [selectedClubId, setSelectedClubId] = useState(managedClubs[0]?.id);
   const [activeTab, setActiveTab] = useState('requests');
 
@@ -48,7 +53,7 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
   const handleToggleAdmin = (memberId) => {
     // Only president can toggle admin status
     if (selectedClub.presidentId !== currentUser?.id) {
-      alert("Sadece Kulüp Başkanı admin yetkisi verebilir.");
+      window.toast.info("Sadece Kulüp Başkanı admin yetkisi verebilir.");
       return;
     }
     
@@ -69,19 +74,41 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
 
   const isPresident = selectedClub.presidentId === currentUser?.id;
 
+  const previewPost = {
+    id: 'preview',
+    authorId: selectedClub.id,
+    authorName: selectedClub.name,
+    authorAvatar: selectedClub.logo,
+    authorTitle: 'Resmi Kulüp Hesabı',
+    content: 'Bu alanda paylaştığınız içerik görünecektir.',
+    timestamp: 'Şimdi',
+    likes: 0,
+    comments: [],
+    type: 'text',
+    isClubPost: true,
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto p-4 sm:p-8 animate-fade-in">
       
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-4">
-          <img src={selectedClub.logo} alt={selectedClub.name} className="w-16 h-16 rounded-2xl shadow-lg border-2 border-white object-cover" />
-          <div>
-            <h1 className="text-2xl font-black text-gray-900">{selectedClub.name}</h1>
-            <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mt-0.5 flex items-center gap-1.5">
-              <Crown size={14} /> {overrideClubId ? 'Süper Admin Paneli' : (isPresident ? 'Kulüp Başkanı' : 'Kulüp Yöneticisi Paneli')}
-            </p>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-4">
+            <img src={selectedClub.logo} alt={selectedClub.name} className="w-16 h-16 rounded-2xl shadow-lg border-2 border-white object-cover" />
+            <div>
+              <h1 className="text-2xl font-black text-gray-900">{selectedClub.name}</h1>
+              <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mt-0.5 flex items-center gap-1.5">
+                <Crown size={14} /> {overrideClubId ? 'Süper Admin Paneli' : (isPresident ? 'Kulüp Başkanı' : 'Kulüp Yöneticisi Paneli')}
+              </p>
+            </div>
           </div>
+          <button 
+            onClick={() => setView(currentUser?.role === 'admin' ? 'admin' : currentUser?.role === 'alumni' ? 'alumni' : 'student')} 
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors shrink-0"
+          >
+            Ana Sayfaya Dön
+          </button>
         </div>
         
         {managedClubs.length > 1 && (
@@ -214,13 +241,27 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
               <Send className="text-emerald-500" /> Kulüp Adına Gönderi/Etkinlik Paylaş
             </h3>
             
-            <div className="bg-gray-50/50 p-1 rounded-[1.8rem] border border-gray-100">
-              <PostComposer currentUser={currentUser} userRole="club" posts={posts} setPosts={setPosts} asClub={selectedClub} />
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+              <div className="lg:col-span-3">
+                <div className="bg-gray-50/50 p-1 rounded-[1.8rem] border border-gray-100">
+                  <PostComposer currentUser={currentUser} userRole="club" posts={posts} setPosts={setPosts} asClub={selectedClub} />
+                </div>
+                <p className="text-xs text-gray-400 font-medium text-center mt-4">
+                  Paylaştığınız gönderiler ana sayfadaki tüm öğrencilerin akışında, kulübünüzün logosu ve ismiyle anında yayınlanacaktır.
+                </p>
+              </div>
+              
+              <div className="lg:col-span-2 hidden lg:block">
+                <div className="sticky top-24">
+                  <h4 className="font-bold text-gray-700 mb-3 text-sm flex items-center gap-2">
+                    <Eye size={16} className="text-emerald-500"/> Akış Önizlemesi
+                  </h4>
+                  <div className="pointer-events-none scale-90 origin-top">
+                    <PostCard post={previewPost} currentUser={currentUser} setPosts={()=>{}} />
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <p className="text-xs text-gray-400 font-medium text-center mt-4">
-              Paylaştığınız gönderiler ana sayfadaki tüm öğrencilerin akışında, kulübünüzün logosu ve ismiyle (Onaylı Kulüp rozetiyle) anında yayınlanacaktır.
-            </p>
           </div>
         )}
         
@@ -262,7 +303,7 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
                     const fileInput = e.target.elements.fileInput;
                     
                     if (fileInput.files.length === 0) {
-                      alert("Lütfen yüklemek için bir PDF dosyası seçin.");
+                      window.toast.error("Lütfen yüklemek için bir PDF dosyası seçin.");
                       return;
                     }
                     
@@ -282,7 +323,7 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
                     
                     setClubs(updatedClubs);
                     e.target.reset();
-                    alert("Belge başarıyla Öğrenci Dekanlığı iç havuzuna iletildi!");
+                    window.toast.success("Belge başarıyla Öğrenci Dekanlığı iç havuzuna iletildi!");
                   }}
                   className="space-y-4"
                 >

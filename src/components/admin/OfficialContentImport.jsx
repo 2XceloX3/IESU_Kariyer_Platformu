@@ -63,7 +63,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
 
     // Mark as imported
     setFetchedData(fetchedData.map(f => f.id === item.id ? { ...f, imported: true } : f));
-    alert(`${item.title} başarıyla Taslak olarak içe aktarıldı. Artık ilgili CMS modülünden düzenleyebilir ve yayınlayabilirsiniz.`);
+    window.toast.success(`${item.title} başarıyla Taslak olarak içe aktarıldı. Artık ilgili CMS modülünden düzenleyebilir ve yayınlayabilirsiniz.`);
   };
 
   const handleImportAll = () => {
@@ -102,7 +102,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
             <button 
               onClick={() => {
                 setFetchedData(FETCHED_CONTENT.map(f => ({ ...f, imported: false })));
-                alert("Veriler yeniden çekildi (Senkronize edildi).");
+                window.toast.info("Veriler yeniden çekildi (Senkronize edildi).");
               }}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-200 transition"
             >

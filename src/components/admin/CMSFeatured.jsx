@@ -51,7 +51,7 @@ export default function CMSFeatured({ featuredOpportunities = [], setFeaturedOpp
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title) return alert("Başlık zorunludur.");
+    if (!form.title) return window.toast.info("Başlık zorunludur.");
 
     if (currentId) {
       setFeaturedOpportunities((featuredOpportunities || []).map(f => f.id === currentId ? { ...f, ...form, updatedAt: new Date().toISOString() } : f));

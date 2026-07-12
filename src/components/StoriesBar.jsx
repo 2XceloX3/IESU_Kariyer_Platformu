@@ -29,9 +29,9 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
     setViewingStoryIndex(index);
     if (setStories && currentUser) {
       const story = index === -1 ? myStory : otherStories[index];
-      if (story && !story.viewedBy?.includes(currentUser.id)) {
+      if (story && !story.viewedBy?.includes(currentUser?.id)) {
         setStories(prev => prev.map(s => 
-          s.id === story.id ? { ...s, viewedBy: [...(s.viewedBy || []), currentUser.id] } : s
+          s.id === story.id ? { ...s, viewedBy: [...(s.viewedBy || []), currentUser?.id] } : s
         ));
       }
     }

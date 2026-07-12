@@ -11,7 +11,7 @@ export default function ForgotPassword({ setView }) {
       const pass1 = e.target.elements[0]?.value;
       const pass2 = e.target.elements[1]?.value;
       if (pass1 !== pass2) {
-        alert("Şifreler eşleşmiyor! Lütfen kontrol edin.");
+        window.toast.error("Şifreler eşleşmiyor! Lütfen kontrol edin.");
         return;
       }
     }

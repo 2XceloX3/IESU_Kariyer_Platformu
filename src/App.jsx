@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -12,7 +13,7 @@ import NewsEvents from './components/NewsEvents';
 import SemPanel from './components/SemPanel';
 import StajPanel from './components/StajPanel';
 import { generateStudents, generateAlumni, generateCompanies, initialSemCourses, initialJobs, initialFeatured, initialMentorships, initialVoluntaryInternships, initialAcademicCatalog, initialAcademicApprovals, initialNews, initialEvents, initialAnnouncements, academicStaff as mockAcademicStaff, initialInternships, initialGroups, initialSurveys } from './utils/mockData';
-import useLocalStorageState from './utils/useLocalStorageState';
+import useAppStore from './store/useAppStore';
 import { contentData } from './components/NewsEvents';
 import AlumniFeed from './components/AlumniFeed';
 import AcademicStaffFeed from './components/AcademicStaffFeed';
@@ -28,6 +29,12 @@ import MessagingInterface from './components/MessagingInterface';
 import CalendarView from './components/CalendarView';
 import JobCreator from './components/JobCreator';
 import ClubAdminPanel from './components/ClubAdminPanel';
+import StudentClubPortal from './components/StudentClubPortal';
+import AlumniInformationSystem from './components/AlumniInformationSystem';
+import CommandPalette from './components/CommandPalette';
+import { ToastContainer, toast } from './components/shared/Toast';
+
+window.toast = toast;
 
 class ErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null }; }
@@ -43,43 +50,32 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const initialClubs = [
-  { id: 'CLUB-001', name: 'Genç Yeşilay Kulübü', category: 'Sosyal Sorumluluk', description: 'Bağımlılıklarla mücadele ve sağlıklı yaşam bilincini artırma.', presidentId: 'STU-001', advisorId: 'ACAD-001', status: 'Aktif', memberCount: 45, coverImage: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=500&q=80', logo: 'https://ui-avatars.com/api/?name=GY&background=10B981&color=fff', forms: [], admins: ['STU-002'], joinRequests: [] }
-];
-const initialClubApplications = [];
-
-const initialRealCompanies = [
-  { id: 'CMP-001', name: 'AIESEC Batı İstanbul Şubesi', username: 'aiesec', password: 'IESU2026!aiesec', sector: 'Genel', status: 'Onaylı' },
-  { id: 'CMP-002', name: 'ALTERNATİF YAYINCILIK SAN.VE TİC.LTD.ŞT', username: 'alternatif', password: 'IESU2026!alternatif', sector: 'Yayıncılık', status: 'Onaylı' },
-  { id: 'CMP-003', name: 'Bayraktar Grup sağlık turizm Ltd şti', username: 'bayraktar', password: 'IESU2026!bayraktar', sector: 'Sağlık Turizm', status: 'Onaylı' },
-  { id: 'CMP-004', name: 'BİLİMSEL ESERLER WACOM', username: 'wacom', password: 'IESU2026!wacom', sector: 'Genel', status: 'Onaylı' },
-  { id: 'CMP-005', name: 'British Centre Dil Okulları', username: 'britishcentre', password: 'IESU2026!british', sector: 'Eğitim', status: 'Onaylı' },
-  { id: 'CMP-006', name: 'CABRA COFFEE ROASTERS', username: 'cabra', password: 'IESU2026!cabra', sector: 'Gıda', status: 'Onaylı' },
-  { id: 'CMP-007', name: 'DİJİTALDE BUGÜN YAYINCILIK', username: 'dijitalde', password: 'IESU2026!dijital', sector: 'Yayıncılık', status: 'Onaylı' },
-  { id: 'CMP-008', name: 'G silva yapı', username: 'gsilva', password: 'IESU2026!gsilva', sector: 'Yapı', status: 'Onaylı' },
-  { id: 'CMP-009', name: 'İstanbul Gümrük Müşavirleri Derneği', username: 'igmd', password: 'IESU2026!igmd', sector: 'Dernek', status: 'Onaylı' },
-  { id: 'CMP-010', name: 'Karınca Lojistik A.Ş.', username: 'karinca', password: 'IESU2026!karinca', sector: 'Lojistik', status: 'Onaylı' },
-  { id: 'CMP-011', name: 'MACFİT', username: 'macfit', password: 'IESU2026!macfit', sector: 'Spor', status: 'Onaylı' },
-  { id: 'CMP-012', name: 'PLUS İNSAN KAYNAKLARI VE DAN. HİZ.', username: 'plusik', password: 'IESU2026!plusik', sector: 'İnsan Kaynakları', status: 'Onaylı' },
-  { id: 'CMP-013', name: 'Ramada Residences by Wyndham Istanbul Haramidere', username: 'ramada', password: 'IESU2026!ramada', sector: 'Otelcilik', status: 'Onaylı' },
-  { id: 'CMP-014', name: 'Sivil Havacılık Genel Müdürlüğü', username: 'shgm', password: 'IESU2026!shgm', sector: 'Kamu', status: 'Onaylı' },
-  { id: 'CMP-015', name: 'TAV Güvenlik', username: 'tavguvenlik', password: 'IESU2026!tavguvenlik', sector: 'Güvenlik', status: 'Onaylı' },
-  { id: 'CMP-016', name: 'TÜRKİYE İŞ KURUMU BÜYÜKÇEKMECE HİZMET MERKEZİ', username: 'iskur', password: 'IESU2026!iskur', sector: 'Kamu', status: 'Onaylı' }
-];
-
 function App() {
-  const [viewState, setViewState] = useLocalStorageState('iesu_view_v1', 'landing'); 
-  const [previousView, setPreviousView] = useLocalStorageState('iesu_prev_view_v1', 'landing');
-  const view = viewState;
-  const setView = (newView) => {
-    if (['student', 'alumni', 'company', 'academic', 'admin'].includes(view)) {
-      setPreviousView(view);
-    }
-    setViewState(newView);
+  const {
+    viewState, setViewState, previousView, setPreviousView, userRole, setUserRole,
+    selectedUserId, setSelectedUserId, selectedGroupId, setSelectedGroupId,
+    posts, setPosts, stories, setStories, news, setNews, announcements, setAnnouncements,
+    events, setEvents, semCourses, setSemCourses, jobs, setJobs, featuredOpportunities, setFeaturedOpportunities,
+    mentorships, setMentorships, voluntaryInternships, setVoluntaryInternships,
+    alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms,
+    students, setStudents, alumni, setAlumni, companies, setCompanies, academicStaff, setAcademicStaff,
+    messages, setMessages, notifications, setNotifications, applications, setApplications,
+    surveys, setSurveys, academicCatalog, setAcademicCatalog, academicApprovals, setAcademicApprovals,
+    liveInternships, setLiveInternships, groups, setGroups, featureSurveys, setFeatureSurveys,
+    featureCareerCheckup, setFeatureCareerCheckup, featureAlumniCard, setFeatureAlumniCard,
+    featureClubsShowcase, setFeatureClubsShowcase, featureClubApplications, setFeatureClubApplications,
+    clubs, setClubs, clubApplications, setClubApplications
+  } = useAppStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  const viewStr = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'landing';
+  const validViews = ['landing', 'login', 'register', 'forgot_password', 'create_job', 'club_admin', 'club_portal', 'student', 'alumni', 'academic', 'company', 'admin', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging'];
+  const view = validViews.includes(viewStr) ? viewStr : 'landing';
+  const setView = (v) => {
+    navigate(v === 'landing' ? '/' : '/' + v);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  const [userRole, setUserRole] = useLocalStorageState('iesu_user_role_v1', null); 
-  const [selectedUserId, setSelectedUserId] = useLocalStorageState('iesu_selected_user_id_v1', null);
-  const [selectedGroupId, setSelectedGroupId] = useLocalStorageState('iesu_selected_group_id_v1', null);
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('iesu_mock_user');
@@ -97,6 +93,7 @@ function App() {
     }
   });
   const [academicRole, setAcademicRole] = useState('super_admin'); // 'super_admin', 'content_admin', 'mentor_admin', 'standard_academic'
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   React.useEffect(() => {
     if (currentUser) {
@@ -105,54 +102,21 @@ function App() {
   }, [currentUser]);
 
   // GLOBAL STATE: Canlı Akış Gönderileri (Feed Posts)
-  const [posts, setPosts] = useLocalStorageState('iesu_posts_v2', []);
-  const [stories, setStories] = useLocalStorageState('iesu_stories_v1', [
-    { id: 1, author: { name: 'Kariyer Ofisi', avatar: '/iesu-logo.svg', role: 'admin' }, content: 'Bugün Kariyer Günleri başlıyor! 🎉', image: 'https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg', viewedBy: [], createdAt: new Date().toISOString() }
-  ]);
 
   // GLOBAL STATE: Haberler, Duyurular, Etkinlikler, SEM vs.
-  const [news, setNews] = useLocalStorageState('iesu_news_v4', initialNews);
-  const [announcements, setAnnouncements] = useLocalStorageState('iesu_announcements_v4', initialAnnouncements);
-  const [events, setEvents] = useLocalStorageState('iesu_events_v4', initialEvents);
-  const [semCourses, setSemCourses] = useLocalStorageState('iesu_sem_courses_v5', initialSemCourses);
-  const [jobs, setJobs] = useLocalStorageState('iesu_jobs_v4', initialJobs);
-  const [featuredOpportunities, setFeaturedOpportunities] = useLocalStorageState('iesu_featured_v2', initialFeatured);
-  const [mentorships, setMentorships] = useLocalStorageState('iesu_mentorships_v2', initialMentorships);
-  const [voluntaryInternships, setVoluntaryInternships] = useLocalStorageState('iesu_voluntary_internships_v1', initialVoluntaryInternships);
   
   // ALUMNI MODULES STATE
-  const [alumniCardApplications, setAlumniCardApplications] = useLocalStorageState('iesu_alumni_card_apps_v1', []);
-  const [alumniCardForms, setAlumniCardForms] = useLocalStorageState('iesu_alumni_card_forms_v1', []);
 
   // Phase 2: Students, Alumni, Companies, Academic Staff
-  const [students, setStudents] = useLocalStorageState('iesu_students_v3', []);
-  const [alumni, setAlumni] = useLocalStorageState('iesu_alumni_v3', []);
-  const [companies, setCompanies] = useLocalStorageState('iesu_companies_v3', initialRealCompanies);
-  const [academicStaff, setAcademicStaff] = useLocalStorageState('iesu_academic_staff_v4', []);
 
   // Phase 4: Interactions (Messages, Notifications & Applications)
-  const [messages, setMessages] = useLocalStorageState('iesu_messages_v2', []);
-  const [notifications, setNotifications] = useLocalStorageState('iesu_notifications_v2', []);
-  const [applications, setApplications] = useLocalStorageState('iesu_applications_v3', []);
 
   // GLOBAL STATE: Anketler (Surveys)
-  const [surveys, setSurveys] = useLocalStorageState('iesu_surveys_v2', initialSurveys);
 
   // Phase 10: Academic Data
-  const [academicCatalog, setAcademicCatalog] = useLocalStorageState('iesu_academic_catalog_v2', initialAcademicCatalog);
-  const [academicApprovals, setAcademicApprovals] = useLocalStorageState('iesu_academic_approvals_v2', initialAcademicApprovals);
-  const [liveInternships, setLiveInternships] = useLocalStorageState('iesu_internships_v2', initialInternships);
-  const [groups, setGroups] = useLocalStorageState('iesu_groups_v1', initialGroups);
 
   // FEATURE TOGGLES
-  const [featureSurveys, setFeatureSurveys] = useLocalStorageState('iesu_feature_surveys', true);
-  const [featureCareerCheckup, setFeatureCareerCheckup] = useLocalStorageState('iesu_feature_career_checkup', true);
-  const [featureAlumniCard, setFeatureAlumniCard] = useLocalStorageState('iesu_feature_alumni_card', true);
-  const [featureClubsShowcase, setFeatureClubsShowcase] = useLocalStorageState('iesu_feature_clubs_showcase', true);
-  const [featureClubApplications, setFeatureClubApplications] = useLocalStorageState('iesu_feature_club_applications', false);
 
-  const [clubs, setClubs] = useLocalStorageState('iesu_clubs_v1', initialClubs);
-  const [clubApplications, setClubApplications] = useLocalStorageState('iesu_club_apps_v1', initialClubApplications);
 
   useEffect(() => {
     if (!localStorage.getItem('iesu_likes_reset_v4')) {
@@ -181,12 +145,14 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <ToastContainer />
       {view === 'landing' && <LandingPage setView={setView} userRole={userRole} setUserRole={setUserRole} />}
       {view === 'login' && <Login setView={setView} setUserRole={setUserRole} setAcademicRole={setAcademicRole} setCurrentUser={setCurrentUser} />}
       {view === 'register' && <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={setStudents} setAlumni={setAlumni} setAcademicStaff={setAcademicStaff} setCompanies={setCompanies} setUserRole={setUserRole} />}
       {view === 'forgot_password' && <ForgotPassword setView={setView} />}
       {view === 'create_job' && <JobCreator setView={setView} currentUser={currentUser} jobs={jobs} setJobs={setJobs} />}
       {view === 'club_admin' && <ClubAdminPanel setView={setView} currentUser={currentUser} clubs={clubs} setClubs={setClubs} posts={posts} setPosts={setPosts} />}
+      {view === 'club_portal' && <StudentClubPortal setView={setView} currentUser={currentUser} clubs={clubs} setClubs={setClubs} previousView={userRole === 'student' ? 'student' : 'alumni'} />}
       {view === 'student' && <StudentFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} academicRole={academicRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} voluntaryInternships={voluntaryInternships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureClubsShowcase={featureClubsShowcase} featureClubApplications={featureClubApplications} clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} />}
       {view === 'alumni' && <AlumniFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} userRole={userRole} academicRole={academicRole} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} currentUser={currentUser} featuredOpportunities={featuredOpportunities} mentorships={mentorships} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} academicStaff={liveAcademicStaff} announcements={announcements} alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} featureSurveys={featureSurveys} featureCareerCheckup={featureCareerCheckup} featureAlumniCard={featureAlumniCard} featureClubsShowcase={featureClubsShowcase} featureClubApplications={featureClubApplications} clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} />}
       {view === 'academic' && (
@@ -212,9 +178,10 @@ function App() {
           />
         </ErrorBoundary>
       )}
-      {view === 'company' && <CompanyFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} surveys={surveys} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} announcements={announcements} academicStaff={liveAcademicStaff} currentUser={currentUser} userRole={userRole} academicRole={academicRole} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} />}
+      {view === 'company' && <CompanyFeed setView={setView} setSelectedUserId={setSelectedUserId} notifications={notifications} setNotifications={setNotifications} posts={posts} setPosts={setPosts} stories={stories} setStories={setStories} surveys={surveys} news={news} events={events} students={liveStudents} alumni={liveAlumni} companies={liveCompanies} messages={liveMessages} setMessages={setMessages} applications={applications} setApplications={setApplications} jobs={jobs} announcements={announcements} academicStaff={liveAcademicStaff} currentUser={currentUser} userRole={userRole} academicRole={academicRole} groups={groups} setGroups={setGroups} setSelectedGroupId={setSelectedGroupId} />}
       {view === 'admin' && <AdminDashboard 
         setView={setView} currentUser={currentUser} setSelectedUserId={setSelectedUserId}
+        userRole={userRole} academicRole={academicRole}
         students={liveStudents} setStudents={setStudents} 
         alumni={liveAlumni} setAlumni={setAlumni} 
         companies={liveCompanies} setCompanies={setCompanies} 
@@ -270,6 +237,11 @@ function App() {
         alumni={alumni} setAlumni={setAlumni}
         academicStaff={liveAcademicStaff} setAcademicStaff={setAcademicStaff}
         companies={companies} setCompanies={setCompanies}
+      />}
+      {view === 'mbs' && <AlumniInformationSystem 
+        currentUser={currentUser} 
+        setView={setView} 
+        setAlumni={setAlumni} 
       />}
       {view === 'user_profile' && <UserProfile 
             userId={selectedUserId} 

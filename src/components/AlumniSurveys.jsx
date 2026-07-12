@@ -15,7 +15,7 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
 
   const handleSubmit = () => {
     if (Object.keys(answers).length < activeSurvey.questions.length) {
-      alert("Lütfen tüm soruları yanıtlayın.");
+      window.toast.error("Lütfen tüm soruları yanıtlayın.");
       return;
     }
     
@@ -30,7 +30,7 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
         message: 'Anket katılımınız için teşekkür ederiz!'
       });
     } else {
-      alert("Anket katılımınız için teşekkür ederiz!");
+      window.toast.success("Anket katılımınız için teşekkür ederiz!");
     }
   };
 

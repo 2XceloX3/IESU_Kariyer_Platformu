@@ -92,7 +92,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                 </div>
               </div>
             </div>
-            <button className="w-full mt-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-sm font-bold transition">Tüm Kulüpleri Gör</button>
+            <button onClick={() => setView('club_portal')} className="w-full mt-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-sm font-bold transition">Tüm Kulüpleri Gör</button>
           </div>
         </div>
 
@@ -299,7 +299,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
               </div>
 
               <button 
-                onClick={() => { setActiveTab('clubs'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                onClick={() => { setView('club_portal'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                 className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[13px] font-bold transition-all shadow-md flex justify-center"
               >
                 Tüm Kulüpleri Gör

@@ -98,13 +98,13 @@ export default function ProfileUpdate({
       }
 
       setHasChanges(false);
-      alert('Değişiklikleriniz başarıyla kaydedildi. Akademik alanlardaki değişiklikleriniz yönetici onayına gönderilmiştir.');
+      window.toast.success('Değişiklikleriniz başarıyla kaydedildi. Akademik alanlardaki değişiklikleriniz yönetici onayına gönderilmiştir.');
       
       // Simulate adding to academicApprovals if academic fields changed
       // In a real app, we'd check if specific fields changed compared to initial state.
       const newApproval = {
         id: `APP-${Date.now()}`,
-        userId: currentUser.id,
+        userId: currentUser?.id,
         userName: formData.name,
         userType: userRole,
         fieldChanged: 'Profil Güncellemesi',

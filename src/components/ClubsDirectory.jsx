@@ -17,7 +17,7 @@ export default function ClubsDirectory({ clubs, setClubs, clubApplications, setC
   const handleApplyClub = (e) => {
     e.preventDefault();
     if(!featureClubApplications) {
-      alert("Şu anda yeni kulüp başvuruları kapalıdır.");
+      window.toast.info("Şu anda yeni kulüp başvuruları kapalıdır.");
       return;
     }
     const newApp = {
@@ -30,7 +30,7 @@ export default function ClubsDirectory({ clubs, setClubs, clubApplications, setC
     setClubApplications([...(clubApplications || []), newApp]);
     setShowApplicationModal(false);
     setApplicationForm({ name: '', purpose: '', advisorName: '' });
-    alert("EK-1: Kulüp Kurulum Başvurunuz Öğrenci Dekanlığına iletilmiştir. Süreci bildirimlerinizden takip edebilirsiniz.");
+    window.toast.success("EK-1: Kulüp Kurulum Başvurunuz Öğrenci Dekanlığına iletilmiştir. Süreci bildirimlerinizden takip edebilirsiniz.");
   };
 
   const handleJoinSubmit = (e) => {
@@ -57,7 +57,7 @@ export default function ClubsDirectory({ clubs, setClubs, clubApplications, setC
     setSelectedClub({ ...selectedClub, joinRequests: [...(selectedClub.joinRequests || []), request] });
     setShowJoinModal(false);
     setJoinForm({ motivation: '', department: '' });
-    alert(`${selectedClub.name} kulübüne katılım talebiniz kulüp başkanına iletildi.`);
+    window.toast.success(`${selectedClub.name} kulübüne katılım talebiniz kulüp başkanına iletildi.`);
   };
 
   return (

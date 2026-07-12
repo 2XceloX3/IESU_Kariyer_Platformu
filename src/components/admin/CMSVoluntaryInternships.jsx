@@ -80,7 +80,7 @@ export default function CMSVoluntaryInternships({ volunteerInterns = [], setVolu
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title || !form.company) return alert("Staj başlığı ve firma adı zorunludur.");
+    if (!form.title || !form.company) return window.toast.info("Staj başlığı ve firma adı zorunludur.");
 
     if (currentId) {
       setVolunteerInterns((volunteerInterns || []).map(v => v.id === currentId ? { ...v, ...form, updatedAt: new Date().toISOString() } : v));

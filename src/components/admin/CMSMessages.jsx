@@ -43,7 +43,7 @@ export default function CMSMessages({ messages, setMessages }) {
 
     setMessages(prev => [...(prev || []), newMsg]);
     setReply('');
-    alert("Yanıtınız başarıyla gönderildi.");
+    window.toast.success("Yanıtınız başarıyla gönderildi.");
   };
 
   const markAsRead = (id) => {
@@ -53,10 +53,10 @@ export default function CMSMessages({ messages, setMessages }) {
 
   const handleBulkSend = (e) => {
     e.preventDefault();
-    if (!bulkForm.subject || !bulkForm.content) return alert("Konu ve mesaj içeriği zorunludur.");
+    if (!bulkForm.subject || !bulkForm.content) return window.toast.info("Konu ve mesaj içeriği zorunludur.");
     
     // In a real app, this would iterate over the target audience and send individual messages
-    alert(`Toplu mesaj '${bulkForm.targetAudience}' kitlesine başarıyla iletildi.`);
+    window.toast.success(`Toplu mesaj '${bulkForm.targetAudience}' kitlesine başarıyla iletildi.`);
     setBulkForm({ targetAudience: 'all', subject: '', content: '' });
   };
 

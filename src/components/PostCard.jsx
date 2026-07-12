@@ -78,7 +78,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
   };
 
   const handleShare = () => {
-    if (!shareTarget) return alert("Lütfen paylaşılacak kişiyi seçin.");
+    if (!shareTarget) return window.toast.error("Lütfen paylaşılacak kişiyi seçin.");
     
     const newMsg = {
       id: Date.now(),
@@ -101,7 +101,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
     setIsShareModalOpen(false);
     setShareText('');
     setShareTarget('');
-    alert("Gönderi başarıyla paylaşıldı!");
+    window.toast.success("Gönderi başarıyla paylaşıldı!");
   };
 
   const handleSaveEdit = () => {
@@ -163,7 +163,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
                   </button>
                 </>
               ) : (
-                <button onClick={() => { setIsMenuOpen(false); alert('Şikayetiniz Kariyer Geliştirme Ofisine iletilmiştir. Teşekkür ederiz.'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                <button onClick={() => { setIsMenuOpen(false); window.toast.success('Şikayetiniz Kariyer Geliştirme Ofisine iletilmiştir. Teşekkür ederiz.'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                   <ShieldCheck size={14} /> Şikayet Et
                 </button>
               )}
@@ -221,7 +221,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
               <p className="text-xs text-gray-500 font-medium">PDF Belgesi</p>
             </div>
           </div>
-          <button onClick={() => alert('Dosya indirme işlemi başlatılıyor...')} className="w-8 h-8 rounded-full bg-white text-gray-500 flex items-center justify-center shadow-sm hover:text-red-600 transition">
+          <button onClick={() => window.toast.info('Dosya indirme işlemi başlatılıyor...')} className="w-8 h-8 rounded-full bg-white text-gray-500 flex items-center justify-center shadow-sm hover:text-red-600 transition">
             <Download size={16} />
           </button>
         </div>
@@ -305,7 +305,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
       {/* Fast Action for Jobs */}
       {post.isJob && (
         <div className="px-4 pb-4">
-          <button onClick={() => alert('Başvurunuz başarıyla kaydedildi. Firma temsilcisine iletilecektir.')} className="w-full bg-gradient-to-r from-[var(--brand-pomegranate)] to-[var(--brand-red-dark)] hover:shadow-lg text-white font-bold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-[0.98]">
+          <button onClick={() => window.toast.success('Başvurunuz başarıyla kaydedildi. Firma temsilcisine iletilecektir.')} className="w-full bg-gradient-to-r from-[var(--brand-pomegranate)] to-[var(--brand-red-dark)] hover:shadow-lg text-white font-bold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-[0.98]">
             <Briefcase size={18} /> Hemen Başvur
           </button>
         </div>

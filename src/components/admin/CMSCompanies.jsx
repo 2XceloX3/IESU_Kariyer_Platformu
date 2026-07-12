@@ -51,7 +51,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.name || !form.email) return alert("Firma Adı ve E-Posta zorunludur.");
+    if (!form.name || !form.email) return window.toast.info("Firma Adı ve E-Posta zorunludur.");
 
     if (currentId) {
       setCompanies(prev => (prev || []).map(c => c.id === currentId ? { ...c, ...form, updatedAt: new Date().toISOString() } : c));

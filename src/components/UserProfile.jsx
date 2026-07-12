@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart, Crown } from 'lucide-react';
+import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart, Crown, Activity, Globe } from 'lucide-react';
 import Logo from './Logo';
 import { Badge } from './admin/AdminCMSLayout';
 import PostCard from './PostCard';
@@ -42,16 +42,16 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
   useEffect(() => {
     // Fallback: Eger localStorage'dan dolayi currentUser'in id'si yoksa ama admin profiline erisilmeye calisiliyorsa
-    if (userId === 'admin_1513' && (userRole === 'admin' || (currentUser && currentUser.role === 'admin'))) {
+    if (userId === 'admin_1513' && (userRole === 'admin' || (currentUser && currentUser?.role === 'admin'))) {
       setUser(currentUser || { name: 'Kariyer Merkezi', department: 'Yönetim', grade: 'Süper Admin', role: 'admin' });
       setUserType('admin');
       setIsLoading(false);
       return;
     }
 
-    if (currentUser && (userId === currentUser.id || userId === parseInt(currentUser.id))) {
+    if (currentUser && (userId === currentUser?.id || userId === parseInt(currentUser?.id))) {
       setUser(currentUser);
-      setUserType(currentUser.role === 'admin' ? 'admin' : (userRole === 'employer' ? 'company' : userRole));
+      setUserType(currentUser?.role === 'admin' ? 'admin' : (userRole === 'employer' ? 'company' : userRole));
       setIsLoading(false);
       return;
     }
@@ -147,7 +147,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                onClick={userRole === 'academic' ? () => window.toast.info('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
                 className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-white border-iesu-red text-iesu-red hover:bg-red-50' : 'bg-iesu-red border-iesu-red hover:bg-red-700 text-white'}`}
               >
                 {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
@@ -226,7 +226,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                onClick={userRole === 'academic' ? () => window.toast.info('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
                 className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-teal-50 border-teal-600 text-teal-600' : 'bg-teal-600 border-teal-600 text-white hover:bg-teal-700'}`}
               >
                 {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
@@ -274,7 +274,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                onClick={userRole === 'academic' ? () => window.toast.info('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
                 className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-blue-50 border-blue-600 text-blue-600' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'}`}
               >
                 {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
@@ -318,7 +318,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           {currentUser?.id !== user?.id && (
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <button 
-                onClick={userRole === 'academic' ? () => alert('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
+                onClick={userRole === 'academic' ? () => window.toast.info('Akademik inceleme moduna geçildi.') : () => setIsFollowing(!isFollowing)} 
                 className={`flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-sm border-2 ${isFollowing && userRole !== 'academic' ? 'bg-slate-50 border-slate-700 text-slate-700' : 'bg-slate-700 border-slate-700 text-white hover:bg-slate-800'}`}
               >
                 {userRole === 'academic' ? <><FileText size={16} /> Akademik İnceleme</> : isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
@@ -385,77 +385,78 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         {userType === 'company' && renderCompanyProfile()}
         {userType === 'academic' && renderAcademicProfile()}
         {userType === 'admin' && (
-          <div className="bg-white rounded-3xl border border-[var(--border-soft)] shadow-md overflow-hidden transition-shadow hover:shadow-lg">
-            <div className="h-64 bg-gradient-to-r from-gray-900 via-gray-800 to-[var(--brand-red-dark)] relative overflow-hidden group">
-              <img src="https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg" className="w-full h-full object-cover mix-blend-overlay opacity-60 group-hover:scale-105 transition-transform duration-700" alt="Esenyurt University" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-              {currentUser?.id === user?.id && (
-                <button 
-                  onClick={() => { setUploadType('cover'); setShowImageUploadModal(true); }}
-                  className="absolute top-4 right-4 bg-black/40 hover:bg-black/60 backdrop-blur-md text-white p-2.5 rounded-full transition-colors opacity-0 group-hover:opacity-100 shadow-sm border border-white/10" 
-                  title="Kapak Fotoğrafını Değiştir"
-                >
-                  <Camera size={20} />
-                </button>
-              )}
-            </div>
-            <div className="px-8 pb-8 relative">
-              <div 
-                className="w-36 h-36 rounded-full border-4 border-white bg-white shadow-xl absolute -top-16 left-8 overflow-hidden flex items-center justify-center group cursor-pointer p-2"
-                onClick={() => { if (currentUser?.id === user?.id) { setUploadType('avatar'); setShowImageUploadModal(true); } }}
-              >
-                <img 
-                  src={userType === 'admin' ? '/iesu-logo.svg' : (user?.avatar || currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'KM')}&background=132A49&color=fff`)}
-                  onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'KM')}&background=132A49&color=fff`; }}
-                  alt={user?.name || "Profil"} 
-                  className="w-full h-full object-contain" 
-                />
-                {currentUser?.id === user?.id && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-                    <Camera size={24} className="text-white" />
-                  </div>
-                )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Bento Box 1: Identity (Spans 2 columns) */}
+            <div className="md:col-span-2 bg-white rounded-3xl border border-[var(--border-soft)] shadow-sm overflow-hidden flex flex-col group relative">
+              <div className="h-40 bg-gradient-to-r from-gray-900 via-gray-800 to-[var(--brand-red-dark)] relative overflow-hidden">
+                <img src="https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg" className="w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:scale-105 transition-transform duration-700" alt="Esenyurt University" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               </div>
-              
-              <div className="ml-44 pt-5 flex justify-between items-start">
-                <div>
-                  <h1 className="text-3xl font-black text-gray-900 flex items-center gap-2">
+              <div className="px-6 pb-6 flex-1 relative flex flex-col sm:flex-row gap-6">
+                <div className="w-32 h-32 rounded-2xl border-4 border-white bg-white shadow-xl -mt-12 overflow-hidden flex items-center justify-center relative shrink-0 p-2 z-10">
+                  <img src="/iesu-logo.svg" alt="Admin" className="w-full h-full object-contain" />
+                </div>
+                <div className="pt-4 flex-1">
+                  <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
                     {user?.name || 'Kariyer Geliştirme Koordinatörlüğü'}
-                    <ShieldCheck size={24} className="text-emerald-500" title="Süper Yönetici" />
+                    <ShieldCheck size={20} className="text-emerald-500" />
                   </h1>
-                  <p className="text-lg text-gray-600 font-medium mt-1">{user?.title || 'Süper Yönetici Hesabı'}</p>
+                  <p className="text-gray-500 font-medium">{user?.title || 'Süper Yönetici Hesabı'}</p>
                   
-                  <div className="flex items-center gap-6 mt-4">
-                    <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition" onClick={() => setFollowersModal({isOpen: true, title: 'Gönderiler', users: []})}>
-                      <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-600"><BookOpen size={16} /></div>
-                      <div>
-                        <p className="text-[11px] font-bold text-gray-400 uppercase">Paylaşım</p>
-                        <p className="text-sm font-black text-gray-900">{userPosts.length}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition" onClick={() => setFollowersModal({isOpen: true, title: 'Takipçiler', users: students?.slice(0, 15) || []})}>
-                      <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><Users size={16} /></div>
-                      <div>
-                        <p className="text-[11px] font-bold text-gray-400 uppercase">Takipçi</p>
-                        <p className="text-sm font-black text-gray-900">{user?.followers?.length || 0}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition" onClick={() => setFollowersModal({isOpen: true, title: 'Takip Edilenler', users: alumni?.slice(0, 5) || []})}>
-                      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600"><UserCheck size={16} /></div>
-                      <div>
-                        <p className="text-[11px] font-bold text-gray-400 uppercase">Takip Edilen</p>
-                        <p className="text-sm font-black text-gray-900">{user?.following?.length || 0}</p>
-                      </div>
-                    </div>
+                  <div className="flex flex-wrap gap-4 mt-6">
+                    <button onClick={handleMessage} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-gray-800 transition">
+                      <MessageCircle size={18} /> İletişime Geç
+                    </button>
                   </div>
                 </div>
-                
-                {currentUser?.id !== user?.id && (
-                  <button className="flex items-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition shadow-sm">
-                    <MessageSquare size={18} /> İletişime Geç
-                  </button>
-                )}
+              </div>
+            </div>
+
+            {/* Bento Box 2: Stats */}
+            <div className="bg-white rounded-3xl border border-[var(--border-soft)] shadow-sm p-6 flex flex-col justify-between">
+              <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                <Activity size={18} className="text-iesu-red" /> İstatistikler
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition" onClick={() => setFollowersModal({isOpen: true, title: 'Gönderiler', users: []})}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600"><BookOpen size={18} /></div>
+                    <span className="font-bold text-gray-700">Paylaşımlar</span>
+                  </div>
+                  <span className="font-black text-gray-900 text-lg">{userPosts.length}</span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition" onClick={() => setFollowersModal({isOpen: true, title: 'Takipçiler', users: students?.slice(0, 15) || []})}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600"><Users size={18} /></div>
+                    <span className="font-bold text-gray-700">Takipçiler</span>
+                  </div>
+                  <span className="font-black text-gray-900 text-lg">{user?.followers?.length || 0}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bento Box 3: Network Overview */}
+            <div className="md:col-span-3 bg-white rounded-3xl border border-[var(--border-soft)] shadow-sm p-6">
+               <h3 className="font-black text-gray-900 mb-6 flex items-center gap-2">
+                <Globe size={18} className="text-blue-500" /> Ağ Özeti
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                  <p className="text-xs font-bold text-blue-600 uppercase mb-1">Öğrenci Ağı</p>
+                  <p className="text-2xl font-black text-gray-900">{students?.length || 0}</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100">
+                  <p className="text-xs font-bold text-emerald-600 uppercase mb-1">Mezun Ağı</p>
+                  <p className="text-2xl font-black text-gray-900">{alumni?.length || 0}</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100">
+                  <p className="text-xs font-bold text-purple-600 uppercase mb-1">Firma Ağı</p>
+                  <p className="text-2xl font-black text-gray-900">{companies?.length || 0}</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100">
+                  <p className="text-xs font-bold text-amber-600 uppercase mb-1">İlanlar</p>
+                  <p className="text-2xl font-black text-gray-900">{jobs?.length || 0}</p>
+                </div>
               </div>
             </div>
           </div>

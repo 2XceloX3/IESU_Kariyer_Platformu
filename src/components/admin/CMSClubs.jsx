@@ -30,12 +30,12 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
     
     // Update application status
     setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'Onaylandı' } : a));
-    alert(`${app.name} kulübü onaylandı ve aktif kulüpler havuzuna eklendi.`);
+    window.toast.info(`${app.name} kulübü onaylandı ve aktif kulüpler havuzuna eklendi.`);
   };
 
   const handleRejectApp = (app) => {
     setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'Reddedildi' } : a));
-    alert("Başvuru reddedildi.");
+    window.toast.info("Başvuru reddedildi.");
   };
 
   const handleTransferPresident = (clubId) => {
@@ -44,7 +44,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
     
     if (window.confirm(`Bu kulübün başkanlığını ${newPresident} ID'li öğrenciye devretmek istediğinize emin misiniz?`)) {
       setClubs((clubs || []).map(c => c.id === clubId ? { ...c, presidentId: newPresident } : c));
-      alert("Kulüp başkanı başarıyla değiştirildi.");
+      window.toast.success("Kulüp başkanı başarıyla değiştirildi.");
     }
   };
 

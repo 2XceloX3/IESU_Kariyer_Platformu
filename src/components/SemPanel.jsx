@@ -96,7 +96,7 @@ export default function SemPanel({ setView, semCourses, userRole }) {
                       
                       {/* Ücretli / Ücretsiz Badge */}
                       <div className="absolute top-4 right-4 z-20">
-                        {egitim.isFree || egitim.isFree === undefined ? (
+                        {egitim.isFree === true ? (
                           <span className="bg-emerald-500/90 backdrop-blur text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1">
                             ÜCRETSİZ
                           </span>
@@ -215,8 +215,8 @@ export default function SemPanel({ setView, semCourses, userRole }) {
                 {selectedItem.date && <span className="text-gray-500 font-bold text-sm flex items-center gap-1.5"><Calendar size={14} /> {selectedItem.date}</span>}
                 
                 {selectedItem.type === 'egitim' && (
-                  <span className={`px-3 py-1 text-white text-xs font-black rounded-lg shadow-sm ${selectedItem.isFree || selectedItem.isFree === undefined ? 'bg-emerald-500' : 'bg-amber-500'}`}>
-                    {selectedItem.isFree || selectedItem.isFree === undefined ? 'ÜCRETSİZ' : (selectedItem.price || 'ÜCRETLİ')}
+                  <span className={`px-3 py-1 text-white text-xs font-black rounded-lg shadow-sm ${selectedItem.isFree === true ? 'bg-emerald-500' : 'bg-amber-500'}`}>
+                    {selectedItem.isFree === true ? 'ÜCRETSİZ' : (selectedItem.price || 'ÜCRETLİ')}
                   </span>
                 )}
               </div>
@@ -229,7 +229,7 @@ export default function SemPanel({ setView, semCourses, userRole }) {
 
               {selectedItem.type === 'egitim' && (
                 <div className="mt-8 flex justify-end">
-                  <button onClick={() => { alert('Ön kayıt sistemine yönlendiriliyorsunuz...'); setSelectedItem(null); }} className="bg-iesu-red hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-[0_4px_20px_rgba(211,47,47,0.3)] transition-all flex items-center gap-2 transform hover:-translate-y-1">
+                  <button onClick={() => { window.toast.info('Ön kayıt sistemine yönlendiriliyorsunuz...'); setSelectedItem(null); }} className="bg-iesu-red hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-[0_4px_20px_rgba(211,47,47,0.3)] transition-all flex items-center gap-2 transform hover:-translate-y-1">
                     Programa Ön Kayıt Yap <ArrowRight size={18} />
                   </button>
                 </div>

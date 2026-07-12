@@ -64,7 +64,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title || !form.company) return alert("Başlık ve şirket zorunludur.");
+    if (!form.title || !form.company) return window.toast.info("Başlık ve şirket zorunludur.");
 
     if (currentId) {
       setJobs((jobs || []).map(job => job.id === currentId ? { ...job, ...form, updatedAt: new Date().toISOString() } : job));
@@ -75,7 +75,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
   };
 
   const handleDownloadExcel = (job, apps) => {
-    alert(`${job.title} ilanı için ${apps.length} başvuru verisi (KVKK uyumlu) Excel olarak indiriliyor...`);
+    window.toast.info(`${job.title} ilanı için ${apps.length} başvuru verisi (KVKK uyumlu) Excel olarak indiriliyor...`);
   };
 
   const filtered = (jobs || []).filter(j => {

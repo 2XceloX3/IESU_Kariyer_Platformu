@@ -2,6 +2,7 @@ import React from 'react';
 import { BarChart3, TrendingUp, Users, Eye, MousePointerClick, Briefcase, GraduationCap, Building2, Calendar, Target } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
+import CMSWorldMap from './CMSWorldMap';
 
 export default function CMSAnalytics({ students = [], alumni = [], companies = [], jobs = [], applications = [] }) {
   // Mock analytics calculation based on existing arrays
@@ -183,6 +184,9 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           </div>
         </div>
       </div>
+      
+      {/* World Map Analytics */}
+      <CMSWorldMap />
     </div>
   );
 }

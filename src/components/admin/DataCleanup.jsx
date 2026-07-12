@@ -41,7 +41,7 @@ export default function DataCleanup({
     if (type === 'message') setMessages((messages || []).filter(m => !ids.includes(m.id)));
 
     setLogs([`[${new Date().toLocaleTimeString()}] ${newLog}`, ...logs]);
-    alert(`${ids.length} kayıt başarıyla demo olarak işaretlendi ve canlı arayüzden gizlendi.`);
+    window.toast.success(`${ids.length} kayıt başarıyla demo olarak işaretlendi ve canlı arayüzden gizlendi.`);
   };
 
   const renderSection = (title, records, type) => (

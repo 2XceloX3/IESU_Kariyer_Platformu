@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2, GraduationCap, KeyRound } from 'lucide-react';
+import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2, GraduationCap, KeyRound, Lock } from 'lucide-react';
 import Logo from './Logo';
 
 // IT Departmanı için Not: Firebase Kimlik Doğrulama (Auth) ve Veritabanı (Firestore) modülleri içeri aktarıldı.
@@ -11,6 +11,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
   const [step, setStep] = useState(1); // 1: Info, 2: Success
   const [accountType, setAccountType] = useState('student'); // 'student' or 'employer'
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -27,6 +28,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setIsLoading(true);
     
     try {
       if (accountType === 'student') {
@@ -73,8 +75,12 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         
       } else if (accountType === 'employer') {
         // [FİREBASE AUTH] - Yeni Firma Kullanıcısı Oluştur
-        // Not: Şirket ekranında şifre alanı olmadığı için şimdilik geçici bir standart şifre belirliyoruz (Güvenlik için admin onayı sonrası değiştirilmeli)
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, "FirmaTemp123!");
+        if (!formData.password || formData.password.length < 6) {
+          setError("Lütfen en az 6 karakterli bir şifre belirleyin.");
+          setLoading(false);
+          return;
+        }
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         const user = userCredential.user;
 
         // [FİREBASE FIRESTORE] - Firma Detaylarını Veritabanına Kaydet
@@ -180,14 +186,11 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
       setStep(2);
 
     } catch (err) {
-      console.error("Firebase Kayıt Hatası:", err);
-      if (err.code === 'auth/email-already-in-use') {
-        setError("Bu e-posta adresi zaten sistemde kayıtlı!");
-      } else if (err.code === 'auth/invalid-email') {
-        setError("Geçersiz e-posta adresi formatı.");
-      } else {
-        setError("Kayıt sırasında beklenmeyen bir hata oluştu: " + err.message);
-      }
+      if (err.code === 'auth/email-already-in-use') setError('Bu e-posta adresi zaten kullanımda!');
+      else if (err.code === 'auth/weak-password') setError('Şifre çok zayıf. Lütfen daha güçlü bir şifre seçin.');
+      else setError("Kayıt olurken bir hata oluştu: " + err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -291,6 +294,10 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                         <Phone className="absolute left-4 top-3.5 text-gray-400" size={18} />
                         <input type="tel" pattern="[0-9]{10,11}" name="phone" value={formData.phone} onChange={handleChange} placeholder="Yetkili Telefon Numarası (05XX...)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
                       </div>
+                      <div className="relative col-span-1 sm:col-span-2">
+                        <Lock className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                        <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Şifre Belirleyin (En az 6 karakter)" minLength={6} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                      </div>
 
                       {/* Logo Yükleme */}
                       <div className="relative col-span-1 sm:col-span-2 mt-2">
@@ -300,7 +307,8 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                     </div>
 
                     <div className="pt-4">
-                      <button type="submit" className="w-full flex items-center justify-center bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98]">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                        {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Firma Kayıt Talebini Gönder
                       </button>
                     </div>
@@ -342,7 +350,8 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                     </div>
 
                     <div className="pt-4">
-                      <button type="submit" className="w-full flex items-center justify-center bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98]">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                        {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Akademik Hesabımı Aktifleştir
                       </button>
                     </div>
@@ -395,7 +404,8 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                     </div>
 
                     <div className="pt-4">
-                      <button type="submit" className="w-full flex items-center justify-center bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98]">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                        {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Mezun Hesabımı Aktifleştir
                       </button>
                     </div>
@@ -437,7 +447,8 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                     </div>
 
                     <div className="pt-4">
-                      <button type="submit" className="w-full flex items-center justify-center bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98]">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                        {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Öğrenci Hesabımı Oluştur
                       </button>
                     </div>

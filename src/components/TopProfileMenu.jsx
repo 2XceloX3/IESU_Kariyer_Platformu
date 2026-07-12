@@ -116,7 +116,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     </div>
                     <span className="text-[11px] font-bold text-gray-700">Firma</span>
                   </button>
-                  <button onClick={() => { setIsOpen(false); try { setView('academic'); } catch (e) { alert('HATA OLUŞTU: ' + e.message); } }} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-gray-50 hover:bg-amber-50 transition-colors group border border-gray-100 hover:border-amber-200 shadow-sm">
+                  <button onClick={() => { setIsOpen(false); try { setView('academic'); } catch (e) { window.toast.error('HATA OLUŞTU: ' + e.message); } }} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-gray-50 hover:bg-amber-50 transition-colors group border border-gray-100 hover:border-amber-200 shadow-sm">
                     <div className="bg-amber-100 text-amber-600 p-2 rounded-lg group-hover:bg-amber-600 group-hover:text-white transition-colors">
                       <BookOpen size={18} />
                     </div>
@@ -137,8 +137,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <button onClick={() => { setIsOpen(false); setView('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
                   <Calendar size={16} className="text-gray-400" /> Takvim
                 </button>
-                <button onClick={() => { setIsOpen(false); setView('profile_update'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
-                  <Settings size={16} className="text-gray-400" /> Bilgileri Düzenle
+                <button onClick={() => { setIsOpen(false); setView('mbs'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
+                  <Settings size={16} className="text-gray-400" /> Bilgileri Düzenle (MBS)
                 </button>
                 <button onClick={() => { setIsOpen(false); setView('cvbuilder'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
                   <Wand2 size={16} className="text-gray-400" /> Yapay Zekâ CV
@@ -192,10 +192,10 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <UserCircle2 size={16} className="text-gray-400" /> Profilimi Görüntüle
                 </button>
                 <button 
-                  onClick={() => { setIsOpen(false); setView('profile_update'); }}
+                  onClick={() => { setIsOpen(false); setView('mbs'); }}
                   className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center gap-3"
                 >
-                  <Settings size={16} className="text-gray-400" /> Bilgilerimi Düzenle
+                  <Settings size={16} className="text-gray-400" /> Bilgilerimi Düzenle (MBS)
                 </button>
                 
                 {(userRole === 'student' || userRole === 'alumni') && (

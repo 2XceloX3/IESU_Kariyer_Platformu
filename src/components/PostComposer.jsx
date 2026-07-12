@@ -6,6 +6,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
   const [media, setMedia] = useState(null);
   const [mediaType, setMediaType] = useState(null); // 'image', 'video', 'pdf'
   const [isFocused, setIsFocused] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFileUpload = (e, type) => {
     const file = e.target.files[0];
@@ -17,9 +18,10 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     setMediaType(type);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim() && !media) return;
+    setIsSubmitting(true);
 
     const newPost = {
       id: 'POST-' + Date.now(),
@@ -33,7 +35,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         name: currentUser?.name || 'Kullanıcı',
         avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=132A49&color=fff`,
         title: currentUser?.title || currentUser?.department || 'Öğrenci',
-        role: userRole || currentUser?.role || (window.localStorage.getItem('iesu_user_role_v1') === '"admin"' ? 'admin' : undefined)
+        role: userRole || currentUser?.role || undefined
       },
       content: content.trim(),
       image: mediaType === 'image' ? media : null,
@@ -51,7 +53,11 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     setMediaType(null);
     setIsFocused(false);
     
-    alert("Gönderiniz başarıyla oluşturuldu ve onay havuzuna gönderildi!");
+    window.toast.success("Gönderiniz başarıyla oluşturuldu ve onay havuzuna gönderildi!");
+    
+    setTimeout(() => {
+      setIsSubmitting(false);
+    }, 1000);
   };
 
   return (
@@ -64,7 +70,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
               alt={asClub.name} 
               className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover shrink-0 border border-gray-200 shadow-sm transition-transform hover:scale-105" 
             />
-          ) : (userRole === 'admin' || currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"') ? (
+          ) : (userRole === 'admin' || currentUser?.role === 'admin') ? (
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-50 flex items-center justify-center shrink-0 border-2 border-gray-100 shadow-sm p-1.5 transition-transform hover:scale-105">
               <img src="/iesu-logo.svg" alt="Admin Logo" className="w-full h-full object-contain" />
             </div>
@@ -114,27 +120,33 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         {/* TOOLBAR */}
         <div className={`flex flex-col sm:flex-row items-center justify-between mt-4 transition-all duration-300 ${isFocused ? 'pt-4 border-t border-gray-100 opacity-100' : 'h-0 overflow-hidden opacity-0 sm:h-auto sm:opacity-100 sm:pt-0 sm:border-transparent'}`}>
           <div className="flex flex-wrap items-center gap-1 sm:gap-2 w-full sm:w-auto">
-            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-blue-100">
+            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-blue-100 focus-within:ring-2 focus-within:ring-blue-500">
               <ImageIcon size={18} strokeWidth={2.5} /> <span className="hidden sm:inline">Fotoğraf</span>
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} />
+              <input type="file" accept="image/*" className="sr-only" onChange={(e) => handleFileUpload(e, 'image')} />
             </label>
-            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-emerald-100">
+            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-emerald-100 focus-within:ring-2 focus-within:ring-emerald-500">
               <Video size={18} strokeWidth={2.5} /> <span className="hidden sm:inline">Video</span>
-              <input type="file" accept="video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'video')} />
+              <input type="file" accept="video/*" className="sr-only" onChange={(e) => handleFileUpload(e, 'video')} />
             </label>
-            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-orange-50 hover:text-orange-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-orange-100">
-              <FileText size={18} strokeWidth={2.5} /> <span className="hidden sm:inline">Döküman</span>
-              <input type="file" accept=".pdf" className="hidden" onChange={(e) => handleFileUpload(e, 'pdf')} />
+            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-orange-50 hover:text-orange-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-orange-100 focus-within:ring-2 focus-within:ring-orange-500">
+              <FileText size={18} strokeWidth={2.5} /> <span className="hidden sm:inline">Doküman</span>
+              <input type="file" accept=".pdf" className="sr-only" onChange={(e) => handleFileUpload(e, 'pdf')} />
             </label>
           </div>
           
-          <button 
-            type="submit" 
-            disabled={!content.trim() && !media}
-            className="w-full sm:w-auto mt-4 sm:mt-0 bg-iesu-red text-white px-6 py-2.5 rounded-full font-extrabold text-[14px] flex items-center justify-center gap-2 shadow-md hover:shadow-xl hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md disabled:hover:bg-iesu-red"
-          >
-            Paylaş <Send size={16} strokeWidth={2.5} />
-          </button>
+          <div className="flex gap-2 shrink-0">
+            {isFocused && <button type="button" onClick={() => setIsFocused(false)} className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-[13px] sm:text-[14px] text-gray-500 hover:bg-gray-100 transition">İptal</button>}
+            <button 
+              type="submit" 
+              disabled={isSubmitting || (!content.trim() && !media)} 
+              className={`flex items-center gap-1.5 sm:gap-2 px-5 sm:px-7 py-2 sm:py-2.5 rounded-xl font-bold text-[13px] sm:text-[14px] transition-all shadow-sm
+                ${(content.trim() || media) && !isSubmitting ? 'bg-[var(--brand-pomegranate)] hover:bg-[var(--brand-red-dark)] text-white hover:shadow-md hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}
+              `}
+            >
+              {isSubmitting ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : <Send size={16} className="sm:w-[18px] sm:h-[18px]" />} 
+              <span className="hidden sm:inline">{isSubmitting ? 'Paylaşılıyor' : 'Paylaş'}</span>
+            </button>
+          </div>
         </div>
       </form>
     </div>

@@ -40,7 +40,7 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
     const newJob = {
       id: 'JOB-' + Date.now(),
       title: formData.title,
-      company: currentUser.name,
+      company: currentUser?.name,
       location: formData.location,
       type: formData.type,
       date: formData.date,

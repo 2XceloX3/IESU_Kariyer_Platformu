@@ -52,6 +52,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
   };
 
   // Removed mock stories and defaultPosts
+  
+  const getManagedClubs = () => {
+    if (userRole === 'admin') return clubs || [];
+    if (currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"') return clubs || [];
+    if (!currentUser?.name) return [];
+    return (clubs || []).filter(c => c.president?.name === currentUser?.name);
+  };
+  const isClubAdmin = getManagedClubs().length > 0;
 
   return (
     <div className="min-h-screen bg-transparent font-sans">
@@ -199,7 +207,6 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
-            <PostComposer currentUser={currentUser} setPosts={setPosts} />
           
           {/* FEED POSTS */}
           <div className="space-y-6">
@@ -534,7 +541,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
                       <input type="checkbox" required className="w-4 h-4 border-gray-300 rounded text-red-600 focus:ring-red-500 cursor-pointer" />
                     </div>
                     <span className="text-xs text-gray-500 font-medium leading-relaxed group-hover:text-gray-700 transition">
-                      Kişisel verilerimin Mezun Kartı basımı ve işlemleri amacıyla işlenmesine dair <a href="#" className="text-red-600 font-bold hover:underline">KVKK Aydınlatma Metni'ni</a> okudum ve onaylıyorum.
+                      Kişisel verilerimin Mezun Kartı basımı ve işlemleri amacıyla işlenmesine dair <button type="button" className="text-red-600 font-bold hover:underline">KVKK Aydınlatma Metni'ni</button> okudum ve onaylıyorum.
                     </span>
                   </label>
                 </div>
@@ -576,7 +583,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
                   localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
                 } catch (err) {}
 
-                alert("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Ofisi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
+                window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Ofisi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
                 setShowMentorshipModal(false);
                 setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
               }} className="p-5 space-y-4">

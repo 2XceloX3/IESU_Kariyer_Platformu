@@ -69,7 +69,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.programTitle || !form.mentorName) return alert("Program adı ve mentor adı zorunludur.");
+    if (!form.programTitle || !form.mentorName) return window.toast.info("Program adı ve mentor adı zorunludur.");
 
     if (currentId) {
       setMentorships((mentorships || []).map(m => m.id === currentId ? { ...m, ...form, updatedAt: new Date().toISOString() } : m));

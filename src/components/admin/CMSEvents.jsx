@@ -72,7 +72,7 @@ export default function CMSEvents({ events = [], setEvents }) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title || !form.date) return alert("Başlık ve tarih zorunludur.");
+    if (!form.title || !form.date) return window.toast.info("Başlık ve tarih zorunludur.");
 
     const newId = currentId || ('NE-E' + Date.now());
     
@@ -436,7 +436,7 @@ export default function CMSEvents({ events = [], setEvents }) {
                     <span className="text-sm font-bold text-gray-700 select-none">Öğrenci anket öncesi KVKK onay metnini kabul etmek zorundadır.</span>
                   </div>
 
-                  <button type="button" onClick={() => alert('Etkinlik anketi başarıyla oluşturuldu!')} className="w-full bg-red-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-red-700 shadow-md transition-all">
+                  <button type="button" onClick={() => window.toast.success('Etkinlik anketi başarıyla oluşturuldu!')} className="w-full bg-red-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-red-700 shadow-md transition-all">
                     Anketi Kaydet ve Aktifleştir
                   </button>
                 </form>

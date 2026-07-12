@@ -53,7 +53,7 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title || !form.date) return alert("Başlık ve tarih zorunludur.");
+    if (!form.title || !form.date) return window.toast.info("Başlık ve tarih zorunludur.");
 
     const newId = currentId || ('NE-D' + Date.now());
 

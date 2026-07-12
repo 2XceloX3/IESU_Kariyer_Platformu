@@ -152,7 +152,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
     
     setForm({ title: '', content: '', contentType: 'Sertifika Programı', visibility: 'public', imageUrl: '' });
     setShowForm(false);
-    alert('SEM Programı başarıyla oluşturuldu ve sosyal akışta paylaşıldı!');
+    window.toast.success('SEM Programı başarıyla oluşturuldu ve sosyal akışta paylaşıldı!');
   };
 
   const exportToExcel = (tableId) => {
@@ -578,7 +578,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                     <span className="text-sm font-bold text-gray-700 select-none">Öğrenci anket öncesi KVKK onay metnini kabul etmek zorundadır.</span>
                   </div>
 
-                  <button type="button" onClick={() => alert('Anket başarıyla oluşturuldu ve hedef kitleye atandı.')} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 shadow-md transition-all">
+                  <button type="button" onClick={() => window.toast.success('Anket başarıyla oluşturuldu ve hedef kitleye atandı.')} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 shadow-md transition-all">
                     Anketi Kaydet ve Aktifleştir
                   </button>
                 </form>

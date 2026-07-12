@@ -20,7 +20,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
 
   useEffect(() => {
     if (currentUser?.id) {
-      localStorage.setItem(`iesu_personal_events_${currentUser.id}`, JSON.stringify(personalEvents));
+      localStorage.setItem(`iesu_personal_events_${currentUser?.id}`, JSON.stringify(personalEvents));
     }
   }, [personalEvents, currentUser?.id]);
 
@@ -245,7 +245,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
                                       read: false 
                                     }]);
                                   }
-                                  alert("Mesaj Kariyer Merkezine iletildi.");
+                                  window.toast.success("Mesaj Kariyer Merkezine iletildi.");
                                 }
                               }}
                               className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm"

@@ -218,10 +218,16 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
     <div className="animate-fade-in space-y-6">
       <PanelHeader title="Kontrol Merkezi" sub="Sistemin genel durumu" />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
         <StatCard icon={<Users size={20}/>} label="Aktif Öğrenci" value={(students || []).filter(s=>s?.status==='Aktif').length} sub="Toplam kayıtlı" color="blue" />
         <StatCard icon={<Briefcase size={20}/>} label="Açık İlanlar" value={(jobs || []).filter(j=>j?.status==='Yayında').length} sub={`${(jobs || []).filter(j=>j?.status==='Beklemede').length} onay bekliyor`} color="red" />
         <StatCard icon={<GraduationCap size={20}/>} label="Mezun Kaydı" value={(alumni || []).length} sub={`${(alumni || []).filter(a=>a.mentor).length} aktif mentor`} color="purple" />
+        
+        {/* Education Breakdown Based on Image 1 */}
+        <StatCard icon={<Award size={20}/>} label="Önlisans" value={(alumni || []).filter(a=>a?.degree === 'Önlisans').length} sub="Mezunu" color="green" />
+        <StatCard icon={<BookOpen size={20}/>} label="Lisans" value={(alumni || []).filter(a=>!a?.degree || a?.degree === 'Lisans').length} sub="Mezunu" color="blue" />
+        <StatCard icon={<Library size={20}/>} label="Lisansüstü" value={(alumni || []).filter(a=>a?.degree === 'Lisansüstü' || a?.degree === 'Yüksek Lisans' || a?.degree === 'Doktora').length} sub="Mezunu" color="orange" />
+        
         <StatCard icon={<MessageSquare size={20}/>} label="Okunmamış" value={(messages || []).filter(m=>!m?.read).length} sub="Mesaj" color="orange" />
       </div>
 
@@ -441,103 +447,7 @@ function AkademikPanel({ students = [] }) {
   );
 }
 
-// ── 4. İçerik Yönetimi ───────────────────────────────────────
-function IcerikPanel({ newsEvents = [], setNewsEvents }) {
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({type:'Haber',title:'',date:''});
-  const handleAdd = e => {
-    e.preventDefault();
-    setNewsEvents([{id:`NE-${Date.now()}`, ...form, status:'Beklemede'},...(newsEvents || [])]);
-    setForm({type:'Haber',title:'',date:''}); setShowForm(false);
-  };
-  return (
-    <div className="animate-fade-in space-y-6">
-      <PanelHeader title="İçerik Yönetimi" sub="Vitrin haber, duyuru ve etkinliklerini yönetin"
-        action={<BtnPrimary onClick={()=>setShowForm(!showForm)}><Plus size={15}/>Yeni Ekle</BtnPrimary>}/>
 
-      {showForm && (
-        <Card className="p-6 border-l-4 border-red-500">
-          <h3 className="font-black text-gray-900 mb-4">Yeni İçerik</h3>
-          <form onSubmit={handleAdd} className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="text-xs font-bold text-gray-600 block mb-1">Tür</label>
-              <select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300">
-                <option>Haber</option><option>Duyuru</option><option>Etkinlik</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-bold text-gray-600 block mb-1">Başlık</label>
-              <input type="text" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} placeholder="Başlık giriniz..." className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300" required/>
-            </div>
-            <div>
-              <label className="text-xs font-bold text-gray-600 block mb-1">Tarih</label>
-              <input type="date" value={form?.date} onChange={e=>setForm({...form,date:e.target.value})} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"/>
-            </div>
-            <div className="col-span-3 flex gap-3">
-              <button type="submit" className="bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition">Kaydet</button>
-              <button type="button" onClick={()=>setShowForm(false)} className="bg-gray-100 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-200 transition">İptal</button>
-            </div>
-          </form>
-        </Card>
-      )}
-
-      <div className="grid grid-cols-3 gap-4">
-        <StatCard icon={<FileText size={20}/>} label="Toplam İçerik" value={(newsEvents || []).length} color="blue"/>
-        <StatCard icon={<CheckCircle size={20}/>} label="Yayında" value={(newsEvents || []).filter(n=>n.status==='Yayında').length} color="green"/>
-        <StatCard icon={<Bell size={20}/>} label="Onay Bekliyor" value={(newsEvents || []).filter(n=>n.status==='Beklemede').length} color="orange"/>
-      </div>
-
-      <Card className="p-6">
-        <Tbl
-          headers={['Tür','Başlık','Tarih','Durum','İşlem']}
-          rows={(newsEvents || []).map(ne=>[
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-bold">{ne?.type}</span>,
-            <span className="font-semibold">{ne?.title}</span>,
-            ne?.date,
-            <Badge status={ne?.status}/>,
-            <div className="flex gap-2">
-              {ne?.status==='Beklemede'&&<BtnGreen onClick={()=>setNewsEvents((newsEvents || []).map(x=>x.id===ne?.id?{...x,status:'Yayında'}:x))}>Yayınla</BtnGreen>}
-              <button onClick={()=>setNewsEvents((newsEvents || []).filter(x=>x.id!==ne?.id))} className="text-red-400 hover:text-red-600 transition p-1"><Trash2 size={14}/></button>
-            </div>
-          ])}
-        />
-      </Card>
-    </div>
-  );
-}
-
-// ── 17. Org Şeması ────────────────────────────────────────────
-function OrgNode({ node }) {
-  return (
-    <div className="flex flex-col items-center">
-      <div className="bg-white border-2 border-red-200 rounded-xl px-5 py-3 text-center shadow-sm min-w-[160px] hover:border-red-400 transition">
-        <p className="font-black text-gray-900 text-sm">{node.name}</p>
-        <p className="text-xs text-red-600 font-bold mt-0.5">{node?.title}</p>
-      </div>
-      {node.children&&(node.children || []).length>0&&(
-        <div className="flex flex-col items-center">
-          <div className="w-0.5 h-6 bg-red-200"/>
-          <div className="flex gap-8">
-            {(node.children || []).map((c,i)=>(
-              <div key={i} className="flex flex-col items-center">
-                <div className="w-0.5 h-4 bg-red-200"/>
-                <OrgNode node={c}/>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-function OrgPanel() {
-  return (
-    <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Organizasyon Şeması" sub="Kariyer Ofisi yapısı"/>
-      <Card className="p-10 overflow-auto"><OrgNode node={ORG}/></Card>
-    </div>
-  );
-}
 
 // ══════════════════════════════════════════════════════════════
 //  SIDEBAR NAVIGATION CONFIG
@@ -578,7 +488,7 @@ const MORE_TABS = [
   { id:'anket',      label:'Anket & Veri Havuzu',      icon:<BarChart3 size={17}/> },
   { id:'analytics',  label:'Sistem Analitiği',    icon:<Activity size={17}/> },
   { id:'content_import', label:'Resmî İçerik İçe Aktar', icon:<Database size={17}/> },
-  { id:'org',        label:'Organizasyon Şeması', icon:<Network size={17}/> },
+
   { id:'entegrasyon',label:'Sistem Entegrasyonları',icon:<Database size={17}/> },
   { id:'cleanup',    label:'Veri Temizliği',      icon:<ShieldAlert size={17}/> },
   { id:'platform_ayarlari', label:'Platform Ayarları', icon:<Settings size={17}/> },
@@ -661,7 +571,7 @@ export default function AdminDashboard({
       case 'anket':       return <CMSSurveys surveys={surveys || []} setSurveys={setSurveys} posts={posts} setPosts={setPosts} currentUser={currentUser} announcements={announcements} setAnnouncements={setAnnouncements} students={students || []} alumni={alumni || []} />;
       case 'analytics':   return <CMSAnalytics students={students || []} alumni={alumni || []} companies={companies || []} jobs={jobs || []} applications={applications || []} />;
       case 'content_import': return <OfficialContentImport news={news || []} setNews={setNews} announcements={announcements || []} setAnnouncements={setAnnouncements} events={events || []} setEvents={setEvents} />;
-      case 'org':         return <OrgPanel/>;
+
       case 'cleanup':     return <DataCleanup students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} companies={companies || []} setCompanies={setCompanies} messages={messages || []} setMessages={setMessages} posts={posts || []} setPosts={setPosts} jobs={jobs || []} setJobs={setJobs} />;
       case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} featureClubsShowcase={featureClubsShowcase} setFeatureClubsShowcase={setFeatureClubsShowcase} featureClubApplications={featureClubApplications} setFeatureClubApplications={setFeatureClubApplications} />;
       default:            return <OverviewPanel {...p}/>;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Search, UserCircle2, CheckCircle2, ChevronLeft, ChevronDown, MessageSquare, Home, Compass, Briefcase, Bell, MessageCircle, Heart, Phone, Video, Paperclip, Smile, Image as ImageIcon, MoreVertical, X, Eye, EyeOff, Film, Camera, Aperture, PhoneCall, PhoneOff, PlayCircle, Clock, Infinity, Archive, Edit3, Grid3X3, Info, CircleDashed, Plus, Calendar, Users, Edit, Link2, Megaphone, PhoneOutgoing, PhoneMissed, PhoneIncoming, ArrowLeft, Check } from 'lucide-react';
+import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -37,6 +37,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [callTimer, setCallTimer] = useState(0);
   const [callFilter, setCallFilter] = useState('all'); // 'all', 'missed'
   const [showNewCallModal, setShowNewCallModal] = useState(false);
+  const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
   const [callHistory, setCallHistory] = useState([
     { id: 'ch-1', contactId: 'usr-1', name: 'Kariyer Merkezi', avatar: 'https://ui-avatars.com/api/?name=Kariyer+Merkezi', type: 'Cevapsız', time: 'Dün', missed: true },
     { id: 'ch-2', contactId: 'usr-2', name: 'Danışman Hocam', avatar: 'https://ui-avatars.com/api/?name=Danışman+Hocam', type: 'Gelen', time: 'Salı', missed: false }
@@ -296,37 +297,77 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   };
 
   const startCamera = async () => {
-    setIsCameraActive(true);
-    setShowAttachmentMenu(false);
+    try {
+      setIsCameraActive(true);
+      setShowAttachmentMenu(false);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+    } catch (e) {
+      console.error('Kamera hatası:', e);
+      window.toast && window.toast.error('Kamera erişimi sağlanamadı.');
+      setIsCameraActive(false);
+    }
   };
 
   const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(t => t.stop());
+    }
     setIsCameraActive(false);
   };
 
-  // Removed useEffect for streamRef
-
   const startRecording = () => {
+    if (!videoRef.current || !videoRef.current.srcObject) return;
     setIsRecording(true);
+    recordedChunks.current = [];
+    try {
+      mediaRecorderRef.current = new MediaRecorder(videoRef.current.srcObject);
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.current.push(e.data);
+      };
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(recordedChunks.current, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        setCapturedMedia({ url, type: 'video' });
+        stopCamera();
+      };
+      mediaRecorderRef.current.start();
+    } catch (e) {
+      console.error('Kayıt başlatılamadı:', e);
+      setIsRecording(false);
+    }
   };
 
   const stopRecording = () => {
-    if (isRecording) {
+    if (isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       setIsRecording(false);
-      setCapturedMedia({ url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 'video' });
-      stopCamera();
+      mediaRecorderRef.current.stop();
     }
   };
 
   const capturePhoto = () => {
-    setCapturedMedia({ url: `https://picsum.photos/800/1200?random=${Date.now()}`, type: 'image' });
-    stopCamera();
+    if (!videoRef.current) return;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth || 640;
+      canvas.height = videoRef.current.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      const url = canvas.toDataURL('image/jpeg');
+      setCapturedMedia({ url, type: 'image' });
+      stopCamera();
+    } catch (e) {
+      console.error('Fotoğraf çekilemedi:', e);
+    }
   };
 
   const sendCapturedMedia = () => {
     if (capturedMedia) {
       if (!activeContactId) {
-        alert("📸 Fotoğrafınız başarıyla Güncellemeler (Durum) olarak paylaşıldı!");
+        window.toast.success("📸 Fotoğrafınız başarıyla Güncellemeler (Durum) olarak paylaşıldı!");
         setCapturedMedia(null);
         setIsCameraActive(false);
         return;
@@ -533,9 +574,9 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       setViewingStoryIndex(index);
       if (setStories && currentUser) {
         const story = index === -1 ? myStory : otherStories[index];
-        if (story && !story.viewedBy?.includes(currentUser.id)) {
+        if (story && !story.viewedBy?.includes(currentUser?.id)) {
           setStories(prev => prev.map(s => 
-            s.id === story.id ? { ...s, viewedBy: [...(s.viewedBy || []), currentUser.id] } : s
+            s.id === story.id ? { ...s, viewedBy: [...(s.viewedBy || []), currentUser?.id] } : s
           ));
         }
       }
@@ -1036,12 +1077,21 @@ export default function MessagingInterface({ previousView, messages = [], setMes
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center bg-[#FAFAFA]">
-            <div className="w-20 h-20 bg-white shadow-sm rounded-full flex items-center justify-center mb-4">
-              <Send size={32} className="text-iesu-red ml-1" />
+          <div className="flex-1 hidden md:flex flex-col items-center justify-center bg-gray-50/50 p-8 text-center border-l border-gray-100">
+            <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-xl shadow-red-100/50 mb-6 group hover:scale-105 transition-transform duration-500">
+              <MessageCircle size={48} className="text-iesu-red ml-1 group-hover:rotate-12 transition-transform duration-300" strokeWidth={1.5} />
             </div>
-            <h2 className="text-xl font-black text-gray-900 mb-2">Mesajlarınız</h2>
-            <p className="text-gray-500 max-w-sm text-sm">Sohbete başlamak için sol taraftan bir kişi seçin veya yeni bir konuşma başlatın.</p>
+            <h2 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">Kariyer Ağınızı Genişletin</h2>
+            <p className="text-gray-500 max-w-md text-[15px] mb-8 leading-relaxed">
+              Öğrenciler, mezunlar ve şirketlerle doğrudan iletişime geçin. Yeni bir konuşma başlatarak kariyer fırsatlarını değerlendirin.
+            </p>
+            <button 
+              onClick={() => setIsNewChatModalOpen(true)}
+              className="px-8 py-3.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg shadow-gray-200 active:scale-95 flex items-center gap-2"
+            >
+              <Plus size={20} />
+              Yeni Konuşma Başlat
+            </button>
           </div>
         )}
       </div>
@@ -1058,11 +1108,9 @@ export default function MessagingInterface({ previousView, messages = [], setMes
           
           <div className="flex-1 flex flex-col items-center justify-center relative bg-black">
             {!capturedMedia ? (
-              // LIVE CAMERA FEED (MOCK)
+              // LIVE CAMERA FEED
               <div className="w-full h-full relative flex items-center justify-center bg-gray-900">
-                <Camera size={64} className="text-gray-600 animate-pulse mb-20" />
-                <p className="absolute bottom-40 text-gray-400 font-medium">Kamera Simulasyonu Aktif</p>
-                <video ref={videoRef} className="hidden" />
+                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
 
                 {/* Recording indicator */}
                 {isRecording && (

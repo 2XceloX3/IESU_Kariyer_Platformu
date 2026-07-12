@@ -54,7 +54,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title) return alert("Anket başlığı zorunludur.");
+    if (!form.title) return window.toast.info("Anket başlığı zorunludur.");
 
     if (currentId) {
       setSurveys((surveys || []).map(s => s.id === currentId ? { ...s, ...form, updatedAt: new Date().toISOString() } : s));
@@ -68,7 +68,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
       }, ...surveys]);
     }
     setIsEditing(true);
-    alert('Anket kaydedildi.');
+    window.toast.info('Anket kaydedildi.');
     setIsEditing(false);
   };
 
@@ -87,7 +87,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   };
 
   const removeQuestion = (id) => {
-    if (form.questions.length === 1) return alert("En az 1 soru olmalıdır.");
+    if (form.questions.length === 1) return window.toast.info("En az 1 soru olmalıdır.");
     setForm(prev => ({
       ...prev,
       questions: prev.questions.filter(q => q.id !== id)
@@ -110,7 +110,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    alert("SPSS / Excel uyumlu veri başarıyla indirildi. (Mock Data)");
+    window.toast.success("SPSS / Excel uyumlu veri başarıyla indirildi. (Mock Data)");
   };
 
   const handleKVKKExport = (survey) => {
@@ -139,7 +139,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   };
 
   const handleShareToFeed = (survey) => {
-    if(!setPosts) { alert('Feed entegrasyonu bulunamadı!'); return; }
+    if(!setPosts) { window.toast.info('Feed entegrasyonu bulunamadı!'); return; }
     const newPost = {
       id: Date.now(),
       author: currentUser || { name: 'Kariyer Merkezi', role: 'admin', avatar: `https://ui-avatars.com/api/?name=Kariyer&background=0D8ABC&color=fff` },
@@ -152,7 +152,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
       surveyData: survey
     };
     setPosts([newPost, ...posts]);
-    alert('Anket başarıyla ana akışta (Feed) paylaşıldı! Öğrenciler ve firmalar görebilir.');
+    window.toast.success('Anket başarıyla ana akışta (Feed) paylaşıldı! Öğrenciler ve firmalar görebilir.');
   };
 
   const safeSurveys = (surveys || []);

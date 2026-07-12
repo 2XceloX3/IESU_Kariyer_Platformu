@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Calendar, ArrowRight, Mail, Menu, Search, Bell, MapPin, Download, FileText, ExternalLink, CheckCircle } from 'lucide-react';
+import { ChevronRight, Calendar, ArrowRight, Mail, Menu, Search, Bell, MapPin, Download, FileText, ExternalLink, CheckCircle, X } from 'lucide-react';
 import { contentData } from './NewsEvents';
 import Logo from './Logo';
 
@@ -7,9 +7,22 @@ export default function LandingPage({ setView }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchContainerRef = React.useRef(null);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setIsSearchFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -78,11 +91,12 @@ export default function LandingPage({ setView }) {
   };
 
   useEffect(() => {
+    if (isCarouselPaused) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isCarouselPaused, heroSlides.length]);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
@@ -127,20 +141,29 @@ export default function LandingPage({ setView }) {
 
           {/* Center: Search Bar */}
           <div className="w-1/3 flex justify-center hidden sm:flex relative">
-            <div className="relative group w-full max-w-md z-50">
+            <div ref={searchContainerRef} className="relative group w-full max-w-md z-50">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-iesu-red transition-colors">
                 <Search size={18} />
               </div>
               <input 
                 type="text" 
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onChange={(e) => { setSearchTerm(e.target.value); setIsSearchFocused(true); }}
                 placeholder="İlan, etkinlik, duyuru ara..." 
-                className="w-full bg-gray-100/80 border border-transparent text-gray-900 text-[14px] rounded-lg pl-10 pr-4 py-2 focus:bg-white focus:outline-none focus:ring-2 focus:ring-iesu-coral/20 focus:border-iesu-coral transition-all duration-300"
+                className="w-full bg-gray-100/80 border border-transparent text-gray-900 text-[14px] rounded-lg pl-10 pr-10 py-2 focus:bg-white focus:outline-none focus:ring-2 focus:ring-iesu-coral/20 focus:border-iesu-coral transition-all duration-300"
               />
+              {searchTerm && (
+                <button 
+                  onClick={() => setSearchTerm('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              )}
               
               {/* Search Results Dropdown */}
-              {searchTerm.length > 2 && (
+              {isSearchFocused && searchTerm.length > 2 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col z-50">
                   {searchResults.length > 0 ? (
                     searchResults.map((item, idx) => (
@@ -194,7 +217,13 @@ export default function LandingPage({ setView }) {
       )}
 
       {/* Hero Slider Area */}
-      <section className="relative h-[400px] md:h-[480px] bg-gray-900 overflow-hidden group">
+      <section 
+        className="relative h-[400px] md:h-[480px] bg-gray-900 overflow-hidden group"
+        onMouseEnter={() => setIsCarouselPaused(true)}
+        onMouseLeave={() => setIsCarouselPaused(false)}
+        onFocus={() => setIsCarouselPaused(true)}
+        onBlur={() => setIsCarouselPaused(false)}
+      >
         {heroSlides.map((slide, index) => (
           <div 
             key={index} 

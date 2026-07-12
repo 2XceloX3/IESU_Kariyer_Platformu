@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, ChevronRight, Calendar, MapPin, X, FileText, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Home, Wand2 } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, ChevronRight, Calendar, MapPin, X, FileText, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Home, Wand2, Star } from 'lucide-react';
 import Logo from './Logo';
 import MessagingInterface from './MessagingInterface';
 import CareerShorts from './CareerShorts';
@@ -28,7 +28,10 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
     <div className="min-h-screen bg-transparent font-sans">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="w-10"></div> {/* Spacer */}
+          {/* LEFT: Star Icon for Post Creation */}
+          <button onClick={() => setActiveTab('create_post')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 ${activeTab === 'create_post' ? 'text-orange-500 bg-orange-50' : 'text-gray-600'}`} title="Gönderi Düzenle/Paylaş">
+            <Star size={24} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
+          </button>
           
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
@@ -126,7 +129,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
           
           {activeTab === 'feed' && (
             <>
-              <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+              {/* PostComposer moved to create_post tab */}
               
               <div className="space-y-6">
             {(() => {
@@ -151,6 +154,16 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
             </>
           )}
 
+          {/* Create Post Native View */}
+          {activeTab === 'create_post' && (
+            <div className="bg-white rounded-3xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
+               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                <Star className="text-orange-500 fill-current" size={24} /> Gönderi Paylaş & Düzenle
+               </h2>
+               <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+            </div>
+          )}
+
           {activeTab === 'career_network' && (
             <CareerNetwork companies={companies} events={events} setView={setView} setSelectedUserId={setSelectedUserId} />
           )}
@@ -159,32 +172,60 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
 
         {/* RIGHT PANEL */}
         <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
-            <h3 className="font-black text-gray-900 mb-2">Firma Profili</h3>
-            <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
-              <div className="bg-blue-600 h-2 rounded-full" style={{ width: '60%' }}></div>
+          {activeTab === 'create_post' && (
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)] sticky top-24 animate-fade-in">
+              <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                <FileText size={18} className="text-iesu-red" /> Gönderi Ön İzleme
+              </h3>
+              <div className="opacity-80 pointer-events-none scale-95 origin-top">
+                <PostCard post={{
+                  id: 'preview',
+                  author: {
+                    name: currentUser?.name || 'Firma Adı',
+                    role: 'employer',
+                    avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Firma')}&background=2563EB&color=fff`
+                  },
+                  content: "Harika bir etkinlik hazırlıyoruz! Detaylar çok yakında burada olacak...",
+                  createdAt: new Date().toISOString(),
+                  likes: 0,
+                  comments: 0
+                }} currentUser={currentUser} students={students} alumni={alumni} />
+              </div>
+              <p className="text-xs text-gray-400 mt-4 text-center font-medium">Bu alan gönderinizin yayında nasıl görüneceğini temsil eder.</p>
             </div>
-            <p className="text-xs text-gray-500 font-medium mb-4">Profiliniz %60 oranında tamamlandı.</p>
-            <button onClick={() => setView('company_profile')} className="w-full py-2 bg-gray-50 text-gray-700 hover:bg-gray-100 rounded-xl text-[13px] font-bold transition-colors">Profili Güncelle</button>
-          </div>
+          )}
 
-          <div className="sticky top-24 bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
-            <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
-              <Users size={18} className="text-blue-500" /> Yetenekleri Keşfedin
-            </h3>
-            
-            <div className="space-y-4">
-              {(networkSuggestions || []).map((person, i) => (
-                <div key={i} className="flex items-center gap-3 group">
-                  <img src={`https://ui-avatars.com/api/?name=${person.name}&background=random&color=fff`} className="w-12 h-12 rounded-full object-cover" alt={person.name} />
-                  <div className="flex-grow">
-                    <p className="text-[13px] font-bold text-gray-900 line-clamp-1">{person.name}</p>
-                    <p className="text-[11px] text-gray-500 line-clamp-1 font-medium">{person.title}</p>
-                  </div>
+          {activeTab !== 'create_post' && (
+            <>
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
+                <h3 className="font-black text-gray-900 mb-2">Firma Profili</h3>
+                <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '60%' }}></div>
                 </div>
-              ))}
-            </div>
-          </div>
+                <p className="text-xs text-gray-500 font-medium mb-4">Profiliniz %60 oranında tamamlandı.</p>
+                <button onClick={() => setView('profile_update')} className="w-full py-2 bg-gray-50 text-gray-700 hover:bg-gray-100 rounded-xl text-[13px] font-bold transition-colors">Profili Güncelle</button>
+              </div>
+
+              <div className="sticky top-24 bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
+                <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
+                  <Users size={18} className="text-blue-500" /> Yetenekleri Keşfedin
+                </h3>
+                
+                <div className="space-y-4">
+                  {(networkSuggestions || []).map((person, i) => (
+                    <div key={i} className="flex items-center gap-3 group">
+                      <img src={`https://ui-avatars.com/api/?name=${person.name}&background=random&color=fff`} className="w-12 h-12 rounded-full object-cover" alt={person.name} />
+                      <div className="flex-grow">
+                        <p className="text-[13px] font-bold text-gray-900 line-clamp-1">{person.name}</p>
+                        <p className="text-[11px] text-gray-500 line-clamp-1 font-medium">{person.title}</p>
+                      </div>
+                      <button onClick={() => setSelectedUserId(person.id)} className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-full transition"><ChevronRight size={16} /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
 

@@ -65,7 +65,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.name || !form.graduationYear) return alert("Ad Soyad ve Mezuniyet Yılı zorunludur.");
+    if (!form.name || !form.graduationYear) return window.toast.info("Ad Soyad ve Mezuniyet Yılı zorunludur.");
 
     if (currentId) {
       setAlumni(prev => (prev || []).map(a => a.id === currentId ? { ...a, ...form, updatedAt: new Date().toISOString() } : a));

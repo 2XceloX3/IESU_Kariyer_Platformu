@@ -51,7 +51,7 @@ export default function CMSAcademicStaff({ academicStaff = [], setAcademicStaff 
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.name || !form.department) return alert("Ad Soyad ve Bölüm zorunludur.");
+    if (!form.name || !form.department) return window.toast.info("Ad Soyad ve Bölüm zorunludur.");
 
     if (currentId) {
       setAcademicStaff((academicStaff || []).map(a => a.id === currentId ? { ...a, ...form, updatedAt: new Date().toISOString() } : a));

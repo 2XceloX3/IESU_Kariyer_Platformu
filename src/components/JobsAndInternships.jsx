@@ -16,13 +16,13 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
 
   const handleApply = (job) => {
     if (userRole !== 'student') {
-      alert("Sadece öğrenciler platform üzerinden hızlı başvuru yapabilir. Lütfen öğrenci girişi yapın.");
+      window.toast.error("Sadece öğrenciler platform üzerinden hızlı başvuru yapabilir. Lütfen öğrenci girişi yapın.");
       return;
     }
     
-    const alreadyApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser.id);
+    const alreadyApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser?.id);
     if (alreadyApplied) {
-      alert("Bu ilana zaten başvurdunuz.");
+      window.toast.info("Bu ilana zaten başvurdunuz.");
       return;
     }
 
@@ -31,14 +31,14 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
       jobId: job.id,
       jobTitle: job.title,
       company: job.company,
-      applicantId: currentUser.id,
-      applicantName: currentUser.name,
+      applicantId: currentUser?.id,
+      applicantName: currentUser?.name,
       status: 'Beklemede', // Beklemede, Mülakat, Reddedildi
       date: new Date().toLocaleDateString('tr-TR')
     };
 
     setApplications([...applications, newApp]);
-    alert("Başvurunuz başarıyla iletildi!");
+    window.toast.success("Başvurunuz başarıyla iletildi!");
   };
 
   return (
@@ -127,55 +127,69 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
           {activeTab === 'ilanlar' && (
             <div className="animate-fade-in">
               <h3 className="text-xl font-extrabold text-gray-900 mb-6 border-b-2 border-red-100 pb-2 inline-block">Güncel İş ve Staj İlanları</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {(jobs || []).filter(j => j.status === 'Aktif' || !j.status).map(job => {
-                  const hasApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser?.id);
+              {(() => {
+                const activeJobs = (jobs || []).filter(j => j.status === 'Aktif' || !j.status);
+                if (activeJobs.length === 0) {
                   return (
-                    <div key={job.id} className="group rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition duration-300">
-                      <div className="h-48 bg-gray-200 relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-red-50 to-white">
-                        {job.logo ? (
-                          <img src={job.logo} alt={job.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
-                        ) : (
-                          <Briefcase size={40} className="text-red-200" />
-                        )}
-                        <div className={`absolute top-3 left-3 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow ${job.type === 'STAJ' ? 'bg-iesu-coral' : 'bg-iesu-red'}`}>
-                          {job.type}
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <h4 className="font-extrabold text-lg text-gray-900 mb-2 truncate">{job.title}</h4>
-                        <p className="text-gray-500 text-[13px] mb-1 font-bold">{job.company}</p>
-                        <p className="text-gray-400 text-[12px] mb-4">{job.location} • Son Başvuru: {job.date}</p>
-                        <p className="text-gray-500 text-[13px] mb-4 line-clamp-2">{job.description}</p>
-                        
-                        <div className="flex items-center justify-between">
-                          {userRole === 'academic' ? (
-                            <button 
-                              onClick={() => alert("Bu ilan öğrencilerinize önerildi!")}
-                              className="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white"
-                            >
-                              <CheckCircle2 size={14} /> Öğrenciye Öner
-                            </button>
-                          ) : (
-                            <button 
-                              onClick={() => handleApply(job)}
-                              disabled={hasApplied}
-                              className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition ${hasApplied ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'}`}
-                            >
-                              {hasApplied ? <><CheckCircle2 size={14} /> Başvuruldu</> : 'Hızlı Başvur'}
-                            </button>
-                          )}
-                          {job.applicationLink && job.applicationLink !== '#' && (
-                            <a href={job.applicationLink} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-iesu-red transition" title="Dış Bağlantı (İşveren Sitesi)">
-                              <ExternalLink size={16} />
-                            </a>
-                          )}
-                        </div>
-                      </div>
+                    <div className="flex flex-col items-center justify-center p-12 bg-gray-50 border border-gray-100 border-dashed rounded-2xl">
+                      <Briefcase size={48} className="text-gray-300 mb-4" />
+                      <p className="text-gray-500 font-medium text-center">Şu an için bu kategoride ilan bulunmamaktadır.</p>
                     </div>
                   );
-                })}
-              </div>
+                }
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {activeJobs.map(job => {
+
+                      const hasApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser?.id);
+                      return (
+                        <div key={job.id} className="group rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition duration-300">
+                          <div className="h-48 bg-gray-200 relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-red-50 to-white">
+                            {job.logo ? (
+                              <img src={job.logo} alt={job.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
+                            ) : (
+                              <Briefcase size={40} className="text-red-200" />
+                            )}
+                            <div className={`absolute top-3 left-3 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow ${job.type === 'STAJ' ? 'bg-iesu-coral' : 'bg-iesu-red'}`}>
+                              {job.type}
+                            </div>
+                          </div>
+                          <div className="p-5">
+                            <h4 className="font-extrabold text-lg text-gray-900 mb-2 truncate">{job.title}</h4>
+                            <p className="text-gray-500 text-[13px] mb-1 font-bold">{job.company}</p>
+                            <p className="text-gray-400 text-[12px] mb-4">{job.location} • Son Başvuru: {job.date}</p>
+                            <p className="text-gray-500 text-[13px] mb-4 line-clamp-2">{job.description}</p>
+                            
+                            <div className="flex items-center justify-between">
+                              {userRole === 'academic' ? (
+                                <button 
+                                  onClick={() => window.toast.info("Bu ilan öğrencilerinize önerildi!")}
+                                  className="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white"
+                                >
+                                  <CheckCircle2 size={14} /> Öğrenciye Öner
+                                </button>
+                              ) : (
+                                <button 
+                                  onClick={() => handleApply(job)}
+                                  disabled={hasApplied}
+                                  className={`px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition ${hasApplied ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'}`}
+                                >
+                                  {hasApplied ? <><CheckCircle2 size={14} /> Başvuruldu</> : 'Hızlı Başvur'}
+                                </button>
+                              )}
+                              {job.applicationLink && job.applicationLink !== '#' && (
+                                <a href={job.applicationLink} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-iesu-red transition" title="Dış Bağlantı (İşveren Sitesi)">
+                                  <ExternalLink size={16} />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           )}
 

@@ -8,7 +8,7 @@ export default function AttachmentUploader({ fileData, fileName, onFileChange, l
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("Dosya boyutu 5MB'dan büyük olamaz.");
+        window.toast.info("Dosya boyutu 5MB'dan büyük olamaz.");
         return;
       }
       const reader = new FileReader();
