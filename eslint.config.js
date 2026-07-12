@@ -1,23 +1,33 @@
 import globals from "globals";
-import pluginReact from "eslint-plugin-react";
+import pluginJs from "@eslint/js";
+import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
+import pluginReactHooks from "eslint-plugin-react-hooks";
 
 export default [
+  pluginJs.configs.recommended,
+  pluginReactConfig,
   {
-    files: ["**/*.{js,jsx}"],
+    files: ["**/*.{js,mjs,cjs,jsx}"],
     languageOptions: {
-      parserOptions: { ecmaFeatures: { jsx: true } },
+      parserOptions: {
+        ecmaFeatures: { jsx: true }
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
-        React: "readonly"
       }
     },
     plugins: {
-      react: pluginReact
+      "react-hooks": pluginReactHooks
     },
     rules: {
-      "no-undef": "error",
-      "react/jsx-no-undef": "error"
+      "react/prop-types": "off",
+      "react/no-unescaped-entities": "off",
+      "react/react-in-jsx-scope": "off",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      "no-unused-vars": "warn",
+      "no-undef": "error"
     }
   }
 ];
