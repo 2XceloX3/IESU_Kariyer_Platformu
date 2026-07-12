@@ -45,7 +45,7 @@ export default function AcademicStaffFeed({
           
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden sm:block text-center">
+            <div className="hidden sm:block text-left">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
             </div>

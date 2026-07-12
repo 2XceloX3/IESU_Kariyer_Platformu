@@ -35,7 +35,7 @@ import {
   ChevronDown, ChevronUp, Search, Bell, Bell as BellIcon,
   CheckCircle, XCircle, Plus, Trash2, Send,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
-  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings
+  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2
 } from 'lucide-react';
 
 // ══════════════════════════════════════════════════════════════
@@ -208,7 +208,7 @@ function BtnPrimary({ onClick, children, type='button', className='' }) {
 // ══════════════════════════════════════════════════════════════
 
 // ── 1. Kontrol Merkezi ────────────────────────────────────────
-function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [], messages = [], mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [] }) {
+function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [], messages = [], mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [], setView }) {
   const depts = {};
   (students || []).forEach(s => { depts[s?.dept]=(depts[s?.dept]||0)+1; });
   const deptList = Object.entries(depts).sort((a,b)=>b[1]-a[1]).slice(0,5);
@@ -217,6 +217,26 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
   return (
     <div className="animate-fade-in space-y-6">
       <PanelHeader title="Kontrol Merkezi" sub="Sistemin genel durumu" />
+      
+      {/* AI Modülleri Banner */}
+      <div className="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 opacity-20 pointer-events-none">
+          <MessageCircle size={150} />
+        </div>
+        <div className="relative z-10">
+          <span className="bg-white/20 px-2.5 py-1 rounded-md text-[10px] font-black tracking-widest uppercase mb-3 inline-block">YENİ MODÜL YAYINDA</span>
+          <h2 className="text-2xl font-black mb-1.5 tracking-tight">Yapay Zeka Mülakat ve CV Merkezi</h2>
+          <p className="text-red-100 text-sm max-w-lg mb-5 font-medium leading-relaxed">Öğrencilerinizi gerçekçi mülakat simülasyonlarıyla geliştirin, otomatik CV oluşturucu ile kariyer yolculuklarını destekleyin.</p>
+          <div className="flex flex-wrap gap-3">
+            <button onClick={() => setView('interview_sim')} className="px-5 py-2.5 bg-white text-red-600 font-bold rounded-xl text-[13px] hover:bg-gray-50 transition-colors shadow-sm flex items-center gap-2">
+              <MessageCircle size={16} /> Mülakat Simülasyonu
+            </button>
+            <button onClick={() => setView('cvbuilder')} className="px-5 py-2.5 bg-red-700/50 hover:bg-red-700/70 text-white border border-red-400 font-bold rounded-xl text-[13px] transition-colors flex items-center gap-2">
+              <Wand2 size={16} /> CV Oluşturucu
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
         <StatCard icon={<Users size={20}/>} label="Aktif Öğrenci" value={(students || []).filter(s=>s?.status==='Aktif').length} sub="Toplam kayıtlı" color="blue" />
@@ -540,7 +560,7 @@ export default function AdminDashboard({
   const pending = (jobs || []).filter(j=>j?.status==='Beklemede').length + (voluntaryInternships || []).filter(v=>v.status==='Taslak').length;
 
   const renderPanel = () => {
-    const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships, messages, setMessages, surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser };
+    const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships, messages, setMessages, surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser, setView };
     switch(activeTab) {
       case 'academic_catalog': return <CMSAcademicCatalog academicCatalog={academicCatalog || []} setAcademicCatalog={setAcademicCatalog} />;
       case 'academic_approvals': return <CMSAcademicApprovals academicApprovals={academicApprovals || []} setAcademicApprovals={setAcademicApprovals} students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} />;

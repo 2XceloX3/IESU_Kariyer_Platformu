@@ -141,7 +141,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <Settings size={16} className="text-gray-400" /> Bilgileri Düzenle (MBS)
                 </button>
                 <button onClick={() => { setIsOpen(false); setView('cvbuilder'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
-                  <Wand2 size={16} className="text-gray-400" /> AI CV Oluşturucu
+                  <Wand2 size={16} className="text-gray-400" /> AI CV Oluşturucu <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-auto animate-pulse">YENİ</span>
                 </button>
                 <button onClick={() => { setIsOpen(false); setView('interview_sim'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3">
                   <MessageCircle size={16} className="text-gray-400" /> AI Mülakat Simülasyonu <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-auto animate-pulse">YENİ</span>
