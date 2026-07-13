@@ -48,6 +48,12 @@ const useAppStore = create(
         userRole: null,
         setUserRole: setter('userRole'),
 
+        focusMode: false,
+        setFocusMode: setter('focusMode'),
+
+        ghostMode: false,
+        setGhostMode: setter('ghostMode'),
+
         selectedUserId: null,
         setSelectedUserId: setter('selectedUserId'),
 
@@ -155,7 +161,9 @@ const useAppStore = create(
       partialize: (state) => ({
         viewState: state.viewState,
         previousView: state.previousView,
-        userRole: state.userRole
+        userRole: state.userRole,
+        focusMode: state.focusMode,
+        ghostMode: state.ghostMode
         // We INTENTIONALLY do NOT persist the massive arrays (posts, jobs, students, etc.) 
         // to prevent synchronous localStorage blocking (stuttering/UI lag) on every state change.
       })

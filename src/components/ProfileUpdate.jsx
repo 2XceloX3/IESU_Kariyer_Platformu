@@ -285,6 +285,27 @@ export default function ProfileUpdate({
                     </label>
                     <input type="text" value={formData.name || ''} readOnly className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-sm font-bold text-gray-500 cursor-not-allowed" />
                   </div>
+
+                  {userRole !== 'company' && (
+                    <div className="grid grid-cols-2 gap-4 col-span-1 md:col-span-2">
+                      <div className="relative group">
+                        <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Zamir (Pronoun)</label>
+                        <select value={formData.pronouns || ''} onChange={e => handleInputChange('pronouns', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 focus:ring-0 outline-none transition-all appearance-none">
+                          <option value="">Belirtmek İstemiyorum</option>
+                          <option value="she/her">she/her</option>
+                          <option value="he/him">he/him</option>
+                          <option value="they/them">they/them</option>
+                        </select>
+                      </div>
+                      
+                      <div className="relative group flex items-center gap-3">
+                        <button type="button" className="w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all">
+                          <UploadCloud size={18} />
+                          İsim Telaffuzu Yükle (Ses)
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="relative group">
                     <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">E-Posta</label>

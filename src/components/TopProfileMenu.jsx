@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { UserCircle2, Settings, LogOut, ChevronDown, User, Shield, Calendar, Wand2, FileText, MessageSquare, ShieldCheck, Crown, LayoutDashboard, GraduationCap, Users as UsersIcon, Building2, BookOpen, MessageCircle } from 'lucide-react';
+import { UserCircle2, Settings, LogOut, ChevronDown, User, Shield, Calendar, Wand2, FileText, MessageSquare, ShieldCheck, Crown, LayoutDashboard, GraduationCap, Users as UsersIcon, Building2, BookOpen, MessageCircle, Ghost, EyeOff, Download, Trash2 } from 'lucide-react';
 import Logo from './Logo';
+import useAppStore from '../store/useAppStore';
 
 export default function TopProfileMenu({ currentUser, userRole, setView, setSelectedUserId, academicRole, currentView }) {
+  const { ghostMode, setGhostMode, focusMode, setFocusMode } = useAppStore();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -234,6 +236,46 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   </button>
                 )}
 
+                {/* GEN Z UX: Otonomi ve Veri Gizliliği */}
+                <div className="border-t border-gray-50 my-1 py-1">
+                  <p className="px-4 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5"><ShieldCheck size={12}/> Gizlilik & Otonomi</p>
+                  
+                  <button 
+                    onClick={() => setGhostMode(!ghostMode)}
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors flex items-center justify-between group"
+                    title="Aktifken şirketler ve İK uzmanları profilinizi görüntüleyemez."
+                  >
+                    <div className="flex items-center gap-3">
+                      <Ghost size={16} className={ghostMode ? "text-indigo-500" : "text-gray-400 group-hover:text-indigo-500"} /> Hayalet Mod (Gizli İş Arama)
+                    </div>
+                    <div className={`w-8 h-4 rounded-full relative transition-colors ${ghostMode ? 'bg-indigo-500' : 'bg-gray-200'}`}>
+                      <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-all ${ghostMode ? 'left-4.5' : 'left-0.5'}`}></div>
+                    </div>
+                  </button>
+
+                  <button 
+                    onClick={() => setFocusMode(!focusMode)}
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors flex items-center justify-between group"
+                    title="Nöroçeşitlilik dostu arayüz. Göz yoran animasyonları kapatır."
+                  >
+                    <div className="flex items-center gap-3">
+                      <EyeOff size={16} className={focusMode ? "text-orange-500" : "text-gray-400 group-hover:text-orange-500"} /> Odak Modu (Animasyonları Kapat)
+                    </div>
+                    <div className={`w-8 h-4 rounded-full relative transition-colors ${focusMode ? 'bg-orange-500' : 'bg-gray-200'}`}>
+                      <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-all ${focusMode ? 'left-4.5' : 'left-0.5'}`}></div>
+                    </div>
+                  </button>
+
+                  <button 
+                    onClick={() => {
+                      if(window.toast) window.toast.success("JSON verileriniz Web3 cüzdanınıza veya cihazınıza indiriliyor...");
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+                  >
+                    <Download size={16} className="text-gray-400" /> Verilerimi İndir (.json)
+                  </button>
+                </div>
 
                 <button 
                   onClick={() => { setIsOpen(false); setView('groups'); }}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart, Crown, Activity, Globe } from 'lucide-react';
+import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart, Crown, Activity, Globe, Volume2, PlayCircle } from 'lucide-react';
 import Logo from './Logo';
 import { Badge } from './admin/AdminCMSLayout';
 import PostCard from './PostCard';
@@ -124,7 +124,12 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         <div className="pt-14 sm:pt-4 sm:ml-40 flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-black text-gray-900 flex items-center gap-2 flex-wrap">
-              {user?.name} {renderBadges(user?.badges)}
+              {user?.name} 
+              {user?.pronouns && <span className="text-sm font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md lowercase">[{user.pronouns}]</span>}
+              <button title="İsmimin Okunuşu" className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                <Volume2 size={14} />
+              </button>
+              {renderBadges(user?.badges)}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 font-medium mt-1">{user?.department}</p>
             {user?.faculty && <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">{user?.faculty}</p>}

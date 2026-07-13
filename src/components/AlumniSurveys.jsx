@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ClipboardList, CheckCircle2, AlertCircle, Send, Star, ChevronRight } from 'lucide-react';
 
 export default function AlumniSurveys({ surveys, currentUser, addNotification }) {
@@ -6,7 +6,9 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState([]);
 
-  const alumniSurveys = (surveys || []).filter(s => s.targetAudience === 'Mezunlar' || s.targetAudience === 'Tümü');
+  const alumniSurveys = useMemo(() => {
+    return (surveys || []).filter(s => s.targetAudience === 'Mezunlar' || s.targetAudience === 'Tümü');
+  }, [surveys]);
 
   const handleStart = (survey) => {
     setActiveSurvey(survey);
