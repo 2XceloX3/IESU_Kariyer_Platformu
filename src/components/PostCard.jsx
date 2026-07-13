@@ -100,7 +100,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
       id: Date.now(),
       senderId: currentUser?.id || 'unknown',
       receiverId: shareTarget,
-      text: `[GÖNDERİ PAYLAŞIMI]\n${shareText ? shareText + '\n\n' : ''}Gönderi: ${post.content.substring(0, 100)}...`,
+      text: `[GÖNDERİ PAYLAŞIMI]\n${shareText ? shareText + '\n\n' : ''}Gönderi: ${(post.content || '').substring(0, 100)}...`,
       timestamp: new Date().toISOString(),
       read: false
     };

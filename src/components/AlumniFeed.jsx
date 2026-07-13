@@ -18,7 +18,7 @@ import NavIcon from './shared/NavIcon';
 import AlumniSurveys from './AlumniSurveys';
 import ClubsDirectory from './ClubsDirectory';
 
-export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole, groups, setGroups, setSelectedGroupId, featureSurveys, featureCareerCheckup, featureAlumniCard, featureClubsShowcase, featureClubApplications, clubs, setClubs, clubApplications, setClubApplications }) {
+export default function AlumniFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, userRole, news, events, students, alumni, companies, currentUser, featuredOpportunities, mentorships, setMentorships, messages, setMessages, applications, setApplications, jobs, academicStaff, announcements, alumniCardApplications, setAlumniCardApplications, alumniCardForms, academicRole, groups, setGroups, setSelectedGroupId, featureSurveys, featureCareerCheckup, featureAlumniCard, featureClubsShowcase, featureClubApplications, clubs, setClubs, clubApplications, setClubApplications }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,8 +55,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
   // Removed mock stories and defaultPosts
   
   const getManagedClubs = () => {
-    if (userRole === 'admin') return clubs || [];
-    if (currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"') return clubs || [];
+    if (userRole === 'admin' || currentUser?.role === 'admin') return clubs || [];
     if (!currentUser?.name) return [];
     return (clubs || []).filter(c => c.president?.name === currentUser?.name);
   };
@@ -581,11 +580,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
                   motivation: mentorshipForm.motivation
                 };
                 
-                // Direct save to localStorage for the mockup
-                try {
-                  const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2')) || [];
-                  localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
-                } catch (err) {}
+                if (setMentorships) {
+                  setMentorships([newMentorship, ...(mentorships || [])]);
+                } else {
+                  try {
+                    const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2')) || [];
+                    localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
+                  } catch (err) {}
+                }
 
                 window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Ofisi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
                 setShowMentorshipModal(false);

@@ -31,8 +31,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     localStorage.removeItem('iesu_mock_user');
     localStorage.removeItem('iesu_user_role_v1');
     localStorage.removeItem('iesu_view_v1');
+    useAppStore.getState().setUserRole(null);
     setIsOpen(false);
-    setView('landing');
+    window.location.href = '/';
     window.location.reload();
   };
 
