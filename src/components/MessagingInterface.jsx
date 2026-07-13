@@ -195,7 +195,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
         ));
       }
     }
-  }, [activeContactId]);
+  }, [activeContactId, messages, currentUser?.id]);
 
   const handleCreateGroup = () => {
     if (!newGroupName.trim() || newGroupSelectedContacts.length === 0) return;

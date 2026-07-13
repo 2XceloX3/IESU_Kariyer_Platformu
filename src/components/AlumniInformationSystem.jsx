@@ -196,7 +196,7 @@ export default function AlumniInformationSystem({ currentUser, setView, setAlumn
 
                 </div>
                 
-                <p className="text-gray-500 text-sm mt-8 font-medium text-center max-w-2xl">Bu interaktif harita üzerinden mezunlarımızın hangi ülkelerde ve sektörlerde çalıştığını analiz edebilirsiniz. Sektörel yoğunluk haritaları ve ülke bazlı detaylı raporlar çok yakında eklenecektir.</p>
+                <p className="text-gray-500 text-sm mt-8 font-medium text-center max-w-2xl">Bu interaktif harita üzerinden mezunlarımızın hangi ülkelerde ve sektörlerde çalıştığını analiz edebilirsiniz. Yukarıdaki ping noktalarına tıklayarak veya üzerine gelerek bölge detaylarını inceleyebilirsiniz.</p>
               </div>
             )}
 
@@ -271,15 +271,12 @@ export default function AlumniInformationSystem({ currentUser, setView, setAlumn
               </div>
             )}
 
-            {!['ozluk', 'yoksis'].includes(activeSection) && (
-              <div className="flex flex-col items-center justify-center min-h-[400px] text-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50 p-8">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
-                  <FileText size={24} />
+            {!['ozluk', 'yoksis', 'akademik', 'staj', 'map'].includes(activeSection) && (
+              <div className="flex-1 overflow-y-auto p-8">
+                <h3 className="text-xl font-bold mb-4">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h3>
+                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-8 text-center text-gray-500">
+                  <p className="mb-4">Bu alan şu anda geliştirme aşamasındadır.</p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">Modül Hazırlanıyor</h3>
-                <p className="text-sm text-gray-500 max-w-md">
-                  {activeSection} bölümü şu anda geliştirme aşamasındadır. Yakında bu alandan detaylı veri girişi yapabileceksiniz.
-                </p>
               </div>
             )}
 

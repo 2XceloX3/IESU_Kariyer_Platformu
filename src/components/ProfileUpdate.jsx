@@ -123,7 +123,8 @@ export default function ProfileUpdate({
       setCurrentUser(formData);
       if (userRole === 'student' && setStudents) setStudents(prev => (prev || []).map(s => s.id === formData.id ? formData : s));
       else if (userRole === 'alumni' && setAlumni) setAlumni(prev => (prev || []).map(a => a.id === formData.id ? formData : a));
-      else if (userRole === 'company' && setCompanies) setCompanies(prev => (prev || []).map(c => c.id === formData.id ? formData : c));
+      else if ((userRole === 'company' || userRole === 'employer') && setCompanies) setCompanies(prev => (prev || []).map(c => c.id === formData.id ? formData : c));
+      else if (userRole === 'academic' && setAcademicStaff) setAcademicStaff(prev => (prev || []).map(a => a.id === formData.id ? formData : a));
 
       setHasChanges(false);
       window.toast.success('Profiliniz başarıyla güncellendi.');
@@ -658,14 +659,27 @@ export default function ProfileUpdate({
 
             {/* OTHERS / FALLBACKS */}
             {['rep'].includes(activeTab) && (
-              <div className="py-12 text-center animate-fade-in flex flex-col items-center justify-center h-full min-h-[400px]">
-                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 border border-gray-100">
-                  <Settings className="text-gray-300" size={32} />
+              <div className="py-8 animate-fade-in flex flex-col h-full min-h-[400px]">
+                <h3 className="text-xl font-black text-gray-900 mb-6">Topluluk Temsilciliği / Gönüllülük</h3>
+                <div className="bg-blue-50 border border-blue-100 p-6 rounded-2xl mb-8">
+                  <p className="text-blue-800 text-sm font-medium leading-relaxed">Topluluk Temsilcisi veya Öğrenci Elçisi olarak üniversitemizi ve bölümünüzü temsil edebilirsiniz. Başvurunuz kariyer ofisimiz tarafından değerlendirilecektir.</p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Bu Alan Hazırlanıyor</h3>
-                <p className="text-sm text-gray-500 leading-relaxed max-w-sm">
-                  Bu sekmedeki güncellemeler yakında aktifleştirilecektir. Diğer sekmelerdeki işlemlerinize devam edebilirsiniz.
-                </p>
+                
+                <div className="space-y-6 max-w-2xl">
+                  <div className="relative group">
+                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Başvurulan Rol</label>
+                    <select className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500 appearance-none">
+                      <option>Öğrenci Elçisi</option>
+                      <option>Bölüm Temsilcisi</option>
+                      <option>Kariyer Kulübü Yöneticisi</option>
+                    </select>
+                  </div>
+                  <div className="relative group">
+                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Neden Temsilci Olmak İstiyorsunuz?</label>
+                    <textarea rows="4" className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500 resize-none" placeholder="Motivasyonunuzu kısaca açıklayın..."></textarea>
+                  </div>
+                  <button onClick={() => window.toast.success("Temsilcilik başvurunuz Kariyer Ofisine iletildi!")} className="bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 transition">Başvuruyu Gönder</button>
+                </div>
               </div>
             )}
 

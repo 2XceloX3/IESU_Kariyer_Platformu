@@ -157,16 +157,7 @@ const useAppStore = create(
       };
     },
     {
-      name: 'iesu_global_store_v1', // unique name
-      partialize: (state) => ({
-        viewState: state.viewState,
-        previousView: state.previousView,
-        userRole: state.userRole,
-        focusMode: state.focusMode,
-        ghostMode: state.ghostMode
-        // We INTENTIONALLY do NOT persist the massive arrays (posts, jobs, students, etc.) 
-        // to prevent synchronous localStorage blocking (stuttering/UI lag) on every state change.
-      })
+      name: 'iesu-kariyer-store-v1'
     }
   )
 );

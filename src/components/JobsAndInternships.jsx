@@ -10,6 +10,7 @@ import JobCreator from './JobCreator';
 export default function JobsAndInternships({ userRole, setView, previousView, jobs = [], applications = [], setApplications = () => {}, currentUser, setSelectedUserId, setJobs, addNotification }) {
   const [activeTab, setActiveTab] = useState('ilanlar'); // 'ilanlar', 'ulusal', 'gonullu'
   const [isCreatingJob, setIsCreatingJob] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
 
   if (isCreatingJob) {
     return <JobCreator setView={() => setIsCreatingJob(false)} currentUser={currentUser} jobs={jobs} setJobs={setJobs} addNotification={addNotification} />;
@@ -155,8 +156,7 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
                               // Could update local state to hide job
                             }}
                             onViewDetails={(j) => {
-                              // If there was a modal, we would open it here. For now, window alert or fallback
-                              window.toast?.info(j.title + " detayları yakında eklenecek!");
+                              setSelectedJob(j);
                             }}
                           />
                         </div>
@@ -200,13 +200,13 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
                 </h4>
                 <div className="space-y-3">
                   {[
-                    { title: "Zorunlu Staj Formu", link: "#" },
-                    { title: "Mesleki Eğitim Sözleşmesi (SHMYO-SBF)", link: "#" },
-                    { title: "İş Sağlığı ve Güvenliği Belgesi (SHMYO)", link: "#" },
-                    { title: "İş Sağlığı ve Güvenliği Belgesi (SBF)", link: "#" },
-                    { title: "Ulusal Staj Başvuru Formu", link: "#" }
+                    { title: "Zorunlu Staj Formu", link: "/docs/zorunlu_staj.pdf" },
+                    { title: "Mesleki Eğitim Sözleşmesi (SHMYO-SBF)", link: "/docs/mesleki_egitim.pdf" },
+                    { title: "İş Sağlığı ve Güvenliği Belgesi (SHMYO)", link: "/docs/isg_shmyo.pdf" },
+                    { title: "İş Sağlığı ve Güvenliği Belgesi (SBF)", link: "/docs/isg_sbf.pdf" },
+                    { title: "Ulusal Staj Başvuru Formu", link: "/docs/ulusal_staj.pdf" }
                   ].map((doc, i) => (
-                    <a key={i} href={doc.link} onClick={(e) => { if (doc.link === '#') e.preventDefault(); }} className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-iesu-red hover:shadow-md transition group cursor-pointer">
+                    <a key={i} href={doc.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-iesu-red hover:shadow-md transition group cursor-pointer">
                       <span className="font-semibold text-[14px] text-gray-700 group-hover:text-iesu-red transition">{doc.title}</span>
                       <Download size={18} className="text-gray-400 group-hover:text-iesu-red transition" />
                     </a>
@@ -342,8 +342,70 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
         </div>
       )}
 
+      {/* Job Details Modal */}
+      {selectedJob && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setSelectedJob(null)}></div>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 animate-fade-in flex flex-col p-8">
+            <button onClick={() => setSelectedJob(null)} className="absolute top-6 right-6 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-900 transition-colors">
+              <span className="font-black text-xl">×</span>
+            </button>
+            <div className="flex items-start gap-5 mb-6 pr-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm border border-gray-200">
+                {selectedJob.logo ? <img src={selectedJob.logo} alt="Logo" className="w-full h-full object-cover"/> : <Building2 className="text-gray-400" size={28} />}
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-gray-900 leading-tight mb-1">{selectedJob.title}</h2>
+                <p className="text-lg font-bold text-gray-600">{selectedJob.company}</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mb-8">
+              <span className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><MapPin size={14}/> {selectedJob.location}</span>
+              <span className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><Briefcase size={14}/> {selectedJob.type}</span>
+              <span className="bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><Calendar size={14}/> {selectedJob.deadline}</span>
+            </div>
+
+            <div className="space-y-6 flex-1">
+              <div>
+                <h4 className="text-[15px] font-black text-gray-900 mb-2 uppercase tracking-wide">İş Tanımı</h4>
+                <p className="text-[15px] text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedJob.description || "İş tanımı belirtilmemiş."}</p>
+              </div>
+              
+              {selectedJob.requirements && selectedJob.requirements.length > 0 && (
+                <div>
+                  <h4 className="text-[15px] font-black text-gray-900 mb-3 uppercase tracking-wide">Aranan Nitelikler</h4>
+                  <ul className="space-y-2">
+                    {selectedJob.requirements.map((req, i) => (
+                      <li key={i} className="flex gap-2 items-start text-[14.5px] text-gray-700">
+                        <CheckCircle2 size={18} className="text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <span>{req}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            
+            <div className="mt-8 pt-6 border-t border-gray-100 flex gap-4">
+              <button 
+                onClick={() => {
+                  handleApply(selectedJob);
+                  setSelectedJob(null);
+                }}
+                disabled={applications.some(a => a.jobId === selectedJob.id && a.applicantId === currentUser?.id)}
+                className={`flex-1 py-4 rounded-xl font-black text-[15px] shadow-lg transition-all flex items-center justify-center gap-2 ${
+                  applications.some(a => a.jobId === selectedJob.id && a.applicantId === currentUser?.id)
+                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed shadow-none'
+                    : 'bg-gradient-to-r from-iesu-red to-red-700 text-white hover:shadow-red-900/20 hover:scale-[1.02]'
+                }`}
+              >
+                {applications.some(a => a.jobId === selectedJob.id && a.applicantId === currentUser?.id) ? 'Başvuruldu' : 'Hemen Başvur'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-

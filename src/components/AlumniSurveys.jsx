@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { ClipboardList, CheckCircle2, AlertCircle, Send, Star, ChevronRight } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
 
 export default function AlumniSurveys({ surveys, currentUser, addNotification }) {
+  const setSurveys = useAppStore(state => state.setSurveys);
   const [activeSurvey, setActiveSurvey] = useState(null);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState([]);
@@ -21,6 +23,20 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
       return;
     }
     
+    if (setSurveys) {
+      setSurveys(prev => (prev || []).map(s => {
+        if (s.id === activeSurvey.id) {
+          const newResponses = [...(s.responses || []), {
+             userId: currentUser?.id || 'anonymous',
+             answers: answers,
+             date: new Date().toISOString()
+          }];
+          return { ...s, responses: newResponses };
+        }
+        return s;
+      }));
+    }
+
     setSubmitted(prev => [...prev, activeSurvey.id]);
     setActiveSurvey(null);
     setAnswers({});

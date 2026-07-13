@@ -155,7 +155,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
                       <p className="text-[16px] font-black text-gray-900 group-hover:text-teal-700 transition">15</p>
                     </div>
                   </div>
-                  <button className="w-full py-2.5 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors">
+                  <button onClick={() => setView('user_profile')} className="w-full py-2.5 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors">
                     Kariyer Durumunu Güncelle
                   </button>
                 </div>

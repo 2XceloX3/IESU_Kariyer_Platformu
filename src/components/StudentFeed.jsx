@@ -23,6 +23,8 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAllConnections, setShowAllConnections] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
   
   const getManagedClubs = useMemo(() => {
     try {
@@ -331,7 +333,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                 </div>
               ))}
             </div>
-            <button onClick={() => window.toast.info("Tüm öneriler yakında...")} className="w-full mt-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-bold transition">Tümünü Gör</button>
+            <button onClick={() => setShowAllConnections(true)} className="w-full mt-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-bold transition">Tümünü Gör</button>
           </div>
 
           {/* Öne Çıkan Firmalar */}
@@ -349,7 +351,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
                     <h4 className="font-bold text-[13px] text-gray-900 truncate">{company.name}</h4>
                     <p className="text-[11px] text-gray-500 truncate">{company.sector || 'Sektör Lideri'}</p>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); window.toast.info("Firma profili yapım aşamasında..."); }} className="text-xs font-bold text-iesu-red hover:text-red-700 transition">İncele</button>
+                  <button onClick={(e) => { e.stopPropagation(); setSelectedCompany(company); }} className="text-xs font-bold text-iesu-red hover:text-red-700 transition">İncele</button>
                 </div>
               ))}
             </div>
@@ -399,6 +401,73 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
 
       {/* CAREER SHORTS FULLSCREEN MODAL */}
       {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
+      {/* All Connections Modal */}
+      {showAllConnections && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowAllConnections(false)}></div>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden relative z-10 animate-fade-in flex flex-col">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <h3 className="font-black text-xl text-gray-900 flex items-center gap-2"><Users className="text-blue-500"/> Önerilen Bağlantılar</h3>
+              <button onClick={() => setShowAllConnections(false)} className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-gray-700 transition"><X size={18}/></button>
+            </div>
+            <div className="overflow-y-auto p-4 space-y-3 flex-1">
+              {(alumni || []).map((person, index) => (
+                <div key={`modal-alumni-${index}`} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition">
+                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=random&color=fff`} className="w-14 h-14 rounded-full object-cover shadow-sm" alt={person.name} />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-[15px] text-gray-900 truncate">{person.name}</h4>
+                    <p className="text-[13px] text-gray-500 truncate">{person.department || 'Mezun'}</p>
+                    <p className="text-[11px] text-gray-400 mt-0.5">{person.company || 'Açık İş Arıyor'}</p>
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); window.toast.success("Bağlantı isteği gönderildi!"); }} className="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white font-bold text-xs transition flex items-center gap-1">
+                    <UserPlus size={14} /> Bağlan
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Company Profile Modal */}
+      {selectedCompany && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setSelectedCompany(null)}></div>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 animate-fade-in flex flex-col">
+            <div className="h-32 bg-gradient-to-r from-gray-800 to-gray-900 relative">
+              <button onClick={() => setSelectedCompany(null)} className="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/40 backdrop-blur rounded-full flex items-center justify-center text-white transition"><X size={18}/></button>
+            </div>
+            <div className="px-8 pb-8">
+              <div className="flex justify-between items-end -mt-12 mb-6">
+                <div className="w-24 h-24 rounded-2xl bg-white border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
+                  <Building2 className="text-gray-300" size={40} />
+                </div>
+                <button onClick={() => window.toast.success("Firmayı takip etmeye başladınız!")} className="bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold text-sm transition shadow-md">Takip Et</button>
+              </div>
+              <h2 className="text-2xl font-black text-gray-900 mb-1">{selectedCompany.name}</h2>
+              <p className="text-gray-500 font-medium mb-6 flex items-center gap-2"><MapPin size={16}/> İstanbul, Türkiye • {selectedCompany.sector || 'Teknoloji'}</p>
+              
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-[15px] font-black text-gray-900 mb-2">Hakkımızda</h4>
+                  <p className="text-[14px] text-gray-600 leading-relaxed">{selectedCompany.description || "Şirket profili ve detaylı bilgileri en kısa sürede eklenecektir. Yenilikçi projelerimizde yer almak için ilanlarımızı takip edin."}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <p className="text-[11px] text-gray-500 font-bold uppercase mb-1">Çalışan Sayısı</p>
+                    <p className="font-black text-gray-900">50-200</p>
+                  </div>
+                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <p className="text-[11px] text-gray-500 font-bold uppercase mb-1">Açık İlanlar</p>
+                    <p className="font-black text-iesu-red">3 İlan</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

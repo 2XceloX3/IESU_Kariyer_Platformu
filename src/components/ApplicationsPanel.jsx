@@ -74,7 +74,7 @@ export default function ApplicationsPanel({ applications = [], setApplications, 
             <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
             <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
             <NavIcon icon={<Users />} label="Topluluklar" onClick={() => setView('groups')} />
-            <NavIcon icon={<Briefcase />} label="İş ve Staj" active={true} onClick={() => {}} />
+            <NavIcon icon={<Briefcase />} label="İş ve Staj" active={true} onClick={() => setView('jobs')} />
             <div className="ml-2">
               <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
             </div>
