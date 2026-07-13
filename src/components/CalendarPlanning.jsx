@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin, Briefcase, Megaphone, CheckCircle2 } from 'lucide-react';
 
 export default function CalendarPlanning({ events = [], jobs = [], userRole }) {
@@ -17,26 +17,28 @@ export default function CalendarPlanning({ events = [], jobs = [], userRole }) {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  // Mock schedule based on passed events and jobs
-  const getDayItems = (day) => {
-    const items = [];
-    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  // Pre-calculate items per day to avoid O(N) on every day render
+  const itemsByDay = useMemo(() => {
+    const map = {};
     
     // Simulate mapping by matching random days if dates don't match perfectly, just for preview
-    events.forEach((e, i) => {
-      // Very naive mapping for demo purposes
-      if (day === (i * 5 + 3) % 28 + 1) {
-        items.push({ type: 'event', title: e.title, time: '14:00', color: 'bg-emerald-100 text-emerald-700' });
-      }
+    (events || []).forEach((e, i) => {
+      const targetDay = (i * 5 + 3) % 28 + 1;
+      if (!map[targetDay]) map[targetDay] = [];
+      map[targetDay].push({ type: 'event', title: e.title, time: '14:00', color: 'bg-emerald-100 text-emerald-700' });
     });
 
-    jobs.forEach((j, i) => {
-      if (day === (i * 7 + 10) % 28 + 1) {
-        items.push({ type: 'job', title: 'Son Başvuru: ' + j.title, time: '23:59', color: 'bg-red-100 text-red-700' });
-      }
+    (jobs || []).forEach((j, i) => {
+      const targetDay = (i * 7 + 10) % 28 + 1;
+      if (!map[targetDay]) map[targetDay] = [];
+      map[targetDay].push({ type: 'job', title: 'Son Başvuru: ' + j.title, time: '23:59', color: 'bg-red-100 text-red-700' });
     });
+    
+    return map;
+  }, [events, jobs]);
 
-    return items;
+  const getDayItems = (day) => {
+    return itemsByDay[day] || [];
   };
 
   const renderCalendarDays = () => {

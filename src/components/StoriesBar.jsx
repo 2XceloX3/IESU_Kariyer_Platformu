@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import StoryViewer from './StoryViewer';
 
@@ -15,8 +15,12 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
     }
   };
 
-  const myStory = stories.find(s => s.author.name === currentUser?.name);
-  const otherStories = stories.filter(s => s.author.name !== currentUser?.name);
+  const { myStory, otherStories } = useMemo(() => {
+    return {
+      myStory: stories.find(s => s.author.name === currentUser?.name),
+      otherStories: stories.filter(s => s.author.name !== currentUser?.name)
+    };
+  }, [stories, currentUser]);
 
   // Mark story as viewed when opened
   const handleOpenStory = (index) => {
