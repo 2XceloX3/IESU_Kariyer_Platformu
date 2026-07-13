@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, BookOpen, Calendar, ChevronRight, Award, Megaphone, ArrowRight, ShieldCheck, MonitorPlay, X } from 'lucide-react';
+import { toast } from './shared/Toast';
 
 export default function SemPanel({ setView, semCourses, userRole }) {
   const [activeTab, setActiveTab] = useState('egitimler');
@@ -229,7 +230,7 @@ export default function SemPanel({ setView, semCourses, userRole }) {
 
               {selectedItem.type === 'egitim' && (
                 <div className="mt-8 flex justify-end">
-                  <button onClick={() => { window.toast.info('Ön kayıt sistemine yönlendiriliyorsunuz...'); setSelectedItem(null); }} className="bg-iesu-red hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-[0_4px_20px_rgba(211,47,47,0.3)] transition-all flex items-center gap-2 transform hover:-translate-y-1">
+                  <button onClick={() => { toast.info('Ön kayıt sistemine yönlendiriliyorsunuz...'); setSelectedItem(null); }} className="bg-iesu-red hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-[0_4px_20px_rgba(211,47,47,0.3)] transition-all flex items-center gap-2 transform hover:-translate-y-1">
                     Programa Ön Kayıt Yap <ArrowRight size={18} />
                   </button>
                 </div>
