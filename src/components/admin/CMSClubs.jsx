@@ -29,13 +29,13 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
     setClubs([...(clubs || []), newClub]);
     
     // Update application status
-    setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'Onaylandı' } : a));
-    window.toast.info(`${app.name} kulübü onaylandı ve aktif kulüpler havuzuna eklendi.`);
+    setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'approved' } : a));
+    if (window.toast) window.toast.info(`${app.name} kulübü onaylandı ve aktif kulüpler havuzuna eklendi.`);
   };
 
   const handleRejectApp = (app) => {
-    setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'Reddedildi' } : a));
-    window.toast.info("Başvuru reddedildi.");
+    setClubApplications((clubApplications || []).map(a => a.id === app.id ? { ...a, status: 'rejected' } : a));
+    if (window.toast) window.toast.info("Başvuru reddedildi.");
   };
 
   const handleTransferPresident = (clubId) => {
@@ -48,8 +48,8 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
     }
   };
 
-  const pendingApps = (clubApplications || []).filter(a => a.status === 'Öğrenci Dekanlığı Onayı Bekliyor');
-  const pastApps = (clubApplications || []).filter(a => a.status !== 'Öğrenci Dekanlığı Onayı Bekliyor');
+  const pendingApps = (clubApplications || []).filter(a => a.status === 'pending');
+  const pastApps = (clubApplications || []).filter(a => a.status !== 'pending');
 
   return (
     <div className="w-full bg-white rounded-3xl p-6 lg:p-8 border border-gray-200 shadow-xl shadow-gray-200/50 animate-fade-in relative overflow-hidden">
@@ -134,8 +134,8 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
                         <td className="py-4 px-4 text-gray-500 font-medium">{app.date}</td>
                         <td className="py-4 px-4 text-gray-500">{app.advisorName}</td>
                         <td className="py-4 px-4 text-right">
-                          <span className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold ${app.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                            {app.status}
+                          <span className={`inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold ${app.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                            {app.status === 'approved' ? 'Onaylandı' : 'Reddedildi'}
                           </span>
                         </td>
                       </tr>

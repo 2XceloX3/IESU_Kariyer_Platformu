@@ -7,6 +7,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
   const [progress, setProgress] = useState(0);
   const [newContent, setNewContent] = useState('');
   const [newImage, setNewImage] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
   
   // Camera specific states
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -16,7 +17,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
 
   // Auto advance stories
   useEffect(() => {
-    if (isCreating) return;
+    if (isCreating || isPaused) return;
     
     const duration = 5000; // 5 seconds per story
     const interval = 50;
@@ -33,7 +34,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
     }, interval);
     
     return () => clearInterval(timer);
-  }, [currentIndex, isCreating]);
+  }, [currentIndex, isCreating, isPaused]);
 
   const handleNext = () => {
     if (currentIndex < stories.length - 1) {
@@ -262,10 +263,15 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
           )}
         </div>
 
-        {/* Touch/Click Areas for Navigation */}
-        <div className="absolute inset-0 z-10 flex">
-          <div className="w-1/3 h-full cursor-pointer" onClick={handlePrev} />
-          <div className="w-2/3 h-full cursor-pointer" onClick={handleNext} />
+        {/* Touch/Click Areas for Navigation and Pausing */}
+        <div 
+          className="absolute inset-0 z-10 flex"
+          onPointerDown={() => setIsPaused(true)}
+          onPointerUp={() => setIsPaused(false)}
+          onPointerLeave={() => setIsPaused(false)}
+        >
+          <div className="w-1/3 h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); handlePrev(); }} />
+          <div className="w-2/3 h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); handleNext(); }} />
         </div>
         
         {/* Nav Arrows (Desktop) */}
