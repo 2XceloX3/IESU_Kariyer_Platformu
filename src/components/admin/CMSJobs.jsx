@@ -3,6 +3,7 @@ import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
 import { Briefcase, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, MapPin, Calendar, Building2, Download, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { exportToCSV } from '../../utils/export';
 
 export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -75,7 +76,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
   };
 
   const handleDownloadExcel = (job, apps) => {
-    window.toast.info(`${job.title} ilanı için ${apps.length} başvuru verisi (KVKK uyumlu) Excel olarak indiriliyor...`);
+    exportToCSV(apps, `${job.title}_basvurulari`);
+    window.toast.success(`${job.title} ilanı için ${apps.length} başvuru verisi Excel olarak indirildi.`);
   };
 
   const filtered = (jobs || []).filter(j => {
@@ -400,8 +402,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
             <Calendar size={13} />
             <span className="text-[11px] font-bold">Yayın: {form.date ? form.date.split('-').reverse().join('.') : '-'}</span>
           </div>
-          <button disabled className="text-[11px] font-bold bg-emerald-600 text-white px-4 py-2 rounded-lg opacity-50 cursor-not-allowed">
-            Başvur
+          <button disabled className="text-[11px] font-bold bg-emerald-600/50 text-white px-4 py-2 rounded-lg cursor-not-allowed">
+              Önizleme Modu (Kapalı)
           </button>
         </div>
       </div>

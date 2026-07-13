@@ -19,12 +19,29 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
     if (!selectedRequest) return;
     
     // In a real app, this would update the actual user's record in the DB.
-    // For now, we just mark the request as approved.
+    // For now, we update the local arrays based on the fieldChanged.
+    
+    // Attempt to parse a standard key from the human-readable fieldChanged string
+    let fieldKey = selectedRequest.fieldChanged.toLowerCase().includes('çap') ? 'capDept' : 
+                   selectedRequest.fieldChanged.toLowerCase().includes('yandal') ? 'yandalDept' : 
+                   selectedRequest.fieldChanged.toLowerCase().includes('staj') ? 'internshipStatus' : 'updatedField';
+
+    if (selectedRequest.userType === 'student' && setStudents) {
+      setStudents(prev => (prev || []).map(s => 
+        s.id === selectedRequest.userId ? { ...s, [fieldKey]: selectedRequest.newValue } : s
+      ));
+    } else if (selectedRequest.userType === 'alumni' && setAlumni) {
+      setAlumni(prev => (prev || []).map(a => 
+        a.id === selectedRequest.userId ? { ...a, [fieldKey]: selectedRequest.newValue } : a
+      ));
+    }
+
     const updatedApprovals = (academicApprovals || []).map(a => 
       a.id === selectedRequest.id ? { ...a, status: 'Onaylandı' } : a
     );
     setAcademicApprovals(updatedApprovals);
     setSelectedRequest(null);
+    window.toast.success('Talep onaylandı ve kullanıcı profili güncellendi.');
   };
 
   const handleReject = () => {

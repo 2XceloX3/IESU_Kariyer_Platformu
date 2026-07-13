@@ -66,7 +66,7 @@ export default function CMSEvents({ events = [], setEvents }) {
 
   const handleDelete = (id) => {
     if (window.confirm("Bu etkinliği silmek istediğinize emin misiniz?")) {
-      setEvents((events || []).filter(e => e.id !== id));
+      setEvents(prev => (prev || []).filter(e => e.id !== id));
     }
   };
 
