@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, ChevronRight, Calendar, MapPin, X, FileText, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Home, Wand2, Star } from 'lucide-react';
 import Logo from './Logo';
 import MessagingInterface from './MessagingInterface';
