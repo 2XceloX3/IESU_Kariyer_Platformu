@@ -18,11 +18,11 @@
     --shadow-soft: 0 12px 32px rgba(128, 30, 45, 0.10);
   }
 
-  .no-scrollbar {
+  * {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  .no-scrollbar::-webkit-scrollbar {
+  *::-webkit-scrollbar {
     display: none;
   }
   html, body, #root {
