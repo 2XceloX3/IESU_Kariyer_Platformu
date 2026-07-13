@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Crown, Users, FileText, Send, CheckCircle, XCircle, Shield, UserPlus, Target, Eye } from 'lucide-react';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
@@ -6,11 +6,14 @@ import PostCard from './PostCard';
 export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, setPosts, setView, overrideClubId }) {
   const isAdmin = currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"';
   
-  const managedClubs = overrideClubId 
-    ? (clubs || []).filter(c => c.id === overrideClubId)
-    : isAdmin 
-      ? (clubs || []) 
-      : (clubs || []).filter(c => c.presidentId === currentUser?.id || c.president?.name === currentUser?.name || (c.admins || []).includes(currentUser?.id));
+  const managedClubs = useMemo(() => {
+    return overrideClubId 
+      ? (clubs || []).filter(c => c.id === overrideClubId)
+      : isAdmin 
+        ? (clubs || []) 
+        : (clubs || []).filter(c => c.presidentId === currentUser?.id || c.president?.name === currentUser?.name || (c.admins || []).includes(currentUser?.id));
+  }, [clubs, overrideClubId, isAdmin, currentUser]);
+  
   const [selectedClubId, setSelectedClubId] = useState(managedClubs[0]?.id);
   const [activeTab, setActiveTab] = useState('requests');
 

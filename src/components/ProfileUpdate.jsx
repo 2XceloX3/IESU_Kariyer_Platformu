@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowLeft, User, BookOpen, Layers, Briefcase, FileText, Shield, CheckCircle2, AlertCircle, Building2, Save, Settings, Award, Star, FileCheck, Plus, Trash2, Target, UploadCloud, ChevronRight, Check, UserCircle2, X } from 'lucide-react';
 import Logo from './Logo';
 import { IESU_FACULTIES, IESU_MYO, IESU_YUKSEKOKUL, IESU_ENSTITU } from '../utils/universityData';
@@ -56,7 +56,7 @@ export default function ProfileUpdate({
   }, [currentUser]);
 
   // Profile Completeness Calculation
-  const calculateCompleteness = () => {
+  const completeness = useMemo(() => {
     let score = 0;
     let total = 0;
     const checkField = (val) => { total++; if (val && val.toString().trim() !== '') score++; };
@@ -77,11 +77,9 @@ export default function ProfileUpdate({
     }
     
     return total === 0 ? 0 : Math.round((score / total) * 100);
-  };
+  }, [formData, userRole]);
 
-  const completeness = calculateCompleteness();
-
-  const getTabsByRole = () => {
+  const tabs = useMemo(() => {
     if (userRole === 'company') return [
       { id: 'personal', label: 'Firma Bilgileri', icon: <Building2 size={18} /> },
       { id: 'rep', label: 'Yetkili Kişi', icon: <User size={18} /> },
@@ -97,9 +95,7 @@ export default function ProfileUpdate({
       { id: 'career', label: 'Kariyer Tercihleri', icon: <Target size={18} /> },
       { id: 'privacy', label: 'Gizlilik ve İzinler', icon: <Shield size={18} /> }
     ];
-  };
-
-  const tabs = getTabsByRole();
+  }, [userRole]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
