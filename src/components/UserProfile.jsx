@@ -68,6 +68,14 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
     found = (academicStaff || []).find(a => a.id === userId || a.id === parseInt(userId));
     if (found) { setUser(found); setUserType('academic'); setIsLoading(false); return; }
     
+    // Fallback: If viewing own profile and not found in arrays, use currentUser directly
+    if (currentUser && (currentUser.id === userId || currentUser.id === parseInt(userId))) {
+      setUser(currentUser);
+      setUserType(currentUser.role === 'alumni' ? 'alumni' : currentUser.role === 'employer' ? 'company' : currentUser.role === 'academic' ? 'academic' : 'student');
+      setIsLoading(false);
+      return;
+    }
+
     setUser(null);
     setIsLoading(false);
   }, [userId, students, alumni, companies, academicStaff]);
