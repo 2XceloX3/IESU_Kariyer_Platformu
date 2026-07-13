@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Crown, Users, FileText, Send, CheckCircle, XCircle, Shield, UserPlus, Target, Eye } from 'lucide-react';
+import { toast } from './shared/Toast';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
 
@@ -34,8 +35,8 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
     const updatedClubs = clubs.map(c => {
       if (c.id === selectedClub.id) {
         const newMembers = [...(c.members || []), req];
-        const newRequests = (c.joinRequests || []).filter(r => r.id !== req.id);
-        return { ...c, members: newMembers, joinRequests: newRequests, memberCount: (c.memberCount || 0) + 1 };
+        const newRequests = (c.memberRequests || []).filter(r => r.id !== req.id);
+        return { ...c, members: newMembers, memberRequests: newRequests, memberCount: (c.memberCount || 0) + 1 };
       }
       return c;
     });
@@ -45,8 +46,8 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
   const handleRejectRequest = (reqId) => {
     const updatedClubs = clubs.map(c => {
       if (c.id === selectedClub.id) {
-        const newRequests = (c.joinRequests || []).filter(r => r.id !== reqId);
-        return { ...c, joinRequests: newRequests };
+        const newRequests = (c.memberRequests || []).filter(r => r.id !== reqId);
+        return { ...c, memberRequests: newRequests };
       }
       return c;
     });
@@ -56,7 +57,7 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
   const handleToggleAdmin = (memberId) => {
     // Only president can toggle admin status
     if (selectedClub.presidentId !== currentUser?.id) {
-      window.toast.info("Sadece Kulüp Başkanı admin yetkisi verebilir.");
+      toast.info("Sadece Kulüp Başkanı admin yetkisi verebilir.");
       return;
     }
     
@@ -154,14 +155,14 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
               <UserPlus className="text-emerald-500" /> Bekleyen Katılım Talepleri
             </h3>
             
-            {(!selectedClub.joinRequests || selectedClub.joinRequests.length === 0) ? (
+            {(!selectedClub.memberRequests || selectedClub.memberRequests.length === 0) ? (
               <div className="text-center py-12 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
                 <Target size={48} className="text-gray-300 mx-auto mb-3" />
                 <h4 className="text-gray-500 font-bold">Bekleyen istek yok.</h4>
               </div>
             ) : (
               <div className="space-y-4">
-                {selectedClub.joinRequests.map(req => (
+                {selectedClub.memberRequests.map(req => (
                   <div key={req.id} className="p-5 border border-gray-100 rounded-2xl flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-gray-50/30 hover:bg-white transition-colors group">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">

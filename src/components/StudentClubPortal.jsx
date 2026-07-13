@@ -71,7 +71,8 @@ export default function StudentClubPortal({ currentUser, clubs, setClubs, setVie
       purpose: createForm.purpose,
       description: createForm.description,
       category: createForm.category,
-      advisor: createForm.advisor,
+      advisorName: createForm.advisor,
+      userId: currentUser?.id,
     };
     const updatedApps = [newApp, ...(clubApplications || [])];
     if (setClubApplications) {
