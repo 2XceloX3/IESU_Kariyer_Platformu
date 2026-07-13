@@ -37,6 +37,7 @@ import ClubAdminPanel from './components/ClubAdminPanel';
 import StudentClubPortal from './components/StudentClubPortal';
 import AlumniInformationSystem from './components/AlumniInformationSystem';
 import CommandPalette from './components/CommandPalette';
+import AICareerWingman from './components/AICareerWingman';
 import { ToastContainer, toast } from './components/shared/Toast';
 
 window.toast = toast;
@@ -346,6 +347,9 @@ function App() {
       {view === 'cvbuilder' && <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} messages={messages} setMessages={setMessages} academicRole={academicRole} />}
       {view === 'interview_sim' && <InterviewSimulator currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
       {view === 'messaging' && <MessagingInterface previousView={previousView} messages={messages} setMessages={setMessages} currentUser={currentUser} userRole={userRole} contacts={[...students, ...alumni, ...companies, ...academicStaff]} groups={groups} setView={setView} setSelectedUserId={setSelectedUserId} selectedGroupId={selectedGroupId} />}
+      
+      {/* Gen Z UX Features */}
+      {currentUser && userRole !== 'admin' && <AICareerWingman />}
       
       <PWAInstallPrompt />
     </ErrorBoundary>

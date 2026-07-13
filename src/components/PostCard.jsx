@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2 } from 'lucide-react';
+import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy } from 'lucide-react';
+import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 
 export default function PostCard({ post, currentUser, setPosts, setMessages }) {
   const [liked, setLiked] = useState(post?.likes > 0);
@@ -75,6 +76,21 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
     if (!newComment.trim()) return;
     setComments([...comments, { id: Date.now(), text: newComment, author: currentUser?.name || 'Siz', time: 'Şimdi' }]);
     setNewComment('');
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(`https://iesu-kariyer-platformu.vercel.app/post/${post.id}`);
+    window.toast.success("Bağlantı kopyalandı!");
+  };
+
+  const handleWhatsappShare = () => {
+    const text = `Bu ilana göz at: ${post.title || 'Kariyer İlanı'} \nhttps://iesu-kariyer-platformu.vercel.app/post/${post.id}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const handleDiscordShare = () => {
+    navigator.clipboard.writeText(`https://iesu-kariyer-platformu.vercel.app/post/${post.id}`);
+    window.toast.info("Link kopyalandı. Discord'a yapıştırabilirsiniz!");
   };
 
   const handleShare = () => {
@@ -265,6 +281,28 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
               <button onClick={() => setIsShareModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition"><X size={20} /></button>
             </div>
             <div className="p-5 space-y-4">
+              {/* Social Buttons */}
+              <div className="grid grid-cols-3 gap-3 mb-2">
+                <button onClick={handleWhatsappShare} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-green-50 text-green-600 hover:bg-green-100 transition-colors">
+                  <FaWhatsapp size={24} />
+                  <span className="text-[10px] font-bold">WhatsApp</span>
+                </button>
+                <button onClick={handleDiscordShare} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-[#5865F2]/10 text-[#5865F2] hover:bg-[#5865F2]/20 transition-colors">
+                  <FaDiscord size={24} />
+                  <span className="text-[10px] font-bold">Discord</span>
+                </button>
+                <button onClick={handleCopyLink} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors">
+                  <Copy size={24} />
+                  <span className="text-[10px] font-bold">Linki Kopyala</span>
+                </button>
+              </div>
+
+              <div className="relative flex items-center py-2">
+                <div className="flex-grow border-t border-gray-100"></div>
+                <span className="flex-shrink-0 mx-4 text-xs font-medium text-gray-400">veya platform içi</span>
+                <div className="flex-grow border-t border-gray-100"></div>
+              </div>
+
               <div>
                 <label className="text-xs font-bold text-gray-600 block mb-1.5">Kime Göndermek İstiyorsunuz?</label>
                 <select value={shareTarget} onChange={e=>setShareTarget(e.target.value)} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20">

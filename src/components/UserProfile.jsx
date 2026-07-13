@@ -161,6 +161,27 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           )}
         </div>
 
+        {/* Gen Z UX: Elevator Pitch / TikTok Resume */}
+        {userRole !== 'academic' && (
+          <div className="mt-8 sm:mt-12">
+            <h3 className="text-base sm:text-lg font-black text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+              <PlayCircle size={18} className="text-iesu-red" /> Asansör Sunumu (Elevator Pitch)
+            </h3>
+            <div className="bg-gray-900 rounded-3xl overflow-hidden shadow-2xl relative group aspect-[9/16] sm:aspect-video w-full max-w-sm sm:max-w-2xl border border-gray-800">
+              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Video Resume" className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-6 pointer-events-none">
+                <span className="text-white text-xs font-bold flex items-center gap-1 mb-2 bg-black/50 w-max px-2 py-1 rounded-md backdrop-blur-sm"><PlayCircle size={14} fill="currentColor" /> 0:45</span>
+                <p className="text-white font-bold text-sm sm:text-base leading-tight">"Merhaba ben {user?.name?.split(' ')[0] || 'Öğrenci'}, frontend alanında kendimi geliştiriyorum..."</p>
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <button className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-iesu-red hover:text-white transition-all transform hover:scale-110 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                  <PlayCircle size={32} fill="currentColor" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           <div className="md:col-span-2 space-y-6 sm:space-y-8">
             <section>

@@ -141,10 +141,24 @@ export default function JobsAndInternships({ userRole, setView, previousView, jo
                 return (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
                     {activeJobs.map(job => {
+
                       const hasApplied = applications.some(app => app.jobId === job.id && app.applicantId === currentUser?.id);
                       return (
-                            </div>
-                          </div>
+                        <div key={job.id} className="h-[400px]">
+                          <SwipeableJobCard 
+                            job={job}
+                            hasApplied={hasApplied}
+                            onApply={(j) => {
+                              handleApply(j);
+                            }}
+                            onDismiss={(j) => {
+                              // Could update local state to hide job
+                            }}
+                            onViewDetails={(j) => {
+                              // If there was a modal, we would open it here. For now, window alert or fallback
+                              window.toast?.info(j.title + " detayları yakında eklenecek!");
+                            }}
+                          />
                         </div>
                       );
                     })}
