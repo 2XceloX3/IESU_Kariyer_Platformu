@@ -69,7 +69,7 @@ export default function LandingPage({ setView }) {
     }
   ];
 
-  const legalData = {
+  const legalData = React.useMemo(() => ({
     gizlilik: {
       title: "Gizlilik Politikası",
       description: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir. Toplanan verileriniz, izniniz olmadan üçüncü şahıslarla paylaşılmamaktadır. Sitemizdeki çerez (cookie) uygulamaları, kullanıcı deneyimini artırmak için kullanılmakta olup, dilediğiniz zaman tarayıcı ayarlarınızdan çerezleri devre dışı bırakabilirsiniz.",
@@ -88,7 +88,7 @@ export default function LandingPage({ setView }) {
       date: "01/01/2026",
       category: "Yasal Bilgilendirme"
     }
-  };
+  }), []);
 
   useEffect(() => {
     if (isCarouselPaused) return;
