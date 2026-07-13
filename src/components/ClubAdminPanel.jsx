@@ -1,46 +1,74 @@
-import React, { useState, useMemo } from 'react';
-import { Crown, Users, FileText, Send, CheckCircle, XCircle, Shield, UserPlus, Target, Eye } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, Users, Check, X, Megaphone, MapPin, Send, FileText, Image as ImageIcon } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';
-import PostComposer from './PostComposer';
-import PostCard from './PostCard';
 
-export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, setPosts, setView, overrideClubId }) {
-  const isAdmin = currentUser?.role === 'admin' || window.localStorage.getItem('iesu_user_role_v1') === '"admin"';
+export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
+  const { clubs, setClubs, addEvent } = useAppStore();
   
-  const managedClubs = useMemo(() => {
-    return overrideClubId 
-      ? (clubs || []).filter(c => c.id === overrideClubId)
-      : isAdmin 
-        ? (clubs || []) 
-        : (clubs || []).filter(c => c.presidentId === currentUser?.id || c.president?.name === currentUser?.name || (c.admins || []).includes(currentUser?.id));
-  }, [clubs, overrideClubId, isAdmin, currentUser]);
+  // 1. Yetkilendirme Mantık Hatası Düzeltmesi
+  // managedClubs içinde, kullanıcının id veya ismine göre başkan/admin olup olmadığını tam kontrol ediyoruz.
+  const managedClubs = clubs.filter(c => 
+    c.presidentId === currentUser?.id || 
+    c.president?.name === currentUser?.name || 
+    (c.admins && c.admins.includes(currentUser?.id))
+  );
+
+  // 2. Stale State Düzeltmesi: overrideClubId veya managedClubs değiştiğinde selectedClubId güncellenir.
+  const [selectedClubId, setSelectedClubId] = useState(overrideClubId || (managedClubs.length > 0 ? managedClubs[0].id : null));
   
-  const [selectedClubId, setSelectedClubId] = useState(managedClubs[0]?.id);
+  useEffect(() => {
+    if (overrideClubId) {
+      setSelectedClubId(overrideClubId);
+    } else if (managedClubs.length > 0 && (!selectedClubId || !managedClubs.find(c => c.id === selectedClubId))) {
+      setSelectedClubId(managedClubs[0].id);
+    }
+  }, [overrideClubId, clubs, currentUser]);
+
   const [activeTab, setActiveTab] = useState('requests');
+  
+  // Post states
+  const [postTitle, setPostTitle] = useState('');
+  const [postContent, setPostContent] = useState('');
+  const [postLocation, setPostLocation] = useState('');
+  const [postImage, setPostImage] = useState('');
 
   if (managedClubs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
-        <Target size={64} className="text-gray-200 mb-4" />
-        <h2 className="text-2xl font-black text-gray-900 mb-2">Yetkiniz Yok</h2>
-        <p className="text-gray-500 max-w-md">Herhangi bir kulüpte yönetici yetkisine sahip değilsiniz.</p>
-        <button onClick={() => setView('landing')} className="mt-6 px-6 py-2.5 bg-gray-900 text-white rounded-xl font-bold">Ana Sayfaya Dön</button>
+      <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
+        <Shield size={64} className="text-gray-200 mb-4" />
+        <h2 className="text-xl font-bold text-gray-500">Yönetim Yetkiniz Bulunmuyor</h2>
+        <p className="text-sm text-gray-400 mt-2 text-center max-w-md">Herhangi bir kulübün başkanı veya yöneticisi değilsiniz. Kulüp kurmak için Kariyer Merkezi ile iletişime geçin.</p>
       </div>
     );
   }
 
-  const selectedClub = managedClubs.find(c => c.id === selectedClubId) || managedClubs[0];
+  const selectedClub = clubs.find(c => c.id === selectedClubId) || managedClubs[0];
+  
+  // 1. Yetkilendirme Mantık Hatası Düzeltmesi (isPresident check)
+  const isPresident = selectedClub.presidentId === currentUser?.id || selectedClub.president?.name === currentUser?.name;
 
+  // 3. Veri Mutasyon Hatası Düzeltmesi: req objesinin id'si reqId iken üyenin userId'si olmalı
   const handleAcceptRequest = (req) => {
     const updatedClubs = clubs.map(c => {
       if (c.id === selectedClub.id) {
-        const newMembers = [...(c.members || []), req];
+        // Create proper member object
+        const newMember = {
+          id: 'MEM-' + Date.now(),
+          userId: req.userId || req.id, // Ensure userId exists
+          name: req.userName || req.name || 'İsimsiz Üye',
+          department: req.department || '',
+          joinedAt: new Date().toISOString()
+        };
+        const newMembers = [...(c.members || []), newMember];
+        // 4. State İsimlendirme Tutarsızlığı Düzeltmesi: Hep memberRequests kullanıyoruz
         const newRequests = (c.memberRequests || []).filter(r => r.id !== req.id);
         return { ...c, members: newMembers, memberRequests: newRequests, memberCount: (c.memberCount || 0) + 1 };
       }
       return c;
     });
     setClubs(updatedClubs);
+    toast.success(`${req.userName || req.name || 'Öğrenci'} kulübe kabul edildi.`);
   };
 
   const handleRejectRequest = (reqId) => {
@@ -52,23 +80,33 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
       return c;
     });
     setClubs(updatedClubs);
+    toast.info('Üyelik isteği reddedildi.');
   };
 
-  const handleToggleAdmin = (memberId) => {
-    // Only president can toggle admin status
-    if (selectedClub.presidentId !== currentUser?.id) {
-      toast.info("Sadece Kulüp Başkanı admin yetkisi verebilir.");
+  const handleToggleAdmin = (userId) => {
+    if (!isPresident) {
+      toast.error('Sadece kulüp başkanı yetki verebilir!');
+      return;
+    }
+    if (!userId) {
+      toast.error('Kullanıcı kimliği bulunamadı.');
       return;
     }
     
     const updatedClubs = clubs.map(c => {
       if (c.id === selectedClub.id) {
-        let newAdmins = [...(c.admins || [])];
-        if (newAdmins.includes(memberId)) {
-          newAdmins = newAdmins.filter(id => id !== memberId);
+        const currentAdmins = c.admins || [];
+        const isAlreadyAdmin = currentAdmins.includes(userId);
+        
+        let newAdmins;
+        if (isAlreadyAdmin) {
+          newAdmins = currentAdmins.filter(id => id !== userId);
+          toast.info('Yönetici yetkisi alındı.');
         } else {
-          newAdmins.push(memberId);
+          newAdmins = [...currentAdmins, userId];
+          toast.success('Yönetici yetkisi verildi.');
         }
+        
         return { ...c, admins: newAdmins };
       }
       return c;
@@ -76,301 +114,259 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
     setClubs(updatedClubs);
   };
 
-  const isPresident = selectedClub.presidentId === currentUser?.id;
+  const handleCreatePost = (e) => {
+    e.preventDefault();
+    if (!postTitle || !postContent) {
+      toast.error('Lütfen başlık ve içerik alanlarını doldurun.');
+      return;
+    }
 
-  const previewPost = {
-    id: 'preview',
-    authorId: selectedClub.id,
-    authorName: selectedClub.name,
-    authorAvatar: selectedClub.logo,
-    authorTitle: 'Resmi Kulüp Hesabı',
-    content: 'Bu alanda paylaştığınız içerik görünecektir.',
-    timestamp: 'Şimdi',
-    likes: 0,
-    comments: [],
-    type: 'text',
-    isClubPost: true,
+    const newEvent = {
+      id: 'EVT-' + Date.now(),
+      title: postTitle,
+      description: postContent,
+      location: postLocation || 'Kampüs İçi',
+      date: new Date().toISOString().split('T')[0],
+      organizer: selectedClub.name,
+      organizerId: selectedClub.id,
+      image: postImage || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80',
+      attendees: 0
+    };
+
+    addEvent(newEvent);
+    toast.success('Gönderi ve Etkinlik başarıyla paylaşıldı!');
+    
+    setPostTitle('');
+    setPostContent('');
+    setPostLocation('');
+    setPostImage('');
+    setActiveTab('requests');
+  };
+
+  // 6. Fake Formlar Düzeltmesi (EK Formları)
+  const handleEKFormSubmit = (formType, successMsg) => {
+    const updatedClubs = clubs.map(c => {
+      if (c.id === selectedClub.id) {
+        const newForm = {
+          id: `FORM-${Date.now()}`,
+          type: formType,
+          date: new Date().toLocaleDateString('tr-TR'),
+          status: 'Bekliyor'
+        };
+        return { ...c, forms: [...(c.forms || []), newForm] };
+      }
+      return c;
+    });
+    setClubs(updatedClubs);
+    toast.success(successMsg);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 sm:p-8 animate-fade-in">
+    <div className="animate-fade-in max-w-5xl mx-auto py-8">
       
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-4">
-            <img src={selectedClub.logo} alt={selectedClub.name} className="w-16 h-16 rounded-2xl shadow-lg border-2 border-white object-cover" />
-            <div>
-              <h1 className="text-2xl font-black text-gray-900">{selectedClub.name}</h1>
-              <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider mt-0.5 flex items-center gap-1.5">
-                <Crown size={14} /> {overrideClubId ? 'Süper Admin Paneli' : (isPresident ? 'Kulüp Başkanı' : 'Kulüp Yöneticisi Paneli')}
-              </p>
+      <div className="mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="absolute top-[-50%] right-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-wider backdrop-blur-sm">
+                YÖNETİCİ PANELİ
+              </span>
+              {isPresident && (
+                <span className="bg-amber-400/20 text-amber-100 border border-amber-400/30 px-3 py-1 rounded-full text-xs font-bold tracking-wider backdrop-blur-sm">
+                  BAŞKAN
+                </span>
+              )}
             </div>
+            <h1 className="text-3xl font-black">{selectedClub.name}</h1>
+            <p className="text-emerald-100 mt-2 font-medium">Kulüp üyelerini, etkinlikleri ve belgeleri yönetin.</p>
           </div>
-          <button 
-            onClick={() => setView(currentUser?.role === 'admin' ? 'admin' : currentUser?.role === 'alumni' ? 'alumni' : 'student')} 
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors shrink-0"
-          >
-            Ana Sayfaya Dön
+          
+          {managedClubs.length > 1 && (
+            <div className="shrink-0 bg-white/10 p-2 rounded-2xl backdrop-blur-md border border-white/20">
+              <select 
+                value={selectedClubId}
+                onChange={(e) => setSelectedClubId(e.target.value)}
+                className="bg-transparent text-white font-bold text-sm outline-none cursor-pointer appearance-none px-4 py-2"
+              >
+                {managedClubs.map(c => (
+                  <option key={c.id} value={c.id} className="text-gray-900">{c.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="flex overflow-x-auto border-b border-gray-100 hide-scrollbar">
+          <button onClick={() => setActiveTab('requests')} className={`whitespace-nowrap py-4 px-6 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'requests' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
+            <Shield size={18}/> 
+            Katılım İstekleri
+            {/* 4. State İsimlendirme Tutarsızlığı Düzeltmesi: joinRequests yerine memberRequests */}
+            {(selectedClub.memberRequests?.length > 0) && (
+              <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-1 animate-pulse">
+                {selectedClub.memberRequests.length}
+              </span>
+            )}
+          </button>
+          <button onClick={() => setActiveTab('members')} className={`whitespace-nowrap py-4 px-6 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'members' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
+            <Users size={18}/> Üyeler ve Yetkiler
+          </button>
+          <button onClick={() => setActiveTab('documents')} className={`whitespace-nowrap py-4 px-6 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'documents' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
+            <FileText size={18}/> Belge Deposu
+          </button>
+          <button onClick={() => setActiveTab('ek_forms')} className={`whitespace-nowrap py-4 px-6 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'ek_forms' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
+            <FileText size={18}/> Resmi Başvuru Formları (EK)
+          </button>
+          <button onClick={() => setActiveTab('post')} className={`whitespace-nowrap py-4 px-6 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'post' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
+            <Send size={18}/> Gönderi Paylaş
           </button>
         </div>
-        
-        {managedClubs.length > 1 && (
-          <select 
-            value={selectedClubId} 
-            onChange={(e) => setSelectedClubId(e.target.value)}
-            className="p-2.5 bg-white border border-gray-200 rounded-xl font-bold text-sm text-gray-700 outline-none focus:ring-2 focus:ring-emerald-500/20"
-          >
-            {managedClubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        )}
-      </div>
 
-      {/* TABS */}
-      <div className="flex border-b border-gray-100 mb-6 overflow-x-auto hide-scrollbar w-full">
-        <button onClick={() => setActiveTab('requests')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'requests' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
-          <UserPlus size={16}/> Katılım İstekleri
-          {(selectedClub.joinRequests?.length > 0) && (
-            <span className="bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{selectedClub.joinRequests.length}</span>
-          )}
-        </button>
-        <button onClick={() => setActiveTab('members')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'members' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
-          <Users size={16}/> Üyeler ve Yetkiler
-        </button>
-        <button onClick={() => setActiveTab('documents')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'documents' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
-          <FileText size={16}/> Belge Deposu
-        </button>
-        <button onClick={() => setActiveTab('post')} className={`whitespace-nowrap py-3 px-4 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'post' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
-          <Send size={16}/> Gönderi Paylaş
-        </button>
-      </div>
-
-      {/* CONTENT */}
-      <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[var(--border-soft)]">
-        
-        {/* REQUESTS TAB */}
-        {activeTab === 'requests' && (
-          <div>
-            <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-              <UserPlus className="text-emerald-500" /> Bekleyen Katılım Talepleri
-            </h3>
-            
-            {(!selectedClub.memberRequests || selectedClub.memberRequests.length === 0) ? (
-              <div className="text-center py-12 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
-                <Target size={48} className="text-gray-300 mx-auto mb-3" />
-                <h4 className="text-gray-500 font-bold">Bekleyen istek yok.</h4>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {selectedClub.memberRequests.map(req => (
-                  <div key={req.id} className="p-5 border border-gray-100 rounded-2xl flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-gray-50/30 hover:bg-white transition-colors group">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-bold text-gray-900 text-[15px]">{req.userName}</span>
-                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{req.department}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-2 bg-white p-3 rounded-xl border border-gray-100">
-                        "{req.motivation}"
-                      </p>
-                      <p className="text-[11px] text-gray-400 font-bold mt-2">{req.date} tarihinde başvurdu.</p>
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto shrink-0 mt-3 md:mt-0">
-                      <button onClick={() => handleAcceptRequest(req)} className="w-full md:w-auto px-4 py-2 bg-emerald-100 hover:bg-emerald-600 text-emerald-700 hover:text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
-                        <CheckCircle size={16} /> Kabul Et
-                      </button>
-                      <button onClick={() => handleRejectRequest(req.id)} className="w-full md:w-auto px-4 py-2 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
-                        <XCircle size={16} /> Reddet
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* MEMBERS TAB */}
-        {activeTab === 'members' && (
-          <div>
-            <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-              <Users className="text-emerald-500" /> Üyeler ve Yönetim Kadrosu
-            </h3>
-            
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl text-sm text-blue-800 font-medium flex items-start gap-3">
-              <Shield className="shrink-0 text-blue-500" size={20} />
-              <p>Kulüp başkanı olarak üyelerinize "Yönetici" yetkisi verebilirsiniz. Yöneticiler, katılım isteklerini onaylayabilir ve kulüp adına gönderi paylaşabilir.</p>
-            </div>
-
-            {(!selectedClub.members || selectedClub.members.length === 0) ? (
-              <div className="text-center py-12 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
-                <Users size={48} className="text-gray-300 mx-auto mb-3" />
-                <h4 className="text-gray-500 font-bold">Henüz onaylanmış üye bulunmuyor.</h4>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {selectedClub.members.map(member => {
-                  const isMemberAdmin = (selectedClub.admins || []).includes(member.userId);
-                  
-                  return (
-                    <div key={member.id} className="p-4 border border-gray-100 rounded-2xl flex items-center justify-between bg-white hover:border-gray-200 transition-colors">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-gray-900 text-sm truncate flex items-center gap-1.5">
-                          {member.userName} 
-                          {isMemberAdmin && <Crown size={14} className="text-amber-500 shrink-0" title="Yönetici"/>}
-                        </h4>
-                        <p className="text-xs text-gray-500 truncate mt-0.5">{member.department}</p>
-                      </div>
-                      
-                      {isPresident && (
-                        <button 
-                          onClick={() => handleToggleAdmin(member.userId)}
-                          className={`ml-3 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${isMemberAdmin ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                        >
-                          {isMemberAdmin ? 'Yetkiyi Al' : 'Yönetici Yap'}
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* POST TAB */}
-        {activeTab === 'post' && (
-          <div>
-            <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-              <Send className="text-emerald-500" /> Kulüp Adına Gönderi/Etkinlik Paylaş
-            </h3>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-              <div className="lg:col-span-3">
-                <div className="bg-gray-50/50 p-1 rounded-[1.8rem] border border-gray-100">
-                  <PostComposer currentUser={currentUser} userRole="club" posts={posts} setPosts={setPosts} asClub={selectedClub} />
+        <div className="p-6 lg:p-8">
+          
+          {/* REQUESTS TAB */}
+          {activeTab === 'requests' && (
+            <div className="animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+                  <Shield size={20} />
                 </div>
-                <p className="text-xs text-gray-400 font-medium text-center mt-4">
-                  Paylaştığınız gönderiler ana sayfadaki tüm öğrencilerin akışında, kulübünüzün logosu ve ismiyle anında yayınlanacaktır.
-                </p>
-              </div>
-              
-              <div className="lg:col-span-2 hidden lg:block">
-                <div className="sticky top-24">
-                  <h4 className="font-bold text-gray-700 mb-3 text-sm flex items-center gap-2">
-                    <Eye size={16} className="text-emerald-500"/> Akış Önizlemesi
-                  </h4>
-                  <div className="pointer-events-none scale-90 origin-top">
-                    <PostCard post={previewPost} currentUser={currentUser} setPosts={()=>{}} />
-                  </div>
+                <div>
+                  <h3 className="text-xl font-black text-gray-900">Bekleyen İstekler</h3>
+                  <p className="text-sm text-gray-500">Kulübünüze katılmak isteyen öğrencileri onaylayın veya reddedin.</p>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-        
-        {/* DOCUMENTS TAB */}
-        {activeTab === 'documents' && (
-          <div>
-            <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-              <FileText className="text-emerald-500" /> Kulüp Belge Deposu
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {/* İndirilebilir Formlar */}
-              <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                <h4 className="font-bold text-gray-900 mb-4">Gerekli Formlar (Boş PDF)</h4>
-                <div className="space-y-3">
-                  {['Kulüp Kurulum Formu', 'Genel Kurul Tutanağı', 'Etkinlik Başvuru Formu', 'Sponsorluk Anlaşması', 'Faaliyet Raporu'].map((formName, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl hover:shadow-sm transition-shadow">
+
+              {(!selectedClub.memberRequests || selectedClub.memberRequests.length === 0) ? (
+                <div className="text-center py-16 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
+                  <Shield size={48} className="text-gray-300 mx-auto mb-4" />
+                  <h4 className="text-gray-900 font-bold text-lg">Bekleyen İstek Yok</h4>
+                  <p className="text-gray-500 text-sm mt-1">Şu anda kulübünüze katılım isteği bulunmuyor.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {selectedClub.memberRequests.map(req => (
+                    <div key={req.id} className="p-5 border border-gray-200 rounded-2xl bg-white hover:border-emerald-200 hover:shadow-md transition-all group">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-base">{req.userName || req.name}</h4>
+                          <p className="text-xs font-medium text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded-md mt-1">{req.department}</p>
+                        </div>
+                        <span className="text-[10px] text-gray-400 font-bold bg-gray-100 px-2 py-1 rounded-md">{new Date(req.date || Date.now()).toLocaleDateString('tr-TR')}</span>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded-xl mb-4 border border-gray-100">
+                        <p className="text-sm text-gray-600 italic">"{req.motivation}"</p>
+                      </div>
                       <div className="flex items-center gap-2">
-                        <FileText size={16} className="text-emerald-600" />
-                        <span className="text-sm font-bold text-gray-800">{formName}</span>
+                        <button onClick={() => handleAcceptRequest(req)} className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm">
+                          <Check size={16} /> Onayla
+                        </button>
+                        <button onClick={() => handleRejectRequest(req.id)} className="flex-1 py-2.5 bg-white border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-gray-700 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                          <X size={16} /> Reddet
+                        </button>
                       </div>
-                      <button className="text-[11px] font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors">İndir</button>
                     </div>
                   ))}
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* MEMBERS TAB */}
+          {activeTab === 'members' && (
+            <div className="animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                  <Users size={20} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-gray-900">Üyeler ve Yönetim Kadrosu</h3>
+                  <p className="text-sm text-gray-500">Üye listenizi görüntüleyin ve yöneticileri atayın.</p>
+                </div>
               </div>
               
-              {/* Belge Yükleme Alanı */}
-              <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                <h4 className="font-bold text-gray-900 mb-4">Doldurulmuş Belge Yükle</h4>
-                
-                <form 
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-                    const docType = formData.get('docType');
-                    const fileInput = e.target.elements.fileInput;
-                    
-                    if (fileInput.files.length === 0) {
-                      window.toast.error("Lütfen yüklemek için bir PDF dosyası seçin.");
-                      return;
-                    }
-                    
-                    const newForm = {
-                      id: 'FORM-' + Date.now(),
-                      type: docType,
-                      status: 'Bekliyor',
-                      date: new Date().toLocaleDateString('tr-TR')
-                    };
-                    
-                    const updatedClubs = clubs.map(c => {
-                      if (c.id === selectedClub.id) {
-                        return { ...c, forms: [...(c.forms || []), newForm] };
-                      }
-                      return c;
-                    });
-                    
-                    setClubs(updatedClubs);
-                    e.target.reset();
-                    window.toast.success("Belge başarıyla Öğrenci Dekanlığı iç havuzuna iletildi!");
-                  }}
-                  className="space-y-4"
-                >
-                  <div>
-                    <label className="text-xs font-bold text-gray-600 block mb-1">Belge Türü</label>
-                    <select name="docType" required className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-emerald-500">
-                      <option value="Kulüp Kurulum Formu">Kulüp Kurulum Formu</option>
-                      <option value="Genel Kurul Tutanağı">Genel Kurul Tutanağı</option>
-                      <option value="Etkinlik Başvuru Formu">Etkinlik Başvuru Formu</option>
-                      <option value="Sponsorluk Anlaşması">Sponsorluk Anlaşması</option>
-                      <option value="Faaliyet Raporu">Faaliyet Raporu</option>
-                      <option value="Diğer (Dilekçe)">Diğer (Dilekçe)</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="text-xs font-bold text-gray-600 block mb-1">PDF Dosyası Seç</label>
-                    <input type="file" name="fileInput" accept=".pdf" className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-                  </div>
-                  
-                  <button type="submit" className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors mt-2">
-                    Belgeyi Yükle ve Gönder
-                  </button>
-                </form>
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl text-sm text-blue-800 font-medium flex items-start gap-3">
+                <Shield className="shrink-0 text-blue-500 mt-0.5" size={18} />
+                <p>Kulüp başkanı olarak üyelerinize "Yönetici" yetkisi verebilirsiniz. Yöneticiler, katılım isteklerini onaylayabilir ve kulüp adına gönderi paylaşabilir.</p>
               </div>
+
+              {(!selectedClub.members || selectedClub.members.length === 0) ? (
+                <div className="text-center py-16 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
+                  <Users size={48} className="text-gray-300 mx-auto mb-4" />
+                  <h4 className="text-gray-900 font-bold text-lg">Henüz onaylanmış üye bulunmuyor.</h4>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {selectedClub.members.map(member => {
+                    const isMemberAdmin = (selectedClub.admins || []).includes(member.userId);
+                    const isMemberPresident = selectedClub.presidentId === member.userId || selectedClub.president?.name === member.name;
+                    
+                    return (
+                      <div key={member.id} className={`p-4 border rounded-2xl flex items-center justify-between transition-all ${isMemberPresident ? 'bg-amber-50 border-amber-200' : isMemberAdmin ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${isMemberPresident ? 'bg-amber-500' : isMemberAdmin ? 'bg-indigo-500' : 'bg-gray-300'}`}>
+                            {member.name ? member.name.charAt(0).toUpperCase() : 'Ü'}
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-900 text-sm">{member.name}</p>
+                            <p className="text-[10px] font-bold mt-0.5 uppercase tracking-wider">
+                              {isMemberPresident ? <span className="text-amber-600">Başkan</span> : isMemberAdmin ? <span className="text-indigo-600">Yönetici</span> : <span className="text-gray-500">Üye</span>}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {isPresident && !isMemberPresident && (
+                          <button 
+                            onClick={() => handleToggleAdmin(member.userId)}
+                            className={`p-2 rounded-xl transition-colors ${isMemberAdmin ? 'text-indigo-600 bg-indigo-100 hover:bg-indigo-200' : 'text-gray-400 bg-gray-100 hover:bg-gray-200 hover:text-gray-700'}`}
+                            title={isMemberAdmin ? "Yöneticilikten Al" : "Yönetici Yap"}
+                          >
+                            <Shield size={16} />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-            
-            {/* Gönderilen Belgeler */}
-            <div className="mt-8">
-              <h4 className="font-bold text-gray-900 mb-4">Sisteme Yüklenmiş Belgeleriniz</h4>
+          )}
+
+          {/* DOCUMENTS TAB */}
+          {activeTab === 'documents' && (
+            <div className="animate-fade-in">
+              <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+                    <FileText size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-gray-900">Belge Deposu</h2>
+                    <p className="text-sm text-gray-500">Sisteme yüklenen onaylı belgeler.</p>
+                  </div>
+                </div>
+                <button className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm">
+                  Yeni Belge Yükle
+                </button>
+              </div>
+
               {(!selectedClub.forms || selectedClub.forms.length === 0) ? (
-                <div className="text-center py-6 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
-                  <p className="text-sm text-gray-500">Henüz dekanlığa iletilmiş bir belgeniz bulunmuyor.</p>
+                <div className="text-center py-16 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
+                  <FileText size={48} className="text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 font-bold">Sisteme yüklenmiş herhangi bir belge bulunamadı.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {selectedClub.forms.map(form => (
-                    <div key={form.id} className="p-4 bg-white border border-gray-200 rounded-xl flex items-center justify-between group hover:border-emerald-200 transition-colors">
+                    <div key={form.id} className="p-5 bg-white border border-gray-200 rounded-2xl flex items-center justify-between group hover:border-orange-200 hover:shadow-sm transition-all cursor-pointer">
                       <div>
-                        <p className="text-sm font-bold text-gray-800">{form.type}</p>
-                        <p className="text-[10px] text-gray-400 font-medium mt-1">{form.date} - Dekanlığa İletildi</p>
+                        <p className="text-sm font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{form.type}</p>
+                        <p className="text-[11px] text-gray-500 font-medium mt-1">{form.date} - Dekanlığa İletildi</p>
                       </div>
-                      <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${form.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-700' : form.status === 'Bekliyor' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
+                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${form.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-700' : form.status === 'Bekliyor' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
                         {form.status}
                       </span>
                     </div>
@@ -378,10 +374,100 @@ export default function ClubAdminPanel({ currentUser, clubs, setClubs, posts, se
                 </div>
               )}
             </div>
-            
-          </div>
-        )}
-        
+          )}
+
+          {/* EK FORMS SECTION */}
+          {activeTab === 'ek_forms' && (
+            <div className="animate-fade-in space-y-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                  <FileText size={20} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-gray-900">Resmi Başvuru Formları</h2>
+                  <p className="text-sm text-gray-500">Öğrenci Dekanlığına sunulması gereken EK-2, EK-3 ve EK-4 belgelerini doldurun.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-6 border border-gray-200 rounded-3xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-black text-gray-900 mb-2 group-hover:text-purple-600 text-lg">EK-2: Kurucu Üye Listesi</h3>
+                    <p className="text-sm text-gray-500 mb-6 line-clamp-2">Kulübün kurucu yönetim kurulu ve denetleme kurulu üyelerini sisteme işleyin.</p>
+                  </div>
+                  <button onClick={() => handleEKFormSubmit('EK-2 Kurucu Üye Listesi', 'EK-2 Formu dolduruldu ve sisteme kaydedildi.')} className="w-full py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 group-hover:bg-purple-50 group-hover:text-purple-700 group-hover:border-purple-200 transition-colors">Formu Doldur</button>
+                </div>
+
+                <div className="p-6 border border-gray-200 rounded-3xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-black text-gray-900 mb-2 group-hover:text-purple-600 text-lg">EK-3: Faaliyet Planı</h3>
+                    <p className="text-sm text-gray-500 mb-6 line-clamp-2">Eğitim-Öğretim yılı içinde gerçekleştirmeyi planladığınız seminer ve etkinlikleri planlayın.</p>
+                  </div>
+                  <button onClick={() => handleEKFormSubmit('EK-3 Faaliyet Planı', 'EK-3 Yıllık Faaliyet planı başarıyla oluşturuldu ve onaya gönderildi.')} className="w-full py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 group-hover:bg-purple-50 group-hover:text-purple-700 group-hover:border-purple-200 transition-colors">Planı Oluştur</button>
+                </div>
+
+                <div className="p-6 border border-gray-200 rounded-3xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-black text-gray-900 mb-2 group-hover:text-purple-600 text-lg">EK-4: Danışman Onay Formu</h3>
+                    <p className="text-sm text-gray-500 mb-6 line-clamp-2">Akademik danışmanınızın resmi onay işlemlerini başlatın ve takip edin.</p>
+                  </div>
+                  <button onClick={() => handleEKFormSubmit('EK-4 Danışman Onayı', 'EK-4 onayı için Akademik Danışmanınıza bildirim gönderildi.')} className="w-full py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 group-hover:bg-purple-50 group-hover:text-purple-700 group-hover:border-purple-200 transition-colors">Onay Talebi Gönder</button>
+                </div>
+
+                <div className="p-6 border border-gray-200 rounded-3xl bg-gray-50 flex flex-col justify-between opacity-60">
+                  <div>
+                    <h3 className="font-black text-gray-900 mb-2 text-lg">EK-5 & EK-6</h3>
+                    <p className="text-sm text-gray-500 mb-6 line-clamp-2">Genel kurul tutanakları ve yeni dönem seçim sonuçları. Sadece seçim döneminde aktif olur.</p>
+                  </div>
+                  <button disabled className="w-full py-3 bg-gray-100 border border-gray-200 rounded-xl text-sm font-bold text-gray-400 cursor-not-allowed">Seçim Dönemi Dışı</button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* POST TAB */}
+          {activeTab === 'post' && (
+            <form onSubmit={handleCreatePost} className="animate-fade-in max-w-2xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+                  <Megaphone size={20} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-gray-900">Gönderi Paylaş</h3>
+                  <p className="text-sm text-gray-500">Kulüp adına duyuru, etkinlik veya haber paylaşın.</p>
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Gönderi Başlığı</label>
+                  <input type="text" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: Yeni Dönem Tanışma Toplantısı!" />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">İçerik</label>
+                  <textarea value={postContent} onChange={(e) => setPostContent(e.target.value)} rows={5} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none resize-none" placeholder="Öğrencilerle paylaşmak istediğiniz mesajınızı yazın..." />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 flex items-center gap-1"><MapPin size={12}/> Konum (Opsiyonel)</label>
+                    <input type="text" value={postLocation} onChange={(e) => setPostLocation(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: C Blok Konferans Salonu" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 flex items-center gap-1"><ImageIcon size={12}/> Görsel URL (Opsiyonel)</label>
+                    <input type="url" value={postImage} onChange={(e) => setPostImage(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="https://..." />
+                  </div>
+                </div>
+
+                <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl py-4 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 mt-2 hover:-translate-y-0.5">
+                  <Send size={18} /> Paylaş
+                </button>
+              </div>
+            </form>
+          )}
+
+        </div>
       </div>
     </div>
   );

@@ -1,23 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { ArrowLeft, User, BookOpen, Layers, Briefcase, FileText, Shield, CheckCircle2, AlertCircle, Building2, Save, Settings, Award, Star, FileCheck, Plus, Trash2, Target, UploadCloud, ChevronRight, Check, UserCircle2, X } from 'lucide-react';
-import Logo from './Logo';
+import { ArrowLeft, User, BookOpen, Layers, Briefcase, FileText, Shield, Building2, Save, Settings, Award, Star, Plus, Trash2, Target, UploadCloud, ChevronRight, UserCircle2, X, Camera, MapPin, Mail, Phone, Globe, Link } from 'lucide-react';
 import { IESU_FACULTIES, IESU_MYO, IESU_YUKSEKOKUL, IESU_ENSTITU } from '../utils/universityData';
 
 export default function ProfileUpdate({ 
   setView, 
   currentUser, setCurrentUser,
   userRole, 
-  academicCatalog, 
-  academicApprovals, setAcademicApprovals,
   setStudents, setAlumni, setCompanies
 }) {
   const [activeTab, setActiveTab] = useState('personal');
   const [formData, setFormData] = useState({ 
-    skills: [],
-    languages: [],
-    experiences: [],
-    certificates: [],
-    careerPreferences: [],
+    skills: [], languages: [], experiences: [], certificates: [], careerPreferences: [],
     privacySettings: { visibility: true, emailNotifications: true, newsletters: true },
     isDoubleMajor: false,
     ...currentUser 
@@ -41,48 +34,39 @@ export default function ProfileUpdate({
   const [tempCert, setTempCert] = useState({ name: '', issuer: '' });
 
   // Dependent dropdown states for Academic Info
-  const [selectedFaculty, setSelectedFaculty] = useState('');
-  const [selectedDept, setSelectedDept] = useState('');
-  const [selectedCapFaculty, setSelectedCapFaculty] = useState('');
-  const [selectedCapDept, setSelectedCapDept] = useState('');
+  const [selectedFaculty, setSelectedFaculty] = useState(currentUser?.faculty || '');
+  const [selectedDept, setSelectedDept] = useState(currentUser?.department || '');
+  const [selectedCapFaculty, setSelectedCapFaculty] = useState(currentUser?.capFaculty || '');
+  const [selectedCapDept, setSelectedCapDept] = useState(currentUser?.capDept || '');
 
   useEffect(() => {
     if (currentUser) {
+      setFormData(prev => ({ ...prev, ...currentUser }));
       if (currentUser.faculty) setSelectedFaculty(currentUser.faculty);
       if (currentUser.department) setSelectedDept(currentUser.department);
       if (currentUser.capFaculty) setSelectedCapFaculty(currentUser.capFaculty);
       if (currentUser.capDept) setSelectedCapDept(currentUser.capDept);
+      if (currentUser.attachmentName) setUploadedFileName(currentUser.attachmentName);
     }
   }, [currentUser]);
 
   // Profile Completeness Calculation
   const completeness = useMemo(() => {
     let score = 0;
-    let total = 0;
-    const checkField = (val) => { total++; if (val && val.toString().trim() !== '') score++; };
-    const checkArray = (arr) => { total++; if (arr && arr.length > 0) score++; };
-
-    checkField(formData.email);
-    checkField(formData.phone);
-    checkField(formData.city);
-    checkField(formData.bio);
-    if (userRole === 'student' || userRole === 'alumni') {
-      checkField(formData.faculty);
-      checkField(formData.department);
-      checkField(formData.gpa);
-      checkArray(formData.skills);
-      checkArray(formData.languages);
-      checkArray(formData.experiences);
-      checkArray(formData.careerPreferences);
-    }
-    
-    return total === 0 ? 0 : Math.round((score / total) * 100);
-  }, [formData, userRole]);
+    if (formData.email) score += 15;
+    if (formData.phone) score += 15;
+    if (formData.faculty || formData.sector) score += 10;
+    if (formData.experiences?.length > 0) score += 20;
+    if (formData.skills?.length > 0) score += 10;
+    if (formData.languages?.length > 0) score += 10;
+    if (formData.certificates?.length > 0) score += 10;
+    if (formData.attachmentName) score += 10;
+    return Math.min(score, 100);
+  }, [formData]);
 
   const tabs = useMemo(() => {
-    if (userRole === 'company') return [
+    if (userRole === 'company' || userRole === 'employer') return [
       { id: 'personal', label: 'Firma Bilgileri', icon: <Building2 size={18} /> },
-      { id: 'rep', label: 'Yetkili Kişi', icon: <User size={18} /> },
       { id: 'privacy', label: 'Doğrulama Durumu', icon: <Shield size={18} /> }
     ];
     return [
@@ -120,11 +104,11 @@ export default function ProfileUpdate({
 
   const handleSave = () => {
     if (hasChanges) {
-      setCurrentUser(formData);
-      if (userRole === 'student' && setStudents) setStudents(prev => (prev || []).map(s => s.id === formData.id ? formData : s));
-      else if (userRole === 'alumni' && setAlumni) setAlumni(prev => (prev || []).map(a => a.id === formData.id ? formData : a));
-      else if ((userRole === 'company' || userRole === 'employer') && setCompanies) setCompanies(prev => (prev || []).map(c => c.id === formData.id ? formData : c));
-      else if (userRole === 'academic' && setAcademicStaff) setAcademicStaff(prev => (prev || []).map(a => a.id === formData.id ? formData : a));
+      const finalData = { ...formData, faculty: selectedFaculty, department: selectedDept, capFaculty: selectedCapFaculty, capDept: selectedCapDept };
+      setCurrentUser(finalData);
+      if (userRole === 'student' && setStudents) setStudents(prev => (prev || []).map(s => s.id === finalData.id ? finalData : s));
+      else if (userRole === 'alumni' && setAlumni) setAlumni(prev => (prev || []).map(a => a.id === finalData.id ? finalData : a));
+      else if ((userRole === 'company' || userRole === 'employer') && setCompanies) setCompanies(prev => (prev || []).map(c => c.id === finalData.id ? finalData : c));
 
       setHasChanges(false);
       window.toast.success('Profiliniz başarıyla güncellendi.');
@@ -135,130 +119,148 @@ export default function ProfileUpdate({
     const file = e.target.files[0];
     if (file) {
       setUploadedFileName(file.name);
-      setHasChanges(true);
+      // Create a mock base64/object URL so it is actually saved
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleInputChange('attachmentData', reader.result);
+        handleInputChange('attachmentName', file.name);
+      };
+      reader.readAsDataURL(file);
       window.toast.success('CV dosyası belleğe alındı, kaydet butonuna basmayı unutmayın.');
     }
   };
 
-  // Add Item Handlers
+  // Item Handlers
   const addExperience = () => {
     if (tempExp.title && tempExp.company) {
       handleInputChange('experiences', [...(formData.experiences || []), { id: Date.now(), ...tempExp }]);
       setShowExpModal(false);
       setTempExp({ title: '', company: '', type: 'Staj' });
-    } else {
-      window.toast.error('Lütfen ünvan ve firma alanlarını doldurun.');
     }
   };
-
   const addSkill = () => {
     if (tempSkill) {
       handleInputChange('skills', [...(formData.skills || []), tempSkill]);
-      setShowSkillModal(false);
-      setTempSkill('');
+      setShowSkillModal(false); setTempSkill('');
     }
   };
-
   const addLanguage = () => {
     if (tempLang.name) {
       handleInputChange('languages', [...(formData.languages || []), { id: Date.now(), ...tempLang }]);
-      setShowLangModal(false);
-      setTempLang({ name: '', level: 'Başlangıç (A1-A2)' });
+      setShowLangModal(false); setTempLang({ name: '', level: 'Başlangıç (A1-A2)' });
     }
   };
-
   const addCert = () => {
     if (tempCert.name) {
       handleInputChange('certificates', [...(formData.certificates || []), { id: Date.now(), ...tempCert }]);
-      setShowCertModal(false);
-      setTempCert({ name: '', issuer: '' });
+      setShowCertModal(false); setTempCert({ name: '', issuer: '' });
     }
   };
-
   const removeItem = (arrayName, indexOrId) => {
     const arr = formData[arrayName] || [];
     const newArr = typeof arr[0] === 'string' ? arr.filter((_, i) => i !== indexOrId) : arr.filter(item => item.id !== indexOrId);
     handleInputChange(arrayName, newArr);
   };
 
-  // Faculty Data
   const allUnits = [...IESU_FACULTIES, ...IESU_MYO, ...IESU_YUKSEKOKUL, ...IESU_ENSTITU];
   const activeFaculties = allUnits.map((u, i) => ({ id: `fac-${i}`, name: u.name, status: 'Aktif', departments: u.departments.map((d, j) => ({ id: `dept-${i}-${j}`, name: d, status: 'Aktif', programs: [{ id: `prog-${i}-${j}`, name: d, level: 'Lisans', status: 'Aktif' }] })) }));
-  const availableDepts = selectedFaculty ? (activeFaculties.find(f => f.id === selectedFaculty)?.departments || []) : [];
+  
+  const availableDepts = selectedFaculty ? (activeFaculties.find(f => f.name === selectedFaculty)?.departments || []) : [];
+  const availableCapDepts = selectedCapFaculty ? (activeFaculties.find(f => f.name === selectedCapFaculty)?.departments || []) : [];
 
   return (
-    <div className="min-h-[100dvh] bg-[#f4f7fb] font-sans flex flex-col relative overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-gray-50/50 font-sans flex flex-col relative overflow-x-hidden selection:bg-indigo-500/30">
       
-      {/* Top Navbar */}
-      <nav className="bg-white/80 backdrop-blur-xl border-b border-gray-200/60 px-6 py-4 flex items-center justify-between shrink-0 sticky top-0 z-40 shadow-sm">
+      {/* Decorative Background Glows */}
+      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
+      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
+
+      {/* Glass Navbar */}
+      <nav className="bg-white/70 backdrop-blur-2xl border-b border-gray-200/50 px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'company' ? 'company' : userRole || 'landing')}
-            className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:scale-105 transition shadow-sm"
+            className="w-10 h-10 rounded-full bg-white border border-gray-200/50 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:scale-105 transition-all shadow-sm"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md">
-              <UserCircle2 size={24} />
+          <div className="hidden md:flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+              <UserCircle2 size={20} />
             </div>
             <div>
-              <h1 className="text-xl font-black text-gray-900 leading-tight">Profil Merkezi</h1>
-              <p className="text-xs text-gray-500 font-medium hidden sm:block">Kariyer bilgilerinizi güncel tutun</p>
+              <h1 className="text-lg font-black text-gray-900 leading-tight">Profil & Ayarlar</h1>
+              <p className="text-[11px] text-gray-500 font-medium tracking-wide uppercase">Kariyer Merkeziniz</p>
             </div>
           </div>
         </div>
+        
         <button 
           onClick={handleSave}
           disabled={!hasChanges}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md transform ${
-            hasChanges ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:-translate-y-0.5 cursor-pointer' : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-70'
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+            hasChanges 
+              ? 'bg-gray-900 text-white hover:bg-black hover:shadow-lg hover:shadow-gray-900/20 hover:-translate-y-0.5 cursor-pointer' 
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
           }`}
         >
-          <Save size={18} />
+          <Save size={16} />
           <span className="hidden sm:inline">Değişiklikleri Kaydet</span>
           <span className="sm:hidden">Kaydet</span>
         </button>
       </nav>
 
-      <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 flex flex-col md:flex-row gap-8">
+      <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-6 lg:gap-10 z-10 relative">
         
-        {/* Sidebar & Progress */}
-        <aside className="w-full md:w-72 shrink-0 flex flex-col gap-6">
-          {/* Progress Card */}
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gray-100">
-              <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-1000" style={{ width: `${completeness}%` }}></div>
+        {/* Floating Sidebar */}
+        <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-6">
+          {/* Profile Card */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border border-gray-200/50 shadow-xl shadow-gray-200/20 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-indigo-500 to-blue-600"></div>
+            
+            <div className="relative z-10 flex flex-col items-center mt-12">
+              <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden relative mb-4">
+                <img src={formData.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name || 'User')}&background=e0e7ff&color=4f46e5`} alt="Avatar" className="w-full h-full object-cover" />
+                <button className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="text-white" size={24} />
+                </button>
+              </div>
+              <h2 className="text-xl font-black text-gray-900 text-center leading-tight">{formData.name}</h2>
+              <p className="text-sm text-gray-500 font-medium mt-1 text-center">{selectedDept || formData.sector || 'Öğrenci'}</p>
+              
+              <div className="w-full mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Profil Gücü</span>
+                  <span className={`text-xs font-black ${completeness === 100 ? 'text-emerald-500' : 'text-indigo-600'}`}>%{completeness}</span>
+                </div>
+                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                  <div className={`h-full transition-all duration-1000 ease-out ${completeness === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-indigo-500 to-blue-500'}`} style={{ width: `${completeness}%` }}></div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center justify-between mb-2 mt-2">
-              <h3 className="font-bold text-gray-900">Profil Doluluğu</h3>
-              <span className={`text-sm font-black ${completeness === 100 ? 'text-green-600' : 'text-blue-600'}`}>%{completeness}</span>
-            </div>
-            <p className="text-xs text-gray-500 mb-4">Profilinizi %100 doldurarak iş bulma şansınızı artırın.</p>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="bg-white rounded-3xl p-3 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-28">
-            <nav className="space-y-1.5">
+          {/* Sleek Navigation */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-2 border border-gray-200/50 shadow-xl shadow-gray-200/20 sticky top-24">
+            <nav className="flex flex-col gap-1">
               {tabs.map(tab => {
                 const isActive = activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-bold transition-all ${
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 relative overflow-hidden ${
                       isActive 
-                        ? 'bg-blue-50/80 text-blue-700 shadow-sm border border-blue-100/50' 
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-transparent'
+                        ? 'text-indigo-700 bg-indigo-50/50' 
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className={`${isActive ? 'text-blue-600' : 'text-gray-400'}`}>
-                        {tab.icon}
-                      </span>
+                    {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"></div>}
+                    <div className="flex items-center gap-3 relative z-10">
+                      <span className={`${isActive ? 'text-indigo-600' : 'text-gray-400'}`}>{tab.icon}</span>
                       {tab.label}
                     </div>
-                    {isActive && <ChevronRight size={16} className="text-blue-500" />}
+                    {isActive && <ChevronRight size={16} className="text-indigo-600" />}
                   </button>
                 );
               })}
@@ -266,256 +268,282 @@ export default function ProfileUpdate({
           </div>
         </aside>
 
-        {/* Content Area */}
-        <main className="flex-1">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 min-h-[600px]">
+        {/* Main Content Area - Glass Cards */}
+        <main className="flex-1 max-w-4xl min-h-[600px] bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-[2.5rem] shadow-xl shadow-gray-200/20 p-6 md:p-10 relative overflow-hidden">
+          
+          <div className="mb-8 pb-6 border-b border-gray-100/80">
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900">{tabs.find(t => t.id === activeTab)?.label}</h2>
+            <p className="text-sm text-gray-500 mt-2">Bu alandaki bilgileri güncelleyerek profilinizi güçlendirin.</p>
+          </div>
+
+          <div className="animate-fade-in space-y-8">
             
-            {/* PERSONAL TAB */}
+            {/* PERSONAL INFO TAB */}
             {activeTab === 'personal' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="border-b border-gray-100 pb-5">
-                  <h2 className="text-2xl font-black text-gray-900">Kişisel Bilgiler</h2>
-                  <p className="text-sm text-gray-500 mt-1">Sistemdeki temel kimlik ve iletişim bilgileriniz.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{userRole === 'company' ? 'Firma Adı' : 'Ad Soyad'}</label>
+                  <div className="relative">
+                    <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" value={formData.name || ''} onChange={e => handleInputChange('name', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">E-Posta Adresi</label>
+                  <div className="relative">
+                    <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="email" value={formData.email || ''} onChange={e => handleInputChange('email', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Telefon Numarası</label>
+                  <div className="relative">
+                    <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="tel" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="+90 555 555 5555" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Konum / Şehir</label>
+                  <div className="relative">
+                    <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" value={formData.location || ''} onChange={e => handleInputChange('location', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: İstanbul, Türkiye" />
+                  </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="col-span-1 md:col-span-2">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block flex items-center justify-between">
-                      <span>Ad Soyad</span>
-                      <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-md flex items-center gap-1"><CheckCircle2 size={12}/> Resmi Kayıt</span>
-                    </label>
-                    <input type="text" value={formData.name || ''} readOnly className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-sm font-bold text-gray-500 cursor-not-allowed" />
-                  </div>
+                <div className="col-span-1 md:col-span-2 mt-4 space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Hakkımda / Biyografi</label>
+                  <textarea rows={4} value={formData.bio || ''} onChange={e => handleInputChange('bio', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none resize-none" placeholder="Kendinizden, kariyer hedeflerinizden ve ilgi alanlarınızdan bahsedin..." />
+                </div>
 
-                  {userRole !== 'company' && (
-                    <div className="grid grid-cols-2 gap-4 col-span-1 md:col-span-2">
-                      <div className="relative group">
-                        <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Zamir (Pronoun)</label>
-                        <select value={formData.pronouns || ''} onChange={e => handleInputChange('pronouns', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 focus:ring-0 outline-none transition-all appearance-none">
-                          <option value="">Belirtmek İstemiyorum</option>
-                          <option value="she/her">she/her</option>
-                          <option value="he/him">he/him</option>
-                          <option value="they/them">they/them</option>
-                        </select>
-                      </div>
-                      
-                      <div className="relative group flex items-center gap-3">
-                        <button type="button" className="w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all">
-                          <UploadCloud size={18} />
-                          İsim Telaffuzu Yükle (Ses)
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">E-Posta</label>
-                    <input type="email" value={formData.email || ''} onChange={e => handleInputChange('email', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 focus:ring-0 outline-none transition-all" />
-                  </div>
-                  
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Telefon</label>
-                    <input type="tel" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all" />
-                  </div>
-
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Şehir</label>
-                    <input type="text" value={formData.city || ''} onChange={e => handleInputChange('city', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all" />
-                  </div>
-
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Doğum Tarihi</label>
-                    <input type="date" value={formData.birthDate || ''} onChange={e => handleInputChange('birthDate', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all" />
-                  </div>
-
-                  <div className="relative group col-span-1 md:col-span-2 mt-4">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Kısa Özgeçmiş (Bio)</label>
-                    <textarea rows="4" value={formData.bio || ''} onChange={e => handleInputChange('bio', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all resize-none" placeholder="Kendinizden etkileyici bir şekilde bahsedin..."></textarea>
-                  </div>
-
-                  {/* CV UPLOAD AREA */}
-                  <div className="col-span-1 md:col-span-2 mt-4">
-                    <label className="text-sm font-bold text-gray-900 block mb-3">Hazır CV Yükle</label>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      className="hidden" 
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleFileUpload}
-                    />
-                    <div 
-                      onClick={() => fileInputRef.current?.click()}
-                      className={`border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${uploadedFileName ? 'border-blue-500 bg-blue-50/50' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'}`}
-                    >
-                      {uploadedFileName ? (
-                        <>
-                          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600 shadow-inner">
-                            <FileCheck size={32} />
-                          </div>
-                          <p className="text-base font-bold text-blue-700">{uploadedFileName}</p>
-                          <p className="text-sm text-blue-500 mt-1">Değiştirmek için tıklayın</p>
-                        </>
-                      ) : (
-                        <>
-                          <div className="w-16 h-16 bg-gray-100 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-4 text-gray-400 group-hover:text-blue-500 transition-colors">
-                            <UploadCloud size={32} />
-                          </div>
-                          <p className="text-base font-bold text-gray-700">PDF veya DOCX formatında CV'nizi seçin</p>
-                          <p className="text-sm text-gray-400 mt-1">veya sürükleyip bırakın (Max 5MB)</p>
-                        </>
-                      )}
+                <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">LinkedIn Profili</label>
+                    <div className="relative">
+                      <Link size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="url" value={formData.linkedin || ''} onChange={e => handleInputChange('linkedin', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="linkedin.com/in/username" />
                     </div>
                   </div>
-
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kişisel Web Sitesi</label>
+                    <div className="relative">
+                      <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="url" value={formData.website || ''} onChange={e => handleInputChange('website', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="https://www.example.com" />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* ACADEMIC TAB */}
+            {/* ACADEMIC INFO TAB */}
             {activeTab === 'academic' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="border-b border-gray-100 pb-5 flex justify-between items-center">
+              <div className="space-y-8">
+                <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 flex items-start gap-4">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-indigo-600 shrink-0">
+                    <BookOpen size={24} />
+                  </div>
                   <div>
-                    <h2 className="text-2xl font-black text-gray-900">Akademik Bilgiler</h2>
-                    <p className="text-sm text-gray-500 mt-1">Eğitim bilgilerinizi eksiksiz doldurun.</p>
+                    <h3 className="text-lg font-bold text-gray-900">Eğitim Bilgileri</h3>
+                    <p className="text-sm text-gray-500 mt-1">Eğitim bilgilerinizi buradan güncelleyebilirsiniz.</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Eğitim Düzeyi</label>
-                    <select value={formData.educationLevel || ''} onChange={e => handleInputChange('educationLevel', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all appearance-none">
-                      <option value="">Seçiniz</option>
-                      <option value="Önlisans">Önlisans</option>
-                      <option value="Lisans">Lisans</option>
-                      <option value="Yüksek Lisans">Yüksek Lisans</option>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Fakülte / Enstitü</label>
+                    <select 
+                      value={selectedFaculty} 
+                      onChange={(e) => {
+                        setSelectedFaculty(e.target.value);
+                        setSelectedDept('');
+                        setHasChanges(true);
+                      }} 
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    >
+                      <option value="">Fakülte Seçiniz</option>
+                      {activeFaculties.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
                     </select>
                   </div>
-
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Fakülte</label>
-                    <select value={selectedFaculty} onChange={(e) => { setSelectedFaculty(e.target.value); setSelectedDept(''); handleInputChange('faculty', e.target.value); }} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all appearance-none">
-                      <option value="">Seçiniz</option>
-                      {activeFaculties.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Bölüm / Program</label>
+                    <select 
+                      value={selectedDept} 
+                      onChange={(e) => {
+                        setSelectedDept(e.target.value);
+                        setHasChanges(true);
+                      }}
+                      disabled={!selectedFaculty} 
+                      className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:opacity-50"
+                    >
+                      <option value="">Bölüm Seçiniz</option>
+                      {availableDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
                     </select>
                   </div>
-
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Bölüm</label>
-                    <select disabled={!selectedFaculty} value={selectedDept} onChange={(e) => { setSelectedDept(e.target.value); handleInputChange('department', e.target.value); }} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 disabled:bg-gray-50 outline-none transition-all appearance-none cursor-pointer">
-                      <option value="">Seçiniz</option>
-                      {availableDepts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                    </select>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Sınıf</label>
+                    <input type="text" value={formData.grade || ''} onChange={(e) => handleInputChange('grade', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" placeholder="Örn: 3. Sınıf" />
                   </div>
-
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Sınıf / Yıl</label>
-                    <select value={formData.year || ''} onChange={e => handleInputChange('year', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none transition-all appearance-none">
-                      <option value="">Seçiniz</option>
-                      <option>Hazırlık</option>
-                      <option>1. Sınıf</option>
-                      <option>2. Sınıf</option>
-                      <option>3. Sınıf</option>
-                      <option>4. Sınıf</option>
-                      <option>Mezun</option>
-                    </select>
-                  </div>
-
-                  <div className="relative group md:col-span-2">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">Genel Not Ortalaması (GNO)</label>
-                    <input type="number" step="0.01" max="4" min="0" placeholder="Örn: 3.25" value={formData.gpa || ''} onChange={e => handleInputChange('gpa', e.target.value)} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all" />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Genel Not Ortalaması (GNO)</label>
+                    <input type="text" value={formData.gpa || ''} onChange={(e) => handleInputChange('gpa', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" placeholder="Örn: 3.45 / 4.00" />
                   </div>
                 </div>
               </div>
             )}
 
-            {/* EXPERIENCE TAB */}
-            {activeTab === 'experience' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="border-b border-gray-100 pb-5 flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-black text-gray-900">Deneyimler</h2>
-                    <p className="text-sm text-gray-500 mt-1">İş ve staj geçmişiniz.</p>
-                  </div>
-                  <button onClick={() => setShowExpModal(true)} className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition-all hover:scale-105">
-                    <Plus size={18} strokeWidth={3} /> Ekle
-                  </button>
+            {/* CAP / YANDAL TAB */}
+            {activeTab === 'cap_yandal' && (
+              <div className="space-y-8">
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" id="doubleMajor" checked={formData.isDoubleMajor} onChange={(e) => handleInputChange('isDoubleMajor', e.target.checked)} className="w-5 h-5 text-indigo-600 rounded" />
+                  <label htmlFor="doubleMajor" className="text-lg font-bold text-gray-900">Çift Anadal / Yandal Yapıyorum</label>
                 </div>
-
-                {formData.experiences?.length > 0 ? (
-                  <div className="space-y-4">
-                    {formData.experiences.map((exp) => (
-                      <div key={exp.id} className="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm flex justify-between items-center hover:border-blue-300 transition-colors">
-                        <div className="flex gap-4 items-center">
-                          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                            <Briefcase size={20} />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-gray-900 text-lg">{exp.title}</h4>
-                            <p className="text-gray-500 text-sm">{exp.company} • <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs ml-1">{exp.type}</span></p>
-                          </div>
-                        </div>
-                        <button onClick={() => removeItem('experiences', exp.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18}/></button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center bg-gray-50/50">
-                    <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4 text-gray-300">
-                      <Briefcase size={36} />
+                
+                {formData.isDoubleMajor && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in border-t border-gray-100 pt-6">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Fakültesi</label>
+                      <select 
+                        value={selectedCapFaculty} 
+                        onChange={(e) => {
+                          setSelectedCapFaculty(e.target.value);
+                          setSelectedCapDept('');
+                          setHasChanges(true);
+                        }} 
+                        className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                      >
+                        <option value="">Fakülte Seçiniz</option>
+                        {activeFaculties.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
+                      </select>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-700 mb-2">Henüz deneyim eklemediniz</h3>
-                    <p className="text-gray-500 text-sm">Staj ve iş tecrübelerinizi ekleyerek öne çıkın.</p>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Bölümü</label>
+                      <select 
+                        value={selectedCapDept} 
+                        onChange={(e) => {
+                          setSelectedCapDept(e.target.value);
+                          setHasChanges(true);
+                        }}
+                        disabled={!selectedCapFaculty} 
+                        className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:opacity-50"
+                      >
+                        <option value="">Bölüm Seçiniz</option>
+                        {availableCapDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
+                      </select>
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* SKILLS & LANGUAGES TAB */}
-            {activeTab === 'skills' && (
-              <div className="space-y-10 animate-fade-in">
-                {/* Languages Section */}
-                <div>
-                  <div className="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
-                    <div>
-                      <h2 className="text-2xl font-black text-gray-900">Yabancı Diller</h2>
-                      <p className="text-sm text-gray-500 mt-1">Bildiğiniz dilleri ve seviyelerini ekleyin.</p>
+            {/* EXPERIENCE TAB */}
+            {activeTab === 'experience' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-end mb-6">
+                  <p className="text-sm text-gray-500 max-w-xl">Staj ve profesyonel iş deneyimlerinizi buradan yönetebilirsiniz. Özgeçmişinizi de eklemeyi unutmayın.</p>
+                  <button onClick={() => setShowExpModal(true)} className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-colors shrink-0">
+                    <Plus size={16} /> Yeni Deneyim
+                  </button>
+                </div>
+
+                <div className="p-6 border border-gray-200 border-dashed rounded-3xl bg-gray-50 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-emerald-600">
+                      <FileText size={24} />
                     </div>
-                    <button onClick={() => setShowLangModal(true)} className="flex items-center gap-1.5 text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-xl transition-colors text-sm border border-blue-100">
-                      <Plus size={18} strokeWidth={3} /> Dil Ekle
-                    </button>
+                    <div>
+                      <h4 className="font-bold text-gray-900">CV / Özgeçmiş Belgesi</h4>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{uploadedFileName ? uploadedFileName : 'Henüz PDF yüklenmedi'}</p>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    {formData.languages?.map(lang => (
-                      <div key={lang.id} className="bg-white border border-gray-200 pl-4 pr-2 py-2 rounded-xl shadow-sm flex items-center gap-3">
-                        <span className="font-bold text-gray-800">{lang.name}</span>
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">{lang.level}</span>
-                        <button onClick={() => removeItem('languages', lang.id)} className="text-gray-400 hover:text-red-500 transition-colors p-1"><X size={14}/></button>
-                      </div>
-                    ))}
-                    {(!formData.languages || formData.languages.length === 0) && <p className="text-sm text-gray-400 italic">Kayıtlı dil bulunmuyor.</p>}
+                  <div>
+                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.doc,.docx" className="hidden" />
+                    <button onClick={() => fileInputRef.current?.click()} className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-sm">
+                      <UploadCloud size={18} className="text-gray-400" />
+                      Yükle
+                    </button>
                   </div>
                 </div>
 
-                {/* Technical Skills Section */}
+                {(!formData.experiences || formData.experiences.length === 0) ? (
+                  <div className="text-center py-16 border border-gray-100 rounded-3xl bg-white shadow-sm">
+                    <Briefcase size={48} className="mx-auto text-gray-200 mb-4" />
+                    <p className="text-gray-500 font-medium">Henüz bir deneyim eklenmemiş.</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {formData.experiences.map((exp) => (
+                      <div key={exp.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-indigo-100 hover:shadow-md transition-all">
+                        <div className="flex gap-4">
+                          <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 shrink-0">
+                            <Building2 size={24} />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-base">{exp.title}</h4>
+                            <p className="text-sm font-medium text-indigo-600 mt-0.5">{exp.company}</p>
+                            <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase tracking-wider">{exp.type}</span>
+                          </div>
+                        </div>
+                        <button onClick={() => removeItem('experiences', exp.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SKILLS TAB */}
+            {activeTab === 'skills' && (
+              <div className="space-y-8">
                 <div>
-                  <div className="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
-                    <div>
-                      <h2 className="text-2xl font-black text-gray-900">Teknik Yetenekler</h2>
-                      <p className="text-sm text-gray-500 mt-1">Öne çıkan yeteneklerinizi (Örn: React, SEO, Excel) ekleyin.</p>
-                    </div>
-                    <button onClick={() => setShowSkillModal(true)} className="flex items-center gap-1.5 text-indigo-600 font-bold hover:bg-indigo-50 px-4 py-2 rounded-xl transition-colors text-sm border border-indigo-100">
-                      <Plus size={18} strokeWidth={3} /> Yetenek Ekle
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><Star size={20} className="text-amber-500"/> Yetenekler</h3>
+                    <button onClick={() => setShowSkillModal(true)} className="flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                      <Plus size={16} /> Ekle
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {formData.skills?.map((skill, idx) => (
-                      <div key={idx} className="bg-indigo-50 border border-indigo-100 text-indigo-700 pl-4 pr-2 py-2 rounded-xl flex items-center gap-2 font-medium">
-                        {skill}
-                        <button onClick={() => removeItem('skills', idx)} className="text-indigo-400 hover:text-red-500 transition-colors p-1"><X size={14}/></button>
-                      </div>
-                    ))}
-                    {(!formData.skills || formData.skills.length === 0) && <p className="text-sm text-gray-400 italic">Yetenek eklenmemiş.</p>}
+                    {(!formData.skills || formData.skills.length === 0) ? (
+                      <p className="text-sm text-gray-400 italic">Yetenek eklenmemiş.</p>
+                    ) : (
+                      formData.skills.map((skill, index) => (
+                        <div key={index} className="pl-4 pr-1.5 py-1.5 bg-white border border-gray-200 rounded-xl flex items-center gap-2 text-sm font-bold text-gray-700 shadow-sm group">
+                          {skill}
+                          <button onClick={() => removeItem('skills', index)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="h-px w-full bg-gray-100"></div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><Globe size={20} className="text-blue-500"/> Yabancı Diller</h3>
+                    <button onClick={() => setShowLangModal(true)} className="flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                      <Plus size={16} /> Ekle
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {(!formData.languages || formData.languages.length === 0) ? (
+                      <p className="text-sm text-gray-400 italic col-span-2">Dil bilgisi eklenmemiş.</p>
+                    ) : (
+                      formData.languages.map((lang) => (
+                        <div key={lang.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex justify-between items-center shadow-sm group hover:border-blue-100 transition-colors">
+                          <div>
+                            <p className="font-bold text-gray-900">{lang.name}</p>
+                            <p className="text-xs text-blue-600 font-medium mt-0.5">{lang.level}</p>
+                          </div>
+                          <button onClick={() => removeItem('languages', lang.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>
@@ -523,41 +551,32 @@ export default function ProfileUpdate({
 
             {/* CERTIFICATES TAB */}
             {activeTab === 'certificates' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="border-b border-gray-100 pb-5 flex justify-between items-center">
-                  <div>
-                    <h2 className="text-2xl font-black text-gray-900">Sertifika ve Belgeler</h2>
-                    <p className="text-sm text-gray-500 mt-1">Sahip olduğunuz sertifikaları ekleyin.</p>
-                  </div>
-                  <button onClick={() => setShowCertModal(true)} className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition-all hover:scale-105">
-                    <Plus size={18} strokeWidth={3} /> Ekle
+              <div className="space-y-6">
+                <div className="flex justify-between items-end mb-6">
+                  <p className="text-sm text-gray-500 max-w-xl">Katıldığınız eğitimler ve sertifikalarınızı buradan ekleyebilirsiniz.</p>
+                  <button onClick={() => setShowCertModal(true)} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shrink-0 shadow-md">
+                    <Plus size={16} /> Sertifika Ekle
                   </button>
                 </div>
 
-                {formData.certificates?.length > 0 ? (
-                  <div className="space-y-4">
-                    {formData.certificates.map((cert) => (
-                      <div key={cert.id} className="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm flex justify-between items-center hover:border-blue-300 transition-colors">
-                        <div className="flex gap-4 items-center">
-                          <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
-                            <Award size={20} />
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-gray-900 text-lg">{cert.name}</h4>
-                            <p className="text-gray-500 text-sm">Veren Kurum: <span className="font-medium text-gray-700">{cert.issuer}</span></p>
-                          </div>
-                        </div>
-                        <button onClick={() => removeItem('certificates', cert.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={18}/></button>
-                      </div>
-                    ))}
+                {(!formData.certificates || formData.certificates.length === 0) ? (
+                  <div className="text-center py-16 border border-gray-100 rounded-3xl bg-white shadow-sm">
+                    <Award size={48} className="mx-auto text-gray-200 mb-4" />
+                    <p className="text-gray-500 font-medium">Henüz bir sertifika eklenmemiş.</p>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center bg-gray-50/50">
-                    <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4 text-gray-300">
-                      <Award size={36} />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-700 mb-2">Henüz sertifika eklemediniz</h3>
-                    <p className="text-gray-500 text-sm">Eğitimlerinizi ve başarı belgelerinizi buraya ekleyin.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {formData.certificates.map((cert) => (
+                      <div key={cert.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-indigo-100 hover:shadow-md transition-all">
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-base">{cert.name}</h4>
+                          <p className="text-sm font-medium text-gray-500 mt-0.5">{cert.issuer}</p>
+                        </div>
+                        <button onClick={() => removeItem('certificates', cert.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -565,120 +584,48 @@ export default function ProfileUpdate({
 
             {/* CAREER PREFERENCES TAB */}
             {activeTab === 'career' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="border-b border-gray-100 pb-5">
-                  <h2 className="text-2xl font-black text-gray-900">Kariyer Tercihleri</h2>
-                  <p className="text-sm text-gray-500 mt-1">İş ve staj arayışınızla ilgili beklentilerinizi firmalarla paylaşın.</p>
-                </div>
-
-                <div>
-                  <label className="text-sm font-bold text-gray-900 block mb-4">Çalışma Şekli (Birden fazla seçilebilir)</label>
-                  <div className="flex flex-wrap gap-3">
-                    {['Tam Zamanlı', 'Yarı Zamanlı', 'Proje Bazlı', 'Uzaktan (Remote)', 'Hibrit', 'Staj'].map(type => {
-                      const isSelected = formData.careerPreferences?.includes(type);
-                      return (
-                        <button 
-                          key={type} 
-                          onClick={() => toggleArrayItem('careerPreferences', type)}
-                          className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold transition-all border-2 ${isSelected ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-gray-50'}`}
-                        >
-                          <div className={`w-5 h-5 rounded flex items-center justify-center ${isSelected ? 'bg-blue-600 text-white' : 'border-2 border-gray-300'}`}>
-                            {isSelected && <Check size={14} strokeWidth={3} />}
-                          </div>
-                          {type}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+              <div className="space-y-6">
+                 <h3 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Çalışma Şekli Tercihleri</h3>
+                 <div className="flex flex-wrap gap-3">
+                   {['Uzaktan (Remote)', 'Hibrit', 'Ofisten', 'Serbest Zamanlı', 'Proje Bazlı'].map(pref => (
+                     <button 
+                       key={pref} 
+                       onClick={() => toggleArrayItem('careerPreferences', pref)}
+                       className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+                         (formData.careerPreferences || []).includes(pref) 
+                           ? 'bg-indigo-50 border-indigo-200 text-indigo-700' 
+                           : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                       }`}
+                     >
+                       {pref}
+                     </button>
+                   ))}
+                 </div>
               </div>
             )}
 
             {/* PRIVACY TAB */}
             {activeTab === 'privacy' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="border-b border-gray-100 pb-5">
-                  <h2 className="text-2xl font-black text-gray-900">Gizlilik ve İzinler</h2>
-                  <p className="text-sm text-gray-500 mt-1">Hesap görünürlüğünüzü ve bildirim tercihlerinizi yönetin.</p>
-                </div>
-
-                <div className="space-y-4">
-                  {[
-                    { key: 'visibility', title: 'Profil Görünürlüğü', desc: 'Firmalar profilimi inceleyebilir.' },
-                    { key: 'emailNotifications', title: 'Fırsat Bildirimleri', desc: 'Bana uygun iş ilanlarında e-posta gönder.' },
-                    { key: 'newsletters', title: 'Kariyer Bültenleri', desc: 'Etkinlik ve seminerlerden haberdar et.' }
-                  ].map(setting => (
-                    <div key={setting.key} className="flex items-start gap-4 p-5 bg-white border border-gray-200 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all cursor-pointer" onClick={() => handleNestedChange('privacySettings', setting.key, !formData.privacySettings?.[setting.key])}>
-                      <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-colors mt-0.5 ${formData.privacySettings?.[setting.key] ? 'bg-blue-600 text-white' : 'border-2 border-gray-300'}`}>
-                        {formData.privacySettings?.[setting.key] && <Check size={14} strokeWidth={3} />}
-                      </div>
-                      <div>
-                        <h4 className="font-black text-gray-900 text-base">{setting.title}</h4>
-                        <p className="text-sm text-gray-500 mt-1">{setting.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ÇAP TAB */}
-            {activeTab === 'cap_yandal' && (
-              <div className="space-y-8 animate-fade-in">
-                <div className="border-b border-gray-100 pb-5">
-                  <h2 className="text-2xl font-black text-gray-900">Çift Anadal (ÇAP)</h2>
-                  <p className="text-sm text-gray-500 mt-1">ÇAP yapıyorsanız lütfen bu alanı işaretleyip bilgileri doldurun.</p>
-                </div>
-                
-                <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm">
-                  <div className="flex items-center gap-4 mb-6 cursor-pointer" onClick={() => handleInputChange('isDoubleMajor', !formData.isDoubleMajor)}>
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${formData.isDoubleMajor ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 border-2 border-gray-300'}`}>
-                      {formData.isDoubleMajor && <Check size={18} strokeWidth={3} />}
-                    </div>
-                    <span className="text-lg font-black text-gray-900">Çift Anadal (ÇAP) Yapıyorum</span>
+              <div className="space-y-6">
+                <div className="p-5 border border-gray-100 rounded-2xl bg-white flex items-center justify-between shadow-sm">
+                  <div>
+                    <h4 className="font-bold text-gray-900">Profil Görünürlüğü</h4>
+                    <p className="text-sm text-gray-500 mt-1">Profilinizin işverenler ve diğer öğrenciler tarafından görünürlüğünü açıp kapatabilirsiniz.</p>
                   </div>
-
-                  {formData.isDoubleMajor && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-gray-100 animate-slide-up mt-2">
-                      <div className="relative group">
-                        <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">ÇAP Fakültesi</label>
-                        <select value={selectedCapFaculty} onChange={(e) => { setSelectedCapFaculty(e.target.value); handleInputChange('capFaculty', e.target.value); }} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none appearance-none focus:border-blue-500">
-                          <option value="">Seçiniz</option>
-                          {activeFaculties.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
-                        </select>
-                      </div>
-                      <div className="relative group">
-                        <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all">ÇAP Bölümü</label>
-                        <input type="text" placeholder="Bölüm adını yazın..." onChange={(e) => handleInputChange('capDept', e.target.value)} value={formData.capDept || ''} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500" />
-                      </div>
-                    </div>
-                  )}
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={formData.privacySettings?.visibility} onChange={e => handleNestedChange('privacySettings', 'visibility', e.target.checked)} />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </label>
                 </div>
-              </div>
-            )}
-
-            {/* OTHERS / FALLBACKS */}
-            {['rep'].includes(activeTab) && (
-              <div className="py-8 animate-fade-in flex flex-col h-full min-h-[400px]">
-                <h3 className="text-xl font-black text-gray-900 mb-6">Topluluk Temsilciliği / Gönüllülük</h3>
-                <div className="bg-blue-50 border border-blue-100 p-6 rounded-2xl mb-8">
-                  <p className="text-blue-800 text-sm font-medium leading-relaxed">Topluluk Temsilcisi veya Öğrenci Elçisi olarak üniversitemizi ve bölümünüzü temsil edebilirsiniz. Başvurunuz kariyer ofisimiz tarafından değerlendirilecektir.</p>
-                </div>
-                
-                <div className="space-y-6 max-w-2xl">
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Başvurulan Rol</label>
-                    <select className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500 appearance-none">
-                      <option>Öğrenci Elçisi</option>
-                      <option>Bölüm Temsilcisi</option>
-                      <option>Kariyer Kulübü Yöneticisi</option>
-                    </select>
+                <div className="p-5 border border-gray-100 rounded-2xl bg-white flex items-center justify-between shadow-sm">
+                  <div>
+                    <h4 className="font-bold text-gray-900">E-Posta Bildirimleri</h4>
+                    <p className="text-sm text-gray-500 mt-1">İş başvuruları ve mesajlarla ilgili e-posta bildirimleri alın.</p>
                   </div>
-                  <div className="relative group">
-                    <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Neden Temsilci Olmak İstiyorsunuz?</label>
-                    <textarea rows="4" className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500 resize-none" placeholder="Motivasyonunuzu kısaca açıklayın..."></textarea>
-                  </div>
-                  <button onClick={() => window.toast.success("Temsilcilik başvurunuz Kariyer Ofisine iletildi!")} className="bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 transition">Başvuruyu Gönder</button>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={formData.privacySettings?.emailNotifications} onChange={e => handleNestedChange('privacySettings', 'emailNotifications', e.target.checked)} />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </label>
                 </div>
               </div>
             )}
@@ -687,98 +634,91 @@ export default function ProfileUpdate({
         </main>
       </div>
 
-      {/* --- MODALS --- */}
-      {/* Experience Modal */}
+      {/* MODALS - Redesigned to look like macOS Dialogs */}
       {showExpModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-slide-up">
-            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xl font-black text-gray-900 flex items-center gap-2"><Briefcase size={22} className="text-blue-600"/> Deneyim Ekle</h3>
-              <button onClick={() => setShowExpModal(false)} className="text-gray-400 hover:text-gray-900 transition bg-white p-2 rounded-full shadow-sm"><X size={20}/></button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up transform transition-all">
+            <div className="px-6 py-5 flex justify-between items-center">
+              <h3 className="text-lg font-black text-gray-900">Yeni Deneyim</h3>
+              <button onClick={() => setShowExpModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
-            <div className="p-6 space-y-6">
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Ünvan / Pozisyon</label>
-                <input type="text" value={tempExp.title} onChange={e => setTempExp({...tempExp, title: e.target.value})} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500" placeholder="Örn: Yazılım Stajyeri" />
+            <div className="p-6 space-y-5 pt-0">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Ünvan / Pozisyon</label>
+                <input type="text" autoFocus onKeyDown={e => e.key === 'Enter' && addExperience()} value={tempExp.title} onChange={e => setTempExp({...tempExp, title: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Örn: Yazılım Stajyeri" />
               </div>
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Firma / Kurum</label>
-                <input type="text" value={tempExp.company} onChange={e => setTempExp({...tempExp, company: e.target.value})} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500" placeholder="Örn: İESÜ Kariyer" />
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Firma / Kurum</label>
+                <input type="text" onKeyDown={e => e.key === 'Enter' && addExperience()} value={tempExp.company} onChange={e => setTempExp({...tempExp, company: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Örn: Google Türkiye" />
               </div>
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Çalışma Tipi</label>
-                <select value={tempExp.type} onChange={e => setTempExp({...tempExp, type: e.target.value})} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500 appearance-none">
-                  <option>Staj</option><option>Tam Zamanlı</option><option>Yarı Zamanlı</option>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Çalışma Tipi</label>
+                <select value={tempExp.type} onChange={e => setTempExp({...tempExp, type: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm appearance-none">
+                  <option>Staj</option><option>Tam Zamanlı</option><option>Yarı Zamanlı</option><option>Gönüllü</option>
                 </select>
               </div>
-              <button onClick={addExperience} className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl mt-4 hover:bg-blue-700 transition-colors shadow-md">Listeye Ekle</button>
+              <button onClick={addExperience} className="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl mt-2 hover:bg-black transition-all shadow-lg hover:shadow-gray-900/20">Deneyimi Kaydet</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Skill Modal */}
       {showSkillModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up">
-            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xl font-black text-gray-900 flex items-center gap-2"><Star size={22} className="text-indigo-600"/> Yetenek Ekle</h3>
-              <button onClick={() => setShowSkillModal(false)} className="text-gray-400 hover:text-gray-900 transition bg-white p-2 rounded-full shadow-sm"><X size={20}/></button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
+            <div className="px-6 py-5 flex justify-between items-center">
+              <h3 className="text-lg font-black text-gray-900">Yetenek Ekle</h3>
+              <button onClick={() => setShowSkillModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
-            <div className="p-6 space-y-6">
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-indigo-600">Yetenek Adı</label>
-                <input type="text" autoFocus value={tempSkill} onChange={e => setTempSkill(e.target.value)} onKeyDown={e => e.key === 'Enter' && addSkill()} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-indigo-500" placeholder="Örn: React.js, SEO, Liderlik" />
-              </div>
-              <button onClick={addSkill} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition-colors shadow-md">Listeye Ekle</button>
+            <div className="p-6 pt-0 space-y-4">
+              <input type="text" autoFocus value={tempSkill} onChange={e => setTempSkill(e.target.value)} onKeyDown={e => e.key === 'Enter' && addSkill()} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Örn: React.js, Liderlik..." />
+              <button onClick={addSkill} className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-all shadow-md">Ekle</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Language Modal */}
       {showLangModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up">
-            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xl font-black text-gray-900">Yabancı Dil Ekle</h3>
-              <button onClick={() => setShowLangModal(false)} className="text-gray-400 hover:text-gray-900 transition bg-white p-2 rounded-full shadow-sm"><X size={20}/></button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
+            <div className="px-6 py-5 flex justify-between items-center">
+              <h3 className="text-lg font-black text-gray-900">Dil Ekle</h3>
+              <button onClick={() => setShowLangModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
-            <div className="p-6 space-y-6">
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Dil Adı</label>
-                <input type="text" autoFocus value={tempLang.name} onChange={e => setTempLang({...tempLang, name: e.target.value})} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500" placeholder="Örn: İngilizce" />
+            <div className="p-6 pt-0 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Dil</label>
+                <input type="text" autoFocus onKeyDown={e => e.key === 'Enter' && addLanguage()} value={tempLang.name} onChange={e => setTempLang({...tempLang, name: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Örn: İngilizce" />
               </div>
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Seviye</label>
-                <select value={tempLang.level} onChange={e => setTempLang({...tempLang, level: e.target.value})} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500 appearance-none">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Seviye</label>
+                <select value={tempLang.level} onChange={e => setTempLang({...tempLang, level: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm appearance-none">
                   <option>Başlangıç (A1-A2)</option><option>Orta (B1-B2)</option><option>İleri (C1-C2)</option><option>Anadil</option>
                 </select>
               </div>
-              <button onClick={addLanguage} className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-md">Listeye Ekle</button>
+              <button onClick={addLanguage} className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl mt-2 hover:bg-blue-700 transition-all shadow-md">Listeye Ekle</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Certificate Modal */}
       {showCertModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up">
-            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-xl font-black text-gray-900">Sertifika Ekle</h3>
-              <button onClick={() => setShowCertModal(false)} className="text-gray-400 hover:text-gray-900 transition bg-white p-2 rounded-full shadow-sm"><X size={20}/></button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
+            <div className="px-6 py-5 flex justify-between items-center">
+              <h3 className="text-lg font-black text-gray-900">Sertifika Ekle</h3>
+              <button onClick={() => setShowCertModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
-            <div className="p-6 space-y-6">
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Sertifika / Eğitim Adı</label>
-                <input type="text" autoFocus value={tempCert.name} onChange={e => setTempCert({...tempCert, name: e.target.value})} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500" placeholder="Örn: Dijital Pazarlama Eğitimi" />
+            <div className="p-6 pt-0 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Sertifika Adı</label>
+                <input type="text" autoFocus onKeyDown={e => e.key === 'Enter' && addCert()} value={tempCert.name} onChange={e => setTempCert({...tempCert, name: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Örn: Dijital Pazarlama Eğitimi" />
               </div>
-              <div className="relative group">
-                <label className="absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600">Veren Kurum</label>
-                <input type="text" value={tempCert.issuer} onChange={e => setTempCert({...tempCert, issuer: e.target.value})} className="w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500" placeholder="Örn: Google" />
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Veren Kurum</label>
+                <input type="text" onKeyDown={e => e.key === 'Enter' && addCert()} value={tempCert.issuer} onChange={e => setTempCert({...tempCert, issuer: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Örn: Google" />
               </div>
-              <button onClick={addCert} className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-md">Listeye Ekle</button>
+              <button onClick={addCert} className="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl mt-2 hover:bg-indigo-700 transition-all shadow-md">Listeye Ekle</button>
             </div>
           </div>
         </div>
