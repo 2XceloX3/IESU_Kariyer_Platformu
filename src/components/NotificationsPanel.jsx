@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ArrowLeft, Bell, Briefcase, Calendar, CheckCircle2, MessageSquare, Star, Info, Trash2, CheckCircle, Home, Compass, MessageCircle, Search, Heart } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -6,8 +6,10 @@ import NavIcon from './shared/NavIcon';
 
 export default function NotificationsPanel({ previousView, userRole, notifications, setNotifications, currentUser, setView, setSelectedUserId }) {
   
-  const myNotifications = (notifications || []).filter(n => n.userId === currentUser?.id).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-  const unreadCount = (myNotifications || []).filter(n => !n.read).length;
+  const myNotifications = useMemo(() => 
+    (notifications || []).filter(n => n.userId === currentUser?.id).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+  , [notifications, currentUser]);
+  const unreadCount = useMemo(() => (myNotifications || []).filter(n => !n.read).length, [myNotifications]);
 
   const getIcon = (type) => {
     switch(type) {

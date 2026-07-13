@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight, Send, Image as ImageIcon, Camera, Aperture } from 'lucide-react';
+import { toast } from './shared/Toast';
 
 export default function StoryViewer({ stories, initialIndex = 0, onClose, isCreating, currentUser, setStories }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -80,7 +81,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
       setNewImage(null); // Clear previous if any
     } catch (err) {
       console.error("Camera access denied:", err);
-      window.toast.error("Kameraya erişilemedi. Lütfen izinleri kontrol edin.");
+      toast.error("Kameraya erişilemedi. Lütfen izin verin.");
     }
   };
 
@@ -181,9 +182,9 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
             <input type="file" accept="image/*" className="hidden" onChange={e => {
               if (e.target.files[0]) {
                 stopCamera();
-                const reader = new FileReader();
-                reader.onload = (evt) => setNewImage(evt.target.result);
-                reader.readAsDataURL(e.target.files[0]);
+                // Use createObjectURL instead of FileReader Base64 to prevent localStorage overflow
+                const objectUrl = URL.createObjectURL(e.target.files[0]);
+                setNewImage(objectUrl);
               }
             }} />
           </label>
