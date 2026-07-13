@@ -406,7 +406,7 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
 
 // ── 3. Akademik Performans ────────────────────────────────────
 function AkademikPanel({ students = [] }) {
-  const avg = ((students || []).reduce((a,s)=>a+parseFloat(s?.gpa||0),0)/((students || []).length||1)).toFixed(2);
+  const avg = students?.length ? ((students || []).reduce((a,s)=>a+parseFloat(s?.gpa||0),0)/students.length).toFixed(2) : "0.00";
   const honor = (students || []).filter(s=>s?.gpa>=3.5).length;
   const withCV = (students || []).filter(s=>s?.cv).length;
   const [search, setSearch] = useState('');

@@ -51,16 +51,17 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUserRole(userData.role || loginRole);
+        const finalRole = userData.role || loginRole;
+        setUserRole(finalRole);
         if (setCurrentUser) setCurrentUser({ id: user.uid, ...userData });
-        setView(userData.role || loginRole);
+        setView(finalRole === 'employer' ? 'company' : finalRole);
         setIsLoading(false);
         return; // Success!
       } else {
         // If no Firestore document, fallback to basic auth info
         setUserRole(loginRole);
         if (setCurrentUser) setCurrentUser({ id: user.uid, email: user.email, name: user.displayName || 'Kullanıcı', role: loginRole, onboardingCompleted: true });
-        setView(loginRole);
+        setView(loginRole === 'employer' ? 'company' : loginRole);
         setIsLoading(false);
         return;
       }

@@ -125,7 +125,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     </div>
                     <span className="text-[11px] font-bold text-gray-700">Firma</span>
                   </button>
-                  <button onClick={() => { setIsOpen(false); try { setView('academic'); } catch (e) { window.toast.error('HATA OLUŞTU: ' + e.message); } }} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-gray-50 hover:bg-amber-50 transition-colors group border border-gray-100 hover:border-amber-200 shadow-sm">
+                  <button onClick={() => { setIsOpen(false); setView('academic'); }} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-gray-50 hover:bg-amber-50 transition-colors group border border-gray-100 hover:border-amber-200 shadow-sm">
                     <div className="bg-amber-100 text-amber-600 p-2 rounded-lg group-hover:bg-amber-600 group-hover:text-white transition-colors">
                       <BookOpen size={18} />
                     </div>

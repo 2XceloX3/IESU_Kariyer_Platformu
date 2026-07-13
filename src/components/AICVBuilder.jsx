@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {  FileText, Wand2, Plus, Trash2, Download, Printer, User, Briefcase, GraduationCap, Award, Mail, Phone, MapPin, Search, ChevronLeft, ShieldCheck, Home, Compass, MessageCircle, Bell } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
@@ -36,6 +36,13 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   });
 
   // Save to localStorage whenever it changes
+  const isMounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   useEffect(() => {
     localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
   }, [cvData, currentUser?.id]);
@@ -49,6 +56,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   const handleAIGenerateSummary = () => {
     setIsGenerating(true);
     setTimeout(() => {
+      if (!isMounted.current) return;
       const eduPart = cvData.education.length > 0
         ? `${cvData.education[0].institution} ${cvData.education[0].degree} bölümünde eğitimine devam eden, `
         : '';

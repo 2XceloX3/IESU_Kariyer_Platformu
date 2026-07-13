@@ -30,7 +30,7 @@ const CompanyFeed = function({ setView, setSelectedUserId, notifications = [], s
 
   const filteredItems = useMemo(() => {
     const allItems = combineFeedItems(posts, events, news, announcements, jobs);
-    return allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+    return allItems.filter(post => post.content?.toLowerCase()?.includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase()?.includes(searchQuery.toLowerCase()));
   }, [posts, events, news, announcements, jobs, searchQuery]);
 
   return (

@@ -29,7 +29,7 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
 };
 
 export default function GroupProfile({ userRole, groupId, groupData, posts, setPosts, currentUser, setView, setSelectedUserId }) {
-  if (!groupData) {
+  if (!groupData || Object.keys(groupData).length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-8 text-center">
         <Users size={48} className="text-gray-300 mb-4" />
