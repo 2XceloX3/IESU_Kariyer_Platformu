@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Bell, Briefcase, Bookmark, Plus, Users, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, FileText, Home, Radar, Target, UserCheck, ChevronRight, MessageCircle, ChevronDown, ChevronUp, Compass, Heart, X, MoreHorizontal } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -23,11 +23,11 @@ export default function AcademicStaffFeed({
   const [internships, setInternships] = useState(initialInternships);
   const [approvals, setApprovals] = useState(academicApprovals);
 
-  const stats = {
+  const stats = useMemo(() => ({
     totalStudents: 450,
     activeInterns: 124,
     pendingApprovals: internships.filter(i => i.status === 'Onay Bekliyor').length + approvals.filter(a => a.status === 'Beklemede').length
-  };
+  }), [internships, approvals]);
 
   const handleApproveInternship = (id) => {
     setInternships(internships.map(i => i.id === id ? { ...i, status: 'Onaylandı' } : i));
