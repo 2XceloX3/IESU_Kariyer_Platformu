@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, XCircle, Info, AlertCircle, X } from 'lucide-react';
 
 let addToastHandler = null;
@@ -12,22 +12,34 @@ export const toast = {
 
 export function ToastContainer() {
   const [toasts, setToasts] = useState([]);
+  const timersRef = useRef({});
 
   useEffect(() => {
     addToastHandler = (toast) => {
       const id = Date.now();
       setToasts((prev) => [...prev, { ...toast, id }]);
-      setTimeout(() => {
+      
+      const timer = setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
+        delete timersRef.current[id];
       }, 4000);
+      
+      timersRef.current[id] = timer;
     };
     return () => {
       addToastHandler = null;
+      // Clear all active timers on unmount
+      Object.values(timersRef.current).forEach(clearTimeout);
+      timersRef.current = {};
     };
   }, []);
 
   const removeToast = (id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+    if (timersRef.current[id]) {
+      clearTimeout(timersRef.current[id]);
+      delete timersRef.current[id];
+    }
   };
 
   return (
