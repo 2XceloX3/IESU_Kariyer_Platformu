@@ -51,14 +51,15 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     }
   };
 
+  const clubs = useAppStore(state => state.clubs);
   const managedClubs = useMemo(() => {
     try {
-      const clubsData = JSON.parse(localStorage.getItem('iesu_clubs_v1')) || [];
+      const clubsData = clubs || [];
       return clubsData.filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
     } catch {
       return [];
     }
-  }, [currentUser]);
+  }, [clubs, currentUser?.id]);
 
   const isClubAdmin = managedClubs.length > 0;
 

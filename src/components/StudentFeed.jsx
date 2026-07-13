@@ -26,7 +26,7 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
   
   const getManagedClubs = useMemo(() => {
     try {
-      const clubsData = JSON.parse(localStorage.getItem('iesu_clubs_v1')) || clubs || [];
+      const clubsData = clubs || [];
       return clubsData.filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
     } catch {
       return [];
