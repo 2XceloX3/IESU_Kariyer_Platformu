@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TopProfileMenu from './TopProfileMenu';
 import { contentData } from './NewsEvents';
-import { Megaphone, Star } from 'lucide-react';
+import { Megaphone, Star, Newspaper } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
 import CMSNews from './admin/CMSNews';
 import CMSAnnouncements from './admin/CMSAnnouncements';

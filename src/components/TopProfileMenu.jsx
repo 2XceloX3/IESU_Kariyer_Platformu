@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { UserCircle2, Settings, LogOut, ChevronDown, User, Shield, Calendar, Wand2, FileText, MessageSquare, ShieldCheck, Crown, LayoutDashboard, GraduationCap, Users as UsersIcon, Building2, BookOpen, MessageCircle } from 'lucide-react';
 import Logo from './Logo';
 
@@ -49,16 +49,16 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     }
   };
 
-  const getManagedClubs = () => {
+  const managedClubs = useMemo(() => {
     try {
       const clubsData = JSON.parse(localStorage.getItem('iesu_clubs_v1')) || [];
       return clubsData.filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id));
     } catch {
       return [];
     }
-  };
+  }, [currentUser]);
 
-  const isClubAdmin = getManagedClubs().length > 0;
+  const isClubAdmin = managedClubs.length > 0;
 
   return (
     <div className="relative" ref={menuRef}>

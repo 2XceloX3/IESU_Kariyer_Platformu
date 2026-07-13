@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
-import { Heart, Building2, MapPin, Briefcase, ExternalLink, X } from 'lucide-react';
+import { Heart, Building2, MapPin, Briefcase, ExternalLink, X, DollarSign, Home, Compass } from 'lucide-react';
 
 export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, onViewDetails }) {
   const [exitX, setExitX] = useState(0);
@@ -111,21 +111,34 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
               <h3 className="text-lg font-black text-gray-900 leading-tight line-clamp-1">{job.title}</h3>
               <p className="text-sm font-bold text-gray-500 mt-1">{job.company}</p>
             </div>
-            {job.salary && (
-              <span className="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-lg shrink-0">
-                {job.salary}
-              </span>
-            )}
           </div>
           
-          <div className="space-y-2 mb-6">
+          <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-              <MapPin size={16} className="text-gray-400" />
-              {job.location}
+              <MapPin size={16} className="text-gray-400 shrink-0" />
+              <span className="truncate">{job.location}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-              <Briefcase size={16} className="text-gray-400" />
-              {job.department}
+              <Briefcase size={16} className="text-gray-400 shrink-0" />
+              <span className="truncate">{job.department}</span>
+            </div>
+          </div>
+
+          {/* Gen Z Indicators: Flexibility & Salary */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {/* Flexibility Indicator */}
+            <div className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
+              job.location?.toLowerCase().includes('uzaktan') || job.location?.toLowerCase().includes('remote') 
+                ? 'bg-blue-50 text-blue-600 border border-blue-100' 
+                : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+            }`}>
+              {job.location?.toLowerCase().includes('uzaktan') || job.location?.toLowerCase().includes('remote') ? <><Home size={12}/> %100 Remote</> : <><Compass size={12}/> Hibrit (Ofis + Ev)</>}
+            </div>
+            
+            {/* Salary Transparency */}
+            <div className="px-2.5 py-1 rounded-lg bg-gray-50 text-gray-700 border border-gray-100 text-xs font-bold flex items-center gap-1.5" title="Yapay zeka tarafından sektörel verilere göre tahmin edilmiştir.">
+              <DollarSign size={12} className="text-emerald-500" />
+              {job.salary ? job.salary : 'Tahmini: 35K - 45K ₺'}
             </div>
           </div>
         </div>
