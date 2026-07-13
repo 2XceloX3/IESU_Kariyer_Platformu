@@ -168,6 +168,18 @@ function App() {
 
   // Modal durumları açık kaldığında veya sayfa değiştiğinde scroll kilitlenmelerini engelle
   useEffect(() => {
+    // Authentication & Authorization Guard
+    const publicViews = ['landing', 'login', 'register', 'forgot_password'];
+    if (!currentUser && !publicViews.includes(view)) {
+      if (window.toast) window.toast.error("Bu sayfayı görüntülemek için giriş yapmalısınız.");
+      setView('landing');
+    } else if (currentUser && view === 'admin' && userRole !== 'admin') {
+      if (window.toast) window.toast.error("Bu sayfaya erişim yetkiniz yok.");
+      setView(userRole === 'academic' ? 'academic' : userRole === 'company' ? 'company' : userRole === 'alumni' ? 'alumni' : 'student');
+    }
+  }, [view, currentUser, userRole]);
+
+  useEffect(() => {
     document.body.style.overflow = '';
     document.body.classList.remove('overflow-hidden');
   }, [view]);
