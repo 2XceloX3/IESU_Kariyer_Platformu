@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {  Briefcase, CheckCircle2, Clock, XCircle, ChevronRight, UserCircle2 , ChevronLeft, Home, Compass, Users, MessageCircle, Bell, Search } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
@@ -30,9 +30,11 @@ export default function ApplicationsPanel({ applications = [], setApplications, 
   // If student: show their applications
   // If company: show applications to their jobs
 
-  const myApplications = userRole === 'student' 
-    ? (applications || []).filter(app => app.applicantId === currentUser?.id)
-    : (applications || []).filter(app => app.company === currentUser?.name);
+  const myApplications = useMemo(() => {
+    return userRole === 'student' 
+      ? (applications || []).filter(app => app.applicantId === currentUser?.id)
+      : (applications || []).filter(app => app.company === currentUser?.name);
+  }, [applications, userRole, currentUser]);
 
   const handleStatusChange = (appId, newStatus) => {
     setApplications((applications || []).map(app => 
