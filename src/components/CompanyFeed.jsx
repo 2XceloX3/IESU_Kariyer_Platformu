@@ -14,7 +14,7 @@ import TopProfileMenu from './TopProfileMenu';
 import ApplicationsPanel from './ApplicationsPanel';
 import NavIcon from './shared/NavIcon';
 
-export default function CompanyFeed({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, news, events, students, alumni, companies, messages, setMessages, applications, setApplications, jobs, announcements, academicStaff, currentUser, userRole, academicRole, groups, setGroups, setSelectedGroupId }) {
+const CompanyFeed = function({ setView, setSelectedUserId, notifications = [], setNotifications, posts, setPosts, stories, setStories, surveys, news, events, students, alumni, companies, messages, setMessages, applications, setApplications, jobs, announcements, academicStaff, currentUser, userRole, academicRole, groups, setGroups, setSelectedGroupId }) {
   const [activeTab, setActiveTab] = useState('feed'); // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -323,4 +323,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, notifications 
   );
 }
 
+
+
+export default React.memo(CompanyFeed);
 
