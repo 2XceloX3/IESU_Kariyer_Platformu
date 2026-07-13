@@ -22,11 +22,9 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+      // Use Object URL instead of Base64 FileReader to prevent localStorage QuotaExceededError
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewImage(objectUrl);
     }
   };
 
