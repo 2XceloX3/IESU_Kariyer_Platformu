@@ -119,14 +119,10 @@ export default function ProfileUpdate({
     const file = e.target.files[0];
     if (file) {
       setUploadedFileName(file.name);
-      // Create a mock base64/object URL so it is actually saved
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        handleInputChange('attachmentData', reader.result);
-        handleInputChange('attachmentName', file.name);
-      };
-      reader.readAsDataURL(file);
-      window.toast.success('CV dosyası belleğe alındı, kaydet butonuna basmayı unutmayın.');
+      const fileUrl = URL.createObjectURL(file);
+      handleInputChange('attachmentData', fileUrl);
+      handleInputChange('attachmentName', file.name);
+      window.toast.success('CV dosyası eklendi, kaydet butonuna basmayı unutmayın.');
     }
   };
 
@@ -156,17 +152,23 @@ export default function ProfileUpdate({
       setShowCertModal(false); setTempCert({ name: '', issuer: '' });
     }
   };
-  const removeItem = (arrayName, indexOrId) => {
+  const removeItem = (arrayName, idOrValue) => {
     const arr = formData[arrayName] || [];
-    const newArr = typeof arr[0] === 'string' ? arr.filter((_, i) => i !== indexOrId) : arr.filter(item => item.id !== indexOrId);
+    const newArr = typeof arr[0] === 'string' ? arr.filter(item => item !== idOrValue) : arr.filter(item => item.id !== idOrValue);
     handleInputChange(arrayName, newArr);
   };
 
-  const allUnits = [...IESU_FACULTIES, ...IESU_MYO, ...IESU_YUKSEKOKUL, ...IESU_ENSTITU];
-  const activeFaculties = allUnits.map((u, i) => ({ id: `fac-${i}`, name: u.name, status: 'Aktif', departments: u.departments.map((d, j) => ({ id: `dept-${i}-${j}`, name: d, status: 'Aktif', programs: [{ id: `prog-${i}-${j}`, name: d, level: 'Lisans', status: 'Aktif' }] })) }));
-  
-  const availableDepts = selectedFaculty ? (activeFaculties.find(f => f.name === selectedFaculty)?.departments || []) : [];
-  const availableCapDepts = selectedCapFaculty ? (activeFaculties.find(f => f.name === selectedCapFaculty)?.departments || []) : [];
+  const { activeFaculties, availableDepts, availableCapDepts } = useMemo(() => {
+    const allUnits = [...IESU_FACULTIES, ...IESU_MYO, ...IESU_YUKSEKOKUL, ...IESU_ENSTITU];
+    const faculties = allUnits.map((u, i) => ({ 
+      id: `fac-${i}`, name: u.name, status: 'Aktif', 
+      departments: u.departments.map((d, j) => ({ id: `dept-${i}-${j}`, name: d, status: 'Aktif', programs: [{ id: `prog-${i}-${j}`, name: d, level: 'Lisans', status: 'Aktif' }] })) 
+    }));
+    const depts = selectedFaculty ? (faculties.find(f => f.name === selectedFaculty)?.departments || []) : [];
+    const capDepts = selectedCapFaculty ? (faculties.find(f => f.name === selectedCapFaculty)?.departments || []) : [];
+    
+    return { activeFaculties: faculties, availableDepts: depts, availableCapDepts: capDepts };
+  }, [selectedFaculty, selectedCapFaculty]);
 
   return (
     <div className="min-h-[100dvh] bg-gray-50/50 font-sans flex flex-col relative overflow-x-hidden selection:bg-indigo-500/30">
@@ -507,10 +509,10 @@ export default function ProfileUpdate({
                     {(!formData.skills || formData.skills.length === 0) ? (
                       <p className="text-sm text-gray-400 italic">Yetenek eklenmemiş.</p>
                     ) : (
-                      formData.skills.map((skill, index) => (
-                        <div key={index} className="pl-4 pr-1.5 py-1.5 bg-white border border-gray-200 rounded-xl flex items-center gap-2 text-sm font-bold text-gray-700 shadow-sm group">
+                      formData.skills.map((skill) => (
+                        <div key={skill} className="pl-4 pr-1.5 py-1.5 bg-white border border-gray-200 rounded-xl flex items-center gap-2 text-sm font-bold text-gray-700 shadow-sm group">
                           {skill}
-                          <button onClick={() => removeItem('skills', index)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors">
+                          <button onClick={() => removeItem('skills', skill)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors">
                             <X size={14} />
                           </button>
                         </div>

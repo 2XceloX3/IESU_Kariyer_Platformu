@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Shield, Users, Check, X, Megaphone, MapPin, Send, FileText, Image as ImageIcon } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';
 
 export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
-  const { clubs, setClubs, addEvent } = useAppStore();
+  const { clubs, setClubs, events, setEvents } = useAppStore();
   
   // 1. Yetkilendirme Mantık Hatası Düzeltmesi
   // managedClubs içinde, kullanıcının id veya ismine göre başkan/admin olup olmadığını tam kontrol ediyoruz.
-  const managedClubs = clubs.filter(c => 
-    c.presidentId === currentUser?.id || 
-    c.president?.name === currentUser?.name || 
-    (c.admins && c.admins.includes(currentUser?.id))
-  );
+  const managedClubs = useMemo(() => {
+    return clubs.filter(c => 
+      c.presidentId === currentUser?.id || 
+      c.president?.name === currentUser?.name || 
+      (c.admins && c.admins.includes(currentUser?.id))
+    );
+  }, [clubs, currentUser]);
 
   // 2. Stale State Düzeltmesi: overrideClubId veya managedClubs değiştiğinde selectedClubId güncellenir.
   const [selectedClubId, setSelectedClubId] = useState(overrideClubId || (managedClubs.length > 0 ? managedClubs[0].id : null));
@@ -23,7 +25,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
     } else if (managedClubs.length > 0 && (!selectedClubId || !managedClubs.find(c => c.id === selectedClubId))) {
       setSelectedClubId(managedClubs[0].id);
     }
-  }, [overrideClubId, clubs, currentUser]);
+  }, [overrideClubId, managedClubs, selectedClubId]);
 
   const [activeTab, setActiveTab] = useState('requests');
   
@@ -43,7 +45,9 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
     );
   }
 
-  const selectedClub = clubs.find(c => c.id === selectedClubId) || managedClubs[0];
+  const selectedClub = useMemo(() => {
+    return clubs.find(c => c.id === selectedClubId) || managedClubs[0];
+  }, [clubs, selectedClubId, managedClubs]);
   
   // 1. Yetkilendirme Mantık Hatası Düzeltmesi (isPresident check)
   const isPresident = selectedClub.presidentId === currentUser?.id || selectedClub.president?.name === currentUser?.name;
@@ -133,7 +137,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
       attendees: 0
     };
 
-    addEvent(newEvent);
+    setEvents(prev => [newEvent, ...prev]);
     toast.success('Gönderi ve Etkinlik başarıyla paylaşıldı!');
     
     setPostTitle('');
