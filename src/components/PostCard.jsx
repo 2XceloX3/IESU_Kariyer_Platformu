@@ -211,7 +211,7 @@ export default function PostCard({ post, currentUser, setPosts, setMessages }) {
       {/* Media Attachments */}
       {post.image && (
         <div className="w-full aspect-video bg-gray-100 relative group cursor-pointer overflow-hidden border-y border-gray-50">
-          <img src={post.image} alt="Post Cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={post.image} alt="Post Cover" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           {post.isJob && (
             <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5">
               <Briefcase size={14} /> İLAN
