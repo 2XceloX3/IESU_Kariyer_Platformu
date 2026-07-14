@@ -156,12 +156,15 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
     dil: <Languages size={20} />,
     cv: <FileText size={20} />,
     map: <Map size={20} />,
+    kulup_basvuru: <Users size={20} />,
+    kariyer_checkup: <Compass size={20} />,
+    mezun_kart: <CreditCard size={20} />
   };
   const sectionColor = {
     ozluk: 'blue', akademik: 'indigo', staj: 'emerald',
     kurs: 'amber', sertifika: 'purple', dil: 'sky',
     cv: 'rose', map: 'teal',
-    kariyer_checkup: 'indigo', mezun_kart: 'rose'
+    kariyer_checkup: 'indigo', mezun_kart: 'rose', kulup_basvuru: 'emerald'
   };
   const colorMap = {
     blue:    { bg: 'bg-blue-50',    text: 'text-blue-600',    btn: 'bg-blue-600 hover:bg-blue-700' },
