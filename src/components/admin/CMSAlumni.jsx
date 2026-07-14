@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, Star, CheckCircle2, Download, ClipboardList } from 'lucide-react';
+import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, Star, CheckCircle2, Download, ClipboardList, Compass, X } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
 import CMSSurveys from './CMSSurveys';
+import useAppStore from '../../store/useAppStore';
 
 export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys, currentUser, setPosts, posts }) {
+  const { alumniSurveyResponses } = useAppStore();
   const [activeTab, setActiveTab] = useState('mezunlar');
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedSurvey, setSelectedSurvey] = useState(null);
 
   const [form, setForm] = useState({
     name: '',
@@ -73,6 +76,18 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
       setAlumni(prev => [{ ...form, id: 'ALM-' + Date.now(), createdAt: new Date().toISOString() }, ...(prev || [])]);
     }
     setIsEditing(false);
+  };
+
+  const handleSPSSExport = () => {
+    if (!alumniSurveyResponses || alumniSurveyResponses.length === 0) {
+      return window.toast?.info('Dışa aktarılacak anket verisi bulunmuyor.');
+    }
+    // KVKK Compliant: Strip PII (name, tc, phone, email etc)
+    const exportData = alumniSurveyResponses.map(r => {
+      const { name, tc, phone, email, ...safeData } = r;
+      return safeData;
+    });
+    exportToCSV(exportData, 'kariyer_checkup_spss_anonim.csv');
   };
 
   const safeAlumni = alumni || [];
@@ -167,7 +182,10 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
           </select>
           <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
           <button onClick={() => exportToCSV(filtered, 'mezunlar.csv')} className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition text-sm font-bold">
-            <Download size={18} /> Excel'e Aktar
+            <Download size={18} /> Excel
+          </button>
+          <button onClick={handleSPSSExport} className="flex items-center gap-2 p-2 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-100 transition text-sm font-bold shadow-sm">
+            <Download size={18} /> SPSS (Anonim)
           </button>
         </div>
       </div>
@@ -235,6 +253,18 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
+                      {alumniSurveyResponses?.find(r => r.email === a.email || r.department === a.department) && (
+                        <button 
+                          title="Anket Yanıtını Gör"
+                          onClick={() => {
+                            const sr = alumniSurveyResponses.find(r => r.email === a.email || r.department === a.department);
+                            setSelectedSurvey({ alumni: a, response: sr });
+                          }} 
+                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                        >
+                          <Compass size={16}/>
+                        </button>
+                      )}
                       <button onClick={() => handleEdit(a)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
@@ -362,8 +392,69 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
   );
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in relative">
       {isEditing ? formView : listView}
+
+      {/* Survey Modal */}
+      {selectedSurvey && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row shadow-2xl animate-fade-in-up">
+            
+            {/* Left Pane: Alumni Info */}
+            <div className="md:w-1/3 bg-gray-50 border-r border-gray-100 p-6 flex flex-col items-center text-center">
+              <div className="w-24 h-24 rounded-full bg-white border border-gray-200 overflow-hidden mb-4 flex items-center justify-center">
+                {selectedSurvey.alumni.avatar ? <img src={selectedSurvey.alumni.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={48} className="text-gray-300"/>}
+              </div>
+              <h3 className="text-lg font-black text-gray-900 mb-1">{selectedSurvey.alumni.name}</h3>
+              <p className="text-xs font-bold text-gray-500 uppercase">{selectedSurvey.alumni.department || 'Belirtilmedi'} - {selectedSurvey.alumni.graduationYear}</p>
+              
+              <div className="mt-6 w-full space-y-3 text-left">
+                <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">E-Posta</p>
+                  <p className="text-xs font-medium text-gray-800 break-all">{selectedSurvey.alumni.email || '-'}</p>
+                </div>
+                <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Kayıtlı Durum</p>
+                  <p className="text-xs font-medium text-gray-800">{selectedSurvey.alumni.careerStatus}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Pane: Likert Survey Answers */}
+            <div className="md:w-2/3 flex flex-col bg-white h-full max-h-[90vh]">
+              <div className="p-6 flex items-center justify-between border-b border-gray-100 bg-white sticky top-0 z-10">
+                <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                  <Compass className="text-indigo-600" size={20} />
+                  Kariyer Check-up Yanıtları
+                </h3>
+                <button onClick={() => setSelectedSurvey(null)} className="p-2 text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-full transition-colors">
+                  <X size={18} />
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto space-y-5">
+                {[
+                  { q: 'Şu anda aktif olarak çalışıyor musunuz?', a: selectedSurvey.response.q1_calisma },
+                  { q: 'İlk işinizi ne kadar sürede buldunuz?', a: selectedSurvey.response.q2_sure },
+                  { q: 'Çalıştığınız sektör', a: selectedSurvey.response.q3_sektor },
+                  { q: 'Kurumun türü', a: selectedSurvey.response.q4_kurum_turu },
+                  { q: 'Mevcut göreviniz / ünvanınız', a: selectedSurvey.response.q5_gorev },
+                  { q: 'İşin bölümle ilişkisi (1-5 Likert)', a: selectedSurvey.response.q6_iliskili ? `${selectedSurvey.response.q6_iliskili} / 5` : '-' },
+                  { q: 'Çalıştığınız il / ülke', a: selectedSurvey.response.q7_il },
+                  { q: 'Çalışma şekli', a: selectedSurvey.response.q8_calisma_sekli },
+                  { q: 'Lisansüstü eğitim', a: selectedSurvey.response.q9_lisansustu },
+                  { q: 'Görüş ve öneriler', a: selectedSurvey.response.q12_oneri },
+                ].map((item, i) => (
+                  <div key={i} className="border-b border-gray-50 pb-4 last:border-0 last:pb-0">
+                    <p className="text-xs font-bold text-gray-500 mb-1">{i+1}. {item.q}</p>
+                    <p className="text-sm font-medium text-gray-900">{item.a || <span className="text-gray-400 italic">Yanıtlanmadı</span>}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

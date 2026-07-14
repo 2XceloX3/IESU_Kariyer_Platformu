@@ -290,6 +290,8 @@ function App() {
         currentUser={currentUser} 
         setView={setView} 
         setAlumni={setAlumni} 
+        alumniCardApplications={alumniCardApplications}
+        setAlumniCardApplications={setAlumniCardApplications}
       />}
       {view === 'user_profile' && <UserProfile 
             userId={selectedUserId} 

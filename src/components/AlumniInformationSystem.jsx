@@ -1,29 +1,77 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import useAppStore from '../store/useAppStore';
 import {
   UserCircle2, Briefcase, FileText, LogOut, BookOpen, GraduationCap,
   Plus, Trash2, Globe2, Languages, Award, X, Building2, Save, RefreshCw,
   Phone, Mail, MapPin, User, Calendar, BadgeCheck, Map, ArrowLeft,
-  UploadCloud, ChevronRight, Star, Link
+  UploadCloud, ChevronRight, Star, Link, Compass, CreditCard, CheckCircle,
+  Clock, AlertCircle, Download, ChevronDown
 } from 'lucide-react';
 
 const LANGUAGE_LEVELS = ['Başlangıç (A1-A2)', 'Orta (B1-B2)', 'İleri (C1)', 'Anadil / Akıcı'];
 const EXP_TYPES = ['Staj', 'Tam Zamanlı', 'Yarı Zamanlı', 'Gönüllü', 'Freelance'];
 
 const TABS = [
-  { id: 'ozluk',    label: 'Özlük Bilgileri',          icon: <User size={16} /> },
-  { id: 'akademik', label: 'Akademik Eğitim',           icon: <GraduationCap size={16} /> },
-  { id: 'staj',     label: 'İş / Staj Tecrübeleri',    icon: <Briefcase size={16} /> },
-  { id: 'kurs',     label: 'Kurs / Seminer',            icon: <BookOpen size={16} /> },
-  { id: 'sertifika',label: 'Sertifika ve Belgeler',     icon: <Award size={16} /> },
-  { id: 'dil',      label: 'Yabancı Dil',               icon: <Languages size={16} /> },
-  { id: 'cv',       label: 'Özgeçmiş / CV',             icon: <FileText size={16} /> },
-  { id: 'map',      label: 'Dünyadaki Mezunlarımız',    icon: <Map size={16} /> },
+  { id: 'ozluk',           label: 'Özlük Bilgileri',          icon: <User size={16} /> },
+  { id: 'akademik',        label: 'Akademik Eğitim',          icon: <GraduationCap size={16} /> },
+  { id: 'staj',            label: 'İş / Staj Tecrübeleri',    icon: <Briefcase size={16} /> },
+  { id: 'kurs',            label: 'Kurs / Seminer',           icon: <BookOpen size={16} /> },
+  { id: 'sertifika',       label: 'Sertifika ve Belgeler',    icon: <Award size={16} /> },
+  { id: 'dil',             label: 'Yabancı Dil',              icon: <Languages size={16} /> },
+  { id: 'cv',              label: 'Özgecşmiş / CV',            icon: <FileText size={16} /> },
+  { id: 'kariyer_checkup', label: 'Kariyer Check-up',         icon: <Compass size={16} /> },
+  { id: 'mezun_kart',      label: 'Mezun Kart Başvurusu',     icon: <CreditCard size={16} /> },
+  { id: 'map',             label: 'Dünyadaki Mezunlarımız',   icon: <Map size={16} /> },
 ];
 
-export default function AlumniInformationSystem({ currentUser, setView }) {
+const CV_SUB_TABS = [
+  { id: 'cv_yukle', label: 'CV Yükle' },
+  { id: 'cv_ai',    label: 'AI CV Oluşturucu' },
+  { id: 'cv_ipucu', label: 'CV İpuçları' },
+];
+
+const LIKERT_OPTIONS = [
+  { value: 1, label: 'Kesinlikle Hayır' },
+  { value: 2, label: 'Hayır' },
+  { value: 3, label: 'Kısmen' },
+  { value: 4, label: 'Evet' },
+  { value: 5, label: 'Kesinlikle Evet' },
+];
+
+export default function AlumniInformationSystem({ currentUser, setView, alumniCardApplications, setAlumniCardApplications }) {
+  const { alumniSurveyResponses, setAlumniSurveyResponses } = useAppStore();
   const [activeTab, setActiveTab] = useState('ozluk');
+  const [activeCvTab, setActiveCvTab] = useState('cv_yukle');
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef(null);
+
+  // ─── Kariyer Check-up Survey State ───
+  const [surveyForm, setSurveyForm] = useState({
+    q1_calisma: '',           // Çalışıyor mu?
+    q2_sure: '',              // İlk iş ne kadar sürede bulundu
+    q3_sektor: '',            // Sektör
+    q4_kurum_turu: '',        // Kurum türü
+    q5_gorev: '',             // Görev/ünvan
+    q6_iliskili: 0,           // Likert 1-5 - bölümle ilgili mi
+    q7_il: '',                // Çalıştığı il/ülke
+    q8_calisma_sekli: '',     // Uzaktan/Hibrit/Ofis
+    q9_lisansustu: '',        // Lisansüstü eğitim
+    q10_telefon: '',          // Telefon güncel mi
+    q11_eposta: '',           // E-posta güncel mi
+    q12_oneri: '',            // Görüş ve öneriler
+  });
+  const [surveySubmitted, setSurveySubmitted] = useState(false);
+
+  // ─── Mezun Kart State ───
+  const [cardForm, setCardForm] = useState({
+    tc: currentUser?.tc || '',
+    phone: currentUser?.phone || '',
+    kvkk: false,
+  });
+  const existingCardApp = (alumniCardApplications || []).find(
+    a => a.email === currentUser?.email || a.name === currentUser?.name
+  );
+
 
   // ─── Form States ───
   const [ozluk, setOzluk] = useState({
@@ -434,60 +482,353 @@ export default function AlumniInformationSystem({ currentUser, setView }) {
             )
           )}
 
-          {/* ─── ÖZGEÇMİŞ / CV ─── */}
+          {/* ─── ÖZGEÇMİŞ / CV ─── with sub-tabs */}
           {activeTab === 'cv' && (
-            <div className="space-y-6">
-              {/* Upload area */}
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-gray-200 hover:border-rose-300 rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer group transition-all hover:bg-rose-50/30"
-              >
-                <input type="file" ref={fileInputRef} onChange={handleCvUpload} accept=".pdf,.doc,.docx" className="hidden" />
-                <div className="w-16 h-16 bg-rose-50 group-hover:bg-rose-100 rounded-2xl flex items-center justify-center mb-4 transition-colors">
-                  <UploadCloud size={28} className="text-rose-500" />
-                </div>
-                <p className="font-bold text-gray-900 text-base">CV / Özgeçmiş Yükle</p>
-                <p className="text-sm text-gray-400 mt-1.5">PDF, DOC veya DOCX formatı desteklenir</p>
-                {cvFileName && (
-                  <div className="mt-4 px-4 py-2 bg-white border border-gray-200 rounded-xl flex items-center gap-2 shadow-sm">
-                    <FileText size={15} className="text-rose-500" />
-                    <span className="text-sm font-bold text-gray-700">{cvFileName}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* CV tips */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  { icon: <Star size={18} />, title: 'ATS Uyumlu', desc: 'CV\'nizin otomatik sistemlerde okunabilir olmasına dikkat edin.' },
-                  { icon: <FileText size={18} />, title: 'Güncel Tutun', desc: 'Her başvuru öncesi CV\'nizi son deneyimlerinizle güncelleyin.' },
-                  { icon: <Globe2 size={18} />, title: 'İngilizce Versiyon', desc: 'Uluslararası fırsatlar için İngilizce CV hazırlayın.' },
-                ].map((tip, i) => (
-                  <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                    <div className="flex items-center gap-2 mb-2 text-rose-500">{tip.icon}<span className="text-sm font-bold text-gray-800">{tip.title}</span></div>
-                    <p className="text-xs text-gray-500 leading-relaxed">{tip.desc}</p>
-                  </div>
+            <div className="space-y-5">
+              {/* CV Sub-Tab Nav */}
+              <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
+                {CV_SUB_TABS.map(st => (
+                  <button
+                    key={st.id}
+                    onClick={() => setActiveCvTab(st.id)}
+                    className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                      activeCvTab === st.id
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    {st.label}
+                  </button>
                 ))}
               </div>
 
-              {/* Link to AI CV Builder */}
-              <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Yapay Zeka Destekli</p>
-                  <h3 className="text-white font-black text-lg">AI CV Oluşturucu</h3>
-                  <p className="text-gray-400 text-sm mt-1">Bilgilerinizden otomatik profesyonel CV oluşturun.</p>
-                </div>
-                <button
-                  onClick={() => setView('cvbuilder')}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors shrink-0 shadow-sm"
+              {/* CV Yükle */}
+              {activeCvTab === 'cv_yukle' && (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-gray-200 hover:border-rose-300 rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer group transition-all hover:bg-rose-50/30"
                 >
-                  Başla <ChevronRight size={16} />
-                </button>
-              </div>
+                  <input type="file" ref={fileInputRef} onChange={handleCvUpload} accept=".pdf,.doc,.docx" className="hidden" />
+                  <div className="w-16 h-16 bg-rose-50 group-hover:bg-rose-100 rounded-2xl flex items-center justify-center mb-4 transition-colors">
+                    <UploadCloud size={28} className="text-rose-500" />
+                  </div>
+                  <p className="font-bold text-gray-900 text-base">CV / Özgecşmiş Yükle</p>
+                  <p className="text-sm text-gray-400 mt-1.5">PDF, DOC veya DOCX formatı desteklenir</p>
+                  {cvFileName && (
+                    <div className="mt-4 px-4 py-2 bg-white border border-gray-200 rounded-xl flex items-center gap-2 shadow-sm">
+                      <FileText size={15} className="text-rose-500" />
+                      <span className="text-sm font-bold text-gray-700">{cvFileName}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* AI CV Oluşturucu */}
+              {activeCvTab === 'cv_ai' && (
+                <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Yapay Zeka Destekli</p>
+                    <h3 className="text-white font-black text-xl">AI CV Oluşturucu</h3>
+                    <p className="text-gray-400 text-sm mt-2 max-w-sm">Profil bilgilerinizden otomatik, profesyonel ve ATS uyumlu CV oluşturun. Saniyeler içinde hazır.</p>
+                  </div>
+                  <button
+                    onClick={() => setView('cvbuilder')}
+                    className="flex items-center gap-2 px-6 py-3 bg-white text-gray-900 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors shrink-0 shadow-sm"
+                  >
+                    Başla <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
+
+              {/* CV İpuçları */}
+              {activeCvTab === 'cv_ipucu' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { icon: <Star size={18} />, title: 'ATS Uyumlu Yazın', desc: 'Basit fontlar, net başlıklar ve tablo kullanmaktan kaçının. Anahtar kelimeleri doğal olarak ekleyin.' },
+                    { icon: <FileText size={18} />, title: 'Güncel Tutun', desc: 'Her başvuru öncesi son deneyimlerinizle güncelleyin. Tarihlerin doğru olduğundan emin olun.' },
+                    { icon: <Globe2 size={18} />, title: 'Uluslararası Versiyon', desc: 'Uluslararası fırsatlar için İngilizce CV hazırlayın, başına professional summary ekleyin.' },
+                    { icon: <BadgeCheck size={18} />, title: 'Niyet Mektubu', desc: 'Her başvuruya özel niyet mektubu ekleyin. Generic metinlerden kaçının.' },
+                  ].map((tip, i) => (
+                    <div key={i} className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <div className="flex items-center gap-2 mb-2 text-rose-500">{tip.icon}<span className="text-sm font-bold text-gray-800">{tip.title}</span></div>
+                      <p className="text-xs text-gray-500 leading-relaxed">{tip.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ─── KARİYER CHECK-UP ─── */}
+          {activeTab === 'kariyer_checkup' && (
+            <div className="space-y-6">
+              {surveySubmitted ? (
+                <div className="text-center py-16">
+                  <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle size={40} className="text-green-500" />
+                  </div>
+                  <h3 className="text-xl font-black text-gray-900 mb-2">Teşekkürler!</h3>
+                  <p className="text-gray-500 text-sm max-w-md mx-auto">Yanıtlarınız başarıyla kaydedildi ve üniversitemizin istatistik havuzuna eklendi. Katkınız için teşekkürler.</p>
+                  <button onClick={() => setSurveySubmitted(false)} className="mt-6 text-xs font-bold text-blue-600 hover:underline">Tekrar doldurmak istiyorum</button>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 flex gap-3">
+                    <Compass size={20} className="text-indigo-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-bold text-indigo-900">Üniversitemizin İstatistiklerine Katkıda Bulunun</p>
+                      <p className="text-xs text-indigo-700 mt-0.5">Mezun durumunuza ilişkin bilgiler anonim olarak toplanır ve KVKK kapsamında korunur. Hiçbir kişisel veri işverenlerle paylaşılmaz.</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* S1 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">1. Şu anda aktif olarak çalışıyor musunuz?</p>
+                      <div className="flex flex-wrap gap-2">
+                        {['Çalışıyorum', 'Kısmi Zamanlı', 'Stajda', 'Hayr, Arıyorum', 'Hayır, Aramıyorum'].map(opt => (
+                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q1_calisma: opt})} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q1_calisma === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* S2 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">2. İlk işinizi mezun olduktan ne kadar süre sonra buldunuz?</p>
+                      <select value={surveyForm.q2_sure} onChange={e => setSurveyForm({...surveyForm, q2_sure: e.target.value})} className={inp}>
+                        <option value="">Seçiniz</option>
+                        {['Mezun olmadan buldum', '0-3 Ay', '3-6 Ay', '6-12 Ay', '1-2 Yıl', '2 Yıldan Fazla', 'Henüz bulamadım'].map(o => <option key={o}>{o}</option>)}
+                      </select>
+                    </div>
+
+                    {/* S3 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">3. Çalıştığınız sektör</p>
+                      <select value={surveyForm.q3_sektor} onChange={e => setSurveyForm({...surveyForm, q3_sektor: e.target.value})} className={inp}>
+                        <option value="">Seçiniz</option>
+                        {['Bilgi Teknolojileri', 'Sağlık', 'Eğitim', 'Finans / Bankacılık', 'İnşaat / Gayrimenkul', 'Lojistik / Taşımacılık', 'Perakende / Ticaret', 'Kamu / Devlet', 'Medya / İletişim', 'Turizm / Otelcilik', 'Sanayi / Üretim', 'Diğer'].map(o => <option key={o}>{o}</option>)}
+                      </select>
+                    </div>
+
+                    {/* S4 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">4. Çalıştığınız kurumun türü</p>
+                      <div className="flex flex-wrap gap-2">
+                        {['Kamu', 'Özel Sektör', 'NGO / Sivil Toplum', 'Kendi İşim (Serbest)', 'Uluslararası Kurum'].map(opt => (
+                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q4_kurum_turu: opt})} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q4_kurum_turu === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* S5 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">5. Mevcut göreviniz / ünvanınız</p>
+                      <input type="text" value={surveyForm.q5_gorev} onChange={e => setSurveyForm({...surveyForm, q5_gorev: e.target.value})} className={inp} placeholder="Örn: Yazılım Mühendisi, Müdire, Analist..." />
+                    </div>
+
+                    {/* S6 - LİKERT */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-4">6. Çalıştığınız iş mezun olduğunuz bölümle ne kadar ilişkili?</p>
+                      <div className="flex gap-2 justify-between">
+                        {LIKERT_OPTIONS.map(opt => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setSurveyForm({...surveyForm, q6_iliskili: opt.value})}
+                            className={`flex-1 flex flex-col items-center gap-1.5 py-3 px-1 rounded-xl border text-xs font-bold transition-all ${
+                              surveyForm.q6_iliskili === opt.value
+                                ? 'bg-indigo-600 text-white border-indigo-600'
+                                : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
+                            }`}
+                          >
+                            <span className="text-lg">{opt.value}</span>
+                            <span className="text-center leading-tight" style={{fontSize: '9px'}}>{opt.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* S7 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">7. Çalıştığınız il / ülke</p>
+                      <input type="text" value={surveyForm.q7_il} onChange={e => setSurveyForm({...surveyForm, q7_il: e.target.value})} className={inp} placeholder="Örn: İstanbul, Almanya, Dubai..." />
+                    </div>
+
+                    {/* S8 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">8. Çalışma şekliniz</p>
+                      <div className="flex flex-wrap gap-2">
+                        {['Uzaktan (Remote)', 'Hibrit', 'Ofisten', 'Saha / Seyahat'].map(opt => (
+                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q8_calisma_sekli: opt})} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q8_calisma_sekli === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* S9 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">9. Lisansüstü eğitim alıyor musunuz?</p>
+                      <div className="flex gap-2">
+                        {['Evet, Yüksek Lisans', 'Evet, Doktora', 'Hayır, Planım Var', 'Hayır'].map(opt => (
+                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q9_lisansustu: opt})} className={`flex-1 py-2 px-2 rounded-lg text-xs font-bold border text-center transition-all ${ surveyForm.q9_lisansustu === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* S10 + S11 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                        <p className="text-sm font-bold text-gray-900 mb-3">10. Telefon numaranız güncel mi?</p>
+                        <div className="flex gap-2">
+                          {['Evet', 'Hayır'].map(opt => (
+                            <button key={opt} onClick={() => setSurveyForm({...surveyForm, q10_telefon: opt})} className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q10_telefon === opt ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200' }`}>{opt}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                        <p className="text-sm font-bold text-gray-900 mb-3">11. E-posta adresiniz güncel mi?</p>
+                        <div className="flex gap-2">
+                          {['Evet', 'Hayır'].map(opt => (
+                            <button key={opt} onClick={() => setSurveyForm({...surveyForm, q11_eposta: opt})} className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q11_eposta === opt ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200' }`}>{opt}</button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* S12 */}
+                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                      <p className="text-sm font-bold text-gray-900 mb-3">12. Üniversitemize veya Kariyer Merkezimize iletmek istediğiniz görüş ve önerileriniz var mı?</p>
+                      <textarea rows={3} value={surveyForm.q12_oneri} onChange={e => setSurveyForm({...surveyForm, q12_oneri: e.target.value})} className={`${inp} resize-none`} placeholder="Görüşlerinizi bizimle paylaşın..." />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      const response = {
+                        id: Date.now(),
+                        respondedAt: new Date().toISOString(),
+                        department: currentUser?.department || '',
+                        graduationYear: currentUser?.graduationYear || '',
+                        faculty: currentUser?.faculty || '',
+                        ...surveyForm,
+                      };
+                      setAlumniSurveyResponses([response, ...alumniSurveyResponses]);
+                      setSurveySubmitted(true);
+                      if (window.toast) window.toast.success('Yanıtlarınız kaydedildi. Teşekkürler!');
+                    }}
+                    className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-sm transition-all shadow-md"
+                  >
+                    Yanıtlarımı Gönder
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ─── MEZUN KART BAŞVURUSU ─── */}
+          {activeTab === 'mezun_kart' && (
+            <div className="space-y-5">
+              {existingCardApp ? (
+                <div className="text-center py-12">
+                  <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                    existingCardApp.status === 'Onaylandı' || existingCardApp.status === 'Verildi' ? 'bg-green-50' : 'bg-amber-50'
+                  }`}>
+                    {existingCardApp.status === 'Onaylandı' || existingCardApp.status === 'Verildi'
+                      ? <CheckCircle size={40} className="text-green-500" />
+                      : <Clock size={40} className="text-amber-500" />
+                    }
+                  </div>
+                  <h3 className="text-xl font-black text-gray-900 mb-1">{existingCardApp.status}</h3>
+                  <p className="text-gray-500 text-sm">Başvuru Tarihi: {existingCardApp.date}</p>
+                  <p className="text-xs text-gray-400 mt-2">Başvurunuz yapılmıştır. Onay süreci için beklemeye devam edin.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-gradient-to-br from-red-50 to-orange-50 border border-red-100 rounded-2xl p-5 flex gap-3">
+                    <CreditCard size={20} className="text-[#e60000] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">Mezun Kartı Nedir?</p>
+                      <p className="text-xs text-gray-600 mt-1 leading-relaxed">Üniversite kampüsüne giriş, kütüphane, spor tesisleri ve partner kurumlardan indirim sağlar. Fiziksel kart kapsamlı mezun ayrıcalıkları sunar.</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className={lbl}>Ad Soyad</label>
+                      <input type="text" disabled value={currentUser?.name || ''} className={`${inp} bg-gray-50 text-gray-400 cursor-not-allowed`} />
+                    </div>
+                    <div>
+                      <label className={lbl}>Bölüm &amp; Mezuniyet Yılı</label>
+                      <input type="text" disabled value={`${currentUser?.department || 'Mezun'} - ${currentUser?.graduationYear || '2023'}`} className={`${inp} bg-gray-50 text-gray-400 cursor-not-allowed`} />
+                    </div>
+                    <div>
+                      <label className={lbl}>E-posta Adresi</label>
+                      <input type="text" disabled value={currentUser?.email || ''} className={`${inp} bg-gray-50 text-gray-400 cursor-not-allowed`} />
+                    </div>
+                    <div>
+                      <label className={lbl}>TC Kimlik No (Zorunlu)</label>
+                      <input
+                        type="text"
+                        maxLength="11"
+                        value={cardForm.tc}
+                        onChange={e => setCardForm({...cardForm, tc: e.target.value.replace(/\D/g,'')})}
+                        className={inp}
+                        placeholder="11 Haneli TC Kimlik No"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className={lbl}>Telefon Numarası</label>
+                      <input
+                        type="tel"
+                        value={cardForm.phone}
+                        onChange={e => setCardForm({...cardForm, phone: e.target.value})}
+                        className={inp}
+                        placeholder="05XX XXX XX XX"
+                      />
+                    </div>
+                  </div>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={cardForm.kvkk}
+                      onChange={e => setCardForm({...cardForm, kvkk: e.target.checked})}
+                      className="w-4 h-4 mt-0.5 rounded border-gray-300 text-red-600"
+                    />
+                    <span className="text-xs text-gray-500 leading-relaxed">
+                      Kişisel verilerimin Mezun Kartı basımı amacıyla işlenmesine dair KVKK Aydınlatma Metni'ni okudum ve onaylıyorum.
+                    </span>
+                  </label>
+
+                  <button
+                    disabled={!cardForm.tc || cardForm.tc.length !== 11 || !cardForm.phone || !cardForm.kvkk}
+                    onClick={() => {
+                      if (!cardForm.kvkk) return;
+                      const newApp = {
+                        id: `KART-${Date.now()}`,
+                        name: currentUser?.name || 'Mezun',
+                        tc: cardForm.tc,
+                        department: currentUser?.department || 'Mezun',
+                        gradYear: currentUser?.graduationYear || '2023',
+                        email: currentUser?.email || '',
+                        phone: cardForm.phone,
+                        date: new Date().toLocaleDateString('tr-TR'),
+                        status: 'Bekliyor'
+                      };
+                      if (setAlumniCardApplications) {
+                        setAlumniCardApplications([newApp, ...(alumniCardApplications || [])]);
+                      }
+                      if (window.toast) window.toast.success('Başvurunuz alındı! En kısa sürede değerlendirilecektir.');
+                    }}
+                    className="w-full py-3.5 bg-[#e60000] hover:bg-red-700 text-white rounded-xl font-black text-sm transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Başvuruyu Tamamla
+                  </button>
+                </>
+              )}
             </div>
           )}
 
           {/* ─── MEZUN HARİTASI ─── */}
+
           {activeTab === 'map' && (
             <div>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">

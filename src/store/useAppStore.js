@@ -153,7 +153,10 @@ const useAppStore = create(
         setClubs: setter('clubs'),
 
         clubApplications: initialClubApplications,
-        setClubApplications: setter('clubApplications')
+        setClubApplications: setter('clubApplications'),
+
+        alumniSurveyResponses: [],
+        setAlumniSurveyResponses: setter('alumniSurveyResponses')
       };
     },
     {

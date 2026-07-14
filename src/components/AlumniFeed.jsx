@@ -24,8 +24,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
   const [searchQuery, setSearchQuery] = useState('');
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
-  const [showCareerStatus, setShowCareerStatus] = useState(true);
-  const [careerStatusForm, setCareerStatusForm] = useState({ status: 'Çalışıyorum', company: '', isMatch: 'Evet' });
+
 
   const [showMentorshipModal, setShowMentorshipModal] = useState(false);
   const [mentorshipForm, setMentorshipForm] = useState({ title: '', hours: '', mode: 'Online', motivation: '' });
@@ -75,7 +74,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
             <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
             <div className="hidden sm:block text-left">
               <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Portalı</p>
             </div>
           </div>
           
@@ -282,63 +281,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
             </div>
           )}
 
-          {/* Career Status Widget (Kariyer Check-up) */}
-          {featureCareerCheckup && showCareerStatus && (
-            <div className="bg-gradient-to-br from-indigo-50 to-white rounded-3xl border border-indigo-100 p-6 shadow-[var(--shadow-soft)] animate-fade-in">
-              <h3 className="font-black text-indigo-900 mb-2 flex items-center gap-2">
-                <Compass size={18} className="text-indigo-500" /> Kariyer Check-up
-              </h3>
-              <p className="text-xs text-indigo-700 font-medium mb-4 leading-relaxed">Üniversitemizin istatistiklerine katkıda bulunmak için güncel çalışma durumunuzu paylaşır mısınız?</p>
-              
-              <div className="space-y-3 mb-4">
-                <select 
-                  value={careerStatusForm.status} 
-                  onChange={e => setCareerStatusForm({...careerStatusForm, status: e.target.value})}
-                  className="w-full bg-white border border-indigo-100 rounded-xl px-3 py-2 text-sm font-bold text-gray-700 focus:ring-2 focus:ring-indigo-200 outline-none"
-                >
-                  <option value="Çalışıyorum">Çalışıyorum</option>
-                  <option value="İş Arıyorum">İş Arıyorum</option>
-                  <option value="Eğitimime Devam Ediyorum">Eğitimime Devam Ediyorum</option>
-                  <option value="Çalışmıyorum">Çalışmıyorum</option>
-                </select>
-                
-                {careerStatusForm.status === 'Çalışıyorum' && (
-                  <>
-                    <input 
-                      type="text" 
-                      placeholder="Şirket Adı" 
-                      value={careerStatusForm.company}
-                      onChange={e => setCareerStatusForm({...careerStatusForm, company: e.target.value})}
-                      className="w-full bg-white border border-indigo-100 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-200 outline-none" 
-                    />
-                    <div>
-                      <p className="text-[11px] font-bold text-gray-500 mb-1">Kendi bölümünüzle alakalı mı çalışıyorsunuz?</p>
-                      <div className="flex gap-2">
-                        <button onClick={() => setCareerStatusForm({...careerStatusForm, isMatch: 'Evet'})} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${careerStatusForm.isMatch === 'Evet' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-indigo-100'}`}>Evet</button>
-                        <button onClick={() => setCareerStatusForm({...careerStatusForm, isMatch: 'Hayır'})} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${careerStatusForm.isMatch === 'Hayır' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-indigo-100'}`}>Hayır</button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-              
-              <button 
-                onClick={() => setShowCareerStatus(false)}
-                className="w-full py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-[13px] font-bold transition-all shadow-md flex items-center justify-center gap-2"
-              >
-                <CheckCircle2 size={16} /> Güncelle
-              </button>
-            </div>
-          )}
-
-          {/* Profile Completion / Quick Action */}
+          {/* Mentor Ol widget */}
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
             <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
             <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
               <div className="bg-teal-600 h-2 rounded-full" style={{ width: '80%' }}></div>
             </div>
             <p className="text-xs text-gray-500 font-medium mb-4">Mezun olarak tecrübelerinizi öğrencilerle paylaşın ve onlara yol gösterin.</p>
-            <button 
+            <button
               onClick={() => setShowMentorshipModal(true)}
               className="w-full py-2 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors"
             >
@@ -346,33 +296,13 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
             </button>
           </div>
 
-          {/* Mezun Kartı Başvurusu Widget */}
-          {featureAlumniCard && (
-            <div className="bg-gradient-to-br from-iesu-red to-iesu-darkRed rounded-3xl p-6 shadow-lg text-white">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><CreditCard size={20}/></div>
-                <h3 className="font-black text-lg leading-tight">Mezun Kartı</h3>
-              </div>
-              
-              {existingApp ? (
-                <div className="mt-4 bg-white/10 p-4 rounded-2xl border border-white/20">
-                  <p className="text-[11px] text-white/70 font-bold uppercase tracking-wider mb-1">Başvuru Durumu</p>
-                  <div className="flex items-center justify-between">
-                    <p className="font-black text-sm">{existingApp.status}</p>
-                    {existingApp.status === 'Onaylandı' ? <CheckCircle size={18} className="text-emerald-400" /> : <Clock size={18} className="text-orange-300" />}
-                  </div>
-                  <p className="text-xs text-white/60 mt-2">Başvuru Tarihi: {existingApp.date}</p>
-                </div>
-              ) : isFormActive ? (
-                <>
-                  <p className="text-xs text-red-100 font-medium mb-4">Üniversite kampüsüne giriş ve kütüphane erişimi için Mezun Kartınızı hemen alın.</p>
-                  <button onClick={() => setShowCardModal(true)} className="w-full py-2.5 bg-white text-iesu-red hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Hemen Başvur</button>
-                </>
-              ) : (
-                <p className="text-xs text-red-100 font-medium mt-2">Mezun kartı başvuruları şu an kapalıdır.</p>
-              )}
-            </div>
-          )}
+          {/* Mezun Bilgi Sistemi shortcut */}
+          <div className="bg-gradient-to-br from-iesu-red to-iesu-darkRed rounded-3xl p-5 shadow-lg text-white">
+            <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mb-1">Hızlı Erişim</p>
+            <h3 className="font-black text-base leading-tight mb-2">Mezun Bilgi Sistemi</h3>
+            <p className="text-xs text-red-100 mb-4">Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.</p>
+            <button onClick={() => setView('alumni_info')} className="w-full py-2.5 bg-white text-iesu-red hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Mezun Bilgi Sistemi'ne Git</button>
+          </div>
 
           {/* Featured Opportunities */}
           {featuredOpportunities && (featuredOpportunities || []).filter(f => f.status === 'Yayında').length > 0 && (
