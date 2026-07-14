@@ -14,16 +14,16 @@ const LANGUAGE_LEVELS = ['Başlangıç (A1-A2)', 'Orta (B1-B2)', 'İleri (C1)', 
 const EXP_TYPES = ['Staj', 'Tam Zamanlı', 'Yarı Zamanlı', 'Gönüllü', 'Freelance'];
 
 const TABS = [
-  { id: 'ozluk',           label: 'Özlük Bilgileri',          icon: <User size={16} /> },
-  { id: 'akademik',        label: 'Akademik Eğitim',          icon: <GraduationCap size={16} /> },
-  { id: 'staj',            label: 'İş / Staj Tecrübeleri',    icon: <Briefcase size={16} /> },
-  { id: 'kurs',            label: 'Kurs / Seminer',           icon: <BookOpen size={16} /> },
-  { id: 'sertifika',       label: 'Sertifika ve Belgeler',    icon: <Award size={16} /> },
-  { id: 'dil',             label: 'Yabancı Dil',              icon: <Languages size={16} /> },
-  { id: 'cv',              label: 'Özgecşmiş / CV',            icon: <FileText size={16} /> },
-  { id: 'kariyer_checkup', label: 'Kariyer Check-up',         icon: <Compass size={16} /> },
-  { id: 'mezun_kart',      label: 'Mezun Kart Başvurusu',     icon: <CreditCard size={16} /> },
-  { id: 'map',             label: 'Dünyadaki Mezunlarımız',   icon: <Map size={16} /> },
+  { id: 'ozluk',           label: '👤 Özlük Bilgileri',          icon: <User size={16} /> },
+  { id: 'akademik',        label: '🎓 Akademik Eğitim',          icon: <GraduationCap size={16} /> },
+  { id: 'staj',            label: '💼 İş / Staj Tecrübeleri',    icon: <Briefcase size={16} /> },
+  { id: 'kurs',            label: '📚 Kurs / Seminer',           icon: <BookOpen size={16} /> },
+  { id: 'sertifika',       label: '🏆 Sertifika ve Belgeler',    icon: <Award size={16} /> },
+  { id: 'dil',             label: '🌐 Yabancı Dil',              icon: <Languages size={16} /> },
+  { id: 'cv',              label: '📄 Özgeçmiş / CV',            icon: <FileText size={16} /> },
+  { id: 'kariyer_checkup', label: '🧭 Kariyer Check-up',         icon: <Compass size={16} /> },
+  { id: 'mezun_kart',      label: '💳 Mezun Kart Başvurusu',     icon: <CreditCard size={16} /> },
+  { id: 'map',             label: '🌍 Dünyadaki Mezunlarımız',   icon: <Map size={16} /> },
 ];
 
 const CV_SUB_TABS = [

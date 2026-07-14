@@ -66,18 +66,14 @@ export default function ProfileUpdate({
 
   const tabs = useMemo(() => {
     if (userRole === 'company' || userRole === 'employer') return [
-      { id: 'personal', label: 'Firma Bilgileri', icon: <Building2 size={18} /> },
-      { id: 'privacy', label: 'Doğrulama Durumu', icon: <Shield size={18} /> }
+      { id: 'personal', label: '🏢 Firma Bilgileri', icon: <Building2 size={18} /> },
+      { id: 'privacy', label: '🛡️ Doğrulama Durumu', icon: <Shield size={18} /> }
     ];
     return [
-      { id: 'personal', label: 'Kişisel Bilgiler', icon: <User size={18} /> },
-      { id: 'academic', label: 'Akademik Bilgiler', icon: <BookOpen size={18} /> },
-      { id: 'experience', label: 'İş ve Staj Deneyimi', icon: <Briefcase size={18} /> },
-      { id: 'skills', label: 'Yetenekler ve Diller', icon: <Star size={18} /> },
-      { id: 'certificates', label: 'Sertifika ve Kulüpler', icon: <Award size={18} /> },
-      { id: 'cap_yandal', label: 'ÇAP / Yandal', icon: <Layers size={18} /> },
-      { id: 'career', label: 'Kariyer Tercihleri', icon: <Target size={18} /> },
-      { id: 'privacy', label: 'Gizlilik ve İzinler', icon: <Shield size={18} /> }
+      { id: 'personal', label: '👤 Kişisel & Gizlilik', icon: <User size={18} /> },
+      { id: 'academic', label: '🎓 Akademik Eğitim', icon: <BookOpen size={18} /> },
+      { id: 'experience', label: '💼 Kariyer & Yetenekler', icon: <Briefcase size={18} /> },
+      { id: 'certificates', label: '🏆 Sertifika & Hedefler', icon: <Award size={18} /> }
     ];
   }, [userRole]);
 
@@ -280,72 +276,98 @@ export default function ProfileUpdate({
 
           <div className="animate-fade-in space-y-8">
             
-            {/* PERSONAL INFO TAB */}
+            {/* PERSONAL & PRIVACY TAB */}
             {activeTab === 'personal' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{userRole === 'company' ? 'Firma Adı' : 'Ad Soyad'}</label>
-                  <div className="relative">
-                    <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input type="text" value={formData.name || ''} onChange={e => handleInputChange('name', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
+              <div className="space-y-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{userRole === 'company' ? 'Firma Adı' : 'Ad Soyad'}</label>
+                    <div className="relative">
+                      <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="text" value={formData.name || ''} onChange={e => handleInputChange('name', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">E-Posta Adresi</label>
-                  <div className="relative">
-                    <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input type="email" value={formData.email || ''} onChange={e => handleInputChange('email', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">E-Posta Adresi</label>
+                    <div className="relative">
+                      <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="email" value={formData.email || ''} onChange={e => handleInputChange('email', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Telefon Numarası</label>
-                  <div className="relative">
-                    <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input type="tel" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="+90 555 555 5555" />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Telefon Numarası</label>
+                    <div className="relative">
+                      <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="tel" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="+90 555 555 5555" />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Konum / Şehir</label>
-                  <div className="relative">
-                    <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input type="text" value={formData.location || ''} onChange={e => handleInputChange('location', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: İstanbul, Türkiye" />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Konum / Şehir</label>
+                    <div className="relative">
+                      <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input type="text" value={formData.location || ''} onChange={e => handleInputChange('location', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: İstanbul, Türkiye" />
+                    </div>
                   </div>
-                </div>
-                
-                <div className="col-span-1 md:col-span-2 mt-4 space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Hakkımda / Biyografi</label>
-                  <textarea rows={4} value={formData.bio || ''} onChange={e => handleInputChange('bio', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none resize-none" placeholder="Kendinizden, kariyer hedeflerinizden ve ilgi alanlarınızdan bahsedin..." />
+                  
+                  <div className="col-span-1 md:col-span-2 mt-4 space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Hakkımda / Biyografi</label>
+                    <textarea rows={4} value={formData.bio || ''} onChange={e => handleInputChange('bio', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none resize-none" placeholder="Kendinizden, kariyer hedeflerinizden ve ilgi alanlarınızdan bahsedin..." />
+                  </div>
+
+                  <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">LinkedIn Profili</label>
+                      <div className="relative">
+                        <Link size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="url" value={formData.linkedin || ''} onChange={e => handleInputChange('linkedin', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="linkedin.com/in/username" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kişisel Web Sitesi</label>
+                      <div className="relative">
+                        <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="url" value={formData.website || ''} onChange={e => handleInputChange('website', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="https://www.example.com" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">LinkedIn Profili</label>
-                    <div className="relative">
-                      <Link size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input type="url" value={formData.linkedin || ''} onChange={e => handleInputChange('linkedin', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="linkedin.com/in/username" />
+                <div className="border-t border-gray-100/80 pt-8 space-y-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Gizlilik ve İzinler</h3>
+                  <div className="p-5 border border-gray-100 rounded-2xl bg-white flex items-center justify-between shadow-sm">
+                    <div>
+                      <h4 className="font-bold text-gray-900">Profil Görünürlüğü</h4>
+                      <p className="text-sm text-gray-500 mt-1">Profilinizin işverenler ve diğer öğrenciler tarafından görünürlüğünü açıp kapatabilirsiniz.</p>
                     </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" checked={formData.privacySettings?.visibility} onChange={e => handleNestedChange('privacySettings', 'visibility', e.target.checked)} />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kişisel Web Sitesi</label>
-                    <div className="relative">
-                      <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input type="url" value={formData.website || ''} onChange={e => handleInputChange('website', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="https://www.example.com" />
+                  <div className="p-5 border border-gray-100 rounded-2xl bg-white flex items-center justify-between shadow-sm">
+                    <div>
+                      <h4 className="font-bold text-gray-900">E-Posta Bildirimleri</h4>
+                      <p className="text-sm text-gray-500 mt-1">İş başvuruları ve mesajlarla ilgili e-posta bildirimleri alın.</p>
                     </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" checked={formData.privacySettings?.emailNotifications} onChange={e => handleNestedChange('privacySettings', 'emailNotifications', e.target.checked)} />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* ACADEMIC INFO TAB */}
+            {/* ACADEMIC & CAP_YANDAL TAB */}
             {activeTab === 'academic' && (
-              <div className="space-y-8">
+              <div className="space-y-12">
                 <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 flex items-start gap-4">
                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-indigo-600 shrink-0">
                     <BookOpen size={24} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Eğitim Bilgileri</h3>
-                    <p className="text-sm text-gray-500 mt-1">Eğitim bilgilerinizi buradan güncelleyebilirsiniz.</p>
+                    <h3 className="text-lg font-bold text-gray-900">Temel Eğitim Bilgileri</h3>
+                    <p className="text-sm text-gray-500 mt-1">Ana bölümünüze ait eğitim bilgilerinizi buradan güncelleyebilirsiniz.</p>
                   </div>
                 </div>
 
@@ -389,245 +411,218 @@ export default function ProfileUpdate({
                     <input type="text" value={formData.gpa || ''} onChange={(e) => handleInputChange('gpa', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" placeholder="Örn: 3.45 / 4.00" />
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* CAP / YANDAL TAB */}
-            {activeTab === 'cap_yandal' && (
-              <div className="space-y-8">
-                <div className="flex items-center gap-3">
-                  <input type="checkbox" id="doubleMajor" checked={formData.isDoubleMajor} onChange={(e) => handleInputChange('isDoubleMajor', e.target.checked)} className="w-5 h-5 text-indigo-600 rounded" />
-                  <label htmlFor="doubleMajor" className="text-lg font-bold text-gray-900">Çift Anadal / Yandal Yapıyorum</label>
-                </div>
-                
-                {formData.isDoubleMajor && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in border-t border-gray-100 pt-6">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Fakültesi</label>
-                      <select 
-                        value={selectedCapFaculty} 
-                        onChange={(e) => {
-                          setSelectedCapFaculty(e.target.value);
-                          setSelectedCapDept('');
-                          setHasChanges(true);
-                        }} 
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                      >
-                        <option value="">Fakülte Seçiniz</option>
-                        {activeFaculties.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
-                      </select>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Bölümü</label>
-                      <select 
-                        value={selectedCapDept} 
-                        onChange={(e) => {
-                          setSelectedCapDept(e.target.value);
-                          setHasChanges(true);
-                        }}
-                        disabled={!selectedCapFaculty} 
-                        className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:opacity-50"
-                      >
-                        <option value="">Bölüm Seçiniz</option>
-                        {availableCapDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
-                      </select>
-                    </div>
+                <div className="border-t border-gray-100/80 pt-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <input type="checkbox" id="doubleMajor" checked={formData.isDoubleMajor} onChange={(e) => handleInputChange('isDoubleMajor', e.target.checked)} className="w-5 h-5 text-indigo-600 rounded" />
+                    <label htmlFor="doubleMajor" className="text-lg font-bold text-gray-900">Çift Anadal / Yandal Yapıyorum</label>
                   </div>
-                )}
+                  
+                  {formData.isDoubleMajor && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in pt-2">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Fakültesi</label>
+                        <select 
+                          value={selectedCapFaculty} 
+                          onChange={(e) => {
+                            setSelectedCapFaculty(e.target.value);
+                            setSelectedCapDept('');
+                            setHasChanges(true);
+                          }} 
+                          className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                        >
+                          <option value="">Fakülte Seçiniz</option>
+                          {activeFaculties.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Bölümü</label>
+                        <select 
+                          value={selectedCapDept} 
+                          onChange={(e) => {
+                            setSelectedCapDept(e.target.value);
+                            setHasChanges(true);
+                          }}
+                          disabled={!selectedCapFaculty} 
+                          className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 disabled:opacity-50"
+                        >
+                          <option value="">Bölüm Seçiniz</option>
+                          {availableCapDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* EXPERIENCE TAB */}
+            {/* EXPERIENCE & SKILLS TAB */}
             {activeTab === 'experience' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-end mb-6">
-                  <p className="text-sm text-gray-500 max-w-xl">Staj ve profesyonel iş deneyimlerinizi buradan yönetebilirsiniz. Özgeçmişinizi de eklemeyi unutmayın.</p>
-                  <button onClick={() => setShowExpModal(true)} className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-colors shrink-0">
-                    <Plus size={16} /> Yeni Deneyim
-                  </button>
-                </div>
+              <div className="space-y-12">
+                <div className="space-y-6">
+                  <div className="flex justify-between items-end mb-6">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">İş ve Staj Deneyimleri</h3>
+                      <p className="text-sm text-gray-500 max-w-xl">Staj ve profesyonel iş deneyimlerinizi buradan yönetebilirsiniz.</p>
+                    </div>
+                    <button onClick={() => setShowExpModal(true)} className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition-colors shrink-0">
+                      <Plus size={16} /> Yeni Deneyim
+                    </button>
+                  </div>
 
-                <div className="p-6 border border-gray-200 border-dashed rounded-3xl bg-gray-50 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-emerald-600">
-                      <FileText size={24} />
+                  <div className="p-6 border border-gray-200 border-dashed rounded-3xl bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-emerald-600">
+                        <FileText size={24} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900">CV / Özgeçmiş Belgesi</h4>
+                        <p className="text-[11px] text-gray-500 mt-0.5">{uploadedFileName ? uploadedFileName : 'Henüz PDF yüklenmedi'}</p>
+                      </div>
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900">CV / Özgeçmiş Belgesi</h4>
-                      <p className="text-[11px] text-gray-500 mt-0.5">{uploadedFileName ? uploadedFileName : 'Henüz PDF yüklenmedi'}</p>
+                      <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.doc,.docx" className="hidden" />
+                      <button onClick={() => fileInputRef.current?.click()} className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-sm">
+                        <UploadCloud size={18} className="text-gray-400" />
+                        Yükle
+                      </button>
                     </div>
                   </div>
-                  <div>
-                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.doc,.docx" className="hidden" />
-                    <button onClick={() => fileInputRef.current?.click()} className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-sm">
-                      <UploadCloud size={18} className="text-gray-400" />
-                      Yükle
-                    </button>
-                  </div>
-                </div>
 
-                {(!formData.experiences || formData.experiences.length === 0) ? (
-                  <div className="text-center py-16 border border-gray-100 rounded-3xl bg-white shadow-sm">
-                    <Briefcase size={48} className="mx-auto text-gray-200 mb-4" />
-                    <p className="text-gray-500 font-medium">Henüz bir deneyim eklenmemiş.</p>
-                  </div>
-                ) : (
-                  <div className="grid gap-4">
-                    {formData.experiences.map((exp) => (
-                      <div key={exp.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-indigo-100 hover:shadow-md transition-all">
-                        <div className="flex gap-4">
-                          <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 shrink-0">
-                            <Building2 size={24} />
+                  {(!formData.experiences || formData.experiences.length === 0) ? (
+                    <div className="text-center py-12 border border-gray-100 rounded-3xl bg-white shadow-sm">
+                      <Briefcase size={48} className="mx-auto text-gray-200 mb-4" />
+                      <p className="text-gray-500 font-medium">Henüz bir deneyim eklenmemiş.</p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4">
+                      {formData.experiences.map((exp) => (
+                        <div key={exp.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-indigo-100 hover:shadow-md transition-all">
+                          <div className="flex gap-4">
+                            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 shrink-0">
+                              <Building2 size={24} />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-gray-900 text-base">{exp.title}</h4>
+                              <p className="text-sm font-medium text-indigo-600 mt-0.5">{exp.company}</p>
+                              <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase tracking-wider">{exp.type}</span>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-bold text-gray-900 text-base">{exp.title}</h4>
-                            <p className="text-sm font-medium text-indigo-600 mt-0.5">{exp.company}</p>
-                            <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase tracking-wider">{exp.type}</span>
-                          </div>
-                        </div>
-                        <button onClick={() => removeItem('experiences', exp.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* SKILLS TAB */}
-            {activeTab === 'skills' && (
-              <div className="space-y-8">
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><Star size={20} className="text-amber-500"/> Yetenekler</h3>
-                    <button onClick={() => setShowSkillModal(true)} className="flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
-                      <Plus size={16} /> Ekle
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {(!formData.skills || formData.skills.length === 0) ? (
-                      <p className="text-sm text-gray-400 italic">Yetenek eklenmemiş.</p>
-                    ) : (
-                      formData.skills.map((skill) => (
-                        <div key={skill} className="pl-4 pr-1.5 py-1.5 bg-white border border-gray-200 rounded-xl flex items-center gap-2 text-sm font-bold text-gray-700 shadow-sm group">
-                          {skill}
-                          <button onClick={() => removeItem('skills', skill)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors">
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
-                <div className="h-px w-full bg-gray-100"></div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><Globe size={20} className="text-blue-500"/> Yabancı Diller</h3>
-                    <button onClick={() => setShowLangModal(true)} className="flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
-                      <Plus size={16} /> Ekle
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {(!formData.languages || formData.languages.length === 0) ? (
-                      <p className="text-sm text-gray-400 italic col-span-2">Dil bilgisi eklenmemiş.</p>
-                    ) : (
-                      formData.languages.map((lang) => (
-                        <div key={lang.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex justify-between items-center shadow-sm group hover:border-blue-100 transition-colors">
-                          <div>
-                            <p className="font-bold text-gray-900">{lang.name}</p>
-                            <p className="text-xs text-blue-600 font-medium mt-0.5">{lang.level}</p>
-                          </div>
-                          <button onClick={() => removeItem('languages', lang.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100">
+                          <button onClick={() => removeItem('experiences', exp.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
                             <Trash2 size={16} />
                           </button>
                         </div>
-                      ))
-                    )}
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="border-t border-gray-100/80 pt-8 space-y-8">
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><Star size={20} className="text-amber-500"/> Yetenekler</h3>
+                      <button onClick={() => setShowSkillModal(true)} className="flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                        <Plus size={16} /> Ekle
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(!formData.skills || formData.skills.length === 0) ? (
+                        <p className="text-sm text-gray-400 italic">Yetenek eklenmemiş.</p>
+                      ) : (
+                        formData.skills.map((skill) => (
+                          <div key={skill} className="pl-4 pr-1.5 py-1.5 bg-white border border-gray-200 rounded-xl flex items-center gap-2 text-sm font-bold text-gray-700 shadow-sm group">
+                            {skill}
+                            <button onClick={() => removeItem('skills', skill)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><Globe size={20} className="text-blue-500"/> Yabancı Diller</h3>
+                      <button onClick={() => setShowLangModal(true)} className="flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                        <Plus size={16} /> Ekle
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {(!formData.languages || formData.languages.length === 0) ? (
+                        <p className="text-sm text-gray-400 italic col-span-2">Dil bilgisi eklenmemiş.</p>
+                      ) : (
+                        formData.languages.map((lang) => (
+                          <div key={lang.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex justify-between items-center shadow-sm group hover:border-blue-100 transition-colors">
+                            <div>
+                              <p className="font-bold text-gray-900">{lang.name}</p>
+                              <p className="text-xs text-blue-600 font-medium mt-0.5">{lang.level}</p>
+                            </div>
+                            <button onClick={() => removeItem('languages', lang.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* CERTIFICATES TAB */}
+            {/* CERTIFICATES & CAREER TAB */}
             {activeTab === 'certificates' && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-end mb-6">
-                  <p className="text-sm text-gray-500 max-w-xl">Katıldığınız eğitimler ve sertifikalarınızı buradan ekleyebilirsiniz.</p>
-                  <button onClick={() => setShowCertModal(true)} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shrink-0 shadow-md">
-                    <Plus size={16} /> Sertifika Ekle
-                  </button>
-                </div>
-
-                {(!formData.certificates || formData.certificates.length === 0) ? (
-                  <div className="text-center py-16 border border-gray-100 rounded-3xl bg-white shadow-sm">
-                    <Award size={48} className="mx-auto text-gray-200 mb-4" />
-                    <p className="text-gray-500 font-medium">Henüz bir sertifika eklenmemiş.</p>
+              <div className="space-y-12">
+                <div className="space-y-6">
+                  <div className="flex justify-between items-end mb-6">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">Eğitim ve Sertifikalar</h3>
+                      <p className="text-sm text-gray-500 max-w-xl">Katıldığınız eğitimler ve sertifikalarınızı buradan ekleyebilirsiniz.</p>
+                    </div>
+                    <button onClick={() => setShowCertModal(true)} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shrink-0 shadow-md">
+                      <Plus size={16} /> Sertifika Ekle
+                    </button>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {formData.certificates.map((cert) => (
-                      <div key={cert.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-indigo-100 hover:shadow-md transition-all">
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-base">{cert.name}</h4>
-                          <p className="text-sm font-medium text-gray-500 mt-0.5">{cert.issuer}</p>
+
+                  {(!formData.certificates || formData.certificates.length === 0) ? (
+                    <div className="text-center py-12 border border-gray-100 rounded-3xl bg-white shadow-sm">
+                      <Award size={48} className="mx-auto text-gray-200 mb-4" />
+                      <p className="text-gray-500 font-medium">Henüz bir sertifika eklenmemiş.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {formData.certificates.map((cert) => (
+                        <div key={cert.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-indigo-100 hover:shadow-md transition-all">
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-base">{cert.name}</h4>
+                            <p className="text-sm font-medium text-gray-500 mt-0.5">{cert.issuer}</p>
+                          </div>
+                          <button onClick={() => removeItem('certificates', cert.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                            <Trash2 size={16} />
+                          </button>
                         </div>
-                        <button onClick={() => removeItem('certificates', cert.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* CAREER PREFERENCES TAB */}
-            {activeTab === 'career' && (
-              <div className="space-y-6">
-                 <h3 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Çalışma Şekli Tercihleri</h3>
-                 <div className="flex flex-wrap gap-3">
-                   {['Uzaktan (Remote)', 'Hibrit', 'Ofisten', 'Serbest Zamanlı', 'Proje Bazlı'].map(pref => (
-                     <button 
-                       key={pref} 
-                       onClick={() => toggleArrayItem('careerPreferences', pref)}
-                       className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
-                         (formData.careerPreferences || []).includes(pref) 
-                           ? 'bg-indigo-50 border-indigo-200 text-indigo-700' 
-                           : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
-                       }`}
-                     >
-                       {pref}
-                     </button>
-                   ))}
-                 </div>
-              </div>
-            )}
-
-            {/* PRIVACY TAB */}
-            {activeTab === 'privacy' && (
-              <div className="space-y-6">
-                <div className="p-5 border border-gray-100 rounded-2xl bg-white flex items-center justify-between shadow-sm">
-                  <div>
-                    <h4 className="font-bold text-gray-900">Profil Görünürlüğü</h4>
-                    <p className="text-sm text-gray-500 mt-1">Profilinizin işverenler ve diğer öğrenciler tarafından görünürlüğünü açıp kapatabilirsiniz.</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" checked={formData.privacySettings?.visibility} onChange={e => handleNestedChange('privacySettings', 'visibility', e.target.checked)} />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                  </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="p-5 border border-gray-100 rounded-2xl bg-white flex items-center justify-between shadow-sm">
-                  <div>
-                    <h4 className="font-bold text-gray-900">E-Posta Bildirimleri</h4>
-                    <p className="text-sm text-gray-500 mt-1">İş başvuruları ve mesajlarla ilgili e-posta bildirimleri alın.</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" checked={formData.privacySettings?.emailNotifications} onChange={e => handleNestedChange('privacySettings', 'emailNotifications', e.target.checked)} />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                  </label>
+
+                <div className="border-t border-gray-100/80 pt-8 space-y-6">
+                   <h3 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Çalışma Şekli Tercihleri</h3>
+                   <div className="flex flex-wrap gap-3">
+                     {['Uzaktan (Remote)', 'Hibrit', 'Ofisten', 'Serbest Zamanlı', 'Proje Bazlı'].map(pref => (
+                       <button 
+                         key={pref} 
+                         onClick={() => toggleArrayItem('careerPreferences', pref)}
+                         className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+                           (formData.careerPreferences || []).includes(pref) 
+                             ? 'bg-indigo-50 border-indigo-200 text-indigo-700' 
+                             : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                         }`}
+                       >
+                         {pref}
+                       </button>
+                     ))}
+                   </div>
                 </div>
               </div>
             )}
