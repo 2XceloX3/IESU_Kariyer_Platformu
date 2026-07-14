@@ -301,7 +301,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, notifications =
             <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mb-1">Hızlı Erişim</p>
             <h3 className="font-black text-base leading-tight mb-2">Mezun Bilgi Sistemi</h3>
             <p className="text-xs text-red-100 mb-4">Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.</p>
-            <button onClick={() => setView('alumni_info')} className="w-full py-2.5 bg-white text-iesu-red hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Mezun Bilgi Sistemi'ne Git</button>
+            <button onClick={() => setView('mbs')} className="w-full py-2.5 bg-white text-iesu-red hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Mezun Bilgi Sistemi'ne Git</button>
           </div>
 
           {/* Featured Opportunities */}
