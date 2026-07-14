@@ -41,40 +41,45 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
 
   useEffect(() => {
+    // If no userId is provided (e.g. clicked from quick nav without setting selectedUserId),
+    // we assume the user wants to view their own profile.
+    const targetUserId = userId || currentUser?.id;
+
     // Fallback: Eger localStorage'dan dolayi currentUser'in id'si yoksa ama admin profiline erisilmeye calisiliyorsa
-    if (userId === 'admin_1513' && (userRole === 'admin' || (currentUser && currentUser?.role === 'admin'))) {
+    if (targetUserId === 'admin_1513' && (userRole === 'admin' || (currentUser && currentUser?.role === 'admin'))) {
       setUser(currentUser || { name: 'Kariyer Merkezi', department: 'Yönetim', grade: 'Süper Admin', role: 'admin' });
       setUserType('admin');
       setIsLoading(false);
       return;
     }
 
-    if (currentUser && (userId === currentUser?.id || userId === parseInt(currentUser?.id))) {
+    if (currentUser && (targetUserId === currentUser?.id || targetUserId === parseInt(currentUser?.id))) {
       setUser(currentUser);
       setUserType(currentUser?.role === 'admin' ? 'admin' : (userRole === 'employer' ? 'company' : userRole));
       setIsLoading(false);
       return;
     }
 
-    let found = (students || []).find(s => s.id === userId || s.id === parseInt(userId));
+    let found = (students || []).find(s => s.id === targetUserId || s.id === parseInt(targetUserId));
     if (found) { setUser(found); setUserType('student'); setIsLoading(false); return; }
 
-    found = (alumni || []).find(a => a.id === userId || a.id === parseInt(userId));
+    found = (alumni || []).find(a => a.id === targetUserId || a.id === parseInt(targetUserId));
     if (found) { setUser(found); setUserType('alumni'); setIsLoading(false); return; }
 
-    found = (companies || []).find(c => c.id === userId || c.id === parseInt(userId));
+    found = (companies || []).find(c => c.id === targetUserId || c.id === parseInt(targetUserId));
     if (found) { setUser(found); setUserType('company'); setIsLoading(false); return; }
 
-    found = (academicStaff || []).find(a => a.id === userId || a.id === parseInt(userId));
+    found = (academicStaff || []).find(a => a.id === targetUserId || a.id === parseInt(targetUserId));
     if (found) { setUser(found); setUserType('academic'); setIsLoading(false); return; }
     
     // Fallback: If viewing own profile and not found in arrays, use currentUser directly
     if (currentUser && (
-        currentUser.id === userId || 
-        currentUser.id === parseInt(userId) || 
-        (!currentUser.id && (userId === 'admin_1513' || userId === 1 || userId === '1'))
+        currentUser.id === targetUserId || 
+        currentUser.id === parseInt(targetUserId) || 
+        (!currentUser.id && (targetUserId === 'admin_1513' || targetUserId === 1 || targetUserId === '1')) ||
+        !targetUserId
     )) {
-      setUser({ ...currentUser, id: currentUser.id || userId });
+      setUser({ ...currentUser, id: currentUser.id || targetUserId });
       setUserType(currentUser.role === 'alumni' ? 'alumni' : currentUser.role === 'employer' ? 'company' : currentUser.role === 'academic' ? 'academic' : currentUser.role === 'admin' ? 'admin' : 'student');
       setIsLoading(false);
       return;
@@ -82,7 +87,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
     setUser(null);
     setIsLoading(false);
-  }, [userId, students, alumni, companies, academicStaff]);
+  }, [userId, students, alumni, companies, academicStaff, currentUser, userRole]);
 
   if (isLoading) {
     return (
