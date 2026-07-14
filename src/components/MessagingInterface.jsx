@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff } from 'lucide-react';
+import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -62,6 +62,39 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, activeContactId]);
+
+  // New Messaging Features States
+  const [replyingTo, setReplyingTo] = useState(null); // ID of the message being replied to
+  const [lightboxMedia, setLightboxMedia] = useState(null); // URL of media to show full screen
+  const [isTyping, setIsTyping] = useState(false); // Mock typing indicator
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+  const [voiceTimer, setVoiceTimer] = useState(0);
+
+  // Mock typing when switching chats
+  useEffect(() => {
+    if (activeContactId && currentTab === 'chats') {
+      setIsTyping(true);
+      const t = setTimeout(() => setIsTyping(false), 2500 + Math.random() * 2000);
+      return () => clearTimeout(t);
+    }
+  }, [activeContactId, currentTab]);
+
+  // Voice recording timer
+  useEffect(() => {
+    let t;
+    if (isRecordingVoice) {
+      t = setInterval(() => setVoiceTimer(prev => prev + 1), 1000);
+    } else {
+      setVoiceTimer(0);
+    }
+    return () => clearInterval(t);
+  }, [isRecordingVoice]);
+
+  const formatVoiceTime = (sec) => {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   // Apply 2x2 Messaging Matrix Rules
   const allowedContacts = contacts.filter(c => {
@@ -243,11 +276,16 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       read: false,
       type: type,
       mediaUrl: mediaUrl,
-      isGroupMsg: !!isGroupChat
+      isGroupMsg: !!isGroupChat,
+      replyTo: replyingTo // Added replyTo
     };
 
     setMessages([...messages, newMsg]);
     setNewMessage('');
+    setPendingMediaType(null);
+    setReplyingTo(null);
+    setIsTyping(true);
+    setTimeout(() => setIsTyping(false), 1500);
     setShowEmojiPicker(false);
     setShowAttachmentMenu(false);
   };
@@ -776,7 +814,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                       <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'} group relative`}>
                         {activeMessageOptions === msg.id && (
                           <div className={`absolute top-full mt-1 ${isMine ? 'right-0' : 'left-0'} z-20 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 flex flex-col overflow-hidden animate-fade-in`}>
-                            {isMine && !msg.isDeleted && <button onClick={() => handleUnsendMessage(msg.id)} className="px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-gray-50">Herkesten Sil (Geri Çek)</button>}
+                            <button onClick={(e) => { e.stopPropagation(); setReplyingTo(msg.id); setActiveMessageOptions(null); }} className="px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"><ArrowLeft size={14}/> Yanıtla</button>
+                            {isMine && !msg.isDeleted && <button onClick={() => handleUnsendMessage(msg.id)} className="px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-gray-50 flex items-center gap-2"><Trash2 size={14}/> Herkesten Sil</button>}
                             <button onClick={() => handleDeleteMessage(msg.id)} className="px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-50">Benden Sil</button>
                             <button onClick={() => setActiveMessageOptions(null)} className="px-4 py-2 text-left text-sm font-medium text-gray-400 hover:bg-gray-50 border-t border-gray-100">İptal</button>
                           </div>
@@ -795,6 +834,23 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                             <div className="text-[11px] font-bold text-red-600 mb-1 px-1.5">{msg.senderName}</div>
                           )}
 
+                          {/* Quoted Reply Message */}
+                          {msg.replyTo && (() => {
+                            const quoted = currentChatMessages.find(m => m.id === msg.replyTo);
+                            if (!quoted) return null;
+                            const isQuotedMine = quoted.senderId === currentUser?.id;
+                            return (
+                              <div onClick={() => {
+                                // Scroll to original message
+                                const el = document.getElementById(`msg-${quoted.id}`);
+                                if(el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('bg-black/10'); setTimeout(() => el.classList.remove('bg-black/10'), 1000); }
+                              }} className={`mb-1 p-2 rounded-lg text-sm border-l-4 cursor-pointer hover:opacity-80 transition ${isMine ? 'bg-black/5 border-green-600' : 'bg-gray-100 border-blue-500'}`}>
+                                <div className={`font-bold text-xs mb-0.5 ${isMine ? 'text-green-700' : 'text-blue-600'}`}>{isQuotedMine ? 'Sen' : quoted.senderName}</div>
+                                <div className="text-gray-600 truncate">{quoted.type === 'text' ? quoted.content : (quoted.type === 'image' ? '📷 Fotoğraf' : '🎵 Ses / Video')}</div>
+                              </div>
+                            );
+                          })()}
+
                           {/* Text Message */}
                           {msg.type === 'text' && (
                             <p className="text-[14px] leading-relaxed tracking-wide px-1.5 pt-1 flex items-center gap-1.5">
@@ -805,8 +861,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
                           {/* Image Message */}
                           {msg.type === 'image' && msg.mediaUrl && (
-                            <div className="rounded-xl overflow-hidden mb-1">
-                              <img src={msg.mediaUrl} alt="attachment" className="w-full max-h-64 object-cover" />
+                            <div className="rounded-xl overflow-hidden mb-1 cursor-pointer" onClick={(e) => { e.stopPropagation(); setLightboxMedia(msg.mediaUrl); }}>
+                              <img src={msg.mediaUrl} alt="attachment" className="w-full max-h-64 object-cover hover:scale-105 transition duration-300" />
                             </div>
                           )}
 
@@ -868,12 +924,26 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
                           <div className={`flex items-center justify-end gap-1.5 mt-1 px-1 ${isMine ? 'text-green-700/70' : 'text-gray-400'}`}>
                             <span className="text-[10px] font-medium">{formatTime(msg.timestamp)}</span>
-                            {isMine && <CheckCircle2 size={12} className={msg.read ? 'text-blue-500' : ''} />}
+                            {isMine && (
+                              msg.read ? <CheckCheck size={14} className="text-blue-500" /> : <Check size={14} className="text-gray-400" />
+                            )}
                           </div>
                         </div>
                       </div>
                     );
                   })}
+
+                  {/* Typing Indicator */}
+                  {isTyping && (
+                    <div className="flex justify-start animate-fade-in">
+                      <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm p-3 shadow-sm flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      </div>
+                    </div>
+                  )}
+
                   <div ref={messagesEndRef} />
                 </div>
               )}
@@ -914,40 +984,75 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                 </div>
               )}
 
+              {/* Reply Banner */}
+              {replyingTo && (() => {
+                const quoted = messages.find(m => m.id === replyingTo);
+                if (!quoted) return null;
+                return (
+                  <div className="bg-gray-100 rounded-t-xl p-3 flex justify-between items-start mb-2 border-l-4 border-blue-500 animate-fade-in relative z-10">
+                    <div className="overflow-hidden">
+                      <div className="text-xs font-bold text-blue-600 mb-0.5">{quoted.senderId === currentUser?.id ? 'Sen' : quoted.senderName}</div>
+                      <div className="text-sm text-gray-600 truncate">{quoted.type === 'text' ? quoted.content : '📷 Medya Mesajı'}</div>
+                    </div>
+                    <button onClick={() => setReplyingTo(null)} className="text-gray-400 hover:text-gray-700 p-1">
+                      <X size={16} />
+                    </button>
+                  </div>
+                );
+              })()}
+
               <div className="flex items-center gap-2">
                 <button onClick={() => {setShowAttachmentMenu(!showAttachmentMenu); setShowEmojiPicker(false);}} className={`w-10 h-10 rounded-full flex items-center justify-center transition shrink-0 ${showAttachmentMenu ? 'bg-gray-200 text-gray-700' : 'text-gray-500 hover:bg-gray-200'}`} title="Dosya Ekle">
                   <Paperclip size={20} />
                 </button>
                 
-                <div className="flex-1 bg-white rounded-full border border-gray-300 flex items-center px-4 py-2 shadow-sm focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
-                  <input 
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSend(e);
-                      }
-                    }}
-                    placeholder="Bir mesaj yazın..."
-                    className="flex-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-gray-400 outline-none"
-                  />
-                  <button onClick={() => {setShowEmojiPicker(!showEmojiPicker); setShowAttachmentMenu(false);}} className={`w-8 h-8 rounded-full flex items-center justify-center transition ml-2 ${showEmojiPicker ? 'text-emerald-500' : 'text-gray-400 hover:text-gray-600'}`} title="Emoji">
-                    <Smile size={22} />
-                  </button>
-                </div>
-
-                {newMessage.trim() ? (
-                  <button 
-                    onClick={handleSend}
-                    className="w-10 h-10 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#008f6f] active:scale-95 transition-all shrink-0 shadow-md"
-                  >
-                    <Send size={18} className="ml-0.5" />
-                  </button>
+                {isRecordingVoice ? (
+                  <div className="flex-1 bg-red-50 rounded-full border border-red-200 flex items-center justify-between px-4 py-2 shadow-sm animate-pulse-slow">
+                    <div className="flex items-center gap-3 text-red-500">
+                      <Mic size={18} className="animate-pulse" />
+                      <span className="font-mono text-sm font-bold">{formatVoiceTime(voiceTimer)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setIsRecordingVoice(false)} className="text-sm font-bold text-gray-500 hover:text-gray-700 mr-2">İptal</button>
+                      <button onClick={() => { setIsRecordingVoice(false); handleSend(null, 'audio'); }} className="text-sm bg-red-500 text-white px-3 py-1 rounded-full font-bold shadow-sm hover:bg-red-600">Gönder</button>
+                    </div>
+                  </div>
                 ) : (
-                  <button className="w-10 h-10 rounded-full text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-all shrink-0">
-                    <Phone size={20} />
-                  </button>
+                  <div className="flex-1 bg-white rounded-full border border-gray-300 flex items-center px-4 py-2 shadow-sm focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+                    <input 
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSend(e);
+                        }
+                      }}
+                      placeholder="Bir mesaj yazın..."
+                      className="flex-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-gray-400 outline-none"
+                    />
+                    <button onClick={() => {setShowEmojiPicker(!showEmojiPicker); setShowAttachmentMenu(false);}} className={`w-8 h-8 rounded-full flex items-center justify-center transition ml-2 ${showEmojiPicker ? 'text-emerald-500' : 'text-gray-400 hover:text-gray-600'}`} title="Emoji">
+                      <Smile size={22} />
+                    </button>
+                  </div>
+                )}
+
+                {!isRecordingVoice && (
+                  newMessage.trim() ? (
+                    <button 
+                      onClick={handleSend}
+                      className="w-10 h-10 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#008f6f] active:scale-95 transition-all shrink-0 shadow-md"
+                    >
+                      <Send size={18} className="ml-0.5" />
+                    </button>
+                  ) : (
+                    <button 
+                      onPointerDown={() => setIsRecordingVoice(true)}
+                      className="w-10 h-10 rounded-full text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-all shrink-0"
+                    >
+                      <Mic size={20} />
+                    </button>
+                  )
                 )}
               </div>
             </div>
@@ -1267,6 +1372,16 @@ export default function MessagingInterface({ previousView, messages = [], setMes
               <PhoneOff size={28} />
             </button>
           </div>
+        </div>
+      )}
+
+      {/* LIGHTBOX OVERLAY */}
+      {lightboxMedia && (
+        <div className="fixed inset-0 z-[300] bg-black/95 flex flex-col items-center justify-center animate-fade-in p-4 backdrop-blur-sm">
+          <button onClick={() => setLightboxMedia(null)} className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-10">
+            <X size={24} />
+          </button>
+          <img src={lightboxMedia} className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 hover:scale-105 cursor-zoom-in" />
         </div>
       )}
     </div>
