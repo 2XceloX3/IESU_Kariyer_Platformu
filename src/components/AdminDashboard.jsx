@@ -474,7 +474,8 @@ function AkademikPanel({ students = [] }) {
 // ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'mezun_dernek', 'sem', 'cms_groups', 'clubs_pool'] },
+  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'mezun_dernek', 'sem', 'cms_groups'] },
+  { id: 'birlik', label: 'Birlik Paneli', icon: <ShieldCheck size={14}/>, panels: ['clubs_pool'] },
   { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'cms_jobs', 'cms_feat', 'cms_ment'] },
   { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['cleanup', 'content_import', 'analytics', 'anket', 'kart', 'platform_ayarlari'] }
 ];
@@ -497,7 +498,7 @@ const MAIN_TABS = [
   { id:'cms_ann',    label:'Duyurular (CMS)',    icon:<Megaphone size={17}/> },
   { id:'cms_feat',   label:'Öne Çıkanlar (CMS)', icon:<Star size={17}/> },
   { id:'cms_groups', label:'Topluluklar ve Gruplar', icon:<Users size={17}/> },
-  { id:'clubs_pool', label:'Kulüpler Havuzu', icon:<Users size={17}/> },
+  { id:'clubs_pool', label:'Başvuru Havuzu', icon:<Users size={17}/> },
   { id:'mesajlar',   label:'İletişim Havuzu (Loglar)', icon:<MessageSquare size={17}/> },
 ];
 const MORE_TABS = [
@@ -650,6 +651,7 @@ export default function AdminDashboard({
                         case 'kullanici': return 'bg-purple-50 text-purple-700 border border-purple-200 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]';
                         case 'icerik': return 'bg-emerald-50 text-emerald-700 border border-emerald-200 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]';
                         case 'sistem': return 'bg-amber-50 text-amber-700 border border-amber-200 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]';
+                        case 'birlik': return 'bg-pink-50 text-pink-700 border border-pink-200 drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]';
                         default: return 'bg-red-50 text-red-700 border border-red-200 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]';
                       }
                     })()
@@ -664,6 +666,7 @@ export default function AdminDashboard({
                         case 'kullanici': return 'text-purple-600 drop-shadow-[0_0_5px_rgba(168,85,247,0.8)]';
                         case 'icerik': return 'text-emerald-600 drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]';
                         case 'sistem': return 'text-amber-600 drop-shadow-[0_0_5px_rgba(245,158,11,0.8)]';
+                        case 'birlik': return 'text-pink-600 drop-shadow-[0_0_5px_rgba(236,72,153,0.8)]';
                         default: return 'text-red-600 drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]';
                       }
                     })()
@@ -673,6 +676,7 @@ export default function AdminDashboard({
                         case 'kullanici': return 'text-gray-400 group-hover:text-purple-500 group-hover:drop-shadow-[0_0_5px_rgba(168,85,247,0.6)]';
                         case 'icerik': return 'text-gray-400 group-hover:text-emerald-500 group-hover:drop-shadow-[0_0_5px_rgba(16,185,129,0.6)]';
                         case 'sistem': return 'text-gray-400 group-hover:text-amber-500 group-hover:drop-shadow-[0_0_5px_rgba(245,158,11,0.6)]';
+                        case 'birlik': return 'text-gray-400 group-hover:text-pink-500 group-hover:drop-shadow-[0_0_5px_rgba(236,72,153,0.6)]';
                         default: return 'text-gray-400 group-hover:text-red-500 group-hover:drop-shadow-[0_0_5px_rgba(239,68,68,0.6)]';
                       }
                     })()
