@@ -12,7 +12,13 @@ const COLORS = {
 const HUB = { lat: 41.0082, lng: 28.9784, name: 'İstanbul, Türkiye', count: 40550, isHub: true };
 
 // Sadece gerçek (veya merkez) veriler, sahte şehirleri sildik.
-const CITIES = []; 
+const CITIES = [
+  { lat: 51.5074, lng: -0.1278, name: 'Londra, BK', count: 42, isHub: false },
+  { lat: 40.7128, lng: -74.0060, name: 'New York, ABD', count: 18, isHub: false },
+  { lat: 52.5200, lng: 13.4050, name: 'Berlin, Almanya', count: 65, isHub: false },
+  { lat: 35.6762, lng: 139.6503, name: 'Tokyo, Japonya', count: 12, isHub: false },
+  { lat: 25.2048, lng: 55.2708, name: 'Dubai, BAE', count: 24, isHub: false }
+];  
 
 export default function GlobeMap() {
   const globeEl = useRef();
@@ -103,8 +109,12 @@ export default function GlobeMap() {
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
           
-          // Removing arcs to prevent pink rods/bars
-
+          // Pulsing / Breathing rings for active student regions
+          ringsData={pointsData}
+          ringColor={(d) => d.isHub ? (t) => `rgba(255,215,0,${Math.max(0, 1-t)})` : (t) => `rgba(0,255,255,${Math.max(0, 1-t)})`}
+          ringMaxRadius={(d) => d.isHub ? 5 : 2}
+          ringPropagationSpeed={(d) => d.isHub ? 1.5 : 1}
+          ringRepeatPeriod={(d) => d.isHub ? 1000 : 1500}
           
           // Glowing points
           pointsData={pointsData}
