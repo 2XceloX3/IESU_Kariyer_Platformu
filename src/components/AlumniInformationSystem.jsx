@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import useAppStore from '../store/useAppStore';
 import Logo from './Logo';
 import ProfileUpdate from './ProfileUpdate';
+import { exportPDF } from '../lib/pdfExporter';
 import {
   UserCircle2, Briefcase, FileText, LogOut, BookOpen, GraduationCap,
   Plus, Trash2, Globe2, Languages, Award, X, Building2, Save, RefreshCw,
@@ -14,10 +15,15 @@ const LANGUAGE_LEVELS = ['Başlangıç (A1-A2)', 'Orta (B1-B2)', 'İleri (C1)', 
 const EXP_TYPES = ['Staj', 'Tam Zamanlı', 'Yarı Zamanlı', 'Gönüllü', 'Freelance'];
 
 const TABS = [
-  { id: 'ozluk',           label: '👤 Profil & Ayarlar',         icon: <User size={16} /> },
+  { id: 'ozluk',           label: '👤 Kişisel Bilgiler',         icon: <User size={16} /> },
+  { id: 'akademik',        label: '🎓 Akademik Eğitim',          icon: <GraduationCap size={16} /> },
+  { id: 'staj',            label: '💼 Deneyim & Yetenek',        icon: <Briefcase size={16} /> },
+  { id: 'sertifika',       label: '🏆 Sertifika & Hedefler',     icon: <Award size={16} /> },
+  { id: 'dil',             label: '🌍 Yabancı Dil',              icon: <Globe2 size={16} /> },
+  { id: 'cv',              label: '📄 Akıllı CV',                icon: <FileText size={16} /> },
   { id: 'kariyer_checkup', label: '🧭 Kariyer Check-up',         icon: <Compass size={16} /> },
-  { id: 'mezun_kart',      label: '💳 Mezun Kart Başvurusu',     icon: <CreditCard size={16} /> },
-  { id: 'kulup_basvuru',   label: '👥 Öğrenci Kulübü Başvurusu', icon: <Users size={16} /> },
+  { id: 'mezun_kart',      label: '💳 Mezun Kart',               icon: <CreditCard size={16} /> },
+  { id: 'kulup_basvuru',   label: '👥 Kulüp Başvurusu',          icon: <Users size={16} /> },
 ];
 
 const CV_SUB_TABS = [
@@ -235,11 +241,8 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
       </header>
 
       {/* ═══════════ MAIN CONTENT ═══════════ */}
-      <main className={`flex-1 ${activeTab === 'ozluk' ? '' : 'p-4 md:p-8 max-w-5xl mx-auto w-full'}`}>
-        {activeTab === 'ozluk' ? (
-          <ProfileUpdate currentUser={currentUser} setView={setView} />
-        ) : (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 animate-fade-in">
+      <main className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 animate-fade-in">
             {/* Section header */}
           <div className="flex items-center justify-between mb-6 pb-5 border-b border-gray-100">
             <div className="flex items-center gap-3">
@@ -272,7 +275,155 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
             )}
           </div>
 
-          {/* ─── ÖĞRENCİ KULÜBÜ BAŞVURUSU ─── */}
+          {/* ─── KİŞİSEL BİLGİLER ─── */}
+          {activeTab === 'ozluk' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className={lbl}>Ad Soyad</label>
+                  <input type="text" value={ozluk.name} onChange={e => setOzluk({...ozluk, name: e.target.value})} className={inp} placeholder="Adınız Soyadınız" />
+                </div>
+                <div>
+                  <label className={lbl}>E-Posta Adresi</label>
+                  <input type="email" value={ozluk.email} onChange={e => setOzluk({...ozluk, email: e.target.value})} className={inp} placeholder="ornek@esenyurt.edu.tr" />
+                </div>
+                <div>
+                  <label className={lbl}>Telefon Numarası</label>
+                  <input type="tel" value={ozluk.phone} onChange={e => setOzluk({...ozluk, phone: e.target.value})} className={inp} placeholder="+90 555 555 5555" />
+                </div>
+                <div>
+                  <label className={lbl}>Konum / Şehir</label>
+                  <input type="text" value={ozluk.address} onChange={e => setOzluk({...ozluk, address: e.target.value})} className={inp} placeholder="Örn: İstanbul, Türkiye" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className={lbl}>Hakkımda / Biyografi</label>
+                  <textarea rows={4} value={ozluk.bio} onChange={e => setOzluk({...ozluk, bio: e.target.value})} className={`${inp} resize-none`} placeholder="Kendinizden ve kariyer hedeflerinizden bahsedin..." />
+                </div>
+                <div>
+                  <label className={lbl}>LinkedIn Profili</label>
+                  <input type="url" value={ozluk.linkedin} onChange={e => setOzluk({...ozluk, linkedin: e.target.value})} className={inp} placeholder="linkedin.com/in/username" />
+                </div>
+                <div>
+                  <label className={lbl}>Kişisel Web Sitesi</label>
+                  <input type="url" value={ozluk.website} onChange={e => setOzluk({...ozluk, website: e.target.value})} className={inp} placeholder="https://www.example.com" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── AKADEMİK EĞİTİM ─── */}
+          {activeTab === 'akademik' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className={lbl}>Fakülte / Enstitü</label>
+                  <select value={akademik.faculty} onChange={e => setAkademik({...akademik, faculty: e.target.value})} className={inp}>
+                    <option value="">Seçiniz</option>
+                    <option value="Mühendislik ve Mimarlık Fakültesi">Mühendislik ve Mimarlık Fakültesi</option>
+                    <option value="İşletme ve Yönetim Bilimleri Fakültesi">İşletme ve Yönetim Bilimleri Fakültesi</option>
+                    <option value="Sağlık Bilimleri Fakültesi">Sağlık Bilimleri Fakültesi</option>
+                    <option value="Sanat ve Sosyal Bilimler Fakültesi">Sanat ve Sosyal Bilimler Fakültesi</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={lbl}>Bölüm / Program</label>
+                  <input type="text" value={akademik.department} onChange={e => setAkademik({...akademik, department: e.target.value})} className={inp} placeholder="Örn: Yazılım Mühendisliği" />
+                </div>
+                <div>
+                  <label className={lbl}>Sınıf / Derece</label>
+                  <input type="text" value={akademik.degree} onChange={e => setAkademik({...akademik, degree: e.target.value})} className={inp} placeholder="Örn: 3. Sınıf / Mezun" />
+                </div>
+                <div>
+                  <label className={lbl}>Genel Not Ortalaması (GNO)</label>
+                  <input type="text" value={akademik.gpa} onChange={e => setAkademik({...akademik, gpa: e.target.value})} className={inp} placeholder="Örn: 3.45" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── İŞ & STAJ DENEYİMİ ─── */}
+          {activeTab === 'staj' && (
+            <div className="space-y-6">
+              {experiences.length === 0 ? (
+                <div className="text-center py-12 border border-gray-100 rounded-3xl bg-gray-50/50">
+                  <Briefcase size={48} className="mx-auto text-gray-200 mb-4" />
+                  <p className="text-gray-500 font-medium">Henüz bir deneyim eklenmemiş.</p>
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {experiences.map((exp) => (
+                    <div key={exp.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-emerald-200 transition-all shadow-sm">
+                      <div className="flex gap-4">
+                        <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
+                          <Building2 size={24} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-base">{exp.title}</h4>
+                          <p className="text-sm font-medium text-emerald-700 mt-0.5">{exp.company}</p>
+                          <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase tracking-wider">{exp.type}</span>
+                        </div>
+                      </div>
+                      <button onClick={() => removeItem(setExperiences, experiences, exp.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ─── YABANCI DİL ─── */}
+          {activeTab === 'dil' && (
+            <div className="space-y-6">
+              {languages.length === 0 ? (
+                <div className="text-center py-12 border border-gray-100 rounded-3xl bg-gray-50/50">
+                  <Globe2 size={48} className="mx-auto text-gray-200 mb-4" />
+                  <p className="text-gray-500 font-medium">Yabancı dil bilgisi eklenmemiş.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {languages.map((lang) => (
+                    <div key={lang.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex justify-between items-center shadow-sm hover:border-sky-200 transition-colors">
+                      <div>
+                        <p className="font-bold text-gray-900">{lang.name}</p>
+                        <p className="text-xs text-sky-600 font-bold mt-0.5">{lang.level}</p>
+                      </div>
+                      <button onClick={() => removeItem(setLanguages, languages, lang.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ─── SERTİFİKA VE EĞİTİMLER ─── */}
+          {activeTab === 'sertifika' && (
+            <div className="space-y-6">
+              {certificates.length === 0 ? (
+                <div className="text-center py-12 border border-gray-100 rounded-3xl bg-gray-50/50">
+                  <Award size={48} className="mx-auto text-gray-200 mb-4" />
+                  <p className="text-gray-500 font-medium">Sertifika veya belge eklenmemiş.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {certificates.map((cert) => (
+                    <div key={cert.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between shadow-sm hover:border-purple-200 transition-all">
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-base">{cert.name}</h4>
+                        <p className="text-sm font-medium text-gray-500 mt-0.5">{cert.issuer} {cert.year && `- ${cert.year}`}</p>
+                      </div>
+                      <button onClick={() => removeItem(setCertificates, certificates, cert.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           {activeTab === 'kulup_basvuru' && (
             <div className="space-y-6">
               {clubSubmitted ? (
@@ -328,6 +479,119 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
                   </button>
                 </>
               )}
+            </div>
+          )}
+
+          {/* ─── AKILLI CV (SMART CV) ─── */}
+          {activeTab === 'cv' && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-6 text-white flex flex-col md:flex-row items-center justify-between shadow-lg">
+                <div>
+                  <h3 className="text-xl font-black mb-1">Akıllı CV'niz Hazır!</h3>
+                  <p className="text-sm text-indigo-100">Diğer sekmelerde girdiğiniz veriler otomatik olarak senkronize edilir.</p>
+                </div>
+                <div className="mt-4 md:mt-0 flex gap-3">
+                  <button onClick={() => exportPDF('alumni-cv-preview', 'Mezun_CV.pdf')} className="px-5 py-2.5 bg-white text-indigo-700 hover:bg-indigo-50 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
+                    <Download size={18} /> PDF İndir
+                  </button>
+                </div>
+              </div>
+              
+              {/* CV PREVIEW CONTAINER */}
+              <div id="alumni-cv-preview" className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 md:p-12 min-h-[842px] max-w-[794px] mx-auto text-gray-800">
+                {/* Header section */}
+                <div className="border-b-2 border-indigo-600 pb-6 mb-6">
+                  <h1 className="text-3xl font-black text-gray-900 uppercase tracking-wide">{ozluk.name || 'Ad Soyad'}</h1>
+                  <p className="text-lg text-indigo-600 font-bold mb-3">{akademik.department || 'Bölüm / Ünvan Belirtilmedi'}</p>
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 font-medium">
+                    {ozluk.email && <span className="flex items-center gap-1.5"><Mail size={14}/> {ozluk.email}</span>}
+                    {ozluk.phone && <span className="flex items-center gap-1.5"><Phone size={14}/> {ozluk.phone}</span>}
+                    {ozluk.address && <span className="flex items-center gap-1.5"><MapPin size={14}/> {ozluk.address}</span>}
+                    {ozluk.linkedin && <span className="flex items-center gap-1.5"><Link size={14}/> LinkedIn</span>}
+                  </div>
+                </div>
+                
+                {/* Bio section */}
+                {ozluk.bio && (
+                  <div className="mb-8">
+                    <p className="text-sm leading-relaxed text-gray-700 text-justify">{ozluk.bio}</p>
+                  </div>
+                )}
+                
+                {/* Grid Layout for the rest */}
+                <div className="grid grid-cols-3 gap-8">
+                  <div className="col-span-2 space-y-8">
+                    {/* Experience */}
+                    {experiences.length > 0 && (
+                      <section>
+                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
+                          <Briefcase size={18} className="text-indigo-600"/> Deneyim
+                        </h2>
+                        <div className="space-y-4">
+                          {experiences.map(exp => (
+                            <div key={exp.id}>
+                              <h3 className="font-bold text-gray-900">{exp.title}</h3>
+                              <p className="text-indigo-600 text-sm font-semibold mb-1">{exp.company} <span className="text-gray-400 font-normal ml-2">({exp.type})</span></p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+                    
+                    {/* Education */}
+                    {(akademik.faculty || akademik.department) && (
+                      <section>
+                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
+                          <GraduationCap size={18} className="text-indigo-600"/> Eğitim
+                        </h2>
+                        <div>
+                          <h3 className="font-bold text-gray-900">İstanbul Esenyurt Üniversitesi</h3>
+                          <p className="text-gray-700 text-sm mb-1">{akademik.faculty}</p>
+                          <p className="text-indigo-600 text-sm font-semibold">{akademik.department} <span className="text-gray-400 font-normal ml-2">({akademik.degree})</span></p>
+                          {akademik.gpa && <p className="text-xs font-bold text-gray-500 mt-1">GNO: {akademik.gpa}</p>}
+                        </div>
+                      </section>
+                    )}
+                  </div>
+                  
+                  <div className="col-span-1 space-y-8">
+                    {/* Languages */}
+                    {languages.length > 0 && (
+                      <section>
+                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
+                          <Globe2 size={18} className="text-indigo-600"/> Yabancı Diller
+                        </h2>
+                        <div className="space-y-3">
+                          {languages.map(lang => (
+                            <div key={lang.id}>
+                              <h3 className="font-bold text-gray-800 text-sm">{lang.name}</h3>
+                              <p className="text-xs text-indigo-600 font-semibold">{lang.level}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+                    
+                    {/* Certificates */}
+                    {certificates.length > 0 && (
+                      <section>
+                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
+                          <Award size={18} className="text-indigo-600"/> Sertifikalar
+                        </h2>
+                        <div className="space-y-3">
+                          {certificates.map(cert => (
+                            <div key={cert.id}>
+                              <h3 className="font-bold text-gray-800 text-sm">{cert.name}</h3>
+                              <p className="text-xs text-gray-500">{cert.issuer}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+                  </div>
+                </div>
+                
+              </div>
             </div>
           )}
 
@@ -600,7 +864,6 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
           )}
 
           </div>
-        )}
       </main>
 
       {/* ═══════════ MODALS ═══════════ */}

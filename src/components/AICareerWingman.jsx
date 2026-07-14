@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Bot, X, Send, Sparkles } from 'lucide-react';
+import { generateAIResponse } from '../lib/gemini';
 
 export default function AICareerWingman() {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,20 +9,25 @@ export default function AICareerWingman() {
   ]);
   const [input, setInput] = useState('');
 
-  const handleSend = () => {
+  const [isTyping, setIsTyping] = useState(false);
+
+  const handleSend = async () => {
     if (!input.trim()) return;
     
+    const userMsg = input;
     // Add user msg
-    setMessages(prev => [...prev, { text: input, sender: 'user' }]);
+    setMessages(prev => [...prev, { text: userMsg, sender: 'user' }]);
     setInput('');
+    setIsTyping(true);
     
-    // Mock AI Reply
-    setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        text: "Harika! Senin için algoritmayı filtreliyorum... Profilindeki yeteneklerinle tam eşleşen 3 yeni ilan buldum. 'Sizin İçin' akışına ekledim, göz atabilirsin! ✨", 
-        sender: 'ai' 
-      }]);
-    }, 1000);
+    // AI Reply
+    const aiResponse = await generateAIResponse(
+      userMsg,
+      "Sen IESU Kariyer Platformu'nun yapay zeka asistanı Wingman'sin. Gençlere, samimi, teşvik edici ve biraz enerjik (emojilerle) bir dille kariyer tavsiyeleri ver."
+    );
+    
+    setMessages(prev => [...prev, { text: aiResponse, sender: 'ai' }]);
+    setIsTyping(false);
   };
 
   return (
@@ -47,6 +53,15 @@ export default function AICareerWingman() {
                 {m.text}
               </div>
             ))}
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="bg-gray-100 text-gray-800 rounded-2xl rounded-tl-sm p-3 max-w-[80%] flex gap-1 items-center">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="p-3 bg-white border-t border-gray-100 flex gap-2">

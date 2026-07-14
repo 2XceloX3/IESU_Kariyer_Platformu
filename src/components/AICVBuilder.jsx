@@ -3,6 +3,8 @@ import {  FileText, Wand2, Plus, Trash2, Download, Printer, User, Briefcase, Gra
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import NavIcon from './shared/NavIcon';
+import { generateAIResponse } from '../lib/gemini';
+import { exportPDF } from '../lib/pdfExporter';
 
 
 export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId }) {
@@ -53,22 +55,31 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   const [newLangLevel, setNewLangLevel] = useState('Orta');
 
   // Simulate AI text generation
-  const handleAIGenerateSummary = () => {
+  const handleAIGenerateSummary = async () => {
     setIsGenerating(true);
-    setTimeout(() => {
-      if (!isMounted.current) return;
-      const eduPart = cvData.education.length > 0
-        ? `${cvData.education[0].institution} ${cvData.education[0].degree} bölümünde eğitimine devam eden, `
-        : '';
-      const skillPart = cvData.skills.length >= 2
-        ? `${cvData.skills.slice(0,2).join(' ve ')} konularında yetkin, `
-        : cvData.skills.length === 1
-          ? `${cvData.skills[0]} konusunda yetkin, `
-          : '';
-      const generated = `${eduPart}${skillPart}gelişime açık ve motivasyonu yüksek bir öğrenci. Kariyer hedeflerine ulaşmak için değer katabileceği bir organizasyonda deneyim kazanmayı hedefliyor.`;
-      setCvData(prev => ({ ...prev, summary: generated }));
-      setIsGenerating(false);
-    }, 1500);
+    
+    // Build context prompt
+    const prompt = `
+      Sen profesyonel bir İK uzmanı ve kariyer danışmanısın. Aşağıda verilen bilgilere dayanarak etkileyici, profesyonel ve kısa (max 3 cümle) bir "Özet (Hakkımda)" yazısı oluştur.
+      
+      Eğitim: ${cvData.education.map(e => e.degree + ' @ ' + e.institution).join(', ')}
+      Yetenekler: ${cvData.skills.join(', ')}
+      Deneyimler: ${cvData.experience.map(e => e.role + ' - ' + e.company).join(', ')}
+      
+      Lütfen doğrudan metni ver, ek açıklama yapma. Ton son derece profesyonel, şirkete değer katmaya hevesli ve üçüncü tekil/birinci tekil şahıs ağzından tutarlı olmalı.
+    `;
+    
+    try {
+      const generated = await generateAIResponse(prompt, "Sadece istenen özeti dön. Ekstra giriş veya çıkış cümlesi kurma.");
+      if (isMounted.current) {
+        setCvData(prev => ({ ...prev, summary: generated }));
+      }
+    } catch (error) {
+      console.error(error);
+      window.toast && window.toast.error("Yapay zeka asistanı yanıt veremedi.");
+    } finally {
+      if (isMounted.current) setIsGenerating(false);
+    }
   };
 
   // --- EXPERIENCE CRUD ---
@@ -539,7 +550,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
           <button onClick={() => window.print()} className="bg-white/80 backdrop-blur-md text-gray-700 hover:text-indigo-600 p-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-100 transition flex items-center gap-2" title="Yazdır">
             <Printer size={16} /> <span className="text-xs font-bold hidden sm:inline">Yazdır</span>
           </button>
-          <button onClick={() => window.print()} className="bg-indigo-600 text-white hover:bg-indigo-700 p-2.5 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-2" title="PDF İndir">
+          <button onClick={() => exportPDF('cv-print-area', 'Ozgecmisim.pdf')} className="bg-indigo-600 text-white hover:bg-indigo-700 p-2.5 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-2" title="PDF İndir">
             <Download size={16} /> <span className="text-xs font-bold hidden sm:inline">PDF İndir</span>
           </button>
         </div>

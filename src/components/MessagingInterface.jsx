@@ -260,7 +260,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
 
   const handleSend = (e, type = 'text', mediaUrl = null) => {
     if (e) e.preventDefault();
-    if (!newMessage.trim() && !mediaUrl) return;
+    if (!newMessage.trim() && !mediaUrl && type !== 'audio') return;
 
     const isGroupChat = activeContactId && String(activeContactId).toLowerCase().startsWith('grp');
 
@@ -821,6 +821,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                           </div>
                         )}
                         <div 
+                          id={`msg-${msg.id}`}
                           onContextMenu={(e) => { e.preventDefault(); setActiveMessageOptions(msg.id); }}
                           onClick={() => setActiveMessageOptions(activeMessageOptions === msg.id ? null : msg.id)}
                           className={`max-w-[75%] md:max-w-[60%] rounded-2xl p-2 shadow-sm cursor-pointer relative ${isMine ? 'bg-[#DCF8C6] text-gray-800 rounded-br-sm' : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-[0_2px_10px_rgb(0,0,0,0.05)]'} ${msg.isDeleted ? 'opacity-70 italic' : ''}`}
@@ -873,6 +874,24 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                             </div>
                           )}
 
+                          {/* Audio Message */}
+                          {msg.type === 'audio' && (
+                            <div className="flex items-center gap-3 p-2 bg-black/5 rounded-xl mb-1 min-w-[200px]">
+                              <button className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white shrink-0 hover:bg-indigo-600 transition">
+                                <Play size={20} className="ml-1" />
+                              </button>
+                              <div className="flex-1">
+                                <div className="h-1 bg-gray-300 rounded-full w-full relative">
+                                  <div className="absolute left-0 top-0 h-full bg-indigo-500 rounded-full" style={{width: '30%'}}></div>
+                                </div>
+                                <div className="flex justify-between mt-1 text-[10px] text-gray-500 font-bold">
+                                  <span>0:00</span>
+                                  <span>0:12</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           {/* View Once / Replay Message */}
                           {(msg.type === 'view_once' || msg.type === 'view_replay') && msg.mediaUrl && (() => {
                             const isReplay = msg.type === 'view_replay';
@@ -912,7 +931,7 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                                   <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4">
                                     <div className="relative max-w-2xl w-full">
                                       <img src={msg.mediaUrl} className="w-full rounded-xl" />
-                                      <button onClick={() => setViewedOnceMsgs(viewedOnceMsgs.filter(id => id !== msg.id + '_temp'))} className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full">
+                                      <button onClick={() => setViewedOnceMsgs([...viewedOnceMsgs.filter(id => id !== msg.id + '_temp'), msg.id])} className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full">
                                         <X size={24} />
                                       </button>
                                     </div>
