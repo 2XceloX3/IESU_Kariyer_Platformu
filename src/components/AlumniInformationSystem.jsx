@@ -1,12 +1,11 @@
 import React, { useState, useRef } from 'react';
 import useAppStore from '../store/useAppStore';
 import Logo from './Logo';
-import GlobeMap from './GlobeMap';
 import ProfileUpdate from './ProfileUpdate';
 import {
   UserCircle2, Briefcase, FileText, LogOut, BookOpen, GraduationCap,
   Plus, Trash2, Globe2, Languages, Award, X, Building2, Save, RefreshCw,
-  Phone, Mail, MapPin, User, Calendar, BadgeCheck, Map, ArrowLeft,
+  Phone, Mail, MapPin, User, Calendar, BadgeCheck, ArrowLeft,
   UploadCloud, ChevronRight, Star, Link, Compass, CreditCard, CheckCircle,
   Clock, AlertCircle, Download, ChevronDown, Users
 } from 'lucide-react';
@@ -19,7 +18,6 @@ const TABS = [
   { id: 'kariyer_checkup', label: '🧭 Kariyer Check-up',         icon: <Compass size={16} /> },
   { id: 'mezun_kart',      label: '💳 Mezun Kart Başvurusu',     icon: <CreditCard size={16} /> },
   { id: 'kulup_basvuru',   label: '👥 Öğrenci Kulübü Başvurusu', icon: <Users size={16} /> },
-  { id: 'map',             label: '🌍 Dünyadaki Mezunlarımız',   icon: <Map size={16} /> },
 ];
 
 const CV_SUB_TABS = [
@@ -153,17 +151,12 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
     staj: <Briefcase size={20} />,
     kurs: <BookOpen size={20} />,
     sertifika: <Award size={20} />,
-    dil: <Languages size={20} />,
-    cv: <FileText size={20} />,
-    map: <Map size={20} />,
-    kulup_basvuru: <Users size={20} />,
-    kariyer_checkup: <Compass size={20} />,
-    mezun_kart: <CreditCard size={20} />
+    cv: <FileText size={20} />
   };
   const sectionColor = {
     ozluk: 'blue', akademik: 'indigo', staj: 'emerald',
     kurs: 'amber', sertifika: 'purple', dil: 'sky',
-    cv: 'rose', map: 'teal',
+    cv: 'rose',
     kariyer_checkup: 'indigo', mezun_kart: 'rose', kulup_basvuru: 'emerald'
   };
   const colorMap = {
@@ -603,14 +596,6 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
                   </button>
                 </>
               )}
-            </div>
-          )}
-
-          {/* ─── MEZUN HARİTASI ─── */}
-
-          {activeTab === 'map' && (
-            <div className="w-full flex flex-col h-[700px]">
-              <GlobeMap />
             </div>
           )}
 
