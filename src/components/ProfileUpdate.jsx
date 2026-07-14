@@ -167,48 +167,9 @@ export default function ProfileUpdate({
   }, [selectedFaculty, selectedCapFaculty]);
 
   return (
-    <div className="min-h-[100dvh] bg-gray-50/50 font-sans flex flex-col relative overflow-x-hidden selection:bg-indigo-500/30">
-      
-      {/* Decorative Background Glows */}
-      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
-      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
+    <div className="w-full flex flex-col relative overflow-x-hidden selection:bg-indigo-500/30">
 
-      {/* Glass Navbar */}
-      <nav className="bg-white/70 backdrop-blur-2xl border-b border-gray-200/50 px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-40">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'company' ? 'company' : userRole || 'landing')}
-            className="w-10 h-10 rounded-full bg-white border border-gray-200/50 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:scale-105 transition-all shadow-sm"
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div className="hidden md:flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-              <UserCircle2 size={20} />
-            </div>
-            <div>
-              <h1 className="text-lg font-black text-gray-900 leading-tight">Profil & Ayarlar</h1>
-              <p className="text-[11px] text-gray-500 font-medium tracking-wide uppercase">Kariyer Merkeziniz</p>
-            </div>
-          </div>
-        </div>
-        
-        <button 
-          onClick={handleSave}
-          disabled={!hasChanges}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
-            hasChanges 
-              ? 'bg-gray-900 text-white hover:bg-black hover:shadow-lg hover:shadow-gray-900/20 hover:-translate-y-0.5 cursor-pointer' 
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
-          }`}
-        >
-          <Save size={16} />
-          <span className="hidden sm:inline">Değişiklikleri Kaydet</span>
-          <span className="sm:hidden">Kaydet</span>
-        </button>
-      </nav>
-
-      <div className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-6 lg:gap-10 z-10 relative">
+      <div className="w-full mx-auto flex flex-col lg:flex-row gap-6 lg:gap-10 z-10 relative">
         
         {/* Floating Sidebar */}
         <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-6">

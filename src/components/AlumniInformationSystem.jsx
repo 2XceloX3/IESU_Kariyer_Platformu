@@ -242,10 +242,12 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
       </header>
 
       {/* ═══════════ MAIN CONTENT ═══════════ */}
-      <main className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 animate-fade-in">
-
-          {/* Section header */}
+      <main className={`flex-1 ${activeTab === 'ozluk' ? '' : 'p-4 md:p-8 max-w-5xl mx-auto w-full'}`}>
+        {activeTab === 'ozluk' ? (
+          <ProfileUpdate currentUser={currentUser} setView={setView} />
+        ) : (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 animate-fade-in">
+            {/* Section header */}
           <div className="flex items-center justify-between mb-6 pb-5 border-b border-gray-100">
             <div className="flex items-center gap-3">
               <div className={`w-11 h-11 rounded-xl ${currentColor.bg} ${currentColor.text} flex items-center justify-center`}>
@@ -276,11 +278,6 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
               </button>
             )}
           </div>
-
-          {/* ─── ÖZLÜK BİLGİLERİ (PROFILE UPDATE) ─── */}
-          {activeTab === 'ozluk' && (
-            <ProfileUpdate currentUser={currentUser} setView={setView} />
-          )}
 
           {/* ─── ÖĞRENCİ KULÜBÜ BAŞVURUSU ─── */}
           {activeTab === 'kulup_basvuru' && (
@@ -617,7 +614,8 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
             </div>
           )}
 
-        </div>
+          </div>
+        )}
       </main>
 
       {/* ═══════════ MODALS ═══════════ */}
