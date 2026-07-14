@@ -2,29 +2,17 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import { MapPin, Users, Building2, Globe2 } from 'lucide-react';
 
-// Neon colors
-const COLORS = {
-  hub: '#ffd700', // Neon Gold
-  node: '#00ffff', // Cyan
-  arc: 'rgba(255, 215, 0, 0.8)'
-};
-
-const HUB = { lat: 41.0082, lng: 28.9784, name: 'İstanbul, Türkiye', count: 40550, isHub: true };
-
-// Sadece gerçek (veya merkez) veriler, sahte şehirleri sildik.
-const CITIES = [
-  { lat: 51.5074, lng: -0.1278, name: 'Londra, BK', count: 42, isHub: false },
-  { lat: 40.7128, lng: -74.0060, name: 'New York, ABD', count: 18, isHub: false },
-  { lat: 52.5200, lng: 13.4050, name: 'Berlin, Almanya', count: 65, isHub: false },
-  { lat: 35.6762, lng: 139.6503, name: 'Tokyo, Japonya', count: 12, isHub: false },
-  { lat: 25.2048, lng: 55.2708, name: 'Dubai, BAE', count: 24, isHub: false }
-];  
+// ISO A2 codes for active student countries
+const ACTIVE_COUNTRIES = ['TR', 'GB', 'US', 'DE', 'JP', 'AE'];
 
 export default function GlobeMap() {
   const globeEl = useRef();
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const containerRef = useRef();
+  const [countries, setCountries] = useState({ features: [] });
+  const [pulse, setPulse] = useState(true);
 
+  // Resize handler
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
@@ -39,29 +27,29 @@ export default function GlobeMap() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Globe Setup
   useEffect(() => {
     if (globeEl.current) {
-      // Auto-rotate kapalı (Kullanıcı kendi döndürecek)
       globeEl.current.controls().autoRotate = false;
       globeEl.current.controls().enableZoom = true;
-      
-      // Point camera to Istanbul
-      globeEl.current.pointOfView({ lat: 30, lng: 20, altitude: 2.0 }, 2000);
+      globeEl.current.pointOfView({ lat: 39, lng: 35, altitude: 2.2 }, 2000);
     }
   }, []);
 
-  const arcsData = useMemo(() => {
-    return CITIES.map(city => ({
-      startLat: HUB.lat,
-      startLng: HUB.lng,
-      endLat: city.lat,
-      endLng: city.lng,
-      color: [COLORS.hub, COLORS.node]
-    }));
+  // Fetch GeoJSON Countries
+  useEffect(() => {
+    fetch('https://raw.githubusercontent.com/vasturiano/react-globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
+      .then(res => res.json())
+      .then(data => setCountries(data))
+      .catch(err => console.error("Could not load countries", err));
   }, []);
 
-  const pointsData = useMemo(() => {
-    return [HUB, ...CITIES];
+  // Breathing Pulse Effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulse(p => !p);
+    }, 1500);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -83,7 +71,7 @@ export default function GlobeMap() {
               </div>
               <div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Merkez Kampüs</p>
-                <p className="text-sm font-bold text-white">İstanbul, Türkiye</p>
+                <p className="text-sm font-bold text-white">Türkiye</p>
               </div>
             </div>
             
@@ -92,8 +80,8 @@ export default function GlobeMap() {
                 <Users className="text-cyan-400" size={18} />
               </div>
               <div>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Global İletişim</p>
-                <p className="text-sm font-bold text-white">Aktif Mezun Ağı</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Aktif Bölgeler</p>
+                <p className="text-sm font-bold text-white">5 Uluslararası Bölge</p>
               </div>
             </div>
           </div>
@@ -109,33 +97,17 @@ export default function GlobeMap() {
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
           
-          // Pulsing / Breathing rings for active student regions
-          ringsData={pointsData}
-          ringColor={(d) => d.isHub ? (t) => `rgba(255,215,0,${Math.max(0, 1-t)})` : (t) => `rgba(0,255,255,${Math.max(0, 1-t)})`}
-          ringMaxRadius={(d) => d.isHub ? 5 : 2}
-          ringPropagationSpeed={(d) => d.isHub ? 1.5 : 1}
-          ringRepeatPeriod={(d) => d.isHub ? 1000 : 1500}
-          
-          // Glowing points
-          pointsData={pointsData}
-          pointColor={(d) => d.isHub ? COLORS.hub : COLORS.node}
-          pointAltitude={(d) => d.isHub ? 0.05 : 0.02}
-          pointRadius={(d) => d.isHub ? 1.0 : 0.5}
-          pointsMerge={false}
-          
-          // HTML Labels for Cities
-          htmlElementsData={pointsData}
-          htmlElement={d => {
-            const el = document.createElement('div');
-            el.innerHTML = `
-              <div style="transform: translate(-50%, -100%); margin-top: -15px; pointer-events: none;">
-                <div style="background: rgba(5, 8, 20, 0.9); backdrop-filter: blur(8px); border: 1px solid ${d.isHub ? 'rgba(255,215,0,0.4)' : 'rgba(0,255,255,0.3)'}; border-radius: 8px; padding: 6px 10px; color: white; white-space: nowrap; box-shadow: 0 0 15px ${d.isHub ? 'rgba(255,215,0,0.5)' : 'rgba(0,255,255,0.3)'};">
-                  <div style="font-size: 12px; font-weight: 900; color: ${d.isHub ? '#ffd700' : '#00ffff'}; text-shadow: 0 0 8px ${d.isHub ? '#ffd700' : '#00ffff'};">${d.name}</div>
-                </div>
-              </div>
-            `;
-            return el;
+          // Glowing Polygons (Countries)
+          polygonsData={countries.features}
+          polygonAltitude={(d) => ACTIVE_COUNTRIES.includes(d.properties.ISO_A2) ? (pulse ? 0.06 : 0.02) : 0.01}
+          polygonCapColor={(d) => {
+            if (d.properties.ISO_A2 === 'TR') return pulse ? 'rgba(255, 215, 0, 0.9)' : 'rgba(255, 215, 0, 0.3)';
+            if (ACTIVE_COUNTRIES.includes(d.properties.ISO_A2)) return pulse ? 'rgba(0, 255, 255, 0.8)' : 'rgba(0, 255, 255, 0.3)';
+            return 'rgba(20, 20, 30, 0.2)';
           }}
+          polygonSideColor={() => 'rgba(0, 0, 0, 0.1)'}
+          polygonStrokeColor={(d) => ACTIVE_COUNTRIES.includes(d.properties.ISO_A2) ? '#ffffff' : 'rgba(255,255,255, 0.1)'}
+          polygonsTransitionDuration={1500}
         />
       </div>
       
