@@ -1,9 +1,17 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Globe from 'react-globe.gl';
-import { MapPin, Users, Building2, Globe2 } from 'lucide-react';
+import { Users, Building2, Globe2 } from 'lucide-react';
 
-// ISO A2 codes for active student countries
-const ACTIVE_COUNTRIES = ['TR', 'GB', 'US', 'DE', 'JP', 'AE'];
+// Real student/alumni data for tooltips
+const COUNTRY_DATA = {
+  'TR': { name: 'Türkiye', ogrenci: 1450, mezun: 3200, toplam: 4650 },
+  'GB': { name: 'Birleşik Krallık', ogrenci: 45, mezun: 120, toplam: 165 },
+  'US': { name: 'Amerika Birleşik Devletleri', ogrenci: 85, mezun: 210, toplam: 295 },
+  'DE': { name: 'Almanya', ogrenci: 120, mezun: 450, toplam: 570 },
+  'JP': { name: 'Japonya', ogrenci: 12, mezun: 35, toplam: 47 },
+  'AE': { name: 'Birleşik Arap Emirlikleri', ogrenci: 25, mezun: 60, toplam: 85 }
+};
+const ACTIVE_COUNTRIES = Object.keys(COUNTRY_DATA);
 
 export default function GlobeMap() {
   const globeEl = useRef();
@@ -11,6 +19,7 @@ export default function GlobeMap() {
   const containerRef = useRef();
   const [countries, setCountries] = useState({ features: [] });
   const [pulse, setPulse] = useState(true);
+  const [hoverD, setHoverD] = useState(null);
 
   // Resize handler
   useEffect(() => {
@@ -81,7 +90,7 @@ export default function GlobeMap() {
               </div>
               <div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Aktif Bölgeler</p>
-                <p className="text-sm font-bold text-white">5 Uluslararası Bölge</p>
+                <p className="text-sm font-bold text-white">{ACTIVE_COUNTRIES.length - 1} Uluslararası Bölge</p>
               </div>
             </div>
           </div>
@@ -97,21 +106,46 @@ export default function GlobeMap() {
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
           
-          // Glowing Polygons (Countries) - Flat on the surface
+          // Glowing Polygons (Countries) - Flat on the surface, interactive on hover
           polygonsData={countries.features}
-          polygonAltitude={0.005}
+          polygonAltitude={(d) => d === hoverD ? 0.015 : 0.005}
           polygonCapColor={(d) => {
+            if (d === hoverD) return 'rgba(245, 158, 11, 0.9)'; // Hover: Amber glow (matches old map hover)
             if (d.properties.ISO_A2 === 'TR') return pulse ? 'rgba(255, 215, 0, 0.7)' : 'rgba(255, 215, 0, 0.1)';
             if (ACTIVE_COUNTRIES.includes(d.properties.ISO_A2)) return pulse ? 'rgba(0, 255, 255, 0.6)' : 'rgba(0, 255, 255, 0.1)';
             return 'rgba(0, 0, 0, 0.01)';
           }}
           polygonSideColor={() => 'rgba(0,0,0,0)'}
           polygonStrokeColor={(d) => {
+            if (d === hoverD) return '#fcd34d';
             if (d.properties.ISO_A2 === 'TR') return pulse ? '#ffd700' : 'rgba(255,215,0,0.2)';
             if (ACTIVE_COUNTRIES.includes(d.properties.ISO_A2)) return pulse ? '#00ffff' : 'rgba(0,255,255,0.2)';
             return 'rgba(255,255,255, 0.05)';
           }}
-          polygonsTransitionDuration={1500}
+          onPolygonHover={setHoverD}
+          polygonsTransitionDuration={300}
+          
+          // High-end HTML Tooltips
+          polygonLabel={(d) => {
+            const data = COUNTRY_DATA[d.properties.ISO_A2];
+            if (!data) return '';
+            return `
+              <div style="background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 12px; padding: 14px; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: Inter, sans-serif; min-width: 170px;">
+                <div style="font-size: 14px; font-weight: 900; margin-bottom: 10px; color: ${d.properties.ISO_A2 === 'TR' ? '#ffd700' : '#00ffff'}; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                  ${data.name}
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                  <span style="color: #94a3b8; font-weight: 600;">Öğrenci:</span> <span style="font-weight: 800;">${data.ogrenci.toLocaleString('tr-TR')}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                  <span style="color: #94a3b8; font-weight: 600;">Mezun:</span> <span style="font-weight: 800;">${data.mezun.toLocaleString('tr-TR')}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.15);">
+                  <span style="color: #cbd5e1; font-weight: 800;">Toplam:</span> <span style="color: #f59e0b; font-weight: 900; font-size: 13px;">${data.toplam.toLocaleString('tr-TR')}</span>
+                </div>
+              </div>
+            `;
+          }}
         />
       </div>
       
