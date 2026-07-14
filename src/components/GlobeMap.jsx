@@ -97,16 +97,20 @@ export default function GlobeMap() {
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
           
-          // Glowing Polygons (Countries)
+          // Glowing Polygons (Countries) - Flat on the surface
           polygonsData={countries.features}
-          polygonAltitude={(d) => ACTIVE_COUNTRIES.includes(d.properties.ISO_A2) ? (pulse ? 0.06 : 0.02) : 0.01}
+          polygonAltitude={0.005}
           polygonCapColor={(d) => {
-            if (d.properties.ISO_A2 === 'TR') return pulse ? 'rgba(255, 215, 0, 0.9)' : 'rgba(255, 215, 0, 0.3)';
-            if (ACTIVE_COUNTRIES.includes(d.properties.ISO_A2)) return pulse ? 'rgba(0, 255, 255, 0.8)' : 'rgba(0, 255, 255, 0.3)';
-            return 'rgba(20, 20, 30, 0.2)';
+            if (d.properties.ISO_A2 === 'TR') return pulse ? 'rgba(255, 215, 0, 0.7)' : 'rgba(255, 215, 0, 0.1)';
+            if (ACTIVE_COUNTRIES.includes(d.properties.ISO_A2)) return pulse ? 'rgba(0, 255, 255, 0.6)' : 'rgba(0, 255, 255, 0.1)';
+            return 'rgba(0, 0, 0, 0.01)';
           }}
-          polygonSideColor={() => 'rgba(0, 0, 0, 0.1)'}
-          polygonStrokeColor={(d) => ACTIVE_COUNTRIES.includes(d.properties.ISO_A2) ? '#ffffff' : 'rgba(255,255,255, 0.1)'}
+          polygonSideColor={() => 'rgba(0,0,0,0)'}
+          polygonStrokeColor={(d) => {
+            if (d.properties.ISO_A2 === 'TR') return pulse ? '#ffd700' : 'rgba(255,215,0,0.2)';
+            if (ACTIVE_COUNTRIES.includes(d.properties.ISO_A2)) return pulse ? '#00ffff' : 'rgba(0,255,255,0.2)';
+            return 'rgba(255,255,255, 0.05)';
+          }}
           polygonsTransitionDuration={1500}
         />
       </div>
