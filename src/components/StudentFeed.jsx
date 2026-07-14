@@ -383,11 +383,9 @@ export default function StudentFeed({ setView, setSelectedUserId, notifications 
           </button>
           
           {/* CLUB ADMIN */}
-          {isClubAdmin && (
-            <button onClick={() => setView('club_admin')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'club_admin' ? 'text-emerald-500 bg-emerald-50' : 'text-emerald-400 hover:text-emerald-600'}`} title="Kulüp Yönetim Paneli">
-              <Crown size={24} strokeWidth={activeTab === 'club_admin' ? 2.5 : 2} className={activeTab === 'club_admin' ? 'fill-current text-emerald-500/20' : ''} />
-            </button>
-          )}
+          <button onClick={() => setView('club_admin')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'club_admin' ? 'text-emerald-500 bg-emerald-50' : 'text-emerald-400 hover:text-emerald-600'}`} title="Kulüp Yönetim Paneli">
+            <Crown size={24} strokeWidth={activeTab === 'club_admin' ? 2.5 : 2} className={activeTab === 'club_admin' ? 'fill-current text-emerald-500/20' : ''} />
+          </button>
           
           {/* PROFILE AVATAR */}
           <button onClick={() => {
