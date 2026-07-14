@@ -155,6 +155,7 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
     ozluk: 'blue', akademik: 'indigo', staj: 'emerald',
     kurs: 'amber', sertifika: 'purple', dil: 'sky',
     cv: 'rose', map: 'teal',
+    kariyer_checkup: 'indigo', mezun_kart: 'rose'
   };
   const colorMap = {
     blue:    { bg: 'bg-blue-50',    text: 'text-blue-600',    btn: 'bg-blue-600 hover:bg-blue-700' },
