@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import useAppStore from '../store/useAppStore';
+import Logo from './Logo';
+import GlobeMap from './GlobeMap';
 import {
   UserCircle2, Briefcase, FileText, LogOut, BookOpen, GraduationCap,
   Plus, Trash2, Globe2, Languages, Award, X, Building2, Save, RefreshCw,
@@ -185,8 +187,8 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
               <ArrowLeft size={17} />
             </button>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#e60000] flex items-center justify-center shadow-sm shrink-0">
-                <img src="/iesu-logo.svg" alt="IESU" className="w-6 h-6 object-contain" onError={e => { e.target.style.display='none'; }} />
+              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0 border border-red-100">
+                <Logo className="w-6 h-6 object-contain text-[#e60000]" />
               </div>
               <div>
                 <h1 className="text-sm font-black text-gray-900 leading-tight">Mezun Bilgi Sistemi</h1>
@@ -200,14 +202,6 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
               <span className="text-[11px] font-bold text-green-700">MBS Bağlantısı Aktif</span>
             </div>
-            {currentUser?.name && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-black shrink-0">
-                  {currentUser.name[0]}
-                </div>
-                <span className="hidden md:block text-sm font-bold text-gray-700">{currentUser.name}</span>
-              </div>
-            )}
             <button
               onClick={handleSave}
               disabled={isSaving}
@@ -831,58 +825,8 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
           {/* ─── MEZUN HARİTASI ─── */}
 
           {activeTab === 'map' && (
-            <div>
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div>
-                  <h3 className="text-base font-black text-gray-900">Global Mezun Ağımız</h3>
-                  <p className="text-xs text-gray-400 mt-0.5">42.500+ mezunumuz dünya genelinde.</p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {[
-                    { color: 'bg-blue-500', label: 'K. Amerika (450)' },
-                    { color: 'bg-emerald-500', label: 'Avrupa (1.200)' },
-                    { color: 'bg-amber-500', label: 'Asya (300)' },
-                    { color: 'bg-red-500', label: 'Türkiye (40.550)' },
-                  ].map(d => (
-                    <div key={d.label} className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                      <span className={`w-2 h-2 rounded-full ${d.color}`}></span>
-                      <span className="text-xs font-bold text-gray-600">{d.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="w-full aspect-video bg-[#0B1121] rounded-2xl relative overflow-hidden shadow-2xl border border-gray-800">
-                <Globe2 size={500} className="text-blue-900 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10" strokeWidth={0.4} />
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-10"></div>
-
-                {[
-                  { top:'30%', left:'20%', color:'blue-400',    glowColor:'59,130,246',  city:'New York, ABD',       count:'450 Mezun' },
-                  { top:'25%', left:'55%', color:'emerald-400', glowColor:'16,185,129',  city:'Berlin, Almanya',     count:'1.200 Mezun' },
-                  { top:'40%', left:'75%', color:'amber-400',   glowColor:'245,158,11',  city:'Tokyo, Japonya',      count:'85 Mezun' },
-                  { top:'55%', left:'28%', color:'rose-400',    glowColor:'244,63,94',   city:'São Paulo, Brezilya', count:'60 Mezun' },
-                  { top:'30%', left:'65%', color:'violet-400',  glowColor:'167,139,250', city:'Dubai, BAE',          count:'320 Mezun' },
-                ].map((dot, i) => (
-                  <div key={i} className="absolute group cursor-pointer z-10" style={{ top: dot.top, left: dot.left }}>
-                    <span className={`absolute w-4 h-4 bg-${dot.color} rounded-full animate-ping opacity-60`}></span>
-                    <span className={`relative w-4 h-4 bg-${dot.color} rounded-full block border-2 border-[#0B1121]`} style={{ boxShadow: `0 0 12px rgba(${dot.glowColor},0.7)` }}></span>
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white text-gray-900 text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow-xl pointer-events-none text-center z-20">
-                      {dot.city}<br /><span className="text-gray-400 font-normal text-[10px]">{dot.count}</span>
-                    </div>
-                  </div>
-                ))}
-
-                {/* İstanbul merkez */}
-                <div className="absolute top-[35%] left-[52%] group cursor-pointer z-20">
-                  <span className="absolute w-6 h-6 bg-red-600 rounded-full animate-ping opacity-75"></span>
-                  <span className="relative w-6 h-6 bg-red-600 rounded-full block border-2 border-white" style={{ boxShadow: '0 0 20px rgba(220,38,38,0.9)' }}></span>
-                  <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-gray-900 text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition whitespace-nowrap shadow-xl pointer-events-none text-center z-30">
-                    İstanbul, Türkiye<br /><span className="text-gray-400 font-normal text-[10px]">Merkez · 40.550 Mezun</span>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-400 text-center mt-3">Noktaların üzerine gelerek bölge detaylarını inceleyin.</p>
+            <div className="w-full flex flex-col h-[700px]">
+              <GlobeMap />
             </div>
           )}
 
