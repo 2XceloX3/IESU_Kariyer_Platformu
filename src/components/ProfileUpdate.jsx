@@ -255,7 +255,6 @@ export default function ProfileUpdate({
                   >
                     {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"></div>}
                     <div className="flex items-center gap-3 relative z-10">
-                      <span className={`${isActive ? 'text-indigo-600' : 'text-gray-400'}`}>{tab.icon}</span>
                       {tab.label}
                     </div>
                     {isActive && <ChevronRight size={16} className="text-indigo-600" />}
