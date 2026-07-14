@@ -231,7 +231,6 @@ export default function AlumniInformationSystem({ currentUser, setView, alumniCa
                     : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
                 }`}
               >
-                <span className={isActive ? 'text-[#e60000]' : 'text-gray-400'}>{tab.icon}</span>
                 {tab.label}
               </button>
             );

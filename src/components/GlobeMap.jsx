@@ -4,9 +4,9 @@ import { MapPin, Users, Building2, Globe2 } from 'lucide-react';
 
 // Neon colors
 const COLORS = {
-  hub: '#ff1493', // Vibrant pink/red
+  hub: '#ffd700', // Neon Gold
   node: '#00ffff', // Cyan
-  arc: 'rgba(255, 20, 147, 0.8)'
+  arc: 'rgba(255, 215, 0, 0.8)'
 };
 
 const HUB = { lat: 41.0082, lng: 28.9784, name: 'İstanbul, Türkiye', count: 40550, isHub: true };
@@ -71,9 +71,9 @@ export default function GlobeMap() {
           <p className="text-xs text-gray-400 font-medium tracking-wide mb-6">İESÜ mezunları dünyanın dört bir yanında.</p>
           
           <div className="space-y-4">
-            <div className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-pink-500/20">
-              <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center border border-pink-500/40 shadow-[0_0_15px_rgba(255,20,147,0.4)]">
-                <Building2 className="text-pink-400" size={18} />
+            <div className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-amber-500/20">
+              <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/40 shadow-[0_0_15px_rgba(255,215,0,0.4)]">
+                <Building2 className="text-amber-400" size={18} />
               </div>
               <div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Merkez Kampüs</p>
@@ -103,14 +103,8 @@ export default function GlobeMap() {
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
           
-          // Arcs connecting Istanbul to the world
-          arcsData={arcsData}
-          arcColor="color"
-          arcDashLength={0.4}
-          arcDashGap={2}
-          arcDashInitialGap={() => Math.random()}
-          arcDashAnimateTime={2500}
-          arcStroke={0.8}
+          // Removing arcs to prevent pink rods/bars
+
           
           // Glowing points
           pointsData={pointsData}
@@ -125,8 +119,8 @@ export default function GlobeMap() {
             const el = document.createElement('div');
             el.innerHTML = `
               <div style="transform: translate(-50%, -100%); margin-top: -15px; pointer-events: none;">
-                <div style="background: rgba(5, 8, 20, 0.9); backdrop-filter: blur(8px); border: 1px solid ${d.isHub ? 'rgba(255,20,147,0.4)' : 'rgba(0,255,255,0.3)'}; border-radius: 8px; padding: 6px 10px; color: white; white-space: nowrap; box-shadow: 0 0 15px ${d.isHub ? 'rgba(255,20,147,0.5)' : 'rgba(0,255,255,0.3)'};">
-                  <div style="font-size: 12px; font-weight: 900; color: ${d.isHub ? '#ff1493' : '#00ffff'}; text-shadow: 0 0 8px ${d.isHub ? '#ff1493' : '#00ffff'};">${d.name}</div>
+                <div style="background: rgba(5, 8, 20, 0.9); backdrop-filter: blur(8px); border: 1px solid ${d.isHub ? 'rgba(255,215,0,0.4)' : 'rgba(0,255,255,0.3)'}; border-radius: 8px; padding: 6px 10px; color: white; white-space: nowrap; box-shadow: 0 0 15px ${d.isHub ? 'rgba(255,215,0,0.5)' : 'rgba(0,255,255,0.3)'};">
+                  <div style="font-size: 12px; font-weight: 900; color: ${d.isHub ? '#ffd700' : '#00ffff'}; text-shadow: 0 0 8px ${d.isHub ? '#ffd700' : '#00ffff'};">${d.name}</div>
                 </div>
               </div>
             `;
