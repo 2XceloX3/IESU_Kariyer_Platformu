@@ -93,7 +93,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
               </div>
               <h3 className="text-xl font-black text-red-950 mb-3">Kurumsal Misyonumuz</h3>
               <p className="text-slate-600 text-sm font-medium leading-relaxed">
-                {corporateData.mission} Toplumsal ve ekonomik esenyurte yüksek katma değer katan sürdürülebilir eğitim modelleri geliştirmektir.
+                {corporateData.mission} Toplumsal ve ekonomik gelişime yüksek katma değer katan sürdürülebilir eğitim modelleri geliştirmektir.
               </p>
             </div>
           </div>

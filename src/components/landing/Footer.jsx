@@ -33,11 +33,11 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
           <div className="flex flex-col">
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-white p-2 rounded-xl flex items-center justify-center shadow-sm">
-                <img src="https://cdn.esenyurt.edu.tr/logo/iesu-logo-blue-tr.svg" alt="İESÜ" className="h-10 w-auto" />
+                <img src="/iesu-logo.svg" alt="İESÜ" className="h-10 w-auto" />
               </div>
             </div>
             <p className="text-[14px] text-red-50 leading-relaxed mb-6 font-medium">
-              Öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal esenyurte katma değer yaratan bireyler olmaları yönünde desteklemektir.
+              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
             </p>
             <div className="flex gap-3">
               <a href="https://tr-tr.facebook.com/iesuedu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
