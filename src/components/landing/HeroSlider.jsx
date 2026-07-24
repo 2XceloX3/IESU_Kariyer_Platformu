@@ -32,7 +32,7 @@ export default function HeroSlider({ onSelectSlide }) {
         date: "Güncel Duyuru",
         category: slide.badge || "Duyuru",
         description: `${cleanTitle} - İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü Resmi Duyurusu.`,
-        content: `İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü portalında yayınlanan bu duyuru ve afiş ile ilgili tüm detaylar, başvuru bilgileri ve akademik takvim güncellemeleri için öğrenci panellerimizi kullanabilirsiniz.\n\nİlgili Başvuru Bağlantısı: ${cleanUrl}`,
+        content: slide.content || `İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü portalında yayınlanan bu duyuru ve afiş ile ilgili tüm detaylar, başvuru bilgileri ve akademik takvim güncellemeleri için öğrenci panellerimizi kullanabilirsiniz.\n\nİlgili Başvuru Bağlantısı: ${cleanUrl}`,
         imageUrl: slide.image,
         url: cleanUrl
       });
