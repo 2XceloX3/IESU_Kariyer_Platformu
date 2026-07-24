@@ -1,33 +1,69 @@
 export const liveSliderData = [
   {
-    "badge": "Esenyurt Duyuru",
-    "title": "İlk 5 Tercihte İndirim",
+    "badge": "İESÜ Duyuru",
+    "title": "İlk 5 Tercihte",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/07/4ul12yzssqgwd-ilk-5-tercihte.jpg",
     "actionLink": "https://aday.esenyurt.edu.tr/kontenjanlar-ve-ucretler"
   },
   {
-    "badge": "Kampüs Yaşamı",
-    "title": "İstanbul Esenyurt Üniversitesi Yerleşkesi",
-    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/3vfnvwenukjgg-esenyurt-universitesi-cover.png",
-    "actionLink": "https://www.esenyurt.edu.tr/"
+    "badge": "İESÜ Duyuru",
+    "title": "Yüksek Lisans",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/07/mnsk4r65vzzss-yuksek-lisans.jpg",
+    "actionLink": "https://obs.esenyurt.edu.tr/oibs/ina_app"
   },
   {
-    "badge": "Akademik Programlar",
-    "title": "Geleceğin Meslekleri ve Eğitim Olanakları",
-    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/i75hk57842lu1-img-01.jpg",
-    "actionLink": "https://aday.esenyurt.edu.tr/"
+    "badge": "İESÜ Duyuru",
+    "title": ".",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/07/27vgbj6d8e8ma-.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr#"
   },
   {
-    "badge": "Sosyal Yaşam",
-    "title": "Öğrenci Kulüpleri ve Etkinlikler",
-    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/gyz4xw9ie7yy3-img-02.jpg",
-    "actionLink": "https://www.esenyurt.edu.tr/"
+    "badge": "İESÜ Duyuru",
+    "title": "Bahar Senligi",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr/etkinlik/1648-iesu-bahar-senligi-26%E2%80%99-basliyor"
   },
   {
-    "badge": "Kütüphane & Araştırma",
-    "title": "Prof. Dr. Aziz Sancar Kütüphanesi",
-    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/i7kltkuczyfcg-img-03.jpg",
-    "actionLink": "https://www.esenyurt.edu.tr/"
+    "badge": "İESÜ Duyuru",
+    "title": "Ödül Töreni",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/05/257y8y0atcmgq-odul-toreni.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1880-universitemizde-bilim-ruzg%C3%A2ri-akademik-basari-odulleri-sahiplerini-buldu"
+  },
+  {
+    "badge": "İESÜ Duyuru",
+    "title": "Teknofest",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/05/qwap0drtzge6m-teknofest.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1864-istanbul-esenyurt-universitesi%E2%80%99nde-teknofest-yolculugu-basladi"
+  },
+  {
+    "badge": "İESÜ Duyuru",
+    "title": ".",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/04/z6zk51zk7l2gc-.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1807-akredite-program-sayisi-12%E2%80%99ye-sureci-devam-edenler-ve-yeni-basvurularla-birlikte-toplam-sayi-31%E2%80%99e-ulasti"
+  },
+  {
+    "badge": "İESÜ Duyuru",
+    "title": "ÜNİLİG",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/01/i3o6f0hqu7iwb-unilig.png",
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1715-universitemiz-unilig-wushu-sampiyonasi%E2%80%99ndan-altin-ve-bronz-madalya-ile-dondu"
+  },
+  {
+    "badge": "İESÜ Duyuru",
+    "title": ".",
+    "image": "https://www.esenyurt.edu.tr/uploads/2025/12/k4uxc14eu2fto-2026-yiliniz-kutlu-olsun.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1669-yok-universite-izleme-ve-degerlendirme-genel-raporu-2025%E2%80%99te-onemli-basari"
+  },
+  {
+    "badge": "İESÜ Duyuru",
+    "title": "Üniversitemizde yeni fakülte ve yüksekokullar açıldı.",
+    "image": "https://www.esenyurt.edu.tr/uploads/2025/07/lbz3xelu5dvgh-universitemizde-yeni-fakulte-ve-yuksekokullar-acildi.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr#"
+  },
+  {
+    "badge": "İESÜ Duyuru",
+    "title": "Yeni Açılan Bölüm ve Programlar",
+    "image": "https://www.esenyurt.edu.tr/uploads/2025/07/k8gysvdmpjx66-yeni-acilan-bolum-ve-programlar.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr#"
   }
 ];
 
