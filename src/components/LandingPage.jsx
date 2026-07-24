@@ -9,6 +9,7 @@ import HeroSlider from './landing/HeroSlider';
 import Footer from './landing/Footer';
 import SEO from './SEO';
 import RichContentRenderer from './RichContentRenderer';
+import TuitionAccordion from './TuitionAccordion';
 
 
 const style = document.createElement('style');
@@ -601,6 +602,9 @@ export default function LandingPage({ setView }) {
               
               <div className="mb-2">
                 <RichContentRenderer content={selectedItem.content || selectedItem.description} />
+                {(selectedItem.title?.includes('Ücret') || selectedItem.title?.includes('Tercih') || selectedItem.title?.includes('İndirim') || selectedItem.category?.includes('Burs')) && (
+                  <TuitionAccordion />
+                )}
               </div>
             </div>
           </div>
