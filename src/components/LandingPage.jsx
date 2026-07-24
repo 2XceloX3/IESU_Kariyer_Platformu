@@ -558,40 +558,32 @@ export default function LandingPage({ setView }) {
       {/* Full-Screen Dedicated News/Announcement/Tuition Detail View */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 bg-gray-50 overflow-y-auto animate-fade-in">
-          {/* Top Sticky Bar */}
-          <div className="sticky top-0 z-30 bg-[#0A2342] text-white px-4 md:px-8 py-3.5 shadow-xl flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setSelectedItem(null)}
-                className="flex items-center gap-2 text-xs md:text-sm font-black bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl transition"
-              >
-                <ArrowLeft size={18} /> Ana Sayfaya Dön
-              </button>
-              
-              <div className="h-6 w-px bg-white/20 hidden sm:block"></div>
-              
-              {/* Top Left Logo */}
-              <div className="flex items-center gap-2">
-                <Logo />
+          {/* Top Sticky Header - Crimson Red / Nar Çiçeği Bar */}
+          <div className="sticky top-0 z-30 bg-gradient-to-r from-[#990000] via-[#800000] to-[#660000] text-white px-4 sm:px-8 py-3.5 shadow-xl flex items-center justify-between border-b border-red-800">
+            {/* Left: White Logo + Title */}
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSelectedItem(null)}>
+              <Logo className="h-10 w-auto" />
+              <div>
+                <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
 
-            <div className="text-xs font-bold text-blue-200 hidden lg:block">
-              İstanbul Esenyurt Üniversitesi Resmi İçerik & Kariyer Portalı
+            {/* Middle-Right: Nav Links */}
+            <div className="hidden lg:flex items-center gap-6 text-xs font-extrabold text-white/90">
+              <button onClick={() => { setSelectedItem(null); setView && setView('about_us'); }} className="hover:text-white hover:underline transition">Hakkımızda</button>
+              <button onClick={() => { setSelectedItem(null); setView && setView('services'); }} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
+              <button onClick={() => { setSelectedItem(null); setView && setView('events_list'); }} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
+              <button onClick={() => { setSelectedItem(null); setView && setView('contact_us'); }} className="hover:text-white hover:underline transition">İletişim</button>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Far Right: Portala Giriş Button */}
+            <div className="flex items-center gap-3">
               <button 
-                onClick={() => window.print()}
-                className="hidden sm:flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition"
+                onClick={() => { setSelectedItem(null); setView && setView('login'); }}
+                className="flex items-center gap-2 bg-white text-[#990000] hover:bg-red-50 px-4.5 py-2.5 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg"
               >
-                <Printer size={16} /> Yazdır / PDF
-              </button>
-              <button 
-                onClick={() => setSelectedItem(null)}
-                className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition"
-              >
-                <X size={20} />
+                <LogIn size={15} /> Portala Giriş
               </button>
             </div>
           </div>
