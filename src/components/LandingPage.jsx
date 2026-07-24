@@ -8,6 +8,7 @@ import SpotlightCard from './shared/SpotlightCard';
 import HeroSlider from './landing/HeroSlider';
 import Footer from './landing/Footer';
 import SEO from './SEO';
+import RichContentRenderer from './RichContentRenderer';
 
 
 const style = document.createElement('style');
@@ -598,8 +599,8 @@ export default function LandingPage({ setView }) {
               
               <h2 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight mb-5">{selectedItem.title}</h2>
               
-              <div className="prose prose-sm md:prose-base text-gray-700 max-w-none mb-2 whitespace-pre-line leading-relaxed">
-                {selectedItem.content || selectedItem.description || "Detaylı içerik bulunamadı."}
+              <div className="mb-2">
+                <RichContentRenderer content={selectedItem.content || selectedItem.description} />
               </div>
             </div>
           </div>
