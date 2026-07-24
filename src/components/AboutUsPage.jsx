@@ -1,3 +1,6 @@
+import React from 'react';
+import { Award, Globe, Users, ShieldCheck, HeartHandshake, CheckCircle2, Building, BookOpen, Sparkles, TrendingUp, Compass, Clock, GraduationCap } from 'lucide-react';
+import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import MainHeader from './MainHeader';
 
 const STATS = [
