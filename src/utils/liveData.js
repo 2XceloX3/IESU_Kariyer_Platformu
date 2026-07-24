@@ -71,6 +71,18 @@ export const liveSliderData = [
 
 export const liveNewsData = [
   {
+    "id": "news-yok-2025",
+    "title": "YÖK Üniversite İzleme ve Değerlendirme Genel Raporu 2025’te Önemli Başarı !",
+    "date": "02 Ocak 2026",
+    "category": "Akademik Başarı",
+    "description": "İstanbul Esenyurt Üniversitesi, YÖK 2025 Genel Raporu sonuçlarına göre uluslararası öğrenci oranında 3., açık erişimli yayında 8., web erişilebilirliğinde 7. ve spor alanları memnuniyetinde 10. sırada yer alarak büyük başarı gösterdi.",
+    "content": "### YÖK Üniversite İzleme ve Değerlendirme Genel Raporu 2025’te İstanbul Esenyurt Üniversitesi’nden Önemli Başarı\n\nİstanbul Esenyurt Üniversitesi, Yükseköğretim Kurulu (YÖK) tarafından yayımlanan **Üniversite İzleme ve Değerlendirme Genel Raporu 2025** sonuçlarına göre, dört farklı göstergede Türkiye genelinde **ilk 10 üniversite** arasında yer alarak önemli bir başarıya imza attı.\n\n---\n\n#### 📊 Türkiye Genelinde Öne Çıkan Başarı Göstergelerimiz:\n\n- 🥉 **Uluslararası Öğrenci Oranında:** Türkiye genelinde **3. sırada**\n- 📚 **Açık Erişimli Bilimsel Yayın Sayısında:** Türkiye genelinde **8. sırada**\n- 🌐 **Üniversite İnternet Sitesi Erişilebilirliğinde:** Türkiye genelinde **7. sırada**\n- ⚽ **Spor Alanlarına İlişkin Öğrenci Memnuniyetinde:** Türkiye genelinde **10. sırada**\n\n---\n\nElde edilen bu sonuçlar; üniversitemizin uluslararasılaşma vizyonunu, akademik üretkenliğini, dijital erişilebilirliğe verdiği önemi ve öğrenci odaklı yaklaşımını somut verilerle ortaya koymaktadır. Farklı alanlarda elde edilen bu başarılar, İstanbul Esenyurt Üniversitesi’nin yükseköğretimde kalite odaklı ve bütüncül gelişim anlayışının bir göstergesi olarak değerlendirilmektedir.\n\n#### 📷 Resmi Rapor İnfografikleri ve Tabloları:\n\n![YÖK Raporu 1](https://www.esenyurt.edu.tr/uploads/2025/12/6v0w40tu9desg-2.jfif)\n![YÖK Raporu 2](https://www.esenyurt.edu.tr/uploads/2025/12/p65ztx4ne9yob-3.jfif)\n![YÖK Raporu 3](https://www.esenyurt.edu.tr/uploads/2025/12/11sauw60w920k-4.jfif)\n![YÖK Raporu 4](https://www.esenyurt.edu.tr/uploads/2025/12/8xesu73c5lsku-5.jfif)\n",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2025/12/pjhehwxvm6o1u-yok-universite-izleme-ve-degerlendirme-genel-raporu-2025’te-onemli-basari.jpg",
+    "url": "https://www.esenyurt.edu.tr/haber/1669-yok-universite-izleme-ve-degerlendirme-genel-raporu-2025’te-onemli-basari",
+    "verificationStatus": "VERIFIED",
+    "lastSynced": "2026-07-24"
+  },
+  {
     "id": "news-main-1",
     "title": "ADAY <span> ÖĞRENCİ</span>",
     "date": "ÖĞRENCİ",

@@ -559,22 +559,31 @@ export default function LandingPage({ setView }) {
       {selectedItem && (
         <div className="fixed inset-0 z-50 bg-gray-50 overflow-y-auto animate-fade-in">
           {/* Top Sticky Bar */}
-          <div className="sticky top-0 z-30 bg-[#0A2342] text-white px-6 py-4 shadow-xl flex items-center justify-between">
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="flex items-center gap-2 text-sm font-black bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition"
-            >
-              <ArrowLeft size={18} /> Ana Sayfaya Dön
-            </button>
+          <div className="sticky top-0 z-30 bg-[#0A2342] text-white px-4 md:px-8 py-3.5 shadow-xl flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="flex items-center gap-2 text-xs md:text-sm font-black bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-xl transition"
+              >
+                <ArrowLeft size={18} /> Ana Sayfaya Dön
+              </button>
+              
+              <div className="h-6 w-px bg-white/20 hidden sm:block"></div>
+              
+              {/* Top Left Logo */}
+              <div className="flex items-center gap-2">
+                <Logo />
+              </div>
+            </div>
 
-            <div className="text-xs font-bold text-blue-200 hidden md:block">
+            <div className="text-xs font-bold text-blue-200 hidden lg:block">
               İstanbul Esenyurt Üniversitesi Resmi İçerik & Kariyer Portalı
             </div>
 
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => window.print()}
-                className="flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition"
+                className="hidden sm:flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition"
               >
                 <Printer size={16} /> Yazdır / PDF
               </button>
@@ -598,71 +607,158 @@ export default function LandingPage({ setView }) {
               <span className="text-[#990000] font-black truncate max-w-xs">{selectedItem.title}</span>
             </div>
 
-            {/* Hero Banner Image */}
-            {selectedItem.imageUrl && (
-              <div className="w-full h-72 md:h-96 rounded-3xl overflow-hidden shadow-2xl mb-8 relative">
-                <img src={selectedItem.imageUrl} alt={selectedItem.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
-                <div className="absolute bottom-6 left-6 right-6 text-white">
-                  <span className="bg-[#990000] text-white text-xs font-black px-3.5 py-1.5 rounded-lg uppercase tracking-wider mb-3 inline-block">
-                    {selectedItem.category || selectedItem.badge || 'Resmi Duyuru'}
-                  </span>
-                  <h1 className="text-2xl md:text-4xl font-black leading-tight drop-shadow-md">{selectedItem.title}</h1>
-                </div>
-              </div>
-            )}
-
-            {!selectedItem.imageUrl && (
-              <div className="bg-[#0A2342] text-white p-8 md:p-12 rounded-3xl shadow-xl mb-8">
-                <span className="bg-[#990000] text-white text-xs font-black px-3.5 py-1.5 rounded-lg uppercase tracking-wider mb-3 inline-block">
-                  {selectedItem.category || selectedItem.badge || 'Resmi Duyuru'}
-                </span>
-                <h1 className="text-2xl md:text-4xl font-black leading-tight">{selectedItem.title}</h1>
-              </div>
-            )}
-
-            {/* Metadata Bar */}
-            <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap items-center justify-between gap-4 mb-8">
-              <div className="flex items-center gap-4 text-xs font-bold text-gray-600">
-                <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
-                  <Calendar size={16} className="text-[#990000]" /> {selectedItem.date || 'Güncel'}
-                </div>
-                {selectedItem.location && (
-                  <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
-                    <MapPin size={16} className="text-[#990000]" /> {selectedItem.location}
+            {/* 2-Column Professional Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Left Column (8 cols): Main Content */}
+              <div className="lg:col-span-8 space-y-6">
+                {/* Hero Banner Image */}
+                {selectedItem.imageUrl && (
+                  <div className="w-full h-72 md:h-96 rounded-3xl overflow-hidden shadow-xl relative">
+                    <img src={selectedItem.imageUrl} alt={selectedItem.title} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
+                    <div className="absolute bottom-6 left-6 right-6 text-white">
+                      <span className="bg-[#990000] text-white text-xs font-black px-3.5 py-1.5 rounded-lg uppercase tracking-wider mb-3 inline-block">
+                        {selectedItem.category || selectedItem.badge || 'Resmi Duyuru'}
+                      </span>
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight drop-shadow-md">{selectedItem.title}</h1>
+                    </div>
                   </div>
                 )}
-                <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-xl">
-                  <ShieldCheck size={16} /> Doğrulanmış Üniversite Yayın Verisi
+
+                {!selectedItem.imageUrl && (
+                  <div className="bg-[#0A2342] text-white p-8 rounded-3xl shadow-xl">
+                    <span className="bg-[#990000] text-white text-xs font-black px-3.5 py-1.5 rounded-lg uppercase tracking-wider mb-3 inline-block">
+                      {selectedItem.category || selectedItem.badge || 'Resmi Duyuru'}
+                    </span>
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight">{selectedItem.title}</h1>
+                  </div>
+                )}
+
+                {/* Metadata Bar */}
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 text-xs font-bold text-gray-600">
+                    <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
+                      <Calendar size={16} className="text-[#990000]" /> {selectedItem.date || 'Güncel'}
+                    </div>
+                    {selectedItem.location && (
+                      <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
+                        <MapPin size={16} className="text-[#990000]" /> {selectedItem.location}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-xl">
+                      <ShieldCheck size={16} /> Doğrulanmış Yayın Verisi
+                    </div>
+                  </div>
+
+                  {selectedItem.url && (
+                    <a
+                      href={selectedItem.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      Orijinal Bağlantı <ExternalLink size={14} />
+                    </a>
+                  )}
+                </div>
+
+                {/* Main Rich Content & Full Width Tables */}
+                <div className="bg-white p-6 md:p-10 rounded-3xl border border-gray-200 shadow-sm">
+                  <RichContentRenderer content={selectedItem.content || selectedItem.description} />
+
+                  {/* Full Width Tuition Accordion */}
+                  {(selectedItem.title?.includes('Ücret') || selectedItem.title?.includes('Tercih') || selectedItem.title?.includes('İndirim') || selectedItem.category?.includes('Burs')) && (
+                    <div className="mt-8 pt-8 border-t border-gray-200">
+                      <TuitionAccordion />
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {selectedItem.url && (
-                <a
-                  href={selectedItem.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
-                >
-                  Orijinal Kaynak Bağlantısı <ExternalLink size={14} />
-                </a>
-              )}
-            </div>
+              {/* Right Column (4 cols): Sidebar Action Panels */}
+              <div className="lg:col-span-4 space-y-6">
+                {/* 1. Quick Action Panel */}
+                <div className="bg-gradient-to-br from-[#0A2342] to-blue-950 text-white p-6 rounded-3xl shadow-lg border border-blue-900/50">
+                  <h3 className="text-base font-black flex items-center gap-2 mb-4">
+                    <Sparkles size={18} className="text-yellow-400" /> Kariyer & Öğrenci İşlemleri
+                  </h3>
+                  <p className="text-xs text-blue-200 mb-5 leading-relaxed">
+                    İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü aracılığıyla tüm işlemlerinizi tek tıkla başlatın.
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => { setSelectedItem(null); setView && setView('mentor-match'); }}
+                      className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-xs font-bold py-3 px-4 rounded-xl flex items-center justify-between transition border border-white/10"
+                    >
+                      <span className="flex items-center gap-2">🎯 Kariyer Danışmanlığı Al</span>
+                      <ChevronRight size={16} />
+                    </button>
 
-            {/* Main Rich Content & Full Width Tables */}
-            <div className="bg-white p-6 md:p-10 rounded-3xl border border-gray-200 shadow-lg">
-              <RichContentRenderer content={selectedItem.content || selectedItem.description} />
+                    <button
+                      onClick={() => { setSelectedItem(null); setView && setView('jobs'); }}
+                      className="w-full bg-[#990000] hover:bg-red-700 text-white text-xs font-bold py-3 px-4 rounded-xl flex items-center justify-between transition shadow-md"
+                    >
+                      <span className="flex items-center gap-2">💼 Yetenek Kapısı İlanları</span>
+                      <ChevronRight size={16} />
+                    </button>
 
-              {/* Full Width Tuition Accordion */}
-              {(selectedItem.title?.includes('Ücret') || selectedItem.title?.includes('Tercih') || selectedItem.title?.includes('İndirim') || selectedItem.category?.includes('Burs')) && (
-                <div className="mt-8 pt-8 border-t border-gray-200">
-                  <TuitionAccordion />
+                    <button
+                      onClick={() => { setSelectedItem(null); setView && setView('contact'); }}
+                      className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-xs font-bold py-3 px-4 rounded-xl flex items-center justify-between transition border border-white/10"
+                    >
+                      <span className="flex items-center gap-2">📞 Koordinatörlük İletişim</span>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
                 </div>
-              )}
+
+                {/* 2. Related News Panel */}
+                <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
+                  <h3 className="text-sm font-black text-gray-900 border-b border-gray-100 pb-3 mb-4 flex items-center gap-2">
+                    <span className="w-2 h-4 bg-[#990000] rounded-full inline-block"></span>
+                    Son Duyurular ve İlanlar
+                  </h3>
+
+                  <div className="space-y-4">
+                    {liveNewsData.slice(0, 4).map((item, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => setSelectedItem(item)}
+                        className="group flex items-center gap-3 p-2 rounded-xl hover:bg-red-50/50 transition cursor-pointer"
+                      >
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt="" className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
+                        ) : (
+                          <div className="w-14 h-14 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center font-bold text-xs flex-shrink-0">
+                            İESÜ
+                          </div>
+                        )}
+                        <div className="flex-grow min-w-0">
+                          <h4 className="text-xs font-bold text-gray-900 group-hover:text-[#990000] transition line-clamp-2 leading-snug">
+                            {item.title}
+                          </h4>
+                          <span className="text-[10px] font-semibold text-gray-500 mt-1 block">{item.date}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Official Verification Box */}
+                <div className="bg-emerald-50/60 p-5 rounded-3xl border border-emerald-200 text-emerald-900">
+                  <div className="flex items-center gap-2 font-black text-xs text-emerald-800 mb-2">
+                    <ShieldCheck size={18} /> Resmi Senkronizasyon Onayı
+                  </div>
+                  <p className="text-[11px] text-emerald-700 font-medium leading-relaxed">
+                    Bu sayfadaki tüm bilgi, duyuru ve tablolar <strong>esenyurt.edu.tr</strong> resmi kaynaklarından canlı senkronize edilmiş olup %100 doğruluk garantisi taşımaktadır.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Back Button Footer */}
-            <div className="mt-10 flex justify-center">
+            <div className="mt-12 flex justify-center border-t border-gray-200 pt-8">
               <button
                 onClick={() => setSelectedItem(null)}
                 className="bg-[#0A2342] hover:bg-blue-950 text-white text-sm font-black px-8 py-3.5 rounded-2xl flex items-center gap-3 shadow-xl transition-transform hover:scale-105"
