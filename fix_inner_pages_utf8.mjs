@@ -1,4 +1,10 @@
-export const innerPagesData = {
+import fs from 'fs';
+import path from 'path';
+
+const activeFile = 'C:\\Users\\celil\\.gemini\\antigravity\\scratch\\IESU_Kariyer_Platformu_Active\\src\\utils\\innerPagesData.js';
+const cleanFile = 'C:\\Users\\celil\\.gemini\\antigravity\\scratch\\IESU_Kariyer_Platformu_Clean\\src\\utils\\innerPagesData.js';
+
+export const cleanInnerPagesData = `export const innerPagesData = {
   hakkimizda: {
     title: "Hakkımızda",
     subtitle: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü",
@@ -81,3 +87,8 @@ export const innerPagesData = {
     ]
   }
 };
+`;
+
+fs.writeFileSync(activeFile, cleanInnerPagesData, 'utf8');
+fs.writeFileSync(cleanFile, cleanInnerPagesData, 'utf8');
+console.log('Fixed UTF-8 encoding and populated clean innerPagesData.js in both projects!');
