@@ -33,28 +33,194 @@ export const liveSliderData = [
 
 export const liveNewsData = [
   {
-    "id": "news-scraped-1",
-    "title": "Esenyurt İlçe Milli Eğitim Müdürü Tayfun Özyolcu'ya Veda Programı",
-    "date": "22.07.2026",
-    "category": "Kariyer Haber",
-    "description": "Esenyurt İlçe Milli Eğitim Müdürü Tayfun Özyolcu'ya Veda Programı detayları için lütfen üniversite sitemizi ziyaret edin.",
-    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/9dt5qegsljhke--10.jpg"
+    "id": "news-main-1",
+    "title": "ADAY <span> ÖĞRENCİ</span>",
+    "date": "ÖĞRENCİ",
+    "category": "Güncel Haber",
+    "description": "ADAY <span> ÖĞRENCİ</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "ADAY <span> ÖĞRENCİ</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-<span>-ogrenci<-span>.png",
+    "url": "https://aday.esenyurt.edu.tr/"
   },
   {
-    "id": "news-scraped-2",
-    "title": "Rektörümüz Prof. Dr. Süleyman Özdemir’den üniversite tercihi yapacak aday öğrencilere önemli tavsiyeler var.",
-    "date": "22.07.2026",
-    "category": "Kariyer Haber",
-    "description": "Rektörümüz Prof. Dr. Süleyman Özdemir’den üniversite tercihi yapacak aday öğrencilere önemli tavsiyeler var. detayları için lütfen üniversite sitemizi ziyaret edin.",
-    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/ax6pej1z8jgi2--10.jpg"
+    "id": "news-main-2",
+    "title": "ÖĞRENCİ <span>İŞLERİ</span>",
+    "date": "İŞLERİ",
+    "category": "Güncel Haber",
+    "description": "ÖĞRENCİ <span>İŞLERİ</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "ÖĞRENCİ <span>İŞLERİ</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/wnriflf4i6hhr-ogrenci-<span>isleri<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/icerik/1269-ogrenci-isleri-daire-baskanligi"
   },
   {
-    "id": "news-scraped-3",
-    "title": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı!",
-    "date": "22.07.2026",
-    "category": "Kariyer Haber",
-    "description": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı! detayları için lütfen üniversite sitemizi ziyaret edin.",
-    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/fyb65bu320c2y-21.png"
+    "id": "news-main-3",
+    "title": "ÖĞRENCİ <span>BİLGİ SİSTEMİ</span>",
+    "date": "BİLGİ SİSTEMİ",
+    "category": "Güncel Haber",
+    "description": "ÖĞRENCİ <span>BİLGİ SİSTEMİ</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "ÖĞRENCİ <span>BİLGİ SİSTEMİ</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/3sdlr31jw2z52-ogrenci-<span>bilgi-sistemi<-span>.png",
+    "url": "https://obs.esenyurt.edu.tr/"
+  },
+  {
+    "id": "news-main-4",
+    "title": "AKADEMİK <span>TAKVİM</span>",
+    "date": "TAKVİM",
+    "category": "Güncel Haber",
+    "description": "AKADEMİK <span>TAKVİM</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "AKADEMİK <span>TAKVİM</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/zk8lz8uk7mgn0-akademik-<span>takvim<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/icerik/1031-akademik-takvim"
+  },
+  {
+    "id": "news-main-5",
+    "title": "DERS <span>PROGRAMLARI</span>",
+    "date": "PROGRAMLARI",
+    "category": "Güncel Haber",
+    "description": "DERS <span>PROGRAMLARI</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "DERS <span>PROGRAMLARI</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/f373xh5lnjzru-ders-<span>programlari<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025–2026-summer-school-course-schedule"
+  },
+  {
+    "id": "news-main-6",
+    "title": "SINAV <span>PROGRAMLARI</span>",
+    "date": "PROGRAMLARI",
+    "category": "Güncel Haber",
+    "description": "SINAV <span>PROGRAMLARI</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "SINAV <span>PROGRAMLARI</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/pj7qxu7tgosiy-sinav-<span>programlari<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1445-tek-ders-not-yukseltme-sinav-programlari-hk"
+  },
+  {
+    "id": "news-main-7",
+    "title": "KALİTE<span>KOORDİNATÖRLÜĞÜ</span>",
+    "date": "KOORDİNATÖRLÜĞÜ",
+    "category": "Güncel Haber",
+    "description": "KALİTE<span>KOORDİNATÖRLÜĞÜ</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "KALİTE<span>KOORDİNATÖRLÜĞÜ</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/o3rhs6xpahdiq-ogrenci-<span>kulupleri<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/icerik/3748-kalite-koordinatorlugu"
+  },
+  {
+    "id": "news-main-8",
+    "title": "UZAKTAN EĞİTİM <span>MERKEZİ</span>",
+    "date": "MERKEZİ",
+    "category": "Güncel Haber",
+    "description": "UZAKTAN EĞİTİM <span>MERKEZİ</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "UZAKTAN EĞİTİM <span>MERKEZİ</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/wzc4j75syphax-uzaktan-egitim-<span>merkezi<-span>.png",
+    "url": "https://eslms.esenyurt.edu.tr/Account/LoginBefore"
+  },
+  {
+    "id": "news-main-9",
+    "title": "KÜTÜPHANE <span>SİSTEMİ</span>",
+    "date": "SİSTEMİ",
+    "category": "Güncel Haber",
+    "description": "KÜTÜPHANE <span>SİSTEMİ</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "KÜTÜPHANE <span>SİSTEMİ</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/qw0fyf90mdttw-kutuphane-<span>sistemi<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/icerik/1188-istanbul-esenyurt-universitesi-prof-dr-aziz-sancar-kutuphanesi"
+  },
+  {
+    "id": "news-main-10",
+    "title": "WEBMAİL <span>SİSTEMİ</span>",
+    "date": "SİSTEMİ",
+    "category": "Güncel Haber",
+    "description": "WEBMAİL <span>SİSTEMİ</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "WEBMAİL <span>SİSTEMİ</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/za57fe8ue2362-webmail-<span>sistemi<-span>.png",
+    "url": "https://posta.esenyurt.edu.tr/"
+  },
+  {
+    "id": "news-main-11",
+    "title": "YAYINLAR, DERGİLER<span>VE KONFERANSLAR</span>",
+    "date": "VE KONFERANSLAR",
+    "category": "Güncel Haber",
+    "description": "YAYINLAR, DERGİLER<span>VE KONFERANSLAR</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "YAYINLAR, DERGİLER<span>VE KONFERANSLAR</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/oyd22rgfmut8b-ogrenci-<span>kulupleri<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/icerik/2625-yayinlar-dergiler-ve-konferanslar"
+  },
+  {
+    "id": "news-main-12",
+    "title": "ETİK KURUL <span>BAŞVURULARI</span>",
+    "date": "BAŞVURULARI",
+    "category": "Güncel Haber",
+    "description": "ETİK KURUL <span>BAŞVURULARI</span> ile ilgili ayrıntılı bilgi İstanbul Esenyurt Üniversitesi duyuru platformunda yayına alınmıştır. Detaylar ve etkinlik takvimi için portalımızı takip edebilirsiniz.",
+    "content": "ETİK KURUL <span>BAŞVURULARI</span>\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2024/06/c1i5wh908x3lr-etik-kurul-<span>basvurulari<-span>.png",
+    "url": "https://www.esenyurt.edu.tr/icerik/1084-etik-kurul-basvurulari"
+  },
+  {
+    "id": "news-main-17",
+    "title": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı!",
+    "date": "23.07.2026",
+    "category": "Güncel Haber",
+    "description": "Geleceğini yeteneğinle şekillendirmek için ilk adımı at!",
+    "content": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı!\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\nGeleceğini yeteneğinle şekillendirmek için ilk adımı at!\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/4ul12yzssqgwd-ilk-5-tercihte.jpg",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1478-2026-ozyes-ozel-yetenek-sinavi-basvurulari-basladi"
+  },
+  {
+    "id": "news-main-19",
+    "title": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule",
+    "date": "17.07.2026",
+    "category": "Güncel Haber",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "content": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\nDetaylı bilgi için tıklayınız...\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/4ul12yzssqgwd-ilk-5-tercihte.jpg",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025–2026-summer-school-course-schedule"
+  },
+  {
+    "id": "news-main-21",
+    "title": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Nihai Değerlendirme Sonuçları Açıklanmıştır.",
+    "date": "13.07.2026",
+    "category": "Güncel Haber",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "content": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Nihai Değerlendirme Sonuçları Açıklanmıştır.\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\nDetaylı bilgi için tıklayınız...\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/4ul12yzssqgwd-ilk-5-tercihte.jpg",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1454-ogr-uyesi-disindaki-ogr-elemani-kadrolarina-personel-alim-ilaninin-nihai-degerlendirme-sonuclari-aciklanmistir-8"
+  },
+  {
+    "id": "news-main-23",
+    "title": "Geleceğin dünyasını şekillendiren teknolojiler ve dijital dönüşüm Bilim Kafe’de konuşuluyor!",
+    "date": "27",
+    "category": "Güncel Haber",
+    "description": "27 Temmuz",
+    "content": "Geleceğin dünyasını şekillendiren teknolojiler ve dijital dönüşüm Bilim Kafe’de konuşuluyor!\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n27 Temmuz\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/tjb9hhos5ydrt-gelecegin-dunyasini-sekillendiren-teknolojiler-ve-dijital-donusum-bilim-kafe’de-konusuluyor.jfif",
+    "url": "https://www.esenyurt.edu.tr/etkinlik/1724-gelecegin-dunyasini-sekillendiren-teknolojiler-ve-dijital-donusum-bilim-kafe’de-konusuluyor"
+  },
+  {
+    "id": "news-main-24",
+    "title": "III. Yönetim Bilimleri Sempozyumu",
+    "date": "26",
+    "category": "Güncel Haber",
+    "description": "26 Kasım",
+    "content": "III. Yönetim Bilimleri Sempozyumu\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n26 Kasım\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/oh0lm0qvjbwgc-iii-yonetim-bilimleri-sempozyumu.jfif",
+    "url": "https://www.esenyurt.edu.tr/etkinlik/1720-iii-yonetim-bilimleri-sempozyumu"
+  },
+  {
+    "id": "news-main-25",
+    "title": "🇹🇷 Karanlık bir geceyi, aydınlık bir geleceğe dönüştürenlerin hikayesi...",
+    "date": "14",
+    "category": "Güncel Haber",
+    "description": "14 Temmuz",
+    "content": "🇹🇷 Karanlık bir geceyi, aydınlık bir geleceğe dönüştürenlerin hikayesi...\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n14 Temmuz\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/0jnmk9hfk7p3s-🇹🇷-karanlik-bir-geceyi-aydinlik-bir-gelecege-donusturenlerin-hikayesi.jpg",
+    "url": "https://www.esenyurt.edu.tr/etkinlik/1717-🇹🇷-karanlik-bir-geceyi-aydinlik-bir-gelecege-donusturenlerin-hikayesi"
+  },
+  {
+    "id": "news-main-26",
+    "title": "15 Temmuz Milli İrade Paneli'ne davetlisiniz!",
+    "date": "14",
+    "category": "Güncel Haber",
+    "description": "14 Temmuz",
+    "content": "15 Temmuz Milli İrade Paneli'ne davetlisiniz!\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından hazırlanan bu haber kapsamında; üniversitemizin tüm akademik ve idari birimleriyle ortak yürütülen çalışmalar detaylandırılmıştır.\n\n14 Temmuz\n\nÖğrencilerimiz ve mezunlarımız ilgili programa katılım sağlayabilir, detaylı bilgi için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçebilirler.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/7ebbksmzr926z-15-temmuz-milli-irade-paneline-davetlisiniz.jpg",
+    "url": "https://www.esenyurt.edu.tr/etkinlik/1714-15-temmuz-milli-irade-paneline-davetlisiniz"
   }
 ];
 
@@ -196,27 +362,48 @@ export const liveEventData = [
 
 export const liveAnnouncementData = [
   {
-    "id": "ann-scraped-1",
+    "id": "ann-main-1",
+    "title": "DERS <span>PROGRAMLARI</span>",
+    "date": "PROGRAMLARI",
+    "category": "Duyuru",
+    "description": "DERS <span>PROGRAMLARI</span> duyurusu İstanbul Esenyurt Üniversitesi tarafından yayınlanmıştır.",
+    "content": "DERS <span>PROGRAMLARI</span>\n\n\n\nDetaylı bilgi ve başvuru koşulları için Öğrenci İşleri Daire Başkanlığı ve Kariyer Geliştirme Koordinatörlüğü resmi duyurularını takip ediniz.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025–2026-summer-school-course-schedule"
+  },
+  {
+    "id": "ann-main-2",
+    "title": "SINAV <span>PROGRAMLARI</span>",
+    "date": "PROGRAMLARI",
+    "category": "Duyuru",
+    "description": "SINAV <span>PROGRAMLARI</span> duyurusu İstanbul Esenyurt Üniversitesi tarafından yayınlanmıştır.",
+    "content": "SINAV <span>PROGRAMLARI</span>\n\n\n\nDetaylı bilgi ve başvuru koşulları için Öğrenci İşleri Daire Başkanlığı ve Kariyer Geliştirme Koordinatörlüğü resmi duyurularını takip ediniz.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1445-tek-ders-not-yukseltme-sinav-programlari-hk"
+  },
+  {
+    "id": "ann-main-3",
     "title": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı!",
-    "date": "24/07/2026",
-    "category": "Kariyer Duyuru",
-    "description": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı! duyurusu yayındadır.",
-    "url": "https://www.esenyurt.edu.tr/duyuru/1479--14"
+    "date": "23.07.2026",
+    "category": "Duyuru",
+    "description": "Geleceğini yeteneğinle şekillendirmek için ilk adımı at!",
+    "content": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı!\n\nGeleceğini yeteneğinle şekillendirmek için ilk adımı at!\n\nDetaylı bilgi ve başvuru koşulları için Öğrenci İşleri Daire Başkanlığı ve Kariyer Geliştirme Koordinatörlüğü resmi duyurularını takip ediniz.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1478-2026-ozyes-ozel-yetenek-sinavi-basvurulari-basladi"
   },
   {
-    "id": "ann-scraped-2",
+    "id": "ann-main-4",
     "title": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule",
-    "date": "20/07/2026",
-    "category": "Kariyer Duyuru",
-    "description": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule duyurusu yayındadır.",
-    "url": "https://www.esenyurt.edu.tr/duyuru/1465--13"
+    "date": "17.07.2026",
+    "category": "Duyuru",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "content": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule\n\nDetaylı bilgi için tıklayınız...\n\nDetaylı bilgi ve başvuru koşulları için Öğrenci İşleri Daire Başkanlığı ve Kariyer Geliştirme Koordinatörlüğü resmi duyurularını takip ediniz.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025–2026-summer-school-course-schedule"
   },
   {
-    "id": "ann-scraped-3",
-    "title": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı!",
-    "date": "09/07/2026",
-    "category": "Kariyer Duyuru",
-    "description": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı! duyurusu yayındadır.",
-    "url": "https://www.esenyurt.edu.tr/duyuru/1451-8"
+    "id": "ann-main-5",
+    "title": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Nihai Değerlendirme Sonuçları Açıklanmıştır.",
+    "date": "13.07.2026",
+    "category": "Duyuru",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "content": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Nihai Değerlendirme Sonuçları Açıklanmıştır.\n\nDetaylı bilgi için tıklayınız...\n\nDetaylı bilgi ve başvuru koşulları için Öğrenci İşleri Daire Başkanlığı ve Kariyer Geliştirme Koordinatörlüğü resmi duyurularını takip ediniz.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1454-ogr-uyesi-disindaki-ogr-elemani-kadrolarina-personel-alim-ilaninin-nihai-degerlendirme-sonuclari-aciklanmistir-8"
   }
 ];
