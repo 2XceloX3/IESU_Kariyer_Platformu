@@ -12,7 +12,7 @@ export default function OrganizationChart({ setView, userRole }) {
             <Logo className="h-10 sm:h-12 w-auto text-[#990000]" />
             <div className="hidden sm:block">
               <h1 className="text-[16px] md:text-xl font-black text-gray-900 leading-tight tracking-tight whitespace-nowrap">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] md:text-[12px] text-iesu-primary font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Kariyer Geliştirme Merkezi</p>
+              <p className="text-[10px] md:text-[12px] text-iesu-primary font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
           <button onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="text-gray-500 hover:text-[#990000] flex items-center gap-2 font-bold transition">
@@ -36,7 +36,7 @@ export default function OrganizationChart({ setView, userRole }) {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-rose-50 to-transparent rounded-full blur-3xl -z-10 group-hover:scale-110 transition-transform duration-700"></div>
 
           <p className="text-lg text-gray-600 mb-10 font-medium max-w-2xl leading-relaxed border-l-4 border-iesu-navy pl-5">
-            Öğrencilerimizin ve mezunlarımızın kariyer yolculuklarına en iyi şekilde destek olabilmek için uzman kadromuzla yanınızdayız. Kariyer Merkezi Organizasyon Şemamızı aşağıdan inceleyebilirsiniz.
+            Öğrencilerimizin ve mezunlarımızın kariyer yolculuklarına en iyi şekilde destek olabilmek için uzman kadromuzla yanınızdayız. Kariyer Geliştirme Koordinatörlüğü Organizasyon Şemamızı aşağıdan inceleyebilirsiniz.
           </p>
 
           <div className="w-full bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden flex items-center justify-center p-4 hover:border-iesu-blue transition-colors duration-300">
@@ -50,7 +50,7 @@ export default function OrganizationChart({ setView, userRole }) {
                   e.target.src = 'https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/be71ba02764646fc8f14a9bb97c5b9a8_(375_300).jpg';
                 } else {
                   e.target.src = 'https://www.esenyurt.edu.tr/assets/frontend/images/empty.png';
-                  e.target.parentElement.innerHTML = '<div class="text-center py-20"><p class="text-[#990000] font-bold text-lg">Organizasyon Şeması Görseli Güncellenmektedir.</p><p class="text-gray-500 mt-2">Daha fazla bilgi için Kariyer Merkezimize ulaşabilirsiniz.</p></div>';
+                  e.target.parentElement.innerHTML = '<div class="text-center py-20"><p class="text-[#990000] font-bold text-lg">Organizasyon Şeması Görseli Güncellenmektedir.</p><p class="text-gray-500 mt-2">Daha fazla bilgi için Kariyer Geliştirme Koordinatörlüğümize ulaşabilirsiniz.</p></div>';
                 }
               }}
             />

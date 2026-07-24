@@ -365,7 +365,7 @@ export default function CMSEvents({ events = [], setEvents }) {
             <Calendar size={16} className="text-red-600" />
           </div>
           <div>
-            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>
+            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Koordinatörlüğü <CheckCircle2 size={12} className="text-emerald-500" /></p>
             <p className="text-[10px] text-gray-500">Az önce • Etkinlik Paylaşımı</p>
           </div>
         </div>

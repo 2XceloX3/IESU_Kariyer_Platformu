@@ -86,7 +86,7 @@ const CMSCareerFair = () => {
     const newPost = {
       id: 'PF-' + Date.now(),
       author: {
-        name: 'Kariyer Merkezi',
+        name: 'Kariyer Geliştirme Koordinatörlüğü',
         role: 'admin',
         avatar: '/logo.png'
       },

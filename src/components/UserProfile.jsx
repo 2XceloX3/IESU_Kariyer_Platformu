@@ -65,7 +65,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
     // Fallback: Eger localStorage'dan dolayi currentUser'in id'si yoksa ama admin profiline erisilmeye calisiliyorsa
     if (targetUserId === 'admin_1513' && (userRole === 'admin' || (currentUser && currentUser?.role === 'admin'))) {
-      setUser(currentUser || { name: 'Kariyer Merkezi', department: 'Yönetim', grade: 'Süper Admin', role: 'admin' });
+      setUser(currentUser || { name: 'Kariyer Geliştirme Koordinatörlüğü', department: 'Yönetim', grade: 'Süper Admin', role: 'admin' });
       setUserType('admin');
       setIsLoading(false);
       return;
@@ -437,8 +437,8 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
     const authorName = typeof p.author === 'string' ? p.author : p.author?.name;
     const authorRole = p.author?.role;
     const isMatch = authorName === user?.name || p.company === user?.name;
-    const isAdminProfile = user?.role === 'admin' || userType === 'admin' || user?.name === 'Kariyer Merkezi' || userId === 'admin_1513';
-    const isAdminPost = authorRole === 'admin' || authorName === 'Kariyer Merkezi';
+    const isAdminProfile = user?.role === 'admin' || userType === 'admin' || user?.name === 'Kariyer Geliştirme Koordinatörlüğü' || userId === 'admin_1513';
+    const isAdminPost = authorRole === 'admin' || authorName === 'Kariyer Geliştirme Koordinatörlüğü';
     return isMatch || (isAdminProfile && isAdminPost);
   });
 
@@ -453,7 +453,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
           
@@ -493,7 +493,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                 </div>
                 <div className="pt-4 flex-1">
                   <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-                    {user?.name || 'Kariyer Geliştirme Merkezi'}
+                    {user?.name || 'Kariyer Geliştirme Koordinatörlüğü'}
                     <ShieldCheck size={20} className="text-emerald-500" />
                   </h1>
                   <p className="text-gray-500 font-medium">{user?.title || 'Süper Yönetici Hesabı'}</p>

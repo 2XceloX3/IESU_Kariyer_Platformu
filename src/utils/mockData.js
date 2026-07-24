@@ -440,11 +440,11 @@ export const initialSemCourses = [
 // İş İlanları — Gerçek sitedeki hizmetler temel alındı
 // =====================================================
 export const initialJobs = [
-  { id: "JOB-001", title: "Ulusal Staj Programı", company: "İESÜ Kariyer Geliştirme Merkezi", location: "Türkiye Geneli", description: "Cumhurbaşkanlığı himayesinde yürütülen Ulusal Staj Programı kapsamında çeşitli kurumlarda staj imkânı.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2026/resimler/mmk/ulusal-staj-programi-ek-usp-uni-pay2_7a018351522340f9883fe36d578505ed.jpg", status: "Aktif" },
-  { id: "JOB-002", title: "Araştırma Faaliyetleri", company: "İESÜ Kariyer Geliştirme Merkezi", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Merkezi bünyesinde yürütülen araştırma faaliyetleri ve projeler.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/123e5d87cd934f49ad587f7f4bb01f5a_(768_432).jpg", status: "Aktif" },
-  { id: "JOB-003", title: "Akran Mentor Programı", company: "İESÜ Kariyer Geliştirme Merkezi", location: "İstanbul Esenyurt Üniversitesi", description: "Deneyimli öğrencilerin yeni öğrencilere rehberlik ettiği Akran Mentor programı.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/c5e98c9906414da897751aef53f7cdea_(768_432).jpg", status: "Aktif" },
-  { id: "JOB-004", title: "İş Arama Platformları Rehberi", company: "İESÜ Kariyer Geliştirme Merkezi", location: "Online", description: "Öğrencilere ve mezunlara yönelik iş arama platformları ve kariyer kaynakları rehberi.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/49c1be8495d7408090bc9340ddd5a707_(768_432).jpg", status: "Aktif" },
-  { id: "JOB-005", title: "İşbirliklerimiz — Sektör Ortaklıkları", company: "İESÜ Kariyer Geliştirme Merkezi", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Merkezi'nin sektör liderleriyle kurduğu iş birliği protokolleri ve ortak projeler.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/81ef9405e47647a19acf4f065f602379_(768_432).jpg", status: "Aktif" },
+  { id: "JOB-001", title: "Ulusal Staj Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Türkiye Geneli", description: "Cumhurbaşkanlığı himayesinde yürütülen Ulusal Staj Programı kapsamında çeşitli kurumlarda staj imkânı.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2026/resimler/mmk/ulusal-staj-programi-ek-usp-uni-pay2_7a018351522340f9883fe36d578505ed.jpg", status: "Aktif" },
+  { id: "JOB-002", title: "Araştırma Faaliyetleri", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü bünyesinde yürütülen araştırma faaliyetleri ve projeler.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/123e5d87cd934f49ad587f7f4bb01f5a_(768_432).jpg", status: "Aktif" },
+  { id: "JOB-003", title: "Akran Mentor Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Deneyimli öğrencilerin yeni öğrencilere rehberlik ettiği Akran Mentor programı.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/c5e98c9906414da897751aef53f7cdea_(768_432).jpg", status: "Aktif" },
+  { id: "JOB-004", title: "İş Arama Platformları Rehberi", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Online", description: "Öğrencilere ve mezunlara yönelik iş arama platformları ve kariyer kaynakları rehberi.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/49c1be8495d7408090bc9340ddd5a707_(768_432).jpg", status: "Aktif" },
+  { id: "JOB-005", title: "İşbirliklerimiz — Sektör Ortaklıkları", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü'nin sektör liderleriyle kurduğu iş birliği protokolleri ve ortak projeler.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/81ef9405e47647a19acf4f065f602379_(768_432).jpg", status: "Aktif" },
 ];
 
 // =====================================================
@@ -579,8 +579,8 @@ export const initialSurveys = [
   },
   {
     id: 'SRV-102',
-    title: 'Kariyer Merkezi Hizmetleri Değerlendirmesi',
-    description: 'İESÜ Kariyer Merkezi\'nin sunduğu hizmetlerden ne kadar faydalandınız?',
+    title: 'Kariyer Geliştirme Koordinatörlüğü Hizmetleri Değerlendirmesi',
+    description: 'İESÜ Kariyer Geliştirme Koordinatörlüğü\'nin sunduğu hizmetlerden ne kadar faydalandınız?',
     date: '2026-07-10',
     status: 'Aktif',
     type: 'Etkinlik Değerlendirme',

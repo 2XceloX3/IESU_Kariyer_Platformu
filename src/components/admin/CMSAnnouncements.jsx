@@ -78,7 +78,7 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
           id: 'POST-' + Date.now(),
           sourceId: newId,
           author: {
-            name: currentUser?.name || 'Kariyer Geliştirme Merkezi',
+            name: currentUser?.name || 'Kariyer Geliştirme Koordinatörlüğü',
             avatar: currentUser?.avatar || 'https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg',
             role: 'admin',
             title: 'Süper Yönetici'
@@ -328,7 +328,7 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
             <Megaphone size={16} className="text-orange-600" />
           </div>
           <div>
-            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>
+            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Koordinatörlüğü <CheckCircle2 size={12} className="text-emerald-500" /></p>
             <p className="text-[10px] text-gray-500">Az önce • Duyuru Paylaşımı</p>
           </div>
         </div>

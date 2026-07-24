@@ -64,7 +64,7 @@ export default function AcademicStaffFeed({
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
           
@@ -102,7 +102,7 @@ export default function AcademicStaffFeed({
                   <Crown size={14} />
                 </button>
               </div>
-              <h2 className="text-lg font-black text-gray-900 mt-4">{userRole === 'admin' ? 'Kariyer Merkezi' : currentUser?.name || 'Akademik Personel'}</h2>
+              <h2 className="text-lg font-black text-gray-900 mt-4">{userRole === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : currentUser?.name || 'Akademik Personel'}</h2>
               <p className="text-[13px] font-medium text-gray-500 mt-1">
                 {userRole === 'admin' ? 'SÜPER YÖNETİCİ' : currentUser?.title || 'Bölüm Başkanı'} / {currentUser?.department || 'Bilgisayar Mühendisliği'}
               </p>

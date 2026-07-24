@@ -11,7 +11,7 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
   const highlights = [];
   
   activeAnnouncements.forEach(a => {
-    highlights.push({ type: 'announcement', icon: <Megaphone size={18} />, title: a.title, desc: 'Kariyer Merkezi Duyurusu', color: 'bg-red-50 text-red-600', link: 'duyurular' });
+    highlights.push({ type: 'announcement', icon: <Megaphone size={18} />, title: a.title, desc: 'Kariyer Geliştirme Koordinatörlüğü Duyurusu', color: 'bg-red-50 text-red-600', link: 'duyurular' });
   });
 
   activeEvents.forEach(e => {

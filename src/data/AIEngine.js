@@ -8,7 +8,7 @@
 export const AI_KNOWLEDGE_ARCHIVE = [
   { 
     id: 'KARYON', 
-    topic: 'Kariyer Merkezi', 
+    topic: 'Kariyer Geliştirme Koordinatörlüğü', 
     keywords: ['kariyer', 'karyön', 'staj', 'iş', 'cv', 'mülakat', 'özgeçmiş'], 
     content: 'İESÜ Kariyer Esenyurt Merkezi (KARYÖN), staj bulma, yetenek yönetimi ve mülakat simülasyonları sunar. Sistemimizdeki algoritmaya göre yeteneklerinizi analiz eder.' 
   },

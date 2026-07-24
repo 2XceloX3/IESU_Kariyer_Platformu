@@ -48,7 +48,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
           <div className="relative z-10 max-w-xl">
             <h2 className="text-3xl font-black mb-3">Kariyerinde Fark Yaratanlar</h2>
             <p className="text-red-100 text-lg leading-relaxed">
-              Kariyer Geliştirme Merkezi verilerine göre yetenek onayları (endorsements) ve sektörel etkileşimleriyle bu ay en çok öne çıkan Esenyurtliler.
+              Kariyer Geliştirme Koordinatörlüğü verilerine göre yetenek onayları (endorsements) ve sektörel etkileşimleriyle bu ay en çok öne çıkan Esenyurtliler.
             </p>
           </div>
         </div>

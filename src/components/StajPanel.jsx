@@ -13,7 +13,7 @@ export default function StajPanel({ setView, userRole }) {
     {
       icon: <FileSignature className="text-iesu-primary" size={24} />,
       title: "2. Koordinatörlük Onayı",
-      desc: "İmzalı kabul formu, Kariyer Geliştirme Merkezi'ne (veya ilgili fakülte sekreterliğine) teslim edilmeli ve staj komisyonundan onay alınmalıdır."
+      desc: "İmzalı kabul formu, Kariyer Geliştirme Koordinatörlüğü'ne (veya ilgili fakülte sekreterliğine) teslim edilmeli ve staj komisyonundan onay alınmalıdır."
     },
     {
       icon: <Clock className="text-iesu-primary" size={24} />,

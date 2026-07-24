@@ -1,7 +1,7 @@
 export const innerPagesData = {
   hakkimizda: {
     title: "Hakkımızda",
-    subtitle: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi",
+    subtitle: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü",
     heroImage: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
     sections: [
       {
@@ -20,12 +20,12 @@ export const innerPagesData = {
     contactInfo: {
       email: "kariyer@esenyurt.edu.tr",
       phone: "0 (212) 422 70 00",
-      office: "J Blok / Kariyer Merkezi"
+      office: "J Blok / Kariyer Geliştirme Koordinatörlüğü"
     }
   },
   hizmetlerimiz: {
     title: "Hizmetlerimiz",
-    subtitle: "Kariyer Geliştirme Merkezi Olarak Sizin İçin Neler Yapıyoruz?",
+    subtitle: "Kariyer Geliştirme Koordinatörlüğü Olarak Sizin İçin Neler Yapıyoruz?",
     heroImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
     sections: [
       {

@@ -30,7 +30,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       if (setCurrentUser) {
         setCurrentUser({
           id: 'admin_1513',
-          name: 'Kariyer Geliştirme Merkezi',
+          name: 'Kariyer Geliştirme Koordinatörlüğü',
           role: 'admin',
           grade: 'Süper Yönetici',
           avatar: '/logo.png',
@@ -150,7 +150,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             <Logo className="h-24 w-auto" />
           </div>
           <h1 className="text-2xl font-black text-iesu-navy tracking-tight text-center">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-          <p className="text-[12px] text-gray-500 font-bold uppercase tracking-widest mt-1 text-center">Kariyer Geliştirme Merkezi</p>
+          <p className="text-[12px] text-gray-500 font-bold uppercase tracking-widest mt-1 text-center">Kariyer Geliştirme Koordinatörlüğü</p>
         </div>
 
         <div className="bg-white/95 backdrop-blur-2xl rounded-xl shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
@@ -306,7 +306,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         
         {/* Footer Text */}
         <p className="text-center text-red-200/60 text-[11px] font-medium mt-8">
-          © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi.
+          © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü.
         </p>
       </div>
     </div>

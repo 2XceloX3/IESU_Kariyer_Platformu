@@ -174,7 +174,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
         <div className="whitespace-nowrap flex animate-[marquee_20s_linear_infinite] gap-12 text-[13px] font-semibold pl-24">
           <span className="flex items-center gap-2"><Trophy size={14} className="text-yellow-400"/> Ahmet Y. "Bahar Şenliği" görevinden 150 SSP kazandı!</span>
           <span className="flex items-center gap-2"><Mic size={14} className="text-red-400"/> Yazılım Kulübü'nün Canlı Odası 124 dinleyiciye ulaştı!</span>
-          <span className="flex items-center gap-2"><Star size={14} className="text-orange-400"/> Kariyer Merkezi yeni Birlik Pazarı ürünleri ekledi.</span>
+          <span className="flex items-center gap-2"><Star size={14} className="text-orange-400"/> Kariyer Geliştirme Koordinatörlüğü yeni Birlik Pazarı ürünleri ekledi.</span>
           <span className="flex items-center gap-2"><Users size={14} className="text-emerald-400"/> Robotik Topluluğu'na 12 yeni üye katıldı.</span>
           {/* Double it for infinite loop effect */}
           <span className="flex items-center gap-2"><Trophy size={14} className="text-yellow-400"/> Ahmet Y. "Bahar Şenliği" görevinden 150 SSP kazandı!</span>
@@ -510,7 +510,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                    <div className="w-8 h-8 rounded-full bg-gray-300 text-white flex items-center justify-center font-black text-sm shadow-inner">2</div>
                    <div>
                      <p className="text-sm font-bold text-gray-900">Zeynep Kaya</p>
-                     <p className="text-[10px] text-gray-500">Kariyer Merkezi</p>
+                     <p className="text-[10px] text-gray-500">Kariyer Geliştirme Koordinatörlüğü</p>
                    </div>
                  </div>
                  <div className="text-sm font-black text-gray-600">2890 SSP</div>

@@ -18,7 +18,7 @@ const MOCK_ANNOUNCEMENTS = [
   {
     id: 2,
     title: "Cumhurbaşkanlığı İnsan Kaynakları Ofisi Ulusal Staj Programı Başvuruları",
-    summary: "Esenyurt Kariyer Merkezi aracılığıyla öğrencilerimizin zorunlu ve gönüllü staj süreçlerini başlatacak form ve belgeler yayınlanmıştır.",
+    summary: "Esenyurt Kariyer Geliştirme Koordinatörlüğü aracılığıyla öğrencilerimizin zorunlu ve gönüllü staj süreçlerini başlatacak form ve belgeler yayınlanmıştır.",
     category: "Kariyer",
     date: "2026-07-18",
     link: "https://kariyer.esenyurt.edu.tr/tr/idari-anasayfa",

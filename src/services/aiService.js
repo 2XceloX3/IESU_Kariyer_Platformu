@@ -12,7 +12,7 @@
 
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
-export const generateAIResponse = async (prompt, systemInstruction = "Sen İESÜ Kariyer Merkezi'nin dijital asistanı Anka'sın. Arkadaş canlısı ve profesyonelsin.") => {
+export const generateAIResponse = async (prompt, systemInstruction = "Sen İESÜ Kariyer Geliştirme Koordinatörlüğü'nin dijital asistanı Anka'sın. Arkadaş canlısı ve profesyonelsin.") => {
   const apiKey = localStorage.getItem('anka_api_key') || import.meta.env.VITE_ANKA_API_KEY;
 
   if (!apiKey) {

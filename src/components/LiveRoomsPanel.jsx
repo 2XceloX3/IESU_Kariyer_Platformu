@@ -8,7 +8,7 @@ const MOCK_ROOMS = [
   {
     id: 'room_1',
     title: 'Yapay Zeka Mülakat Stratejileri',
-    host: 'Kariyer Merkezi',
+    host: 'Kariyer Geliştirme Koordinatörlüğü',
     type: 'official', // official, club, student
     speakers: [
       { name: 'Dr. Ahmet Yılmaz', avatar: 'https://i.pravatar.cc/150?u=12', role: 'Host' },

@@ -209,7 +209,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
                    <CheckCircle2 size={32} />
                  </div>
                  <h3 className="text-2xl font-black text-[#990000]">Kariyer Hedefine Ulaşıldı</h3>
-                 <p className="text-gray-500 mt-2">Bu adımları izlediğinizde hedefinize ulaşmak için gerekli kurumsal yetkinlikleri kazanmış olacaksınız. Kariyer Geliştirme Merkezi tüm bu süreçte yanınızda.</p>
+                 <p className="text-gray-500 mt-2">Bu adımları izlediğinizde hedefinize ulaşmak için gerekli kurumsal yetkinlikleri kazanmış olacaksınız. Kariyer Geliştirme Koordinatörlüğü tüm bu süreçte yanınızda.</p>
               </div>
 
             </motion.div>

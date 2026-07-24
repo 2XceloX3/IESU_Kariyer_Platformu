@@ -43,7 +43,7 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
       <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
         <Shield size={64} className="text-gray-200 mb-4" />
         <h2 className="text-xl font-bold text-gray-500">Yönetim Yetkiniz Bulunmuyor</h2>
-        <p className="text-sm text-gray-500 mt-2 text-center max-w-md">Herhangi bir kulübün başkanı veya yöneticisi değilsiniz. Kulüp kurmak için Kariyer Merkezi ile iletişime geçin.</p>
+        <p className="text-sm text-gray-500 mt-2 text-center max-w-md">Herhangi bir kulübün başkanı veya yöneticisi değilsiniz. Kulüp kurmak için Kariyer Geliştirme Koordinatörlüğü ile iletişime geçin.</p>
       </div>
     );
   }

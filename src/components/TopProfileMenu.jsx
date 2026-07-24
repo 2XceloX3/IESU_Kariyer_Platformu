@@ -49,7 +49,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
         if (academicRole === 'super_admin') return 'Süper Yönetici';
         if (academicRole === 'content_admin') return 'İçerik Yöneticisi';
         if (academicRole === 'mentor_admin') return 'Mentor Yönetici';
-        return 'Kariyer Merkezi';
+        return 'Kariyer Geliştirme Koordinatörlüğü';
       default: return 'Kullanıcı';
     }
   };

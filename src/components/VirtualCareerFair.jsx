@@ -83,7 +83,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
               </div>
               <div className="hidden sm:block">
                 <h1 className="font-black text-gray-900 leading-tight">Dijital Kariyer Zirvesi 2026</h1>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Kariyer Merkezi</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
           </div>

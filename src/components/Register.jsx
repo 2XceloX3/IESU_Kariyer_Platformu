@@ -521,7 +521,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
               <h2 className="text-2xl font-black text-gray-900 mb-2">İşlem Başarılı!</h2>
               <p className="text-gray-500 font-medium mb-8">
                 {accountType === 'employer' 
-                  ? "Firma kayıt talebiniz Kariyer Geliştirme Merkezine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
+                  ? "Firma kayıt talebiniz Kariyer Geliştirme Koordinatörlüğüne başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
                   : accountType === 'academic'
                   ? "Akademik hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık kurumsal e-postanız ve şifrenizle giriş yapabilirsiniz."
                   : accountType === 'alumni'

@@ -47,7 +47,7 @@ export default function LandingPage({ setView }) {
   const legalData = React.useMemo(() => ({
     gizlilik: {
       title: "Gizlilik Politikası",
-      description: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.",
+      description: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.",
       date: "01/01/2026",
       category: "Yasal Bilgilendirme"
     },
@@ -59,7 +59,7 @@ export default function LandingPage({ setView }) {
     },
     kvkk: {
       title: "KVKK Aydınlatma Metni",
-      description: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından işlenmektedir.",
+      description: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından işlenmektedir.",
       date: "01/01/2026",
       category: "Yasal Bilgilendirme"
     }
@@ -125,7 +125,7 @@ export default function LandingPage({ setView }) {
 
       <SEO 
         title="Ana Sayfa" 
-        description="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi"
+        description="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü"
         url="https://kariyer.esenyurt.edu.tr/"
       />
 
@@ -163,7 +163,7 @@ export default function LandingPage({ setView }) {
             <Logo className="h-10 w-auto" />
             <div className="hidden sm:block">
               <h1 className="text-sm font-black text-iesu-navy leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
 
@@ -260,7 +260,7 @@ export default function LandingPage({ setView }) {
               Geleceğe Odaklan.
             </h2>
             <p className="text-slate-500 font-medium text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-              Kariyer Geliştirme Merkezi servisleriyle yeteneklerini keşfet, iş dünyasına rakiplerinden bir adım önde başla.
+              Kariyer Geliştirme Koordinatörlüğü servisleriyle yeteneklerini keşfet, iş dünyasına rakiplerinden bir adım önde başla.
             </p>
           </div>
 

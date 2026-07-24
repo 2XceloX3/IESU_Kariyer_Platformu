@@ -103,7 +103,7 @@ const useAppStore = create(
         
         sspUsers: [
           { id: 'STU-01', name: 'Ahmet Yılmaz', department: 'Yazılım Kulübü', points: 3450 },
-          { id: 'STU-02', name: 'Zeynep Kaya', department: 'Kariyer Merkezi', points: 2890 },
+          { id: 'STU-02', name: 'Zeynep Kaya', department: 'Kariyer Geliştirme Koordinatörlüğü', points: 2890 },
           { id: 'STU-03', name: 'Caner Demir', department: 'Tiyatro Kulübü', points: 2100 }
         ],
         setSspUsers: setter('sspUsers'),
@@ -130,7 +130,7 @@ const useAppStore = create(
         setPosts: setter('posts'),
 
         stories: [
-          { id: 1, author: { name: 'Kariyer Merkezi', avatar: '/logo.png', role: 'admin' }, content: 'İESÜ Kariyer Günleri başlıyor! 🎉', image: 'https://panel.esenyurt.edu.tr/assets/2025/resimler/hitdb/cd8eee1b7fa146fd8e952b0c7d012305_fcf735c1ca7f470c8fe6bd98923cf369.jpg', viewedBy: [], createdAt: new Date().toISOString() }
+          { id: 1, author: { name: 'Kariyer Geliştirme Koordinatörlüğü', avatar: '/logo.png', role: 'admin' }, content: 'İESÜ Kariyer Günleri başlıyor! 🎉', image: 'https://panel.esenyurt.edu.tr/assets/2025/resimler/hitdb/cd8eee1b7fa146fd8e952b0c7d012305_fcf735c1ca7f470c8fe6bd98923cf369.jpg', viewedBy: [], createdAt: new Date().toISOString() }
         ],
         setStories: setter('stories'),
 
@@ -162,7 +162,7 @@ const useAppStore = create(
 
         liveRooms: [
           { id: 201, title: '🚀 React vs Vue Tartışması', host: 'Yazılım Kulübü', listeners: 124, speakers: 4, active: true },
-          { id: 202, title: '💼 Mezunlar Anlatıyor: İlk İş Mülakatı', host: 'Kariyer Merkezi', listeners: 342, speakers: 2, active: true },
+          { id: 202, title: '💼 Mezunlar Anlatıyor: İlk İş Mülakatı', host: 'Kariyer Geliştirme Koordinatörlüğü', listeners: 342, speakers: 2, active: true },
           { id: 203, title: '🗣️ İngilizce Konuşma Pratiği (B2-C1)', host: 'Dil Kulübü', listeners: 45, speakers: 8, active: true },
         ],
         setLiveRooms: setter('liveRooms'),

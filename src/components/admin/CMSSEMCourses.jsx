@@ -136,7 +136,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
         id: 'sem',
         name: 'Sürekli Eğitim Merkezi',
         avatar: 'https://ui-avatars.com/api/?name=SEM&background=1e3a8a&color=fff',
-        title: 'Kariyer Merkezi'
+        title: 'Kariyer Geliştirme Koordinatörlüğü'
       },
       title: form.title,
       content: form.content,
@@ -351,7 +351,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                             author: {
                               name: 'Sürekli Eğitim Merkezi',
                               avatar: 'https://ui-avatars.com/api/?name=SEM&background=1e3a8a&color=fff',
-                              title: 'Kariyer Merkezi',
+                              title: 'Kariyer Geliştirme Koordinatörlüğü',
                             },
                             title: form.title,
                             content: form.content,

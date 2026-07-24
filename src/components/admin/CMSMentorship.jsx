@@ -228,7 +228,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                 <option>Akademik Personel</option>
                 <option>Sektör Uzmanı (Firma)</option>
                 <option>Mezun</option>
-                <option>Kariyer Merkezi</option>
+                <option>Kariyer Geliştirme Koordinatörlüğü</option>
               </select>
             </div>
             <div>

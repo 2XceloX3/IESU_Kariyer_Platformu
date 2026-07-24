@@ -250,7 +250,7 @@ export default function CMSAcademicStaff({ academicStaff = [], setAcademicStaff 
         <div className="flex justify-between items-center pt-6 border-t border-gray-100">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.isMentor} onChange={e=>setForm({...form, isMentor: e.target.checked})} className="w-4 h-4 rounded text-red-600 focus:ring-red-500/20" />
-            <span className="text-sm font-bold text-gray-700">Kariyer Merkezi Akademik Mentor Havuzunda</span>
+            <span className="text-sm font-bold text-gray-700">Kariyer Geliştirme Koordinatörlüğü Akademik Mentor Havuzunda</span>
           </label>
           <div className="flex gap-3">
             <button type="button" onClick={() => setIsEditing(false)} className="px-6 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 transition">İptal</button>

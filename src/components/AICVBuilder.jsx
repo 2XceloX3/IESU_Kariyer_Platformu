@@ -239,7 +239,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
             <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
           

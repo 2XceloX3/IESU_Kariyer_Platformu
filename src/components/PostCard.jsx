@@ -205,7 +205,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   </button>
                 </>
               ) : (
-                <button aria-label="Şikayet Et" onClick={() => { setIsMenuOpen(false); window.toast.success('Şikayetiniz Kariyer Geliştirme Merkezine iletilmiştir. Teşekkür ederiz.'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 active:scale-95">
+                <button aria-label="Şikayet Et" onClick={() => { setIsMenuOpen(false); window.toast.success('Şikayetiniz Kariyer Geliştirme Koordinatörlüğüne iletilmiştir. Teşekkür ederiz.'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 active:scale-95">
                   <ShieldCheck size={14} /> Şikayet Et
                 </button>
               )}
@@ -551,7 +551,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           <div className="space-y-3 mb-4">
             {comments.map(comment => (
               <div key={comment.id} className="flex gap-3">
-                {comment.author === 'Kariyer Geliştirme Merkezi' || comment.author === 'Kariyer Merkezi' ? (
+                {comment.author === 'Kariyer Geliştirme Koordinatörlüğü' || comment.author === 'Kariyer Geliştirme Koordinatörlüğü' ? (
                   <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0 border border-gray-200 p-0.5 shadow-sm">
                     <img src="/logo.png" alt="Admin" className="w-full h-full object-contain" />
                   </div>

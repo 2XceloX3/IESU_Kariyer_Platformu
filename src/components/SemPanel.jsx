@@ -242,7 +242,7 @@ export default function SemPanel({ setView, userRole }) {
               <h2 className="text-2xl font-black text-gray-900 mb-6 leading-tight">{selectedItem.title}</h2>
               
               <div className="text-gray-600 font-medium leading-relaxed bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                {selectedItem.desc || selectedItem.content || "Detaylı içerik bulunamadı. Lütfen daha fazla bilgi için Kariyer Merkezimizle veya Sürekli Eğitim Merkezi ile iletişime geçiniz."}
+                {selectedItem.desc || selectedItem.content || "Detaylı içerik bulunamadı. Lütfen daha fazla bilgi için Kariyer Geliştirme Koordinatörlüğümizle veya Sürekli Eğitim Merkezi ile iletişime geçiniz."}
               </div>
 
               {selectedItem.type === 'egitim' && (

@@ -45,7 +45,7 @@ export const EVENTS_INIT = [
 export const ORG = {
   name:'Prof. Dr. Ahmet Bulut', title:'Rektör',
   children:[{
-    name:'Dr. Zeynep Aksoy', title:'Kariyer Merkezi Direktörü',
+    name:'Dr. Zeynep Aksoy', title:'Kariyer Geliştirme Koordinatörlüğü Direktörü',
     children:[
       { name:'Murat Koç',     title:'Kariyer Danışmanı',    children:[] },
       { name:'Seda Türkmen',  title:'Mezun İlişkileri',     children:[] },

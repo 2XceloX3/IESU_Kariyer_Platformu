@@ -6,7 +6,7 @@ import TopProfileMenu from './TopProfileMenu';
 
 const CERTIFICATES = [
   { id: 'CERT-8492-X', title: 'İleri Seviye React ve UI Mimarisi', issuer: 'Esenyurt Üniversitesi Bilgisayar Müh.', date: '12 Eki 2026', type: 'Akademik Başarı', hash: '0x8f3c...9b2a', verified: true },
-  { id: 'CERT-1102-M', title: 'Yapay Zeka ve Veri Bilimi Bootcamp', issuer: 'Kariyer Merkezi & Google', date: '05 Eyl 2026', type: 'Sektörel Eğitim', hash: '0x4a1e...7c8f', verified: true },
+  { id: 'CERT-1102-M', title: 'Yapay Zeka ve Veri Bilimi Bootcamp', issuer: 'Kariyer Geliştirme Koordinatörlüğü & Google', date: '05 Eyl 2026', type: 'Sektörel Eğitim', hash: '0x4a1e...7c8f', verified: true },
   { id: 'CERT-5541-K', title: 'Agile Proje Yönetimi Sertifikası', issuer: 'Birlik Ağı Kulüpleri', date: '20 Ağu 2026', type: 'Yetkinlik', hash: '0x9b2d...1e3a', verified: true },
 ];
 

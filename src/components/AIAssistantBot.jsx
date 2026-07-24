@@ -248,7 +248,7 @@ export default function AIAssistantBot({ currentUser }) {
       });
 
       // Call LLM
-      const sysInst = `Sen İESÜ Kariyer Merkezi'nin dijital asistanı Anka'sın. Kullanıcı: ${currentUser?.name || 'Öğrenci'}, Bölümü: ${currentUser?.department || 'Bilinmiyor'}. Kullanıcıya samimi, motive edici ve profesyonel cevap ver. Esenyurt Üniversitesi kariyer merkezi odaklı ol.`;
+      const sysInst = `Sen İESÜ Kariyer Geliştirme Koordinatörlüğü'nin dijital asistanı Anka'sın. Kullanıcı: ${currentUser?.name || 'Öğrenci'}, Bölümü: ${currentUser?.department || 'Bilinmiyor'}. Kullanıcıya samimi, motive edici ve profesyonel cevap ver. Esenyurt Üniversitesi kariyer merkezi odaklı ol.`;
       
       const aiResponse = await generateAIResponse(userMsg, sysInst);
 

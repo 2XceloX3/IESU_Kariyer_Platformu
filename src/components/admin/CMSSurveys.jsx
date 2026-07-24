@@ -19,7 +19,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     targetAudience: 'Tümü', // 'Öğrenciler', 'Mezunlar', 'Tümü'
     description: '',
     questions: [
-      { id: 'q1', text: 'Kariyer Merkezi hizmetlerinden genel olarak memnun musunuz?', type: 'likert' }
+      { id: 'q1', text: 'Kariyer Geliştirme Koordinatörlüğü hizmetlerinden genel olarak memnun musunuz?', type: 'likert' }
     ]
   });
 
@@ -142,7 +142,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     if(!setPosts) { window.toast.info('Feed entegrasyonu bulunamadı!'); return; }
     const newPost = {
       id: Date.now(),
-      author: currentUser || { name: 'Kariyer Merkezi', role: 'admin', avatar: `https://ui-avatars.com/api/?name=Kariyer&background=0D8ABC&color=fff` },
+      author: currentUser || { name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: `https://ui-avatars.com/api/?name=Kariyer&background=0D8ABC&color=fff` },
       content: `📢 **Yeni Anket:** ${survey.title}\n\nLütfen değerlendirme anketimize katılarak bize geri bildirimde bulunun. Desteğiniz için teşekkürler!\n\n[Ankete Katıl]`,
       timestamp: 'Az önce',
       likes: 0,
