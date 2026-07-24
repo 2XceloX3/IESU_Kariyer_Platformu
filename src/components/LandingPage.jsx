@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, ArrowRight, ArrowLeft, Printer, Mail, MapPin, Download, FileText, ExternalLink, X, LogIn, Briefcase, Search, Users, Handshake, TrendingUp, Target, Sparkles, Zap, GraduationCap, Building, ChevronRight, ShieldCheck } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import { liveSliderData } from '../utils/liveData';
+import { liveSliderData, liveNewsData } from '../utils/liveData';
 import Logo from './Logo';
 import SpotlightCard from './shared/SpotlightCard';
 import HeroSlider from './landing/HeroSlider';
