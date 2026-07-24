@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { Megaphone, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, Calendar, ArrowRight, FileText } from 'lucide-react';
+import RichContentRenderer from '../RichContentRenderer';
+import { Megaphone, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, Calendar, ArrowRight, FileText, Table } from 'lucide-react';
 
 export default function CMSNews({ news = [], setNews, posts, setPosts, currentUser }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -246,8 +247,20 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
           </div>
 
           <div>
-            <label className="text-xs font-bold text-gray-600 block mb-1.5">Açıklama</label>
-            <textarea value={form.description} onChange={e=>setForm({...form, description: e.target.value})} rows={5} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none" placeholder="Haber detayları..."></textarea>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-xs font-bold text-gray-600 block">Açıklama & İçerik Detayı</label>
+              <button
+                type="button"
+                onClick={() => {
+                  const sampleTable = `\n\n| Fakülte / Bölüm | Puan Türü | Peşin Ücret | Tercih İndirimli |\n| :--- | :---: | :---: | :---: |\n| **Bilgisayar Mühendisliği** | SAY | ₺395.000 | **₺276.500** |\n| **İşletme** | EA | ₺363.000 | **₺254.100** |\n| **Hemşirelik** | SAY | ₺450.125 | **₺405.113** |\n`;
+                  setForm(prev => ({ ...prev, description: (prev.description || '') + sampleTable }));
+                }}
+                className="text-[11px] font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg flex items-center gap-1 transition"
+              >
+                <Table size={12} /> 📊 Örnek Tablo Şablonu Ekle
+              </button>
+            </div>
+            <textarea value={form.description} onChange={e=>setForm({...form, description: e.target.value})} rows={6} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-y" placeholder="Haber detayları veya tablo formatında metin..."></textarea>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
@@ -266,7 +279,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
 
           <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
             <button type="button" onClick={() => setIsEditing(false)} className="px-6 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 transition">İptal</button>
-            <button type="submit" className="px-6 py-2.5 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-md transition">Haberyu Kaydet</button>
+            <button type="submit" className="px-6 py-2.5 rounded-xl text-sm font-bold bg-red-600 text-white hover:bg-red-700 shadow-sm hover:shadow-md transition">Haber Kaydet</button>
           </div>
         </form>
       </div>
@@ -309,9 +322,9 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
           <span>{form.date || 'Tarih Belirtilmedi'}</span>
         </div>
 
-        <p className="text-[13px] font-medium text-gray-600 mb-5 line-clamp-4">
-          {form.description || 'Haber hakkında detaylı metin burada görünecektir.'}
-        </p>
+        <div className="mb-5 overflow-hidden text-xs">
+          <RichContentRenderer content={form.description || 'Haber detayları veya tablolar burada canlı görünecektir.'} />
+        </div>
 
         <button className="text-[12px] font-bold text-red-600 flex items-center gap-1 hover:text-red-700 transition">
           Devamını Oku <ArrowRight size={14}/>
