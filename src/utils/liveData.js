@@ -1,21 +1,33 @@
 export const liveSliderData = [
   {
     "badge": "Esenyurt Duyuru",
-    "title": "İlk 5 Tercihte",
+    "title": "İlk 5 Tercihte İndirim",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/07/4ul12yzssqgwd-ilk-5-tercihte.jpg",
     "actionLink": "https://aday.esenyurt.edu.tr/kontenjanlar-ve-ucretler"
   },
   {
-    "badge": "Öğrenci Portalı",
-    "title": "ADAY ÖĞRENCİ",
-    "image": "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-%3Cspan%3E-ogrenci%3C-span%3E.png",
+    "badge": "Kampüs Yaşamı",
+    "title": "İstanbul Esenyurt Üniversitesi Yerleşkesi",
+    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/3vfnvwenukjgg-esenyurt-universitesi-cover.png",
+    "actionLink": "https://www.esenyurt.edu.tr/"
+  },
+  {
+    "badge": "Akademik Programlar",
+    "title": "Geleceğin Meslekleri ve Eğitim Olanakları",
+    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/i75hk57842lu1-img-01.jpg",
     "actionLink": "https://aday.esenyurt.edu.tr/"
   },
   {
-    "badge": "Öğrenci Portalı",
-    "title": "ÖĞRENCİ İŞLERİ",
-    "image": "https://www.esenyurt.edu.tr/uploads/2024/06/wnriflf4i6hhr-ogrenci-%3Cspan%3Eisleri%3C-span%3E.png",
-    "actionLink": "https://www.esenyurt.edu.tr/icerik/1269-ogrenci-isleri-daire-baskanligi"
+    "badge": "Sosyal Yaşam",
+    "title": "Öğrenci Kulüpleri ve Etkinlikler",
+    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/gyz4xw9ie7yy3-img-02.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr/"
+  },
+  {
+    "badge": "Kütüphane & Araştırma",
+    "title": "Prof. Dr. Aziz Sancar Kütüphanesi",
+    "image": "https://www.esenyurt.edu.tr/uploads/2024/07/i7kltkuczyfcg-img-03.jpg",
+    "actionLink": "https://www.esenyurt.edu.tr/"
   }
 ];
 

@@ -52,17 +52,7 @@ export default function HeroSlider() {
             className="absolute inset-0 w-full h-full object-cover cursor-pointer hover:scale-[1.02] transition-transform duration-700"
             onClick={slide.action}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent pointer-events-none"></div>
-          <div className="absolute bottom-12 left-6 md:left-12 right-6 md:right-12 z-10 text-white max-w-3xl pointer-events-none">
-            {slide.badge && (
-              <span className="inline-block text-[11px] font-black uppercase tracking-widest text-indigo-300 bg-indigo-950/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-red-500/30 mb-3">
-                {slide.badge}
-              </span>
-            )}
-            <h2 className="text-2xl md:text-4xl font-black text-white leading-tight drop-shadow-md">
-              {slide.title}
-            </h2>
-          </div>
+          {/* Clean image slide without text overlay */}
         </div>
       ))}
       
