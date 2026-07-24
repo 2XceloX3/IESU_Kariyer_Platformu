@@ -1,7 +1,4 @@
-import React from 'react';
-import { ChevronLeft, Award, Globe, Users, ShieldCheck, HeartHandshake, CheckCircle2, Building, BookOpen, Sparkles, TrendingUp, Compass, Clock, GraduationCap } from 'lucide-react';
-import TopProfileMenu from './TopProfileMenu';
-import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
+import MainHeader from './MainHeader';
 
 const STATS = [
   { label: 'Topluma Kazandırılan Mezun', value: '77.000+', icon: <GraduationCap size={22} className="text-red-600" /> },
@@ -26,21 +23,7 @@ const TIMELINE = [
 export default function AboutUsPage({ setView, currentUser, userRole, setSelectedUserId }) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
-      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setView((currentUser && currentUser.id) ? (userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : userRole === 'admin' ? 'admin' : 'student') : 'landing')} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="flex items-center gap-2">
-            <Award className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">Hakkımızda & Kurumsal Yapı</h1>
-          </div>
-        </div>
-        <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
-      </header>
+      <MainHeader setView={setView} />
 
       <main className="flex-1 w-full max-w-[1150px] mx-auto p-4 lg:p-8 flex flex-col gap-10">
         

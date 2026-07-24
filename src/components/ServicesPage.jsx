@@ -5,6 +5,7 @@ import {
   CheckCircle2, Search, Target, Users, X, FileText, Compass, Star, Lock
 } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
+import MainHeader from './MainHeader';
 
 const CATEGORIES = ['Tümü', 'Kariyer & Gelecek', 'Akademik & Ar-Ge', 'Bilişim & Altyapı', 'Sağlık & Yaşam'];
 
@@ -195,21 +196,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-indigo-900/20 via-red-900/10 to-transparent blur-3xl pointer-events-none"></div>
 
       {/* Top Header Navbar */}
-      <header className="h-16 bg-[#0B1528]/80 backdrop-blur-xl border-b border-red-900/80 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-2xl">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setView((currentUser && currentUser.id) ? (userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : userRole === 'admin' ? 'admin' : 'student') : 'landing')} 
-            className="p-2 rounded-full bg-red-900/80 text-slate-300 hover:bg-slate-700 transition border border-slate-700/60"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div className="flex items-center gap-2">
-            <Sparkles className="text-indigo-400 animate-pulse" size={22} />
-            <h1 className="font-black text-white text-base md:text-lg tracking-tight">Hizmetlerimiz & İdari Birimler</h1>
-          </div>
-        </div>
-        <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
-      </header>
+      <MainHeader setView={setView} />
 
       {/* Main Container */}
       <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-10 relative z-10">
