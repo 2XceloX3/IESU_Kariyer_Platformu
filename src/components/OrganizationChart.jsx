@@ -49,7 +49,7 @@ export default function OrganizationChart({ setView, userRole }) {
                 if(e.target.src.includes('2024/01')) {
                   e.target.src = 'https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/be71ba02764646fc8f14a9bb97c5b9a8_(375_300).jpg';
                 } else {
-                  e.target.src = 'https://www.esenyurt.edu.tr/assets/frontend/images/empty.png';
+                  e.target.src = '/kariyer_logo.png';
                   e.target.parentElement.innerHTML = '<div class="text-center py-20"><p class="text-[#990000] font-bold text-lg">Organizasyon Şeması Görseli Güncellenmektedir.</p><p class="text-gray-500 mt-2">Daha fazla bilgi için Kariyer Geliştirme Koordinatörlüğümize ulaşabilirsiniz.</p></div>';
                 }
               }}

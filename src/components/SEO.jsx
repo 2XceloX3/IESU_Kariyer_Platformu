@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 
 export default function SEO({ title, description, url, type = "website", schema, image }) {
   const siteName = "İstanbul Esenyurt Üniversitesi - Kariyer Geliştirme Koordinatörlüğü";
-  const defaultImage = "https://cdn.esenyurt.edu.tr/logo/iesu-logo-blue-tr.svg";
+  const defaultImage = "https://cdn.esenyurt.edu.tr/logo/iesu-logo.svg";
   
   return (
     <Helmet>

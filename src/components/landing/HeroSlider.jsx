@@ -17,7 +17,7 @@ export default function HeroSlider() {
 
   return (
     <section 
-      className="relative w-full h-[320px] sm:h-[420px] md:h-[500px] lg:h-[560px] bg-[#061121] overflow-hidden group shadow-md"
+      className="relative w-full aspect-[16/7] min-h-[300px] max-h-[580px] bg-[#061121] overflow-hidden group shadow-md"
       onMouseEnter={() => setIsCarouselPaused(true)}
       onMouseLeave={() => setIsCarouselPaused(false)}
       onFocus={() => setIsCarouselPaused(true)}
@@ -50,7 +50,7 @@ export default function HeroSlider() {
             <img 
               src={slide.image} 
               alt={slide.title} 
-              className="w-full h-full object-contain md:object-cover object-center cursor-pointer transition-transform duration-700"
+              className="w-full h-full object-cover object-center cursor-pointer transition-transform duration-700"
             />
           </a>
         </div>
