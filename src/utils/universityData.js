@@ -34,7 +34,7 @@ export const IESU_FACULTIES = [
       'Hemşirelik',
       'Sağlık Yönetimi',
       'Sosyal Hizmet',
-      'Çocuk Gelişimi'
+      'Çocuk Esenyurti'
     ]
   },
   {
@@ -162,3 +162,4 @@ export function getDepartmentsByFaculty(facultyName) {
   const unit = [...IESU_FACULTIES, ...IESU_MYO, ...IESU_YUKSEKOKUL, ...IESU_ENSTITU].find(f => f.name === facultyName);
   return unit ? unit.departments : [];
 }
+

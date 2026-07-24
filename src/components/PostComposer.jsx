@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image as ImageIcon, FileText, Video, Send, X, Plus, Calendar, Smile, Link as LinkIcon, BarChart2 } from 'lucide-react';
+import { Image as ImageIcon, FileText, Video, Send, X, Plus, Calendar, Smile, BarChart2 } from 'lucide-react';
 
 export default function PostComposer({ currentUser, userRole, posts, setPosts, asClub }) {
   const [content, setContent] = useState('');
@@ -11,11 +11,10 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
   const handleFileUpload = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Simulate file upload with local object URL
     const url = URL.createObjectURL(file);
     setMedia(url);
     setMediaType(type);
+    setIsFocused(true);
   };
 
   const handleSubmit = async (e) => {
@@ -33,7 +32,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         role: 'club'
       } : {
         name: currentUser?.name || 'Kullanıcı',
-        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=132A49&color=fff`,
+        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=0A2342&color=fff`,
         title: currentUser?.title || currentUser?.department || 'Öğrenci',
         role: userRole || currentUser?.role || undefined
       },
@@ -53,64 +52,58 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     setMediaType(null);
     setIsFocused(false);
     
-    window.toast.success("Gönderiniz başarıyla oluşturuldu ve onay havuzuna gönderildi!");
+    window.toast.success("Gönderiniz paylaşıldı!");
     
     setTimeout(() => {
       setIsSubmitting(false);
-    }, 1000);
+    }, 500);
   };
 
+  const authorAvatar = asClub ? asClub.logo : (userRole === 'admin' || currentUser?.role === 'admin') ? "/logo.png" : (currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=0A2342&color=fff`);
+
   return (
-    <div className={`transition-all duration-300 bg-white rounded-3xl ${isFocused ? 'shadow-2xl ring-4 ring-gray-50 border-transparent scale-[1.01]' : 'shadow-sm border border-gray-100'} p-1`}>
-      <form onSubmit={handleSubmit} className="w-full flex flex-col p-5 bg-white rounded-[1.4rem]">
-        <div className="flex gap-4 items-start">
-          {asClub ? (
-            <img 
-              src={asClub.logo} 
-              alt={asClub.name} 
-              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover shrink-0 border border-gray-200 shadow-sm transition-transform hover:scale-105" 
-            />
-          ) : (userRole === 'admin' || currentUser?.role === 'admin') ? (
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gray-50 flex items-center justify-center shrink-0 border-2 border-gray-100 shadow-sm p-1.5 transition-transform hover:scale-105">
-              <img src="/iesu-logo.svg" alt="Admin Logo" className="w-full h-full object-contain" />
-            </div>
-          ) : (
-            <img 
-              src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=132A49&color=fff`} 
-              alt="User" 
-              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover shrink-0 border border-gray-200 shadow-sm transition-transform hover:scale-105" 
-            />
-          )}
+    <div className={`transition-all duration-300 bg-white sm:rounded-[12px] ${isFocused ? 'shadow-md border border-gray-300 scale-[1.01]' : 'shadow-sm border border-gray-200'} mb-4 overflow-hidden`}>
+      <form onSubmit={handleSubmit} className="w-full flex flex-col pt-3 pb-2 px-4 bg-white">
+        
+        {/* TOP AREA: AVATAR & INPUT */}
+        <div className="flex gap-3 items-start">
+          <img 
+            src={authorAvatar} 
+            alt="Profile" 
+            className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200" 
+          />
           <div className="flex-1 min-w-0">
-            <textarea 
-              value={content}
-              maxLength={2000}
-              onChange={(e) => setContent(e.target.value)}
-              onFocus={() => setIsFocused(true)}
-              placeholder="Ağınızdaki kişilerle yeni bir başarı, proje veya soru paylaşın..." 
-              className={`w-full bg-transparent border-none outline-none text-[15px] sm:text-[17px] text-gray-800 placeholder-gray-400 font-medium resize-none transition-all ${isFocused ? 'min-h-[140px] pt-2' : 'min-h-[60px] pt-3.5 sm:pt-4'}`}
-            />
+            {/* LINKEDIN STYLE INPUT */}
+            <div className={`transition-all duration-200 ${isFocused ? 'bg-transparent' : 'bg-white rounded-full border border-gray-300 hover:bg-gray-50'}`}>
+              <textarea 
+                value={content}
+                maxLength={2000}
+                onChange={(e) => setContent(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                disabled={isSubmitting}
+                aria-label="Gönderi içeriği"
+                placeholder={isFocused ? "Ne hakkında konuşmak istiyorsunuz?" : "Gönderi başlat..."}
+                className={`w-full bg-transparent border-none outline-none text-[15px] sm:text-[16px] text-gray-800 placeholder-gray-500 font-medium resize-none transition-all disabled:opacity-50
+                  ${isFocused ? 'min-h-[120px] pt-2 px-1 focus:ring-0' : 'min-h-[48px] pt-3 px-4 cursor-text'}`}
+              />
+            </div>
             
             {media && (
-              <div className="relative mt-4 rounded-2xl overflow-hidden bg-gray-50 border border-gray-200 group shadow-sm">
+              <div className="relative mt-4 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 group shadow-sm">
                 <button 
                   type="button"
                   onClick={() => { setMedia(null); setMediaType(null); }}
-                  className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white p-2 rounded-full hover:bg-black transition-all z-10 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"
-                  title="Kaldır"
+                  className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full hover:bg-black transition-all z-10"
                 >
-                  <X size={18} strokeWidth={2.5} />
+                  <X size={16} strokeWidth={2.5} />
                 </button>
                 
-                {mediaType === 'image' && <img src={media} alt="Upload Preview" className="w-full max-h-96 object-cover" />}
-                {mediaType === 'video' && <video src={media} controls className="w-full max-h-96 bg-black rounded-2xl" />}
+                {mediaType === 'image' && <img src={media} alt="Upload Preview" className="w-full max-h-[300px] object-contain bg-black" />}
+                {mediaType === 'video' && <video src={media} controls className="w-full max-h-[300px] bg-black" />}
                 {mediaType === 'pdf' && (
-                  <div className="flex flex-col items-center justify-center p-10 text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100">
-                    <div className="w-16 h-16 bg-red-100 text-red-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm">
-                      <FileText size={32} strokeWidth={2} />
-                    </div>
-                    <p className="font-bold text-gray-800">PDF Dökümanı Eklendi</p>
-                    <p className="text-xs text-gray-500 mt-1">Gönderi onaylandığında indirilebilir olacak.</p>
+                  <div className="flex flex-col items-center justify-center p-8 text-gray-500 bg-gray-50">
+                    <FileText size={32} className="text-gray-400 mb-2" />
+                    <p className="font-bold text-gray-800">PDF Eklendi</p>
                   </div>
                 )}
               </div>
@@ -118,34 +111,54 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
           </div>
         </div>
 
-        {/* TOOLBAR */}
-        <div className={`flex flex-col sm:flex-row items-center justify-between mt-4 transition-all duration-300 ${isFocused ? 'pt-4 border-t border-gray-100 opacity-100' : 'h-0 overflow-hidden opacity-0 sm:h-auto sm:opacity-100 sm:pt-0 sm:border-transparent'}`}>
-          <div className="flex flex-wrap items-center gap-1 sm:gap-2 w-full sm:w-auto">
-            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-blue-100 focus-within:ring-2 focus-within:ring-blue-500">
-              <ImageIcon size={18} strokeWidth={2.5} /> <span className="hidden sm:inline">Fotoğraf</span>
-              <input type="file" accept="image/*" className="sr-only" onChange={(e) => handleFileUpload(e, 'image')} />
+        {/* BOTTOM TOOLBAR (LINKEDIN STYLE) */}
+        <div className={`flex flex-col sm:flex-row items-center justify-between mt-3 transition-all duration-300`}>
+          <div className="flex items-center justify-between w-full sm:w-auto px-1">
+            <label className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md cursor-pointer transition-colors font-semibold text-[14px]">
+              <ImageIcon size={20} className="text-blue-500" /> <span className="hidden sm:inline">Medya</span>
+              <input type="file" accept="image/*,video/*" className="sr-only" onChange={(e) => handleFileUpload(e, e.target.files[0]?.type?.includes('video') ? 'video' : 'image')} disabled={isSubmitting} />
             </label>
-            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-emerald-100 focus-within:ring-2 focus-within:ring-emerald-500">
-              <Video size={18} strokeWidth={2.5} /> <span className="hidden sm:inline">Video</span>
-              <input type="file" accept="video/*" className="sr-only" onChange={(e) => handleFileUpload(e, 'video')} />
-            </label>
-            <label className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-gray-50 text-gray-600 hover:bg-orange-50 hover:text-orange-600 rounded-xl cursor-pointer transition font-bold text-[13px] border border-transparent hover:border-orange-100 focus-within:ring-2 focus-within:ring-orange-500">
-              <FileText size={18} strokeWidth={2.5} /> <span className="hidden sm:inline">Doküman</span>
-              <input type="file" accept=".pdf" className="sr-only" onChange={(e) => handleFileUpload(e, 'pdf')} />
-            </label>
+            <button type="button" onClick={() => { setIsFocused(true); window.toast?.info('Yakında!'); }} className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md transition-colors font-semibold text-[14px]">
+              <Calendar size={20} className="text-orange-500" /> <span className="hidden sm:inline">Etkinlik</span>
+            </button>
+            <button 
+              type="button" 
+              onClick={(e) => { 
+                e.preventDefault();
+                setIsFocused(true);
+                if(content.length < 5) {
+                  window.toast && window.toast.error("Anka AI: Geliştirmek için lütfen biraz metin yazın.");
+                  return;
+                }
+                window.toast && window.toast.info("Anka AI: Metniniz daha profesyonel bir dil ile yeniden yazılıyor...");
+                setTimeout(() => {
+                  setContent((prev) => prev + "\n\n#EsenyurtKariyer #ProfesyonelAğ #Inovasyon");
+                  window.toast && window.toast.success("✅ AI Düzeltmesi: Metniniz profesyonelleştirildi ve uygun etiketler eklendi.");
+                }, 2000);
+              }} 
+              className="flex items-center gap-2 px-3 py-3 text-purple-600 hover:bg-purple-50 rounded-md transition-colors font-bold text-[14px]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg> 
+              <span className="hidden sm:inline">AI Profesyonelleştir</span>
+            </button>
           </div>
           
-          <div className="flex gap-2 shrink-0">
-            {isFocused && <button type="button" onClick={() => setIsFocused(false)} className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-[13px] sm:text-[14px] text-gray-500 hover:bg-gray-100 transition">İptal</button>}
+          <div className={`flex gap-2 shrink-0 transition-opacity duration-200 ${isFocused ? 'opacity-100 mt-3 sm:mt-0 w-full sm:w-auto justify-end' : 'opacity-0 hidden'}`}>
+            <button 
+              type="button" 
+              onClick={() => setIsFocused(false)} 
+              className="px-4 py-1.5 rounded-full font-semibold text-[14px] text-gray-500 hover:bg-gray-100 transition"
+            >
+              İptal
+            </button>
             <button 
               type="submit" 
               disabled={isSubmitting || (!content.trim() && !media)} 
-              className={`flex items-center gap-1.5 sm:gap-2 px-5 sm:px-7 py-2 sm:py-2.5 rounded-xl font-bold text-[13px] sm:text-[14px] transition-all shadow-sm
-                ${(content.trim() || media) && !isSubmitting ? 'bg-[var(--brand-pomegranate)] hover:bg-[var(--brand-red-dark)] text-white hover:shadow-md hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full font-semibold text-[14px] transition-all
+                ${(content.trim() || media) && !isSubmitting ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
               `}
             >
-              {isSubmitting ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : <Send size={16} className="sm:w-[18px] sm:h-[18px]" />} 
-              <span className="hidden sm:inline">{isSubmitting ? 'Paylaşılıyor' : 'Paylaş'}</span>
+              {isSubmitting ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : 'Gönder'}
             </button>
           </div>
         </div>

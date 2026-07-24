@@ -77,7 +77,7 @@ export default function DataCleanup({
                   <td className="py-3 px-4 text-sm font-medium text-gray-900">{r.name || r.content?.substring(0,20) || r.id}</td>
                   <td className="py-3 px-4 text-xs text-amber-600 font-medium">Demo Veri / Test Kaydı</td>
                   <td className="py-3 px-4">
-                    <button onClick={() => handleArchive(type, [r])} className="text-gray-400 hover:text-amber-600 transition-colors">
+                    <button onClick={() => handleArchive(type, [r])} className="text-gray-500 hover:text-amber-600 transition-colors">
                       <Archive size={16} />
                     </button>
                   </td>
@@ -94,7 +94,7 @@ export default function DataCleanup({
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-3xl p-6 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
         <h2 className="text-2xl font-black mb-2 flex items-center gap-2">
           <ShieldAlert size={28} /> Demo Veri Temizliği (Bakım)
         </h2>

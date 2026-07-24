@@ -147,19 +147,19 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><GraduationCap size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Toplam Mezun</p><p className="text-2xl font-black text-gray-900">{safeAlumni.length}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Mezun</p><p className="text-2xl font-black text-gray-900">{safeAlumni.length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><Briefcase size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">İstihdam Oranı</p><p className="text-2xl font-black text-gray-900">%{employmentRate}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">İstihdam Oranı</p><p className="text-2xl font-black text-gray-900">%{employmentRate}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Alan Uyumu</p><p className="text-2xl font-black text-gray-900">%{matchRate}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alan Uyumu</p><p className="text-2xl font-black text-gray-900">%{matchRate}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center"><Star size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Gönüllü Mentor</p><p className="text-2xl font-black text-gray-900">{mentorCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gönüllü Mentor</p><p className="text-2xl font-black text-gray-900">{mentorCount}</p></div>
           </div>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
       {/* FILTERS */}
       <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
           <input 
             type="text" placeholder="Ad Soyad veya Firma ara..." 
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
@@ -180,7 +180,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
             <option value="mezun">Mezun</option>
             <option value="pasif">Pasif</option>
           </select>
-          <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
           <button onClick={() => exportToCSV(filtered, 'mezunlar.csv')} className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition text-sm font-bold">
             <Download size={18} /> Excel
           </button>
@@ -194,7 +194,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mb-4"><GraduationCap size={32}/></div>
+            <div className="w-16 h-16 bg-gray-50 text-gray-500 rounded-full flex items-center justify-center mb-4"><GraduationCap size={32}/></div>
             <h3 className="text-lg font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
             <p className="text-sm text-gray-500">Arama kriterlerine uygun mezun bulunmuyor.</p>
           </div>
@@ -202,11 +202,11 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Mezun</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Bölüm & Yıl</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Kariyer Durumu</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Sistem Durumu</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">İşlemler</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Mezun</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Bölüm & Yıl</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kariyer Durumu</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Sistem Durumu</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -215,7 +215,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center relative">
-                        {a.avatar ? <img src={a.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={20} className="text-gray-400"/>}
+                        {a.avatar ? <img src={a.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={20} className="text-gray-500"/>}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
@@ -228,7 +228,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                   </td>
                   <td className="py-3 px-5">
                     <p className="text-xs font-bold text-gray-700">{a.department || 'Belirtilmedi'}</p>
-                    <p className="text-[10px] font-bold text-gray-400 mt-0.5 uppercase">{a.graduationYear ? `${a.graduationYear} Mezunu` : '-'}</p>
+                    <p className="text-[10px] font-bold text-gray-500 mt-0.5 uppercase">{a.graduationYear ? `${a.graduationYear} Mezunu` : '-'}</p>
                   </td>
                   <td className="py-3 px-5">
                     {a.careerStatus && a.careerStatus !== 'Belirtilmedi' ? (
@@ -242,7 +242,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-400 font-medium">Belirtilmedi</span>
+                      <span className="text-xs text-gray-500 font-medium">Belirtilmedi</span>
                     )}
                   </td>
                   <td className="py-3 px-5">
@@ -260,13 +260,13 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                             const sr = alumniSurveyResponses.find(r => r.email === a.email || r.department === a.department);
                             setSelectedSurvey({ alumni: a, response: sr });
                           }} 
-                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                          className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
                         >
                           <Compass size={16}/>
                         </button>
                       )}
-                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
-                      <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
+                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
                 </tr>
@@ -398,23 +398,23 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
       {/* Survey Modal */}
       {selectedSurvey && (
         <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row shadow-2xl animate-fade-in-up">
+          <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row shadow-2xl animate-fade-in-up">
             
             {/* Left Pane: Alumni Info */}
             <div className="md:w-1/3 bg-gray-50 border-r border-gray-100 p-6 flex flex-col items-center text-center">
               <div className="w-24 h-24 rounded-full bg-white border border-gray-200 overflow-hidden mb-4 flex items-center justify-center">
-                {selectedSurvey.alumni.avatar ? <img src={selectedSurvey.alumni.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={48} className="text-gray-300"/>}
+                {selectedSurvey.alumni.avatar ? <img src={selectedSurvey.alumni.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={48} className="text-gray-400"/>}
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-1">{selectedSurvey.alumni.name}</h3>
               <p className="text-xs font-bold text-gray-500 uppercase">{selectedSurvey.alumni.department || 'Belirtilmedi'} - {selectedSurvey.alumni.graduationYear}</p>
               
               <div className="mt-6 w-full space-y-3 text-left">
                 <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">E-Posta</p>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">E-Posta</p>
                   <p className="text-xs font-medium text-gray-800 break-all">{selectedSurvey.alumni.email || '-'}</p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Kayıtlı Durum</p>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Kayıtlı Durum</p>
                   <p className="text-xs font-medium text-gray-800">{selectedSurvey.alumni.careerStatus}</p>
                 </div>
               </div>
@@ -427,7 +427,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                   <Compass className="text-indigo-600" size={20} />
                   Kariyer Check-up Yanıtları
                 </h3>
-                <button onClick={() => setSelectedSurvey(null)} className="p-2 text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-full transition-colors">
+                <button onClick={() => setSelectedSurvey(null)} className="p-2 text-gray-500 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-full transition-colors">
                   <X size={18} />
                 </button>
               </div>
@@ -447,7 +447,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                 ].map((item, i) => (
                   <div key={i} className="border-b border-gray-50 pb-4 last:border-0 last:pb-0">
                     <p className="text-xs font-bold text-gray-500 mb-1">{i+1}. {item.q}</p>
-                    <p className="text-sm font-medium text-gray-900">{item.a || <span className="text-gray-400 italic">Yanıtlanmadı</span>}</p>
+                    <p className="text-sm font-medium text-gray-900">{item.a || <span className="text-gray-500 italic">Yanıtlanmadı</span>}</p>
                   </div>
                 ))}
               </div>

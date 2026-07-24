@@ -3,12 +3,13 @@ import { Shield, Users, Check, X, Megaphone, MapPin, Send, FileText, Image as Im
 import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';
 
-export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
+export default function ClubAdminPanel({ currentUser, setView, userRole }) {
   const { clubs, setClubs, events, setEvents } = useAppStore();
   
   // 1. Yetkilendirme Mantık Hatası Düzeltmesi
   // managedClubs içinde, kullanıcının id veya ismine göre başkan/admin olup olmadığını tam kontrol ediyoruz.
   const managedClubs = useMemo(() => {
+    if (currentUser?.role === 'admin') return clubs; // Süper Admin tüm kulüpleri yönetebilir
     return clubs.filter(c => 
       c.presidentId === currentUser?.id || 
       c.president?.name === currentUser?.name || 
@@ -16,16 +17,14 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
     );
   }, [clubs, currentUser]);
 
-  // 2. Stale State Düzeltmesi: overrideClubId veya managedClubs değiştiğinde selectedClubId güncellenir.
-  const [selectedClubId, setSelectedClubId] = useState(overrideClubId || (managedClubs.length > 0 ? managedClubs[0].id : null));
+  // 2. Stale State Düzeltmesi: managedClubs değiştiğinde selectedClubId güncellenir.
+  const [selectedClubId, setSelectedClubId] = useState(managedClubs.length > 0 ? managedClubs[0].id : null);
   
   useEffect(() => {
-    if (overrideClubId) {
-      setSelectedClubId(overrideClubId);
-    } else if (managedClubs.length > 0 && (!selectedClubId || !managedClubs.find(c => c.id === selectedClubId))) {
+    if (managedClubs.length > 0 && (!selectedClubId || !managedClubs.find(c => c.id === selectedClubId))) {
       setSelectedClubId(managedClubs[0].id);
     }
-  }, [overrideClubId, managedClubs, selectedClubId]);
+  }, [managedClubs, selectedClubId]);
 
   const [activeTab, setActiveTab] = useState('requests');
   
@@ -35,19 +34,19 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
   const [postLocation, setPostLocation] = useState('');
   const [postImage, setPostImage] = useState('');
 
+  const selectedClub = useMemo(() => {
+    return clubs.find(c => c.id === selectedClubId) || managedClubs[0];
+  }, [clubs, selectedClubId, managedClubs]);
+
   if (managedClubs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
         <Shield size={64} className="text-gray-200 mb-4" />
         <h2 className="text-xl font-bold text-gray-500">Yönetim Yetkiniz Bulunmuyor</h2>
-        <p className="text-sm text-gray-400 mt-2 text-center max-w-md">Herhangi bir kulübün başkanı veya yöneticisi değilsiniz. Kulüp kurmak için Kariyer Merkezi ile iletişime geçin.</p>
+        <p className="text-sm text-gray-500 mt-2 text-center max-w-md">Herhangi bir kulübün başkanı veya yöneticisi değilsiniz. Kulüp kurmak için Kariyer Merkezi ile iletişime geçin.</p>
       </div>
     );
   }
-
-  const selectedClub = useMemo(() => {
-    return clubs.find(c => c.id === selectedClubId) || managedClubs[0];
-  }, [clubs, selectedClubId, managedClubs]);
   
   // 1. Yetkilendirme Mantık Hatası Düzeltmesi (isPresident check)
   const isPresident = selectedClub.presidentId === currentUser?.id || selectedClub.president?.name === currentUser?.name;
@@ -168,7 +167,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
   return (
     <div className="animate-fade-in max-w-5xl mx-auto py-8">
       
-      <div className="mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute top-[-50%] right-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -203,7 +202,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="flex overflow-x-auto border-b border-gray-100 hide-scrollbar">
           <button onClick={() => setActiveTab('requests')} className={`whitespace-nowrap py-4 px-6 font-bold text-sm border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === 'requests' ? 'border-emerald-500 text-emerald-600 bg-emerald-50/50' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
             <Shield size={18}/> 
@@ -245,8 +244,8 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
               </div>
 
               {(!selectedClub.memberRequests || selectedClub.memberRequests.length === 0) ? (
-                <div className="text-center py-16 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
-                  <Shield size={48} className="text-gray-300 mx-auto mb-4" />
+                <div className="text-center py-16 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
+                  <Shield size={48} className="text-gray-400 mx-auto mb-4" />
                   <h4 className="text-gray-900 font-bold text-lg">Bekleyen İstek Yok</h4>
                   <p className="text-gray-500 text-sm mt-1">Şu anda kulübünüze katılım isteği bulunmuyor.</p>
                 </div>
@@ -259,7 +258,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
                           <h4 className="font-bold text-gray-900 text-base">{req.userName || req.name}</h4>
                           <p className="text-xs font-medium text-emerald-600 bg-emerald-50 inline-block px-2 py-1 rounded-md mt-1">{req.department}</p>
                         </div>
-                        <span className="text-[10px] text-gray-400 font-bold bg-gray-100 px-2 py-1 rounded-md">{new Date(req.date || Date.now()).toLocaleDateString('tr-TR')}</span>
+                        <span className="text-[10px] text-gray-500 font-bold bg-gray-100 px-2 py-1 rounded-md">{new Date(req.date || Date.now()).toLocaleDateString('tr-TR')}</span>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-xl mb-4 border border-gray-100">
                         <p className="text-sm text-gray-600 italic">"{req.motivation}"</p>
@@ -298,8 +297,8 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
               </div>
 
               {(!selectedClub.members || selectedClub.members.length === 0) ? (
-                <div className="text-center py-16 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
-                  <Users size={48} className="text-gray-300 mx-auto mb-4" />
+                <div className="text-center py-16 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
+                  <Users size={48} className="text-gray-400 mx-auto mb-4" />
                   <h4 className="text-gray-900 font-bold text-lg">Henüz onaylanmış üye bulunmuyor.</h4>
                 </div>
               ) : (
@@ -325,7 +324,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
                         {isPresident && !isMemberPresident && (
                           <button 
                             onClick={() => handleToggleAdmin(member.userId)}
-                            className={`p-2 rounded-xl transition-colors ${isMemberAdmin ? 'text-indigo-600 bg-indigo-100 hover:bg-indigo-200' : 'text-gray-400 bg-gray-100 hover:bg-gray-200 hover:text-gray-700'}`}
+                            className={`p-2 rounded-xl transition-colors ${isMemberAdmin ? 'text-indigo-600 bg-indigo-100 hover:bg-indigo-200' : 'text-gray-500 bg-gray-100 hover:bg-gray-200 hover:text-gray-700'}`}
                             title={isMemberAdmin ? "Yöneticilikten Al" : "Yönetici Yap"}
                           >
                             <Shield size={16} />
@@ -358,8 +357,8 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
               </div>
 
               {(!selectedClub.forms || selectedClub.forms.length === 0) ? (
-                <div className="text-center py-16 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
-                  <FileText size={48} className="text-gray-300 mx-auto mb-4" />
+                <div className="text-center py-16 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
+                  <FileText size={48} className="text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500 font-bold">Sisteme yüklenmiş herhangi bir belge bulunamadı.</p>
                 </div>
               ) : (
@@ -394,7 +393,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-6 border border-gray-200 rounded-3xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
+                <div className="p-6 border border-gray-200 rounded-xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
                   <div>
                     <h3 className="font-black text-gray-900 mb-2 group-hover:text-purple-600 text-lg">EK-2: Kurucu Üye Listesi</h3>
                     <p className="text-sm text-gray-500 mb-6 line-clamp-2">Kulübün kurucu yönetim kurulu ve denetleme kurulu üyelerini sisteme işleyin.</p>
@@ -402,7 +401,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
                   <button onClick={() => handleEKFormSubmit('EK-2 Kurucu Üye Listesi', 'EK-2 Formu dolduruldu ve sisteme kaydedildi.')} className="w-full py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 group-hover:bg-purple-50 group-hover:text-purple-700 group-hover:border-purple-200 transition-colors">Formu Doldur</button>
                 </div>
 
-                <div className="p-6 border border-gray-200 rounded-3xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
+                <div className="p-6 border border-gray-200 rounded-xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
                   <div>
                     <h3 className="font-black text-gray-900 mb-2 group-hover:text-purple-600 text-lg">EK-3: Faaliyet Planı</h3>
                     <p className="text-sm text-gray-500 mb-6 line-clamp-2">Eğitim-Öğretim yılı içinde gerçekleştirmeyi planladığınız seminer ve etkinlikleri planlayın.</p>
@@ -410,7 +409,7 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
                   <button onClick={() => handleEKFormSubmit('EK-3 Faaliyet Planı', 'EK-3 Yıllık Faaliyet planı başarıyla oluşturuldu ve onaya gönderildi.')} className="w-full py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 group-hover:bg-purple-50 group-hover:text-purple-700 group-hover:border-purple-200 transition-colors">Planı Oluştur</button>
                 </div>
 
-                <div className="p-6 border border-gray-200 rounded-3xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
+                <div className="p-6 border border-gray-200 rounded-xl bg-white hover:border-purple-300 hover:shadow-lg hover:shadow-purple-900/5 transition-all cursor-pointer group flex flex-col justify-between">
                   <div>
                     <h3 className="font-black text-gray-900 mb-2 group-hover:text-purple-600 text-lg">EK-4: Danışman Onay Formu</h3>
                     <p className="text-sm text-gray-500 mb-6 line-clamp-2">Akademik danışmanınızın resmi onay işlemlerini başlatın ve takip edin.</p>
@@ -418,12 +417,12 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
                   <button onClick={() => handleEKFormSubmit('EK-4 Danışman Onayı', 'EK-4 onayı için Akademik Danışmanınıza bildirim gönderildi.')} className="w-full py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 group-hover:bg-purple-50 group-hover:text-purple-700 group-hover:border-purple-200 transition-colors">Onay Talebi Gönder</button>
                 </div>
 
-                <div className="p-6 border border-gray-200 rounded-3xl bg-gray-50 flex flex-col justify-between opacity-60">
+                <div className="p-6 border border-gray-200 rounded-xl bg-gray-50 flex flex-col justify-between opacity-60">
                   <div>
                     <h3 className="font-black text-gray-900 mb-2 text-lg">EK-5 & EK-6</h3>
                     <p className="text-sm text-gray-500 mb-6 line-clamp-2">Genel kurul tutanakları ve yeni dönem seçim sonuçları. Sadece seçim döneminde aktif olur.</p>
                   </div>
-                  <button disabled className="w-full py-3 bg-gray-100 border border-gray-200 rounded-xl text-sm font-bold text-gray-400 cursor-not-allowed">Seçim Dönemi Dışı</button>
+                  <button disabled className="w-full py-3 bg-gray-100 border border-gray-200 rounded-xl text-sm font-bold text-gray-500 cursor-not-allowed">Seçim Dönemi Dışı</button>
                 </div>
               </div>
             </div>
@@ -436,9 +435,25 @@ export default function ClubAdminPanel({ currentUser, overrideClubId = null }) {
                 <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
                   <Megaphone size={20} />
                 </div>
-                <div>
-                  <h3 className="text-xl font-black text-gray-900">Gönderi Paylaş</h3>
-                  <p className="text-sm text-gray-500">Kulüp adına duyuru, etkinlik veya haber paylaşın.</p>
+                <div className="flex-1 flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-black text-gray-900">Gönderi Paylaş</h3>
+                    <p className="text-sm text-gray-500">Kulüp adına duyuru, etkinlik veya haber paylaşın.</p>
+                  </div>
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.toast && window.toast.info("AI Metin Oluşturuluyor...");
+                      setTimeout(() => {
+                        setPostTitle(prev => prev || 'Yeni Dönem Tanışma Toplantısı');
+                        setPostContent('Merhaba Değerli Üyelerimiz,\n\nYeni döneme harika bir başlangıç yapmak için bir araya geliyoruz! Bu toplantıda yıllık planlarımızı konuşacak, vizyonumuzu paylaşacak ve sürpriz etkinliklerimizi duyuracağız.\n\nHerkesi bekliyoruz!');
+                        setPostLocation('G Blok Konferans Salonu');
+                      }, 1000);
+                    }}
+                    className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg hover:bg-emerald-100 transition flex items-center gap-1.5 border border-emerald-200 shadow-sm"
+                  >
+                    <Check size={14} /> AI ile Oluştur
+                  </button>
                 </div>
               </div>
 

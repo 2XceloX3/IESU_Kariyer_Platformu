@@ -30,7 +30,7 @@ export default function CMSWorldMap() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="font-black text-gray-900 flex items-center gap-2">
-            <MapPin size={18} className="text-iesu-red" /> Dünyadaki Mezunlarımız
+            <MapPin size={18} className="text-[#0A2342]" /> Dünyadaki Mezunlarımız
           </h3>
           <p className="text-xs text-gray-500 mt-1">Mezunların bulundukları ülkelere göre coğrafi dağılımı</p>
         </div>

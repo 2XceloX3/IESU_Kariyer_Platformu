@@ -1,5 +1,6 @@
 import React from 'react';
-import { BarChart3, TrendingUp, Users, Eye, MousePointerClick, Briefcase, GraduationCap, Building2, Calendar, Target } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { BarChart3, TrendingUp, Users, Eye, MousePointerClick, Briefcase, GraduationCap, Building2, Calendar, Target, PhoneCall, MailCheck, CheckCircle2 } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
 import CMSWorldMap from './CMSWorldMap';
@@ -55,6 +56,13 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
     { month: 'Nis', value: 50 }, { month: 'May', value: 80 }, { month: 'Haz', value: 95 }
   ];
 
+  const checkupData = [
+    { name: 'Çalışıyor', value: 65 },
+    { name: 'Stajda', value: 15 },
+    { name: 'İş Arıyor', value: 20 }
+  ];
+  const COLORS = ['#10B981', '#3B82F6', '#F59E0B'];
+
   const StatProgress = ({ label, value, max, colorClass }) => (
     <div className="mb-4">
       <div className="flex justify-between items-end mb-1">
@@ -87,28 +95,88 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <TopInfoCard icon={<Eye size={20} />} title="İlan Görüntülenmesi" value="128K" color="purple" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* KARIYER CHECK-UP ANALITIKLERI */}
+      <div className="bg-indigo-50/50 rounded-2xl border border-indigo-100 shadow-sm p-6 mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="font-black text-indigo-900 flex items-center gap-2"><CheckCircle2 size={18} className="text-indigo-600"/> Kariyer Check-up & İletişim Havuzu</h3>
+            <p className="text-xs text-indigo-700/70 mt-1">Sistem üzerinden güncellenen veriler ve mezun istihdam durumları</p>
+          </div>
+        </div>
         
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-xl p-5 border border-indigo-50 shadow-sm flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center shrink-0">
+                <PhoneCall size={20}/>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-gray-800">Telefon Güncellemesi</h4>
+                <p className="text-xs text-gray-500">Havuzda biriken yeni veri</p>
+              </div>
+            </div>
+            <div className="text-3xl font-black text-green-600">42 <span className="text-sm font-bold text-gray-400">kişi</span></div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-5 border border-indigo-50 shadow-sm flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                <MailCheck size={20}/>
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-gray-800">E-posta Güncellemesi</h4>
+                <p className="text-xs text-gray-500">Havuzda biriken yeni veri</p>
+              </div>
+            </div>
+            <div className="text-3xl font-black text-blue-600">85 <span className="text-sm font-bold text-gray-400">kişi</span></div>
+          </div>
+
+          <div className="bg-white rounded-xl p-5 border border-indigo-50 shadow-sm flex flex-col items-center justify-center">
+            <h4 className="text-xs font-bold text-gray-500 w-full mb-2">İstihdam Dağılımı</h4>
+            <div className="h-32 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={checkupData} cx="50%" cy="50%" innerRadius={30} outerRadius={50} paddingAngle={2} dataKey="value">
+                    {checkupData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip wrapperStyle={{ fontSize: '12px' }} />
+                  <Legend wrapperStyle={{ fontSize: '10px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart Area */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-black text-gray-900 flex items-center gap-2"><TrendingUp size={18} className="text-red-500"/> Aylık Ziyaretçi Trendi</h3>
+              <h3 className="font-black text-gray-900 flex items-center gap-2"><TrendingUp size={18} className="text-[#0A66C2]"/> Aylık Ziyaretçi Trendi</h3>
               <p className="text-xs text-gray-500 mt-1">Son 6 aydaki tekil giriş sayısı (bin)</p>
             </div>
           </div>
           
-          <div className="h-64 flex items-end justify-between gap-2 px-2 pb-6 border-b border-gray-100">
-            {monthlyVisits.map((item, i) => (
-              <div key={i} className="flex flex-col items-center flex-1 group">
-                <div className="w-full max-w-[40px] bg-red-100 rounded-t-lg relative group-hover:bg-red-200 transition-colors" style={{ height: `${item.value}%` }}>
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold py-1 px-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    {item.value}k
-                  </div>
-                </div>
-                <span className="text-xs font-bold text-gray-400 mt-3">{item.month}</span>
-              </div>
-            ))}
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={monthlyVisits} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0A66C2" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#0A66C2" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
+                  itemStyle={{ color: '#0f172a', fontWeight: 'bold' }}
+                />
+                <Area type="monotone" dataKey="value" stroke="#0A66C2" strokeWidth={3} fillOpacity={1} fill="url(#colorVisits)" />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
@@ -150,7 +218,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-black text-gray-900">{job.clicks} <span className="text-[10px] text-gray-400 font-bold uppercase">Tık</span></div>
+                  <div className="text-sm font-black text-gray-900">{job.clicks} <span className="text-[10px] text-gray-500 font-bold uppercase">Tık</span></div>
                   <div className="text-xs font-bold text-emerald-600">{job.applications} Başvuru</div>
                 </div>
               </div>
@@ -177,7 +245,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-black text-gray-900">{comp.views}</div>
-                  <div className="text-[10px] font-bold text-gray-400 uppercase">Profil Görüntülenmesi</div>
+                  <div className="text-[10px] font-bold text-gray-500 uppercase">Profil Görüntülenmesi</div>
                 </div>
               </div>
             ))}

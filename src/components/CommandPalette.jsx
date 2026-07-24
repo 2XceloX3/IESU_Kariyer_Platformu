@@ -52,12 +52,12 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
 
   return (
     <div className="fixed inset-0 z-[9999] bg-gray-900/40 backdrop-blur-sm flex items-start justify-center pt-[15vh] p-4 font-sans animate-fade-in">
-      <div 
+      <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
         className="bg-white/90 backdrop-blur-xl w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200/50 overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center px-4 border-b border-gray-100">
-          <Search size={20} className="text-gray-400 mr-2" />
+          <Search size={20} className="text-gray-500 mr-2" />
           <input
             ref={inputRef}
             type="text"
@@ -75,9 +75,9 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
               <button
                 key={action.id}
                 onClick={() => handleAction(action.action)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-iesu-red/5 rounded-xl text-left group transition-all"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#0A2342]/5 rounded-xl text-left group transition-all"
               >
-                <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-white flex items-center justify-center text-gray-500 group-hover:text-iesu-red transition-colors shadow-sm">
+                <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-white flex items-center justify-center text-gray-500 group-hover:text-[#0A2342] transition-colors shadow-sm">
                   {action.icon}
                 </div>
                 <span className="font-semibold text-gray-700 group-hover:text-gray-900">{action.title}</span>
@@ -91,7 +91,7 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
           )}
         </div>
       </div>
-      <div className="absolute inset-0 -z-10" onClick={() => setIsOpen(false)}></div>
+      <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="absolute inset-0 -z-10" onClick={() => setIsOpen(false)}></div>
     </div>
   );
 }

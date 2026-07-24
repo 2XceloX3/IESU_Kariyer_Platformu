@@ -6,8 +6,10 @@ import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import useAppStore from '../store/useAppStore';
 
-export default function Register({ setView, setCurrentUser, setStudents, setAlumni, setAcademicStaff, setCompanies, setUserRole }) {
+export default function Register({ setView, setCurrentUser, setUserRole }) {
+  const { setStudents, setAlumni, setAcademicStaff, setCompanies } = useAppStore();
   const [step, setStep] = useState(1); // 1: Info, 2: Success
   const [accountType, setAccountType] = useState('student'); // 'student' or 'employer'
   const [error, setError] = useState(null);
@@ -41,13 +43,21 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
           return;
         }
 
-        // [FİREBASE AUTH] - Yeni Öğrenci Kullanıcısı Oluştur
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.studentEmail, formData.password);
-        const user = userCredential.user;
+        // [FİREBASE AUTH] - Yeni Öğrenci Kullanıcısı Oluştur (Hata durumunda lokal veriyle devam et)
+        let studentUid = `mock_stu_${Date.now()}`;
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, formData.studentEmail, formData.password);
+          studentUid = userCredential.user.uid;
+        } catch(authErr) {
+          console.warn("Firebase Auth bağlanamadı, lokal kayıt yapılıyor:", authErr.message);
+          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
+            throw authErr;
+          }
+        }
 
         // [FİREBASE FIRESTORE] - Kullanıcı Detaylarını Veritabanına Kaydet
         const newStudent = {
-          id: user.uid, // Firebase'in atadığı eşsiz UID
+          id: studentUid, // Eşsiz UID
           name: formData.studentName || 'Yeni Öğrenci',
           studentId: formData.studentId,
           email: formData.studentEmail,
@@ -56,7 +66,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
           grade: 'Aktif',
           status: 'Aktif',
           internshipStatus: 'Arıyor',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.studentName || 'Öğrenci')}&background=132A49&color=fff`,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.studentName || 'Öğrenci')}&background=0A2342&color=fff`,
           onboardingCompleted: false,
           createdAt: new Date().toISOString()
         };
@@ -68,7 +78,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
 
         // users koleksiyonuna uid ile kaydet (Firestore) - hata fırlatsa da uygulama devam etsin
         try {
-          await setDoc(doc(db, "users", user.uid), newStudent);
+          await setDoc(doc(db, "users", studentUid), newStudent);
         } catch(err) {
           console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
         }
@@ -80,12 +90,21 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
           setIsLoading(false);
           return;
         }
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-        const user = userCredential.user;
+        
+        let companyUid = `mock_cmp_${Date.now()}`;
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+          companyUid = userCredential.user.uid;
+        } catch(authErr) {
+          console.warn("Firebase Auth bağlanamadı, lokal firma kaydı yapılıyor:", authErr.message);
+          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
+            throw authErr;
+          }
+        }
 
         // [FİREBASE FIRESTORE] - Firma Detaylarını Veritabanına Kaydet
         const newCompany = {
-          id: user.uid,
+          id: companyUid,
           name: formData.companyName,
           username: formData.email,
           email: formData.email,
@@ -103,7 +122,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         if (setCompanies) setCompanies(prev => [...(prev || []), newCompany]);
 
         try {
-          await setDoc(doc(db, "users", user.uid), newCompany);
+          await setDoc(doc(db, "users", companyUid), newCompany);
         } catch(err) {
           console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
         }
@@ -118,12 +137,20 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         }
 
         // [FİREBASE AUTH] - Yeni Akademik Kullanıcı Oluştur
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.academicEmail, formData.password);
-        const user = userCredential.user;
+        let academicUid = `mock_acad_${Date.now()}`;
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, formData.academicEmail, formData.password);
+          academicUid = userCredential.user.uid;
+        } catch(authErr) {
+          console.warn("Firebase Auth bağlanamadı, lokal akademik kaydı yapılıyor:", authErr.message);
+          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
+            throw authErr;
+          }
+        }
 
         // [FİREBASE FIRESTORE] - Akademik Detayları Veritabanına Kaydet
         const newAcademic = {
-          id: user.uid,
+          id: academicUid,
           name: formData.academicName || 'Yeni Akademisyen',
           email: formData.academicEmail,
           title: formData.academicTitle || 'Akademisyen',
@@ -139,7 +166,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         if (setUserRole) setUserRole('academic');
 
         try {
-          await setDoc(doc(db, "users", user.uid), newAcademic);
+          await setDoc(doc(db, "users", academicUid), newAcademic);
         } catch(err) {
           console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
         }
@@ -154,12 +181,20 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         }
 
         // [FİREBASE AUTH] - Yeni Mezun Kullanıcı Oluştur
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.alumniEmail, formData.password);
-        const user = userCredential.user;
+        let alumniUid = `mock_alum_${Date.now()}`;
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, formData.alumniEmail, formData.password);
+          alumniUid = userCredential.user.uid;
+        } catch(authErr) {
+          console.warn("Firebase Auth bağlanamadı, lokal mezun kaydı yapılıyor:", authErr.message);
+          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
+            throw authErr;
+          }
+        }
 
         // [FİREBASE FIRESTORE] - Mezun Detayları
         const newAlumni = {
-          id: user.uid,
+          id: alumniUid,
           name: formData.alumniName || 'Yeni Mezun',
           studentId: formData.alumniId,
           email: formData.alumniEmail,
@@ -176,7 +211,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
         if (setUserRole) setUserRole('alumni');
 
         try {
-          await setDoc(doc(db, "users", user.uid), newAlumni);
+          await setDoc(doc(db, "users", alumniUid), newAlumni);
         } catch(err) {
           console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
         }
@@ -198,11 +233,11 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
     <div className="min-h-screen relative flex items-center justify-center font-sans overflow-hidden bg-gray-900 py-10">
       {/* Background */}
       <img 
-        src="https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg" 
+        src="https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/519cc07174684619b555d5bb4eecac4f_b54816bd1b5941a595a60eb469b5b4c7.jpg" 
         alt="Background" 
         className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105 animate-pulse-slow fixed"
       />
-      <div className="absolute inset-0 bg-gradient-to-tr from-iesu-red/80 via-gray-900/80 to-gray-900/90 mix-blend-multiply fixed"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-iesu-navy/80 via-gray-900/80 to-gray-900/90 mix-blend-multiply fixed"></div>
       
       <button 
         onClick={() => setView('login')} 
@@ -212,8 +247,8 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
       </button>
 
       <div className="relative z-10 w-full max-w-2xl p-4 sm:p-8">
-        <div className="bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-red via-iesu-coral to-iesu-red"></div>
+        <div className="bg-white/95 backdrop-blur-2xl rounded-xl shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-navy via-iesu-blue to-iesu-navy"></div>
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl font-bold animate-fade-in text-sm">
@@ -228,28 +263,28 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                   <button 
                     type="button"
                     onClick={() => setAccountType('student')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'student' ? 'bg-white text-iesu-red shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'student' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <GraduationCap size={18} /> Öğrenci Numarası ile Kayıt
                   </button>
                   <button 
                     type="button"
                     onClick={() => setAccountType('employer')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'employer' ? 'bg-white text-iesu-red shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'employer' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <Building2 size={18} /> Firma Kaydı
                   </button>
                   <button 
                     type="button"
                     onClick={() => setAccountType('academic')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'academic' ? 'bg-white text-iesu-red shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'academic' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <User size={18} /> Akademik Personel
                   </button>
                   <button 
                     type="button"
                     onClick={() => setAccountType('alumni')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'alumni' ? 'bg-white text-iesu-red shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'alumni' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <GraduationCap size={18} /> Mezun
                   </button>
@@ -267,47 +302,54 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Kurum Adı & Logo */}
                       <div className="relative col-span-1 sm:col-span-2">
-                        <Building2 className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="companyName" value={formData.companyName} onChange={handleChange} placeholder="Şirket / Kurum Adı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="companyName" className="sr-only">Şirket / Kurum Adı</label>
+                        <Building2 className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="companyName" type="text" name="companyName" value={formData.companyName} onChange={handleChange} placeholder="Şirket / Kurum Adı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       <div className="relative col-span-1 sm:col-span-2">
-                        <FileText className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="url" name="website" value={formData.website} onChange={handleChange} placeholder="Şirket Web Sayfası / İletişim URL" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="website" className="sr-only">Şirket Web Sayfası / İletişim URL</label>
+                        <FileText className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="website" type="url" name="website" value={formData.website} onChange={handleChange} placeholder="Şirket Web Sayfası / İletişim URL" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       {/* Yetkili Kişi & Unvan */}
                       <div className="relative">
-                        <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="contactName" value={formData.contactName} onChange={handleChange} placeholder="Yetkili Adı Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="contactName" className="sr-only">Yetkili Adı Soyadı</label>
+                        <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="contactName" type="text" name="contactName" value={formData.contactName} onChange={handleChange} placeholder="Yetkili Adı Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       <div className="relative">
-                        <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Firmadaki Görev Tanımı / Unvan" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="title" className="sr-only">Firmadaki Görev Tanımı / Unvan</label>
+                        <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="title" type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Firmadaki Görev Tanımı / Unvan" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       {/* İletişim */}
                       <div className="relative">
-                        <Mail className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Yetkili Kurumsal E-Posta" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="email" className="sr-only">Yetkili Kurumsal E-Posta</label>
+                        <Mail className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="email" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Yetkili Kurumsal E-Posta" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       <div className="relative">
-                        <Phone className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="tel" pattern="[0-9]{10,11}" name="phone" value={formData.phone} onChange={handleChange} placeholder="Yetkili Telefon Numarası (05XX...)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="phone" className="sr-only">Yetkili Telefon Numarası</label>
+                        <Phone className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="phone" type="tel" pattern="[0-9]{10,11}" name="phone" value={formData.phone} onChange={handleChange} placeholder="Yetkili Telefon Numarası (05XX...)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       <div className="relative col-span-1 sm:col-span-2">
-                        <Lock className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Şifre Belirleyin (En az 6 karakter)" minLength={6} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="emp_password" className="sr-only">Şifre Belirleyin</label>
+                        <Lock className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="emp_password" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Şifre Belirleyin (En az 6 karakter)" minLength={6} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       {/* Logo Yükleme */}
                       <div className="relative col-span-1 sm:col-span-2 mt-2">
-                        <label className="block text-[13px] font-bold text-gray-700 mb-2">Firma Logosu Yükle</label>
-                        <input type="file" accept="image/*" className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-iesu-red/10 file:text-iesu-red hover:file:bg-iesu-red/20 transition-all cursor-pointer border border-gray-200 rounded-xl bg-gray-50" />
+                        <label htmlFor="companyLogo" className="block text-[13px] font-bold text-gray-700 mb-2">Firma Logosu Yükle</label>
+                        <input id="companyLogo" type="file" accept="image/*" className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#0A2342]/10 file:text-[#0A2342] hover:file:bg-[#0A2342]/20 transition-all cursor-pointer border border-gray-200 rounded-xl bg-gray-50" />
                       </div>
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Firma Kayıt Talebini Gönder
                       </button>
@@ -324,33 +366,38 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                   <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="relative">
-                        <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="academicName" value={formData.academicName} onChange={handleChange} placeholder="Ad Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="academicName" className="sr-only">Ad Soyadı</label>
+                        <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="academicName" type="text" name="academicName" value={formData.academicName} onChange={handleChange} placeholder="Ad Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       
                       <div className="relative">
-                        <FileText className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="academicTitle" value={formData.academicTitle} onChange={handleChange} placeholder="Unvan (Prof. Dr., Doç. Dr., vb.)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="academicTitle" className="sr-only">Unvan</label>
+                        <FileText className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="academicTitle" type="text" name="academicTitle" value={formData.academicTitle} onChange={handleChange} placeholder="Unvan (Prof. Dr., Doç. Dr., vb.)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative">
-                        <Mail className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="email" name="academicEmail" value={formData.academicEmail} onChange={handleChange} placeholder="Kurumsal E-Posta Adresi (@esenyurt.edu.tr)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="academicEmail" className="sr-only">Kurumsal E-Posta Adresi</label>
+                        <Mail className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="academicEmail" type="email" name="academicEmail" value={formData.academicEmail} onChange={handleChange} placeholder="Kurumsal E-Posta Adresi (@esenyurt.edu.tr)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative mt-4">
-                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="password" name="password" minLength={6} value={formData.password} onChange={handleChange} placeholder="Yeni Şifre (En az 6 karakter)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="academicPassword" className="sr-only">Yeni Şifre</label>
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="academicPassword" type="password" name="password" minLength={6} value={formData.password} onChange={handleChange} placeholder="Yeni Şifre (En az 6 karakter)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative">
-                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="academicPasswordConfirm" className="sr-only">Yeni Şifre Tekrar</label>
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="academicPasswordConfirm" type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Akademik Hesabımı Aktifleştir
                       </button>
@@ -361,50 +408,57 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                 <>
                   <h2 className="text-2xl font-black text-gray-900 mb-2 text-center">Mezun İlk Giriş (Şifre Belirleme)</h2>
                   <p className="text-center text-sm text-gray-500 font-medium mb-8">
-                    Mezuniyet bilgilerinizle hesabınızı oluşturun ve IESU Kariyer Ağına katılın.
+                    Mezuniyet bilgilerinizle hesabınızı oluşturun ve Esenyurt Kariyer Ağına katılın.
                   </p>
 
                   <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="relative">
-                        <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="alumniName" value={formData.alumniName} onChange={handleChange} placeholder="Ad Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="alumniName" className="sr-only">Ad Soyadı</label>
+                        <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="alumniName" type="text" name="alumniName" value={formData.alumniName} onChange={handleChange} placeholder="Ad Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       
                       <div className="relative">
-                        <FileText className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="alumniId" pattern="[0-9]{9,11}" value={formData.alumniId} onChange={handleChange} placeholder="Öğrenci Numarası (Mezun olduğunuz)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="alumniId" className="sr-only">Öğrenci Numarası</label>
+                        <FileText className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="alumniId" type="text" name="alumniId" pattern="[0-9]{9,11}" value={formData.alumniId} onChange={handleChange} placeholder="Öğrenci Numarası (Mezun olduğunuz)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="relative">
-                          <MapPin className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                          <input type="text" name="alumniDepartment" value={formData.alumniDepartment} onChange={handleChange} placeholder="Mezun Olunan Bölüm" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                          <label htmlFor="alumniDepartment" className="sr-only">Mezun Olunan Bölüm</label>
+                          <MapPin className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                          <input id="alumniDepartment" type="text" name="alumniDepartment" value={formData.alumniDepartment} onChange={handleChange} placeholder="Mezun Olunan Bölüm" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                         </div>
                         <div className="relative">
-                          <GraduationCap className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                          <input type="text" name="graduationYear" value={formData.graduationYear} onChange={handleChange} placeholder="Mezuniyet Yılı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                          <label htmlFor="graduationYear" className="sr-only">Mezuniyet Yılı</label>
+                          <GraduationCap className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                          <input id="graduationYear" type="text" name="graduationYear" value={formData.graduationYear} onChange={handleChange} placeholder="Mezuniyet Yılı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                         </div>
                       </div>
 
                       <div className="relative">
-                        <Mail className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="email" name="alumniEmail" value={formData.alumniEmail} onChange={handleChange} placeholder="E-Posta Adresi" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="alumniEmail" className="sr-only">E-Posta Adresi</label>
+                        <Mail className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="alumniEmail" type="email" name="alumniEmail" value={formData.alumniEmail} onChange={handleChange} placeholder="E-Posta Adresi" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative mt-4">
-                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="password" name="password" minLength={6} value={formData.password} onChange={handleChange} placeholder="Yeni Şifre (En az 6 karakter)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="alumniPassword" className="sr-only">Yeni Şifre</label>
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="alumniPassword" type="password" name="password" minLength={6} value={formData.password} onChange={handleChange} placeholder="Yeni Şifre (En az 6 karakter)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative">
-                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="alumniPasswordConfirm" className="sr-only">Yeni Şifre Tekrar</label>
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="alumniPasswordConfirm" type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Mezun Hesabımı Aktifleştir
                       </button>
@@ -421,33 +475,38 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
                   <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 gap-4">
                       <div className="relative">
-                        <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="studentName" value={formData.studentName} onChange={handleChange} placeholder="Ad Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="studentName" className="sr-only">Ad Soyadı</label>
+                        <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="studentName" type="text" name="studentName" value={formData.studentName} onChange={handleChange} placeholder="Ad Soyadı" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                       
                       <div className="relative">
-                        <FileText className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="text" name="studentId" pattern="[0-9]{9,11}" value={formData.studentId} onChange={handleChange} placeholder="Öğrenci Numarası (9-11 hane)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="studentId" className="sr-only">Öğrenci Numarası</label>
+                        <FileText className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="studentId" type="text" name="studentId" pattern="[0-9]{9,11}" value={formData.studentId} onChange={handleChange} placeholder="Öğrenci Numarası (9-11 hane)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative">
-                        <Mail className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="email" name="studentEmail" value={formData.studentEmail} onChange={handleChange} placeholder="E-Posta Adresi" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="studentEmail" className="sr-only">E-Posta Adresi</label>
+                        <Mail className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="studentEmail" type="email" name="studentEmail" value={formData.studentEmail} onChange={handleChange} placeholder="E-Posta Adresi" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative mt-4">
-                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="password" name="password" minLength={6} value={formData.password} onChange={handleChange} placeholder="Yeni Şifre (En az 6 karakter)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="studentPassword" className="sr-only">Yeni Şifre</label>
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="studentPassword" type="password" name="password" minLength={6} value={formData.password} onChange={handleChange} placeholder="Yeni Şifre (En az 6 karakter)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       <div className="relative">
-                        <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                        <input type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 outline-none text-[14px]" required />
+                        <label htmlFor="studentPasswordConfirm" className="sr-only">Yeni Şifre Tekrar</label>
+                        <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="studentPasswordConfirm" type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Öğrenci Hesabımı Oluştur
                       </button>
@@ -462,7 +521,7 @@ export default function Register({ setView, setCurrentUser, setStudents, setAlum
               <h2 className="text-2xl font-black text-gray-900 mb-2">İşlem Başarılı!</h2>
               <p className="text-gray-500 font-medium mb-8">
                 {accountType === 'employer' 
-                  ? "Firma kayıt talebiniz Kariyer Geliştirme Ofisine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
+                  ? "Firma kayıt talebiniz Kariyer Geliştirme Merkezine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
                   : accountType === 'academic'
                   ? "Akademik hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık kurumsal e-postanız ve şifrenizle giriş yapabilirsiniz."
                   : accountType === 'alumni'

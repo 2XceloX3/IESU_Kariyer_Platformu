@@ -28,7 +28,7 @@ export default function ForgotPassword({ setView }) {
         alt="Background" 
         className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105 animate-pulse-slow"
       />
-      <div className="absolute inset-0 bg-gradient-to-tr from-iesu-red/80 via-gray-900/80 to-gray-900/90 mix-blend-multiply"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-iesu-navy/80 via-gray-900/80 to-gray-900/90 mix-blend-multiply"></div>
       
       <button 
         onClick={() => setView('login')} 
@@ -38,10 +38,10 @@ export default function ForgotPassword({ setView }) {
       </button>
 
       <div className="relative z-10 w-full max-w-md p-4 sm:p-8">
-        <div className="bg-white/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-red via-iesu-coral to-iesu-red"></div>
+        <div className="bg-white/95 backdrop-blur-2xl rounded-xl shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-navy via-iesu-blue to-iesu-navy"></div>
 
-          <div className="flex justify-center mb-6 text-iesu-red">
+          <div className="flex justify-center mb-6 text-[#0A2342]">
             {step === 4 ? <CheckCircle2 size={56} className="text-green-500" /> : <KeyRound size={56} />}
           </div>
 
@@ -61,11 +61,11 @@ export default function ForgotPassword({ setView }) {
           <form className="space-y-5" onSubmit={handleSubmit}>
             {step === 1 && (
               <div className="relative">
-                <User className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
                 <input 
                   type="email" 
                   placeholder="Sistemde Kayıtlı E-Posta Adresiniz" 
-                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 focus:border-iesu-coral outline-none transition text-[14px] font-medium" 
+                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium" 
                   required
                 />
               </div>
@@ -73,11 +73,11 @@ export default function ForgotPassword({ setView }) {
 
             {step === 2 && (
               <div className="relative">
-                <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
                 <input 
                   type="text" 
                   placeholder="E-Posta Onay Kodu (Örn: 123456)" 
-                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 focus:border-iesu-coral outline-none transition text-[14px] font-medium tracking-widest text-center" 
+                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium tracking-widest text-center" 
                   required
                 />
               </div>
@@ -86,20 +86,20 @@ export default function ForgotPassword({ setView }) {
             {step === 3 && (
               <>
                 <div className="relative">
-                  <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                  <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
                   <input 
                     type="password" 
                     placeholder="Yeni Şifreniz" 
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 focus:border-iesu-coral outline-none transition text-[14px] font-medium" 
+                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium" 
                     required
                   />
                 </div>
                 <div className="relative">
-                  <KeyRound className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                  <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
                   <input 
                     type="password" 
                     placeholder="Yeni Şifreniz (Tekrar)" 
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-coral/30 focus:border-iesu-coral outline-none transition text-[14px] font-medium" 
+                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium" 
                     required
                   />
                 </div>
@@ -109,7 +109,7 @@ export default function ForgotPassword({ setView }) {
             {step < 4 ? (
               <button 
                 type="submit" 
-                className="w-full flex items-center justify-center bg-iesu-red text-white font-bold py-3.5 px-4 rounded-xl hover:bg-iesu-darkRed transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2"
+                className="w-full flex items-center justify-center bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#0A2342] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2"
               >
                 {step === 1 ? "Devam Et" : step === 2 ? "Doğrula" : "Şifreyi Kaydet"}
               </button>

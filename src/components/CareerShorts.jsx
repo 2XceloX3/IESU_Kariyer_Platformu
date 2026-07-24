@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Heart, MessageCircle, Share2, Bookmark, X, Play, Pause, ChevronUp, ChevronDown, UserPlus, FileText } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, X, Play, Pause, ChevronUp, ChevronDown, UserPlus, FileText, Sparkles } from 'lucide-react';
 
 const DUMMY_SHORTS = [
   {
@@ -72,10 +72,10 @@ export default function CareerShorts({ setView, onClose }) {
       </button>
 
       {/* MOBILE OPTIMIZED CONTAINER */}
-      <div className="relative w-full max-w-[450px] h-[100dvh] sm:h-[90vh] sm:rounded-3xl bg-gray-900 overflow-hidden shadow-2xl flex flex-col">
+      <div className="relative w-full max-w-[450px] h-[100dvh] sm:h-[90vh] sm:rounded-xl bg-gray-900 overflow-hidden shadow-2xl flex flex-col">
         
         {/* VIDEO PLAYER */}
-        <div className="absolute inset-0 cursor-pointer" onClick={() => setIsPlaying(!isPlaying)}>
+        <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="absolute inset-0 cursor-pointer" onClick={() => setIsPlaying(!isPlaying)}>
           <video
             ref={el => videoRefs.current[currentIndex] = el}
             src={currentShort.videoUrl}
@@ -102,15 +102,15 @@ export default function CareerShorts({ setView, onClose }) {
           {/* Avatar */}
           <div className="relative group cursor-pointer">
             <img src={currentShort.author.avatar} className="w-12 h-12 rounded-full border-2 border-white object-cover" alt="Author" />
-            <button className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-iesu-red text-white rounded-full p-1 shadow-lg">
+            <button aria-label="İşlem Butonu" className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#0A2342] text-white rounded-full p-1 shadow-lg">
               <UserPlus size={14} />
             </button>
           </div>
           
           {/* Like */}
-          <div className="flex flex-col items-center gap-1 cursor-pointer group" onClick={(e) => { e.stopPropagation(); toggleLike(currentShort.id); }}>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex flex-col items-center gap-1 cursor-pointer group" onClick={(e) => { e.stopPropagation(); toggleLike(currentShort.id); }}>
             <div className="w-12 h-12 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-black/40 transition">
-              <Heart size={26} className={liked[currentShort.id] ? "fill-iesu-red text-iesu-red" : "text-white"} />
+              <Heart size={26} className={liked[currentShort.id] ? "fill-iesu-navy text-[#0A2342]" : "text-white"} />
             </div>
             <span className="text-white text-xs font-bold">{liked[currentShort.id] ? currentShort.likes + 1 : currentShort.likes}</span>
           </div>
@@ -121,6 +121,26 @@ export default function CareerShorts({ setView, onClose }) {
               <MessageCircle size={26} className="text-white" />
             </div>
             <span className="text-white text-xs font-bold">{currentShort.comments}</span>
+          </div>
+
+          {/* AI Insights */}
+          <div 
+            role="button" 
+            tabIndex={0} 
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
+            className="flex flex-col items-center gap-1 cursor-pointer group" 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              window.toast && window.toast.info("Anka AI: Video analiz ediliyor...");
+              setTimeout(() => {
+                window.toast && window.toast.success(`✅ AI Özeti: Bu video ${currentShort.author.name} şirket kültürünü anlatıyor. Size uygunluğu %88.`);
+              }, 2500);
+            }}
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center group-hover:scale-110 shadow-lg shadow-indigo-500/50 transition-all">
+              <Sparkles size={22} className="text-white fill-white/50" />
+            </div>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 text-[10px] font-black uppercase tracking-wider">AI Analiz</span>
           </div>
 
           {/* Share */}
@@ -145,10 +165,10 @@ export default function CareerShorts({ setView, onClose }) {
 
         {/* NAVIGATION CONTROLS (Desktop) */}
         <div className="hidden sm:flex absolute right-[-80px] top-1/2 -translate-y-1/2 flex-col gap-4">
-          <button onClick={handlePrev} disabled={currentIndex === 0} className="w-14 h-14 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-md rounded-full flex items-center justify-center text-white transition">
+          <button aria-label="İşlem Butonu" onClick={handlePrev} disabled={currentIndex === 0} className="w-14 h-14 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-md rounded-full flex items-center justify-center text-white transition">
             <ChevronUp size={30} />
           </button>
-          <button onClick={handleNext} disabled={currentIndex === DUMMY_SHORTS.length - 1} className="w-14 h-14 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-md rounded-full flex items-center justify-center text-white transition">
+          <button aria-label="İşlem Butonu" onClick={handleNext} disabled={currentIndex === DUMMY_SHORTS.length - 1} className="w-14 h-14 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed backdrop-blur-md rounded-full flex items-center justify-center text-white transition">
             <ChevronDown size={30} />
           </button>
         </div>

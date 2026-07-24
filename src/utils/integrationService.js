@@ -2,7 +2,7 @@
 // Prepared for real REST API integration
 
 // Proxy to internal backend to avoid exposing external API keys
-const API_BASE_URL = process.env.REACT_APP_INTERNAL_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_INTERNAL_API_URL || '/api';
 
 /**
  * Fetches student data from the university's OBS system via internal proxy.

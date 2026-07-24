@@ -30,7 +30,7 @@ export default function AttachmentUploader({ fileData, fileName, onFileChange, l
   return (
     <div className="space-y-2">
       <label className="text-xs font-bold text-gray-600 block">{label}</label>
-      <div 
+      <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
         onClick={() => !fileData && fileInputRef.current?.click()}
         className={`relative flex items-center justify-between w-full border-2 border-dashed rounded-xl p-4 transition group
           ${fileData ? 'border-red-500 bg-red-50 cursor-default' : 'border-gray-200 cursor-pointer hover:border-red-400 hover:bg-red-50/50'}
@@ -61,7 +61,7 @@ export default function AttachmentUploader({ fileData, fileName, onFileChange, l
             </div>
             <div>
               <p className="text-sm font-bold text-gray-700 group-hover:text-red-600 transition">Tıkla veya Sürükle</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">PDF, DOC, DOCX • Max 5MB</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">PDF, DOC, DOCX • Max 5MB</p>
             </div>
           </div>
         )}

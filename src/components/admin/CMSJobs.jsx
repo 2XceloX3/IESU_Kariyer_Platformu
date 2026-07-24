@@ -107,15 +107,15 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Briefcase size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Toplam İlan</p><p className="text-2xl font-black text-gray-900">{(jobs || []).length}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam İlan</p><p className="text-2xl font-black text-gray-900">{(jobs || []).length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Aktif İlanlar</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Aktif İlanlar</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center"><Edit size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Onay Bekleyen (Havuz)</p><p className="text-2xl font-black text-gray-900">{pendingCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Onay Bekleyen (Havuz)</p><p className="text-2xl font-black text-gray-900">{pendingCount}</p></div>
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
       {/* FILTERS */}
       <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
           <input 
             type="text" placeholder="İlan başlığı veya firma ara..." 
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
@@ -138,7 +138,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
             <option value="taslak">Taslak</option>
             <option value="kapalı">Kapalı</option>
           </select>
-          <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mb-4"><Briefcase size={32}/></div>
+            <div className="w-16 h-16 bg-gray-50 text-gray-500 rounded-full flex items-center justify-center mb-4"><Briefcase size={32}/></div>
             <h3 className="text-lg font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
             <p className="text-sm text-gray-500">Arama kriterlerine uygun iş ilanı bulunmuyor.</p>
           </div>
@@ -154,11 +154,11 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">İlan / Firma</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Çalışma Türü</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Konum</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Durum</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">İşlemler</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">İlan / Firma</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Çalışma Türü</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Konum</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -172,7 +172,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 overflow-hidden shrink-0 flex items-center justify-center">
-                            {j.logo ? <img src={j.logo} className="w-full h-full object-cover" /> : <Building2 size={18} className="text-gray-400"/>}
+                            {j.logo ? <img src={j.logo} className="w-full h-full object-cover" /> : <Building2 size={18} className="text-gray-500"/>}
                           </div>
                           <div>
                             <p className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{j.title}</p>
@@ -200,11 +200,11 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                       </td>
                       <td className="py-3 px-5 text-right">
                         <div className="flex justify-end gap-1">
-                          <button onClick={(e) => { e.stopPropagation(); setExpandedJobId(isExpanded ? null : j.id); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Başvuruları Gör">
+                          <button onClick={(e) => { e.stopPropagation(); setExpandedJobId(isExpanded ? null : j.id); }} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Başvuruları Gör">
                             {isExpanded ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
                           </button>
-                          <button onClick={(e) => { e.stopPropagation(); handleEdit(j); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition tooltip" title="Düzenle"><Edit size={16}/></button>
-                          <button onClick={(e) => { e.stopPropagation(); handleDelete(j.id); }} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition tooltip" title="Sil"><Trash2 size={16}/></button>
+                          <button onClick={(e) => { e.stopPropagation(); handleEdit(j); }} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition tooltip" title="Düzenle"><Edit size={16}/></button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(j.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition tooltip" title="Sil"><Trash2 size={16}/></button>
                         </div>
                       </td>
                     </tr>
@@ -224,7 +224,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                             </div>
                             
                             {jobApplications.length === 0 ? (
-                              <div className="text-center py-8 text-gray-400 text-sm font-medium">Henüz bu ilana başvuru yapılmamış.</div>
+                              <div className="text-center py-8 text-gray-500 text-sm font-medium">Henüz bu ilana başvuru yapılmamış.</div>
                             ) : (
                               <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                                 <table className="w-full text-left text-sm">
@@ -362,13 +362,13 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
   );
 
   const previewView = (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
       <div className="p-5 border-b border-gray-50 flex items-start gap-4">
         <div className="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
           {form.logo ? (
             <img src={form.logo} alt="Logo" className="w-full h-full object-cover" />
           ) : (
-            <Building2 size={20} className="text-gray-300" />
+            <Building2 size={20} className="text-gray-400" />
           )}
         </div>
         <div className="flex-1">
@@ -391,7 +391,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
         </div>
 
         <div className="mb-4">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">İlan Açıklaması</p>
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">İlan Açıklaması</p>
           <p className="text-[12px] font-medium text-gray-600 line-clamp-3">
             {form.description || 'İş tanımı ve aranan özellikler burada görünecektir.'}
           </p>
@@ -422,13 +422,13 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
             )}
           </div>
           <div>
-            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Ofisi <CheckCircle2 size={12} className="text-emerald-500" /></p>
-            <p className="text-[10px] text-gray-400">Az önce • İlan Paylaşımı</p>
+            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>
+            <p className="text-[10px] text-gray-500">Az önce • İlan Paylaşımı</p>
           </div>
         </div>
         <p className="text-[12px] font-bold text-gray-800 mb-1">{form.title}</p>
         <p className="text-[11px] text-gray-500 line-clamp-2">{form.description || ''}</p>
-        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
+        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-500">
           <span>📍 {form.location || '...'}</span>
           <span>💼 {form.type || '...'}</span>
         </div>

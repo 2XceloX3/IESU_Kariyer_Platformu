@@ -1,0 +1,14 @@
+{
+  "internalRoutes": [
+    { "path": "/sksdb/yemekhane", "view": "sksdb_lunch", "label": "Yemekhane Menüsü" },
+    { "path": "/sksdb/kuluplar", "view": "sksdb_clubs", "label": "Öğrenci Kulüpleri" },
+    { "path": "/bidb/durum", "view": "bidb_status", "label": "Bilişim Sistem Durumu" },
+    { "path": "/bidb/destek", "view": "bidb_helpdesk", "label": "Teknik Destek (Helpdesk)" },
+    { "path": "/kariyer/ilanlar", "view": "kariyer_board", "label": "Staj ve İş İlanları" }
+  ],
+  "externalPortals": [
+    { "name": "OBİS", "url": "https://obis.gelisim.edu.tr", "tooltip": "Bu işlem sizi resmi OBİS öğrenci bilgi sistemine yönlendirecektir." },
+    { "name": "E-Devlet Kapısı", "url": "https://www.turkiye.gov.tr", "tooltip": "Bu işlem sizi e-Devlet Kapısı resmi portalına yönlendirecektir." },
+    { "name": "YÖK-SİS", "url": "https://yoksis.yok.gov.tr", "tooltip": "Bu işlem sizi YÖK-SİS sistemine yönlendirecektir." }
+  ]
+}

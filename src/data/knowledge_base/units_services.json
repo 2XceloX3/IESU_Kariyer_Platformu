@@ -1,0 +1,29 @@
+{
+  "sksdb": {
+    "lunchMenu": {
+      "date": "21 Temmuz 2026",
+      "mainCourse": "Mercimek Çorbası & Izgara Köfte",
+      "sideCourse": "Pirinç Pilavı",
+      "dessert": "Kemalpaşa Tatlısı & Ayran",
+      "calories": 850,
+      "price": "25.00 ₺",
+      "rating": 4.8
+    },
+    "clubsCount": 42,
+    "sportsFacilities": ["Kapalı Spor Salonu", "Fitness Merkezi", "Tenis Kortu", "Yüzme Havuzu"]
+  },
+  "bidb": {
+    "status": {
+      "wifi": "Aktif (%99.8)",
+      "ibis_obis": "Aktif",
+      "lms": "Aktif",
+      "email": "Aktif"
+    },
+    "helpdeskEmail": "bidb@gelisim.edu.tr"
+  },
+  "kariyer": {
+    "activeJobs": 128,
+    "partnerCompanies": 450,
+    "mentorshipProgram": "Aktif"
+  }
+}

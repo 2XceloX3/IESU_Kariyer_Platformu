@@ -1,29 +1,74 @@
-import React, { useState, useEffect, useRef } from 'react';
+import useAppStore from '../store/useAppStore';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 
 const EMOJI_LIST = [
-  '😀','😂','🥰','😎','🤔','👍','🙌','❤️','🔥','🎉','✨','👏','🚀','💡',
-  '🎓','💼','📊','📈','🤝','✅','❌','👀','🧑‍🎓','👨‍💻','🏆','🎯','💯','📝','🔔',
-  '🏢','🖥️','💻','📱','📚','🧠','💪','🌟','✈️','🌍','🗣️','🗣️','🙌','👋'
+  '😊','😂','🥰','😎','🤔','😅','😭','❤️','✨','🔥','👍','🎉','🙌','👏',
+  '🤩','😇','😋','😜','🤫','😏','🙄','😬','😴','😷','🤒','🤢','🤯','🥳',
+  '😎','🤓','🧐','🤠','😈','👻','👽','🤖','🎃','🌟','💫','⭐','🎈','🧨',
+  '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸',
+  '🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🐣','🐥','🦆','🦅','🦉',
+  '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🍈','🍒','🍑','🥭','🍍',
+  '⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🪀','🏓','🏸','🏒',
+  '🚗','🚕','🚙','🚌','🚎','🏎','🚓','🚑','🚒','🚐','🚚','🚛','🚜','🦯'
 ];
 
-export default function MessagingInterface({ previousView, messages = [], setMessages, currentUser, userRole, contacts = [], groups = [], setGroups, setView, setSelectedUserId, selectedGroupId, isOverlay = false }) {
-  // messages format: { id, senderId, senderName, senderAvatar, receiverId, receiverName, content, timestamp, read, type: 'text'|'image'|'video'|'view_once', mediaUrl }
+// SNAPCHAT FILTERS
+const CAMERA_FILTERS = [
+  { id: 'normal', name: 'Normal', filter: 'none' },
+  { id: 'grayscale', name: 'Siyah Beyaz', filter: 'grayscale(100%)' },
+  { id: 'sepia', name: 'Sepya', filter: 'sepia(100%)' },
+  { id: 'invert', name: 'Ters Renk', filter: 'invert(100%)' },
+  { id: 'hue', name: 'Neon', filter: 'hue-rotate(90deg)' },
+  { id: 'blur', name: 'Bulanık', filter: 'blur(2px)' },
+  { id: 'contrast', name: 'Drama', filter: 'contrast(150%) brightness(90%)' }
+];
+
+export default function MessagingInterface({ previousView, currentUser, userRole, setView, setSelectedUserId, selectedUserId, selectedGroupId, isOverlay = false }) {
+  const messages = useAppStore(state => state.messages);
+  const setMessages = useAppStore(state => state.setMessages);
   
-  const [activeContactId, setActiveContactId] = useState(selectedGroupId || null);
+  const groups = useAppStore(state => state.groups);
+  const setGroups = useAppStore(state => state.setGroups);
+  const students = useAppStore(state => state.students);
+  const alumni = useAppStore(state => state.alumni);
+  const companies = useAppStore(state => state.companies);
+  const academicStaff = useAppStore(state => state.academicStaff);
+
+  const contacts = useMemo(() => {
+    return [
+      ...(students || []),
+      ...(alumni || []),
+      ...(companies || []),
+      ...(academicStaff || [])
+    ];
+  }, [students, alumni, companies, academicStaff]);
+
+  const [activeContactId, setActiveContactId] = useState(selectedUserId || selectedGroupId || null);
   const [currentTab, setCurrentTab] = useState('chats'); // 'updates', 'calls', 'communities', 'chats', 'profile'
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [chatFilter, setChatFilter] = useState('all'); // 'all', 'unread', 'favorites', 'groups'
+  const [chatFilter, setChatFilter] = useState('all'); 
   const [showAllContacts, setShowAllContacts] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
   const [viewedOnceMsgs, setViewedOnceMsgs] = useState([]);
   const [activeMessageOptions, setActiveMessageOptions] = useState(null);
   const [pendingMediaType, setPendingMediaType] = useState(null);
+  const [messageReactions, setMessageReactions] = useState({});
+
+  const handleToggleReaction = (msgId, emoji) => {
+    setMessageReactions(prev => {
+      const current = prev[msgId] || [];
+      if (current.includes(emoji)) {
+        return { ...prev, [msgId]: current.filter(e => e !== emoji) };
+      }
+      return { ...prev, [msgId]: [...current, emoji] };
+    });
+  };
 
   // Group Creation states
   const [showNewGroupModal, setShowNewGroupModal] = useState(false);
@@ -31,10 +76,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [newGroupSelectedContacts, setNewGroupSelectedContacts] = useState([]);
   
   // Call states
-  const [callStatus, setCallStatus] = useState(null); // 'calling', 'connected'
-  const [callType, setCallType] = useState(null); // 'audio', 'video'
+  const [callStatus, setCallStatus] = useState(null);
+  const [callType, setCallType] = useState(null);
   const [callTimer, setCallTimer] = useState(0);
-  const [callFilter, setCallFilter] = useState('all'); // 'all', 'missed'
+  const [callFilter, setCallFilter] = useState('all');
   const [showNewCallModal, setShowNewCallModal] = useState(false);
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
   const [callHistory, setCallHistory] = useState([
@@ -48,29 +93,26 @@ export default function MessagingInterface({ previousView, messages = [], setMes
   const [cameraShareOption, setCameraShareOption] = useState('keep'); // 'keep', 'replay', 'once'
   const [isRecording, setIsRecording] = useState(false);
   const [viewReplayMsgs, setViewReplayMsgs] = useState({});
+  const [cameraFilter, setCameraFilter] = useState(CAMERA_FILTERS[0]);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunks = useRef([]);
-
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Scroll to bottom of chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, activeContactId]);
 
-  // New Messaging Features States
-  const [replyingTo, setReplyingTo] = useState(null); // ID of the message being replied to
-  const [lightboxMedia, setLightboxMedia] = useState(null); // URL of media to show full screen
-  const [isTyping, setIsTyping] = useState(false); // Mock typing indicator
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [lightboxMedia, setLightboxMedia] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
   const [voiceTimer, setVoiceTimer] = useState(0);
 
-  // Mock typing when switching chats
   useEffect(() => {
     if (activeContactId && currentTab === 'chats') {
       setIsTyping(true);
@@ -79,7 +121,6 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     }
   }, [activeContactId, currentTab]);
 
-  // Voice recording timer
   useEffect(() => {
     let t;
     if (isRecordingVoice) {
@@ -96,11 +137,8 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     return `${m}:${s}`;
   };
 
-  // Apply 2x2 Messaging Matrix Rules
   const allowedContacts = contacts.filter(c => {
-    if (userRole === 'admin') return true; // Admin can message anyone
-    
-    // Identify contact roles by their data signature
+    if (userRole === 'admin') return true;
     const isContactCompany = !!c.sector;
     const isContactAcademic = !!c.title;
     const isContactAlumni = !!c.gradYear;
@@ -118,1076 +156,578 @@ export default function MessagingInterface({ previousView, messages = [], setMes
     return false;
   });
 
-  // Extract unique contacts from messages and merge with available contacts
-  const getConversations = () => {
-    const convos = new Map();
-    
-    // Add existing contacts from directory (if provided and allowed)
-    allowedContacts.forEach(c => {
-      convos.set(c.id, {
-        id: c.id,
-        name: c.name,
-        avatar: c.avatar || '',
-        role: c.role || 'Kullanıcı',
-        isGroup: false,
-        lastMessage: null,
-        unreadCount: 0,
-        timestamp: 0
-      });
-    });
+  const activeContact = useMemo(() => {
+    if (!activeContactId) return null;
+    let found = allowedContacts.find(c => c.id === activeContactId);
+    if (found) return found;
+    return groups.find(g => g.id === activeContactId);
+  }, [activeContactId, allowedContacts, groups]);
 
-    // Add groups
-    (groups || []).forEach(g => {
-      convos.set(g.id, {
-        id: g.id,
-        name: g.name,
-        avatar: g.logo || '',
-        role: 'Topluluk',
-        isGroup: true,
-        lastMessage: null,
-        unreadCount: 0,
-        timestamp: 0
-      });
-    });
-
-    // Process messages to find recent chats
-    messages.forEach(msg => {
-      const isSender = msg.senderId === currentUser?.id;
-      const isReceiver = msg.receiverId === currentUser?.id;
-      const isGroupMsg = msg.receiverId && msg.receiverId.startsWith('GRP-');
-      
-      let otherId;
-      if (isGroupMsg) {
-        otherId = msg.receiverId;
-      } else {
-        if (!isSender && !isReceiver) return; // Not our message
-        otherId = isSender ? msg.receiverId : msg.senderId;
-      }
-      
-      const existing = convos.get(otherId);
-      if (!existing && !isGroupMsg) {
-        // Find real contact
-        const realContact = allowedContacts.find(c => c.id === otherId);
-        if(realContact) {
-           convos.set(otherId, {
-            id: otherId,
-            name: realContact.name,
-            avatar: realContact.avatar || realContact.logo || '',
-            role: realContact.department ? 'Öğrenci' : realContact.sector ? 'Firma' : realContact.gradYear ? 'Mezun' : 'Akademik',
-            isGroup: false,
-            unreadCount: 0,
-            timestamp: 0
-          });
-        }
-      }
-
-      const updated = convos.get(otherId);
-      if (updated) {
-        if (!updated.timestamp || msg.timestamp > updated.timestamp) {
-          updated.lastMessage = msg.type === 'image' ? '📷 Fotoğraf' : msg.type === 'video' ? '🎥 Video' : msg.content;
-          updated.timestamp = msg.timestamp;
-        }
-        if ((isReceiver || (isGroupMsg && !isSender)) && !msg?.read) {
-          updated.unreadCount += 1;
-        }
-        convos.set(otherId, updated);
-      }
-    });
-
-    return Array.from(convos.values())
-      .filter(c => showAllContacts || c.lastMessage || c.isGroup || (searchQuery && c.name.toLowerCase().includes(searchQuery.toLowerCase()))) // Show all if toggled or searched
-      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-  };
-
-  const conversations = getConversations().filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const activeContact = conversations.find(c => c.id === activeContactId) || null;
-
-  const currentChatMessages = (messages || [])
-    .filter(msg => {
-      const isGroupChat = activeContactId && String(activeContactId).toLowerCase().startsWith('grp');
-      if (isGroupChat) {
-        return msg.receiverId === activeContactId;
-      } else {
-        return (msg.senderId === currentUser?.id && msg.receiverId === activeContactId) ||
-               (msg.receiverId === currentUser?.id && msg.senderId === activeContactId);
-      }
-    })
-    .sort((a, b) => (a.timestamp || 0) - (a.timestamp || 0));
-
-  // Mark as read when opening a chat
-  useEffect(() => {
-    if (activeContactId && messages) {
-      const isGroupChat = String(activeContactId).toLowerCase().startsWith('grp');
-      const unreadMessages = currentChatMessages.filter(m => (m.receiverId === currentUser?.id || (isGroupChat && m.receiverId === activeContactId && m.senderId !== currentUser?.id)) && !m.read);
-      if (unreadMessages.length > 0) {
-        setMessages(prevMessages => (prevMessages || []).map(m => 
-          ((m.receiverId === currentUser?.id && m.senderId === activeContactId) || (isGroupChat && m.receiverId === activeContactId && m.senderId !== currentUser?.id)) ? { ...m, read: true } : m
-        ));
-      }
+  const currentChatMessages = useMemo(() => {
+    if (!activeContactId) return [];
+    if (activeContact?.isGroup) {
+      return messages.filter(m => m.receiverId === activeContactId).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
     }
-  }, [activeContactId, messages, currentUser?.id]);
+    return messages.filter(m => 
+      (m.senderId === currentUser?.id && m.receiverId === activeContactId) ||
+      (m.senderId === activeContactId && m.receiverId === currentUser?.id)
+    ).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+  }, [messages, activeContactId, currentUser, activeContact]);
 
-  const handleCreateGroup = () => {
-    if (!newGroupName.trim() || newGroupSelectedContacts.length === 0) return;
-    
-    const newGroupId = 'grp-' + Date.now();
-    const newGroup = {
-      id: newGroupId,
-      name: newGroupName.trim(),
-      logo: `https://ui-avatars.com/api/?name=${encodeURIComponent(newGroupName.trim())}&background=00A884&color=fff`,
-      type: 'Kullanıcı Topluluğu',
-      members: [currentUser?.id, ...newGroupSelectedContacts].filter(Boolean),
-      adminId: currentUser?.id,
-      date: 'Şimdi'
-    };
+  const conversations = useMemo(() => {
+    const map = new Map();
+    messages.forEach(m => {
+      const isMine = m.senderId === currentUser?.id;
+      const otherId = isMine ? m.receiverId : m.senderId;
+      
+      const group = groups.find(g => g.id === m.receiverId);
+      if (group) {
+        if (!map.has(group.id) || new Date(map.get(group.id).timestamp) < new Date(m.timestamp)) {
+          map.set(group.id, { ...group, lastMessage: m, unread: 0 });
+        }
+        return;
+      }
 
-    if (setGroups) {
-      setGroups(prev => [newGroup, ...(prev || [])]);
-    }
-    
-    // Reset and close
-    setNewGroupName('');
-    setNewGroupSelectedContacts([]);
-    setShowNewGroupModal(false);
-    
-    // Switch to new group chat
-    setActiveContactId(newGroupId);
-    setCurrentTab('chats');
-  };
+      if (!map.has(otherId) || new Date(map.get(otherId).timestamp) < new Date(m.timestamp)) {
+        const contact = allowedContacts.find(c => c.id === otherId);
+        if (contact) map.set(otherId, { ...contact, lastMessage: m, unread: !isMine && !m.read ? 1 : 0 });
+      } else if (!isMine && !m.read) {
+        const c = map.get(otherId);
+        c.unread = (c.unread || 0) + 1;
+        map.set(otherId, c);
+      }
+    });
+    return Array.from(map.values()).sort((a, b) => new Date(b.lastMessage?.timestamp || 0) - new Date(a.lastMessage?.timestamp || 0));
+  }, [messages, currentUser, allowedContacts, groups]);
 
-  const handleSend = (e, type = 'text', mediaUrl = null) => {
+  const handleSend = (e, specificType = null) => {
     if (e) e.preventDefault();
-    if (!newMessage.trim() && !mediaUrl && type !== 'audio') return;
+    if (!newMessage.trim() && !specificType) return;
 
-    const isGroupChat = activeContactId && String(activeContactId).toLowerCase().startsWith('grp');
+    const sentMessageContent = specificType === 'audio' ? 'Ses Kaydı' : newMessage;
 
     const newMsg = {
-      id: Date.now(),
-      senderId: currentUser?.id || 'sys-1',
-      senderName: currentUser?.name || 'Ben',
-      senderAvatar: currentUser?.avatar || '',
+      id: Date.now().toString(),
+      senderId: currentUser?.id,
+      senderName: currentUser?.name,
+      senderAvatar: currentUser?.avatar,
       receiverId: activeContactId,
       receiverName: activeContact?.name,
-      content: newMessage,
-      timestamp: Date.now(),
+      content: sentMessageContent,
+      timestamp: new Date().toISOString(),
       read: false,
-      type: type,
-      mediaUrl: mediaUrl,
-      isGroupMsg: !!isGroupChat,
-      replyTo: replyingTo // Added replyTo
+      type: specificType || 'text',
+      mediaUrl: specificType === 'audio' ? 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' : null,
+      replyTo: replyingTo
     };
 
     setMessages([...messages, newMsg]);
     setNewMessage('');
-    setPendingMediaType(null);
-    setReplyingTo(null);
-    setIsTyping(true);
-    setTimeout(() => setIsTyping(false), 1500);
     setShowEmojiPicker(false);
-    setShowAttachmentMenu(false);
-  };
+    setReplyingTo(null);
 
-  const handleUnsendMessage = (msgId) => {
-    if (setMessages) {
-      setMessages((messages || []).map(m => m.id === msgId ? { ...m, isDeleted: true, content: 'Bu mesaj silindi', mediaUrl: null, type: 'text' } : m));
-    }
-    setActiveMessageOptions(null);
-  };
+    // AI Auto-Responder Logic
+    if (activeContactId && activeContact?.name && !activeContact?.isGroup) {
+      setTimeout(() => {
+        let replyContent = `Selam! Ben ${activeContact.name}. Mesajını aldım, en kısa sürede detaylı dönüş yapacağım.`;
+        
+        const lowerMsg = sentMessageContent.toLowerCase();
+        if (lowerMsg.includes('mülakat') || lowerMsg.includes('staj') || lowerMsg.includes('iş')) {
+           replyContent = "Harika! Kariyerin için atmış olduğun bu adım çok önemli. Bol şans diliyorum, sana her zaman destek olmaya hazırım!";
+        } else if (lowerMsg.includes('selam') || lowerMsg.includes('merhaba')) {
+           replyContent = "Selam! Sana nasıl yardımcı olabilirim? Esenyurt Kariyer platformunda bugün neler yapıyorsun?";
+        } else if (lowerMsg.includes('teşekkür')) {
+           replyContent = "Ne demek, lafı bile olmaz! Başka bir sorun olursa buradayım.";
+        } else if (lowerMsg.includes('nasılsın')) {
+           replyContent = "Teşekkürler, iyiyim! Umarım senin de her şey yolundadır. Nasıl yardımcı olabilirim?";
+        }
 
-  const handleDeleteMessage = (msgId) => {
-    if (setMessages) {
-      setMessages((messages || []).filter(m => m.id !== msgId));
+        const autoReply = {
+          id: Date.now().toString() + '_auto',
+          senderId: activeContactId,
+          senderName: activeContact.name,
+          senderAvatar: activeContact.avatar || 'https://ui-avatars.com/api/?name=A&background=random',
+          receiverId: currentUser?.id,
+          content: replyContent,
+          timestamp: new Date().toISOString(),
+          read: false,
+          type: 'text',
+          replyTo: newMsg.id
+        };
+        setMessages(prev => [...prev, autoReply]);
+        if (window.toast && window.toast.info) window.toast.info(`${activeContact.name} adlı kullanıcıdan yeni mesaj!`);
+      }, Math.random() * 2000 + 1500); // 1.5s - 3.5s delay
     }
-    setActiveMessageOptions(null);
   };
 
   const handleSendMedia = (type) => {
-    if (type === 'camera') {
-      startCamera();
-      return;
-    }
     setPendingMediaType(type);
-    if(fileInputRef.current) {
-      fileInputRef.current.setAttribute('accept', type === 'video' ? 'video/*' : 'image/*');
-      fileInputRef.current.click();
+    if (type === 'camera') {
+      setIsCameraActive(true);
+      startCamera();
+      setShowAttachmentMenu(false);
+    } else {
+      fileInputRef.current?.click();
+      setShowAttachmentMenu(false);
     }
   };
 
   const onFileChange = (e) => {
     const file = e.target.files[0];
-    if(!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      handleSend(null, pendingMediaType, evt.target.result);
-      setPendingMediaType(null);
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const newMsg = {
+      id: Date.now().toString(),
+      senderId: currentUser?.id,
+      receiverId: activeContactId,
+      content: '',
+      timestamp: new Date().toISOString(),
+      read: false,
+      type: file.type.startsWith('image/') ? 'image' : 'video',
+      mediaUrl: url
     };
-    reader.readAsDataURL(file);
-    e.target.value = ''; // reset
+    setMessages([...messages, newMsg]);
   };
 
   const startCamera = async () => {
     try {
-      setIsCameraActive(true);
-      setShowAttachmentMenu(false);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        streamRef.current = stream;
       }
-    } catch (e) {
-      console.error('Kamera hatası:', e);
-      window.toast && window.toast.error('Kamera erişimi sağlanamadı.');
+    } catch (err) {
+      console.error('Kamera erişimi reddedildi:', err);
       setIsCameraActive(false);
     }
   };
 
   const stopCamera = () => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach(t => t.stop());
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
     setIsCameraActive(false);
+    setCapturedMedia(null);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const context = canvasRef.current.getContext('2d');
+      canvasRef.current.width = videoRef.current.videoWidth;
+      canvasRef.current.height = videoRef.current.videoHeight;
+      context.filter = cameraFilter.filter;
+      context.drawImage(videoRef.current, 0, 0);
+      const url = canvasRef.current.toDataURL('image/jpeg');
+      setCapturedMedia({ type: 'image', url });
+    }
   };
 
   const startRecording = () => {
-    if (!videoRef.current || !videoRef.current.srcObject) return;
-    setIsRecording(true);
-    recordedChunks.current = [];
-    try {
-      mediaRecorderRef.current = new MediaRecorder(videoRef.current.srcObject);
+    if (streamRef.current) {
+      setIsRecording(true);
+      recordedChunks.current = [];
+      mediaRecorderRef.current = new MediaRecorder(streamRef.current);
       mediaRecorderRef.current.ondataavailable = (e) => {
         if (e.data.size > 0) recordedChunks.current.push(e.data);
       };
       mediaRecorderRef.current.onstop = () => {
         const blob = new Blob(recordedChunks.current, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
-        setCapturedMedia({ url, type: 'video' });
-        stopCamera();
+        setCapturedMedia({ type: 'video', url });
       };
       mediaRecorderRef.current.start();
-    } catch (e) {
-      console.error('Kayıt başlatılamadı:', e);
-      setIsRecording(false);
     }
   };
 
   const stopRecording = () => {
-    if (isRecording && mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      setIsRecording(false);
+    setIsRecording(false);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
-    }
-  };
-
-  const capturePhoto = () => {
-    if (!videoRef.current) return;
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth || 640;
-      canvas.height = videoRef.current.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const url = canvas.toDataURL('image/jpeg');
-      setCapturedMedia({ url, type: 'image' });
-      stopCamera();
-    } catch (e) {
-      console.error('Fotoğraf çekilemedi:', e);
-    }
-  };
-
-  const sendCapturedMedia = () => {
-    if (capturedMedia) {
-      if (!activeContactId) {
-        window.toast.success("📸 Fotoğrafınız başarıyla Güncellemeler (Durum) olarak paylaşıldı!");
-        setCapturedMedia(null);
-        setIsCameraActive(false);
-        return;
-      }
-      // Map 'cameraShareOption' to our message types
-      let mappedType = capturedMedia.type; 
-      if (cameraShareOption === 'once') mappedType = 'view_once';
-      if (cameraShareOption === 'replay') mappedType = 'view_replay';
-      
-      handleSend(null, mappedType, capturedMedia.url);
-      setCapturedMedia(null);
-      setIsCameraActive(false);
     }
   };
 
   const cancelCapturedMedia = () => {
     setCapturedMedia(null);
-    startCamera();
   };
 
-  const markViewReplay = (msgId) => {
-    const current = viewReplayMsgs[msgId] || 0;
-    if (current < 2) {
-      setViewReplayMsgs({ ...viewReplayMsgs, [msgId]: current + 1 });
-    }
+  const sendCapturedMedia = () => {
+    if (!capturedMedia) return;
+    
+    let type = capturedMedia.type;
+    if (cameraShareOption === 'once') type = 'view_once';
+    if (cameraShareOption === 'replay') type = 'view_replay';
+
+    const newMsg = {
+      id: Date.now().toString(),
+      senderId: currentUser?.id,
+      receiverId: activeContactId,
+      content: '',
+      timestamp: new Date().toISOString(),
+      read: false,
+      type: type,
+      mediaUrl: capturedMedia.url,
+      filter: cameraFilter.id
+    };
+
+    setMessages([...messages, newMsg]);
+    stopCamera();
   };
 
-  useEffect(() => {
-    return () => stopCamera(); // Cleanup on unmount
-  }, []);
+  const markViewReplay = (id) => {
+    setViewReplayMsgs(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+  };
 
+  const handleDeleteMessage = (id) => {
+    setMessages(messages.filter(m => m.id !== id));
+    setActiveMessageOptions(null);
+  };
 
-  const callTimeoutRef = useRef(null);
+  const handleUnsendMessage = (id) => {
+    setMessages(messages.map(m => m.id === id ? { ...m, content: '', mediaUrl: null, type: 'text', isDeleted: true } : m));
+    setActiveMessageOptions(null);
+  };
 
-  const startCall = (type, contactId) => {
-    if (contactId) setActiveContactId(contactId);
-    const targetId = contactId || activeContactId;
-    if (!targetId) return;
-
-    const contact = allowedContacts.find(c => c.id === targetId) || groups?.find(g => g.id === targetId);
-
-    setCallHistory(prev => [{
-      id: 'ch-' + Date.now(),
-      contactId: targetId,
-      name: contact?.name || 'Kullanıcı',
-      avatar: contact?.avatar || contact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact?.name || 'Kullanıcı')}`,
-      type: 'Giden',
-      time: 'Şimdi',
-      missed: false
-    }, ...prev]);
-
+  const startCall = (type) => {
     setCallType(type);
     setCallStatus('calling');
-    setCallTimer(0);
-    setShowNewCallModal(false);
-    
-    callTimeoutRef.current = setTimeout(() => {
+    setTimeout(() => {
       setCallStatus('connected');
-    }, 4000);
+      setCallTimer(0);
+    }, 3000);
   };
 
   const endCall = () => {
     setCallStatus(null);
+    setCallType(null);
     setCallTimer(0);
-    if (callTimeoutRef.current) clearTimeout(callTimeoutRef.current);
   };
 
   useEffect(() => {
-    let interval;
+    let t;
     if (callStatus === 'connected') {
-      interval = setInterval(() => {
-        setCallTimer(prev => prev + 1);
-      }, 1000);
+      t = setInterval(() => setCallTimer(prev => prev + 1), 1000);
     }
-    return () => clearInterval(interval);
+    return () => clearInterval(t);
   }, [callStatus]);
 
-  const formatCallTime = (seconds) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
+  const formatTime = (ts) => {
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatCallTime = (sec) => {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   };
 
-  const formatTime = (ts) => {
-    if (!ts) return '';
-    const date = new Date(ts);
-    return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-  };
-
-  // 1. CHATS VIEW
-  const renderChatsView = () => (
-    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
-      <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
-        <div className="flex justify-between items-center mb-4">
-          <button className="text-blue-500 font-medium text-[17px]">Düzenle</button>
-          <div className="flex gap-4">
-            <button onClick={startCamera} className="text-blue-500 hover:opacity-80 transition"><Camera size={24} strokeWidth={1.5} /></button>
-            <button onClick={() => setShowAllContacts(!showAllContacts)} className="text-blue-500 hover:opacity-80 transition"><Edit size={24} strokeWidth={1.5} /></button>
+  return (
+    <div className={`flex flex-col md:flex-row bg-[#E1E6ED] h-screen font-sans overflow-hidden ${isOverlay ? 'fixed inset-0 z-50' : ''}`}>
+      {/* LEFT PANEL */}
+      <div className={`w-full md:w-[380px] bg-white flex flex-col border-r border-gray-200 z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] ${activeContactId ? 'hidden md:flex' : 'flex'}`}>
+        
+        {/* Header */}
+        <div className="bg-[#00A884] text-white p-4 flex items-center justify-between shrink-0 shadow-sm relative z-20">
+          <div className="flex items-center gap-3">
+            {isOverlay && (
+              <button onClick={() => setView(previousView || (userRole === 'academic' ? 'academic' : userRole === 'company' ? 'company' : userRole === 'alumni' ? 'alumni' : 'student'))} className="p-2 hover:bg-white/20 rounded-full transition">
+                <ArrowLeft size={24} />
+              </button>
+            )}
+            <div className="w-10 h-10 rounded-full border-2 border-white/30 overflow-hidden shadow-inner">
+              <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || '')}`} className="w-full h-full object-cover" />
+            </div>
+            <h2 className="font-bold text-lg hidden sm:block">Sohbetler</h2>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button className="w-10 h-10 rounded-full hover:bg-white/20 flex items-center justify-center transition"><CircleDashed size={22} /></button>
+            <button onClick={() => setIsNewChatModalOpen(true)} className="w-10 h-10 rounded-full hover:bg-white/20 flex items-center justify-center transition"><MessageSquare size={22} /></button>
+            <button className="w-10 h-10 rounded-full hover:bg-white/20 flex items-center justify-center transition"><MoreVertical size={22} /></button>
           </div>
         </div>
-        <h1 className="text-3xl font-black text-black mb-3">Sohbetler</h1>
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-          <input 
-            type="text" 
-            placeholder="Mesaj veya kişi ara..." 
-            className="w-full bg-[#f2f2f7] border-none rounded-xl pl-10 pr-4 py-2 text-[15px] focus:ring-0 focus:outline-none"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+
+        {/* Search */}
+        <div className="p-3 bg-white border-b border-gray-100 shrink-0">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search size={18} className="text-gray-400" />
+            </div>
+            <input 
+              type="text" 
+              placeholder="Ara veya yeni sohbet başlat" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#F0F2F5] text-gray-800 text-sm rounded-full pl-11 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#00A884] focus:bg-white transition-all shadow-inner"
+            />
+          </div>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {['Tümü', 'Okunmamış', 'Favoriler', 'Gruplar'].map(filter => (
-            <button 
-              key={filter}
-              onClick={() => setChatFilter(filter === 'Tümü' ? 'all' : filter === 'Okunmamış' ? 'unread' : filter === 'Favoriler' ? 'favorites' : 'groups')}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                (chatFilter === 'all' && filter === 'Tümü') || 
-                (chatFilter === 'unread' && filter === 'Okunmamış') ||
-                (chatFilter === 'favorites' && filter === 'Favoriler') ||
-                (chatFilter === 'groups' && filter === 'Gruplar')
-                  ? 'bg-green-100 text-[#00A884]' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+
+        {/* Tabs */}
+        <div className="flex px-3 py-2 gap-2 overflow-x-auto custom-scrollbar border-b border-gray-100 bg-gray-50/50">
+          <button onClick={() => setChatFilter('all')} className={`px-4 py-1.5 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors ${chatFilter === 'all' ? 'bg-[#E7F8F3] text-[#00A884]' : 'bg-[#F0F2F5] text-gray-600 hover:bg-gray-200'}`}>Tümü</button>
+          <button onClick={() => setChatFilter('unread')} className={`px-4 py-1.5 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors ${chatFilter === 'unread' ? 'bg-[#E7F8F3] text-[#00A884]' : 'bg-[#F0F2F5] text-gray-600 hover:bg-gray-200'}`}>Okunmayanlar</button>
+          <button onClick={() => setChatFilter('groups')} className={`px-4 py-1.5 rounded-full text-[13px] font-bold whitespace-nowrap transition-colors ${chatFilter === 'groups' ? 'bg-[#E7F8F3] text-[#00A884]' : 'bg-[#F0F2F5] text-gray-600 hover:bg-gray-200'}`}>Gruplar</button>
+        </div>
+
+        {/* Conversation List */}
+        <div className="flex-1 overflow-y-auto bg-white custom-scrollbar">
+          {conversations.filter(c => chatFilter === 'groups' ? c.isGroup : (chatFilter === 'unread' ? c.unread > 0 : true)).filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())).map(conv => (
+            <div 
+              key={conv.id} 
+              onClick={() => setActiveContactId(conv.id)}
+              className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#F5F6F6] transition-colors border-b border-gray-50/50 last:border-0 ${activeContactId === conv.id ? 'bg-[#F0F2F5]' : ''}`}
             >
-              {filter}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto bg-white px-2">
-        <div className="flex justify-between px-4 py-2 border-b border-gray-100 mb-2">
-          <button className="text-blue-500 font-medium text-[15px]">Toplu Mesaj Listeleri</button>
-          <button className="text-blue-500 font-medium text-[15px]">Yeni Grup</button>
-        </div>
-
-        <div className="flex items-center gap-4 p-3 hover:bg-gray-50 cursor-pointer">
-          <div className="w-12 h-12 flex items-center justify-center shrink-0">
-            <Archive size={22} className="text-gray-500" />
-          </div>
-          <div className="flex-1 border-b border-gray-100 pb-3 mt-3">
-            <h4 className="font-bold text-[16px] text-gray-900">Arşivlenmiş</h4>
-          </div>
-        </div>
-        
-        {(conversations || []).filter(c => {
-          if (chatFilter === 'unread') return c.unreadCount > 0;
-          if (chatFilter === 'groups') return c.isGroup;
-          return true;
-        }).map(convo => (
-          <div 
-            key={convo.id}
-            onClick={() => setActiveContactId(convo.id)}
-            className={`flex items-stretch gap-3 pl-3 cursor-pointer transition-colors ${activeContactId === convo.id ? 'bg-gray-100/50 rounded-xl' : 'hover:bg-gray-50'}`}
-          >
-            <div className="relative self-center py-2 shrink-0">
-              <img src={convo.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(convo.name)}&background=132A49&color=fff`} className="w-14 h-14 rounded-full object-cover" alt="" />
-              {convo.unreadCount > 0 && (
-                <div className="absolute top-1 right-0 w-5 h-5 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
-                  {convo.unreadCount}
+              <div className="relative shrink-0">
+                <img src={conv.avatar || conv.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.name)}`} className="w-14 h-14 rounded-full object-cover border border-gray-100" />
+                {!conv.isGroup && <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center mb-0.5">
+                  <h3 className="font-semibold text-[16px] text-gray-900 truncate">{conv.name}</h3>
+                  <span className={`text-[12px] ${conv.unread > 0 ? 'text-[#00A884] font-bold' : 'text-gray-500'}`}>{conv.lastMessage ? formatTime(conv.lastMessage.timestamp) : ''}</span>
                 </div>
-              )}
-            </div>
-            <div className="flex-1 min-w-0 border-b border-gray-100 py-3 pr-4 flex flex-col justify-center">
-              <div className="flex justify-between items-center mb-0.5">
-                <h4 className="font-bold text-black text-[16px] truncate">{convo.name}</h4>
-                {convo.timestamp && (
-                  <span className={`text-[13px] ${convo.unreadCount > 0 ? 'text-[#00A884] font-medium' : 'text-gray-500'} shrink-0 ml-2`}>
-                    {formatTime(convo.timestamp)}
-                  </span>
-                )}
-              </div>
-              <p className="text-[14px] text-gray-500 truncate">{convo.lastMessage || convo.role}</p>
-            </div>
-          </div>
-        ))}
-        {conversations.length === 0 && (
-          <div className="p-8 text-center flex flex-col items-center justify-center opacity-50">
-            <MessageSquare size={32} className="text-gray-400 mb-3" />
-            <p className="text-sm font-medium text-gray-500">Henüz mesaj bulunmuyor.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  // 3. CALLS VIEW
-  const renderCallsView = () => {
-    const filteredCalls = callFilter === 'missed' ? callHistory.filter(c => c.missed) : callHistory;
-    
-    return (
-    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
-      <div className="px-5 pt-8 pb-3 bg-white z-10 shrink-0">
-        <div className="flex justify-between items-center mb-4">
-          <div className="w-16"></div> {/* Spacer for alignment */}
-          <div className="flex bg-gray-100 p-0.5 rounded-lg w-48">
-            <button onClick={() => setCallFilter('all')} className={`flex-1 py-1.5 text-[13px] font-bold rounded-md transition ${callFilter === 'all' ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-black'}`}>Tümü</button>
-            <button onClick={() => setCallFilter('missed')} className={`flex-1 py-1.5 text-[13px] font-bold rounded-md transition ${callFilter === 'missed' ? 'bg-white shadow-sm text-black' : 'text-gray-500 hover:text-black'}`}>Cevapsızlar</button>
-          </div>
-          <button className="text-[#00A884] w-16 text-right flex justify-end" onClick={() => setShowNewCallModal(true)}><Phone size={22}/></button>
-        </div>
-        <h1 className="text-3xl font-black text-black mb-6">Aramalar</h1>
-        
-        {/* New Call Button */}
-        <div onClick={() => setShowNewCallModal(true)} className="flex items-center gap-4 mb-4 cursor-pointer bg-white p-3 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition group">
-          <div className="w-12 h-12 rounded-full bg-[#00A884] flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
-            <PhoneCall size={24} />
-          </div>
-          <div>
-            <h4 className="font-bold text-[17px] text-[#00A884]">Yeni Arama Başlat</h4>
-            <p className="text-gray-500 text-[14px]">Rehberinizdeki kişilerle sesli veya görüntülü görüşün</p>
-          </div>
-        </div>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto px-5 pb-4">
-        <h3 className="font-bold text-[18px] text-black mb-3 px-2">Arama Geçmişi</h3>
-        {filteredCalls.length > 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-16">
-            {filteredCalls.map((call, i, arr) => (
-              <div key={call.id} onClick={() => { setActiveContactId(call.contactId); startCall('audio'); }} className={`flex items-center gap-4 p-3 cursor-pointer hover:bg-gray-50 transition ${i !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                <img src={call.avatar} className="w-12 h-12 rounded-full object-cover shrink-0" />
-                <div className="flex-1 flex justify-between items-center">
-                  <div>
-                    <h4 className={`font-bold text-[16px] ${call.missed ? 'text-red-500' : 'text-gray-900'}`}>{call.name}</h4>
-                    <div className="flex items-center gap-1.5 text-gray-500 text-[14px] mt-0.5">
-                      {call.type === 'Giden' ? <PhoneOutgoing size={14} /> : call.type === 'Cevapsız' ? <PhoneMissed size={14} className="text-red-500" /> : <PhoneIncoming size={14} />} 
-                      <span>{call.type}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-gray-500 text-[14px] mr-2">{call.time}</span>
-                    <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(call.contactId); startCall('audio'); }}>
-                      <Phone size={22}/>
-                    </button>
-                    <button className="text-[#00A884] p-2 hover:bg-[#00A884]/10 rounded-full transition" onClick={(e) => { e.stopPropagation(); setActiveContactId(call.contactId); startCall('video'); }}>
-                      <Video size={22}/>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center text-gray-500 py-10">
-            {callFilter === 'missed' ? 'Cevapsız aramanız bulunmuyor.' : 'Henüz hiç arama yapmadınız.'}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-  const renderCommunitiesView = () => (
-    <div className="flex-1 flex flex-col bg-white relative overflow-hidden">
-      <div className="px-5 pt-8 pb-3 bg-white sticky top-0 z-10 border-b border-gray-100 shrink-0">
-        <h2 className="text-3xl font-bold text-black mb-4 tracking-tight">Topluluklar</h2>
-        <p className="text-gray-500 text-sm mb-4">Gruplarınız ve dahil olduğunuz öğrenci kulüpleri burada yer alır.</p>
-      </div>
-      <div className="flex-1 overflow-y-auto bg-gray-100">
-        <div onClick={() => setShowNewGroupModal(true)} className="bg-white px-5 py-4 mb-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition border-b border-gray-200">
-          <div className="w-14 h-14 bg-gray-200 rounded-xl flex items-center justify-center shrink-0 relative overflow-hidden">
-            <Users size={28} className="text-white" fill="currentColor" />
-            <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#00A884] rounded-full border-2 border-white flex items-center justify-center text-white">
-              <Plus size={14} />
-            </div>
-          </div>
-          <div>
-            <h4 className="font-bold text-[17px] text-gray-900">Yeni Topluluk</h4>
-          </div>
-        </div>
-
-        {(groups || []).length > 0 ? (groups || []).map(group => (
-          <div key={group.id} className="bg-white mb-3 border-y border-gray-200 shadow-sm">
-            <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden shrink-0">
-                <img src={group.logo} className="w-full h-full object-cover" />
-              </div>
-              <h3 className="font-bold text-[18px] text-black">{group.name}</h3>
-            </div>
-            <div onClick={() => { setActiveContactId(group.id); setCurrentTab('chats'); }} className="px-5 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition">
-              <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
-                <Megaphone size={24} className="text-[#00A884]" fill="currentColor" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-bold text-[16px] text-gray-900">Duyurular</h4>
-                <p className="text-[14px] text-gray-500 truncate">Topluluk yöneticilerinden son haberler.</p>
-              </div>
-              <div className="text-[12px] text-gray-400">Dün</div>
-            </div>
-          </div>
-        )) : (
-          <div className="p-10 text-center text-gray-500 flex flex-col items-center justify-center">
-            <Users size={64} className="text-gray-300 mb-6" />
-            <p className="text-lg font-medium text-gray-800 mb-2">Henüz hiçbir topluluğa katılmadınız.</p>
-            <p className="text-sm text-gray-500 mb-6">Topluluklar, birden fazla grubu bir araya getirerek okulunuzu, kulüplerinizi veya iş ağlarınızı düzenlemenize yardımcı olur.</p>
-            <button className="bg-[#00A884] text-white font-bold py-3 px-6 rounded-full w-full hover:bg-[#008f6f] transition">Topluluklarınızı Görün</button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const getActiveTabContent = () => {
-    switch (currentTab) {
-      case 'calls': return renderCallsView();
-      case 'chats': return renderChatsView();
-      case 'communities': return renderCommunitiesView();
-      default: return renderChatsView();
-    }
-  };
-
-  const iOSBottomTabBar = (
-    <div className="h-[84px] bg-[#f9f9f9]/90 backdrop-blur-md border-t border-gray-200/50 flex justify-around items-start pt-2 px-2 shrink-0 w-full z-50 relative">
-      {[
-        { id: 'calls', label: 'Aramalar', icon: Phone, activeIcon: Phone },
-        { id: 'communities', label: 'Topluluklar', icon: Users, activeIcon: Users },
-        { id: 'chats', label: 'Sohbetler', icon: MessageCircle, activeIcon: MessageSquare }
-      ].map(tab => (
-        <button 
-          key={tab.id}
-          onClick={() => setCurrentTab(tab.id)}
-          className="flex flex-col items-center justify-center w-16 gap-1"
-        >
-          <div className={`relative flex items-center justify-center transition-transform ${currentTab === tab.id ? 'scale-110' : ''}`}>
-            {currentTab === tab.id ? (
-              <tab.activeIcon size={26} className="text-black" fill={tab.id === 'chats' || tab.id === 'communities' || tab.id === 'profile' ? "currentColor" : "none"} strokeWidth={2} />
-            ) : (
-              <tab.icon size={26} className="text-gray-400" strokeWidth={1.5} />
-            )}
-            {/* Unread dot simulation for chats */}
-            {tab.id === 'chats' && conversations.some(c => c.unreadCount > 0) && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
-            )}
-          </div>
-          <span className={`text-[10px] font-medium mt-0.5 ${currentTab === tab.id ? 'text-black' : 'text-gray-500'}`}>{tab.label}</span>
-        </button>
-      ))}
-    </div>
-  );
-
-  const leftPanel = (
-    <div className={`w-full md:w-[420px] h-full flex flex-col bg-white border-r border-gray-200 shrink-0 ${activeContactId ? 'hidden md:flex' : 'flex'}`}>
-      <div className="bg-[#00A884] text-white p-2.5 flex items-center shrink-0">
-        <button onClick={() => setView ? setView(previousView || 'landing') : window.history.back()} className="p-2 hover:bg-white/20 rounded-full transition mr-2" title="Geri Dön">
-          <ArrowLeft size={20} />
-        </button>
-        <span className="font-bold">Ana Sayfaya Dön</span>
-      </div>
-      {getActiveTabContent()}
-      {iOSBottomTabBar}
-    </div>
-  );
-
-  const rightPanel = (
-    <>
-      <div className={`flex-1 flex flex-col bg-[#efeae2] h-full ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
-        {activeContact ? (
-          <>
-            <div className="h-16 px-6 border-b border-gray-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 shrink-0 cursor-pointer" onClick={() => { if (!activeContact.isGroup && setView && setSelectedUserId) { setSelectedUserId(activeContact.id); setView('user_profile'); } }}>
-              <div className="flex items-center gap-4 flex-1">
-                <button className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition" onClick={() => setActiveContactId(null)}>
-                  <ChevronLeft size={24} />
-                </button>
-                <div className="relative">
-                  <img src={activeContact.avatar || activeContact.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact.name || 'U')}&background=random`} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-sm" />
-                  {!activeContact.isGroup && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>}
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-[16px] leading-tight">{activeContact.name}</h3>
-                  <div className="text-[13px] text-gray-500 flex items-center gap-1">
-                    {activeContact.isGroup ? (
-                      <span>{(groups?.find(g => g.id === activeContact.id)?.members?.length || 2)} Üye</span>
-                    ) : (
-                      <>
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Çevrimiçi
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 sm:gap-2">
-                <button onClick={() => startCall('audio')} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition" title="Sesli Ara">
-                  <Phone size={18} />
-                </button>
-                <button onClick={() => startCall('video')} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition" title="Görüntülü Ara">
-                  <Video size={20} />
-                </button>
-                <div className="w-px h-6 bg-gray-200 mx-1"></div>
-                <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition" title="Daha Fazla">
-                  <MoreVertical size={20} />
-                </button>
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-6 bg-[#E5E5E5] custom-scrollbar" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}>
-              {currentChatMessages.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center text-gray-500 h-full">
-                  <div className="bg-white/80 backdrop-blur-md px-6 py-4 rounded-2xl shadow-sm text-center">
-                    <MessageSquare size={32} className="mx-auto mb-2 text-iesu-red opacity-50" />
-                    <p className="font-medium text-sm">Mesajlaşma başlatıldı. Güvenli şekilde iletişim kurabilirsiniz.</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {currentChatMessages.map(msg => {
-                    const isMine = msg.senderId === currentUser?.id;
-                    const isViewed = viewedOnceMsgs.includes(msg.id);
-                    
-                    return (
-                      <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'} group relative`}>
-                        {activeMessageOptions === msg.id && (
-                          <div className={`absolute top-full mt-1 ${isMine ? 'right-0' : 'left-0'} z-20 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 flex flex-col overflow-hidden animate-fade-in`}>
-                            <button onClick={(e) => { e.stopPropagation(); setReplyingTo(msg.id); setActiveMessageOptions(null); }} className="px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"><ArrowLeft size={14}/> Yanıtla</button>
-                            {isMine && !msg.isDeleted && <button onClick={() => handleUnsendMessage(msg.id)} className="px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-gray-50 flex items-center gap-2"><Trash2 size={14}/> Herkesten Sil</button>}
-                            <button onClick={() => handleDeleteMessage(msg.id)} className="px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-50">Benden Sil</button>
-                            <button onClick={() => setActiveMessageOptions(null)} className="px-4 py-2 text-left text-sm font-medium text-gray-400 hover:bg-gray-50 border-t border-gray-100">İptal</button>
-                          </div>
-                        )}
-                        <div 
-                          id={`msg-${msg.id}`}
-                          onContextMenu={(e) => { e.preventDefault(); setActiveMessageOptions(msg.id); }}
-                          onClick={() => setActiveMessageOptions(activeMessageOptions === msg.id ? null : msg.id)}
-                          className={`max-w-[75%] md:max-w-[60%] rounded-2xl p-2 shadow-sm cursor-pointer relative ${isMine ? 'bg-[#DCF8C6] text-gray-800 rounded-br-sm' : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-[0_2px_10px_rgb(0,0,0,0.05)]'} ${msg.isDeleted ? 'opacity-70 italic' : ''}`}
-                        >
-                          <button onClick={(e) => { e.stopPropagation(); setActiveMessageOptions(msg.id); }} className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition p-1 text-gray-400 hover:text-gray-600 z-10 bg-white/50 rounded-full backdrop-blur-sm">
-                            <ChevronDown size={14} />
-                          </button>
-                          
-                          {/* Sender Name in Group Chat */}
-                          {activeContact.isGroup && !isMine && (
-                            <div className="text-[11px] font-bold text-red-600 mb-1 px-1.5">{msg.senderName}</div>
-                          )}
-
-                          {/* Quoted Reply Message */}
-                          {msg.replyTo && (() => {
-                            const quoted = currentChatMessages.find(m => m.id === msg.replyTo);
-                            if (!quoted) return null;
-                            const isQuotedMine = quoted.senderId === currentUser?.id;
-                            return (
-                              <div onClick={() => {
-                                // Scroll to original message
-                                const el = document.getElementById(`msg-${quoted.id}`);
-                                if(el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.classList.add('bg-black/10'); setTimeout(() => el.classList.remove('bg-black/10'), 1000); }
-                              }} className={`mb-1 p-2 rounded-lg text-sm border-l-4 cursor-pointer hover:opacity-80 transition ${isMine ? 'bg-black/5 border-green-600' : 'bg-gray-100 border-blue-500'}`}>
-                                <div className={`font-bold text-xs mb-0.5 ${isMine ? 'text-green-700' : 'text-blue-600'}`}>{isQuotedMine ? 'Sen' : quoted.senderName}</div>
-                                <div className="text-gray-600 truncate">{quoted.type === 'text' ? quoted.content : (quoted.type === 'image' ? '📷 Fotoğraf' : '🎵 Ses / Video')}</div>
-                              </div>
-                            );
-                          })()}
-
-                          {/* Text Message */}
-                          {msg.type === 'text' && (
-                            <p className="text-[14px] leading-relaxed tracking-wide px-1.5 pt-1 flex items-center gap-1.5">
-                              {msg.isDeleted && <div className="text-gray-400">🚫</div>}
-                              {msg.content}
-                            </p>
-                          )}
-
-                          {/* Image Message */}
-                          {msg.type === 'image' && msg.mediaUrl && (
-                            <div className="rounded-xl overflow-hidden mb-1 cursor-pointer" onClick={(e) => { e.stopPropagation(); setLightboxMedia(msg.mediaUrl); }}>
-                              <img src={msg.mediaUrl} alt="attachment" className="w-full max-h-64 object-cover hover:scale-105 transition duration-300" />
-                            </div>
-                          )}
-
-                          {/* Video Message */}
-                          {msg.type === 'video' && msg.mediaUrl && (
-                            <div className="rounded-xl overflow-hidden mb-1 bg-black">
-                              <video src={msg.mediaUrl} controls className="w-full max-h-64" />
-                            </div>
-                          )}
-
-                          {/* Audio Message */}
-                          {msg.type === 'audio' && (
-                            <div className="flex items-center gap-3 p-2 bg-black/5 rounded-xl mb-1 min-w-[200px]">
-                              <button className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white shrink-0 hover:bg-indigo-600 transition">
-                                <Play size={20} className="ml-1" />
-                              </button>
-                              <div className="flex-1">
-                                <div className="h-1 bg-gray-300 rounded-full w-full relative">
-                                  <div className="absolute left-0 top-0 h-full bg-indigo-500 rounded-full" style={{width: '30%'}}></div>
-                                </div>
-                                <div className="flex justify-between mt-1 text-[10px] text-gray-500 font-bold">
-                                  <span>0:00</span>
-                                  <span>0:12</span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* View Once / Replay Message */}
-                          {(msg.type === 'view_once' || msg.type === 'view_replay') && msg.mediaUrl && (() => {
-                            const isReplay = msg.type === 'view_replay';
-                            const views = isReplay ? (viewReplayMsgs[msg.id] || 0) : (viewedOnceMsgs.includes(msg.id) ? 1 : 0);
-                            const maxViews = isReplay ? 2 : 1;
-                            const isViewed = views >= maxViews;
-
-                            return (
-                              <div className="rounded-xl overflow-hidden mb-1 bg-gray-900 border border-gray-800 p-4 w-48 text-center flex flex-col items-center justify-center relative group">
-                                {isMine ? (
-                                  <>
-                                    {isReplay ? <PlayCircle size={24} className="text-gray-400 mb-2" /> : <Eye size={24} className="text-gray-400 mb-2" />}
-                                    <p className="text-xs text-gray-300 font-bold">{isReplay ? 'Tekrar Oynatmalı' : '1 Kez Görüntülenebilir'}</p>
-                                  </>
-                                ) : isViewed ? (
-                                  <>
-                                    <EyeOff size={24} className="text-gray-500 mb-2" />
-                                    <p className="text-xs text-gray-500 font-bold">Açıldı</p>
-                                  </>
-                                ) : (
-                                  <button onClick={() => {
-                                      if(isReplay) markViewReplay(msg.id);
-                                      // markViewOnce not implemented, handled by state below
-                                      setViewedOnceMsgs([...viewedOnceMsgs, msg.id + '_temp']);
-                                    }} 
-                                    className="w-full h-full flex flex-col items-center justify-center"
-                                  >
-                                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white mb-2 animate-pulse">
-                                      {isReplay ? <PlayCircle size={20} /> : <Eye size={20} />}
-                                    </div>
-                                    <p className="text-xs text-white font-bold">{isReplay ? `Aç (${views}/${maxViews})` : 'Aç'}</p>
-                                  </button>
-                                )}
-                                
-                                {/* Overlay for viewing */}
-                                {!isMine && !isViewed && viewedOnceMsgs.includes(msg.id + '_temp') && (
-                                  <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4">
-                                    <div className="relative max-w-2xl w-full">
-                                      <img src={msg.mediaUrl} className="w-full rounded-xl" />
-                                      <button onClick={() => setViewedOnceMsgs([...viewedOnceMsgs.filter(id => id !== msg.id + '_temp'), msg.id])} className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full">
-                                        <X size={24} />
-                                      </button>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })()}
-
-                          <div className={`flex items-center justify-end gap-1.5 mt-1 px-1 ${isMine ? 'text-green-700/70' : 'text-gray-400'}`}>
-                            <span className="text-[10px] font-medium">{formatTime(msg.timestamp)}</span>
-                            {isMine && (
-                              msg.read ? <CheckCheck size={14} className="text-blue-500" /> : <Check size={14} className="text-gray-400" />
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Typing Indicator */}
-                  {isTyping && (
-                    <div className="flex justify-start animate-fade-in">
-                      <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm p-3 shadow-sm flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                      </div>
+                <div className="flex justify-between items-center">
+                  <p className={`text-[14px] truncate pr-2 ${conv.unread > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+                    {conv.lastMessage?.senderId === currentUser?.id ? <CheckCheck size={14} className="inline mr-1 text-blue-500"/> : null}
+                    {conv.lastMessage?.type === 'image' ? '📷 Fotoğraf' : conv.lastMessage?.type === 'audio' ? '🎤 Ses Kaydı' : conv.lastMessage?.content}
+                  </p>
+                  {conv.unread > 0 && (
+                    <div className="w-5 h-5 bg-[#00A884] rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0">
+                      {conv.unread}
                     </div>
                   )}
-
-                  <div ref={messagesEndRef} />
                 </div>
-              )}
+              </div>
             </div>
-            <div className="p-3 bg-[#F0F2F5] border-t border-gray-200 shrink-0 z-10 relative">
-              
-              {/* Attachment Menu */}
+          ))}
+          {conversations.length === 0 && (
+            <div className="p-8 text-center text-gray-500 flex flex-col items-center justify-center h-full">
+              <MessageCircle size={48} className="text-gray-300 mb-4" />
+              <p className="text-sm">Henüz bir sohbetiniz yok. Yeni bir sohbete başlamak için üstteki butonu kullanın.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* RIGHT PANEL (Chat Area) */}
+      <div className={`flex-1 flex flex-col bg-[#EFEAE2] relative bg-[url('https://i.pinimg.com/736x/8c/98/99/8c98994518b575bfd8c949e91d20548b.jpg')] bg-repeat bg-[length:400px_400px] bg-opacity-40 bg-blend-overlay ${!activeContactId ? 'hidden md:flex' : 'flex'}`}>
+        {activeContactId ? (
+          <>
+            {/* Header */}
+            <div className="h-[68px] bg-white border-b border-gray-200 px-4 flex items-center justify-between shrink-0 shadow-sm z-10">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setActiveContactId(null)} className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full transition"><ArrowLeft size={20} /></button>
+                <div className="relative">
+                  <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                  {isTyping && (
+                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 border border-gray-200">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col cursor-pointer" onClick={() => {/* Open Contact Info */}}>
+                  <h3 className="font-semibold text-gray-900">{activeContact?.name}</h3>
+                  <p className="text-xs text-gray-500">
+                    {isTyping ? <span className="text-[#00A884] font-medium">yazıyor...</span> : (activeContact?.isGroup ? `${activeContact?.members?.length || 0} katılımcı` : 'çevrimiçi')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-4">
+                {!activeContact?.isGroup && (
+                  <>
+                    <button onClick={() => startCall('audio')} className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition"><Phone size={20} /></button>
+                    <button onClick={() => startCall('video')} className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition"><Video size={20} /></button>
+                  </>
+                )}
+                <div className="w-px h-6 bg-gray-200 hidden sm:block"></div>
+                <button className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition"><Search size={20} /></button>
+                <button className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-600 transition"><MoreVertical size={20} /></button>
+              </div>
+            </div>
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col gap-2 custom-scrollbar">
+              <div className="text-center my-4">
+                <span className="bg-[#E1F3FB] text-gray-600 text-xs font-bold px-4 py-1.5 rounded-lg shadow-sm border border-[#D1EAF4]">
+                  Sohbet uçtan uca şifrelenmiştir.
+                </span>
+              </div>
+              {currentChatMessages.map((msg, idx) => {
+                const isMine = msg.senderId === currentUser?.id;
+                const showTail = idx === currentChatMessages.length - 1 || currentChatMessages[idx + 1].senderId !== msg.senderId;
+
+                return (
+                  <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'} mb-1 group`}>
+                    <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl p-2 shadow-[0_1px_2px_rgba(0,0,0,0.1)] relative ${isMine ? 'bg-[#DCF8C6]' : 'bg-white'} ${showTail && isMine ? 'rounded-br-sm' : ''} ${showTail && !isMine ? 'rounded-bl-sm' : ''}`}>
+                      
+                      {activeContact?.isGroup && !isMine && (
+                        <div className="text-[12px] font-bold text-[#E53935] mb-1 px-1">{msg.senderName}</div>
+                      )}
+
+                      {/* Msg Content */}
+                      {msg.type === 'text' && <p className="text-[14px] leading-relaxed px-1 text-[#111B21] break-words">{msg.content}</p>}
+                      {msg.type === 'image' && <img src={msg.mediaUrl} className="max-w-full rounded-xl" onClick={() => setLightboxMedia(msg.mediaUrl)}/>}
+                      {msg.type === 'video' && <video src={msg.mediaUrl} controls className="max-w-full rounded-xl"/>}
+                      {msg.type === 'audio' && (
+                        <div className="flex items-center gap-3 p-2 bg-black/5 rounded-xl min-w-[200px]">
+                          <button className="w-10 h-10 bg-[#00A884] rounded-full flex items-center justify-center text-white"><Play size={20} className="ml-1"/></button>
+                          <div className="flex-1"><div className="h-1 bg-gray-300 w-full"><div className="h-full bg-[#00A884] w-1/3"></div></div></div>
+                        </div>
+                      )}
+
+                      <div className={`flex items-center justify-end gap-1 mt-1 px-1 ${isMine ? 'text-green-800/60' : 'text-gray-500'}`}>
+                        <span className="text-[10px]">{formatTime(msg.timestamp)}</span>
+                        {isMine && (msg.read ? <CheckCheck size={14} className="text-[#53bdeb]"/> : <Check size={14}/>)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {isTyping && (
+                <div className="flex justify-start mb-2">
+                  <div className="bg-white p-3 rounded-2xl rounded-bl-sm shadow-sm flex gap-1">
+                    <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'150ms'}}></div>
+                    <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{animationDelay:'300ms'}}></div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="p-3 bg-[#F0F2F5] shrink-0 relative flex gap-2 items-end z-20">
               {showAttachmentMenu && (
-                <div className="absolute bottom-16 left-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 flex flex-col gap-1 animate-fade-in z-20">
-                  <button onClick={() => handleSendMedia('image')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><ImageIcon size={16} /></div> Fotoğraf
+                <div className="absolute bottom-16 left-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 flex flex-col gap-1 z-30">
+                  <button onClick={() => handleSendMedia('image')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
+                    <ImageIcon size={18} className="text-blue-500"/> Fotoğraf & Video
                   </button>
-                  <button onClick={() => handleSendMedia('video')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
-                    <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center"><Film size={16} /></div> Video
+                  <button onClick={() => handleSendMedia('camera')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
+                    <Aperture size={18} className="text-red-500"/> Kamera Aç
                   </button>
-                  <button onClick={() => handleSendMedia('camera')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700 transition">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center"><Aperture size={16} /></div> Kamera Aç
+                  <button className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
+                    <FileText size={18} className="text-purple-500"/> Belge
                   </button>
                 </div>
               )}
 
-              {/* Hidden File Input for Media Selection */}
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                onChange={onFileChange} 
-              />
-
-              {/* Emoji Picker */}
               {showEmojiPicker && (
-                <div className="absolute bottom-16 right-4 sm:right-16 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 w-72 max-h-64 overflow-y-auto grid grid-cols-6 gap-2 animate-fade-in z-20 custom-scrollbar">
+                <div className="absolute bottom-16 left-12 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 w-72 h-64 overflow-y-auto grid grid-cols-6 gap-2 z-30 custom-scrollbar">
                   {EMOJI_LIST.map(emoji => (
-                    <button key={emoji} onClick={() => setNewMessage(prev => prev + emoji)} className="text-2xl hover:bg-gray-100 rounded-lg transition active:scale-95">
-                      {emoji}
-                    </button>
+                    <button key={emoji} onClick={() => setNewMessage(prev => prev + emoji)} className="text-2xl hover:bg-gray-100 rounded-lg">{emoji}</button>
                   ))}
                 </div>
               )}
 
-              {/* Reply Banner */}
-              {replyingTo && (() => {
-                const quoted = messages.find(m => m.id === replyingTo);
-                if (!quoted) return null;
-                return (
-                  <div className="bg-gray-100 rounded-t-xl p-3 flex justify-between items-start mb-2 border-l-4 border-blue-500 animate-fade-in relative z-10">
-                    <div className="overflow-hidden">
-                      <div className="text-xs font-bold text-blue-600 mb-0.5">{quoted.senderId === currentUser?.id ? 'Sen' : quoted.senderName}</div>
-                      <div className="text-sm text-gray-600 truncate">{quoted.type === 'text' ? quoted.content : '📷 Medya Mesajı'}</div>
-                    </div>
-                    <button onClick={() => setReplyingTo(null)} className="text-gray-400 hover:text-gray-700 p-1">
-                      <X size={16} />
-                    </button>
-                  </div>
-                );
-              })()}
+              <input type="file" ref={fileInputRef} className="hidden" onChange={onFileChange} />
 
-              <div className="flex items-center gap-2">
-                <button onClick={() => {setShowAttachmentMenu(!showAttachmentMenu); setShowEmojiPicker(false);}} className={`w-10 h-10 rounded-full flex items-center justify-center transition shrink-0 ${showAttachmentMenu ? 'bg-gray-200 text-gray-700' : 'text-gray-500 hover:bg-gray-200'}`} title="Dosya Ekle">
-                  <Paperclip size={20} />
-                </button>
-                
-                {isRecordingVoice ? (
-                  <div className="flex-1 bg-red-50 rounded-full border border-red-200 flex items-center justify-between px-4 py-2 shadow-sm animate-pulse-slow">
-                    <div className="flex items-center gap-3 text-red-500">
-                      <Mic size={18} className="animate-pulse" />
-                      <span className="font-mono text-sm font-bold">{formatVoiceTime(voiceTimer)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => setIsRecordingVoice(false)} className="text-sm font-bold text-gray-500 hover:text-gray-700 mr-2">İptal</button>
-                      <button onClick={() => { setIsRecordingVoice(false); handleSend(null, 'audio'); }} className="text-sm bg-red-500 text-white px-3 py-1 rounded-full font-bold shadow-sm hover:bg-red-600">Gönder</button>
-                    </div>
-                  </div>
+              <div className="flex gap-1 shrink-0 mb-1.5">
+                <button onClick={() => {setShowEmojiPicker(!showEmojiPicker); setShowAttachmentMenu(false)}} className="p-2 text-gray-500 hover:text-gray-600 transition"><Smile size={24}/></button>
+                <button onClick={() => {setShowAttachmentMenu(!showAttachmentMenu); setShowEmojiPicker(false)}} className="p-2 text-gray-500 hover:text-gray-600 transition"><Paperclip size={24}/></button>
+              </div>
+
+              <div className="flex-1 bg-white rounded-xl min-h-[44px] flex items-center shadow-sm">
+                <input 
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSend(e); }}
+                  placeholder="Bir mesaj yazın"
+                  className="w-full bg-transparent border-none focus:ring-0 px-4 py-2.5 text-[15px] outline-none"
+                />
+              </div>
+
+              <div className="shrink-0 mb-1.5">
+                {newMessage.trim() ? (
+                  <button onClick={handleSend} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md"><Send size={20} className="ml-1"/></button>
                 ) : (
-                  <div className="flex-1 bg-white rounded-full border border-gray-300 flex items-center px-4 py-2 shadow-sm focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
-                    <input 
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSend(e);
-                        }
-                      }}
-                      placeholder="Bir mesaj yazın..."
-                      className="flex-1 bg-transparent border-none focus:ring-0 text-[15px] text-gray-800 placeholder-gray-400 outline-none"
-                    />
-                    <button onClick={() => {setShowEmojiPicker(!showEmojiPicker); setShowAttachmentMenu(false);}} className={`w-8 h-8 rounded-full flex items-center justify-center transition ml-2 ${showEmojiPicker ? 'text-emerald-500' : 'text-gray-400 hover:text-gray-600'}`} title="Emoji">
-                      <Smile size={22} />
-                    </button>
-                  </div>
-                )}
-
-                {!isRecordingVoice && (
-                  newMessage.trim() ? (
-                    <button 
-                      onClick={handleSend}
-                      className="w-10 h-10 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#008f6f] active:scale-95 transition-all shrink-0 shadow-md"
-                    >
-                      <Send size={18} className="ml-0.5" />
-                    </button>
-                  ) : (
-                    <button 
-                      onPointerDown={() => setIsRecordingVoice(true)}
-                      className="w-10 h-10 rounded-full text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-all shrink-0"
-                    >
-                      <Mic size={20} />
-                    </button>
-                  )
+                  <button onClick={() => setIsRecordingVoice(!isRecordingVoice)} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md"><Mic size={20}/></button>
                 )}
               </div>
             </div>
           </>
         ) : (
-          <div className="flex-1 hidden md:flex flex-col items-center justify-center bg-gray-50/50 p-8 text-center border-l border-gray-100">
-            <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-xl shadow-red-100/50 mb-6 group hover:scale-105 transition-transform duration-500">
-              <MessageCircle size={48} className="text-iesu-red ml-1 group-hover:rotate-12 transition-transform duration-300" strokeWidth={1.5} />
+          <div className="flex-1 flex flex-col items-center justify-center bg-[#F0F2F5] text-center p-8">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-state-2130362-1800926.png" className="w-64 opacity-60 mb-6 grayscale" />
+            <h2 className="text-3xl font-light text-gray-700 mb-4">Esenyurt Kariyer Web</h2>
+            <p className="text-gray-500 max-w-md">Mesaj gönderin ve alın. Ağınızı genişletin, kariyer fırsatlarını yakalayın. Tüm mesajlar uçtan uca şifrelenmiştir.</p>
+            <div className="mt-12 flex items-center gap-2 text-sm text-gray-400 font-medium">
+              <ShieldCheck size={16} /> Esenyurt Üniversitesi Güvencesiyle
             </div>
-            <h2 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">Kariyer Ağınızı Genişletin</h2>
-            <p className="text-gray-500 max-w-md text-[15px] mb-8 leading-relaxed">
-              Öğrenciler, mezunlar ve şirketlerle doğrudan iletişime geçin. Yeni bir konuşma başlatarak kariyer fırsatlarını değerlendirin.
-            </p>
-            <button 
-              onClick={() => setIsNewChatModalOpen(true)}
-              className="px-8 py-3.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition shadow-lg shadow-gray-200 active:scale-95 flex items-center gap-2"
-            >
-              <Plus size={20} />
-              Yeni Konuşma Başlat
-            </button>
           </div>
         )}
       </div>
 
-      {/* Advanced Camera Overlay (Snap Modülü) */}
-      {(isCameraActive || capturedMedia) && (
-        <div className="fixed inset-0 z-[200] bg-black flex flex-col animate-fade-in font-sans">
-          <div className="flex justify-between items-center p-4 absolute top-0 w-full z-50">
-            <h2 className="text-white font-bold text-lg drop-shadow-md">Kamera</h2>
-            <button onClick={() => { stopCamera(); setCapturedMedia(null); }} className="p-2 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition">
-              <X size={24} />
-            </button>
-          </div>
-          
-          <div className="flex-1 flex flex-col items-center justify-center relative bg-black">
+      {/* SNAPCHAT CAMERA OVERLAY */}
+      {isCameraActive && (
+        <div className="fixed inset-0 bg-black z-[300] flex flex-col animate-fade-in font-sans">
+          <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
+            <canvas ref={canvasRef} className="hidden" />
+            
             {!capturedMedia ? (
-              // LIVE CAMERA FEED
-              <div className="w-full h-full relative flex items-center justify-center bg-gray-900">
-                <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-
-                {/* Recording indicator */}
-                {isRecording && (
-                  <div className="absolute top-20 flex items-center gap-2 bg-red-500/80 backdrop-blur px-3 py-1.5 rounded-full text-white font-bold text-sm animate-pulse z-10">
-                    <div className="w-2 h-2 rounded-full bg-white" /> Kaydediliyor...
+              <div className="w-full h-full relative">
+                <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover" style={{filter: cameraFilter.filter, transform: 'scaleX(-1)'}}/>
+                
+                {/* Camera UI Elements */}
+                <div className="absolute top-0 w-full p-4 flex justify-between items-start bg-gradient-to-b from-black/60 to-transparent z-20">
+                  <button onClick={stopCamera} className="p-2 text-white hover:bg-white/20 rounded-full backdrop-blur-sm"><X size={28} /></button>
+                  <div className="flex flex-col gap-3">
+                    <button className="p-3 text-white bg-black/40 hover:bg-white/20 rounded-full backdrop-blur-md transition"><Aperture size={22} /></button>
+                    <button className="p-3 text-white bg-black/40 hover:bg-white/20 rounded-full backdrop-blur-md transition"><ImageIcon size={22} /></button>
                   </div>
-                )}
+                </div>
+
+                {/* Filters (Snapchat logic) */}
+                <div className="absolute bottom-32 w-full px-4 z-20 overflow-x-auto custom-scrollbar flex gap-3 pb-2 snap-x">
+                  {CAMERA_FILTERS.map(f => (
+                    <button key={f.id} onClick={() => setCameraFilter(f)} className={`snap-center shrink-0 w-16 h-20 rounded-xl flex flex-col items-center justify-end p-2 border-2 transition ${cameraFilter.id === f.id ? 'border-[#00A884] scale-110 shadow-lg bg-black/40' : 'border-transparent bg-black/20 hover:bg-black/40'} backdrop-blur-sm`}>
+                      <span className="text-[10px] text-white font-bold text-shadow-md text-center">{f.name}</span>
+                    </button>
+                  ))}
+                </div>
 
                 {/* Capture Button */}
-                <div className="absolute bottom-12 left-0 w-full flex justify-center z-20">
-                  <div className="relative flex items-center justify-center">
-                    {/* Progress ring if recording (mock visual) */}
-                    {isRecording && (
-                      <svg className="absolute w-[84px] h-[84px] animate-spin-slow" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" strokeWidth="6" strokeDasharray="250" strokeDashoffset="50" />
-                      </svg>
-                    )}
+                <div className="absolute bottom-8 w-full flex justify-center z-20">
+                  <div className="relative flex justify-center items-center">
                     <button 
-                      onPointerDown={startRecording}
-                      onPointerUp={stopRecording}
-                      onPointerLeave={stopRecording}
-                      onClick={capturePhoto}
-                      className={`w-20 h-20 rounded-full border-4 ${isRecording ? 'border-red-500' : 'border-white'} flex items-center justify-center bg-transparent transition-all`}
+                      onClick={capturePhoto} 
+                      onMouseDown={startRecording} 
+                      onMouseUp={stopRecording}
+                      onTouchStart={startRecording}
+                      onTouchEnd={stopRecording}
+                      className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center relative z-10"
                     >
                       <div className={`w-16 h-16 rounded-full transition-all ${isRecording ? 'bg-red-500 scale-50' : 'bg-white hover:bg-gray-200'}`}></div>
                     </button>
                   </div>
-                  <p className="absolute -bottom-8 text-white/70 text-xs font-medium">Fotoğraf için dokun, Video için basılı tut</p>
+                  <p className="absolute -bottom-6 text-white/70 text-[10px] font-bold uppercase tracking-wider text-shadow-md">Bas Çek - Basılı Tut Video</p>
                 </div>
               </div>
             ) : (
-              // CAPTURED PREVIEW & SHARE OPTIONS
               <div className="w-full h-full relative">
                 {capturedMedia.type === 'video' ? (
-                  <video src={capturedMedia.url} autoPlay loop playsInline className="absolute inset-0 w-full h-full object-cover" />
+                  <video src={capturedMedia.url} autoPlay loop playsInline className="absolute inset-0 w-full h-full object-cover" style={{filter: cameraFilter.filter}} />
                 ) : (
-                  <img src={capturedMedia.url} className="absolute inset-0 w-full h-full object-cover" />
+                  <img src={capturedMedia.url} className="absolute inset-0 w-full h-full object-cover" style={{filter: cameraFilter.filter}} />
                 )}
 
-                {/* Cancel Button */}
-                <button onClick={cancelCapturedMedia} className="absolute top-4 left-4 p-2 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 transition z-50">
-                  <ChevronLeft size={24} />
+                <button onClick={cancelCapturedMedia} className="absolute top-4 left-4 p-2 bg-black/40 backdrop-blur-md rounded-full text-white hover:bg-black/60 z-50">
+                  <X size={28} />
                 </button>
 
-                {/* Share Options Footer */}
-                <div className="absolute bottom-0 w-full p-6 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent z-20">
+                {/* Share Options */}
+                <div className="absolute bottom-0 w-full p-6 flex flex-col gap-4 bg-gradient-to-t from-black/80 to-transparent z-20">
+                  <div className="flex justify-center gap-2">
+                    <button onClick={() => setCameraShareOption('once')} className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition ${cameraShareOption === 'once' ? 'bg-white text-black' : 'bg-black/50 text-white backdrop-blur-md'}`}><Clock size={16}/> 1 Kez</button>
+                    <button onClick={() => setCameraShareOption('replay')} className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition ${cameraShareOption === 'replay' ? 'bg-white text-black' : 'bg-black/50 text-white backdrop-blur-md'}`}><PlayCircle size={16}/> Tekrar</button>
+                    <button onClick={() => setCameraShareOption('keep')} className={`px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition ${cameraShareOption === 'keep' ? 'bg-[#00A884] text-white' : 'bg-black/50 text-white backdrop-blur-md'}`}><Infinity size={16}/> Sürekli</button>
+                  </div>
                   
-                  {/* Option Selector */}
-                  <div className="bg-black/50 backdrop-blur-md rounded-full p-1 flex gap-1">
-                    <button 
-                      onClick={() => setCameraShareOption('once')}
-                      className={`px-4 py-2 rounded-full flex items-center gap-1.5 text-xs font-bold transition ${cameraShareOption === 'once' ? 'bg-white text-black' : 'text-white hover:bg-white/20'}`}
-                    >
-                      <Clock size={14} /> 1 Kez
-                    </button>
-                    <button 
-                      onClick={() => setCameraShareOption('replay')}
-                      className={`px-4 py-2 rounded-full flex items-center gap-1.5 text-xs font-bold transition ${cameraShareOption === 'replay' ? 'bg-white text-black' : 'text-white hover:bg-white/20'}`}
-                    >
-                      <PlayCircle size={14} /> Tekrar
-                    </button>
-                    <button 
-                      onClick={() => setCameraShareOption('keep')}
-                      className={`px-4 py-2 rounded-full flex items-center gap-1.5 text-xs font-bold transition ${cameraShareOption === 'keep' ? 'bg-white text-black' : 'text-white hover:bg-white/20'}`}
-                    >
-                      <Infinity size={14} /> Sürekli
+                  <div className="flex justify-end w-full">
+                    <button onClick={sendCapturedMedia} className="w-14 h-14 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#008f6f] shadow-xl transition hover:scale-105">
+                      <Send size={24} className="ml-1" />
                     </button>
                   </div>
-
-                  {/* Send Button */}
-                  <button 
-                    onClick={sendCapturedMedia}
-                    className="w-14 h-14 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#008f6f] transition shadow-xl"
-                  >
-                    <Send size={24} className="ml-1" />
-                  </button>
-
                 </div>
               </div>
             )}
@@ -1198,11 +738,9 @@ export default function MessagingInterface({ previousView, messages = [], setMes
       {/* CALL OVERLAY */}
       {callStatus && (
         <div className="fixed inset-0 z-[250] bg-slate-900 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
-          {/* Background blurred avatar */}
           <div className="absolute inset-0 z-0 opacity-30">
             <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
           </div>
-
           <div className="z-10 flex flex-col items-center mt-10">
             <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden mb-6 shadow-2xl relative">
               <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover" />
@@ -1213,11 +751,10 @@ export default function MessagingInterface({ previousView, messages = [], setMes
               )}
             </div>
             <h2 className="text-3xl font-bold text-white mb-2 text-shadow-md">{activeContact?.name}</h2>
-            <p className="text-white/80 text-lg">
+            <p className="text-gray-400 font-medium text-lg tracking-wide">
               {callStatus === 'calling' ? (callType === 'video' ? 'Görüntülü aranıyor...' : 'Sesli aranıyor...') : formatCallTime(callTimer)}
             </p>
           </div>
-
           <div className="z-10 flex items-center gap-8 mb-10">
             {callStatus === 'connected' && (
               <>
@@ -1229,178 +766,18 @@ export default function MessagingInterface({ previousView, messages = [], setMes
                 </button>
               </>
             )}
-            
-            <button 
-              onClick={endCall}
-              className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-xl shadow-red-500/20 flex items-center justify-center text-white transition hover:scale-105"
-            >
-              <PhoneOff size={28} />
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-
-  const renderNewGroupModal = () => (
-    <div className="absolute inset-0 bg-white z-[100] flex flex-col h-full overflow-hidden animate-slide-up">
-      <div className="h-16 px-4 border-b border-gray-100 flex items-center gap-4 bg-[#00A884] text-white shrink-0">
-        <button onClick={() => { setShowNewGroupModal(false); setNewGroupName(''); setNewGroupSelectedContacts([]); }} className="p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>
-        <h2 className="text-xl font-bold">Yeni Topluluk</h2>
-      </div>
-      <div className="p-6 bg-gray-50 shrink-0">
-        <div className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center shrink-0">
-            <Camera size={24} className="text-gray-400" />
-          </div>
-          <input 
-            type="text" 
-            placeholder="Topluluk adı yazın..." 
-            className="flex-1 text-lg font-medium bg-transparent border-none focus:ring-0 px-2"
-            value={newGroupName}
-            onChange={(e) => setNewGroupName(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto px-4 pb-20 bg-white">
-        <div className="text-sm font-bold text-gray-500 uppercase px-2 mb-3 mt-4">Kişileri Seçin</div>
-        {contacts.filter(c => c.id !== currentUser?.id).map(contact => (
-          <div key={contact.id} onClick={() => {
-            if (newGroupSelectedContacts.includes(contact.id)) {
-              setNewGroupSelectedContacts(prev => prev.filter(id => id !== contact.id));
-            } else {
-              setNewGroupSelectedContacts(prev => [...prev, contact.id]);
-            }
-          }} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition">
-            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 ${newGroupSelectedContacts.includes(contact.id) ? 'border-[#00A884] bg-[#00A884]' : 'border-gray-300'}`}>
-              {newGroupSelectedContacts.includes(contact.id) && <Check size={14} className="text-white stroke-[3]" />}
-            </div>
-            <img src={contact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
-            <div className="flex-1">
-              <h4 className="font-bold text-gray-900">{contact.name}</h4>
-              <p className="text-sm text-gray-500 truncate">{contact.title || contact.department || contact.sector || 'Kullanıcı'}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="absolute bottom-6 right-6">
-        <button 
-          disabled={!newGroupName.trim() || newGroupSelectedContacts.length === 0}
-          onClick={handleCreateGroup}
-          className="w-14 h-14 bg-[#00A884] hover:bg-[#008f6f] text-white rounded-full flex items-center justify-center shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Check size={28} />
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderNewCallModal = () => (
-    <div className="absolute inset-0 bg-white z-[100] flex flex-col h-full overflow-hidden animate-slide-up">
-      <div className="h-16 px-4 border-b border-gray-100 flex items-center gap-4 bg-[#00A884] text-white shrink-0">
-        <button onClick={() => setShowNewCallModal(false)} className="p-2 hover:bg-white/20 rounded-full transition"><ArrowLeft size={24} /></button>
-        <h2 className="text-xl font-bold">Yeni Arama</h2>
-      </div>
-      <div className="flex-1 overflow-y-auto px-4 pb-20 bg-white">
-        <div className="text-sm font-bold text-gray-500 uppercase px-2 mb-3 mt-4">Kişileriniz</div>
-        {contacts.filter(c => c.id !== currentUser?.id).map(contact => (
-          <div key={contact.id} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition">
-            <img src={contact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}&background=random`} className="w-12 h-12 rounded-full object-cover shrink-0" />
-            <div className="flex-1">
-              <h4 className="font-bold text-gray-900">{contact.name}</h4>
-              <p className="text-sm text-gray-500 truncate">{contact.title || contact.department || contact.sector || 'Kullanıcı'}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="text-[#00A884] p-3 bg-gray-100 hover:bg-[#00A884]/20 rounded-full transition" onClick={() => { setActiveContactId(contact.id); startCall('audio'); }}>
-                <Phone size={20} />
-              </button>
-              <button className="text-[#00A884] p-3 bg-gray-100 hover:bg-[#00A884]/20 rounded-full transition" onClick={() => { setActiveContactId(contact.id); startCall('video'); }}>
-                <Video size={20} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  if (isOverlay) {
-    return (
-      <div className="w-full h-full flex bg-white overflow-hidden relative">
-        {leftPanel}
-        {rightPanel}
-        {showNewGroupModal && renderNewGroupModal()}
-        {showNewCallModal && renderNewCallModal()}
-      </div>
-    );
-  }
-
-  return (
-    <div className={`w-full h-[100dvh] bg-[#f0f2f5] flex flex-col font-sans overflow-hidden`}>
-      <main className={`flex-1 flex justify-center w-full h-full overflow-hidden`}>
-        {/* The main container acts like a native app shell. On desktop it has max-width, on mobile it's full screen */}
-        <div className={`w-full h-full md:py-8 flex justify-center items-center`}>
-          <div className={`w-full max-w-[1600px] h-full md:h-[calc(100vh-64px)] md:rounded-3xl shadow-2xl border border-gray-300 overflow-hidden flex bg-white relative`}>
-            {leftPanel}
-            {rightPanel}
-            {showNewGroupModal && renderNewGroupModal()}
-            {showNewCallModal && renderNewCallModal()}
-          </div>
-        </div>
-      </main>
-
-      {/* CALL OVERLAY */}
-      {callStatus && (
-        <div className="fixed inset-0 z-[250] bg-slate-900 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
-          {/* Background blurred avatar */}
-          <div className="absolute inset-0 z-0 opacity-30">
-            <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
-          </div>
-
-          <div className="z-10 flex flex-col items-center mt-10">
-            <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden mb-6 shadow-2xl relative">
-              <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover" />
-              {callStatus === 'calling' && (
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                  <div className="w-full h-full animate-ping rounded-full border-4 border-white opacity-50"></div>
-                </div>
-              )}
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-2 text-shadow-md">{activeContact?.name}</h2>
-            <p className="text-white/80 text-lg">
-              {callStatus === 'calling' ? (callType === 'video' ? 'Görüntülü aranıyor...' : 'Sesli aranıyor...') : formatCallTime(callTimer)}
-            </p>
-          </div>
-
-          <div className="z-10 flex items-center gap-6 pb-10">
-            {callStatus === 'connected' && (
-              <>
-                <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition">
-                   <PhoneOff size={24} /> {/* Mute */}
-                </button>
-                <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white hover:bg-white/20 transition">
-                   {callType === 'video' ? <Video size={24} /> : <Phone size={24} />}
-                </button>
-              </>
-            )}
-            
-            <button 
-              onClick={endCall}
-              className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-xl shadow-red-500/20 flex items-center justify-center text-white transition hover:scale-105"
-            >
+            <button onClick={endCall} className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-xl flex items-center justify-center text-white transition hover:scale-105">
               <PhoneOff size={28} />
             </button>
           </div>
         </div>
       )}
 
-      {/* LIGHTBOX OVERLAY */}
+      {/* Lightbox */}
       {lightboxMedia && (
-        <div className="fixed inset-0 z-[300] bg-black/95 flex flex-col items-center justify-center animate-fade-in p-4 backdrop-blur-sm">
-          <button onClick={() => setLightboxMedia(null)} className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-10">
-            <X size={24} />
-          </button>
-          <img src={lightboxMedia} className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 hover:scale-105 cursor-zoom-in" />
+        <div className="fixed inset-0 z-[400] bg-black/95 flex items-center justify-center p-4" onClick={() => setLightboxMedia(null)}>
+          <button className="absolute top-6 right-6 text-white p-2 hover:bg-white/10 rounded-full transition"><X size={28}/></button>
+          <img src={lightboxMedia} className="max-w-full max-h-full object-contain" onClick={e => e.stopPropagation()}/>
         </div>
       )}
     </div>

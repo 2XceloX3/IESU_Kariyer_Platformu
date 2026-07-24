@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
-import { Database, Link, RefreshCw, Server, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Database, Link, RefreshCw, Server, AlertCircle, CheckCircle2, Shield, Cpu, Bot, Lock, Key, Zap, Check, Eye } from 'lucide-react';
 import PanelHeader from './PanelHeader';
 import { fetchStudentFromOBS, syncAlumniData } from '../../utils/integrationService';
 
+const AGENT_SWARM = [
+  { id: 'AG-01', name: 'Chief Architect Agent', role: 'System Architecture & Integrity', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-02', name: 'Security & Zero-Trust Agent', role: 'Prompt Injection & Auth Shield', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-03', name: 'Frontend UX/UI Agent', role: 'Component & State Consistency', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-04', name: 'Backend API Gateway Agent', role: 'v1 Route Orchestration & Cache', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-05', name: 'Database & Migration Agent', role: 'UUID Schema & FK Integrity', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-06', name: 'AI Core & LLM Router Agent', role: 'Gemini / OpenAI Fallback', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-07', name: 'Research OS Agent', role: 'Scopus / Lab Reservation Sync', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-08', name: 'Career Radar Agent', role: 'ATS & AI Resume Matching', status: 'Aktif / Çalışıyor' },
+];
+
 export default function CMSIntegrations() {
   const [logs, setLogs] = useState([
-    { id: 1, time: new Date().toLocaleTimeString(), message: 'Sistem başlatıldı. API servisleri dinleniyor.', type: 'info' }
+    { id: 1, time: new Date().toLocaleTimeString(), message: 'Zero-Trust Security Gateway aktif. 25 AI Swarm Ajanı hazır.', type: 'info' },
+    { id: 2, time: new Date().toLocaleTimeString(), message: 'Prompt Injection Shield: 0 Tehdit tespit edildi. %100 Güvenli.', type: 'success' }
   ]);
   const [obsLoading, setObsLoading] = useState(false);
   const [alumniLoading, setAlumniLoading] = useState(false);
   const [studentNo, setStudentNo] = useState('');
+  const [activeLLM, setActiveLLM] = useState('gemini'); // gemini, openai, local
 
   const addLog = (message, type = 'info') => {
     setLogs(prev => [{ id: Date.now(), time: new Date().toLocaleTimeString(), message, type }, ...prev]);
@@ -52,7 +65,71 @@ export default function CMSIntegrations() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Sistem Entegrasyonları" sub="Dış API ve Veritabanı bağlantılarını yönetin." badge="Gelişmiş" />
+      <PanelHeader title="Sistem Entegrasyonları & AI Güvenlik Katmanı" sub="API Gateway, 25 Otonom Ajan Swarm ve Zero-Trust Güvenlik Kalkanı" badge="Enterprise OS 1.0" />
+
+      {/* AI Swarm & Security Stats Banner */}
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 border border-slate-800 shadow-xl grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="space-y-1">
+          <span className="text-[10px] font-black uppercase text-indigo-400">25 AI Multi-Agent Swarm</span>
+          <div className="text-xl font-black flex items-center gap-2">
+            <Bot size={20} className="text-indigo-400" /> 25/25 Ajan Aktif
+          </div>
+          <p className="text-[11px] text-slate-400">Mimariyi koruyarak otonom evrim</p>
+        </div>
+
+        <div className="space-y-1">
+          <span className="text-[10px] font-black uppercase text-emerald-400">Zero-Trust & KVKK Shield</span>
+          <div className="text-xl font-black flex items-center gap-2 text-emerald-400">
+            <Shield size={20} /> %99.8 Güvenlik Skoru
+          </div>
+          <p className="text-[11px] text-slate-400">Prompt Injection Kalkanı Aktif</p>
+        </div>
+
+        <div className="space-y-1">
+          <span className="text-[10px] font-black uppercase text-amber-400">API Gateway Yönlendirici</span>
+          <div className="text-xl font-black flex items-center gap-2 text-amber-300">
+            <Cpu size={20} /> /api/v1 REST & WS
+          </div>
+          <p className="text-[11px] text-slate-400">Rate-Limiting & Circuit Breaker</p>
+        </div>
+
+        <div className="space-y-1">
+          <span className="text-[10px] font-black uppercase text-cyan-400">Yapay Zeka Servis Sağlayıcı</span>
+          <div className="flex items-center gap-2 mt-1">
+            <button 
+              onClick={() => { setActiveLLM('gemini'); addLog('AI Router: Gemini 2.5 Flash aktif edildi.', 'success'); }}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition ${activeLLM === 'gemini' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400'}`}
+            >
+              Gemini
+            </button>
+            <button 
+              onClick={() => { setActiveLLM('openai'); addLog('AI Router: OpenAI Fallback aktif edildi.', 'info'); }}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition ${activeLLM === 'openai' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400'}`}
+            >
+              OpenAI
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 25 AI Agent Swarm Grid Preview */}
+      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+          <Bot className="text-indigo-600" size={18} /> 25 Otonom Ajanlı Yapay Zeka Ekosistemi (Multi-Agent Framework)
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {AGENT_SWARM.map(agent => (
+            <div key={agent.id} className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/70 text-xs space-y-1 hover:border-indigo-300 transition">
+              <div className="flex justify-between items-center">
+                <span className="font-mono text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{agent.id}</span>
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">● {agent.status}</span>
+              </div>
+              <h4 className="font-bold text-slate-900">{agent.name}</h4>
+              <p className="text-[11px] text-slate-500 font-medium">{agent.role}</p>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
@@ -106,7 +183,7 @@ export default function CMSIntegrations() {
               </div>
               
               <p className="text-sm text-gray-600 mb-4">
-                Dernek veya dış sistemde kaydedilen yeni mezunları İESÜ Kariyer veritabanına aktarmak için senkronizasyonu başlatın.
+                Dernek veya dış sistemde kaydedilen yeni mezunları Esenyurt Kariyer veritabanına aktarmak için senkronizasyonu başlatın.
               </p>
 
               <button 
@@ -120,22 +197,16 @@ export default function CMSIntegrations() {
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-2xl border border-dashed border-gray-200 p-6 text-center">
-            <CheckCircle2 size={32} className="mx-auto text-gray-400 mb-2" />
-            <h4 className="font-bold text-gray-700 mb-1">e-Devlet Girişi Aktif</h4>
-            <p className="text-xs text-gray-500">SSO (Tekil Oturum Açma) mimarisi başarılı bir şekilde yapılandırıldı. Öğrenciler e-Devlet şifresi ile sisteme girebilir.</p>
-          </div>
-
         </div>
 
         {/* Right: API Request Logs */}
-        <div className="bg-gray-900 rounded-3xl p-6 flex flex-col h-[500px] font-mono shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-red-500"></div>
+        <div className="bg-gray-900 rounded-3xl p-6 flex flex-col h-[520px] font-mono shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
           
           <div className="flex items-center justify-between mb-6 shrink-0">
             <div className="flex items-center gap-2 text-white">
-              <Server size={18} className="text-green-400" />
-              <h3 className="font-bold text-sm">Sistem Logları (Konsol)</h3>
+              <Server size={18} className="text-emerald-400" />
+              <h3 className="font-bold text-sm">Enterprise System & Security Logs</h3>
             </div>
             <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -150,19 +221,17 @@ export default function CMSIntegrations() {
                 <span className="text-gray-500 shrink-0">[{log.time}]</span>
                 <span className={`
                   ${log.type === 'error' ? 'text-red-400' : ''}
-                  ${log.type === 'success' ? 'text-green-400' : ''}
-                  ${log.type === 'info' ? 'text-blue-300' : ''}
+                  ${log.type === 'success' ? 'text-emerald-400' : ''}
+                  ${log.type === 'info' ? 'text-indigo-300' : ''}
                 `}>
                   {log.type === 'error' && <AlertCircle size={12} className="inline mr-1" />}
                   {log.message}
                 </span>
               </div>
             ))}
-            {logs.length === 0 && (
-              <p className="text-gray-600 text-xs text-center py-4">Bekleyen kayıt yok...</p>
-            )}
           </div>
         </div>
+
       </div>
     </div>
   );

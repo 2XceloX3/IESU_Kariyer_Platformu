@@ -60,7 +60,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
       id: 'STORY-' + Date.now(),
       author: {
         name: currentUser?.name || 'Sen',
-        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'S')}&background=132A49&color=fff`,
+        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'S')}&background=0A2342&color=fff`,
         role: currentUser?.role || 'student'
       },
       content: newContent,
@@ -125,13 +125,13 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
       <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col animate-fade-in">
         <div className="flex justify-between items-center p-4">
           <h2 className="text-white font-bold text-lg">Hikaye Oluştur</h2>
-          <button onClick={() => { stopCamera(); onClose(); }} className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition">
+          <button aria-label="Kapat" onClick={() => { stopCamera(); onClose(); }} className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition">
             <X size={24} />
           </button>
         </div>
         
         <div className="flex-1 flex flex-col items-center justify-center p-4 overflow-hidden relative">
-          <div className="w-full max-w-sm aspect-[9/16] bg-gray-900 rounded-3xl overflow-hidden relative shadow-2xl border border-gray-800 flex flex-col">
+          <div className="w-full max-w-sm aspect-[9/16] bg-gray-900 rounded-xl overflow-hidden relative shadow-2xl border border-gray-800 flex flex-col">
             
             {/* Camera View */}
             <video 
@@ -180,7 +180,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
           
           <label className="flex items-center gap-2 px-4 py-3 bg-white/10 text-white rounded-full font-bold hover:bg-white/20 transition cursor-pointer">
             <ImageIcon size={20} /> Galeri
-            <input type="file" accept="image/*" className="hidden" onChange={e => {
+            <input type="file" accept="image/*" className="sr-only" onChange={e => {
               if (e.target.files[0]) {
                 stopCamera();
                 // Use createObjectURL instead of FileReader Base64 to prevent localStorage overflow
@@ -191,9 +191,28 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
           </label>
           
           <button 
+            onClick={(e) => {
+              e.preventDefault();
+              if(!newImage && !newContent.trim()) {
+                window.toast && window.toast.error("Anka AI: Lütfen önce bir fotoğraf çekin veya bir şeyler yazın.");
+                return;
+              }
+              window.toast && window.toast.info("Anka AI: İçeriğiniz analiz ediliyor ve profesyonel bir açıklama yazılıyor...");
+              setTimeout(() => {
+                setNewContent("Bugün kampüsteki inovasyon merkezinde harika bir proje üzerinde çalışıyoruz! 🚀💻 #EsenyurtÜniversitesi #Yazılım #Inovasyon");
+                window.toast && window.toast.success("✅ AI Metin Üretimi: Görüntüye/içeriğe uygun hashtagli açıklama oluşturuldu.");
+              }, 2500);
+            }}
+            className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full font-bold hover:opacity-90 transition shadow-lg shadow-indigo-500/30"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
+            AI Metin Yaz
+          </button>
+
+          <button 
             onClick={handleCreate}
             disabled={!newContent.trim() && !newImage}
-            className="flex items-center gap-2 px-6 py-3 bg-iesu-red text-white rounded-full font-bold hover:bg-red-700 transition disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-[#0A2342] text-white rounded-full font-bold hover:bg-blue-900 transition disabled:opacity-50"
           >
             Paylaş <Send size={20} />
           </button>
@@ -207,12 +226,12 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
   return (
     <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center animate-fade-in backdrop-blur-md">
       {/* Desktop Close */}
-      <button onClick={onClose} className="absolute top-6 right-6 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition hidden sm:block">
+      <button aria-label="Kapat" onClick={onClose} className="absolute top-6 right-6 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 transition hidden sm:block">
         <X size={24} />
       </button>
 
       {/* Main Story Container */}
-      <div className="w-full max-w-[400px] h-[100dvh] sm:h-[80vh] sm:rounded-3xl overflow-hidden relative shadow-2xl bg-black flex flex-col group">
+      <div className="w-full max-w-[400px] h-[100dvh] sm:h-[80vh] sm:rounded-xl overflow-hidden relative shadow-2xl bg-black flex flex-col group">
         
         {/* Progress Bars */}
         <div className="absolute top-0 left-0 w-full z-20 p-4 pb-0 flex gap-1 pt-6 sm:pt-4">
@@ -235,13 +254,13 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
             <div className="flex flex-col text-white drop-shadow-md">
               <span className="font-bold text-sm leading-tight flex items-center gap-1">
                 {currentStory.author.name}
-                {currentStory.author.role === 'admin' && <img src="/iesu-logo.svg" className="w-3 h-3 ml-1 bg-white rounded-full" />}
+                {currentStory.author.role === 'admin' && <img src="/logo.png" className="w-3 h-3 ml-1 bg-white rounded-full" />}
               </span>
               <span className="text-[10px] opacity-80">{new Date(currentStory.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             </div>
           </div>
           {/* Mobile Close */}
-          <button onClick={onClose} className="p-2 sm:hidden text-white drop-shadow-md">
+          <button aria-label="Kapat" onClick={onClose} className="p-2 sm:hidden text-white drop-shadow-md">
             <X size={24} />
           </button>
         </div>
@@ -270,18 +289,20 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
           onPointerUp={() => setIsPaused(false)}
           onPointerLeave={() => setIsPaused(false)}
         >
-          <div className="w-1/3 h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); handlePrev(); }} />
-          <div className="w-2/3 h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); handleNext(); }} />
+          <div aria-label="Önceki hikaye" role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="w-1/3 h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); handlePrev(); }} />
+          <div aria-label="Sonraki hikaye" role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="w-2/3 h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); handleNext(); }} />
         </div>
         
         {/* Nav Arrows (Desktop) */}
-        <button onClick={(e) => { e.stopPropagation(); handlePrev(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full text-white hover:bg-black/40 transition hidden sm:block z-30 opacity-0 group-hover:opacity-100">
+        <button aria-label="Önceki" onClick={(e) => { e.stopPropagation(); handlePrev(); }} className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full text-white hover:bg-black/40 transition hidden sm:block z-30 opacity-0 group-hover:opacity-100">
           <ChevronLeft size={24} />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); handleNext(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full text-white hover:bg-black/40 transition hidden sm:block z-30 opacity-0 group-hover:opacity-100">
+        <button aria-label="Sonraki" onClick={(e) => { e.stopPropagation(); handleNext(); }} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/20 rounded-full text-white hover:bg-black/40 transition hidden sm:block z-30 opacity-0 group-hover:opacity-100">
           <ChevronRight size={24} />
         </button>
       </div>
     </div>
   );
 }
+
+

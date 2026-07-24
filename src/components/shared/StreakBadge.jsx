@@ -31,7 +31,7 @@ export default function StreakBadge({ streakCount = 0 }) {
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={handleConfetti}
-      title={`${streakCount} Günlük Gelişim Serisi! Her gün giriş yaparak serini koru.`}
+      title={`${streakCount} Günlük Esenyurt Serisi! Her gün giriş yaparak serini koru.`}
     >
       <motion.div
         animate={isHovered ? {

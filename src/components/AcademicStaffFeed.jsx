@@ -9,19 +9,37 @@ import CareerNetwork from './CareerNetwork';
 import NavIcon from './shared/NavIcon';
 import MessagingInterface from './MessagingInterface';
 
+import useAppStore from '../store/useAppStore';
+
 export default function AcademicStaffFeed({ 
-  setView, setSelectedUserId, currentUser, userRole, academicRole, 
-  notifications, setNotifications, 
-  initialInternships = [], academicApprovals = [], setAcademicApprovals,
-  posts, setPosts, news, events, announcements, jobs,
-  students, setStudents, alumni, companies, academicStaff, surveys,
-  messages, setMessages, groups, setSelectedGroupId
+  setView, setSelectedUserId, currentUser, userRole, academicRole
 }) {
+  const posts = useAppStore(state => state.posts);
+  const setPosts = useAppStore(state => state.setPosts);
+  const news = useAppStore(state => state.news);
+  const events = useAppStore(state => state.events);
+  const announcements = useAppStore(state => state.announcements);
+  const jobs = useAppStore(state => state.jobs);
+  const students = useAppStore(state => state.students);
+  const setStudents = useAppStore(state => state.setStudents);
+  const alumni = useAppStore(state => state.alumni);
+  const companies = useAppStore(state => state.companies);
+  const academicStaff = useAppStore(state => state.academicStaff);
+  const surveys = useAppStore(state => state.surveys);
+  const groups = useAppStore(state => state.groups);
+  const academicApprovals = useAppStore(state => state.academicApprovals);
+  const setAcademicApprovals = useAppStore(state => state.setAcademicApprovals);
+  const notifications = useAppStore(state => state.notifications);
+  const setNotifications = useAppStore(state => state.setNotifications);
+  const messages = useAppStore(state => state.messages);
+  const setMessages = useAppStore(state => state.setMessages);
+  const setSelectedGroupId = useAppStore(state => state.setSelectedGroupId);
+
   const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, approvals, radar, messaging
   const [isRadarOpen, setIsRadarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [internships, setInternships] = useState(initialInternships);
-  const [approvals, setApprovals] = useState(academicApprovals);
+  const [internships, setInternships] = useState([]);
+  const [approvals, setApprovals] = useState(academicApprovals || []);
 
   const stats = useMemo(() => ({
     totalStudents: 450,
@@ -43,24 +61,23 @@ export default function AcademicStaffFeed({
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="w-10"></div> {/* Spacer */}
           
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
-            <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+            <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
+              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
             </div>
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-iesu-red`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#0A2342]`} title="Bildirimler">
               <div className="relative">
-                <Bell size={24} strokeWidth={2.5} className="fill-current text-iesu-red/10" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#0A2342]/10" />
                 {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
-            <TopProfileMenu currentUser={currentUser || { name: 'Akademik Personel', avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('Akademik Personel')}&background=132A49&color=fff` }} userRole={userRole || 'academic'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="academic" />
+            <TopProfileMenu currentUser={currentUser || { name: 'Akademik Personel', avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('Akademik Personel')}&background=0A2342&color=fff` }} userRole={userRole || 'academic'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="academic" />
           </div>
         </div>
       </nav>
@@ -70,18 +87,18 @@ export default function AcademicStaffFeed({
         
         {/* LEFT PANEL: Profile Mini-Card */}
         <div className="hidden md:block w-[300px] shrink-0 space-y-6">
-          <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-900 to-slate-800"></div>
             <div className="relative pt-12 text-center">
               <div className="relative inline-block">
                 {userRole === 'admin' ? (
                   <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg mx-auto p-2">
-                    <img src="/iesu-logo.svg" alt="Admin Logo" className="w-full h-full object-contain" />
+                    <img src="/logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
                   </div>
                 ) : (
-                  <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Akademik Personel')}&background=132A49&color=fff`} className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto object-cover bg-white" alt="Profile" />
+                  <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Akademik Personel')}&background=0A2342&color=fff`} className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto object-cover bg-white" alt="Profile" />
                 )}
-                <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow-md hover:bg-blue-700 transition">
+                <button aria-label="İşlem Butonu" className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow-md hover:bg-blue-700 transition">
                   <Crown size={14} />
                 </button>
               </div>
@@ -93,12 +110,12 @@ export default function AcademicStaffFeed({
               <div className="mt-8 flex justify-between text-center px-2">
                 <div>
                   <p className="text-2xl font-black text-blue-600">{stats.totalStudents}</p>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mt-1">Öğrenci</p>
+                  <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-1">Öğrenci</p>
                 </div>
                 <div className="w-px bg-gray-200"></div>
                 <div>
                   <p className="text-2xl font-black text-emerald-600">{stats.activeInterns}</p>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mt-1">Stajyer</p>
+                  <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-1">Stajyer</p>
                 </div>
               </div>
 
@@ -113,7 +130,7 @@ export default function AcademicStaffFeed({
         <div className="w-full max-w-[600px] shrink-0 space-y-6">
           
           {/* Welcome Header (Slimmer version for center column) */}
-          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col gap-4">
+          <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-black text-gray-900 mb-1">Hoş Geldiniz, {currentUser?.name}</h1>
@@ -128,7 +145,7 @@ export default function AcademicStaffFeed({
 
         {/* --- RADAR / YÖNETİM PANELİ (COLLAPSIBLE) --- */}
         {isRadarOpen && (
-          <div className="mb-8 animate-fade-in bg-white rounded-3xl p-2 shadow-sm border border-gray-100">
+          <div className="mb-8 animate-fade-in bg-white rounded-xl p-2 shadow-sm border border-gray-100">
             <div className="flex items-center justify-center gap-4 mb-4 mt-2">
               <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-2 text-sm font-bold rounded-xl transition ${activeTab === 'dashboard' ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>Genel İstatistikler</button>
               <button onClick={() => setActiveTab('approvals')} className={`px-4 py-2 text-sm font-bold rounded-xl transition ${activeTab === 'approvals' ? 'bg-blue-50 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}>Onay Havuzu ({stats.pendingApprovals})</button>
@@ -176,7 +193,7 @@ export default function AcademicStaffFeed({
                         <div className="flex items-center gap-4 mb-4 sm:mb-0">
                           <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 font-bold text-lg shrink-0">{internship.studentName.charAt(0)}</div>
                           <div>
-                            <h4 className="font-bold text-gray-900">{internship.studentName} <span className="text-xs text-gray-400 font-normal ml-2">({internship.studentNo})</span></h4>
+                            <h4 className="font-bold text-gray-900">{internship.studentName} <span className="text-xs text-gray-500 font-normal ml-2">({internship.studentNo})</span></h4>
                             <p className="text-sm text-gray-500">{internship.company} - {internship.type}</p>
                           </div>
                         </div>
@@ -208,7 +225,7 @@ export default function AcademicStaffFeed({
                       <tbody className="divide-y divide-gray-100">
                         {internships.map(i => (
                           <tr key={i.id} className="hover:bg-slate-50/50 transition">
-                            <td className="px-6 py-4 font-bold text-gray-900">{i.studentName} <span className="text-xs font-normal text-gray-400 block">{i.studentNo}</span></td>
+                            <td className="px-6 py-4 font-bold text-gray-900">{i.studentName} <span className="text-xs font-normal text-gray-500 block">{i.studentNo}</span></td>
                             <td className="px-6 py-4 text-gray-600 font-medium">{i.company}</td>
                             <td className="px-6 py-4"><span className={`px-2 py-1 rounded-md text-[10px] font-bold ${i.status === 'Devam Ediyor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>{i.type} ({i.status})</span></td>
                             <td className="px-6 py-4 text-gray-500">{i.term}</td>
@@ -224,7 +241,7 @@ export default function AcademicStaffFeed({
                 <div className="bg-white border border-gray-200 rounded-2xl p-6 animate-fade-in">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><ShieldCheck className="text-iesu-red" size={24} /> Kurumsal Rozet Merkezi</h3>
+                      <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><ShieldCheck className="text-[#0A2342]" size={24} /> Kurumsal Rozet Merkezi</h3>
                       <p className="text-sm text-gray-500 mt-1">Öğrencilere Sınıf Temsilcisi, Kulüp Başkanı vb. onaylı kurumsal rozetler atayın.</p>
                     </div>
                   </div>
@@ -277,7 +294,7 @@ export default function AcademicStaffFeed({
 
         {/* --- KARIYER AĞI (MOBİL İÇİN VEYA SEKME) --- */}
         {!isRadarOpen && activeTab === 'career_network' && (
-          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in">
+          <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in">
             <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2"><Compass className="text-blue-600" /> Kariyer Ağı</h2>
             <CareerNetwork companies={companies} students={students} alumni={alumni} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} hideHeader={true} />
           </div>
@@ -297,8 +314,8 @@ export default function AcademicStaffFeed({
                 
                 if (filteredItems.length === 0) {
                   return (
-                    <div className="p-8 text-center bg-white rounded-3xl border border-gray-100 flex flex-col items-center">
-                      <MessageCircle size={32} className="text-gray-300 mb-4" />
+                    <div className="p-8 text-center bg-white rounded-xl border border-gray-100 flex flex-col items-center">
+                      <MessageCircle size={32} className="text-gray-400 mb-4" />
                       <h3 className="text-gray-900 font-black mb-2">Henüz bir gönderi yok.</h3>
                     </div>
                   );
@@ -313,7 +330,7 @@ export default function AcademicStaffFeed({
 
         {activeTab === 'messaging' && (
           <div className="fixed inset-0 z-[60] bg-gray-900/40 flex items-end sm:items-center justify-center p-0 sm:p-6 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-5xl h-[95vh] sm:h-[85vh] sm:rounded-3xl rounded-t-3xl overflow-hidden flex flex-col shadow-2xl animate-slide-up sm:animate-fade-in relative">
+            <div className="bg-white w-full max-w-5xl h-[95vh] sm:h-[85vh] sm:rounded-xl rounded-t-3xl overflow-hidden flex flex-col shadow-2xl animate-slide-up sm:animate-fade-in relative">
               {/* Modal Native Header */}
               <div className="h-12 w-full bg-white border-b border-gray-100 shrink-0 flex items-center justify-between px-4 z-50">
                 <div className="w-10 h-1 bg-gray-200 rounded-full absolute left-1/2 -translate-x-1/2 top-2 sm:hidden"></div>
@@ -352,11 +369,11 @@ export default function AcademicStaffFeed({
       {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
         <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setActiveTab('dashboard')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'dashboard' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Akış">
+          <button onClick={() => setActiveTab('dashboard')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'dashboard' ? 'text-[#0A2342]' : 'text-gray-500 hover:text-gray-900'}`} title="Akış">
             <Home size={26} strokeWidth={2} />
           </button>
           
-          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900" title="İlanlar">
+          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-gray-500 hover:text-gray-900" title="İlanlar">
             <Briefcase size={24} strokeWidth={2} />
           </button>
           
@@ -366,7 +383,7 @@ export default function AcademicStaffFeed({
           </button>
           
           {/* MESSAGES */}
-          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-iesu-red' : 'text-gray-400 hover:text-gray-900'}`} title="Mesajlar">
+          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#0A2342]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
             <MessageCircle size={24} strokeWidth={2} />
           </button>
           
@@ -379,3 +396,7 @@ export default function AcademicStaffFeed({
     </div>
   );
 }
+
+
+
+

@@ -8,7 +8,7 @@ const FETCHED_CONTENT = [
     type: 'Haber',
     title: 'Kariyer Fuarı 2026 Büyük Bir Coşkuyla Gerçekleşti',
     date: '2026-06-20',
-    description: 'İESÜ Kariyer Geliştirme Ofisi Koordinatörlüğü tarafından düzenlenen Kariyer Fuarı, 50\'den fazla firmanın katılımıyla başarıyla tamamlandı.',
+    description: 'Esenyurt Kariyer Geliştirme Merkezi tarafından düzenlenen Kariyer Fuarı, 50\'den fazla firmanın katılımıyla başarıyla tamamlandı.',
     originalImageUrl: 'https://www.esenyurt.edu.tr/uploads/images/kariyer-fuari.jpg',
     source: 'esenyurt.edu.tr',
     imported: false
@@ -89,7 +89,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
       <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-6">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
             <input 
               type="text"
               placeholder="İçerik başlığında ara..."
@@ -112,7 +112,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
               onClick={handleImportAll}
               disabled={pendingCount === 0 || isImporting}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition ${
-                pendingCount > 0 ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                pendingCount > 0 ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-100 text-gray-500 cursor-not-allowed'
               }`}
             >
               <DownloadCloud size={16} />
@@ -128,12 +128,12 @@ export default function OfficialContentImport({ news, setNews, announcements, se
                 {item.originalImageUrl ? (
                   <img src={item.originalImageUrl} alt={item.title} className="w-full h-full object-cover" onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
                 ) : (
-                  <div className="flex flex-col items-center justify-center text-gray-400">
+                  <div className="flex flex-col items-center justify-center text-gray-500">
                     <ImageIcon size={24} className="mb-1" />
                     <span className="text-[10px] font-bold">Görsel Yok</span>
                   </div>
                 )}
-                <div style={{display: item.originalImageUrl ? 'none' : 'flex'}} className="absolute inset-0 flex-col items-center justify-center text-gray-400 bg-gray-100 hidden">
+                <div style={{display: item.originalImageUrl ? 'none' : 'flex'}} className="absolute inset-0 flex-col items-center justify-center text-gray-500 bg-gray-100 hidden">
                     <ImageIcon size={24} className="mb-1" />
                     <span className="text-[10px] font-bold">Görsel Yok</span>
                 </div>
@@ -147,8 +147,8 @@ export default function OfficialContentImport({ news, setNews, announcements, se
                   }`}>
                     {item.type}
                   </span>
-                  <span className="text-xs text-gray-400 font-medium">{item.date}</span>
-                  <span className="text-xs text-gray-400 font-medium ml-auto flex items-center gap-1">
+                  <span className="text-xs text-gray-500 font-medium">{item.date}</span>
+                  <span className="text-xs text-gray-500 font-medium ml-auto flex items-center gap-1">
                     <ExternalLink size={12} /> {item.source}
                   </span>
                 </div>
@@ -178,7 +178,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
           
           {filtered.length === 0 && (
             <div className="text-center py-10">
-              <DownloadCloud className="mx-auto text-gray-300 mb-3" size={32} />
+              <DownloadCloud className="mx-auto text-gray-400 mb-3" size={32} />
               <p className="text-gray-500 text-sm font-medium">İçe aktarılacak yeni içerik bulunamadı.</p>
             </div>
           )}

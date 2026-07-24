@@ -117,7 +117,7 @@ export default function CMSMessages({ messages, setMessages }) {
                       { id: 'companies', label: 'Firmalar', icon: <Building2 size={16}/> },
                       { id: 'academics', label: 'Akademisyenler', icon: <BookOpen size={16}/> }
                     ].map(aud => (
-                      <div 
+                      <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
                         key={aud.id}
                         onClick={() => setBulkForm({...bulkForm, targetAudience: aud.id})}
                         className={`border rounded-xl p-3 cursor-pointer transition flex flex-col items-center justify-center text-center gap-2
@@ -168,7 +168,7 @@ export default function CMSMessages({ messages, setMessages }) {
             <div className="w-1/3 border-r border-gray-100 flex flex-col bg-gray-50/50">
               <div className="p-4 border-b border-gray-100 bg-white">
                 <div className="relative">
-                  <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                  <Search className="absolute left-3 top-2.5 text-gray-500" size={16} />
                   <input 
                     type="text" 
                     placeholder="Mesajlarda ara..." 
@@ -191,7 +191,7 @@ export default function CMSMessages({ messages, setMessages }) {
                         <h4 className={`text-sm truncate pr-2 ${!msg.read ? 'font-black text-gray-900' : 'font-bold text-gray-700'}`}>
                           {msg.senderName}
                         </h4>
-                        <span className="text-[10px] text-gray-400 shrink-0 font-medium">
+                        <span className="text-[10px] text-gray-500 shrink-0 font-medium">
                           {msg.timestamp ? new Date(msg.timestamp).toLocaleDateString('tr-TR') : ''}
                         </span>
                       </div>
@@ -211,7 +211,7 @@ export default function CMSMessages({ messages, setMessages }) {
                   <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white shadow-sm z-10">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0 border border-gray-200 overflow-hidden">
-                        {selectedMessage.senderAvatar ? <img src={selectedMessage.senderAvatar} className="w-full h-full object-cover" /> : <MessageSquare size={20} className="text-gray-400"/>}
+                        {selectedMessage.senderAvatar ? <img src={selectedMessage.senderAvatar} className="w-full h-full object-cover" /> : <MessageSquare size={20} className="text-gray-500"/>}
                       </div>
                       <div>
                         <h3 className="font-black text-gray-900 text-lg">{selectedMessage.senderName}</h3>
@@ -220,7 +220,7 @@ export default function CMSMessages({ messages, setMessages }) {
                         </p>
                       </div>
                     </div>
-                    <button onClick={() => handleDelete(selectedMessage.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
+                    <button onClick={() => handleDelete(selectedMessage.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -240,14 +240,14 @@ export default function CMSMessages({ messages, setMessages }) {
                         placeholder="Yanıtınızı yazın..." 
                         className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none"
                       />
-                      <button type="submit" disabled={!reply.trim()} className="bg-red-600 text-white px-6 rounded-xl hover:bg-red-700 disabled:opacity-50 transition font-bold flex items-center justify-center shadow-sm">
+                      <button aria-label="İşlem Butonu" type="submit" disabled={!reply.trim()} className="bg-red-600 text-white px-6 rounded-xl hover:bg-red-700 disabled:opacity-50 transition font-bold flex items-center justify-center shadow-sm">
                         <Send size={18} />
                       </button>
                     </form>
                   </div>
                 </>
               ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-gray-50/50">
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-500 bg-gray-50/50">
                   <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 mb-4 text-red-600">
                     <MessageSquare size={32} />
                   </div>
@@ -285,11 +285,11 @@ export default function CMSMessages({ messages, setMessages }) {
                         </td>
                         <td className="px-6 py-4">
                           <div className="font-bold text-gray-900">{msg.senderName}</div>
-                          <div className="text-[10px] text-gray-400 uppercase tracking-wide">{msg.senderId}</div>
+                          <div className="text-[10px] text-gray-500 uppercase tracking-wide">{msg.senderId}</div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="font-bold text-gray-900">{msg.receiverName}</div>
-                          <div className="text-[10px] text-gray-400 uppercase tracking-wide">{msg.receiverId}</div>
+                          <div className="text-[10px] text-gray-500 uppercase tracking-wide">{msg.receiverId}</div>
                         </td>
                         <td className="px-6 py-4 text-gray-700 font-medium max-w-md truncate" title={msg.content}>
                           {msg.content}
@@ -298,7 +298,7 @@ export default function CMSMessages({ messages, setMessages }) {
                     ))}
                     {sortedMessages.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="px-6 py-12 text-center text-gray-400 font-medium">Sistemde henüz mesaj kaydı bulunmuyor.</td>
+                        <td colSpan={4} className="px-6 py-12 text-center text-gray-500 font-medium">Sistemde henüz mesaj kaydı bulunmuyor.</td>
                       </tr>
                     )}
                   </tbody>

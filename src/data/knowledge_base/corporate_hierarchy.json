@@ -1,0 +1,20 @@
+{
+  "university": "İstanbul Gelişim Üniversitesi",
+  "motto": "Gelişime Açık Olun",
+  "vision": "Uluslararası düzeyde kaliteli eğitim, özgün araştırmalar ve toplumsal katkı sağlayan dünya üniversitesi olmak.",
+  "mission": "Eleştirel düşünen, yenilikçi, etik değerlere bağlı ve küresel ölçekte rekabet edebilen bireyler yetiştirmek.",
+  "administration": {
+    "rector": "Prof. Dr. Bahri Şahin",
+    "viceRectors": [
+      "Prof. Dr. Nuri Kuruoğlu",
+      "Prof. Dr. Arda Öztürkcan"
+    ],
+    "secretaryGeneral": "Doç. Dr. Serdar Çerkeş"
+  },
+  "contact": {
+    "address": "Cihangir Mah. Şehit Jandarma Komando Er Hakan Öner Sk. No:1 Avcılar / İstanbul",
+    "phone": "+90 212 422 70 00",
+    "email": "rehber@gelisim.edu.tr",
+    "callCenter": "444 0 448"
+  }
+}

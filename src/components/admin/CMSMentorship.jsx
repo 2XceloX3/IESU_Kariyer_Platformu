@@ -96,15 +96,15 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Target size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Toplam Program</p><p className="text-2xl font-black text-gray-900">{(mentorships || []).length}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Program</p><p className="text-2xl font-black text-gray-900">{(mentorships || []).length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Aktif / Yayında</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Aktif / Yayında</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center"><Edit size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Taslak Bekleyen</p><p className="text-2xl font-black text-gray-900">{draftCount}</p></div>
+            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Taslak Bekleyen</p><p className="text-2xl font-black text-gray-900">{draftCount}</p></div>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
       {/* FILTERS */}
       <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
           <input 
             type="text" placeholder="Program veya mentor ara..." 
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
@@ -127,7 +127,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
             <option value="taslak">Taslak</option>
             <option value="kapalı">Kapalı</option>
           </select>
-          <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
         </div>
       </div>
 
@@ -135,7 +135,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mb-4"><Users size={32}/></div>
+            <div className="w-16 h-16 bg-gray-50 text-gray-500 rounded-full flex items-center justify-center mb-4"><Users size={32}/></div>
             <h3 className="text-lg font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
             <p className="text-sm text-gray-500">Arama kriterlerine uygun mentorluk programı bulunmuyor.</p>
           </div>
@@ -143,11 +143,11 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Program</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Mentor</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tarih/Kota</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Durum</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">İşlemler</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Program</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Mentor</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tarih/Kota</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -166,12 +166,12 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                   </td>
                   <td className="py-3 px-5">
                     <p className="text-sm font-bold text-gray-700">{mnt.mentorName}</p>
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{mnt.mentorType || 'Akademik Personel'}</p>
+                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">{mnt.mentorType || 'Akademik Personel'}</p>
                   </td>
                   <td className="py-3 px-5">
                     <div className="flex flex-col gap-1 text-xs font-medium text-gray-600">
-                      <span className="flex items-center gap-1.5"><Calendar size={13} className="text-gray-400"/> {mnt.deadline || '-'}</span>
-                      <span className="flex items-center gap-1.5"><Users size={13} className="text-gray-400"/> Kota: {mnt.quota || 'Sınırsız'}</span>
+                      <span className="flex items-center gap-1.5"><Calendar size={13} className="text-gray-500"/> {mnt.deadline || '-'}</span>
+                      <span className="flex items-center gap-1.5"><Users size={13} className="text-gray-500"/> Kota: {mnt.quota || 'Sınırsız'}</span>
                     </div>
                   </td>
                   <td className="py-3 px-5">
@@ -187,8 +187,8 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                       {mnt.status === 'Beklemede' && (
                         <button onClick={() => setMentorships(mentorships.map(m => m.id === mnt.id ? {...m, status: 'Aktif'} : m))} className="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition" title="Onayla"><CheckCircle2 size={16}/></button>
                       )}
-                      <button onClick={() => handleEdit(mnt)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
-                      <button onClick={() => handleDelete(mnt.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
+                      <button onClick={() => handleEdit(mnt)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleDelete(mnt.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
                 </tr>
@@ -228,7 +228,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                 <option>Akademik Personel</option>
                 <option>Sektör Uzmanı (Firma)</option>
                 <option>Mezun</option>
-                <option>Kariyer Ofisi</option>
+                <option>Kariyer Merkezi</option>
               </select>
             </div>
             <div>
@@ -291,16 +291,16 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
       {/* RIGHT: LIVE PREVIEW */}
       <div className="w-full lg:w-[380px] shrink-0">
         <div className="sticky top-6">
-          <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">Canlı Önizleme</h4>
+          <h4 className="text-xs font-black text-gray-500 uppercase tracking-wider mb-3">Canlı Önizleme</h4>
           
           {/* Card Preview */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             {/* Image Area */}
             <div className="h-40 bg-gray-100 relative group">
               {form.image ? (
                 <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
                   <ImagePlaceholder />
                   <span className="text-[10px] font-bold uppercase tracking-wider mt-2">Görsel Yok</span>
                 </div>
@@ -316,7 +316,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
             <div className="p-5">
               <div className="flex items-center gap-2 mb-3">
                 <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">{form.mentorType || 'MENTOR'}</span>
-                {form.department && <span className="text-[10px] font-bold text-gray-400 uppercase">{form.department}</span>}
+                {form.department && <span className="text-[10px] font-bold text-gray-500 uppercase">{form.department}</span>}
               </div>
               
               <h3 className="text-[16px] font-black text-gray-900 leading-tight mb-2">
@@ -329,10 +329,10 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
 
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl mb-4">
                 <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-gray-100">
-                  <span className="text-sm font-black text-gray-400">{form.mentorName ? form.mentorName.charAt(0) : 'M'}</span>
+                  <span className="text-sm font-black text-gray-500">{form.mentorName ? form.mentorName.charAt(0) : 'M'}</span>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">MENTOR</p>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">MENTOR</p>
                   <p className="text-[13px] font-bold text-gray-900 leading-tight">{form.mentorName || 'Mentor Adı Soyadı'}</p>
                 </div>
               </div>

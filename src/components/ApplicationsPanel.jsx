@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import {  Briefcase, CheckCircle2, Clock, XCircle, ChevronRight, UserCircle2 , ChevronLeft, Home, Compass, Users, MessageCircle, Bell, Search } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
+import {  Briefcase, CheckCircle2, Clock, XCircle, ChevronRight, UserCircle2 , ChevronLeft, Home, Compass, Users, MessageCircle, Bell, Search, Globe } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 
@@ -10,12 +11,12 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
       case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
       case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
       case 'Topluluklar': return { text: 'text-teal-500', bg: 'bg-teal-50', badge: 'bg-teal-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
-      default: return { text: 'text-iesu-red', bg: 'bg-red-50', badge: 'bg-iesu-red', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
+      default: return { text: 'text-[#0A2342]', bg: 'bg-red-50', badge: 'bg-[#0A2342]', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
     }
   };
   const theme = getClasses();
   return (
-    <div className="relative group cursor-pointer" onClick={onClick} title={label}>
+    <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="relative group cursor-pointer" onClick={onClick} title={label}>
       <div className={`p-2 sm:p-2.5 rounded-2xl transition-all duration-300 ${active ? `${theme.bg} scale-105` : 'hover:bg-gray-100/80 hover:scale-105'}`}>
         <div className={`transition-all duration-300 ${active ? `${theme.text} ${theme.glow}` : 'text-gray-500 group-hover:text-gray-900'}`}>
           {React.cloneElement(icon, { size: active ? 22 : 20, strokeWidth: active ? 2.5 : 2 })}
@@ -26,7 +27,8 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
   );
 };
 
-export default function ApplicationsPanel({ applications = [], setApplications, jobs = [], currentUser, userRole, setView, setSelectedUserId }) {
+export default function ApplicationsPanel({ currentUser, userRole, setView, setSelectedUserId }) {
+  const { applications, setApplications } = useAppStore();
   // If student: show their applications
   // If company: show applications to their jobs
 
@@ -62,18 +64,18 @@ export default function ApplicationsPanel({ applications = [], setApplications, 
     <div className="min-h-screen bg-gray-50 pb-20">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
-            <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <Logo className="h-10 w-auto text-[#0A2342] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
             </div>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
-            <NavIcon icon={<Users />} label="Topluluklar" onClick={() => setView('groups')} />
+            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Globe />} label="Birlik Ağı" onClick={() => setView('birlik_agi')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={true} onClick={() => setView('jobs')} />
             <div className="ml-2">
               <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -82,7 +84,7 @@ export default function ApplicationsPanel({ applications = [], setApplications, 
         </div>
       </nav>
       <main className="max-w-[1000px] mx-auto px-4 lg:px-8 pt-24">
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 min-h-[500px]">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 min-h-[500px]">
       <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
         <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
           <Briefcase size={24} />
@@ -100,7 +102,7 @@ export default function ApplicationsPanel({ applications = [], setApplications, 
       <div className="space-y-4">
         {myApplications.length === 0 ? (
           <div className="text-center py-12 px-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-            <Briefcase size={48} className="mx-auto text-gray-300 mb-4" />
+            <Briefcase size={48} className="mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-bold text-gray-900 mb-2">Henüz Başvuru Yok</h3>
             <p className="text-gray-500">
               {userRole === 'student' ? 'Henüz hiçbir ilana başvurmadınız. İlanlar sekmesinden fırsatları inceleyebilirsiniz.' : 'Henüz ilanlarınıza başvuru yapılmadı.'}
@@ -115,7 +117,7 @@ export default function ApplicationsPanel({ applications = [], setApplications, 
                     <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border ${getStatusColor(app.status)}`}>
                       {getStatusIcon(app.status)} {app.status}
                     </div>
-                    <span className="text-xs text-gray-400 font-medium">{app.date}</span>
+                    <span className="text-xs text-gray-500 font-medium">{app.date}</span>
                   </div>
                   
                   {userRole === 'company' && (
@@ -174,4 +176,5 @@ export default function ApplicationsPanel({ applications = [], setApplications, 
     </div>
   );
 }
+
 

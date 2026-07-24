@@ -75,7 +75,7 @@ export default function CalendarPlanning({ events = [], jobs = [], userRole }) {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col h-[700px]">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col h-[700px]">
       {/* HEADER */}
       <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white z-10 shrink-0">
         <div className="flex items-center gap-4">
@@ -90,9 +90,9 @@ export default function CalendarPlanning({ events = [], jobs = [], userRole }) {
         
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-1 border border-gray-100">
-            <button onClick={handlePrevMonth} className="p-2 text-gray-500 hover:text-gray-900 hover:bg-white rounded-lg transition"><ChevronLeft size={18}/></button>
+            <button aria-label="İşlem Butonu" onClick={handlePrevMonth} className="p-2 text-gray-500 hover:text-gray-900 hover:bg-white rounded-lg transition"><ChevronLeft size={18}/></button>
             <span className="font-black text-gray-900 w-32 text-center text-sm">{monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
-            <button onClick={handleNextMonth} className="p-2 text-gray-500 hover:text-gray-900 hover:bg-white rounded-lg transition"><ChevronRight size={18}/></button>
+            <button aria-label="İşlem Butonu" onClick={handleNextMonth} className="p-2 text-gray-500 hover:text-gray-900 hover:bg-white rounded-lg transition"><ChevronRight size={18}/></button>
           </div>
         </div>
       </div>
@@ -130,7 +130,7 @@ export default function CalendarPlanning({ events = [], jobs = [], userRole }) {
         <div className="flex-1 p-4 sm:p-6 overflow-y-auto bg-gray-50/30">
           <div className="grid grid-cols-7 gap-2 sm:gap-3 mb-2">
             {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map(d => (
-              <div key={d} className="text-center text-[11px] font-black uppercase tracking-widest text-gray-400 py-2">
+              <div key={d} className="text-center text-[11px] font-black uppercase tracking-widest text-gray-500 py-2">
                 {d}
               </div>
             ))}

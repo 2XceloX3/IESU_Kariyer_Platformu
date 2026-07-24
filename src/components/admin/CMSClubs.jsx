@@ -53,7 +53,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
   const pastApps = (clubApplications || []).filter(a => a.status !== 'pending');
 
   return (
-    <div className="w-full bg-white rounded-3xl p-6 lg:p-8 border border-gray-200 shadow-xl shadow-gray-200/50 animate-fade-in relative overflow-hidden">
+    <div className="w-full bg-white rounded-xl p-6 lg:p-8 border border-gray-200 shadow-xl shadow-gray-200/50 animate-fade-in relative overflow-hidden">
       <PanelHeader 
         title="Kulüpler Havuzu Yönetimi" 
         sub="" 
@@ -80,7 +80,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
       {activeTab === 'applications' && (
         <div className="space-y-6 animate-fade-in">
           {pendingApps.length > 0 ? (
-            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
               <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2"><Clock size={18} className="text-amber-500" /> Bekleyen Kurulum Başvuruları</h3>
               <div className="space-y-4">
                 {pendingApps.map(app => (
@@ -107,7 +107,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
               </div>
             </div>
           ) : (
-             <div className="text-center py-12 bg-white rounded-3xl border border-gray-100">
+             <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
                <CheckCircle size={48} className="mx-auto text-emerald-300 mb-3" />
                <h3 className="font-bold text-gray-900 text-lg">Bekleyen Başvuru Yok</h3>
                <p className="text-gray-500">Tüm kulüp kurulum başvuruları değerlendirilmiş.</p>
@@ -116,7 +116,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
 
           {/* Past Applications */}
           {pastApps.length > 0 && (
-            <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm mt-8">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm mt-8">
               <h3 className="font-bold text-gray-900 mb-6">Geçmiş Başvurular</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -154,7 +154,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
         <div className="animate-fade-in">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {(clubs || []).map(club => (
-              <div key={club.id} className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
+              <div key={club.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
                 <div className="h-20 bg-emerald-600 relative">
                   <div className="absolute -bottom-6 left-6 w-14 h-14 bg-white rounded-2xl p-1 shadow-md">
                     <img src={club.logo} alt={club.name} className="w-full h-full rounded-xl object-cover" />
@@ -187,7 +187,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
               </div>
             ))}
             {(clubs || []).length === 0 && (
-               <div className="col-span-full text-center py-12 bg-white rounded-3xl border border-gray-100">
+               <div className="col-span-full text-center py-12 bg-white rounded-xl border border-gray-100">
                  <p className="text-gray-500 font-medium">Henüz aktif bir kulüp bulunmuyor.</p>
                </div>
             )}
@@ -198,7 +198,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
       {/* CLUB FORMS POOL MODAL */}
       {selectedClub && (
         <div className="fixed inset-0 z-[100] bg-gray-900/60 flex items-center justify-center p-0 sm:p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-none sm:rounded-3xl w-full sm:w-[95%] max-w-5xl h-full sm:h-[90vh] overflow-hidden shadow-2xl flex flex-col relative">
+          <div className="bg-white rounded-none sm:rounded-xl w-full sm:w-[95%] max-w-5xl h-full sm:h-[90vh] overflow-hidden shadow-2xl flex flex-col relative">
             <div className="h-16 border-b border-gray-100 bg-gray-50/80 shrink-0 flex items-center justify-between px-6">
               <div className="flex items-center gap-3">
                 <img src={selectedClub.logo} className="w-8 h-8 rounded-lg object-cover shadow-sm" alt="Logo"/>
@@ -211,7 +211,7 @@ export default function CMSClubs({ clubs, setClubs, clubApplications, setClubApp
             </div>
             
             <div className="overflow-y-auto flex-1 bg-gray-50 p-0 sm:p-6 relative">
-              <div className="bg-white rounded-none sm:rounded-3xl overflow-hidden shadow-sm border-0 sm:border border-gray-100 h-full">
+              <div className="bg-white rounded-none sm:rounded-xl overflow-hidden shadow-sm border-0 sm:border border-gray-100 h-full">
                 <ClubAdminPanel 
                   currentUser={currentUser}
                   clubs={clubs}

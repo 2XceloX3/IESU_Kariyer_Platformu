@@ -26,7 +26,7 @@ export default function MediaUploader({ image, onImageChange, label = "Görsel Y
   return (
     <div className="space-y-2">
       <label className="text-xs font-bold text-gray-600 block">{label}</label>
-      <div 
+      <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
         onClick={() => fileInputRef.current?.click()}
         className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl cursor-pointer transition overflow-hidden group
           ${image ? 'border-red-500 bg-black' : 'border-gray-200 hover:border-red-400 hover:bg-red-50'}
@@ -53,7 +53,7 @@ export default function MediaUploader({ image, onImageChange, label = "Görsel Y
               <UploadCloud size={20} />
             </div>
             <p className="text-sm font-bold text-gray-700">Tıkla veya Sürükle</p>
-            <p className="text-[10px] text-gray-400 mt-1">PNG, JPG, WEBP • Max 5MB</p>
+            <p className="text-[10px] text-gray-500 mt-1">PNG, JPG, WEBP • Max 5MB</p>
           </div>
         )}
         <input 

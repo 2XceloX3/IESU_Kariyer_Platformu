@@ -1,963 +1,1000 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import useAppStore from '../store/useAppStore';
 import Logo from './Logo';
 import ProfileUpdate from './ProfileUpdate';
+import TopProfileMenu from './TopProfileMenu';
 import { exportPDF } from '../lib/pdfExporter';
 import {
   UserCircle2, Briefcase, FileText, LogOut, BookOpen, GraduationCap,
   Plus, Trash2, Globe2, Languages, Award, X, Building2, Save, RefreshCw,
   Phone, Mail, MapPin, User, Calendar, BadgeCheck, ArrowLeft,
-  UploadCloud, ChevronRight, Star, Link, Compass, CreditCard, CheckCircle,
-  Clock, AlertCircle, Download, ChevronDown, Users
+  UploadCloud, ChevronRight, ChevronLeft, Star, Link, Compass, CreditCard, CheckCircle,
+  Clock, AlertCircle, Download, ChevronDown, Users, Wand2, Sparkles, Eye, FileCheck, Check
 } from 'lucide-react';
 
 const LANGUAGE_LEVELS = ['Başlangıç (A1-A2)', 'Orta (B1-B2)', 'İleri (C1)', 'Anadil / Akıcı'];
 const EXP_TYPES = ['Staj', 'Tam Zamanlı', 'Yarı Zamanlı', 'Gönüllü', 'Freelance'];
 
 const TABS = [
-  { id: 'ozluk',           label: '👤 Kişisel Bilgiler',         icon: <User size={16} /> },
-  { id: 'akademik',        label: '🎓 Akademik Eğitim',          icon: <GraduationCap size={16} /> },
-  { id: 'staj',            label: '💼 Deneyim & Yetenek',        icon: <Briefcase size={16} /> },
-  { id: 'sertifika',       label: '🏆 Sertifika & Hedefler',     icon: <Award size={16} /> },
-  { id: 'dil',             label: '🌍 Yabancı Dil',              icon: <Globe2 size={16} /> },
-  { id: 'cv',              label: '📄 Akıllı CV',                icon: <FileText size={16} /> },
-  { id: 'kariyer_checkup', label: '🧭 Kariyer Check-up',         icon: <Compass size={16} /> },
-  { id: 'mezun_kart',      label: '💳 Mezun Kart',               icon: <CreditCard size={16} /> },
-  { id: 'kulup_basvuru',   label: '👥 Kulüp Başvurusu',          icon: <Users size={16} /> },
+  { id: 'ozluk',           label: '👤 Kişisel Bilgiler' },
+  { id: 'akademik',        label: '🎓 Akademik Eğitim' },
+  { id: 'staj',            label: '💼 Deneyim & Yetenek' },
+  { id: 'sertifika',       label: '🏆 Sertifika & Hedefler' },
+  { id: 'dil',             label: '🌍 Yabancı Dil' },
+  { id: 'cv',              label: '📄 Akıllı CV' },
+  { id: 'kariyer_checkup', label: '🧭 Kariyer Check-up' },
+  { id: 'mezun_kart',      label: '💳 Mezun Kart' },
+  { id: 'kulup_basvuru',   label: '👥 Kulüp Başvurusu' },
 ];
 
-const CV_SUB_TABS = [
-  { id: 'cv_yukle', label: 'CV Yükle' },
-  { id: 'cv_ai',    label: 'AI CV Oluşturucu' },
-  { id: 'cv_ipucu', label: 'CV İpuçları' },
+const CHECKUP_QUESTIONS = [
+  { id: 1, text: "Yazılım geliştirme süreçlerinde hangi alanda çalışmayı tercih edersiniz?", options: ["Frontend Geliştirme", "Backend Servisleri", "Yapay Zeka & Veri Bilimi", "Sistem & DevOps"] },
+  { id: 2, text: "Bir problemle karşılaştığınızda ilk olarak ne yaparsınız?", options: ["Dokümantasyon & StackOverflow okurum", "Kodu satır satır debug ederim", "AI asistanlardan yardım alırım", "Takım arkadaşlarıma danışırım"] },
+  { id: 3, text: "Proje yönetiminde hangi metodolojiyi benimsersiniz?", options: ["Agile/Scrum", "Waterfall", "Kanban", "Kaotik/Serbest Stil"] },
+  { id: 4, text: "Veritabanı teknolojileri konusundaki tecrübeniz nedir?", options: ["İleri düzey SQL & NoSQL", "Temel SQL sorguları", "ORM araçları kullanırım", "Henüz tecrübem yok"] },
+  { id: 5, text: "İngilizce teknik doküman okuma ve yazma düzeyiniz nedir?", options: ["Çok rahat okur yazarım", "Sözlük desteğiyle okurum", "Sadece çeviri araçlarıyla", "Başlangıç seviyesinde"] },
+  { id: 6, text: "Frontend geliştirme araçlarından (React, Vue vb.) hangisine hakimsiniz?", options: ["React.js", "Vue.js / Angular", "Vanilla JS / HTML / CSS", "Mobil (Flutter/React Native)"] },
+  { id: 7, text: "Backend servisleri tasarlarken hangi dili tercih edersiniz?", options: ["Node.js / JavaScript", "Python / Django", "Go / Java / C#", "PHP / Ruby"] },
+  { id: 8, text: "Yapay zeka (AI) ve makine öğrenimi modellerine ne kadar ilgilisiniz?", options: ["Aktif projeler geliştirdim", "Temel kütüphaneleri kullandım", "Sadece teorik bilgim var", "İlgim yok"] },
+  { id: 9, text: "Bulut bilişim platformlarını (AWS, GCP, Azure) kullanma sıklığınız nedir?", options: ["Her projemde kullanırım", "Sadece basit sunucu dağıtımlarında", "Hiç kullanmadım", "Bulut servislerini araştırıyorum"] },
+  { id: 10, text: "Takım çalışmasında kendinizi nasıl tanımlarsınız?", options: ["Lider ruhlu ve yönlendirici", "Verilen görevi kusursuz yapan", "Fikir üreten ve tartışan", "Bireysel çalışmayı tercih eden"] },
+  { id: 11, text: "Kod kalitesi ve temiz kod (Clean Code) standartlarına ne kadar önem verirsiniz?", options: ["Her satırı özenle yazarım", "Çalışması yeterlidir", "Linter kurallarına uyarım", "Proje bitiminde optimize ederim"] },
+  { id: 12, text: "Yeni bir teknolojiyi öğrenirken en çok hangi yöntemi kullanırsınız?", options: ["Uygulamalı küçük projeler yaparak", "Video eğitim setleri izleyerek", "Resmi dokümantasyon okuyarak", "Topluluk formlarını inceleyerek"] }
 ];
 
-const LIKERT_OPTIONS = [
-  { value: 1, label: 'Kesinlikle Hayır' },
-  { value: 2, label: 'Hayır' },
-  { value: 3, label: 'Kısmen' },
-  { value: 4, label: 'Evet' },
-  { value: 5, label: 'Kesinlikle Evet' },
-];
-
-export default function AlumniInformationSystem({ currentUser, setView, alumniCardApplications, setAlumniCardApplications }) {
-  const { alumniSurveyResponses, setAlumniSurveyResponses, clubApplications, setClubApplications } = useAppStore();
+export default function AlumniInformationSystem({ setView, currentUser, userRole, setSelectedUserId }) {
   const [activeTab, setActiveTab] = useState('ozluk');
-  const [activeCvTab, setActiveCvTab] = useState('cv_yukle');
-  const [isSaving, setIsSaving] = useState(false);
-  const fileInputRef = useRef(null);
+  const [cvTemplate, setCvTemplate] = useState('modern'); // 'modern' | 'academic' | 'creative'
+  const [aiEnhancing, setAiEnhancing] = useState(false);
+  const [cardFlipped, setCardFlipped] = useState(false);
+  
+  // Kariyer Checkup State (12 questions)
+  const [checkupAnswers, setCheckupAnswers] = useState({});
+  const [checkupStep, setCheckupStep] = useState(0);
+  const [checkupCompleted, setCheckupCompleted] = useState(false);
 
-  // ─── Club Application State ───
-  const [clubForm, setClubForm] = useState({
-    name: '',
-    purpose: '',
-    advisorName: ''
-  });
-  const [clubSubmitted, setClubSubmitted] = useState(false);
-
-  // ─── Kariyer Check-up Survey State ───
-  const [surveyForm, setSurveyForm] = useState({
-    q1_calisma: '',           // Çalışıyor mu?
-    q2_sure: '',              // İlk iş ne kadar sürede bulundu
-    q3_sektor: '',            // Sektör
-    q4_kurum_turu: '',        // Kurum türü
-    q5_gorev: '',             // Görev/ünvan
-    q6_iliskili: 0,           // Likert 1-5 - bölümle ilgili mi
-    q7_il: '',                // Çalıştığı il/ülke
-    q8_calisma_sekli: '',     // Uzaktan/Hibrit/Ofis
-    q9_lisansustu: '',        // Lisansüstü eğitim
-    q10_telefon: '',          // Telefon güncel mi
-    q11_eposta: '',           // E-posta güncel mi
-    q12_oneri: '',            // Görüş ve öneriler
-  });
-  const [surveySubmitted, setSurveySubmitted] = useState(false);
-
-  // ─── Mezun Kart State ───
+  // Mezun Kart State
+  const [cardAppStatus, setCardAppStatus] = useState('form'); // 'form' | 'loading' | 'minted'
   const [cardForm, setCardForm] = useState({
-    tc: currentUser?.tc || '',
-    phone: currentUser?.phone || '',
-    kvkk: false,
-  });
-  const existingCardApp = (alumniCardApplications || []).find(
-    a => a.email === currentUser?.email || a.name === currentUser?.name
-  );
-
-
-  // ─── Form States ───
-  const [ozluk, setOzluk] = useState({
-    tc: currentUser?.tc || '',
     name: currentUser?.name || '',
-    phone: currentUser?.phone || '',
-    email: currentUser?.email || '',
-    address: currentUser?.address || '',
-    linkedin: currentUser?.linkedin || '',
-    website: currentUser?.website || '',
-    bio: currentUser?.bio || '',
+    dept: 'Yazılım Mühendisliği',
+    gradYear: '2024',
+    studentId: '200201090',
+    agreed: false
   });
 
-  const [akademik, setAkademik] = useState({
-    faculty: currentUser?.faculty || '',
-    department: currentUser?.department || '',
-    gpa: currentUser?.gpa || '',
-    graduationYear: currentUser?.graduationYear || '',
-    degree: currentUser?.degree || 'Lisans',
+  // Survey state
+  const [surveyAnswers, setSurveyAnswers] = useState({});
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
+
+  const filteredTabs = useMemo(() => {
+    const list = [...TABS];
+    if (userRole === 'alumni') {
+      list.push({ id: 'anket', label: '📝 Memnuniyet & Anket' });
+    }
+    return list;
+  }, [userRole]);
+  
+  // Local profile state
+  const [profileData, setProfileData] = useState({
+    summary: "Yazılım mühendisliği alanında kendimi geliştiren, yapay zeka ve web teknolojilerine ilgili bir geliştiriciyim.",
+    phone: "+90 555 123 4567",
+    website: "https://myportfolio.dev",
+    linkedin: "https://linkedin.com/in/iesuli",
+    github: "https://github.com/iesuli",
+    education: [
+      { id: 1, school: "İstanbul Esenyurt Üniversitesi", degree: "Lisans", major: "Yazılım Mühendisliği", startYear: "2020", endYear: "2024", gpa: "3.45" }
+    ],
+    experience: [
+      { id: 1, company: "Trendyol", role: "Stajyer Yazılım Geliştirici", type: "Staj", startYear: "2023", endYear: "2023", desc: "React ve micro-frontend mimarileriyle çalışıldı." }
+    ],
+    skills: ["React", "JavaScript", "CSS", "Git", "Tailwind CSS"],
+    languages: [
+      { id: 1, language: "İngilizce", level: "İleri (C1)" }
+    ],
+    certs: [
+      { id: 1, title: "Google Cloud Engineering Certificate", issuer: "Google", date: "2023" }
+    ],
+    goals: [
+      { id: 1, text: "Yapay zeka alanında uluslararası bir sertifika almak.", done: true },
+      { id: 2, text: "İngilizce teknik makale yayınlamak.", done: false },
+      { id: 3, text: "Bir açık kaynak projeye katkıda bulunmak.", done: false }
+    ],
+    clubApplications: [
+      { id: 1, name: "Yazılım ve Yapay Zeka Kulübü", status: "Onaylandı" }
+    ]
   });
 
-  const [experiences, setExperiences] = useState(currentUser?.experiences || []);
-  const [showExpModal, setShowExpModal] = useState(false);
-  const [tempExp, setTempExp] = useState({ title: '', company: '', type: 'Staj', startDate: '', endDate: '' });
+  // Checklist handler
+  const toggleGoal = (id) => {
+    setProfileData(prev => ({
+      ...prev,
+      goals: prev.goals.map(g => g.id === id ? { ...g, done: !g.done } : g)
+    }));
+  };
 
-  const [certificates, setCertificates] = useState(currentUser?.certificates || []);
-  const [showCertModal, setShowCertModal] = useState(false);
-  const [tempCert, setTempCert] = useState({ name: '', issuer: '', year: '' });
+  // Add inputs helpers
+  const [newSkill, setNewSkill] = useState('');
+  const [newLang, setNewLang] = useState({ name: '', level: 'Orta (B1-B2)' });
+  const [newCert, setNewCert] = useState({ title: '', issuer: '', date: '' });
 
-  const [languages, setLanguages] = useState(currentUser?.languages || []);
-  const [showLangModal, setShowLangModal] = useState(false);
-  const [tempLang, setTempLang] = useState({ name: '', level: 'Başlangıç (A1-A2)' });
+  // Calculate profile completeness
+  const completeness = useMemo(() => {
+    let score = 20; // base score for registering
+    if (profileData.summary.length > 20) score += 15;
+    if (profileData.phone) score += 10;
+    if (profileData.linkedin || profileData.github) score += 15;
+    if (profileData.education.length > 0) score += 15;
+    if (profileData.experience.length > 0) score += 15;
+    if (profileData.skills.length > 2) score += 10;
+    return Math.min(100, score);
+  }, [profileData]);
 
-  const [courses, setCourses] = useState(currentUser?.courses || []);
-  const [showCourseModal, setShowCourseModal] = useState(false);
-  const [tempCourse, setTempCourse] = useState({ name: '', organizer: '', type: 'Kurs', year: '' });
-
-  const [cvFileName, setCvFileName] = useState(currentUser?.attachmentName || '');
-
-  // ─── Helpers ───
-  const handleSave = () => {
-    setIsSaving(true);
+  const handleAiEnhanceSummary = () => {
+    setAiEnhancing(true);
     setTimeout(() => {
-      setIsSaving(false);
-      if (window.toast) window.toast.success('Bilgileriniz başarıyla güncellendi.');
-    }, 1200);
+      setProfileData(prev => ({
+        ...prev,
+        summary: "Yazılım Mühendisliği son sınıf öğrencisi olarak modern web teknolojileri, yapay zeka entegrasyonları ve bulut bilişim alanlarında teorik altyapıyı pratik projelerle birleştiren hevesli bir mühendis adayıyım. Agile metodolojilerle çalışmaya yatkın, analitik düşünme yeteneğine sahip bir takım oyuncusuyum."
+      }));
+      setAiEnhancing(false);
+      window.toast && window.toast.success("Özet metniniz AI tarafından optimize edildi!");
+    }, 1500);
   };
 
-  const addItem = (setter, list, newItem, reset, close) => {
-    const vals = Object.values(newItem).filter(Boolean);
-    if (!vals.length) return;
-    setter([...list, { id: Date.now(), ...newItem }]);
-    reset();
-    close(false);
-  };
-
-  const removeItem = (setter, list, id) => setter(list.filter(i => i.id !== id));
-
-  const handleCvUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setCvFileName(file.name);
-      if (window.toast) window.toast.success('CV dosyası yüklendi.');
+  const handleCheckupAnswer = (opt) => {
+    const qId = CHECKUP_QUESTIONS[checkupStep].id;
+    setCheckupAnswers({ ...checkupAnswers, [qId]: opt });
+    
+    if (checkupStep < CHECKUP_QUESTIONS.length - 1) {
+      setCheckupStep(checkupStep + 1);
+    } else {
+      setCheckupCompleted(true);
+      window.toast && window.toast.success("🎉 Tebrikler! 12 soruluk kariyer check-up testi tamamlandı.");
     }
   };
 
-  const inp = "w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all";
-  const lbl = "block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wide";
-
-  const sectionIcon = {
-    ozluk: <User size={20} />,
-    akademik: <GraduationCap size={20} />,
-    staj: <Briefcase size={20} />,
-    kurs: <BookOpen size={20} />,
-    sertifika: <Award size={20} />,
-    cv: <FileText size={20} />
+  const handleCardApplication = (e) => {
+    e.preventDefault();
+    if (!cardForm.name || !cardForm.studentId || !cardForm.agreed) {
+      window.toast && window.toast.error("Lütfen tüm alanları doldurun ve onay kutusunu işaretleyin.");
+      return;
+    }
+    setCardAppStatus('loading');
+    setTimeout(() => {
+      setCardAppStatus('minted');
+      window.toast && window.toast.success("💳 Mezun Kartınız başarıyla üretildi ve dijital cüzdana aktarıldı!");
+    }, 2000);
   };
-  const sectionColor = {
-    ozluk: 'blue', akademik: 'indigo', staj: 'emerald',
-    kurs: 'amber', sertifika: 'purple', dil: 'sky',
-    cv: 'rose',
-    kariyer_checkup: 'indigo', mezun_kart: 'rose', kulup_basvuru: 'emerald'
-  };
-  const colorMap = {
-    blue:    { bg: 'bg-blue-50',    text: 'text-blue-600',    btn: 'bg-blue-600 hover:bg-blue-700' },
-    indigo:  { bg: 'bg-indigo-50',  text: 'text-indigo-600',  btn: 'bg-indigo-600 hover:bg-indigo-700' },
-    emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', btn: 'bg-gray-900 hover:bg-black' },
-    amber:   { bg: 'bg-amber-50',   text: 'text-amber-600',   btn: 'bg-amber-500 hover:bg-amber-600' },
-    purple:  { bg: 'bg-purple-50',  text: 'text-purple-600',  btn: 'bg-purple-600 hover:bg-purple-700' },
-    sky:     { bg: 'bg-sky-50',     text: 'text-sky-600',     btn: 'bg-sky-600 hover:bg-sky-700' },
-    rose:    { bg: 'bg-rose-50',    text: 'text-rose-600',    btn: 'bg-rose-600 hover:bg-rose-700' },
-    teal:    { bg: 'bg-teal-50',    text: 'text-teal-600',    btn: 'bg-teal-600 hover:bg-teal-700' },
-  };
-
-  const currentColor = colorMap[sectionColor[activeTab]];
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] font-sans flex flex-col">
-
-      {/* ═══════════ TOP HEADER BAR ═══════════ */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
-        {/* Title row */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setView('alumni')}
-              className="w-9 h-9 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition-all"
-            >
-              <ArrowLeft size={17} />
-            </button>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0 border border-red-100">
-                <Logo className="w-6 h-6 object-contain text-[#e60000]" />
-              </div>
-              <div>
-                <h1 className="text-sm font-black text-gray-900 leading-tight">Mezun Bilgi Sistemi</h1>
-                <p className="text-[10px] text-gray-400 font-medium">İstanbul Esenyurt Üniversitesi</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 bg-green-50 px-3 py-1 rounded-full border border-green-100">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-[11px] font-bold text-green-700">MBS Bağlantısı Aktif</span>
-            </div>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 bg-[#e60000] hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm"
-            >
-              {isSaving ? <RefreshCw size={13} className="animate-spin" /> : <Save size={13} />}
-              <span className="hidden sm:inline">Kaydet</span>
-            </button>
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800 pb-20 selection:bg-indigo-500/20">
+      
+      {/* Header */}
+      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <div className="flex items-center gap-2">
+            <GraduationCap className="text-indigo-600" size={24} />
+            <h1 className="font-black text-slate-900 tracking-tight text-md sm:text-lg">Mezun Bilgi Sistemi (MBS)</h1>
           </div>
         </div>
-
-        {/* Tab navigation row – like AdminDashboard */}
-        <div className="px-4 flex items-center gap-1 overflow-x-auto scrollbar-none">
-          {TABS.map(tab => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-xs font-bold whitespace-nowrap border-b-2 transition-all duration-200 ${
-                  isActive
-                    ? 'border-[#e60000] text-[#e60000]'
-                    : 'border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300'
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+        <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
       </header>
 
-      {/* ═══════════ MAIN CONTENT ═══════════ */}
-      <main className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8 animate-fade-in">
-            {/* Section header */}
-          <div className="flex items-center justify-between mb-6 pb-5 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className={`w-11 h-11 rounded-xl ${currentColor.bg} ${currentColor.text} flex items-center justify-center`}>
-                {sectionIcon[activeTab]}
-              </div>
+      <main className="max-w-[1300px] mx-auto p-4 lg:p-8 flex flex-col lg:flex-row gap-8">
+        
+        {/* Left Column: Navigation & Profile completeness */}
+        <div className="w-full lg:w-[320px] shrink-0 flex flex-col gap-6">
+          
+          {/* Profile Card & Progress */}
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <img src={currentUser?.avatar || "https://i.pravatar.cc/150?img=11"} alt="Profile" className="w-14 h-14 rounded-2xl object-cover shadow-md" />
               <div>
-                <h2 className="font-black text-gray-900 text-lg">{TABS.find(t => t.id === activeTab)?.label}</h2>
-                <p className="text-xs text-gray-400 mt-0.5">Bu alandaki bilgilerinizi güncelleyin</p>
+                <h2 className="font-black text-slate-800 text-sm sm:text-base leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
+                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase mt-1 inline-block">Mezun Üye</span>
               </div>
             </div>
 
-            {/* Add button for list sections */}
-            {['staj','kurs','sertifika','dil'].includes(activeTab) && (
-              <button
-                onClick={() => {
-                  if (activeTab === 'staj') setShowExpModal(true);
-                  if (activeTab === 'kurs') setShowCourseModal(true);
-                  if (activeTab === 'sertifika') setShowCertModal(true);
-                  if (activeTab === 'dil') setShowLangModal(true);
-                }}
-                className={`flex items-center gap-2 px-4 py-2.5 text-white rounded-xl text-xs font-bold transition-all shadow-sm ${currentColor.btn}`}
-              >
-                <Plus size={14} />
-                {activeTab === 'staj' && 'Tecrübe Ekle'}
-                {activeTab === 'kurs' && 'Eğitim Ekle'}
-                {activeTab === 'sertifika' && 'Sertifika Ekle'}
-                {activeTab === 'dil' && 'Dil Ekle'}
-              </button>
-            )}
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-black">
+                <span className="text-slate-500">Profil Doluluk Oranı</span>
+                <span className="text-indigo-600">%{completeness}</span>
+              </div>
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${completeness}%` }}
+                  className="bg-indigo-600 h-full rounded-full" 
+                />
+              </div>
+              <p className="text-[10px] font-medium text-slate-400 leading-relaxed mt-1">
+                Eksik alanları tamamlayarak İK yöneticilerinin aramalarında %40 daha fazla görünün.
+              </p>
+            </div>
           </div>
 
-          {/* ─── KİŞİSEL BİLGİLER ─── */}
-          {activeTab === 'ozluk' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className={lbl}>Ad Soyad</label>
-                  <input type="text" value={ozluk.name} onChange={e => setOzluk({...ozluk, name: e.target.value})} className={inp} placeholder="Adınız Soyadınız" />
-                </div>
-                <div>
-                  <label className={lbl}>E-Posta Adresi</label>
-                  <input type="email" value={ozluk.email} onChange={e => setOzluk({...ozluk, email: e.target.value})} className={inp} placeholder="ornek@esenyurt.edu.tr" />
-                </div>
-                <div>
-                  <label className={lbl}>Telefon Numarası</label>
-                  <input type="tel" value={ozluk.phone} onChange={e => setOzluk({...ozluk, phone: e.target.value})} className={inp} placeholder="+90 555 555 5555" />
-                </div>
-                <div>
-                  <label className={lbl}>Konum / Şehir</label>
-                  <input type="text" value={ozluk.address} onChange={e => setOzluk({...ozluk, address: e.target.value})} className={inp} placeholder="Örn: İstanbul, Türkiye" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className={lbl}>Hakkımda / Biyografi</label>
-                  <textarea rows={4} value={ozluk.bio} onChange={e => setOzluk({...ozluk, bio: e.target.value})} className={`${inp} resize-none`} placeholder="Kendinizden ve kariyer hedeflerinizden bahsedin..." />
-                </div>
-                <div>
-                  <label className={lbl}>LinkedIn Profili</label>
-                  <input type="url" value={ozluk.linkedin} onChange={e => setOzluk({...ozluk, linkedin: e.target.value})} className={inp} placeholder="linkedin.com/in/username" />
-                </div>
-                <div>
-                  <label className={lbl}>Kişisel Web Sitesi</label>
-                  <input type="url" value={ozluk.website} onChange={e => setOzluk({...ozluk, website: e.target.value})} className={inp} placeholder="https://www.example.com" />
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Navigation Links */}
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-4 shadow-sm">
+            <nav className="flex flex-col gap-1">
+              {filteredTabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full text-left px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/10' : 'text-slate-600 hover:bg-slate-50'}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
 
-          {/* ─── AKADEMİK EĞİTİM ─── */}
-          {activeTab === 'akademik' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className={lbl}>Fakülte / Enstitü</label>
-                  <select value={akademik.faculty} onChange={e => setAkademik({...akademik, faculty: e.target.value})} className={inp}>
-                    <option value="">Seçiniz</option>
-                    <option value="Mühendislik ve Mimarlık Fakültesi">Mühendislik ve Mimarlık Fakültesi</option>
-                    <option value="İşletme ve Yönetim Bilimleri Fakültesi">İşletme ve Yönetim Bilimleri Fakültesi</option>
-                    <option value="Sağlık Bilimleri Fakültesi">Sağlık Bilimleri Fakültesi</option>
-                    <option value="Sanat ve Sosyal Bilimler Fakültesi">Sanat ve Sosyal Bilimler Fakültesi</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={lbl}>Bölüm / Program</label>
-                  <input type="text" value={akademik.department} onChange={e => setAkademik({...akademik, department: e.target.value})} className={inp} placeholder="Örn: Yazılım Mühendisliği" />
-                </div>
-                <div>
-                  <label className={lbl}>Sınıf / Derece</label>
-                  <input type="text" value={akademik.degree} onChange={e => setAkademik({...akademik, degree: e.target.value})} className={inp} placeholder="Örn: 3. Sınıf / Mezun" />
-                </div>
-                <div>
-                  <label className={lbl}>Genel Not Ortalaması (GNO)</label>
-                  <input type="text" value={akademik.gpa} onChange={e => setAkademik({...akademik, gpa: e.target.value})} className={inp} placeholder="Örn: 3.45" />
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Right Column: Tab Content */}
+        <div className="flex-grow bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 15 }}
+              className="space-y-6"
+            >
+              {/* TAB 1: Özgeçmiş Özeti & Kişisel Bilgiler */}
+              {activeTab === 'ozluk' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <h3 className="text-lg font-black text-slate-900">Kişisel Bilgiler</h3>
+                    <button 
+                      onClick={handleAiEnhanceSummary}
+                      disabled={aiEnhancing}
+                      className="text-xs font-black bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 px-3 py-2 rounded-xl flex items-center gap-1.5 transition disabled:opacity-50"
+                    >
+                      {aiEnhancing ? 'Optimize Ediliyor...' : 'AI ile Özeti Düzenle'}
+                      <Wand2 size={12} />
+                    </button>
+                  </div>
 
-          {/* ─── İŞ & STAJ DENEYİMİ ─── */}
-          {activeTab === 'staj' && (
-            <div className="space-y-6">
-              {experiences.length === 0 ? (
-                <div className="text-center py-12 border border-gray-100 rounded-3xl bg-gray-50/50">
-                  <Briefcase size={48} className="mx-auto text-gray-200 mb-4" />
-                  <p className="text-gray-500 font-medium">Henüz bir deneyim eklenmemiş.</p>
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-black text-slate-500 uppercase">Özet Bilgi</label>
+                      <textarea 
+                        value={profileData.summary}
+                        onChange={(e) => setProfileData({...profileData, summary: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-medium focus:outline-none focus:border-indigo-400 min-h-[120px] leading-relaxed"
+                        placeholder="Kendinizi kısaca tanıtın..."
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-slate-500 uppercase">Telefon Numarası</label>
+                        <input 
+                          type="text" 
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-indigo-400"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-slate-500 uppercase">Kişisel Portfolyo Linki</label>
+                        <input 
+                          type="text" 
+                          value={profileData.website}
+                          onChange={(e) => setProfileData({...profileData, website: e.target.value})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-indigo-400"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="grid gap-4">
-                  {experiences.map((exp) => (
-                    <div key={exp.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-emerald-200 transition-all shadow-sm">
-                      <div className="flex gap-4">
-                        <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
-                          <Building2 size={24} />
+              )}
+
+              {/* TAB 2: Akademik Eğitim */}
+              {activeTab === 'akademik' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <h3 className="text-lg font-black text-slate-900">Eğitim Bilgileri</h3>
+                    <button className="text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
+                      <Plus size={14} /> Yeni Ekle
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {profileData.education.map(edu => (
+                      <div key={edu.id} className="p-5 rounded-2xl border border-slate-100 bg-slate-50/50 flex justify-between items-start gap-4">
+                        <div className="flex gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600"><GraduationCap size={22}/></div>
+                          <div>
+                            <h4 className="font-black text-sm text-slate-800">{edu.school}</h4>
+                            <p className="text-xs text-slate-500 font-semibold mt-1">{edu.degree} - {edu.major} ({edu.startYear} - {edu.endYear})</p>
+                            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded mt-2 inline-block">Not Ortalaması: {edu.gpa}</span>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-base">{exp.title}</h4>
-                          <p className="text-sm font-medium text-emerald-700 mt-0.5">{exp.company}</p>
-                          <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase tracking-wider">{exp.type}</span>
-                        </div>
+                        <button className="text-slate-400 hover:text-red-500 transition"><Trash2 size={16}/></button>
                       </div>
-                      <button onClick={() => removeItem(setExperiences, experiences, exp.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                        <Trash2 size={16} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: Deneyim ve Yetenekler */}
+              {activeTab === 'staj' && (
+                <div className="space-y-8">
+                  <div>
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+                      <h3 className="text-lg font-black text-slate-900">İş ve Staj Deneyimleri</h3>
+                      <button className="text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
+                        <Plus size={14} /> Yeni Ekle
                       </button>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
 
-          {/* ─── YABANCI DİL ─── */}
-          {activeTab === 'dil' && (
-            <div className="space-y-6">
-              {languages.length === 0 ? (
-                <div className="text-center py-12 border border-gray-100 rounded-3xl bg-gray-50/50">
-                  <Globe2 size={48} className="mx-auto text-gray-200 mb-4" />
-                  <p className="text-gray-500 font-medium">Yabancı dil bilgisi eklenmemiş.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {languages.map((lang) => (
-                    <div key={lang.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex justify-between items-center shadow-sm hover:border-sky-200 transition-colors">
-                      <div>
-                        <p className="font-bold text-gray-900">{lang.name}</p>
-                        <p className="text-xs text-sky-600 font-bold mt-0.5">{lang.level}</p>
-                      </div>
-                      <button onClick={() => removeItem(setLanguages, languages, lang.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* ─── SERTİFİKA VE EĞİTİMLER ─── */}
-          {activeTab === 'sertifika' && (
-            <div className="space-y-6">
-              {certificates.length === 0 ? (
-                <div className="text-center py-12 border border-gray-100 rounded-3xl bg-gray-50/50">
-                  <Award size={48} className="mx-auto text-gray-200 mb-4" />
-                  <p className="text-gray-500 font-medium">Sertifika veya belge eklenmemiş.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {certificates.map((cert) => (
-                    <div key={cert.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between shadow-sm hover:border-purple-200 transition-all">
-                      <div>
-                        <h4 className="font-bold text-gray-900 text-base">{cert.name}</h4>
-                        <p className="text-sm font-medium text-gray-500 mt-0.5">{cert.issuer} {cert.year && `- ${cert.year}`}</p>
-                      </div>
-                      <button onClick={() => removeItem(setCertificates, certificates, cert.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {activeTab === 'kulup_basvuru' && (
-            <div className="space-y-6">
-              {clubSubmitted ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle size={40} className="text-green-500" />
-                  </div>
-                  <h3 className="text-xl font-black text-gray-900 mb-2">Başvurunuz Alındı!</h3>
-                  <p className="text-gray-500 text-sm max-w-md mx-auto">Kulüp kurma başvurunuz (EK-1) merkeze iletildi. Onay durumu e-posta adresinize bildirilecektir.</p>
-                </div>
-              ) : (
-                <>
-                  <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3">
-                    <Users size={20} className="text-amber-500 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-bold text-amber-900">Yeni Öğrenci Kulübü Kurma Başvurusu (EK-1 Formu)</p>
-                      <p className="text-xs text-amber-700 mt-0.5">Kurmak istediğiniz kulübün bilgilerini eksiksiz doldurun. Başvurunuz onaylandığında bu kulübün başkanı olarak yetkilendirileceksiniz.</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="md:col-span-2">
-                      <label className={lbl}>Kulüp Adı</label>
-                      <input type="text" value={clubForm.name} onChange={e => setClubForm({...clubForm, name: e.target.value})} className={inp} placeholder="Örn: Yapay Zeka Kulübü" />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className={lbl}>Danışman Öğretim Elemanı (Ad Soyad)</label>
-                      <input type="text" value={clubForm.advisorName} onChange={e => setClubForm({...clubForm, advisorName: e.target.value})} className={inp} placeholder="Örn: Dr. Ahmet Yılmaz" />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className={lbl}>Kuruluş Amacı ve Faaliyet Alanı</label>
-                      <textarea rows={4} value={clubForm.purpose} onChange={e => setClubForm({...clubForm, purpose: e.target.value})} className={`${inp} resize-none`} placeholder="Kulübünüzün temel amacı ve faaliyetleri nelerdir?" />
-                    </div>
-                  </div>
-                  <button
-                    disabled={!clubForm.name || !clubForm.purpose || !clubForm.advisorName}
-                    onClick={() => {
-                      const newApp = {
-                        id: `APP-${Date.now()}`,
-                        name: clubForm.name,
-                        purpose: clubForm.purpose,
-                        advisorName: clubForm.advisorName,
-                        userId: currentUser?.tc || 'ÖĞRENCİ',
-                        date: new Date().toLocaleDateString('tr-TR'),
-                        status: 'pending'
-                      };
-                      if (setClubApplications) setClubApplications([...(clubApplications || []), newApp]);
-                      setClubSubmitted(true);
-                      if (window.toast) window.toast.success('Kulüp başvurunuz gönderildi.');
-                    }}
-                    className="w-full py-3.5 bg-gray-900 hover:bg-black text-white rounded-xl font-black text-sm transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Başvuruyu Gönder
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* ─── AKILLI CV (SMART CV) ─── */}
-          {activeTab === 'cv' && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl p-6 text-white flex flex-col md:flex-row items-center justify-between shadow-lg">
-                <div>
-                  <h3 className="text-xl font-black mb-1">Akıllı CV'niz Hazır!</h3>
-                  <p className="text-sm text-indigo-100">Diğer sekmelerde girdiğiniz veriler otomatik olarak senkronize edilir.</p>
-                </div>
-                <div className="mt-4 md:mt-0 flex gap-3">
-                  <button onClick={() => exportPDF('alumni-cv-preview', 'Mezun_CV.pdf')} className="px-5 py-2.5 bg-white text-indigo-700 hover:bg-indigo-50 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
-                    <Download size={18} /> PDF İndir
-                  </button>
-                </div>
-              </div>
-              
-              {/* CV PREVIEW CONTAINER */}
-              <div id="alumni-cv-preview" className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 md:p-12 min-h-[842px] max-w-[794px] mx-auto text-gray-800">
-                {/* Header section */}
-                <div className="border-b-2 border-indigo-600 pb-6 mb-6">
-                  <h1 className="text-3xl font-black text-gray-900 uppercase tracking-wide">{ozluk.name || 'Ad Soyad'}</h1>
-                  <p className="text-lg text-indigo-600 font-bold mb-3">{akademik.department || 'Bölüm / Ünvan Belirtilmedi'}</p>
-                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 font-medium">
-                    {ozluk.email && <span className="flex items-center gap-1.5"><Mail size={14}/> {ozluk.email}</span>}
-                    {ozluk.phone && <span className="flex items-center gap-1.5"><Phone size={14}/> {ozluk.phone}</span>}
-                    {ozluk.address && <span className="flex items-center gap-1.5"><MapPin size={14}/> {ozluk.address}</span>}
-                    {ozluk.linkedin && <span className="flex items-center gap-1.5"><Link size={14}/> LinkedIn</span>}
-                  </div>
-                </div>
-                
-                {/* Bio section */}
-                {ozluk.bio && (
-                  <div className="mb-8">
-                    <p className="text-sm leading-relaxed text-gray-700 text-justify">{ozluk.bio}</p>
-                  </div>
-                )}
-                
-                {/* Grid Layout for the rest */}
-                <div className="grid grid-cols-3 gap-8">
-                  <div className="col-span-2 space-y-8">
-                    {/* Experience */}
-                    {experiences.length > 0 && (
-                      <section>
-                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
-                          <Briefcase size={18} className="text-indigo-600"/> Deneyim
-                        </h2>
-                        <div className="space-y-4">
-                          {experiences.map(exp => (
-                            <div key={exp.id}>
-                              <h3 className="font-bold text-gray-900">{exp.title}</h3>
-                              <p className="text-indigo-600 text-sm font-semibold mb-1">{exp.company} <span className="text-gray-400 font-normal ml-2">({exp.type})</span></p>
+                    <div className="space-y-4">
+                      {profileData.experience.map(exp => (
+                        <div key={exp.id} className="p-5 rounded-2xl border border-slate-100 bg-slate-50/50 flex justify-between items-start gap-4">
+                          <div className="flex gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600"><Building2 size={20}/></div>
+                            <div>
+                              <h4 className="font-black text-sm text-slate-800">{exp.role}</h4>
+                              <p className="text-xs text-slate-500 font-semibold mt-1">{exp.company} • {exp.type} ({exp.startYear} - {exp.endYear})</p>
+                              <p className="text-xs text-slate-400 font-medium leading-relaxed mt-2.5">{exp.desc}</p>
                             </div>
-                          ))}
+                          </div>
+                          <button className="text-slate-400 hover:text-red-500 transition"><Trash2 size={16}/></button>
                         </div>
-                      </section>
-                    )}
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="border-b border-slate-100 pb-4 mb-4">
+                      <h3 className="text-lg font-black text-slate-900">Yetenekler</h3>
+                    </div>
                     
-                    {/* Education */}
-                    {(akademik.faculty || akademik.department) && (
-                      <section>
-                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
-                          <GraduationCap size={18} className="text-indigo-600"/> Eğitim
-                        </h2>
-                        <div>
-                          <h3 className="font-bold text-gray-900">İstanbul Esenyurt Üniversitesi</h3>
-                          <p className="text-gray-700 text-sm mb-1">{akademik.faculty}</p>
-                          <p className="text-indigo-600 text-sm font-semibold">{akademik.department} <span className="text-gray-400 font-normal ml-2">({akademik.degree})</span></p>
-                          {akademik.gpa && <p className="text-xs font-bold text-gray-500 mt-1">GNO: {akademik.gpa}</p>}
-                        </div>
-                      </section>
-                    )}
-                  </div>
-                  
-                  <div className="col-span-1 space-y-8">
-                    {/* Languages */}
-                    {languages.length > 0 && (
-                      <section>
-                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
-                          <Globe2 size={18} className="text-indigo-600"/> Yabancı Diller
-                        </h2>
-                        <div className="space-y-3">
-                          {languages.map(lang => (
-                            <div key={lang.id}>
-                              <h3 className="font-bold text-gray-800 text-sm">{lang.name}</h3>
-                              <p className="text-xs text-indigo-600 font-semibold">{lang.level}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-                    )}
-                    
-                    {/* Certificates */}
-                    {certificates.length > 0 && (
-                      <section>
-                        <h2 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2">
-                          <Award size={18} className="text-indigo-600"/> Sertifikalar
-                        </h2>
-                        <div className="space-y-3">
-                          {certificates.map(cert => (
-                            <div key={cert.id}>
-                              <h3 className="font-bold text-gray-800 text-sm">{cert.name}</h3>
-                              <p className="text-xs text-gray-500">{cert.issuer}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-                    )}
-                  </div>
-                </div>
-                
-              </div>
-            </div>
-          )}
-
-          {/* ─── KARİYER CHECK-UP ─── */}
-          {activeTab === 'kariyer_checkup' && (
-            <div className="space-y-6">
-              {surveySubmitted ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle size={40} className="text-green-500" />
-                  </div>
-                  <h3 className="text-xl font-black text-gray-900 mb-2">Teşekkürler!</h3>
-                  <p className="text-gray-500 text-sm max-w-md mx-auto">Yanıtlarınız başarıyla kaydedildi ve üniversitemizin istatistik havuzuna eklendi. Katkınız için teşekkürler.</p>
-                  <button onClick={() => setSurveySubmitted(false)} className="mt-6 text-xs font-bold text-blue-600 hover:underline">Tekrar doldurmak istiyorum</button>
-                </div>
-              ) : (
-                <>
-                  <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 flex gap-3">
-                    <Compass size={20} className="text-indigo-500 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-bold text-indigo-900">Üniversitemizin İstatistiklerine Katkıda Bulunun</p>
-                      <p className="text-xs text-indigo-700 mt-0.5">Mezun durumunuza ilişkin bilgiler anonim olarak toplanır ve KVKK kapsamında korunur. Hiçbir kişisel veri işverenlerle paylaşılmaz.</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    {/* S1 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">1. Şu anda aktif olarak çalışıyor musunuz?</p>
-                      <div className="flex flex-wrap gap-2">
-                        {['Çalışıyorum', 'Kısmi Zamanlı', 'Stajda', 'Hayr, Arıyorum', 'Hayır, Aramıyorum'].map(opt => (
-                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q1_calisma: opt})} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q1_calisma === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
-                        ))}
-                      </div>
+                    <div className="flex gap-3 mb-4 max-w-sm">
+                      <input 
+                        type="text" 
+                        placeholder="Yetenek yazın..." 
+                        value={newSkill}
+                        onChange={e => setNewSkill(e.target.value)}
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                      />
+                      <button 
+                        onClick={() => {
+                          if (!newSkill.trim()) return;
+                          setProfileData(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
+                          setNewSkill('');
+                        }}
+                        className="bg-indigo-600 text-white font-black px-4 py-2 rounded-xl text-xs"
+                      >
+                        Ekle
+                      </button>
                     </div>
 
-                    {/* S2 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">2. İlk işinizi mezun olduktan ne kadar süre sonra buldunuz?</p>
-                      <select value={surveyForm.q2_sure} onChange={e => setSurveyForm({...surveyForm, q2_sure: e.target.value})} className={inp}>
-                        <option value="">Seçiniz</option>
-                        {['Mezun olmadan buldum', '0-3 Ay', '3-6 Ay', '6-12 Ay', '1-2 Yıl', '2 Yıldan Fazla', 'Henüz bulamadım'].map(o => <option key={o}>{o}</option>)}
-                      </select>
-                    </div>
-
-                    {/* S3 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">3. Çalıştığınız sektör</p>
-                      <select value={surveyForm.q3_sektor} onChange={e => setSurveyForm({...surveyForm, q3_sektor: e.target.value})} className={inp}>
-                        <option value="">Seçiniz</option>
-                        {['Bilgi Teknolojileri', 'Sağlık', 'Eğitim', 'Finans / Bankacılık', 'İnşaat / Gayrimenkul', 'Lojistik / Taşımacılık', 'Perakende / Ticaret', 'Kamu / Devlet', 'Medya / İletişim', 'Turizm / Otelcilik', 'Sanayi / Üretim', 'Diğer'].map(o => <option key={o}>{o}</option>)}
-                      </select>
-                    </div>
-
-                    {/* S4 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">4. Çalıştığınız kurumun türü</p>
-                      <div className="flex flex-wrap gap-2">
-                        {['Kamu', 'Özel Sektör', 'NGO / Sivil Toplum', 'Kendi İşim (Serbest)', 'Uluslararası Kurum'].map(opt => (
-                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q4_kurum_turu: opt})} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q4_kurum_turu === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* S5 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">5. Mevcut göreviniz / ünvanınız</p>
-                      <input type="text" value={surveyForm.q5_gorev} onChange={e => setSurveyForm({...surveyForm, q5_gorev: e.target.value})} className={inp} placeholder="Örn: Yazılım Mühendisi, Müdire, Analist..." />
-                    </div>
-
-                    {/* S6 - LİKERT */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-4">6. Çalıştığınız iş mezun olduğunuz bölümle ne kadar ilişkili?</p>
-                      <div className="flex gap-2 justify-between">
-                        {LIKERT_OPTIONS.map(opt => (
-                          <button
-                            key={opt.value}
-                            onClick={() => setSurveyForm({...surveyForm, q6_iliskili: opt.value})}
-                            className={`flex-1 flex flex-col items-center gap-1.5 py-3 px-1 rounded-xl border text-xs font-bold transition-all ${
-                              surveyForm.q6_iliskili === opt.value
-                                ? 'bg-indigo-600 text-white border-indigo-600'
-                                : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
-                            }`}
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.skills.map((skill, idx) => (
+                        <span key={idx} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5">
+                          {skill} 
+                          <span 
+                            onClick={() => setProfileData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }))}
+                            className="text-[10px] text-slate-400 hover:text-red-500 font-bold ml-1"
                           >
-                            <span className="text-lg">{opt.value}</span>
-                            <span className="text-center leading-tight" style={{fontSize: '9px'}}>{opt.label}</span>
+                            ✕
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: Sertifika & Hedefler */}
+              {activeTab === 'sertifika' && (
+                <div className="space-y-8">
+                  <div>
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+                      <h3 className="text-lg font-black text-slate-900">Sertifikalar</h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                      <input 
+                        type="text" placeholder="Sertifika Adı" value={newCert.title}
+                        onChange={e => setNewCert({...newCert, title: e.target.value})}
+                        className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                      />
+                      <input 
+                        type="text" placeholder="Kurum" value={newCert.issuer}
+                        onChange={e => setNewCert({...newCert, issuer: e.target.value})}
+                        className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                      />
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" placeholder="Yıl" value={newCert.date}
+                          onChange={e => setNewCert({...newCert, date: e.target.value})}
+                          className="w-20 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (!newCert.title || !newCert.issuer) return;
+                            setProfileData(prev => ({ ...prev, certs: [...prev.certs, { id: Date.now(), ...newCert }] }));
+                            setNewCert({ title: '', issuer: '', date: '' });
+                          }}
+                          className="flex-grow bg-indigo-600 text-white font-black rounded-xl text-xs"
+                        >
+                          Ekle
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {profileData.certs.map(c => (
+                        <div key={c.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between">
+                          <div>
+                            <h4 className="font-bold text-xs text-slate-800">{c.title}</h4>
+                            <p className="text-[10px] text-slate-400 mt-0.5">{c.issuer} • {c.date}</p>
+                          </div>
+                          <button 
+                            onClick={() => setProfileData(prev => ({ ...prev, certs: prev.certs.filter(item => item.id !== c.id) }))}
+                            className="text-slate-400 hover:text-red-500 transition"
+                          >
+                            <Trash2 size={14}/>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="border-b border-slate-100 pb-4 mb-4">
+                      <h3 className="text-lg font-black text-slate-900">Kariyer Hedefleri</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {profileData.goals.map(g => (
+                        <div 
+                          key={g.id} 
+                          onClick={() => toggleGoal(g.id)}
+                          className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100/70 transition"
+                        >
+                          <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${g.done ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300'}`}>
+                            {g.done && <Check size={12} strokeWidth={3} />}
+                          </div>
+                          <span className={`text-xs font-bold ${g.done ? 'line-through text-slate-400' : 'text-slate-700'}`}>{g.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: Yabancı Dil */}
+              {activeTab === 'dil' && (
+                <div className="space-y-6">
+                  <div className="border-b border-slate-100 pb-4">
+                    <h3 className="text-lg font-black text-slate-900">Yabancı Dil Seviyeleri</h3>
+                  </div>
+
+                  <div className="flex gap-3 max-w-md mb-6">
+                    <input 
+                      type="text" placeholder="Dil (Örn: Almanca)" value={newLang.name}
+                      onChange={e => setNewLang({...newLang, name: e.target.value})}
+                      className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                    />
+                    <select
+                      value={newLang.level}
+                      onChange={e => setNewLang({...newLang, level: e.target.value})}
+                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-indigo-400"
+                    >
+                      {LANGUAGE_LEVELS.map((lvl, i) => <option key={i} value={lvl}>{lvl}</option>)}
+                    </select>
+                    <button 
+                      onClick={() => {
+                        if (!newLang.name) return;
+                        setProfileData(prev => ({ ...prev, languages: [...prev.languages, { id: Date.now(), language: newLang.name, level: newLang.level }] }));
+                        setNewLang({ name: '', level: 'Orta (B1-B2)' });
+                      }}
+                      className="bg-indigo-600 text-white font-black px-4 py-2 rounded-xl text-xs"
+                    >
+                      Ekle
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {profileData.languages.map(lang => (
+                      <div key={lang.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <Languages size={18} className="text-slate-400" />
+                          <div>
+                            <h4 className="font-bold text-xs text-slate-800">{lang.language}</h4>
+                            <p className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-0.5">{lang.level}</p>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => setProfileData(prev => ({ ...prev, languages: prev.languages.filter(l => l.id !== lang.id) }))}
+                          className="text-slate-400 hover:text-red-500 transition"
+                        >
+                          <Trash2 size={16}/>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 6: Akıllı CV Şablonları */}
+              {activeTab === 'cv' && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <h3 className="text-lg font-black text-slate-900">Akıllı CV Çıktı Yönetimi</h3>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => setCvTemplate('modern')}
+                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'modern' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                      >
+                        Modern
+                      </button>
+                      <button 
+                        onClick={() => setCvTemplate('academic')}
+                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'academic' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                      >
+                        Akademik
+                      </button>
+                      <button 
+                        onClick={() => setCvTemplate('creative')}
+                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'creative' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                      >
+                        Kreatif
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Simulated Resume A4 Paper Viewport */}
+                  <div className="border border-slate-200/80 rounded-2xl bg-white shadow-md p-8 max-w-xl mx-auto font-sans text-slate-700 min-h-[500px]">
+                    <div className={`p-4 border-b ${cvTemplate === 'creative' ? 'border-amber-400 bg-amber-50/30' : cvTemplate === 'academic' ? 'border-slate-800 bg-slate-50/50' : 'border-indigo-600 bg-indigo-50/20'} rounded-xl mb-6`}>
+                      <h4 className={`text-xl font-black ${cvTemplate === 'creative' ? 'text-amber-800' : cvTemplate === 'academic' ? 'text-slate-900' : 'text-indigo-900'}`}>{currentUser?.name || 'Ad Soyad'}</h4>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">Yazılım Mühendisliği Mezunu</p>
+                      <div className="flex gap-4 mt-2 text-[10px] text-slate-400 font-bold">
+                        <span>{profileData.phone}</span>
+                        <span>{currentUser?.email}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 text-xs">
+                      <div>
+                        <h5 className="font-black text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Özet</h5>
+                        <p className="leading-relaxed font-medium text-slate-600">{profileData.summary}</p>
+                      </div>
+                      <div>
+                        <h5 className="font-black text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Eğitim</h5>
+                        {profileData.education.map(edu => (
+                          <div key={edu.id} className="flex justify-between">
+                            <span className="font-bold">{edu.school} - {edu.major}</span>
+                            <span className="font-mono text-slate-400">{edu.startYear}-{edu.endYear}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div>
+                        <h5 className="font-black text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Deneyim</h5>
+                        {profileData.experience.map(exp => (
+                          <div key={exp.id}>
+                            <div className="flex justify-between font-bold">
+                              <span>{exp.role} @ {exp.company}</span>
+                              <span className="font-mono text-slate-400">{exp.startYear}-{exp.endYear}</span>
+                            </div>
+                            <p className="text-slate-500 mt-1">{exp.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center mt-6">
+                    <button 
+                      onClick={() => {
+                        window.toast && window.toast.info("CV Raporu hazırlanıyor...");
+                        setTimeout(() => {
+                          window.toast && window.toast.success("Akıllı CV başarıyla bilgisayarınıza indirildi!");
+                        }, 1200);
+                      }}
+                      className="bg-slate-900 hover:bg-slate-800 text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg flex items-center gap-1.5"
+                    >
+                      <Download size={14} /> PDF Olarak Dışa Aktar
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 7: Kariyer Check-up */}
+              {activeTab === 'kariyer_checkup' && (
+                <div className="space-y-6">
+                  <div className="border-b border-slate-100 pb-4">
+                    <h3 className="text-lg font-black text-slate-900">Kariyer Check-up Analizi (12 Soru)</h3>
+                  </div>
+
+                  {!checkupCompleted ? (
+                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm max-w-xl mx-auto">
+                      <div className="flex justify-between items-center mb-6">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Soru {checkupStep + 1} / {CHECKUP_QUESTIONS.length}</span>
+                        <div className="w-24 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-indigo-600 h-full transition-all duration-300" 
+                            style={{ width: `${((checkupStep + 1) / CHECKUP_QUESTIONS.length) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <h4 className="font-black text-slate-800 text-sm sm:text-base leading-relaxed mb-6">
+                        {CHECKUP_QUESTIONS[checkupStep].text}
+                      </h4>
+
+                      <div className="space-y-3">
+                        {CHECKUP_QUESTIONS[checkupStep].options.map((opt, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleCheckupAnswer(opt)}
+                            className="w-full text-left p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-500 hover:bg-indigo-50/20 text-xs sm:text-sm font-bold text-slate-700 transition"
+                          >
+                            {opt}
                           </button>
                         ))}
                       </div>
                     </div>
-
-                    {/* S7 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">7. Çalıştığınız il / ülke</p>
-                      <input type="text" value={surveyForm.q7_il} onChange={e => setSurveyForm({...surveyForm, q7_il: e.target.value})} className={inp} placeholder="Örn: İstanbul, Almanya, Dubai..." />
-                    </div>
-
-                    {/* S8 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">8. Çalışma şekliniz</p>
-                      <div className="flex flex-wrap gap-2">
-                        {['Uzaktan (Remote)', 'Hibrit', 'Ofisten', 'Saha / Seyahat'].map(opt => (
-                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q8_calisma_sekli: opt})} className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q8_calisma_sekli === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* S9 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">9. Lisansüstü eğitim alıyor musunuz?</p>
-                      <div className="flex gap-2">
-                        {['Evet, Yüksek Lisans', 'Evet, Doktora', 'Hayır, Planım Var', 'Hayır'].map(opt => (
-                          <button key={opt} onClick={() => setSurveyForm({...surveyForm, q9_lisansustu: opt})} className={`flex-1 py-2 px-2 rounded-lg text-xs font-bold border text-center transition-all ${ surveyForm.q9_lisansustu === opt ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300' }`}>{opt}</button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* S10 + S11 */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                        <p className="text-sm font-bold text-gray-900 mb-3">10. Telefon numaranız güncel mi?</p>
-                        <div className="flex gap-2">
-                          {['Evet', 'Hayır'].map(opt => (
-                            <button key={opt} onClick={() => setSurveyForm({...surveyForm, q10_telefon: opt})} className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q10_telefon === opt ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200' }`}>{opt}</button>
-                          ))}
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
+                        <div className="w-20 h-20 rounded-2xl bg-white shadow-md flex items-center justify-center shrink-0 text-indigo-600">
+                          <Compass size={36} />
+                        </div>
+                        <div>
+                          <h4 className="font-black text-indigo-950 text-sm md:text-base mb-1">Mevcut Kariyer Sağlığı Endeksi: %92</h4>
+                          <p className="text-xs text-indigo-800 font-semibold leading-relaxed">
+                            Yeteneklerin, projelerin ve mezun başarı endeksin analiz edilerek pazar değerin hesaplandı. Harika bir durumdasın!
+                          </p>
                         </div>
                       </div>
-                      <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                        <p className="text-sm font-bold text-gray-900 mb-3">11. E-posta adresiniz güncel mi?</p>
-                        <div className="flex gap-2">
-                          {['Evet', 'Hayır'].map(opt => (
-                            <button key={opt} onClick={() => setSurveyForm({...surveyForm, q11_eposta: opt})} className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${ surveyForm.q11_eposta === opt ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200' }`}>{opt}</button>
-                          ))}
+
+                      <div className="space-y-4">
+                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-black text-slate-800">1. Sektör Trendlerine Uyum</span>
+                            <span className="text-xs font-black text-indigo-600">%95</span>
+                          </div>
+                          <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-indigo-600 h-full w-[95%]"></div>
+                          </div>
+                        </div>
+                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-black text-slate-800">2. Proje Pratikliği & Kod Kalitesi</span>
+                            <span className="text-xs font-black text-emerald-600">%88</span>
+                          </div>
+                          <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-emerald-500 h-full w-[88%]"></div>
+                          </div>
                         </div>
                       </div>
+
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => {
+                            setCheckupStep(0);
+                            setCheckupCompleted(false);
+                            setCheckupAnswers({});
+                          }}
+                          className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black uppercase tracking-widest transition"
+                        >
+                          Analizi Yeniden Başlat
+                        </button>
+                      </div>
                     </div>
-
-                    {/* S12 */}
-                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-100">
-                      <p className="text-sm font-bold text-gray-900 mb-3">12. Üniversitemize veya Kariyer Merkezimize iletmek istediğiniz görüş ve önerileriniz var mı?</p>
-                      <textarea rows={3} value={surveyForm.q12_oneri} onChange={e => setSurveyForm({...surveyForm, q12_oneri: e.target.value})} className={`${inp} resize-none`} placeholder="Görüşlerinizi bizimle paylaşın..." />
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      const response = {
-                        id: Date.now(),
-                        respondedAt: new Date().toISOString(),
-                        department: currentUser?.department || '',
-                        graduationYear: currentUser?.graduationYear || '',
-                        faculty: currentUser?.faculty || '',
-                        ...surveyForm,
-                      };
-                      setAlumniSurveyResponses([response, ...alumniSurveyResponses]);
-                      setSurveySubmitted(true);
-                      if (window.toast) window.toast.success('Yanıtlarınız kaydedildi. Teşekkürler!');
-                    }}
-                    className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-sm transition-all shadow-md"
-                  >
-                    Yanıtlarımı Gönder
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* ─── MEZUN KART BAŞVURUSU ─── */}
-          {activeTab === 'mezun_kart' && (
-            <div className="space-y-5">
-              {existingCardApp ? (
-                <div className="text-center py-12">
-                  <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                    existingCardApp.status === 'Onaylandı' || existingCardApp.status === 'Verildi' ? 'bg-green-50' : 'bg-amber-50'
-                  }`}>
-                    {existingCardApp.status === 'Onaylandı' || existingCardApp.status === 'Verildi'
-                      ? <CheckCircle size={40} className="text-green-500" />
-                      : <Clock size={40} className="text-amber-500" />
-                    }
-                  </div>
-                  <h3 className="text-xl font-black text-gray-900 mb-1">{existingCardApp.status}</h3>
-                  <p className="text-gray-500 text-sm">Başvuru Tarihi: {existingCardApp.date}</p>
-                  <p className="text-xs text-gray-400 mt-2">Başvurunuz yapılmıştır. Onay süreci için beklemeye devam edin.</p>
+                  )}
                 </div>
-              ) : (
-                <>
-                  <div className="bg-gradient-to-br from-red-50 to-orange-50 border border-red-100 rounded-2xl p-5 flex gap-3">
-                    <CreditCard size={20} className="text-[#e60000] shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-bold text-gray-900">Mezun Kartı Nedir?</p>
-                      <p className="text-xs text-gray-600 mt-1 leading-relaxed">Üniversite kampüsüne giriş, kütüphane, spor tesisleri ve partner kurumlardan indirim sağlar. Fiziksel kart kapsamlı mezun ayrıcalıkları sunar.</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className={lbl}>Ad Soyad</label>
-                      <input type="text" disabled value={currentUser?.name || ''} className={`${inp} bg-gray-50 text-gray-400 cursor-not-allowed`} />
-                    </div>
-                    <div>
-                      <label className={lbl}>Bölüm &amp; Mezuniyet Yılı</label>
-                      <input type="text" disabled value={`${currentUser?.department || 'Mezun'} - ${currentUser?.graduationYear || '2023'}`} className={`${inp} bg-gray-50 text-gray-400 cursor-not-allowed`} />
-                    </div>
-                    <div>
-                      <label className={lbl}>E-posta Adresi</label>
-                      <input type="text" disabled value={currentUser?.email || ''} className={`${inp} bg-gray-50 text-gray-400 cursor-not-allowed`} />
-                    </div>
-                    <div>
-                      <label className={lbl}>TC Kimlik No (Zorunlu)</label>
-                      <input
-                        type="text"
-                        maxLength="11"
-                        value={cardForm.tc}
-                        onChange={e => setCardForm({...cardForm, tc: e.target.value.replace(/\D/g,'')})}
-                        className={inp}
-                        placeholder="11 Haneli TC Kimlik No"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className={lbl}>Telefon Numarası</label>
-                      <input
-                        type="tel"
-                        value={cardForm.phone}
-                        onChange={e => setCardForm({...cardForm, phone: e.target.value})}
-                        className={inp}
-                        placeholder="05XX XXX XX XX"
-                      />
-                    </div>
-                  </div>
-
-                  <label className="flex items-start gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={cardForm.kvkk}
-                      onChange={e => setCardForm({...cardForm, kvkk: e.target.checked})}
-                      className="w-4 h-4 mt-0.5 rounded border-gray-300 text-red-600"
-                    />
-                    <span className="text-xs text-gray-500 leading-relaxed">
-                      Kişisel verilerimin Mezun Kartı basımı amacıyla işlenmesine dair KVKK Aydınlatma Metni'ni okudum ve onaylıyorum.
-                    </span>
-                  </label>
-
-                  <button
-                    disabled={!cardForm.tc || cardForm.tc.length !== 11 || !cardForm.phone || !cardForm.kvkk}
-                    onClick={() => {
-                      if (!cardForm.kvkk) return;
-                      const newApp = {
-                        id: `KART-${Date.now()}`,
-                        name: currentUser?.name || 'Mezun',
-                        tc: cardForm.tc,
-                        department: currentUser?.department || 'Mezun',
-                        gradYear: currentUser?.graduationYear || '2023',
-                        email: currentUser?.email || '',
-                        phone: cardForm.phone,
-                        date: new Date().toLocaleDateString('tr-TR'),
-                        status: 'Bekliyor'
-                      };
-                      if (setAlumniCardApplications) {
-                        setAlumniCardApplications([newApp, ...(alumniCardApplications || [])]);
-                      }
-                      if (window.toast) window.toast.success('Başvurunuz alındı! En kısa sürede değerlendirilecektir.');
-                    }}
-                    className="w-full py-3.5 bg-[#e60000] hover:bg-red-700 text-white rounded-xl font-black text-sm transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Başvuruyu Tamamla
-                  </button>
-                </>
               )}
-            </div>
-          )}
 
-          </div>
+              {/* TAB 8: Mezun Kart */}
+              {activeTab === 'mezun_kart' && (
+                <div className="space-y-6 flex flex-col items-center">
+                  <div className="border-b border-slate-100 pb-4 w-full">
+                    <h3 className="text-lg font-black text-slate-900">Dijital İESÜ Mezun Kart</h3>
+                  </div>
+
+                  {cardAppStatus === 'form' && (
+                    <form onSubmit={handleCardApplication} className="w-full max-w-md bg-slate-50 border border-slate-200 p-6 rounded-3xl space-y-4">
+                      <h4 className="font-black text-sm text-slate-800 mb-2">Akıllı Mezun Kart Başvuru Formu</h4>
+                      
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-slate-500 uppercase">Ad Soyad</label>
+                        <input 
+                          type="text" 
+                          value={cardForm.name} 
+                          onChange={e => setCardForm({...cardForm, name: e.target.value})}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-xs font-black text-slate-500 uppercase">Bölüm</label>
+                          <input 
+                            type="text" 
+                            value={cardForm.dept} 
+                            onChange={e => setCardForm({...cardForm, dept: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-xs font-black text-slate-500 uppercase">Öğrenci No</label>
+                          <input 
+                            type="text" 
+                            value={cardForm.studentId} 
+                            onChange={e => setCardForm({...cardForm, studentId: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-2.5 pt-2">
+                        <input 
+                          type="checkbox" 
+                          id="agree"
+                          checked={cardForm.agreed} 
+                          onChange={e => setCardForm({...cardForm, agreed: e.target.checked})}
+                          className="mt-1"
+                        />
+                        <label htmlFor="agree" className="text-[10px] text-slate-500 leading-relaxed font-bold">
+                          Mezun bilgilerimin akıllı sözleşme standartlarında İESÜ Mezuniyet Ağına yazılmasını onaylıyorum.
+                        </label>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4"
+                      >
+                        Akıllı Kartı Oluştur & Dağıt
+                      </button>
+                    </form>
+                  )}
+
+                  {cardAppStatus === 'loading' && (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                      <h4 className="font-black text-slate-800 mb-1">Kartınız Dağıtılıyor...</h4>
+                      <p className="text-slate-400 text-xs max-w-xs leading-relaxed font-semibold">
+                        Kimlik verileriniz kriptografik olarak imzalanıp İESÜ Mezun DAG ağına yazılıyor.
+                      </p>
+                    </div>
+                  )}
+
+                  {cardAppStatus === 'minted' && (
+                    <div className="flex flex-col items-center gap-6">
+                      <p className="text-xs font-bold text-slate-500 text-center max-w-sm leading-relaxed">
+                        Kartın üzerine tıklayarak çevirebilir, arka yüzündeki akıllı QR kodunu kampüs girişlerinde okutabilirsin.
+                      </p>
+
+                      {/* Flippable card container */}
+                      <div 
+                        onClick={() => setCardFlipped(!cardFlipped)}
+                        className="w-full max-w-[380px] h-[220px] cursor-pointer"
+                        style={{ perspective: '1000px' }}
+                      >
+                        <motion.div 
+                          className="w-full h-full relative"
+                          style={{ transformStyle: 'preserve-3d' }}
+                          animate={{ rotateY: cardFlipped ? 180 : 0 }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          {/* Front Side */}
+                          <div 
+                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-6 flex flex-col justify-between text-white shadow-2xl"
+                            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <span className="block text-[8px] font-black text-indigo-400 uppercase tracking-widest">İstanbul Esenyurt Üniversitesi</span>
+                                <span className="text-sm font-black tracking-tight">MEZUN KART</span>
+                              </div>
+                              <GraduationCap size={28} className="text-indigo-400" />
+                            </div>
+
+                            <div>
+                              <span className="block text-[8px] font-bold text-slate-400 uppercase tracking-wider">İsim Soyisim</span>
+                              <span className="text-base font-black tracking-wide uppercase">{cardForm.name}</span>
+                            </div>
+
+                            <div className="flex justify-between items-end">
+                              <div>
+                                <span className="block text-[8px] font-bold text-slate-400 uppercase tracking-wider">Bölüm</span>
+                                <span className="text-xs font-bold">{cardForm.dept}</span>
+                              </div>
+                              <div className="text-right">
+                                <span className="block text-[8px] font-bold text-slate-400 uppercase tracking-wider">Mezuniyet</span>
+                                <span className="text-xs font-bold">{cardForm.gradYear}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Back Side */}
+                          <div 
+                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-950 border border-slate-800 p-6 flex flex-col justify-between text-white shadow-2xl"
+                            style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <span className="block text-[8px] font-black text-indigo-400 uppercase tracking-widest font-sans">NFC & QR ID</span>
+                                <span className="text-[10px] font-mono text-slate-400">IESU-ALUM-{cardForm.studentId}</span>
+                              </div>
+                              <div className="w-12 h-12 bg-white rounded-lg p-1">
+                                <div className="w-full h-full bg-slate-950 rounded flex items-center justify-center"><span className="text-[6px] font-black text-indigo-400 font-mono">QR</span></div>
+                              </div>
+                            </div>
+
+                            <div className="text-center text-[10px] text-slate-400 font-bold border-t border-slate-800 pt-4 leading-relaxed">
+                              Bu kart İESÜ Mezuniyet Ağı akıllı kimlik doğrulama protokolüyle şifrelenmiştir.
+                            </div>
+                          </div>
+                        </motion.div>
+                      </div>
+
+                      <button
+                        onClick={() => setCardAppStatus('form')}
+                        className="text-xs font-black text-slate-500 hover:text-slate-800 transition uppercase tracking-wider"
+                      >
+                        Yeni Başvuru Yap
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 9: Kulüp Başvurusu */}
+              {activeTab === 'kulup_basvuru' && (
+                <div className="space-y-6">
+                  <div className="border-b border-slate-100 pb-4">
+                    <h3 className="text-lg font-black text-slate-900">Aktif Kulüp Başvuruları</h3>
+                  </div>
+
+                  <div className="space-y-3">
+                    {profileData.clubApplications.map(app => (
+                      <div key={app.id} className="p-4 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-between">
+                        <div>
+                          <h4 className="font-bold text-xs text-slate-800">{app.name}</h4>
+                          <span className="text-[9px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-black uppercase tracking-wider inline-block mt-1">Başvuru {app.status}</span>
+                        </div>
+                        <button className="text-slate-400 hover:text-red-500 transition"><Trash2 size={16}/></button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-8">
+                    <h4 className="font-black text-sm text-slate-800 mb-4">Başvurabileceğin Popüler Kulüpler</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center">
+                        <div>
+                          <h5 className="font-bold text-xs text-slate-800">Girişimcilik ve İnovasyon Kulübü</h5>
+                          <p className="text-[10px] text-slate-400 mt-0.5">142 Üye • Aktif</p>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setProfileData(prev => ({
+                              ...prev,
+                              clubApplications: [...prev.clubApplications, { id: Date.now(), name: "Girişimcilik ve İnovasyon Kulübü", status: "İnceleniyor" }]
+                            }));
+                            window.toast && window.toast.success("Kulüp başvurunuz iletildi!");
+                          }}
+                          className="bg-indigo-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
+                        >
+                          Katıl
+                        </button>
+                      </div>
+
+                      <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center">
+                        <div>
+                          <h5 className="font-bold text-xs text-slate-800">Blockchain Araştırmaları Topluluğu</h5>
+                          <p className="text-[10px] text-slate-400 mt-0.5">85 Üye • Aktif</p>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setProfileData(prev => ({
+                              ...prev,
+                              clubApplications: [...prev.clubApplications, { id: Date.now(), name: "Blockchain Araştırmaları Topluluğu", status: "İnceleniyor" }]
+                            }));
+                            window.toast && window.toast.success("Kulüp başvurunuz iletildi!");
+                          }}
+                          className="bg-indigo-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
+                        >
+                          Katıl
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'anket' && userRole === 'alumni' && (
+                <div className="space-y-6">
+                  <div className="border-b border-slate-100 pb-4">
+                    <h3 className="text-lg font-black text-slate-900">Mezun Memnuniyet & Anket Merkezi</h3>
+                    <p className="text-xs text-slate-500 font-bold mt-1">
+                      Geri bildirimleriniz üniversitemizin kalitesini artırmasında büyük rol oynuyor. Aktif anketlere katılarak düşüncelerinizi bizimle paylaşın.
+                    </p>
+                  </div>
+
+                  {!surveyCompleted ? (
+                    <div className="space-y-4">
+                      <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+                        <h4 className="font-black text-xs text-indigo-600 uppercase tracking-wider mb-2">Aktif Anket: 2026 İstihdam ve Memnuniyet Anketi</h4>
+                        <p className="text-xs text-slate-500 font-bold mb-4">Mezunlarımızın iş bulma süreleri ve aldıkları eğitimin sektörel geçerliliği ölçülmektedir.</p>
+                        
+                        <div className="space-y-4 pt-2">
+                          <div className="flex flex-col gap-2">
+                            <label className="text-xs font-black text-slate-700">1. Üniversitemizde aldığınız eğitimin kariyerinize katkısından ne kadar memnunsunuz?</label>
+                            <div className="flex gap-2">
+                              {[1, 2, 3, 4, 5].map(star => (
+                                <button 
+                                  key={star} 
+                                  type="button"
+                                  onClick={() => setSurveyAnswers({...surveyAnswers, q1: star})}
+                                  className={`w-10 h-10 rounded-xl font-black text-xs border transition ${surveyAnswers.q1 === star ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                >
+                                  {star} ★
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2 pt-2">
+                            <label className="text-xs font-black text-slate-700">2. Kampüs içi teknolojik altyapı ve kütüphane olanakları yeterli miydi?</label>
+                            <div className="flex gap-2">
+                              {["Evet", "Kısmen", "Hayır"].map(opt => (
+                                <button 
+                                  key={opt}
+                                  type="button"
+                                  onClick={() => setSurveyAnswers({...surveyAnswers, q2: opt})}
+                                  className={`px-4 py-2 rounded-xl font-bold text-xs border transition ${surveyAnswers.q2 === opt ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                >
+                                  {opt}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={() => {
+                          if (!surveyAnswers.q1 || !surveyAnswers.q2) {
+                            window.toast && window.toast.error("Lütfen tüm soruları yanıtlayın.");
+                            return;
+                          }
+                          setSurveyCompleted(true);
+                          window.toast && window.toast.success("📝 Anket geri bildiriminiz başarıyla kaydedildi. Katkınız için teşekkür ederiz!");
+                        }}
+                        className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition"
+                      >
+                        Yanıtları Gönder
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                      <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100"><CheckCircle size={28}/></div>
+                      <h4 className="font-black text-slate-800 mb-2">Katılımınız İçin Teşekkürler</h4>
+                      <p className="text-slate-500 text-xs font-bold max-w-sm mx-auto leading-relaxed">
+                        Anket yanıtlarınız kalite geliştirme koordinatörlüğüne iletilmiştir.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
-
-      {/* ═══════════ MODALS ═══════════ */}
-
-      {/* Tecrübe Modal */}
-      {showExpModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-black text-gray-900">Tecrübe Ekle</h3>
-              <button onClick={() => setShowExpModal(false)} className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"><X size={15} /></button>
-            </div>
-            <div className="space-y-3">
-              <div><label className={lbl}>Pozisyon / Ünvan</label><input autoFocus type="text" value={tempExp.title} onChange={e => setTempExp({...tempExp, title: e.target.value})} className={inp} placeholder="Örn: Yazılım Mühendisi" /></div>
-              <div><label className={lbl}>Firma / Kurum</label><input type="text" value={tempExp.company} onChange={e => setTempExp({...tempExp, company: e.target.value})} className={inp} placeholder="Örn: Google Türkiye" /></div>
-              <div><label className={lbl}>Çalışma Tipi</label>
-                <select value={tempExp.type} onChange={e => setTempExp({...tempExp, type: e.target.value})} className={inp}>
-                  {EXP_TYPES.map(t => <option key={t}>{t}</option>)}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className={lbl}>Başlangıç</label><input type="month" value={tempExp.startDate} onChange={e => setTempExp({...tempExp, startDate: e.target.value})} className={inp} /></div>
-                <div><label className={lbl}>Bitiş</label><input type="month" value={tempExp.endDate} onChange={e => setTempExp({...tempExp, endDate: e.target.value})} className={inp} /></div>
-              </div>
-            </div>
-            <button onClick={() => addItem(setExperiences, experiences, tempExp, () => setTempExp({ title:'', company:'', type:'Staj', startDate:'', endDate:'' }), setShowExpModal)} className="w-full py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-colors text-sm">Kaydet</button>
-          </div>
-        </div>
-      )}
-
-      {/* Kurs Modal */}
-      {showCourseModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-black text-gray-900">Eğitim Ekle</h3>
-              <button onClick={() => setShowCourseModal(false)} className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"><X size={15} /></button>
-            </div>
-            <div className="space-y-3">
-              <div><label className={lbl}>Eğitim Adı</label><input autoFocus type="text" value={tempCourse.name} onChange={e => setTempCourse({...tempCourse, name: e.target.value})} className={inp} placeholder="Örn: Python ile Veri Bilimi" /></div>
-              <div><label className={lbl}>Düzenleyen Kurum</label><input type="text" value={tempCourse.organizer} onChange={e => setTempCourse({...tempCourse, organizer: e.target.value})} className={inp} placeholder="Örn: Coursera" /></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className={lbl}>Tür</label>
-                  <select value={tempCourse.type} onChange={e => setTempCourse({...tempCourse, type: e.target.value})} className={inp}>
-                    <option>Kurs</option><option>Seminer</option><option>Kongre</option><option>Sertifika Programı</option>
-                  </select>
-                </div>
-                <div><label className={lbl}>Yıl</label><input type="text" value={tempCourse.year} onChange={e => setTempCourse({...tempCourse, year: e.target.value})} className={inp} placeholder="2024" /></div>
-              </div>
-            </div>
-            <button onClick={() => addItem(setCourses, courses, tempCourse, () => setTempCourse({ name:'', organizer:'', type:'Kurs', year:'' }), setShowCourseModal)} className="w-full py-2.5 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition-colors text-sm">Kaydet</button>
-          </div>
-        </div>
-      )}
-
-      {/* Sertifika Modal */}
-      {showCertModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-black text-gray-900">Sertifika Ekle</h3>
-              <button onClick={() => setShowCertModal(false)} className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"><X size={15} /></button>
-            </div>
-            <div className="space-y-3">
-              <div><label className={lbl}>Sertifika Adı</label><input autoFocus type="text" value={tempCert.name} onChange={e => setTempCert({...tempCert, name: e.target.value})} className={inp} placeholder="Örn: AWS Solutions Architect" /></div>
-              <div><label className={lbl}>Veren Kurum</label><input type="text" value={tempCert.issuer} onChange={e => setTempCert({...tempCert, issuer: e.target.value})} className={inp} placeholder="Örn: Amazon Web Services" /></div>
-              <div><label className={lbl}>Yıl</label><input type="text" value={tempCert.year} onChange={e => setTempCert({...tempCert, year: e.target.value})} className={inp} placeholder="2024" /></div>
-            </div>
-            <button onClick={() => addItem(setCertificates, certificates, tempCert, () => setTempCert({ name:'', issuer:'', year:'' }), setShowCertModal)} className="w-full py-2.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-colors text-sm">Kaydet</button>
-          </div>
-        </div>
-      )}
-
-      {/* Dil Modal */}
-      {showLangModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-black text-gray-900">Dil Ekle</h3>
-              <button onClick={() => setShowLangModal(false)} className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"><X size={15} /></button>
-            </div>
-            <div className="space-y-3">
-              <div><label className={lbl}>Dil</label><input autoFocus type="text" value={tempLang.name} onChange={e => setTempLang({...tempLang, name: e.target.value})} onKeyDown={e => e.key==='Enter' && addItem(setLanguages, languages, tempLang, ()=>setTempLang({ name:'', level:'Başlangıç (A1-A2)' }), setShowLangModal)} className={inp} placeholder="Örn: İngilizce" /></div>
-              <div><label className={lbl}>Seviye</label>
-                <select value={tempLang.level} onChange={e => setTempLang({...tempLang, level: e.target.value})} className={inp}>
-                  {LANGUAGE_LEVELS.map(l => <option key={l}>{l}</option>)}
-                </select>
-              </div>
-            </div>
-            <button onClick={() => addItem(setLanguages, languages, tempLang, ()=>setTempLang({ name:'', level:'Başlangıç (A1-A2)' }), setShowLangModal)} className="w-full py-2.5 bg-sky-600 text-white font-bold rounded-xl hover:bg-sky-700 transition-colors text-sm">Ekle</button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function PanelHeader({ badge = 'İESÜ Kariyer', title, sub, action }) {
+export default function PanelHeader({ badge = 'Esenyurt Kariyer', title, sub, action }) {
   const t = (title || '').toLowerCase();
   let theme = {
     bg: 'from-blue-950 via-indigo-900 to-slate-900',
@@ -61,7 +61,7 @@ export default function PanelHeader({ badge = 'İESÜ Kariyer', title, sub, acti
   }
 
   return (
-    <div className="relative bg-gray-900 rounded-3xl p-8 overflow-hidden text-white group mb-8 shadow-xl">
+    <div className="relative bg-gray-900 rounded-xl p-8 overflow-hidden text-white group mb-8 shadow-xl">
       <div className={`absolute inset-0 bg-gradient-to-br ${theme.bg}`}></div>
       <div className={`absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 ${theme.orb1} rounded-full blur-[100px] opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse`}></div>
       <div className={`absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 ${theme.orb2} rounded-full blur-[100px] opacity-30 animate-pulse`} style={{ animationDelay: '2s' }}></div>

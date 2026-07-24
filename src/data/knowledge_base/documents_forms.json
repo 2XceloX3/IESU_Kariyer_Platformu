@@ -1,0 +1,25 @@
+{
+  "forms": [
+    {
+      "id": "FORM-01",
+      "title": "Staj Başvuru ve Kabul Formu (Zorunlu Staj)",
+      "department": "Kariyer Merkezi",
+      "format": "PDF",
+      "size": "245 KB"
+    },
+    {
+      "id": "FORM-02",
+      "title": "Öğrenci Kulübü Kurma Dilekçesi Şablonu",
+      "department": "SKSDB",
+      "format": "DOCX",
+      "size": "110 KB"
+    },
+    {
+      "id": "FORM-03",
+      "title": "E-Posta ve Wi-Fi Şifre Sıfırlama Talep Formu",
+      "department": "BİDB",
+      "format": "PDF",
+      "size": "180 KB"
+    }
+  ]
+}

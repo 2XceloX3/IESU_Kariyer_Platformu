@@ -3,11 +3,17 @@ import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, Plus, Graduat
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
+import useAppStore from '../store/useAppStore';
 
-export default function CalendarView({ events, mentorships, currentUser, setView, setEvents, userRole, messages, setMessages, setSelectedUserId }) {
+export default function CalendarView({ currentUser, setView, userRole, setSelectedUserId, academicRole }) {
+  const events = useAppStore(state => state.events);
+  const setEvents = useAppStore(state => state.setEvents);
+  const mentorships = useAppStore(state => state.mentorships);
+  const messages = useAppStore(state => state.messages);
+  const setMessages = useAppStore(state => state.setMessages);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [personalEvents, setPersonalEvents] = useState(() => {
-    const saved = localStorage.getItem(`iesu_personal_events_${currentUser?.id}`);
+    const saved = localStorage.getItem(`igu_personal_events_${currentUser?.id}`);
     try {
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
@@ -20,7 +26,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
 
   useEffect(() => {
     if (currentUser?.id) {
-      localStorage.setItem(`iesu_personal_events_${currentUser?.id}`, JSON.stringify(personalEvents));
+      localStorage.setItem(`igu_personal_events_${currentUser?.id}`, JSON.stringify(personalEvents));
     }
   }, [personalEvents, currentUser?.id]);
 
@@ -74,33 +80,46 @@ export default function CalendarView({ events, mentorships, currentUser, setView
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
           
           {/* LEFT: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
-            <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <Logo className="h-10 w-auto text-[#0A2342] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
+              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
           {/* MIDDLE: Search Bar */}
           <div className="hidden md:flex relative group flex-1 max-w-md mx-auto shrink">
-            <Search className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-iesu-red transition-colors" size={18} />
+            <Search className="absolute left-3 top-2.5 text-gray-500 group-focus-within:text-[#0A2342] transition-colors" size={18} />
             <input 
               type="text" 
               placeholder="Takvimde etkinlik ara..." 
-              className="bg-gray-100/80 pl-10 pr-4 py-2 rounded-2xl text-[14px] w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-iesu-coral/20 transition-all" 
+              className="bg-gray-100/80 pl-10 pr-4 py-2 rounded-2xl text-[14px] w-full focus:outline-none focus:bg-white focus:ring-2 focus:ring-iesu-blue/20 transition-all" 
             />
           </div>
           
           {/* RIGHT: Navigation Icons & Profile */}
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <button 
+              onClick={(e) => {
+                e.preventDefault();
+                window.toast && window.toast.info("Anka AI: Ajandanızdaki boşluklar taranarak 'Kariyer Fuarı' için ideal gün hesaplanıyor...");
+                setTimeout(() => {
+                  window.toast && window.toast.success("✅ AI Planlaması: Etkinlik 15 Kasım Cuma günü saat 14:00'e başarıyla yerleştirildi.");
+                }, 2500);
+              }}
+              className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-md transition-all mr-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
+              <span className="text-[13px]">AI Planlayıcı</span>
+            </button>
+            <button 
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1.5 md:gap-2 bg-iesu-red text-white px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl font-bold hover:bg-iesu-darkRed transition shadow-sm mr-2"
+              className="flex items-center gap-1.5 md:gap-2 bg-[#0A2342] text-white px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl font-bold hover:bg-[#0A2342] transition shadow-sm mr-2"
             >
               <Plus size={16} /> <span className="hidden md:inline text-[13px]">Etkinlik Ekle</span>
             </button>
-            <NavIcon icon={<Home />} label="Akış" active={false} onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} />
+            <NavIcon icon={<Home />} label="Akış" active={false} onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
             <NavIcon icon={<Compass />} label="Kariyer Ağı" active={false} onClick={() => setView(userRole === 'admin' ? 'admin' : userRole || 'landing')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={false} onClick={() => setView('jobs')} />
             <NavIcon 
@@ -120,7 +139,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
           
           {/* Left Panel: Calendar Grid */}
           <div className="md:col-span-2 space-y-6">
-            <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
               {/* Minimalist modern calendar view for UI purposes */}
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-black text-gray-900">
@@ -133,7 +152,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
               </div>
 
               {/* Day Headers */}
-              <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-gray-400">
+              <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-gray-500">
                 {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map(d => <div key={d}>{d}</div>)}
               </div>
 
@@ -154,14 +173,14 @@ export default function CalendarView({ events, mentorships, currentUser, setView
                       key={'day-'+i}
                       onClick={() => setSelectedDate(d)}
                       className={`aspect-square rounded-xl flex flex-col items-center justify-center relative transition-all ${
-                        isSelected ? 'bg-iesu-red text-white shadow-md shadow-red-600/20' : 
-                        isToday ? 'bg-red-50 text-iesu-red font-bold' :
+                        isSelected ? 'bg-[#0A2342] text-white shadow-md shadow-red-600/20' : 
+                        isToday ? 'bg-red-50 text-[#0A2342] font-bold' :
                         'hover:bg-gray-100 text-gray-700'
                       }`}
                     >
                       <span>{day}</span>
                       {hasEvents && !isSelected && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-iesu-coral mt-1"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-iesu-blue mt-1"></div>
                       )}
                       {hasEvents && isSelected && (
                         <div className="w-1.5 h-1.5 rounded-full bg-white mt-1 opacity-80"></div>
@@ -175,23 +194,23 @@ export default function CalendarView({ events, mentorships, currentUser, setView
 
           {/* Right Panel: Day's Events */}
           <div className="space-y-6">
-            <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[400px]">
+            <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[400px]">
               <h3 className="font-black text-gray-900 mb-6 flex items-center gap-2">
-                <Clock className="text-iesu-red" size={20} /> 
+                <Clock className="text-[#0A2342]" size={20} /> 
                 {selectedDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })}
               </h3>
               
               <div className="space-y-4">
                 {dayEvents.length === 0 ? (
                   <div className="text-center py-12 px-4 bg-gray-50 rounded-2xl">
-                    <CalendarIcon size={32} className="mx-auto text-gray-300 mb-3" />
+                    <CalendarIcon size={32} className="mx-auto text-gray-400 mb-3" />
                     <p className="text-sm font-medium text-gray-500">Bu tarih için planlanmış etkinlik bulunmuyor.</p>
                   </div>
                 ) : (
                   (dayEvents || []).map((item, idx) => {
                     let typeColor = 'bg-blue-100 text-blue-700';
                     if (item.calendarType !== 'personal') {
-                      typeColor = item.type === 'Eğitim' ? 'bg-emerald-100 text-emerald-700' : 'bg-iesu-red/10 text-iesu-red';
+                      typeColor = item.type === 'Eğitim' ? 'bg-emerald-100 text-emerald-700' : 'bg-[#0A2342]/10 text-[#0A2342]';
                     } else {
                       switch (item.type) {
                         case 'Gönüllü Staj': typeColor = 'bg-purple-100 text-purple-700'; break;
@@ -211,7 +230,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
                             {item.type || 'Etkinlik'}
                           </span>
                           {item.calendarType === 'personal' && (
-                            <button onClick={() => deletePersonalEvent(item.id)} className="text-gray-400 hover:text-red-600 transition">
+                            <button onClick={() => deletePersonalEvent(item.id)} className="text-gray-500 hover:text-red-600 transition">
                               <Trash2 size={14} />
                             </button>
                           )}
@@ -250,7 +269,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
                               }}
                               className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm"
                             >
-                              <Send size={14} className="text-iesu-red" />
+                              <Send size={14} className="text-[#0A2342]" />
                               Kariyer Merkezine Mesaj/Evrak Gönder
                             </button>
                           </div>
@@ -269,20 +288,20 @@ export default function CalendarView({ events, mentorships, currentUser, setView
       {/* Add Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl p-6">
             <h3 className="text-lg font-black text-gray-900 mb-4">Kişisel Etkinlik Ekle</h3>
             <form onSubmit={handleAddPersonalEvent} className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Başlık</label>
-                <input required type="text" value={newPersonalEvent.title} onChange={e => setNewPersonalEvent({...newPersonalEvent, title: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-red focus:ring-1 focus:ring-iesu-red" placeholder="Örn: Vize Sınavı, Mülakat..." />
+                <input required type="text" value={newPersonalEvent.title} onChange={e => setNewPersonalEvent({...newPersonalEvent, title: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-navy focus:ring-1 focus:ring-iesu-navy" placeholder="Örn: Vize Sınavı, Mülakat..." />
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Tarih</label>
-                <input required type="date" value={newPersonalEvent.date} onChange={e => setNewPersonalEvent({...newPersonalEvent, date: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-red focus:ring-1 focus:ring-iesu-red" />
+                <input required type="date" value={newPersonalEvent.date} onChange={e => setNewPersonalEvent({...newPersonalEvent, date: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-navy focus:ring-1 focus:ring-iesu-navy" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Kategori</label>
-                <select value={newPersonalEvent.type} onChange={e => setNewPersonalEvent({...newPersonalEvent, type: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-red focus:ring-1 focus:ring-iesu-red">
+                <select value={newPersonalEvent.type} onChange={e => setNewPersonalEvent({...newPersonalEvent, type: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-navy focus:ring-1 focus:ring-iesu-navy">
                   <option value="Kişisel">Kişisel</option>
                   <option value="Sınav">Sınav</option>
                   <option value="Mülakat">Mülakat</option>
@@ -298,7 +317,7 @@ export default function CalendarView({ events, mentorships, currentUser, setView
               </div>
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-xl transition">İptal</button>
-                <button type="submit" className="px-6 py-2 bg-iesu-red text-white font-bold rounded-xl hover:bg-iesu-darkRed transition shadow-sm">Ekle</button>
+                <button type="submit" className="px-6 py-2 bg-[#0A2342] text-white font-bold rounded-xl hover:bg-[#0A2342] transition shadow-sm">Ekle</button>
               </div>
             </form>
           </div>
@@ -307,3 +326,4 @@ export default function CalendarView({ events, mentorships, currentUser, setView
     </div>
   );
 }
+

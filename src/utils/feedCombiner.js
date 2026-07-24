@@ -2,9 +2,9 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
   const combined = [...(posts || []).filter(p => p.status !== 'Beklemede' && p.status !== 'Reddedildi')];
 
   const adminAuthor = {
-    name: 'Kariyer Geliştirme Ofisi',
+    name: 'Kariyer Geliştirme Merkezi',
     role: 'admin',
-    avatar: 'https://ui-avatars.com/api/?name=KGO&background=132A49&color=fff',
+    avatar: 'https://ui-avatars.com/api/?name=KGO&background=0A2342&color=fff',
     title: 'Süper Yönetici'
   };
 

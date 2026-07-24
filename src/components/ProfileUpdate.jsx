@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowLeft, User, BookOpen, Layers, Briefcase, FileText, Shield, Building2, Save, Settings, Award, Star, Plus, Trash2, Target, UploadCloud, ChevronRight, UserCircle2, X, Camera, MapPin, Mail, Phone, Globe, Link } from 'lucide-react';
 import { IESU_FACULTIES, IESU_MYO, IESU_YUKSEKOKUL, IESU_ENSTITU } from '../utils/universityData';
+import useAppStore from '../store/useAppStore';
 
 export default function ProfileUpdate({ 
   setView, 
   currentUser, setCurrentUser,
-  userRole, 
-  setStudents, setAlumni, setCompanies
+  userRole
 }) {
+  const setStudents = useAppStore(state => state.setStudents);
+  const setAlumni = useAppStore(state => state.setAlumni);
+  const setCompanies = useAppStore(state => state.setCompanies);
   const [activeTab, setActiveTab] = useState('personal');
   const [formData, setFormData] = useState({ 
     skills: [], languages: [], experiences: [], certificates: [], careerPreferences: [],
@@ -174,13 +177,13 @@ export default function ProfileUpdate({
         {/* Floating Sidebar */}
         <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-6">
           {/* Profile Card */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border border-gray-200/50 shadow-xl shadow-gray-200/20 relative overflow-hidden group">
+          <div className="bg-white/80 backdrop-blur-xl rounded-xl p-6 border border-gray-200/50 shadow-xl shadow-gray-200/20 relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-indigo-500 to-blue-600"></div>
             
             <div className="relative z-10 flex flex-col items-center mt-12">
               <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden relative mb-4">
                 <img src={formData.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name || 'User')}&background=e0e7ff&color=4f46e5`} alt="Avatar" className="w-full h-full object-cover" />
-                <button className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <button aria-label="İşlem Butonu" className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <Camera className="text-white" size={24} />
                 </button>
               </div>
@@ -200,7 +203,7 @@ export default function ProfileUpdate({
           </div>
 
           {/* Sleek Navigation */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-2 border border-gray-200/50 shadow-xl shadow-gray-200/20 sticky top-24">
+          <div className="bg-white/80 backdrop-blur-xl rounded-xl p-2 border border-gray-200/50 shadow-xl shadow-gray-200/20 sticky top-24">
             <nav className="flex flex-col gap-1">
               {tabs.map(tab => {
                 const isActive = activeTab === tab.id;
@@ -243,28 +246,28 @@ export default function ProfileUpdate({
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{userRole === 'company' ? 'Firma Adı' : 'Ad Soyad'}</label>
                     <div className="relative">
-                      <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                       <input type="text" value={formData.name || ''} onChange={e => handleInputChange('name', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">E-Posta Adresi</label>
                     <div className="relative">
-                      <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                       <input type="email" value={formData.email || ''} onChange={e => handleInputChange('email', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Telefon Numarası</label>
                     <div className="relative">
-                      <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                       <input type="tel" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="+90 555 555 5555" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Konum / Şehir</label>
                     <div className="relative">
-                      <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                       <input type="text" value={formData.location || ''} onChange={e => handleInputChange('location', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: İstanbul, Türkiye" />
                     </div>
                   </div>
@@ -278,14 +281,14 @@ export default function ProfileUpdate({
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">LinkedIn Profili</label>
                       <div className="relative">
-                        <Link size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <Link size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                         <input type="url" value={formData.linkedin || ''} onChange={e => handleInputChange('linkedin', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="linkedin.com/in/username" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kişisel Web Sitesi</label>
                       <div className="relative">
-                        <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                         <input type="url" value={formData.website || ''} onChange={e => handleInputChange('website', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="https://www.example.com" />
                       </div>
                     </div>
@@ -321,7 +324,7 @@ export default function ProfileUpdate({
             {/* ACADEMIC & CAP_YANDAL TAB */}
             {activeTab === 'academic' && (
               <div className="space-y-12">
-                <div className="bg-indigo-50/50 border border-indigo-100 rounded-3xl p-6 flex items-start gap-4">
+                <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-6 flex items-start gap-4">
                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-indigo-600 shrink-0">
                     <BookOpen size={24} />
                   </div>
@@ -430,7 +433,7 @@ export default function ProfileUpdate({
                     </button>
                   </div>
 
-                  <div className="p-6 border border-gray-200 border-dashed rounded-3xl bg-gray-50 flex items-center justify-between">
+                  <div className="p-6 border border-gray-200 border-dashed rounded-xl bg-gray-50 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-emerald-600">
                         <FileText size={24} />
@@ -443,14 +446,14 @@ export default function ProfileUpdate({
                     <div>
                       <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.doc,.docx" className="hidden" />
                       <button onClick={() => fileInputRef.current?.click()} className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-sm">
-                        <UploadCloud size={18} className="text-gray-400" />
+                        <UploadCloud size={18} className="text-gray-500" />
                         Yükle
                       </button>
                     </div>
                   </div>
 
                   {(!formData.experiences || formData.experiences.length === 0) ? (
-                    <div className="text-center py-12 border border-gray-100 rounded-3xl bg-white shadow-sm">
+                    <div className="text-center py-12 border border-gray-100 rounded-xl bg-white shadow-sm">
                       <Briefcase size={48} className="mx-auto text-gray-200 mb-4" />
                       <p className="text-gray-500 font-medium">Henüz bir deneyim eklenmemiş.</p>
                     </div>
@@ -459,7 +462,7 @@ export default function ProfileUpdate({
                       {formData.experiences.map((exp) => (
                         <div key={exp.id} className="p-5 border border-gray-100 rounded-2xl bg-white flex items-start justify-between group hover:border-indigo-100 hover:shadow-md transition-all">
                           <div className="flex gap-4">
-                            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 shrink-0">
+                            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-500 shrink-0">
                               <Building2 size={24} />
                             </div>
                             <div>
@@ -468,7 +471,7 @@ export default function ProfileUpdate({
                               <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded uppercase tracking-wider">{exp.type}</span>
                             </div>
                           </div>
-                          <button onClick={() => removeItem('experiences', exp.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                          <button onClick={() => removeItem('experiences', exp.id)} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -487,12 +490,12 @@ export default function ProfileUpdate({
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {(!formData.skills || formData.skills.length === 0) ? (
-                        <p className="text-sm text-gray-400 italic">Yetenek eklenmemiş.</p>
+                        <p className="text-sm text-gray-500 italic">Yetenek eklenmemiş.</p>
                       ) : (
                         formData.skills.map((skill) => (
                           <div key={skill} className="pl-4 pr-1.5 py-1.5 bg-white border border-gray-200 rounded-xl flex items-center gap-2 text-sm font-bold text-gray-700 shadow-sm group">
                             {skill}
-                            <button onClick={() => removeItem('skills', skill)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors">
+                            <button onClick={() => removeItem('skills', skill)} className="p-1 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-red-500 transition-colors">
                               <X size={14} />
                             </button>
                           </div>
@@ -510,7 +513,7 @@ export default function ProfileUpdate({
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {(!formData.languages || formData.languages.length === 0) ? (
-                        <p className="text-sm text-gray-400 italic col-span-2">Dil bilgisi eklenmemiş.</p>
+                        <p className="text-sm text-gray-500 italic col-span-2">Dil bilgisi eklenmemiş.</p>
                       ) : (
                         formData.languages.map((lang) => (
                           <div key={lang.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex justify-between items-center shadow-sm group hover:border-blue-100 transition-colors">
@@ -518,7 +521,7 @@ export default function ProfileUpdate({
                               <p className="font-bold text-gray-900">{lang.name}</p>
                               <p className="text-xs text-blue-600 font-medium mt-0.5">{lang.level}</p>
                             </div>
-                            <button onClick={() => removeItem('languages', lang.id)} className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100">
+                            <button onClick={() => removeItem('languages', lang.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100">
                               <Trash2 size={16} />
                             </button>
                           </div>
@@ -545,7 +548,7 @@ export default function ProfileUpdate({
                   </div>
 
                   {(!formData.certificates || formData.certificates.length === 0) ? (
-                    <div className="text-center py-12 border border-gray-100 rounded-3xl bg-white shadow-sm">
+                    <div className="text-center py-12 border border-gray-100 rounded-xl bg-white shadow-sm">
                       <Award size={48} className="mx-auto text-gray-200 mb-4" />
                       <p className="text-gray-500 font-medium">Henüz bir sertifika eklenmemiş.</p>
                     </div>
@@ -557,7 +560,7 @@ export default function ProfileUpdate({
                             <h4 className="font-bold text-gray-900 text-base">{cert.name}</h4>
                             <p className="text-sm font-medium text-gray-500 mt-0.5">{cert.issuer}</p>
                           </div>
-                          <button onClick={() => removeItem('certificates', cert.id)} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                          <button onClick={() => removeItem('certificates', cert.id)} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -594,10 +597,10 @@ export default function ProfileUpdate({
       {/* MODALS - Redesigned to look like macOS Dialogs */}
       {showExpModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up transform transition-all">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Yeni Deneyim</h3>
-              <button onClick={() => setShowExpModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
+              <button onClick={() => setShowExpModal(false)} className="text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
             <div className="p-6 space-y-5 pt-0">
               <div>
@@ -622,10 +625,10 @@ export default function ProfileUpdate({
 
       {showSkillModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Yetenek Ekle</h3>
-              <button onClick={() => setShowSkillModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
+              <button onClick={() => setShowSkillModal(false)} className="text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
             <div className="p-6 pt-0 space-y-4">
               <input type="text" autoFocus value={tempSkill} onChange={e => setTempSkill(e.target.value)} onKeyDown={e => e.key === 'Enter' && addSkill()} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm" placeholder="Örn: React.js, Liderlik..." />
@@ -637,10 +640,10 @@ export default function ProfileUpdate({
 
       {showLangModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Dil Ekle</h3>
-              <button onClick={() => setShowLangModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
+              <button onClick={() => setShowLangModal(false)} className="text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
             <div className="p-6 pt-0 space-y-4">
               <div>
@@ -661,10 +664,10 @@ export default function ProfileUpdate({
 
       {showCertModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Sertifika Ekle</h3>
-              <button onClick={() => setShowCertModal(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
+              <button onClick={() => setShowCertModal(false)} className="text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors p-1.5 rounded-full"><X size={18}/></button>
             </div>
             <div className="p-6 pt-0 space-y-4">
               <div>

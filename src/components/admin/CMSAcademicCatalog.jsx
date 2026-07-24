@@ -41,7 +41,7 @@ export default function CMSAcademicCatalog({ academicCatalog, setAcademicCatalog
           <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden">
             <div className="p-4 border-b border-gray-100 flex flex-wrap gap-3 items-center justify-between bg-gray-50/50">
               <div className="relative flex-grow max-w-md">
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
                 <input 
                   type="text"
                   placeholder="Fakülte veya bölüm ara..."
@@ -63,12 +63,12 @@ export default function CMSAcademicCatalog({ academicCatalog, setAcademicCatalog
             <div className="divide-y divide-gray-100">
               {filteredCatalog.map(faculty => (
                 <div key={faculty.id} className="bg-white">
-                  <div 
+                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
                     className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
                     onClick={() => toggleFaculty(faculty.id)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-1.5 rounded-md ${expandedFaculties[faculty.id] ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'}`}>
+                      <div className={`p-1.5 rounded-md ${expandedFaculties[faculty.id] ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
                         {expandedFaculties[faculty.id] ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                       </div>
                       <div>
@@ -78,7 +78,7 @@ export default function CMSAcademicCatalog({ academicCatalog, setAcademicCatalog
                     </div>
                     <div className="flex items-center gap-4">
                       <Badge status={faculty.status} />
-                      <button className="text-gray-400 hover:text-blue-600 p-1 rounded-md hover:bg-blue-50 transition" onClick={(e) => { e.stopPropagation(); setSelectedFaculty(faculty); }}>
+                      <button className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-blue-50 transition" onClick={(e) => { e.stopPropagation(); setSelectedFaculty(faculty); }}>
                         <Edit size={16} />
                       </button>
                     </div>
@@ -96,7 +96,7 @@ export default function CMSAcademicCatalog({ academicCatalog, setAcademicCatalog
                                 <div key={prog.id} className="flex items-center gap-2 text-xs">
                                   <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
                                   <span className="font-medium text-gray-700">{prog.name}</span>
-                                  <span className="text-gray-400">({prog.level})</span>
+                                  <span className="text-gray-500">({prog.level})</span>
                                   {prog.doubleMajorEligible && <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded text-[10px] font-bold">ÇAP</span>}
                                 </div>
                               ))}
@@ -104,7 +104,7 @@ export default function CMSAcademicCatalog({ academicCatalog, setAcademicCatalog
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge status={dept.status} />
-                            <button className="text-gray-400 hover:text-blue-600 p-1">
+                            <button aria-label="İşlem Butonu" className="text-gray-500 hover:text-blue-600 p-1">
                               <Edit size={14} />
                             </button>
                           </div>
@@ -121,7 +121,7 @@ export default function CMSAcademicCatalog({ academicCatalog, setAcademicCatalog
               {filteredCatalog.length === 0 && (
                 <div className="p-12 text-center">
                   <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Library className="text-gray-400" size={24} />
+                    <Library className="text-gray-500" size={24} />
                   </div>
                   <h3 className="text-base font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
                   <p className="text-sm text-gray-500">Arama kriterlerinize uygun akademik birim bulunmuyor.</p>
@@ -172,7 +172,7 @@ export default function CMSAcademicCatalog({ academicCatalog, setAcademicCatalog
             ) : (
               <div className="text-center py-10 px-4">
                 <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Library className="text-gray-300" size={24} />
+                  <Library className="text-gray-400" size={24} />
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 mb-2">Birim Seçilmedi</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">Düzenlemek için sol taraftaki listeden bir fakülte veya bölüm seçin.</p>

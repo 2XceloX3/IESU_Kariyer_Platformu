@@ -1,0 +1,34 @@
+{
+  "announcements": [
+    {
+      "id": "ANN-2026-01",
+      "title": "2025-2026 Bahar Yarıyılı Ders Kayıt Süreci Başladı",
+      "date": "2026-02-10",
+      "category": "Akademik",
+      "summary": "Öğrencilerimizin OBİS sistemi üzerinden ders seçimlerini tamamlamaları gerekmektedir."
+    },
+    {
+      "id": "ANN-2026-02",
+      "title": "İGÜ Kariyer Zirvesi 2026 Kayıtları Açıldı",
+      "date": "2026-02-15",
+      "category": "Kariyer",
+      "summary": "50+ Global şirketin katılımıyla gerçekleşecek dev kariyer zirvesi için yerinizi ayırın."
+    }
+  ],
+  "events": [
+    {
+      "id": "EVT-101",
+      "title": "Yapay Zeka ve Geleceğin Meslekleri Paneli",
+      "date": "2026-03-05",
+      "time": "14:00",
+      "location": "J Blok Mehmet Akif Ersoy Konferans Salonu"
+    },
+    {
+      "id": "EVT-102",
+      "title": "Hackathon 2026: Sürdürülebilir Şehirler",
+      "date": "2026-03-20",
+      "time": "09:00",
+      "location": "Kuluçka Merkezi A Blok"
+    }
+  ]
+}

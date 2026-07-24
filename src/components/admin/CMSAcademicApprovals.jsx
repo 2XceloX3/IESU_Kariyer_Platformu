@@ -72,7 +72,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
           <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden">
             <div className="p-4 border-b border-gray-100 flex flex-wrap gap-3 items-center justify-between bg-gray-50/50">
               <div className="relative flex-grow max-w-md">
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
                 <input 
                   type="text"
                   placeholder="Kişi veya alan ara..."
@@ -85,7 +85,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
 
             <div className="divide-y divide-gray-100">
               {filteredApprovals.map(request => (
-                <div 
+                <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
                   key={request.id} 
                   className={`p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors ${selectedRequest?.id === request.id ? 'bg-orange-50/50' : 'bg-white'}`}
                   onClick={() => setSelectedRequest(request)}
@@ -102,7 +102,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-xs font-medium text-gray-400">{request.submittedDate}</span>
+                    <span className="text-xs font-medium text-gray-500">{request.submittedDate}</span>
                     <Badge status={request.status} />
                   </div>
                 </div>
@@ -111,7 +111,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
               {filteredApprovals.length === 0 && (
                 <div className="p-12 text-center">
                   <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <ShieldCheck className="text-gray-400" size={24} />
+                    <ShieldCheck className="text-gray-500" size={24} />
                   </div>
                   <h3 className="text-base font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
                   <p className="text-sm text-gray-500">İnceleme bekleyen talep yok.</p>
@@ -176,7 +176,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
             ) : (
               <div className="text-center py-10 px-4">
                 <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ShieldCheck className="text-gray-300" size={24} />
+                  <ShieldCheck className="text-gray-400" size={24} />
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 mb-2">Talep Seçilmedi</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">İncelemek için sol taraftaki listeden bir talep seçin.</p>

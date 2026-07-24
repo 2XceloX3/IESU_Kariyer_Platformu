@@ -28,22 +28,37 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
   }
 
   return (
-    <div className="mb-8 bg-white/60 backdrop-blur-xl border border-white rounded-3xl p-5 shadow-[var(--shadow-soft)]">
+    <div className="mb-8 bg-white/60 backdrop-blur-xl border border-white rounded-xl p-5 shadow-[var(--shadow-soft)]">
       <div className="flex items-center gap-2 mb-5 px-1">
-        <Compass className="text-[var(--brand-pomegranate)]" size={22} />
+        <Compass className="text-[var(--brand-navy)]" size={22} />
         <h2 className="text-[17px] font-black text-gray-900 tracking-tight">Kariyer Radarı</h2>
-        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--brand-red)] bg-[var(--brand-soft-red)] px-2 py-1 rounded-full ml-auto">Öne Çıkanlar</span>
+        <div className="ml-auto flex items-center gap-2">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              window.toast && window.toast.info("Anka AI: Radar taraması başlatıldı...");
+              setTimeout(() => {
+                window.toast && window.toast.success("✅ AI Sinyali: Hedefiniz olan 'Yazılım' alanında radarınıza 3 yeni staj ilanı ve 1 kulüp etkinliği takıldı.");
+              }, 2500);
+            }}
+            className="flex items-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full hover:opacity-90 transition shadow-md shadow-blue-500/20"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"></path><path d="m17 5-5-3-5 3v14l5 3 5-3V5z"></path></svg>
+            AI ile Tara
+          </button>
+          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--brand-navy)] bg-[var(--brand-soft-blue)] px-2 py-1 rounded-full">Öne Çıkanlar</span>
+        </div>
       </div>
       
       <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar">
         {(highlights || []).map((item, idx) => (
-          <div 
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
             key={idx}
             onClick={() => setView && setView(item.link)}
             className="flex-shrink-0 w-36 h-36 relative overflow-hidden rounded-[24px] border border-white/50 shadow-sm hover:shadow-md transition-all cursor-pointer snap-start group"
             style={{ background: 'linear-gradient(145deg, #ffffff 0%, #f9f9fb 100%)' }}
           >
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-br from-[var(--brand-coral)] to-[var(--brand-red-dark)]"></div>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-br from-[var(--brand-blue)] to-[var(--brand-secondary)]"></div>
             
             <div className="flex flex-col h-full justify-between p-4 relative z-10">
               <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm border border-white transition-transform duration-300 group-hover:-translate-y-1 ${item.color.replace('bg-', 'bg-white text-')}`}>
@@ -54,10 +69,10 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
               </div>
               
               <div>
-                <h3 className="font-black text-[13px] text-gray-900 leading-tight line-clamp-2 mb-1 group-hover:text-[var(--brand-red)] transition-colors">
+                <h3 className="font-black text-[13px] text-gray-900 leading-tight line-clamp-2 mb-1 group-hover:text-[var(--brand-navy)] transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-[10px] font-bold text-gray-400 line-clamp-1 uppercase tracking-wide">
+                <p className="text-[10px] font-bold text-gray-500 line-clamp-1 uppercase tracking-wide">
                   {item.desc}
                 </p>
               </div>

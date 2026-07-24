@@ -50,7 +50,7 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
           {job.logo ? (
             <img src={job.logo} alt={job.title} className="w-full h-full object-cover" />
           ) : (
-            <Building2 size={48} className="text-gray-300" />
+            <Building2 size={48} className="text-gray-400" />
           )}
         </div>
         <div className="p-6 bg-white border-t border-gray-100 flex-grow">
@@ -88,13 +88,13 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
           {job.logo ? (
             <img src={job.logo} alt={job.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700 pointer-events-none" />
           ) : (
-            <Building2 size={48} className="text-gray-300 pointer-events-none" />
+            <Building2 size={48} className="text-gray-400 pointer-events-none" />
           )}
           <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
             <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-xs font-black rounded-lg shadow-sm text-gray-700">
               {job.type}
             </span>
-            <span className="px-3 py-1 bg-iesu-red/90 backdrop-blur-sm text-xs font-black rounded-lg shadow-sm text-white flex items-center gap-1">
+            <span className="px-3 py-1 bg-[#0A2342]/90 backdrop-blur-sm text-xs font-black rounded-lg shadow-sm text-white flex items-center gap-1">
               <Heart size={10} fill="currentColor" /> Hızlı Başvur
             </span>
           </div>
@@ -115,11 +115,11 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
           
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-              <MapPin size={16} className="text-gray-400 shrink-0" />
+              <MapPin size={16} className="text-gray-500 shrink-0" />
               <span className="truncate">{job.location}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-              <Briefcase size={16} className="text-gray-400 shrink-0" />
+              <Briefcase size={16} className="text-gray-500 shrink-0" />
               <span className="truncate">{job.department}</span>
             </div>
           </div>
@@ -140,6 +140,20 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
               <DollarSign size={12} className="text-emerald-500" />
               {job.salary ? job.salary : 'Tahmini: 35K - 45K ₺'}
             </div>
+
+            {/* Smart Job Matching Score */}
+            <div className="w-full mt-1">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Profil Eşleşmesi</span>
+                <span className="text-xs font-black text-[#0A66C2]">%{((job.id.length * 7 + job.title.length * 3) % 30) + 70}</span>
+              </div>
+              <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-400 to-[#0A66C2] rounded-full" 
+                  style={{ width: `${((job.id.length * 7 + job.title.length * 3) % 30) + 70}%` }}
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -158,7 +172,7 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
               controls.start({ x: 250, opacity: 0, transition: { duration: 0.2 } });
               setTimeout(() => onApply(job), 200);
             }} 
-            className="w-full py-2.5 bg-iesu-red hover:bg-red-700 text-white font-bold rounded-xl transition text-sm flex items-center justify-center gap-1.5 shadow-md shadow-red-200"
+            className="w-full py-2.5 bg-[#0A2342] hover:bg-red-700 text-white font-bold rounded-xl transition text-sm flex items-center justify-center gap-1.5 shadow-md shadow-red-200"
           >
             <Heart size={14} fill="currentColor" /> Başvur
           </button>

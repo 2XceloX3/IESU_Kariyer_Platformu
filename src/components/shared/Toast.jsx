@@ -61,7 +61,7 @@ export function ToastContainer() {
           
           <p className="text-sm font-bold text-gray-800 flex-1">{t.message}</p>
           
-          <button onClick={() => removeToast(t.id)} className="text-gray-400 hover:text-gray-600 transition-colors shrink-0">
+          <button onClick={() => removeToast(t.id)} className="text-gray-500 hover:text-gray-600 transition-colors shrink-0">
             <X size={16} />
           </button>
         </div>

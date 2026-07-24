@@ -20,12 +20,12 @@ export default function AcademicOnboarding({ onComplete, currentUser }) {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+      <div className="max-w-2xl w-full bg-white rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row">
         {/* Left Side - Info */}
         <div className="bg-slate-900 w-full md:w-2/5 p-8 text-white flex flex-col justify-between">
           <div>
             <Logo className="h-8 w-auto text-white mb-12 brightness-0 invert" />
-            <h2 className="text-2xl font-black mb-4 leading-tight">IESU Akademik <br/>Kariyer Paneline <br/><span className="text-blue-400">Hoş Geldiniz</span></h2>
+            <h2 className="text-2xl font-black mb-4 leading-tight">İESÜ Akademik <br/>Kariyer Paneline <br/><span className="text-blue-400">Hoş Geldiniz</span></h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               Öğrencilerinizin kariyer yolculuğuna rehberlik edin, staj onaylarını yönetin ve bölümünüzün başarı istatistiklerini takip edin.
             </p>
@@ -51,7 +51,7 @@ export default function AcademicOnboarding({ onComplete, currentUser }) {
                 {['Prof. Dr.', 'Doç. Dr.', 'Dr. Öğr. Üyesi', 'Öğr. Gör.', 'Arş. Gör.'].map(t => (
                   <label key={t} className={`flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.title === t ? 'border-blue-600 bg-blue-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
                     <input type="radio" name="title" className="hidden" checked={formData.title === t} onChange={() => setFormData({...formData, title: t})} />
-                    <User size={18} className={formData.title === t ? 'text-blue-600' : 'text-gray-400'} />
+                    <User size={18} className={formData.title === t ? 'text-blue-600' : 'text-gray-500'} />
                     <span className={`ml-3 font-medium ${formData.title === t ? 'text-blue-900' : 'text-gray-700'}`}>{t}</span>
                   </label>
                 ))}
@@ -84,7 +84,7 @@ export default function AcademicOnboarding({ onComplete, currentUser }) {
                 <div className="space-y-3">
                   <label className={`flex items-start p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.role === 'advisor' ? 'border-blue-600 bg-blue-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
                     <input type="radio" name="role" className="hidden" checked={formData.role === 'advisor'} onChange={() => setFormData({...formData, role: 'advisor'})} />
-                    <BookOpen size={20} className={`mt-0.5 ${formData.role === 'advisor' ? 'text-blue-600' : 'text-gray-400'}`} />
+                    <BookOpen size={20} className={`mt-0.5 ${formData.role === 'advisor' ? 'text-blue-600' : 'text-gray-500'}`} />
                     <div className="ml-3">
                       <span className={`block font-bold text-sm ${formData.role === 'advisor' ? 'text-blue-900' : 'text-gray-700'}`}>Akademik Danışman</span>
                       <span className="block text-xs text-gray-500 mt-1">Öğrencilerin staj defterlerini ve dilekçelerini onaylayın.</span>
@@ -92,7 +92,7 @@ export default function AcademicOnboarding({ onComplete, currentUser }) {
                   </label>
                   <label className={`flex items-start p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.role === 'head' ? 'border-blue-600 bg-blue-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
                     <input type="radio" name="role" className="hidden" checked={formData.role === 'head'} onChange={() => setFormData({...formData, role: 'head'})} />
-                    <Briefcase size={20} className={`mt-0.5 ${formData.role === 'head' ? 'text-blue-600' : 'text-gray-400'}`} />
+                    <Briefcase size={20} className={`mt-0.5 ${formData.role === 'head' ? 'text-blue-600' : 'text-gray-500'}`} />
                     <div className="ml-3">
                       <span className={`block font-bold text-sm ${formData.role === 'head' ? 'text-blue-900' : 'text-gray-700'}`}>Bölüm Başkanı</span>
                       <span className="block text-xs text-gray-500 mt-1">Bölüm istatistiklerini görün, stajları takip edin ve departmanı yönetin.</span>

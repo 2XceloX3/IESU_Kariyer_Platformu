@@ -3,9 +3,12 @@ import { ArrowLeft, Bell, Briefcase, Calendar, CheckCircle2, MessageSquare, Star
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
+import useAppStore from '../store/useAppStore';
 
-export default function NotificationsPanel({ previousView, userRole, notifications, setNotifications, currentUser, setView, setSelectedUserId }) {
-  
+export default function NotificationsPanel({ previousView, userRole, currentUser, setView, setSelectedUserId }) {
+  const notifications = useAppStore(state => state.notifications);
+  const setNotifications = useAppStore(state => state.setNotifications);
+
   const myNotifications = useMemo(() => 
     (notifications || []).filter(n => n.userId === currentUser?.id).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
   , [notifications, currentUser]);
@@ -16,7 +19,7 @@ export default function NotificationsPanel({ previousView, userRole, notificatio
       case 'message': return <MessageSquare size={18} className="text-blue-500" />;
       case 'application': return <Briefcase size={18} className="text-emerald-500" />;
       case 'event': return <Calendar size={18} className="text-purple-500" />;
-      case 'system': return <Info size={18} className="text-iesu-red" />;
+      case 'system': return <Info size={18} className="text-[#0A2342]" />;
       default: return <Bell size={18} className="text-gray-500" />;
     }
   };
@@ -54,17 +57,16 @@ export default function NotificationsPanel({ previousView, userRole, notificatio
           <div className="w-10"></div> {/* Spacer for symmetry */}
           
           {/* CENTER: Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')}>
-            <Logo className="h-10 w-auto text-iesu-red hover:scale-105 transition-transform" />
-            <div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-gray-900 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Ofisi Koordinatörlüğü</p>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
+              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
           {/* RIGHT: Notifications & Profile Menu */}
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center bg-red-50 text-iesu-red`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center bg-red-50 text-[#0A2342]`} title="Bildirimler">
               <div className="relative">
                 <Bell size={24} strokeWidth={2.5} className="fill-current" />
               </div>
@@ -81,17 +83,17 @@ export default function NotificationsPanel({ previousView, userRole, notificatio
             Bildirimler
           </h1>
           {unreadCount > 0 && (
-            <button onClick={markAllAsRead} className="text-sm font-bold text-gray-500 hover:text-iesu-red flex items-center gap-1 transition">
+            <button onClick={markAllAsRead} className="text-sm font-bold text-gray-500 hover:text-[#0A2342] flex items-center gap-1 transition">
               <CheckCircle size={16} /> Tümünü Okundu İşaretle
             </button>
           )}
         </div>
 
-        <div className="bg-white rounded-3xl border border-[var(--border-soft)] shadow-[var(--shadow-soft)] overflow-hidden">
+        <div className="bg-white rounded-xl border border-[var(--border-soft)] shadow-[var(--shadow-soft)] overflow-hidden">
           {myNotifications.length === 0 ? (
             <div className="h-64 flex flex-col items-center justify-center text-center p-6">
               <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                <Bell size={24} className="text-gray-400" />
+                <Bell size={24} className="text-gray-500" />
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-2">Henüz bildiriminiz bulunmuyor.</h3>
               <p className="text-gray-500 text-sm">Size gelen önemli güncellemeler burada listelenecektir.</p>
@@ -99,7 +101,7 @@ export default function NotificationsPanel({ previousView, userRole, notificatio
           ) : (
             <div className="divide-y divide-gray-50">
               {(myNotifications || []).map(notification => (
-                <div 
+                <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
                   key={notification.id} 
                   onClick={() => handleNotificationClick(notification.id, notification.link)}
                   className={`p-6 flex items-start gap-4 transition cursor-pointer relative group ${!notification.read ? 'bg-red-50/30 hover:bg-red-50/50' : 'hover:bg-gray-50'}`}
@@ -114,16 +116,16 @@ export default function NotificationsPanel({ previousView, userRole, notificatio
                     <p className={`text-sm ${!notification.read ? 'text-gray-700' : 'text-gray-500'}`}>
                       {notification.description}
                     </p>
-                    <span className="text-xs text-gray-400 mt-2 block">
+                    <span className="text-xs text-gray-500 mt-2 block">
                       {new Date(notification.timestamp).toLocaleString('tr-TR')}
                     </span>
                   </div>
                   {!notification.read && (
-                    <div className="w-2 h-2 rounded-full bg-iesu-red shrink-0 absolute right-6 top-8"></div>
+                    <div className="w-2 h-2 rounded-full bg-[#0A2342] shrink-0 absolute right-6 top-8"></div>
                   )}
                   <button 
                     onClick={(e) => handleDelete(notification.id, e)}
-                    className="absolute right-6 top-6 p-2 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition"
+                    className="absolute right-6 top-6 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -137,32 +139,34 @@ export default function NotificationsPanel({ previousView, userRole, notificatio
       {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
         <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Akış">
+          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-500 hover:text-gray-900`} title="Akış">
             <Home size={26} strokeWidth={2} />
           </button>
           
-          <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="İlanlar">
+          <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-500 hover:text-gray-900`} title="İlanlar">
             <Briefcase size={24} strokeWidth={2} />
           </button>
           
           {/* CENTER: SEARCH ICON */}
-          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'admin' ? 'admin' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole || 'landing')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
+          <button onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Keşfet'e Dön">
             <Search size={24} strokeWidth={2.5} />
           </button>
           
           {/* MESSAGES */}
-          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-400 hover:text-gray-900`} title="Mesajlar">
+          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-gray-500 hover:text-gray-900`} title="Mesajlar">
             <MessageCircle size={24} strokeWidth={2} />
           </button>
           
           {/* PROFILE AVATAR */}
           <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanici')}&background=132A49&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanici')}&background=0A2342&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+
 
 

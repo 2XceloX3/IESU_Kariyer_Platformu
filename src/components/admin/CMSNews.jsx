@@ -78,7 +78,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
           id: 'POST-' + Date.now(),
           sourceId: newId,
           author: {
-            name: currentUser?.name || 'Kariyer Geliştirme Koordinatörlüğü',
+            name: currentUser?.name || 'Kariyer Geliştirme Merkezi',
             avatar: currentUser?.avatar || 'https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg',
             role: 'admin',
             title: 'Süper Yönetici'
@@ -129,7 +129,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
       {/* FILTERS */}
       <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
           <input 
             type="text" placeholder="Haber ara..." 
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
@@ -142,7 +142,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
             <option value="yayında">Yayında</option>
             <option value="taslak">Taslak</option>
           </select>
-          <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
         </div>
       </div>
 
@@ -150,7 +150,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mb-4"><Megaphone size={32}/></div>
+            <div className="w-16 h-16 bg-gray-50 text-gray-500 rounded-full flex items-center justify-center mb-4"><Megaphone size={32}/></div>
             <h3 className="text-lg font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
             <p className="text-sm text-gray-500">Arama kriterlerine uygun haber bulunmuyor.</p>
           </div>
@@ -158,11 +158,11 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Haber</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tarih</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Önem Derecesi</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Durum</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">İşlemler</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Haber</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tarih</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Önem Derecesi</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -181,7 +181,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
                   </td>
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
-                      <Calendar size={13} className="text-gray-400"/> {a.date || 'Belirtilmedi'}
+                      <Calendar size={13} className="text-gray-500"/> {a.date || 'Belirtilmedi'}
                     </div>
                   </td>
                   <td className="py-3 px-5">
@@ -197,8 +197,8 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
-                      <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
+                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
                 </tr>
@@ -274,7 +274,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
   );
 
   const previewView = (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
       {form.imageUrl && (
         <div className="h-40 bg-gray-100 relative group">
           <img src={form.imageUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -304,7 +304,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
           {form.title || 'Haber Başlığı'}
         </h3>
         
-        <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 mb-4">
+        <div className="flex items-center gap-2 text-[11px] font-bold text-gray-500 mb-4">
           <Calendar size={13} />
           <span>{form.date || 'Tarih Belirtilmedi'}</span>
         </div>
@@ -328,8 +328,8 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
             <FileText size={16} className="text-blue-600" />
           </div>
           <div>
-            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Ofisi <CheckCircle2 size={12} className="text-emerald-500" /></p>
-            <p className="text-[10px] text-gray-400">Az önce • Haber Paylaşımı</p>
+            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>
+            <p className="text-[10px] text-gray-500">Az önce • Haber Paylaşımı</p>
           </div>
         </div>
         {form.imageUrl && (
@@ -339,7 +339,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
         )}
         <p className="text-[12px] font-bold text-gray-800 mb-1">{form.title}</p>
         <p className="text-[11px] text-gray-500 line-clamp-2">{form.description || ''}</p>
-        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
+        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-500">
           <span>📅 {form.date || '...'}</span>
         </div>
       </div>

@@ -15,6 +15,8 @@ export default function CMSEvents({ events = [], setEvents }) {
     date: '',
     time: '',
     location: '',
+    hasSurvey: false,
+    surveyQuestions: [{ id: 'q1', text: 'Etkinlikten genel olarak memnun kaldınız mı?', type: 'likert' }],
     description: '',
     imageUrl: '',
     attachmentData: null,
@@ -70,6 +72,26 @@ export default function CMSEvents({ events = [], setEvents }) {
     }
   };
 
+  
+  const addSurveyQuestion = () => {
+    setForm(prev => ({
+      ...prev,
+      surveyQuestions: [...prev.surveyQuestions, { id: 'q' + Date.now(), text: '', type: 'likert' }]
+    }));
+  };
+  const updateSurveyQuestion = (id, text) => {
+    setForm(prev => ({
+      ...prev,
+      surveyQuestions: prev.surveyQuestions.map(q => q.id === id ? { ...q, text } : q)
+    }));
+  };
+  const removeSurveyQuestion = (id) => {
+    setForm(prev => ({
+      ...prev,
+      surveyQuestions: prev.surveyQuestions.filter(q => q.id !== id)
+    }));
+  };
+
   const handleSave = (e) => {
     e.preventDefault();
     if (!form.title || !form.date) return window.toast.info("Başlık ve tarih zorunludur.");
@@ -115,7 +137,7 @@ export default function CMSEvents({ events = [], setEvents }) {
 
       <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
           <input 
             type="text" placeholder="Etkinlik ara..." 
             className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
@@ -128,14 +150,14 @@ export default function CMSEvents({ events = [], setEvents }) {
             <option value="yayında">Yayında</option>
             <option value="taslak">Taslak</option>
           </select>
-          <button className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
         </div>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mb-4"><Calendar size={32}/></div>
+            <div className="w-16 h-16 bg-gray-50 text-gray-500 rounded-full flex items-center justify-center mb-4"><Calendar size={32}/></div>
             <h3 className="text-lg font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
             <p className="text-sm text-gray-500">Arama kriterlerine uygun etkinlik bulunmuyor.</p>
           </div>
@@ -143,11 +165,11 @@ export default function CMSEvents({ events = [], setEvents }) {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Etkinlik</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tarih & Saat</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Konum</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">Durum</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-400 uppercase tracking-wider text-right">İşlemler</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Etkinlik</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tarih & Saat</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Konum</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -156,7 +178,7 @@ export default function CMSEvents({ events = [], setEvents }) {
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden shrink-0">
-                        {e.imageUrl ? <img src={e.imageUrl} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Calendar size={20} className="text-gray-400"/></div>}
+                        {e.imageUrl ? <img src={e.imageUrl} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Calendar size={20} className="text-gray-500"/></div>}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{e.title}</p>
@@ -166,7 +188,7 @@ export default function CMSEvents({ events = [], setEvents }) {
                   </td>
                   <td className="py-3 px-5">
                     <p className="text-sm font-bold text-gray-700">{e.date || 'Belirtilmedi'}</p>
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{e.time || '-'}</p>
+                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">{e.time || '-'}</p>
                   </td>
                   <td className="py-3 px-5">
                     <p className="text-xs font-bold text-gray-700 flex items-center gap-1"><MapPin size={12}/> {e.location || 'Belirtilmedi'}</p>
@@ -179,8 +201,8 @@ export default function CMSEvents({ events = [], setEvents }) {
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(e)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
-                      <button onClick={() => handleDelete(e.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
+                      <button onClick={() => handleEdit(e)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleDelete(e.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
                 </tr>
@@ -193,7 +215,7 @@ export default function CMSEvents({ events = [], setEvents }) {
   );
 
   const actualFormView = (
-    <div className="flex-1">
+    <div className="flex flex-col lg:flex-row gap-6">
       <div className="flex-1 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
           <h3 className="text-lg font-black text-gray-900">{currentId ? 'Etkinliği Düzenle' : 'Yeni Etkinlik'}</h3>
@@ -241,6 +263,30 @@ export default function CMSEvents({ events = [], setEvents }) {
             <textarea value={form.description} onChange={e=>setForm({...form, description: e.target.value})} rows={5} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none" placeholder="Etkinlik detayları..."></textarea>
           </div>
 
+          
+          <div className="pt-6 border-t border-gray-100 mt-6">
+            <div className="flex items-center gap-3 mb-4">
+              <input type="checkbox" id="hasSurvey" checked={form.hasSurvey} onChange={(e) => setForm({...form, hasSurvey: e.target.checked})} className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" />
+              <label htmlFor="hasSurvey" className="text-sm font-black text-gray-900">Etkinlik Sonrası Değerlendirme Anketi (Likert) Ekle</label>
+            </div>
+            
+            {form.hasSurvey && (
+              <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h4 className="text-xs font-bold text-indigo-900">Anket Soruları</h4>
+                  <button type="button" onClick={addSurveyQuestion} className="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded hover:bg-indigo-200 transition">+ Soru Ekle</button>
+                </div>
+                {form.surveyQuestions.map((q, index) => (
+                  <div key={q.id} className="flex items-start gap-2">
+                    <span className="text-xs font-bold text-indigo-400 mt-2">{index+1}.</span>
+                    <input type="text" value={q.text} onChange={(e) => updateSurveyQuestion(q.id, e.target.value)} placeholder="Likert sorusu (Örn: Eğitmen yeterliydi)" className="flex-1 bg-white border border-indigo-200 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500" />
+                    <button type="button" onClick={() => removeSurveyQuestion(q.id)} className="p-1.5 text-red-400 hover:bg-red-50 rounded"><Trash2 size={14}/></button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
             <MediaUploader 
               label="Etkinlik Afişi / Görsel" 
@@ -265,12 +311,12 @@ export default function CMSEvents({ events = [], setEvents }) {
   );
 
   const previewView = (
-    <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
       <div className="h-48 bg-gray-100 relative group">
         {form.imageUrl ? (
           <img src={form.imageUrl} alt="Preview" className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+          <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
             <ImageIcon size={32} />
             <span className="text-[10px] font-bold uppercase tracking-wider mt-2">Görsel Yok</span>
           </div>
@@ -319,8 +365,8 @@ export default function CMSEvents({ events = [], setEvents }) {
             <Calendar size={16} className="text-red-600" />
           </div>
           <div>
-            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Ofisi <CheckCircle2 size={12} className="text-emerald-500" /></p>
-            <p className="text-[10px] text-gray-400">Az önce • Etkinlik Paylaşımı</p>
+            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>
+            <p className="text-[10px] text-gray-500">Az önce • Etkinlik Paylaşımı</p>
           </div>
         </div>
         {form.imageUrl && (
@@ -330,7 +376,7 @@ export default function CMSEvents({ events = [], setEvents }) {
         )}
         <p className="text-[12px] font-bold text-gray-800 mb-1">{form.title}</p>
         <p className="text-[11px] text-gray-500 line-clamp-2">{form.description || ''}</p>
-        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400">
+        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-500">
           <span>📅 {form.date || '...'}</span>
           <span>📍 {form.location || '...'}</span>
         </div>
@@ -383,7 +429,7 @@ export default function CMSEvents({ events = [], setEvents }) {
             </button>
           </div>
           
-          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               
               <div>
@@ -399,13 +445,13 @@ export default function CMSEvents({ events = [], setEvents }) {
 
                 <form className="space-y-5">
                   <div>
-                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">Anket Başlığı</label>
+                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Anket Başlığı</label>
                     <input type="text" value={surveyForm.title} onChange={e => setSurveyForm({...surveyForm, title: e.target.value})} placeholder="Örn: Kariyer Fuarı Değerlendirmesi" className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 outline-none font-medium" />
                   </div>
                   
                   <div className="space-y-3 pt-2">
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Anket Soruları (Likert Ölçeği)</label>
+                      <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Anket Soruları (Likert Ölçeği)</label>
                       <button type="button" onClick={() => setSurveyForm({...surveyForm, questions: [...surveyForm.questions, 'Yeni Soru']})} className="text-xs font-bold text-red-600 hover:bg-red-50 px-2 py-1 rounded flex items-center gap-1">
                         <Plus size={14} /> Soru Ekle
                       </button>
@@ -422,14 +468,14 @@ export default function CMSEvents({ events = [], setEvents }) {
                         <button type="button" onClick={() => {
                           const newQ = surveyForm.questions.filter((_, idx) => idx !== i);
                           setSurveyForm({...surveyForm, questions: newQ});
-                        }} className="w-8 h-8 rounded flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+                        }} className="w-8 h-8 rounded flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors">
                           <Trash2 size={16} />
                         </button>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200 mt-6 cursor-pointer hover:bg-gray-100 transition" onClick={() => setSurveyForm({...surveyForm, kvkkConfirmed: !surveyForm.kvkkConfirmed})}>
+                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200 mt-6 cursor-pointer hover:bg-gray-100 transition" onClick={() => setSurveyForm({...surveyForm, kvkkConfirmed: !surveyForm.kvkkConfirmed})}>
                     <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${surveyForm.kvkkConfirmed ? 'bg-red-600' : 'border-2 border-gray-300 bg-white'}`}>
                       {surveyForm.kvkkConfirmed && <CheckCircle size={14} className="text-white" />}
                     </div>
@@ -443,7 +489,7 @@ export default function CMSEvents({ events = [], setEvents }) {
               </div>
 
               <div className="bg-slate-50/50 rounded-2xl p-6 border border-dashed border-gray-200 relative">
-                <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-6">
+                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-6">
                   <Eye size={14} className="text-red-500" /> Öğrenci Ekranı Ön İzlemesi
                 </label>
                 
@@ -455,11 +501,11 @@ export default function CMSEvents({ events = [], setEvents }) {
                   
                   <div className="p-5 space-y-6">
                     {surveyForm.questions.length === 0 ? (
-                      <p className="text-sm text-gray-400 text-center py-4 font-bold">Henüz soru eklenmedi.</p>
+                      <p className="text-sm text-gray-500 text-center py-4 font-bold">Henüz soru eklenmedi.</p>
                     ) : surveyForm.questions.map((q, i) => (
                       <div key={i} className="space-y-3">
                         <p className="text-sm font-bold text-gray-800">{i+1}. {q || 'Soru metni...'}</p>
-                        <div className="flex justify-between items-center gap-1 text-[10px] font-bold text-gray-400 text-center">
+                        <div className="flex justify-between items-center gap-1 text-[10px] font-bold text-gray-500 text-center">
                           <span>Kesinlikle Katılmıyorum</span>
                           <div className="flex gap-2">
                             {[1, 2, 3, 4, 5].map(rating => (
@@ -479,7 +525,7 @@ export default function CMSEvents({ events = [], setEvents }) {
                     )}
 
                     <div className="mt-6">
-                      <div className="w-full bg-gray-100 text-gray-400 py-2.5 rounded-xl font-bold text-sm text-center">Gönder</div>
+                      <div className="w-full bg-gray-100 text-gray-500 py-2.5 rounded-xl font-bold text-sm text-center">Gönder</div>
                     </div>
                   </div>
                 </div>
@@ -489,7 +535,7 @@ export default function CMSEvents({ events = [], setEvents }) {
           </div>
 
           {/* OLUŞTURULAN ANKETLER VE SONUÇ ANALİZİ (YÖK İÇİN) */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mt-8">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mt-8">
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <div>
                 <h3 className="text-lg font-black text-gray-900 mb-1">Oluşturulan Anketler ve Sonuç Analizi</h3>
@@ -513,10 +559,10 @@ export default function CMSEvents({ events = [], setEvents }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-white">
-                    <th className="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-wider border-b border-gray-100">Etkinlik Başlığı</th>
-                    <th className="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-wider text-center border-b border-gray-100">Katılımcı Sayısı</th>
-                    <th className="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-wider text-center border-b border-gray-100">Ort. Memnuniyet</th>
-                    <th className="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-wider text-right border-b border-gray-100">Rapor</th>
+                    <th className="py-4 px-6 text-xs font-black text-gray-500 uppercase tracking-wider border-b border-gray-100">Etkinlik Başlığı</th>
+                    <th className="py-4 px-6 text-xs font-black text-gray-500 uppercase tracking-wider text-center border-b border-gray-100">Katılımcı Sayısı</th>
+                    <th className="py-4 px-6 text-xs font-black text-gray-500 uppercase tracking-wider text-center border-b border-gray-100">Ort. Memnuniyet</th>
+                    <th className="py-4 px-6 text-xs font-black text-gray-500 uppercase tracking-wider text-right border-b border-gray-100">Rapor</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-sm">
@@ -561,12 +607,12 @@ export default function CMSEvents({ events = [], setEvents }) {
                     <tr className="bg-slate-50/50 border-none">
                       <td colSpan="4" className="p-0">
                         <div className="px-12 py-6 border-l-2 border-red-500 ml-4 mb-4 mt-2 bg-white rounded-r-xl shadow-sm">
-                          <h4 className="text-xs font-black tracking-wider text-gray-400 mb-4 uppercase flex items-center gap-2">
+                          <h4 className="text-xs font-black tracking-wider text-gray-500 mb-4 uppercase flex items-center gap-2">
                             <FileText size={14} className="text-red-500" />
                             Anket Soruları (SPSS Referansı)
                           </h4>
                           {surveyForm.questions.length === 0 ? (
-                            <p className="text-sm text-gray-400 italic">Henüz soru eklenmedi.</p>
+                            <p className="text-sm text-gray-500 italic">Henüz soru eklenmedi.</p>
                           ) : (
                             <ul className="space-y-3">
                               {surveyForm.questions.map((q, idx) => (

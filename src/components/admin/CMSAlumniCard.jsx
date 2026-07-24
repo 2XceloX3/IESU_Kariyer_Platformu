@@ -94,7 +94,7 @@ export default function CMSAlumniCard({ alumniCardApplications = [], setAlumniCa
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <h3 className="font-black text-gray-900">Başvuru Listesi</h3>
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input value={search} onChange={e => setSearch(e.target.value)} type="text" placeholder="İsim veya TC ara..." className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-red-300 w-64" />
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function CMSAlumniCard({ alumniCardApplications = [], setAlumniCa
                   <td className="py-3 px-5">
                     <p className="font-bold text-gray-900 text-sm">{app.name}</p>
                     <p className="text-xs text-gray-500 mt-0.5">TC: {app.tc}</p>
-                    <p className="text-[10px] text-gray-400 mt-1">Başvuru: {app.date}</p>
+                    <p className="text-[10px] text-gray-500 mt-1">Başvuru: {app.date}</p>
                   </td>
                   <td className="py-3 px-5">
                     <p className="text-xs font-medium text-gray-900">{app.department}</p>

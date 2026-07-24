@@ -4,7 +4,7 @@ import { Search } from 'lucide-react';
 export function TopInfoCard({ title, count, icon, trend, color = 'blue' }) {
   const gradients = {
     blue: 'from-blue-500/10 to-blue-500/5 hover:from-blue-500/20 hover:to-blue-500/10 border-blue-100 text-blue-600',
-    red: 'from-iesu-red/10 to-red-500/5 hover:from-iesu-red/20 hover:to-red-500/10 border-red-100 text-iesu-red',
+    red: 'from-iesu-navy/10 to-red-500/5 hover:from-iesu-navy/20 hover:to-red-500/10 border-red-100 text-[#0A2342]',
     emerald: 'from-emerald-500/10 to-emerald-500/5 hover:from-emerald-500/20 hover:to-emerald-500/10 border-emerald-100 text-emerald-600',
     orange: 'from-orange-500/10 to-orange-500/5 hover:from-orange-500/20 hover:to-orange-500/10 border-orange-100 text-orange-600',
     purple: 'from-purple-500/10 to-purple-500/5 hover:from-purple-500/20 hover:to-purple-500/10 border-purple-100 text-purple-600'
@@ -13,7 +13,7 @@ export function TopInfoCard({ title, count, icon, trend, color = 'blue' }) {
   const currentGradient = gradients[color] || gradients.blue;
 
   return (
-    <div className={`bg-gradient-to-br ${currentGradient} rounded-3xl border p-5 shadow-sm transition-all duration-300 backdrop-blur-xl group cursor-pointer flex items-center justify-between`}>
+    <div className={`bg-gradient-to-br ${currentGradient} rounded-xl border p-5 shadow-sm transition-all duration-300 backdrop-blur-xl group cursor-pointer flex items-center justify-between`}>
       <div>
         <p className="text-[11px] font-black text-gray-600 uppercase tracking-widest mb-1 opacity-80 group-hover:opacity-100 transition-opacity">{title}</p>
         <p className="text-3xl font-black text-gray-900 flex items-center gap-2 drop-shadow-sm">
@@ -31,7 +31,7 @@ export function TopInfoCard({ title, count, icon, trend, color = 'blue' }) {
 export function SearchFilterBar({ searchQuery, setSearchQuery, placeholder = "Ara..." }) {
   return (
     <div className="relative w-full md:max-w-md">
-      <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+      <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
       <input 
         type="text" 
         value={searchQuery}
@@ -58,7 +58,7 @@ export function Badge({ children, type = 'default' }) {
   );
 }
 
-export function PanelHeader({ badge = 'İESÜ Kariyer', title, sub, action }) {
+export function PanelHeader({ badge = 'Esenyurt Kariyer', title, sub, action }) {
   const t = (title || '').toLowerCase();
   let theme = {
     bg: 'from-blue-950 via-indigo-900 to-slate-900',
@@ -123,7 +123,7 @@ export function PanelHeader({ badge = 'İESÜ Kariyer', title, sub, action }) {
   }
 
   return (
-    <div className="relative bg-gray-900 rounded-3xl p-8 overflow-hidden text-white group mb-8 shadow-xl">
+    <div className="relative bg-gray-900 rounded-xl p-8 overflow-hidden text-white group mb-8 shadow-xl">
       {/* Zengin Arkaplan Tasarımı */}
       <div className={`absolute inset-0 bg-gradient-to-br ${theme.bg}`}></div>
       

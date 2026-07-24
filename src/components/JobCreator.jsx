@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Upload, CheckCircle2, Briefcase, MapPin, Calendar, Layout, AlertCircle } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
 
-export default function JobCreator({ setView, currentUser, jobs, setJobs, addNotification }) {
+export default function JobCreator({ setView, currentUser, addNotification }) {
+  const jobs = useAppStore(state => state.jobs);
+  const setJobs = useAppStore(state => state.setJobs);
   const [formData, setFormData] = useState({
     title: '',
     type: 'STAJ',
@@ -70,7 +73,7 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
           <ArrowLeft size={20} /> <span className="font-bold text-sm">Geri</span>
         </button>
         <div className="font-black text-gray-900 text-lg">Yeni İlan Oluştur</div>
-        <button onClick={handleSubmit} className="px-5 py-2 bg-iesu-red text-white text-sm font-bold rounded-full hover:bg-red-700 transition shadow-md flex items-center gap-2">
+        <button onClick={handleSubmit} className="px-5 py-2 bg-[#0A2342] text-white text-sm font-bold rounded-full hover:bg-red-700 transition shadow-md flex items-center gap-2">
           <CheckCircle2 size={16} /> Onaya Gönder
         </button>
       </nav>
@@ -89,9 +92,9 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
               İlanınız başarıyla admin onayına gönderildi! Yönlendiriliyorsunuz...
             </div>
           )}
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-              <Layout className="text-iesu-red" size={20} /> İlan Detayları
+              <Layout className="text-[#0A2342]" size={20} /> İlan Detayları
             </h2>
 
             <div className="space-y-5">
@@ -120,8 +123,23 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
                 <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="Örn: İstanbul (Hibrit) veya Uzaktan" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition" />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1">Açıklama & Aranan Nitelikler *</label>
+              <div className="relative">
+                <div className="flex justify-between items-end mb-1">
+                  <label className="block text-xs font-bold text-gray-500">Açıklama & Aranan Nitelikler *</label>
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if(!formData.title) return;
+                      window.toast && window.toast.info("AI İlanı Oluşturuluyor...");
+                      setTimeout(() => {
+                        setFormData(prev => ({ ...prev, description: `${formData.title} pozisyonu için ekibimize katılacak dinamik takım arkadaşları arıyoruz.\n\nBeklentilerimiz:\n- İlgili alanda güçlü akademik veya pratik bilgi\n- Analitik düşünme ve problem çözme yeteneği\n- Takım çalışmasına yatkınlık\n\nNeden Biz?\nSürekli öğrenmeyi destekleyen yenilikçi bir çalışma ortamı sunuyoruz.`}));
+                      }, 1500);
+                    }}
+                    className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition flex items-center gap-1"
+                  >
+                    <CheckCircle2 size={12} /> AI ile Oluştur
+                  </button>
+                </div>
                 <textarea name="description" value={formData.description} maxLength={5000} onChange={handleInputChange} placeholder="Adaylarda aradığınız özellikleri detaylıca yazın..." rows={5} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition resize-none"></textarea>
               </div>
 
@@ -132,15 +150,15 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Upload className="text-iesu-red" size={20} /> Afiş / Görsel Yükle
+              <Upload className="text-[#0A2342]" size={20} /> Afiş / Görsel Yükle
             </h2>
-            <div className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-iesu-red transition-colors rounded-2xl flex flex-col items-center justify-center bg-gray-50 relative cursor-pointer group overflow-hidden">
+            <div className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-iesu-navy transition-colors rounded-2xl flex flex-col items-center justify-center bg-gray-50 relative cursor-pointer group overflow-hidden">
               <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-              <Upload size={32} className="text-gray-400 group-hover:text-iesu-red mb-2 transition-colors" />
-              <p className="text-sm font-bold text-gray-600 group-hover:text-iesu-red transition-colors">Tıkla veya Sürükle Bırak</p>
-              <p className="text-[10px] text-gray-400 mt-1">PNG, JPG, JPEG (Maks 5MB)</p>
+              <Upload size={32} className="text-gray-500 group-hover:text-[#0A2342] mb-2 transition-colors" />
+              <p className="text-sm font-bold text-gray-600 group-hover:text-[#0A2342] transition-colors">Tıkla veya Sürükle Bırak</p>
+              <p className="text-[10px] text-gray-500 mt-1">PNG, JPG, JPEG (Maks 5MB)</p>
             </div>
           </div>
         </div>
@@ -155,7 +173,7 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
              </div>
            </div>
 
-           <div className="bg-white rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-gray-200 sticky top-24">
+           <div className="bg-white rounded-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-gray-200 sticky top-24">
              {/* Preview Card */}
              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm transition duration-300 bg-white">
                 <div className="h-56 relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-red-50 to-gray-50 border-b border-gray-100">
@@ -164,10 +182,10 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
                   ) : (
                     <div className="text-center">
                       <Briefcase size={48} className="text-red-200 mx-auto mb-2" />
-                      <span className="text-xs font-bold text-gray-400">Görsel Yüklenmedi</span>
+                      <span className="text-xs font-bold text-gray-500">Görsel Yüklenmedi</span>
                     </div>
                   )}
-                  <div className={`absolute top-4 left-4 text-white text-[12px] font-bold px-4 py-1.5 rounded-full shadow-md ${formData.type === 'STAJ' ? 'bg-iesu-coral' : 'bg-iesu-red'}`}>
+                  <div className={`absolute top-4 left-4 text-white text-[12px] font-bold px-4 py-1.5 rounded-full shadow-md ${formData.type === 'STAJ' ? 'bg-iesu-blue' : 'bg-[#0A2342]'}`}>
                     {formData.type}
                   </div>
                 </div>
@@ -175,7 +193,7 @@ export default function JobCreator({ setView, currentUser, jobs, setJobs, addNot
                   <h4 className="font-black text-xl text-gray-900 mb-2 truncate">{formData.title || 'İlan Başlığı'}</h4>
                   <p className="text-gray-500 text-sm mb-2 font-bold">{currentUser?.name || 'Şirketiniz'}</p>
                   
-                  <div className="flex items-center gap-4 text-gray-400 text-[13px] mb-5 font-medium">
+                  <div className="flex items-center gap-4 text-gray-500 text-[13px] mb-5 font-medium">
                     <span className="flex items-center gap-1"><MapPin size={14} /> {formData.location || 'Lokasyon'}</span>
                     <span className="flex items-center gap-1"><Calendar size={14} /> {formData.date || 'Tarih'}</span>
                   </div>
