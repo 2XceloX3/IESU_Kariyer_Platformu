@@ -1,48 +1,56 @@
 export const liveSliderData = [
   {
-    badge: "Kariyer Fuarları",
-    title: "Next Gen Kariyer Fuarı'26 Başlıyor",
-    image: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/c22f7ef2fdc8492ea26e4508c7a48adc_015b9396b49f4bbfb8454c98cc1ebeaa.jpg",
-    actionLink: "/haberler/kariyer-fuari"
+    "badge": "Esenyurt Duyuru",
+    "title": "İlk 5 Tercihte",
+    "image": "https://www.esenyurt.edu.tr/uploads/2026/07/4ul12yzssqgwd-ilk-5-tercihte.jpg",
+    "actionLink": "https://aday.esenyurt.edu.tr/kontenjanlar-ve-ucretler"
   },
   {
-    badge: "Akran Mentor",
-    title: "Akran Mentor Programı Başvuruları Başladı",
-    image: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/1d091a0ef16d416db4ab9232c2f9120b_97d77ce97bbe412b80857b53c64b7cf6.jpg",
-    actionLink: "/duyurular/akran-mentor"
+    "badge": "Öğrenci Portalı",
+    "title": "ADAY ÖĞRENCİ",
+    "image": "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-%3Cspan%3E-ogrenci%3C-span%3E.png",
+    "actionLink": "https://aday.esenyurt.edu.tr/"
   },
   {
-    badge: "Sektör Buluşmaları",
-    title: "Lider Firmalar Öğrencilerimizle Buluşuyor",
-    image: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/8c4f08ebeb2c4fd8b10b76a73388eb07_ce7747ca00fc4b659e0af2bacbe93742.jpg",
-    actionLink: "/etkinlikler/sektor-bulusmalari"
+    "badge": "Öğrenci Portalı",
+    "title": "ÖĞRENCİ İŞLERİ",
+    "image": "https://www.esenyurt.edu.tr/uploads/2024/06/wnriflf4i6hhr-ogrenci-%3Cspan%3Eisleri%3C-span%3E.png",
+    "actionLink": "https://www.esenyurt.edu.tr/icerik/1269-ogrenci-isleri-daire-baskanligi"
   }
 ];
 
 export const liveNewsData = [
   {
-    id: "news-1",
-    title: "İESÜ Mezunları Sektörün Öncü Firmalarında Yerini Alıyor",
-    date: "15 Temmuz 2026",
-    category: "Öne Çıkan Haber",
-    description: "İstanbul Esenyurt Üniversitesi (İESÜ) Kariyer Geliştirme Merkezi tarafından düzenlenen etkinlikler sayesinde mezunlarımız Türkiye'nin önde gelen firmalarında istihdam edilmeye devam ediyor. Bu yılki yerleştirme oranları %15 artış gösterdi.",
-    imageUrl: "https://panel.esenyurt.edu.tr/assets/2026/resimler/mmk/22e312c3e67646ccb6aec889e6a800db_(768_432).jpg"
+    "id": "news-1",
+    "title": "Esenyurt İlçe Milli Eğitim Müdürü Tayfun Özyolcu'ya Veda Programı",
+    "date": "22.07.2026",
+    "category": "Güncel Haber",
+    "description": "Rektörümüz Prof. Dr. Süleyman Özdemir, Esenyurt Kaymakamı Sayın Fatih Çobanoğlu’nun ev ...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
   },
   {
-    id: "news-2",
-    title: "Yapay Zeka Destekli CV Platformumuz Yayında!",
-    date: "12 Temmuz 2026",
-    category: "Haber",
-    description: "Öğrencilerimizin modern iş dünyasına daha hızlı entegre olabilmeleri için geliştirdiğimiz Yapay Zeka Destekli CV Oluşturucu ve Mülakat Simülasyonu portalımız tüm öğrencilerimizin kullanımına açıldı.",
-    imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/b9ec20f282ca455e8b55f1eab8b00c57_7c50bd63d1b34feab07bbd8eed7ba269.jpg"
+    "id": "news-2",
+    "title": "Rektörümüz Prof. Dr. Süleyman Özdemir’den üniversite tercihi yapacak aday öğrencilere önemli tavsiyeler var.",
+    "date": "21.07.2026",
+    "category": "Güncel Haber",
+    "description": "Genel bir eğitiminden sonra tercih edeceğiniz üniversite eğitimi, çok geniş bir ...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
   },
   {
-    id: "news-3",
-    title: "Özgeçmiş ve Önyazı Hazırlama Atölyesi Tamamlandı",
-    date: "08 Temmuz 2026",
-    category: "Haber",
-    description: "Kariyer danışmanlarımız eşliğinde gerçekleştirilen Özgeçmiş ve Önyazı Hazırlama eğitimine katılım sağlayan 250 öğrencimize katılım sertifikaları takdim edildi.",
-    imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/09a23c212bca4b988af33523dc56b0dc_dd6cc4f202854efbb56f5f58b6494a2e.jpg"
+    "id": "news-3",
+    "title": "Kalite Koordinatörlüğümüz tarafından “Kalite Farkındalık Eğitimi” gerçekleştirildi.",
+    "date": "20.07.2026",
+    "category": "Güncel Haber",
+    "description": "Üniversitemizde kalite kültürünü güçlendirme çalışmaları kapsamında ...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+  },
+  {
+    "id": "news-4",
+    "title": "15 Temmuz Demokrasi ve Millî Birlik Günü Anma Törenine Katılım Sağladık 🇹🇷",
+    "date": "18.07.2026",
+    "category": "Güncel Haber",
+    "description": "İstanbul Esenyurt Üniversitesi olarak, 15 Temmuz Demokrasi ve Millî Birlik Günü’nün...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
   }
 ];
 

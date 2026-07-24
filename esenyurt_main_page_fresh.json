@@ -1,0 +1,238 @@
+{
+  "source_url": "https://www.esenyurt.edu.tr/",
+  "scraped_at": "2026-07-24T11:14:00+03:00",
+  "sliders": [
+    {
+      "id": 1,
+      "title": "İlk 5 Tercihte",
+      "description": "İlk 5 Tercihte indirim / kontenjanlar ve ücretler duyurusu",
+      "date": null,
+      "link_url": "https://aday.esenyurt.edu.tr/kontenjanlar-ve-ucretler",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2026/07/4ul12yzssqgwd-ilk-5-tercihte.jpg"
+    }
+  ],
+  "banners": [
+    {
+      "id": 1,
+      "title": "ADAY ÖĞRENCİ",
+      "description": "Aday Öğrenci Portalı ve Bilgilendirme",
+      "date": null,
+      "link_url": "https://aday.esenyurt.edu.tr/",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-%3Cspan%3E-ogrenci%3C-span%3E.png"
+    },
+    {
+      "id": 2,
+      "title": "ÖĞRENCİ İŞLERİ",
+      "description": "Öğrenci İşleri Daire Başkanlığı Hizmet ve Duyuruları",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/icerik/1269-ogrenci-isleri-daire-baskanligi",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/06/wnriflf4i6hhr-ogrenci-%3Cspan%3Eisleri%3C-span%3E.png"
+    },
+    {
+      "id": 3,
+      "title": "ÖĞRENCİ BİLGİ SİSTEMİ",
+      "description": "OBS Öğrenci ve Akademisyen Portalı",
+      "date": null,
+      "link_url": "https://obs.esenyurt.edu.tr/",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/06/3sdlr31jw2z52-ogrenci-%3Cspan%3Ebilgi-sistemi%3C-span%3E.png"
+    },
+    {
+      "id": 4,
+      "title": "AKADEMİK TAKVİM",
+      "description": "2025-2026 Akademik Takvim Detayları",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/icerik/1031-akademik-takvim",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/06/zk8lz8uk7mgn0-akademik-%3Cspan%3Etakvim%3C-span%3E.png"
+    },
+    {
+      "id": 5,
+      "title": "DERS PROGRAMLARI",
+      "description": "Yaz Okulu ve Dönem Ders Programları",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025%E2%80%932026-summer-school-course-schedule",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 6,
+      "title": "SINAV PROGRAMLARI",
+      "description": "Tek Ders ve Not Yükseltme Sınav Programları",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/duyuru/1445-tek-ders-not-yukseltme-sinav-programlari-hk",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 7,
+      "title": "KALİTE KOORDİNATÖRLÜĞÜ",
+      "description": "Kalite ve Akreditasyon Süreçleri",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/icerik/3748-kalite-koordinatorlugu",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 8,
+      "title": "UZAKTAN EĞİTİM MERKEZİ",
+      "description": "LMS Uzaktan Eğitim Portalı",
+      "date": null,
+      "link_url": "https://eslms.esenyurt.edu.tr/Account/LoginBefore",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 9,
+      "title": "KÜTÜPHANE SİSTEMİ",
+      "description": "Prof. Dr. Aziz Sancar Kütüphanesi Kataloğu ve Veritabanları",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/icerik/1188-istanbul-esenyurt-universitesi-prof-dr-aziz-sancar-kutuphanesi",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 10,
+      "title": "WEBMAİL SİSTEMİ",
+      "description": "Kurumsal E-posta Portalı",
+      "date": null,
+      "link_url": "https://posta.esenyurt.edu.tr/",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 11,
+      "title": "YAYINLAR, DERGİLER VE KONFERANSLAR",
+      "description": "Akademik Yayınlar ve Dergiler Portal",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/icerik/2625-yayinlar-dergiler-ve-konferanslar",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 12,
+      "title": "ETİK KURUL BAŞVURULARI",
+      "description": "Etik Kurul Başvuru Form ve Rehberleri",
+      "date": null,
+      "link_url": "https://www.esenyurt.edu.tr/icerik/1084-etik-kurul-basvurulari",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    }
+  ],
+  "announcements": [
+    {
+      "id": 1,
+      "title": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı!",
+      "date": "23.07.2026",
+      "description": "Geleceğini yeteneğinle şekillendirmek için ilk adımı at!",
+      "link_url": "https://www.esenyurt.edu.tr/duyuru/1478-2026-ozyes-ozel-yetenek-sinavi-basvurulari-basladi",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 2,
+      "title": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule",
+      "date": "17.07.2026",
+      "description": "Detaylı bilgi için tıklayınız...",
+      "link_url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025%E2%80%932026-summer-school-course-schedule",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 3,
+      "title": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Nihai Değerlendirme Sonuçları Açıklanmıştır.",
+      "date": "13.07.2026",
+      "description": "Detaylı bilgi için tıklayınız...",
+      "link_url": "https://www.esenyurt.edu.tr/duyuru/1454-ogr-uyesi-disindaki-ogr-elemani-kadrolarina-personel-alim-ilaninin-nihai-degerlendirme-sonuclari-aciklanmistir-8",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    }
+  ],
+  "news": [
+    {
+      "id": 1,
+      "title": "Esenyurt İlçe Milli Eğitim Müdürü Tayfun Özyolcu'ya Veda Programı",
+      "date": "22.07.2026",
+      "description": "Rektörümüz Prof. Dr. Süleyman Özdemir, Esenyurt Kaymakamı Sayın Fatih Çobanoğlu’nun ev ...",
+      "link_url": "https://www.esenyurt.edu.tr/haber/2213-esenyurt-ilce-milli-egitim-muduru-tayfun-ozyolcuya-veda-programi",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 2,
+      "title": "Rektörümüz Prof. Dr. Süleyman Özdemir’den üniversite tercihi yapacak aday öğrencilere önemli tavsiyeler var.",
+      "date": "21.07.2026",
+      "description": "Genel bir eğitiminden sonra tercih edeceğiniz üniversite eğitimi, çok geniş bir ...",
+      "link_url": "https://www.esenyurt.edu.tr/haber/2169-rektorumuz-prof-dr-suleyman-ozdemir%E2%80%99den-universite-tercihi-yapacak-aday-ogrencilere-onemli-tavsiyeler-var",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 3,
+      "title": "Kalite Koordinatörlüğümüz tarafından “Kalite Farkındalık Eğitimi” gerçekleştirildi.",
+      "date": "20.07.2026",
+      "description": "Üniversitemizde kalite kültürünü güçlendirme çalışmaları kapsamında ...",
+      "link_url": "https://www.esenyurt.edu.tr/haber/2163-kalite-koordinatorlugumuz-tarafindan-%E2%80%9Ckalite-farkindalik-egitimi%E2%80%9D-gerceklestirildi",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 4,
+      "title": "15 Temmuz Demokrasi ve Millî Birlik Günü Anma Törenine Katılım Sağladık 🇹🇷",
+      "date": "18.07.2026",
+      "description": "İstanbul Esenyurt Üniversitesi olarak, 15 Temmuz Demokrasi ve Millî Birlik Günü’nün...",
+      "link_url": "https://www.esenyurt.edu.tr/haber/2162-15-temmuz-demokrasi-ve-mill%C3%AE-birlik-gunu-anma-torenine-katilim-sagladik-%F0%9F%87%B9%F0%9F%87%B7",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "title": "Geleceğin dünyasını şekillendiren teknolojiler ve dijital dönüşüm Bilim Kafe’de konuşuluyor!",
+      "date": "27 TEMMUZ 14:00",
+      "description": "Detaylı bilgi için tıklayınız...",
+      "link_url": "https://www.esenyurt.edu.tr/etkinlik/1724-gelecegin-dunyasini-sekillendiren-teknolojiler-ve-dijital-donusum-bilim-kafe%E2%80%99de-konusuluyor",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 2,
+      "title": "III. Yönetim Bilimleri Sempozyumu",
+      "date": "26 KASIM 10:00",
+      "description": "Detaylı bilgi için tıklayınız...",
+      "link_url": "https://www.esenyurt.edu.tr/etkinlik/1720-iii-yonetim-bilimleri-sempozyumu",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 3,
+      "title": "🇹🇷 Karanlık bir geceyi, aydınlık bir geleceğe dönüştürenlerin hikayesi...",
+      "date": "14 TEMMUZ 13:30",
+      "description": "Detaylı bilgi için tıklayınız...",
+      "link_url": "https://www.esenyurt.edu.tr/etkinlik/1717-%F0%9F%87%B9%F0%9F%87%B7-karanlik-bir-geceyi-aydinlik-bir-gelecege-donusturenlerin-hikayesi",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    },
+    {
+      "id": 4,
+      "title": "15 Temmuz Milli İrade Paneli'ne davetlisiniz!",
+      "date": "14 TEMMUZ 14:00",
+      "description": "Detaylı bilgi için tıklayınız...",
+      "link_url": "https://www.esenyurt.edu.tr/etkinlik/1714-15-temmuz-milli-irade-paneline-davetlisiniz",
+      "image_url": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    }
+  ],
+  "gallery_banners": [
+    {
+      "id": 1,
+      "title": "İstanbul Esenyurt Üniversitesi Galeri Görseli 1",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/07/i75hk57842lu1-img-01.jpg"
+    },
+    {
+      "id": 2,
+      "title": "İstanbul Esenyurt Üniversitesi Galeri Görseli 2",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/07/gyz4xw9ie7yy3-img-02.jpg"
+    },
+    {
+      "id": 3,
+      "title": "İstanbul Esenyurt Üniversitesi Galeri Görseli 3",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/07/i7kltkuczyfcg-img-03.jpg"
+    },
+    {
+      "id": 4,
+      "title": "İstanbul Esenyurt Üniversitesi Galeri Görseli 4",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/07/n0hzjg1877qc3-img-04.jpg"
+    },
+    {
+      "id": 5,
+      "title": "İstanbul Esenyurt Üniversitesi Galeri Görseli 5",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/07/ztljcoaz67f5s-img-05.jpg"
+    },
+    {
+      "id": 6,
+      "title": "İstanbul Esenyurt Üniversitesi Galeri Görseli 6",
+      "image_url": "https://www.esenyurt.edu.tr/uploads/2024/07/02adjeufujgcn-img06.jpeg"
+    }
+  ]
+}
