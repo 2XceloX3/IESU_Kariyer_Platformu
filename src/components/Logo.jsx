@@ -38,7 +38,7 @@ export default function Logo({ className = '', size = 'md', ...props }) {
     <div className={`flex items-center gap-2 cursor-pointer transition-transform ${chaosMode ? 'animate-spin' : ''} ${className}`} onClick={handleLogoClick} {...props}>
       {!imgError ? (
         <img
-          src="/logo.png"
+          src="/iesu-logo.svg"
           alt="İstanbul Esenyurt Üniversitesi"
           className={`${imgClass} w-auto object-contain shrink-0 ${chaosMode ? 'animate-pulse hue-rotate-180 scale-110' : ''}`}
           onError={() => setImgError(true)}

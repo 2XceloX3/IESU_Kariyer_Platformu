@@ -21,36 +21,28 @@ export const liveSliderData = [
 
 export const liveNewsData = [
   {
-    "id": "news-1",
+    "id": "news-scraped-1",
     "title": "Esenyurt İlçe Milli Eğitim Müdürü Tayfun Özyolcu'ya Veda Programı",
     "date": "22.07.2026",
-    "category": "Güncel Haber",
-    "description": "Rektörümüz Prof. Dr. Süleyman Özdemir, Esenyurt Kaymakamı Sayın Fatih Çobanoğlu’nun ev ...",
-    "imageUrl": "/kariyer_logo.png"
+    "category": "Kariyer Haber",
+    "description": "Esenyurt İlçe Milli Eğitim Müdürü Tayfun Özyolcu'ya Veda Programı detayları için lütfen üniversite sitemizi ziyaret edin.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/9dt5qegsljhke--10.jpg"
   },
   {
-    "id": "news-2",
+    "id": "news-scraped-2",
     "title": "Rektörümüz Prof. Dr. Süleyman Özdemir’den üniversite tercihi yapacak aday öğrencilere önemli tavsiyeler var.",
-    "date": "21.07.2026",
-    "category": "Güncel Haber",
-    "description": "Genel bir eğitiminden sonra tercih edeceğiniz üniversite eğitimi, çok geniş bir ...",
-    "imageUrl": "/kariyer_logo.png"
+    "date": "22.07.2026",
+    "category": "Kariyer Haber",
+    "description": "Rektörümüz Prof. Dr. Süleyman Özdemir’den üniversite tercihi yapacak aday öğrencilere önemli tavsiyeler var. detayları için lütfen üniversite sitemizi ziyaret edin.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/ax6pej1z8jgi2--10.jpg"
   },
   {
-    "id": "news-3",
-    "title": "Kalite Koordinatörlüğümüz tarafından “Kalite Farkındalık Eğitimi” gerçekleştirildi.",
-    "date": "20.07.2026",
-    "category": "Güncel Haber",
-    "description": "Üniversitemizde kalite kültürünü güçlendirme çalışmaları kapsamında ...",
-    "imageUrl": "/kariyer_logo.png"
-  },
-  {
-    "id": "news-4",
-    "title": "15 Temmuz Demokrasi ve Millî Birlik Günü Anma Törenine Katılım Sağladık 🇹🇷",
-    "date": "18.07.2026",
-    "category": "Güncel Haber",
-    "description": "İstanbul Esenyurt Üniversitesi olarak, 15 Temmuz Demokrasi ve Millî Birlik Günü’nün...",
-    "imageUrl": "/kariyer_logo.png"
+    "id": "news-scraped-3",
+    "title": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı!",
+    "date": "22.07.2026",
+    "category": "Kariyer Haber",
+    "description": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı! detayları için lütfen üniversite sitemizi ziyaret edin.",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/fyb65bu320c2y-21.png"
   }
 ];
 
@@ -157,134 +149,62 @@ export const liveStatsData = [
 
 export const liveEventData = [
   {
-    "id": "event-1",
+    "id": "event-scraped-1",
     "title": "Geleceğin dünyasını şekillendiren teknolojiler ve dijital dönüşüm Bilim Kafe’de konuşuluyor!",
-    "date": "27 TEMMUZ 14:00",
-    "category": "Etkinlik",
-    "description": "Detaylı bilgi için tıklayınız...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "date": "Yakında",
+    "category": "Kariyer Etkinlik",
+    "description": "Geleceğin dünyasını şekillendiren teknolojiler ve dijital dönüşüm Bilim Kafe’de konuşuluyor!",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/ylg08xu5dynap-gelecegin-dunyasini-sekillendiren-teknolojiler-ve-dijital-donusum-bilim-kafe’de-konusuluyor.jfif"
   },
   {
-    "id": "event-2",
+    "id": "event-scraped-3",
     "title": "III. Yönetim Bilimleri Sempozyumu",
-    "date": "26 KASIM 10:00",
-    "category": "Etkinlik",
-    "description": "Detaylı bilgi için tıklayınız...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "date": "Yakında",
+    "category": "Kariyer Etkinlik",
+    "description": "III. Yönetim Bilimleri Sempozyumu",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/wye0w3zjllr5j-iii-yonetim-bilimleri-sempozyumu.jfif"
   },
   {
-    "id": "event-3",
+    "id": "event-scraped-5",
     "title": "🇹🇷 Karanlık bir geceyi, aydınlık bir geleceğe dönüştürenlerin hikayesi...",
-    "date": "14 TEMMUZ 13:30",
-    "category": "Etkinlik",
-    "description": "Detaylı bilgi için tıklayınız...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "date": "Yakında",
+    "category": "Kariyer Etkinlik",
+    "description": "🇹🇷 Karanlık bir geceyi, aydınlık bir geleceğe dönüştürenlerin hikayesi...",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/9qlsvnexo3os5-🇹🇷-karanlik-bir-geceyi-aydinlik-bir-gelecege-donusturenlerin-hikayesi.jpg"
   },
   {
-    "id": "event-4",
+    "id": "event-scraped-7",
     "title": "15 Temmuz Milli İrade Paneli'ne davetlisiniz!",
-    "date": "14 TEMMUZ 14:00",
-    "category": "Etkinlik",
-    "description": "Detaylı bilgi için tıklayınız...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "date": "Yakında",
+    "category": "Kariyer Etkinlik",
+    "description": "15 Temmuz Milli İrade Paneli'ne davetlisiniz!",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/rwamka3wdkfp2-15-temmuz-milli-irade-paneline-davetlisiniz.jpg"
   }
 ];
 
 export const liveAnnouncementData = [
   {
-    "id": "ann-1",
-    "title": "ADAY ÖĞRENCİ",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Aday Öğrenci Portalı ve Bilgilendirme",
-    "url": "https://aday.esenyurt.edu.tr/"
+    "id": "ann-scraped-1",
+    "title": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı!",
+    "date": "24/07/2026",
+    "category": "Kariyer Duyuru",
+    "description": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı! duyurusu yayındadır.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1479--14"
   },
   {
-    "id": "ann-2",
-    "title": "ÖĞRENCİ İŞLERİ",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Öğrenci İşleri Daire Başkanlığı Hizmet ve Duyuruları",
-    "url": "https://www.esenyurt.edu.tr/icerik/1269-ogrenci-isleri-daire-baskanligi"
+    "id": "ann-scraped-2",
+    "title": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule",
+    "date": "20/07/2026",
+    "category": "Kariyer Duyuru",
+    "description": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule duyurusu yayındadır.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1465--13"
   },
   {
-    "id": "ann-3",
-    "title": "ÖĞRENCİ BİLGİ SİSTEMİ",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "OBS Öğrenci ve Akademisyen Portalı",
-    "url": "https://obs.esenyurt.edu.tr/"
-  },
-  {
-    "id": "ann-4",
-    "title": "AKADEMİK TAKVİM",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "2025-2026 Akademik Takvim Detayları",
-    "url": "https://www.esenyurt.edu.tr/icerik/1031-akademik-takvim"
-  },
-  {
-    "id": "ann-5",
-    "title": "DERS PROGRAMLARI",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Yaz Okulu ve Dönem Ders Programları",
-    "url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025%E2%80%932026-summer-school-course-schedule"
-  },
-  {
-    "id": "ann-6",
-    "title": "SINAV PROGRAMLARI",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Tek Ders ve Not Yükseltme Sınav Programları",
-    "url": "https://www.esenyurt.edu.tr/duyuru/1445-tek-ders-not-yukseltme-sinav-programlari-hk"
-  },
-  {
-    "id": "ann-7",
-    "title": "KALİTE KOORDİNATÖRLÜĞÜ",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Kalite ve Akreditasyon Süreçleri",
-    "url": "https://www.esenyurt.edu.tr/icerik/3748-kalite-koordinatorlugu"
-  },
-  {
-    "id": "ann-8",
-    "title": "UZAKTAN EĞİTİM MERKEZİ",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "LMS Uzaktan Eğitim Portalı",
-    "url": "https://eslms.esenyurt.edu.tr/Account/LoginBefore"
-  },
-  {
-    "id": "ann-9",
-    "title": "KÜTÜPHANE SİSTEMİ",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Prof. Dr. Aziz Sancar Kütüphanesi Kataloğu ve Veritabanları",
-    "url": "https://www.esenyurt.edu.tr/icerik/1188-istanbul-esenyurt-universitesi-prof-dr-aziz-sancar-kutuphanesi"
-  },
-  {
-    "id": "ann-10",
-    "title": "WEBMAİL SİSTEMİ",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Kurumsal E-posta Portalı",
-    "url": "https://posta.esenyurt.edu.tr/"
-  },
-  {
-    "id": "ann-11",
-    "title": "YAYINLAR, DERGİLER VE KONFERANSLAR",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Akademik Yayınlar ve Dergiler Portal",
-    "url": "https://www.esenyurt.edu.tr/icerik/2625-yayinlar-dergiler-ve-konferanslar"
-  },
-  {
-    "id": "ann-12",
-    "title": "ETİK KURUL BAŞVURULARI",
-    "date": "Sürekli",
-    "category": "Duyuru",
-    "description": "Etik Kurul Başvuru Form ve Rehberleri",
-    "url": "https://www.esenyurt.edu.tr/icerik/1084-etik-kurul-basvurulari"
+    "id": "ann-scraped-3",
+    "title": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı!",
+    "date": "09/07/2026",
+    "category": "Kariyer Duyuru",
+    "description": "Gençlik ve Spor Bakanlığı Tarafından Geliştirilen e-Rehberlik Sistemi Açıldı! duyurusu yayındadır.",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1451-8"
   }
 ];
