@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { liveSliderData } from '../../utils/liveData';
 
-export default function HeroSlider() {
+export default function HeroSlider({ onSelectSlide }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const heroSlides = liveSliderData;
@@ -14,6 +14,22 @@ export default function HeroSlider() {
     }, 5000);
     return () => clearInterval(timer);
   }, [isCarouselPaused, heroSlides.length]);
+
+  const handleSlideClick = (slide) => {
+    if (onSelectSlide) {
+      onSelectSlide({
+        title: slide.title,
+        date: "Güncel Duyuru",
+        category: slide.badge || "Duyuru",
+        description: `${slide.title} - İstanbul Esenyurt Üniversitesi Resmi Duyurusudur.`,
+        content: `### ${slide.title}\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü portalında yayınlanan bu duyuru ve görsel ile ilgili tüm detaylar ve etkinlik takvimi için öğrenci panellerimizi kullanabilirsiniz.\n\nİlgili Başvuru Adresi: ${slide.actionLink || 'https://www.esenyurt.edu.tr'}`,
+        imageUrl: slide.image,
+        url: slide.actionLink
+      });
+    } else if (slide.actionLink) {
+      window.open(slide.actionLink, '_blank');
+    }
+  };
 
   return (
     <section 
@@ -46,13 +62,16 @@ export default function HeroSlider() {
           key={index} 
           className={`absolute inset-0 transition-transform duration-1000 ease-in-out ${index === currentSlide ? 'translate-x-0' : index < currentSlide ? '-translate-x-full' : 'translate-x-full'}`}
         >
-          <a href={slide.actionLink || '#'} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+          <div 
+            onClick={() => handleSlideClick(slide)}
+            className="w-full h-full cursor-pointer"
+          >
             <img 
               src={slide.image} 
               alt={slide.title} 
-              className="w-full h-full object-cover object-center cursor-pointer transition-transform duration-700"
+              className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-[1.01]"
             />
-          </a>
+          </div>
         </div>
       ))}
       

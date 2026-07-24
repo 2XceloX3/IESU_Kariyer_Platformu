@@ -187,8 +187,8 @@ export default function LandingPage({ setView }) {
         </div>
       </nav>
 
-      {/* Hero Slider */}
-      <HeroSlider slides={heroSlides} currentSlide={currentSlide} />
+      {/* Hero Slider with internal detail modal on click */}
+      <HeroSlider slides={heroSlides} currentSlide={currentSlide} onSelectSlide={setSelectedItem} />
 
       {/* 1. QUALITATIVE INSTITUTIONAL VALUE RIBBON (NO HARDCODED NUMBERS) */}
       <section className="relative z-10 pt-10 pb-6 max-w-7xl mx-auto px-4">
