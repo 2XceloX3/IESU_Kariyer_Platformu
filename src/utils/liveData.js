@@ -26,7 +26,7 @@ export const liveNewsData = [
     "date": "22.07.2026",
     "category": "Güncel Haber",
     "description": "Rektörümüz Prof. Dr. Süleyman Özdemir, Esenyurt Kaymakamı Sayın Fatih Çobanoğlu’nun ev ...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "imageUrl": "/kariyer_logo.png"
   },
   {
     "id": "news-2",
@@ -34,7 +34,7 @@ export const liveNewsData = [
     "date": "21.07.2026",
     "category": "Güncel Haber",
     "description": "Genel bir eğitiminden sonra tercih edeceğiniz üniversite eğitimi, çok geniş bir ...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "imageUrl": "/kariyer_logo.png"
   },
   {
     "id": "news-3",
@@ -42,7 +42,7 @@ export const liveNewsData = [
     "date": "20.07.2026",
     "category": "Güncel Haber",
     "description": "Üniversitemizde kalite kültürünü güçlendirme çalışmaları kapsamında ...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "imageUrl": "/kariyer_logo.png"
   },
   {
     "id": "news-4",
@@ -50,7 +50,7 @@ export const liveNewsData = [
     "date": "18.07.2026",
     "category": "Güncel Haber",
     "description": "İstanbul Esenyurt Üniversitesi olarak, 15 Temmuz Demokrasi ve Millî Birlik Günü’nün...",
-    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+    "imageUrl": "/kariyer_logo.png"
   }
 ];
 
