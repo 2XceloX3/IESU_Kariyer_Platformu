@@ -188,35 +188,53 @@ export default function LandingPage({ setView }) {
         </div>
       </div>
 
-      {/* Main Navbar — clean, professional, no overlap */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-          {/* Left: Logo + Name */}
-          <div className="flex items-center gap-3">
-            <Logo className="h-10 w-auto" />
+      {/* Main Navbar — identical Crimson Red / Nar Çiçeği styling */}
+      <nav className="bg-gradient-to-r from-[#990000] via-[#800000] to-[#660000] text-white border-b border-red-800 sticky top-0 z-40 shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between py-3.5 gap-4">
+          {/* Left: White Logo + Title */}
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView('landing')}>
+            <div className="brightness-0 invert flex-shrink-0">
+              <Logo className="h-10 w-auto" />
+            </div>
             <div className="hidden sm:block">
-              <h1 className="text-sm font-black text-iesu-navy leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+              <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
+              <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
 
+          {/* Right Group: Search Bar + Nav Links + Portala Giriş */}
+          <div className="flex items-center gap-4 md:gap-6 overflow-x-auto py-1">
+            {/* Search Bar immediately to the left of Hakkımızda */}
+            <div className="relative hidden md:block w-44 lg:w-56 flex-shrink-0">
+              <Search className="absolute left-3 top-2.5 text-white/60" size={14} />
+              <input
+                type="text"
+                placeholder="İçerik veya Bölüm Ara..."
+                className="w-full bg-white/10 text-white placeholder-white/60 text-xs font-medium pl-9 pr-3 py-1.5 rounded-xl border border-white/20 focus:outline-none focus:bg-white/20 transition"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.target.value) {
+                    if (setView) setView('explore');
+                  }
+                }}
+              />
+            </div>
 
+            {/* Nav Links immediately to the left of Portala Giriş */}
+            <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
+              <button onClick={() => setView('about_us')} className="hover:text-white hover:underline transition">Hakkımızda</button>
+              <button onClick={() => setView('services')} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
+              <button onClick={() => setView('events_list')} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
+              <button onClick={() => setView('contact_us')} className="hover:text-white hover:underline transition">İletişim</button>
+            </div>
 
-          {/* Middle: Navigation Links */}
-          <div className="hidden lg:flex items-center gap-6 text-xs font-bold text-slate-700">
-            <button onClick={() => setSelectedItem(menuPagesData.about_us)} className="hover:text-iesu-navy transition">Hakkımızda</button>
-            <button onClick={() => setSelectedItem(menuPagesData.services)} className="hover:text-iesu-navy transition">Hizmetlerimiz</button>
-            <button onClick={() => setSelectedItem(menuPagesData.events_list)} className="hover:text-iesu-navy transition">Etkinliklerimiz</button>
-            <button onClick={() => setSelectedItem(menuPagesData.contact_us)} className="hover:text-iesu-navy transition">İletişim</button>
+            {/* Far Right: Portala Giriş Button */}
+            <button 
+              onClick={() => setView('login')}
+              className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg whitespace-nowrap flex-shrink-0"
+            >
+              <LogIn size={15} /> Portala Giriş
+            </button>
           </div>
-
-          {/* Right: Direct Login Button */}
-          <button 
-            onClick={() => setView('login')}
-            className="flex items-center gap-2 bg-iesu-navy text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-[#163B65] transition-colors shadow-md hover:shadow-lg"
-          >
-            <LogIn size={16} /> Portala Giriş
-          </button>
         </div>
       </nav>
 
@@ -622,10 +640,10 @@ export default function LandingPage({ setView }) {
 
               {/* Nav Links immediately to the left of Portala Giriş */}
               <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
-                <button onClick={() => setSelectedItem(menuPagesData.about_us)} className="hover:text-white hover:underline transition">Hakkımızda</button>
-                <button onClick={() => setSelectedItem(menuPagesData.services)} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
-                <button onClick={() => setSelectedItem(menuPagesData.events_list)} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
-                <button onClick={() => setSelectedItem(menuPagesData.contact_us)} className="hover:text-white hover:underline transition">İletişim</button>
+                <button onClick={() => { setSelectedItem(null); setView && setView('about_us'); }} className="hover:text-white hover:underline transition">Hakkımızda</button>
+                <button onClick={() => { setSelectedItem(null); setView && setView('services'); }} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
+                <button onClick={() => { setSelectedItem(null); setView && setView('events_list'); }} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
+                <button onClick={() => { setSelectedItem(null); setView && setView('contact_us'); }} className="hover:text-white hover:underline transition">İletişim</button>
               </div>
 
               {/* Far Right: Portala Giriş Button (Fixed size, no wrap) */}
