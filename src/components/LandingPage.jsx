@@ -67,6 +67,37 @@ export default function LandingPage({ setView }) {
     }
   }), []);
 
+  const menuPagesData = React.useMemo(() => ({
+    about_us: {
+      title: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü",
+      category: "Kurumsal",
+      date: "2026 - Güncel",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
+      content: `### Hakkımızda\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü, öğrencilerimizin ve mezunlarımızın mesleki gelişimlerini desteklemek, onları iş dünyasına hazırlamak ve kariyer yolculuklarında rehberlik etmek amacıyla kurulmuştur.\n\n---\n\n#### 🎯 Misyonumuz\nÖğrenci ve mezunlarımızın, küresel ölçekte rekabet edebilir, yenilikçi ve etik değerlere sahip profesyoneller olarak iş dünyasına hazırlanmalarını sağlamak; onların potansiyellerini en üst düzeye çıkaracak kariyer planlama ve geliştirme hizmetleri sunmaktır.\n\n---\n\n#### 🚀 Vizyonumuz\nUlusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, öncü bir kariyer koordinatörlüğü olmak.\n\n---\n\n#### 📞 İletişim ve Yerleşke Bilgileri\n- **E-Posta:** kariyer@esenyurt.edu.tr\n- **Telefon:** 444 9 123 / 0 (212) 422 70 00\n- **Ofis:** Kariyer Geliştirme Koordinatörlüğü / Rektörlük Binası Esenyurt Kampüsü`
+    },
+    services: {
+      title: "Kariyer Geliştirme Hizmetlerimiz",
+      category: "Hizmet Portföyü",
+      date: "2026 - Güncel",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-ogrenci.png",
+      content: `### Sizin İçin Neler Yapıyoruz?\n\nKariyer Geliştirme Koordinatörlüğü olarak öğrencilerimize ve mezunlarımıza sunduğumuz ana hizmetlerimiz aşağıda detaylandırılmıştır:\n\n---\n\n#### 1. 🎯 Birebir Kariyer Danışmanlığı\nÖğrenci ve mezunlarımızın kariyer hedeflerine ulaşmalarına yardımcı olmak amacıyla profesyonel kariyer danışmanlığı hizmetleri sunulmaktadır.\n\n---\n\n#### 2. 📄 Özgeçmiş (CV) ve Niyet Mektubu Rehberliği\nKişisel, eğitim ve mesleki bilgileri içeren kritik bir belge olan özgeçmişin oluşturulması ve ATS uyumlu format düzenlemeleri konusunda birebir rehberlik sağlanır.\n\n---\n\n#### 3. 💼 Staj ve İstihdam Fırsatları (Yetenek Kapısı)\nSektör lideri firmalarla yapılan kurumsal iş birlikleri ve Yetenek Kapısı entegrasyonu ile zorunlu ve gönüllü staj başvuruları yönetilmektedir.\n\n---\n\n#### 4. 🏆 Kariyer Günleri ve Sektör Buluşmaları\nHer akademik yılda düzenlenen Kariyer Günleri, mülakat simülasyonları ve teknik geziler ile öğrenciler iş dünyasının lider temsilcileriyle doğrudan bir araya getirilmektedir.`
+    },
+    events_list: {
+      title: "Akademik ve Sektörel Etkinliklerimiz",
+      category: "Etkinlik Takvimi",
+      date: "2026 Güz & Bahar Dönemi",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg",
+      content: `### Yaklaşan ve Güncel Etkinliklerimiz\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen atölyeler, seminerler ve zirveler:\n\n---\n\n#### 🎪 1. İESÜ Bahar Şenliği & Kariyer Festivali 2026\n- **Tarih:** 15-18 Mayıs 2026\n- **Yer:** Esenyurt Kampüsü Ana Bahçe\n- **Detay:** Sektör lideri şirket stantları, kariyer sohbetleri ve müzik performansları eşliğinde yıllık büyük buluşma.\n\n---\n\n#### 🏆 2. Bilim Rüzgarı & Akademik Başarı Ödül Töreni\n- **Tarih:** 20 Nisan 2026\n- **Yer:** Konferans Salonu\n- **Detay:** Başarılı projelerin, TEKNOFEST ekiplerinin ve akademik yayın ödüllerinin takdim edildiği resmi tören.\n\n---\n\n#### 🚀 3. TEKNOFEST & Ar-Ge Girişimcilik Zirvesi\n- **Tarih:** 10 Mart 2026\n- **Yer:** İESÜMER Kuluçka Merkezi\n- **Detay:** TEKNOFEST yarışmalarına katılacak öğrenci takımlarına teknik mentorluk ve fon sunumları.`
+    },
+    contact_us: {
+      title: "Kariyer Geliştirme Koordinatörlüğü İletişim Bilgileri",
+      category: "İletişim & Ulaşım",
+      date: "7/24 Kesintisiz Destek",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-ogrenci.png",
+      content: `### Bizimle İletişime Geçin\n\nKariyer planlama, staj işlemleri, randevu talepleri veya kurumsal iş birlikleri için aşağıdaki iletişim kanallarından bize ulaşabilirsiniz:\n\n---\n\n#### 📍 Kampüs Adresi\n**İstanbul Esenyurt Üniversitesi Rektörlüğü**\nZafer Mahallesi, Doğan Araslı Bulvarı No:79, 34513 Esenyurt / İstanbul\n\n---\n\n#### 📞 Telefon ve E-Posta\n- **Santral:** 444 9 123 / 0 (212) 422 70 00\n- **E-Posta:** kariyer@esenyurt.edu.tr\n- **Öğrenci Dekanlığı:** ogrencidekanligi@esenyurt.edu.tr\n\n---\n\n#### ⏰ Çalışma Saatleri\nHafta İçi: 08:30 - 17:30 (Resmi Tatiller Hariç)`
+    }
+  }), []);
+
   useEffect(() => {
     if (isCarouselPaused) return;
     const timer = setInterval(() => {
@@ -173,10 +204,10 @@ export default function LandingPage({ setView }) {
 
           {/* Middle: Navigation Links */}
           <div className="hidden lg:flex items-center gap-6 text-xs font-bold text-slate-700">
-            <button onClick={() => setView('about_us')} className="hover:text-iesu-navy transition">Hakkımızda</button>
-            <button onClick={() => setView('services')} className="hover:text-iesu-navy transition">Hizmetlerimiz</button>
-            <button onClick={() => setView('events_list')} className="hover:text-iesu-navy transition">Etkinliklerimiz</button>
-            <button onClick={() => setView('contact_us')} className="hover:text-iesu-navy transition">İletişim</button>
+            <button onClick={() => setSelectedItem(menuPagesData.about_us)} className="hover:text-iesu-navy transition">Hakkımızda</button>
+            <button onClick={() => setSelectedItem(menuPagesData.services)} className="hover:text-iesu-navy transition">Hizmetlerimiz</button>
+            <button onClick={() => setSelectedItem(menuPagesData.events_list)} className="hover:text-iesu-navy transition">Etkinliklerimiz</button>
+            <button onClick={() => setSelectedItem(menuPagesData.contact_us)} className="hover:text-iesu-navy transition">İletişim</button>
           </div>
 
           {/* Right: Direct Login Button */}
@@ -591,10 +622,10 @@ export default function LandingPage({ setView }) {
 
               {/* Nav Links immediately to the left of Portala Giriş */}
               <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
-                <button onClick={() => { setSelectedItem(null); setView && setView('about_us'); }} className="hover:text-white hover:underline transition">Hakkımızda</button>
-                <button onClick={() => { setSelectedItem(null); setView && setView('services'); }} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
-                <button onClick={() => { setSelectedItem(null); setView && setView('events_list'); }} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
-                <button onClick={() => { setSelectedItem(null); setView && setView('contact_us'); }} className="hover:text-white hover:underline transition">İletişim</button>
+                <button onClick={() => setSelectedItem(menuPagesData.about_us)} className="hover:text-white hover:underline transition">Hakkımızda</button>
+                <button onClick={() => setSelectedItem(menuPagesData.services)} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
+                <button onClick={() => setSelectedItem(menuPagesData.events_list)} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
+                <button onClick={() => setSelectedItem(menuPagesData.contact_us)} className="hover:text-white hover:underline transition">İletişim</button>
               </div>
 
               {/* Far Right: Portala Giriş Button (Fixed size, no wrap) */}
