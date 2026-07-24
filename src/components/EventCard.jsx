@@ -31,7 +31,7 @@ export default function EventCard({ event, onSelect }) {
             <span>{event.date || 'Tarih Belirtilmedi'}</span>
           </div>
 
-          <h4 className="text-base font-black text-slate-900 leading-snug mb-3 hover:text-[#A80016] transition-colors" data-testid="event-title">
+          <h4 className="text-base font-black text-red-950 leading-snug mb-3 hover:text-[#A80016] transition-colors" data-testid="event-title">
             {event.title}
           </h4>
 

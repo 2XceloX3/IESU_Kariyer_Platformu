@@ -106,7 +106,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Briefcase size={24}/></div>
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><Briefcase size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam İlan</p><p className="text-2xl font-black text-gray-900">{(jobs || []).length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -181,7 +181,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                         </div>
                       </td>
                       <td className="py-3 px-5">
-                        <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">
+                        <span className="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">
                           {j.type}
                         </span>
                       </td>
@@ -200,10 +200,10 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                       </td>
                       <td className="py-3 px-5 text-right">
                         <div className="flex justify-end gap-1">
-                          <button onClick={(e) => { e.stopPropagation(); setExpandedJobId(isExpanded ? null : j.id); }} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Başvuruları Gör">
+                          <button onClick={(e) => { e.stopPropagation(); setExpandedJobId(isExpanded ? null : j.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Başvuruları Gör">
                             {isExpanded ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
                           </button>
-                          <button onClick={(e) => { e.stopPropagation(); handleEdit(j); }} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition tooltip" title="Düzenle"><Edit size={16}/></button>
+                          <button onClick={(e) => { e.stopPropagation(); handleEdit(j); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition tooltip" title="Düzenle"><Edit size={16}/></button>
                           <button onClick={(e) => { e.stopPropagation(); handleDelete(j.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition tooltip" title="Sil"><Trash2 size={16}/></button>
                         </div>
                       </td>
@@ -213,9 +213,9 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                     {isExpanded && (
                       <tr className="bg-slate-50/50">
                         <td colSpan={5} className="p-0 border-b border-gray-100">
-                          <div className="p-6 bg-slate-50 border-t-2 border-blue-500/20 shadow-inner">
+                          <div className="p-6 bg-slate-50 border-t-2 border-red-500/20 shadow-inner">
                             <div className="flex justify-between items-center mb-4">
-                              <h4 className="font-bold text-gray-900 flex items-center gap-2"><Users size={18} className="text-blue-600" /> Bu İlana Başvuranlar ({jobApplications.length})</h4>
+                              <h4 className="font-bold text-gray-900 flex items-center gap-2"><Users size={18} className="text-red-600" /> Bu İlana Başvuranlar ({jobApplications.length})</h4>
                               {jobApplications.length > 0 && (
                                 <button onClick={() => handleDownloadExcel(j, jobApplications)} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-bold text-xs transition border border-emerald-200 shadow-sm">
                                   <Download size={14} /> Excel İndir (KVKK)

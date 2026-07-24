@@ -134,7 +134,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                 setView('landing');
               }
             }}>
-              <Logo className="w-auto h-8 text-indigo-600 group-hover:scale-105 transition-transform" />
+              <Logo className="w-auto h-8 text-red-600 group-hover:scale-105 transition-transform" />
             </div>
             
             <div className="hidden md:flex relative ml-4">
@@ -142,7 +142,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               <input 
                 type="text" 
                 placeholder="Kulüp, kişi, etkinlik veya görev ara..." 
-                className="w-80 pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full focus:ring-2 focus:ring-indigo-500/20 focus:bg-white outline-none transition-all text-sm font-medium"
+                className="w-80 pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full focus:ring-2 focus:ring-red-500/20 focus:bg-white outline-none transition-all text-sm font-medium"
               />
             </div>
           </div>
@@ -189,9 +189,9 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
       <div className="bg-white border-b border-gray-200/50 shadow-sm overflow-x-auto hide-scrollbar">
         <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-4 flex gap-4">
           <div className="flex flex-col items-center gap-1.5 cursor-pointer shrink-0">
-            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition-colors relative">
+            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-red-500 hover:bg-indigo-50 transition-colors relative">
               <Plus size={24} className="text-gray-500" />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-indigo-600 rounded-full border-2 border-white flex items-center justify-center text-white">
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-600 rounded-full border-2 border-white flex items-center justify-center text-white">
                 <Plus size={12} strokeWidth={4} />
               </div>
             </div>
@@ -200,7 +200,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           
           {mockStories.map(story => (
             <div key={story.id} onClick={() => setActiveStory(story)} className="flex flex-col items-center gap-1.5 cursor-pointer shrink-0 group">
-              <div className={`w-16 h-16 rounded-full p-0.5 ${story.hasUnseen ? 'bg-gradient-to-tr from-amber-500 via-rose-500 to-indigo-600' : 'bg-gray-200'} transition-all`}>
+              <div className={`w-16 h-16 rounded-full p-0.5 ${story.hasUnseen ? 'bg-gradient-to-tr from-amber-500 via-rose-500 to-red-600' : 'bg-gray-200'} transition-all`}>
                 <div className="w-full h-full bg-white rounded-full p-0.5">
                   <img src={story.logo} alt={story.name} className="w-full h-full rounded-full object-cover group-hover:scale-95 transition-transform" />
                 </div>
@@ -219,7 +219,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           
           {/* User Gamification Card */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden relative">
-            <div className="h-16 bg-gradient-to-r from-indigo-600 to-violet-600"></div>
+            <div className="h-16 bg-gradient-to-r from-red-600 to-violet-600"></div>
             <div className="px-5 pb-5">
               <div className="relative -mt-8 flex justify-between items-end mb-4">
                 <img src={currentUser?.avatar || 'https://ui-avatars.com/api/?name=CU'} alt="User" className="w-16 h-16 rounded-2xl border-4 border-white shadow-md bg-white object-cover" />
@@ -232,23 +232,23 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               
               <div className="flex items-center justify-between p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 mb-4">
                 {sspEnabled && (<div>
-                  <p className="text-[10px] font-bold text-indigo-600 uppercase">Sosyal Sorumluluk</p>
+                  <p className="text-[10px] font-bold text-red-600 uppercase">Sosyal Sorumluluk</p>
                   <p className="text-xl font-black text-indigo-900 flex items-center gap-1">1,250 <Zap size={18} className="text-amber-500 fill-amber-500"/></p>
                 </div>)}
                 <div className="h-8 w-px bg-indigo-200"></div>
                 <div>
-                  <p className="text-[10px] font-bold text-indigo-600 uppercase">Görevler</p>
+                  <p className="text-[10px] font-bold text-red-600 uppercase">Görevler</p>
                   <p className="text-xl font-black text-indigo-900">12</p>
                 </div>
               </div>
 
               <div className="space-y-1">
                 <button className="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors group">
-                  <span className="text-sm font-bold text-gray-700 group-hover:text-indigo-600">Kulüplerim</span>
+                  <span className="text-sm font-bold text-gray-700 group-hover:text-red-600">Kulüplerim</span>
                   <span className="text-xs font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md group-hover:bg-indigo-100 group-hover:text-indigo-700">3</span>
                 </button>
                 <button className="w-full flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors group">
-                  <span className="text-sm font-bold text-gray-700 group-hover:text-indigo-600">Etkinliklerim</span>
+                  <span className="text-sm font-bold text-gray-700 group-hover:text-red-600">Etkinliklerim</span>
                   <span className="text-xs font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md group-hover:bg-indigo-100 group-hover:text-indigo-700">5</span>
                 </button>
               </div>
@@ -261,7 +261,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl"></div>
              <div className="flex items-center justify-between mb-4">
                <h3 className="font-black text-gray-900 flex items-center gap-2"><TargetIcon size={18} className="text-rose-500"/> Sosyal Sorumluluk</h3>
-               <button className="text-xs font-bold text-indigo-600 hover:text-indigo-700">Tümü</button>
+               <button className="text-xs font-bold text-red-600 hover:text-indigo-700">Tümü</button>
              </div>
              <p className="text-xs text-gray-500 mb-4">Sosyal sorumluluk projelerine katıl, Gönüllülük Puanı kazan!</p>
              
@@ -272,12 +272,12 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-white text-gray-600 border border-gray-200">{mission.type}</span>
                      <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">{mission.time}</span>
                    </div>
-                   <h4 className="text-sm font-bold text-gray-900 leading-tight mb-1 group-hover:text-indigo-600 transition-colors">{mission.title}</h4>
+                   <h4 className="text-sm font-bold text-gray-900 leading-tight mb-1 group-hover:text-red-600 transition-colors">{mission.title}</h4>
                    <p className="text-[11px] text-gray-500 mb-3">{mission.club}</p>
                    
                    <div className="flex items-center justify-between">
                      <span className="text-xs font-black text-amber-600 flex items-center gap-1"><Zap size={12} className="fill-amber-600"/> {mission.points} GP</span>
-                     <button onClick={() => handleApplyMission(mission.id)} className="text-xs font-bold bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                     <button onClick={() => handleApplyMission(mission.id)} className="text-xs font-bold bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
                        Üstlen
                      </button>
                    </div>
@@ -299,7 +299,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
             </button>
             
             
-            <button onClick={() => setView('club_portal')} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-all border border-transparent hover:border-indigo-100">
+            <button onClick={() => setView('club_portal')} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-indigo-50 transition-all border border-transparent hover:border-indigo-100">
               <Building2 size={18} /> Kulüp Dizini
             </button>
           </div>
@@ -322,7 +322,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                     <button className="p-2 text-amber-500 hover:bg-amber-50 rounded-xl transition-colors flex items-center gap-2 text-sm font-bold">
                       <Calendar size={18} /> <span className="hidden sm:inline">Etkinlik</span>
                     </button>
-                    <button className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-xl transition-colors flex items-center gap-2 text-sm font-bold">
+                    <button className="p-2 text-red-500 hover:bg-indigo-50 rounded-xl transition-colors flex items-center gap-2 text-sm font-bold">
                       <Briefcase size={18} /> <span className="hidden sm:inline">Fırsat</span>
                     </button>
                   </div>
@@ -339,9 +339,9 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                     <div className="flex gap-3">
                       <img src={post.author.logo} alt={post.author.name} className="w-12 h-12 rounded-xl object-cover border border-gray-100" />
                       <div>
-                        <h4 className="font-bold text-gray-900 leading-tight flex items-center gap-1 hover:text-indigo-600 cursor-pointer">
+                        <h4 className="font-bold text-gray-900 leading-tight flex items-center gap-1 hover:text-red-600 cursor-pointer">
                           {post.author.name}
-                          {post.author.role.includes('Topluluğu') && <CheckCircle2 size={14} className="text-blue-500" />}
+                          {post.author.role.includes('Topluluğu') && <CheckCircle2 size={14} className="text-red-500" />}
                         </h4>
                         <p className="text-[11px] text-gray-500">{post.author.role}</p>
                         <p className="text-[10px] text-gray-400 mt-0.5">{post.time}</p>
@@ -380,8 +380,8 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                   <div className="px-4 py-2 flex items-center justify-between text-[11px] text-gray-500 border-b border-gray-100">
                     <div className="flex items-center gap-1">
                       <div className="flex -space-x-1">
-                        <div className="w-4 h-4 rounded-full bg-indigo-500 flex items-center justify-center"><Heart size={8} className="text-white fill-white"/></div>
-                        <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center"><Zap size={8} className="text-white fill-white"/></div>
+                        <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center"><Heart size={8} className="text-white fill-white"/></div>
+                        <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center"><Zap size={8} className="text-white fill-white"/></div>
                       </div>
                       <span className="ml-1">{post.likes}</span>
                     </div>
@@ -432,7 +432,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                           setCommentText('');
                           setActiveCommentPost(null);
                         }}
-                        className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center disabled:opacity-50 disabled:bg-gray-300"
+                        className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center disabled:opacity-50 disabled:bg-gray-300"
                       >
                         <Send size={14} className="ml-0.5" />
                       </button>
@@ -467,7 +467,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                       <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div> CANLI
                     </span>
                   </div>
-                  <h4 className="font-bold text-sm text-gray-900 leading-snug mb-3 group-hover:text-indigo-600">{room.title}</h4>
+                  <h4 className="font-bold text-sm text-gray-900 leading-snug mb-3 group-hover:text-red-600">{room.title}</h4>
                   
                   <div className="flex items-center justify-between">
                     <div className="flex -space-x-2">
@@ -484,7 +484,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               ))}
             </div>
             <div className="p-3 bg-white text-center border-t border-gray-100">
-              <button className="text-xs font-bold text-indigo-600 hover:text-indigo-700">Tüm Odaları Gör</button>
+              <button className="text-xs font-bold text-red-600 hover:text-indigo-700">Tüm Odaları Gör</button>
             </div>
           </div>
 
@@ -530,7 +530,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               <div className="mt-2 border-t border-gray-100 pt-2 px-3 pb-1">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-gray-500">Sizin Sıranız</span>
-                  <span className="text-xs font-black text-indigo-600">#42 (1250 SSP)</span>
+                  <span className="text-xs font-black text-red-600">#42 (1250 SSP)</span>
                 </div>
               </div>
             </div>
@@ -538,7 +538,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           </>)}
 
           {/* AI Eşleşme Widget */}
-          <div className="bg-gradient-to-br from-indigo-900 to-violet-900 rounded-2xl border border-indigo-700 shadow-lg p-5 relative overflow-hidden mt-6 group cursor-pointer hover:shadow-indigo-500/20 transition-all">
+          <div className="bg-gradient-to-br from-indigo-900 to-violet-900 rounded-2xl border border-indigo-700 shadow-lg p-5 relative overflow-hidden mt-6 group cursor-pointer hover:shadow-red-500/20 transition-all">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl group-hover:bg-white/20 transition-all"></div>
             <div className="relative z-10">
               <div className="flex items-center justify-between mb-3">
@@ -565,7 +565,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                       <p className="text-[10px] text-gray-500">Yazılım Kulübü Üyesi</p>
                     </div>
                   </div>
-                  <button className="w-8 h-8 rounded-full bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 flex items-center justify-center text-gray-600 transition-colors border border-gray-200">
+                  <button className="w-8 h-8 rounded-full bg-gray-50 hover:bg-indigo-50 hover:text-red-600 flex items-center justify-center text-gray-600 transition-colors border border-gray-200">
                     <Plus size={16} />
                   </button>
                 </div>
@@ -589,7 +589,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
             
             {/* Modal Header */}
             <div className="p-6 pb-4 border-b border-gray-800 text-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-purple-500"></div>
               <div className="w-16 h-16 bg-gray-800 rounded-xl mx-auto flex items-center justify-center mb-4 border border-gray-700 shadow-inner">
                 <Mic size={32} className="text-indigo-400" />
               </div>
@@ -608,8 +608,8 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                 {/* Host */}
                 <div className="flex flex-col items-center gap-2">
                   <div className="relative">
-                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(activeRoom.host)}&background=4f46e5&color=fff`} className="w-16 h-16 rounded-full border-2 border-indigo-500 p-0.5 object-cover" />
-                    <div className="absolute -bottom-1 -right-1 bg-indigo-500 text-white rounded-full p-1 border-2 border-gray-900">
+                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(activeRoom.host)}&background=4f46e5&color=fff`} className="w-16 h-16 rounded-full border-2 border-red-500 p-0.5 object-cover" />
+                    <div className="absolute -bottom-1 -right-1 bg-red-500 text-white rounded-full p-1 border-2 border-gray-900">
                       <Mic size={10} />
                     </div>
                   </div>
@@ -712,13 +712,13 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
         <div className="fixed inset-0 z-[120] bg-gray-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl border border-gray-200">
             <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-lg font-black text-gray-900 flex items-center gap-2"><Send size={18} className="text-indigo-600"/> Gönderiyi Paylaş</h2>
+              <h2 className="text-lg font-black text-gray-900 flex items-center gap-2"><Send size={18} className="text-red-600"/> Gönderiyi Paylaş</h2>
               <button onClick={() => setActiveShareModal(null)} className="text-gray-400 hover:text-gray-600 transition"><X size={20}/></button>
             </div>
             <div className="p-5 space-y-4">
               <div>
                 <label className="text-xs font-bold text-gray-600 block mb-1.5">Kime Göndermek İstiyorsunuz?</label>
-                <select value={shareTarget} onChange={e=>setShareTarget(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20">
+                <select value={shareTarget} onChange={e=>setShareTarget(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
                   <option value="">Kişi Seçin...</option>
                   {availableUsers.map(u => (
                     <option key={u.id} value={u.id}>{u.name} ({u.department || u.companyName || u.title})</option>
@@ -732,7 +732,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                   value={shareText} onChange={e=>setShareText(e.target.value)}
                   placeholder="Bu gönderi ilgini çekebilir..."
                   rows={2}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 resize-none"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none"
                 />
               </div>
               <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl flex gap-3 opacity-80 pointer-events-none">
@@ -755,7 +755,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                   setShareTarget('');
                   setShareText('');
                 }} 
-                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition shadow-md active:scale-95"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-red-600 text-white hover:bg-indigo-700 disabled:opacity-50 transition shadow-md active:scale-95"
               >
                 Mesaj Olarak Gönder
               </button>
@@ -794,7 +794,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
             </div>
             <div className="p-4 border-t border-gray-100 flex justify-end gap-2">
               <button onClick={() => { setActiveRepostModal(null); setRepostComment(''); }} className="px-4 py-2 font-bold text-gray-600 hover:bg-gray-100 rounded-lg">İptal</button>
-              <button onClick={handleSubmitRepost} disabled={!repostComment.trim()} className="px-4 py-2 font-bold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">Paylaş</button>
+              <button onClick={handleSubmitRepost} disabled={!repostComment.trim()} className="px-4 py-2 font-bold bg-red-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50">Paylaş</button>
             </div>
           </div>
         </div>

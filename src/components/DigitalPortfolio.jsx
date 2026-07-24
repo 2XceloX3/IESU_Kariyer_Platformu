@@ -14,9 +14,9 @@ const MOCK_PROJECTS = [
 ];
 
 const MOCK_CERTS = [
-  { id: 1, title: 'Google Advanced Data Analytics', issuer: 'Google', date: 'Ekim 2023', verifyUrl: '#', icon: <Award size={32} className="text-blue-500" /> },
+  { id: 1, title: 'Google Advanced Data Analytics', issuer: 'Google', date: 'Ekim 2023', verifyUrl: '#', icon: <Award size={32} className="text-red-500" /> },
   { id: 2, title: 'AWS Solutions Architect Associate', issuer: 'Amazon Web Services', date: 'Kasım 2023', verifyUrl: '#', icon: <Award size={32} className="text-orange-500" /> },
-  { id: 3, title: 'Esenyurt Blockchain Eğitimi', issuer: 'İESÜ Sürekli Eğitim', date: 'Aralık 2023', verifyUrl: '#', icon: <Award size={32} className="text-indigo-500" /> },
+  { id: 3, title: 'Esenyurt Blockchain Eğitimi', issuer: 'İESÜ Sürekli Eğitim', date: 'Aralık 2023', verifyUrl: '#', icon: <Award size={32} className="text-red-500" /> },
 ];
 
 export default function DigitalPortfolio({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -57,8 +57,8 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <FolderGit2 className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">Dijital Portfolyo</h1>
+            <FolderGit2 className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight">Dijital Portfolyo</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -74,8 +74,8 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
           
           <div className="flex-1 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-              <h2 className="text-3xl font-black text-slate-900">{currentUser?.name || 'Öğrenci Adı'}</h2>
-              <CheckCircle2 size={24} className="text-blue-500" />
+              <h2 className="text-3xl font-black text-red-950">{currentUser?.name || 'Öğrenci Adı'}</h2>
+              <CheckCircle2 size={24} className="text-red-500" />
             </div>
             <p className="text-slate-500 font-medium mb-4">{currentUser?.department || 'Yazılım Mühendisliği'} • {currentUser?.year || '4. Sınıf'}</p>
             <div className="flex flex-wrap justify-center md:justify-start gap-2">
@@ -100,7 +100,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
             </button>
             <button 
               onClick={() => setShowAddProjectModal(true)}
-              className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl font-black transition shadow-lg flex items-center justify-center gap-2"
+              className="bg-red-950 hover:bg-red-900 text-white px-6 py-3 rounded-2xl font-black transition shadow-lg flex items-center justify-center gap-2"
             >
               <Plus size={18} /> Yeni Proje Ekle
             </button>
@@ -111,13 +111,13 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
         <div className="flex gap-6 mb-8 border-b border-slate-200 pb-px">
           <button 
             onClick={() => setActiveTab('projects')}
-            className={`pb-4 px-2 font-black text-lg transition-colors border-b-4 ${activeTab === 'projects' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+            className={`pb-4 px-2 font-black text-lg transition-colors border-b-4 ${activeTab === 'projects' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
           >
             <span className="flex items-center gap-2"><FolderGit2 size={20}/> Projeler ({projectsList.length})</span>
           </button>
           <button 
             onClick={() => setActiveTab('certs')}
-            className={`pb-4 px-2 font-black text-lg transition-colors border-b-4 ${activeTab === 'certs' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+            className={`pb-4 px-2 font-black text-lg transition-colors border-b-4 ${activeTab === 'certs' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
           >
             <span className="flex items-center gap-2"><FileCheck2 size={20}/> Sertifikalar ({MOCK_CERTS.length})</span>
           </button>
@@ -136,7 +136,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                   <div>
                     <div className="h-48 overflow-hidden relative">
                       <img src={proj.image} alt={proj.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-slate-800 shadow-sm border border-slate-100">
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-red-900 shadow-sm border border-slate-100">
                         {proj.category}
                       </div>
                       
@@ -148,7 +148,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     </div>
                     
                     <div className="p-6">
-                      <h3 className="text-lg font-black text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors leading-tight">{proj.title}</h3>
+                      <h3 className="text-lg font-black text-red-950 mb-3 group-hover:text-red-600 transition-colors leading-tight">{proj.title}</h3>
                       <div className="flex flex-wrap gap-1.5 mb-6">
                         {proj.tech.map(t => (
                           <span key={t} className="px-2.5 py-1 bg-slate-50 border border-slate-100 text-slate-600 rounded-lg text-[10px] font-bold">{t}</span>
@@ -159,7 +159,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
 
                   <div className="px-6 pb-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
                     <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1 hover:text-blue-500 transition cursor-pointer"><Eye size={14}/> {proj.views}</span>
+                      <span className="flex items-center gap-1 hover:text-red-500 transition cursor-pointer"><Eye size={14}/> {proj.views}</span>
                       <span className="flex items-center gap-1 hover:text-amber-500 transition cursor-pointer"><Star size={14}/> {proj.stars}</span>
                     </div>
                     <button 
@@ -170,7 +170,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                           window.toast && window.toast.success("✅ AI Kod İncelemesi: Clean code standartlarına %89 uyumlu.");
                         }, 2500);
                       }}
-                      className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5"
+                      className="text-red-600 hover:text-indigo-800 flex items-center gap-1.5"
                     >
                        <Sparkles size={14} /> AI Analiz Et
                     </button>
@@ -192,18 +192,18 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     {cert.icon}
                   </div>
                   <div className="flex-grow">
-                    <h3 className="text-sm font-black text-slate-900 leading-tight mb-1">{cert.title}</h3>
+                    <h3 className="text-sm font-black text-red-950 leading-tight mb-1">{cert.title}</h3>
                     <p className="text-slate-500 font-medium text-xs mb-2">{cert.issuer}</p>
                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider">{cert.date}</p>
                   </div>
-                  <a href={cert.verifyUrl} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition shrink-0">
+                  <a href={cert.verifyUrl} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-red-600 transition shrink-0">
                     <ExternalLink size={16} />
                   </a>
                 </div>
               ))}
               
               {/* Blockchain Badge */}
-              <div className="col-span-1 md:col-span-2 bg-gradient-to-r from-slate-900 to-indigo-950 rounded-3xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+              <div className="col-span-1 md:col-span-2 bg-gradient-to-r from-red-950 to-indigo-950 rounded-3xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
                   <Award size={150} />
                 </div>
@@ -213,7 +213,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     Tüm sertifikaların Esenyurt Ağı üzerinde kriptografik olarak imzalanmış ve doğrulanmıştır. İşverenler QR kod ile anında teyit edebilir.
                   </p>
                 </div>
-                <button className="bg-white text-slate-900 px-6 py-3 rounded-xl font-black shrink-0 hover:bg-slate-100 transition shadow-lg text-xs uppercase tracking-widest">
+                <button className="bg-white text-red-950 px-6 py-3 rounded-xl font-black shrink-0 hover:bg-slate-100 transition shadow-lg text-xs uppercase tracking-widest">
                   Sertifika Ağını Gör
                 </button>
               </div>
@@ -280,7 +280,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
 
                 <button 
                   onClick={handleAddProject}
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg"
+                  className="w-full py-3 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg"
                 >
                   Proje Ekle
                 </button>

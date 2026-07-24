@@ -17,9 +17,9 @@ const SERVICES_CATALOG = [
     desc: "1-on-1 Profesyonel kariyer koçluğu, yetkinlik envanter testi, ATS uyumlu CV tasarımı ve mülakat simülasyonları.",
     view: "mentor_booking",
     badge: "🔥 4 Uzman Çevrimiçi",
-    gradient: "from-indigo-600 to-blue-700",
+    gradient: "from-red-600 to-red-700",
     glowColor: "rgba(99,102,241,0.15)",
-    icon: <Briefcase className="text-indigo-600" size={26} />,
+    icon: <Briefcase className="text-red-600" size={26} />,
     previewData: {
       title: "Kariyer & Danışmanlık Modülü İç Görünümü",
       subtitle: "Öğrencilerimiz İçin Hazırlanan Özel Araçlar",
@@ -125,9 +125,9 @@ const SERVICES_CATALOG = [
     desc: "Sektörün lider holding ve teknoloji firmalarıyla staj anlaşmaları, mezun takip sistemi ve Birlik Ağı iş birliği görevleri.",
     view: "about_us",
     badge: "🤝 1.200 Anlaşma",
-    gradient: "from-[#0A2342] to-slate-900",
+    gradient: "from-[#990000] to-red-950",
     glowColor: "rgba(10,35,66,0.2)",
-    icon: <Building2 className="text-[#0A2342]" size={26} />,
+    icon: <Building2 className="text-[#990000]" size={26} />,
     previewData: {
       title: "Kurumsal İşbirlikleri & Mezun İletişim Portalı",
       subtitle: "77.000+ Mezun ve Dev Şirketlerle Doğrudan Ağ",
@@ -152,7 +152,7 @@ const SERVICES_CATALOG = [
     desc: "CEO buluşmaları, teknik atölyeler, sertifikalı webinarlar ve kampüs içi kültür-sanat etkinliklerine katılım bileti oluşturun.",
     view: "events_list",
     badge: "🎟️ Canlı Etkinlikler",
-    gradient: "from-cyan-600 to-blue-800",
+    gradient: "from-cyan-600 to-red-800",
     glowColor: "rgba(6,182,212,0.15)",
     icon: <Award className="text-cyan-600" size={26} />,
     previewData: {
@@ -192,14 +192,14 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
   return (
     <div className="min-h-screen bg-[#070D18] text-slate-100 flex flex-col font-sans relative overflow-x-hidden">
       {/* Background Aurora Lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-indigo-900/20 via-blue-900/10 to-transparent blur-3xl pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-indigo-900/20 via-red-900/10 to-transparent blur-3xl pointer-events-none"></div>
 
       {/* Top Header Navbar */}
-      <header className="h-16 bg-[#0B1528]/80 backdrop-blur-xl border-b border-slate-800/80 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-2xl">
+      <header className="h-16 bg-[#0B1528]/80 backdrop-blur-xl border-b border-red-900/80 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-2xl">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView((currentUser && currentUser.id) ? (userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : userRole === 'admin' ? 'admin' : 'student') : 'landing')} 
-            className="p-2 rounded-full bg-slate-800/80 text-slate-300 hover:bg-slate-700 transition border border-slate-700/60"
+            className="p-2 rounded-full bg-red-900/80 text-slate-300 hover:bg-slate-700 transition border border-slate-700/60"
           >
             <ChevronLeft size={20} />
           </button>
@@ -236,7 +236,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
               </p>
 
               {/* Live Ticker inside Hero */}
-              <div className="mt-6 p-3 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-800 flex items-center gap-3 text-xs font-semibold text-indigo-200">
+              <div className="mt-6 p-3 bg-red-950/80 backdrop-blur-md rounded-2xl border border-red-900 flex items-center gap-3 text-xs font-semibold text-indigo-200">
                 <span className="flex h-2.5 w-2.5 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -247,19 +247,19 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
 
             {/* Quick Hero Counters */}
             <div className="grid grid-cols-2 gap-4 lg:w-[320px] shrink-0">
-              <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-center">
+              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
                 <span className="text-2xl font-black text-indigo-400">77.000+</span>
                 <span className="text-[11px] font-bold text-slate-400 mt-1">Mezun Ağ Lideri</span>
               </div>
-              <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-center">
+              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
                 <span className="text-2xl font-black text-purple-400">110+</span>
                 <span className="text-[11px] font-bold text-slate-400 mt-1">Ar-Ge Laboratuvarı</span>
               </div>
-              <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-center">
+              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
                 <span className="text-2xl font-black text-emerald-400">1.200+</span>
                 <span className="text-[11px] font-bold text-slate-400 mt-1">Sektör Protokolü</span>
               </div>
-              <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-center">
+              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
                 <span className="text-2xl font-black text-amber-400">10 Gbps</span>
                 <span className="text-[11px] font-bold text-slate-400 mt-1">BİDB Fiber Ağ</span>
               </div>
@@ -275,8 +275,8 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
               onClick={() => setActiveCategory(cat)}
               className={`px-5 py-2.5 rounded-2xl text-xs font-black tracking-wide transition-all whitespace-nowrap cursor-pointer ${
                 activeCategory === cat 
-                  ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-600/30 scale-105' 
-                  : 'bg-slate-900/80 text-slate-400 hover:bg-slate-800 hover:text-white border border-slate-800'
+                  ? 'bg-gradient-to-r from-red-600 to-red-600 text-white shadow-lg shadow-red-600/30 scale-105' 
+                  : 'bg-red-950/80 text-slate-400 hover:bg-red-900 hover:text-white border border-red-900'
               }`}
             >
               {cat}
@@ -289,13 +289,13 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
           {filteredServices.map((srv) => (
             <div 
               key={srv.id}
-              className="bg-[#0B1528] rounded-3xl p-6 border border-slate-800/80 shadow-xl hover:shadow-2xl hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
+              className="bg-[#0B1528] rounded-3xl p-6 border border-red-900/80 shadow-xl hover:shadow-2xl hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
               style={{ boxShadow: `0 10px 30px -10px ${srv.glowColor}` }}
             >
               {/* Top Card Bar */}
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="p-3.5 bg-slate-900/90 rounded-2xl border border-slate-800 group-hover:scale-110 transition-transform">
+                  <div className="p-3.5 bg-red-950/90 rounded-2xl border border-red-900 group-hover:scale-110 transition-transform">
                     {srv.icon}
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/60">
@@ -318,10 +318,10 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
               </div>
 
               {/* Action Buttons: Preview Drawer & Direct SPA Navigation */}
-              <div className="flex flex-col gap-2 pt-4 border-t border-slate-800/80">
+              <div className="flex flex-col gap-2 pt-4 border-t border-red-900/80">
                 <button
                   onClick={() => setSelectedServicePreview(srv)}
-                  className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-indigo-300 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-slate-800 cursor-pointer"
+                  className="w-full py-2.5 bg-red-950 hover:bg-red-900 text-indigo-300 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-red-900 cursor-pointer"
                 >
                   <Eye size={15} /> İç Mimari Önizleme
                 </button>
@@ -343,7 +343,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
           <div className="bg-[#0B1528] border border-indigo-900/60 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl text-slate-100 relative animate-in fade-in zoom-in-95 duration-200">
             <button 
               onClick={() => setSelectedServicePreview(null)}
-              className="absolute top-6 right-6 p-2 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition"
+              className="absolute top-6 right-6 p-2 rounded-full bg-red-950 hover:bg-red-900 text-slate-400 hover:text-white transition"
             >
               <X size={20} />
             </button>
@@ -369,7 +369,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
             {/* Metrics */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               {selectedServicePreview.previewData.stats.map((st, i) => (
-                <div key={i} className="bg-slate-900 p-3 rounded-2xl border border-slate-800 text-center">
+                <div key={i} className="bg-red-950 p-3 rounded-2xl border border-red-900 text-center">
                   <span className="block text-base font-black text-indigo-400">{st.val}</span>
                   <span className="text-[10px] font-bold text-slate-400">{st.label}</span>
                 </div>
@@ -380,7 +380,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
             <div className="space-y-2.5 mb-8">
               <h4 className="text-xs font-black text-slate-300 uppercase tracking-wider mb-2">Bu Hizmet İçerisinde Neler Var?</h4>
               {selectedServicePreview.previewData.features.map((feat, i) => (
-                <div key={i} className="flex items-center gap-3 text-xs font-medium text-slate-300 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80">
+                <div key={i} className="flex items-center gap-3 text-xs font-medium text-slate-300 bg-red-950/60 p-2.5 rounded-xl border border-red-900/80">
                   <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
                   <span>{feat}</span>
                 </div>
@@ -394,7 +394,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
                 setSelectedServicePreview(null);
                 setView(targetView);
               }}
-              className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:opacity-95 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/20 cursor-pointer"
+              className="w-full py-3.5 bg-gradient-to-r from-red-600 via-red-600 to-indigo-700 hover:opacity-95 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-xl shadow-red-600/20 cursor-pointer"
             >
               Hemen Portala Geç & Kullan <ArrowRight size={18} />
             </button>

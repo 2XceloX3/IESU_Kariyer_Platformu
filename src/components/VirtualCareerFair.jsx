@@ -78,7 +78,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
               <ChevronLeft size={20} />
             </button>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#0A2342] rounded-lg flex items-center justify-center shadow-sm">
+              <div className="w-8 h-8 bg-[#990000] rounded-lg flex items-center justify-center shadow-sm">
                 <Building2 className="text-white" size={16} />
               </div>
               <div className="hidden sm:block">
@@ -122,12 +122,12 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
       <main className="flex-1 max-w-[1200px] mx-auto w-full p-4 lg:p-8">
         
         {/* Banner */}
-        <div className="bg-[#0A2342] rounded-2xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-1/3 h-full bg-blue-600/20 skew-x-12 transform origin-bottom pointer-events-none"></div>
+        <div className="bg-[#990000] rounded-2xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-1/3 h-full bg-red-600/20 skew-x-12 transform origin-bottom pointer-events-none"></div>
           
           <div className="relative z-10 max-w-xl">
             <h2 className="text-3xl font-black mb-3">Geleceğin Liderleriyle Tanışın</h2>
-            <p className="text-blue-100 text-lg leading-relaxed">
+            <p className="text-red-100 text-lg leading-relaxed">
               Türkiye'nin öncü firmalarının İK profesyonelleriyle doğrudan görüşün, staj ve iş fırsatlarını değerlendirin.
             </p>
           </div>
@@ -135,11 +135,11 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
           <div className="relative z-10 flex gap-4 shrink-0">
             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl text-center min-w-[120px]">
               <div className="text-2xl font-black text-white mb-1">45</div>
-              <div className="text-xs font-bold text-blue-200 uppercase tracking-wider">Katılımcı Firma</div>
+              <div className="text-xs font-bold text-red-200 uppercase tracking-wider">Katılımcı Firma</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-xl text-center min-w-[120px]">
               <div className="text-2xl font-black text-white mb-1">120+</div>
-              <div className="text-xs font-bold text-blue-200 uppercase tracking-wider">Açık Pozisyon</div>
+              <div className="text-xs font-bold text-red-200 uppercase tracking-wider">Açık Pozisyon</div>
             </div>
           </div>
         </div>
@@ -230,7 +230,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                     </button>
                     <button 
                       onClick={() => setSelectedCompany(company)}
-                      className="flex-[3] py-2.5 bg-[#0A66C2] text-white hover:bg-blue-800 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                      className="flex-[3] py-2.5 bg-[#0A66C2] text-white hover:bg-red-800 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                     >
                       Standı Ziyaret Et <ArrowRight size={16} />
                     </button>
@@ -302,7 +302,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
 
                 {/* Actions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button className="flex items-center justify-center gap-2 p-4 border-2 border-[#0A66C2] bg-[#0A66C2] text-white rounded-xl font-bold hover:bg-blue-700 transition">
+                  <button className="flex items-center justify-center gap-2 p-4 border-2 border-[#0A66C2] bg-[#0A66C2] text-white rounded-xl font-bold hover:bg-red-700 transition">
                     <CalendarClock size={20} /> 
                     Birebir Görüşme Randevusu Al
                   </button>

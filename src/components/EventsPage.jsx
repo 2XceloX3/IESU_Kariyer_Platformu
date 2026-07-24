@@ -72,7 +72,7 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
@@ -82,8 +82,8 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Calendar className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">Etkinliklerimiz & Konferans Takvimi</h1>
+            <Calendar className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight">Etkinliklerimiz & Konferans Takvimi</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -92,7 +92,7 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
       <main className="flex-1 w-full max-w-[1150px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
         {/* Banner */}
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-800">
+        <div className="bg-gradient-to-r from-slate-950 via-red-950 to-indigo-950 text-white rounded-3xl p-8 md:p-10 shadow-xl border border-red-900">
           <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 bg-indigo-950/70 px-3.5 py-1.5 rounded-full border border-indigo-900/60">
             Resmi Etkinlik Ekosistemi
           </span>
@@ -113,7 +113,7 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
               placeholder="Etkinlik veya salon ara..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent text-xs font-bold w-full focus:outline-none text-slate-800"
+              className="bg-transparent text-xs font-bold w-full focus:outline-none text-red-900"
             />
           </div>
 
@@ -122,7 +122,7 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
               <button 
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition ${filter === cat ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition ${filter === cat ? 'bg-red-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
               >
                 {cat}
               </button>
@@ -138,32 +138,32 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
               <div key={evt.id} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-lg transition flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">{evt.category}</span>
+                    <span className="text-[10px] font-black uppercase text-red-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">{evt.category}</span>
                     <span className="text-xs font-bold text-slate-400">{evt.registered} / {evt.capacity} Katılımcı</span>
                   </div>
 
-                  <h3 className="text-base font-black text-slate-900 mb-2">{evt.title}</h3>
+                  <h3 className="text-base font-black text-red-950 mb-2">{evt.title}</h3>
                   <p className="text-xs font-medium text-slate-500 mb-4 leading-relaxed">{evt.desc}</p>
 
                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2 text-xs font-semibold text-slate-600 mb-6">
                     <div className="flex items-center gap-2">
-                      <UserCheck size={14} className="text-indigo-600 shrink-0" /> Konuşmacı: <span className="font-bold text-slate-800">{evt.speaker}</span>
+                      <UserCheck size={14} className="text-red-600 shrink-0" /> Konuşmacı: <span className="font-bold text-red-900">{evt.speaker}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Calendar size={14} className="text-indigo-600 shrink-0" /> Tarih: <span className="font-bold text-slate-800">{evt.date}</span>
+                      <Calendar size={14} className="text-red-600 shrink-0" /> Tarih: <span className="font-bold text-red-900">{evt.date}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock size={14} className="text-indigo-600 shrink-0" /> Saat: <span className="font-bold text-slate-800">{evt.time}</span>
+                      <Clock size={14} className="text-red-600 shrink-0" /> Saat: <span className="font-bold text-red-900">{evt.time}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin size={14} className="text-indigo-600 shrink-0" /> Salon: <span className="font-bold text-slate-800">{evt.location}</span>
+                      <MapPin size={14} className="text-red-600 shrink-0" /> Salon: <span className="font-bold text-red-900">{evt.location}</span>
                     </div>
                   </div>
                 </div>
 
                 <button 
                   onClick={() => handleRegister(evt.id, evt.title)}
-                  className={`w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${isReg ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md'}`}
+                  className={`w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${isReg ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-red-600 hover:bg-indigo-700 text-white shadow-md'}`}
                 >
                   {isReg ? <CheckCircle2 size={16} /> : <Ticket size={16} />}
                   {isReg ? 'Biletiniz Hazır (Barkodlu)' : 'Ücretsiz Kayıt Ol & Bilet Al'}

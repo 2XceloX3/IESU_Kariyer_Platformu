@@ -180,7 +180,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   const topStatsView = isAlumniTab ? (
     <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
       <div className="font-bold text-gray-700">Mezun Anketleri Yöneticisi</div>
-      <button onClick={handleAddNew} className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all">
+      <button onClick={handleAddNew} className="bg-red-50 text-red-600 hover:bg-red-100 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all">
         <Plus size={18} /> Yeni Mezun Anketi Ekle
       </button>
     </div>
@@ -239,26 +239,26 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
                     <td className="px-6 py-4 text-gray-600 font-medium">{s.date}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-blue-600">{s.responses || 0}</span>
+                        <span className="font-bold text-red-600">{s.responses || 0}</span>
                         <span className="text-gray-500">/ {s.total || 0}</span>
                       </div>
                       <div className="w-24 h-1.5 bg-gray-100 rounded-full mt-1">
-                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(100, ((s.responses || 0) / (s.total || 1)) * 100)}%` }}></div>
+                        <div className="h-full bg-red-500 rounded-full" style={{ width: `${Math.min(100, ((s.responses || 0) / (s.total || 1)) * 100)}%` }}></div>
                       </div>
                     </td>
                     <td className="px-6 py-4"><Badge status={s.status} /></td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={(e) => { e.stopPropagation(); setExpandedSurveyId(isExpanded ? null : s.id); }} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Yanıtları Gör">
+                        <button onClick={(e) => { e.stopPropagation(); setExpandedSurveyId(isExpanded ? null : s.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Yanıtları Gör">
                           {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); setPreviewSurvey(s); }} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition tooltip" title="Önizleme">
                           <Eye size={16} />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleShareToFeed(s); }} className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition tooltip" title="Akışta Paylaş">
+                        <button onClick={(e) => { e.stopPropagation(); handleShareToFeed(s); }} className="p-2 text-indigo-400 hover:text-red-600 hover:bg-indigo-50 rounded-lg transition tooltip" title="Akışta Paylaş">
                           <Share2 size={16} />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleEdit(s); }} className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Düzenle">
+                        <button onClick={(e) => { e.stopPropagation(); handleEdit(s); }} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Düzenle">
                           <Edit size={16} />
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Sil">
@@ -272,9 +272,9 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
                   {isExpanded && (
                     <tr className="bg-slate-50/50">
                       <td colSpan={5} className="p-0 border-b border-gray-100">
-                        <div className="p-6 bg-slate-50 border-t-2 border-blue-500/20 shadow-inner">
+                        <div className="p-6 bg-slate-50 border-t-2 border-red-500/20 shadow-inner">
                           <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-bold text-gray-900 flex items-center gap-2"><Users size={18} className="text-blue-600" /> Havuz: Anket Yanıtları ({s.responses || 0})</h4>
+                            <h4 className="font-bold text-gray-900 flex items-center gap-2"><Users size={18} className="text-red-600" /> Havuz: Anket Yanıtları ({s.responses || 0})</h4>
                             {(s.responses > 0) && (
                               <button onClick={() => handleKVKKExport(s)} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-bold text-xs transition border border-emerald-200 shadow-sm">
                                 <Download size={14} /> Excel İndir (KVKK)
@@ -302,7 +302,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
                                   <td className="px-4 py-3 font-bold text-gray-900">Katılımcı {index + 1}</td>
                                   {s.questions?.slice(0, 3).map((q, i) => (
                                     <td key={i} className="px-4 py-3">
-                                      <span className="px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded">{(index % 3) + 3} / 5</span>
+                                      <span className="px-2.5 py-1 bg-red-50 text-red-700 font-bold rounded">{(index % 3) + 3} / 5</span>
                                     </td>
                                   ))}
                                   <td className="px-4 py-3 text-emerald-600 font-bold text-xs">Tamamlandı</td>
@@ -387,8 +387,8 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
 
           <div className="pt-4 border-t border-gray-100">
             <div className="flex justify-between items-center mb-4">
-              <label className="text-sm font-black text-gray-900 block flex items-center gap-2"><Target size={18} className="text-blue-600" /> Değerlendirme Soruları</label>
-              <button type="button" onClick={addQuestion} className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
+              <label className="text-sm font-black text-gray-900 block flex items-center gap-2"><Target size={18} className="text-red-600" /> Değerlendirme Soruları</label>
+              <button type="button" onClick={addQuestion} className="text-xs font-bold bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 transition flex items-center gap-1">
                 <Plus size={14} /> Soru Ekle
               </button>
             </div>
@@ -396,7 +396,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
             <div className="space-y-3">
               {(form.questions || []).map((q, index) => (
                 <div key={q.id} className="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-black text-xs shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-black text-xs shrink-0 mt-0.5">
                     {index + 1}
                   </div>
                   <div className="flex-1">
@@ -405,7 +405,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
                       value={q.text} 
                       onChange={(e) => updateQuestion(q.id, e.target.value)} 
                       placeholder="Soru metnini giriniz..." 
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20"
                     />
                     <p className="text-[10px] text-gray-500 mt-1 font-medium ml-1">Tip: 1'den 5'e Likert (Kesinlikle Katılmıyorum ➜ Kesinlikle Katılıyorum)</p>
                   </div>

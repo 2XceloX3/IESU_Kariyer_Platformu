@@ -157,14 +157,14 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
       <div className="min-h-screen bg-slate-50 font-sans pb-20 animate-fade-in">
         
         {/* NEW PROFESSIONAL CLUB PROFILE HEADER (LinkedIn Style) */}
-        <div className="h-64 relative bg-slate-900 border-b border-slate-200">
+        <div className="h-64 relative bg-red-950 border-b border-slate-200">
            <button onClick={() => setSelectedClub(null)} className="absolute top-6 left-6 bg-black/40 hover:bg-black/60 backdrop-blur-md text-white p-2.5 rounded-full transition-colors z-20">
              <ArrowLeft size={20} />
            </button>
            {selectedClub.coverImage && (
              <img src={selectedClub.coverImage} alt={selectedClub.name} className="w-full h-full object-cover opacity-60" />
            )}
-           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+           <div className="absolute inset-0 bg-gradient-to-t from-red-950 via-red-950/40 to-transparent"></div>
         </div>
 
         <div className="max-w-6xl mx-auto px-6 relative -mt-20 z-10">
@@ -184,7 +184,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
             
             <div className="pb-2 flex gap-3">
               {userIsMember ? (
-                 <button className="px-6 py-3 bg-white text-slate-800 font-bold rounded-xl shadow-md flex items-center justify-center gap-2">
+                 <button className="px-6 py-3 bg-white text-red-900 font-bold rounded-xl shadow-md flex items-center justify-center gap-2">
                    <CheckCircle2 size={18} className="text-emerald-500" /> Üyesiniz
                  </button>
                ) : userHasPending ? (
@@ -206,7 +206,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
             {/* LEFT COLUMN: About & Info */}
             <div className="lg:col-span-1 space-y-6">
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">Hakkımızda</h3>
+                <h3 className="font-bold text-red-950 mb-3 flex items-center gap-2">Hakkımızda</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">{selectedClub.description || 'Bu kulüp için henüz bir açıklama girilmemiştir.'}</p>
                 
                 <div className="mt-6 pt-6 border-t border-slate-100 space-y-4">
@@ -214,14 +214,14 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500"><Users size={18}/></div>
                     <div>
                       <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Danışman</p>
-                      <p className="text-sm font-bold text-slate-800">{selectedClub.advisor || 'Atanmadı'}</p>
+                      <p className="text-sm font-bold text-red-900">{selectedClub.advisor || 'Atanmadı'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500"><Trophy size={18}/></div>
                     <div>
                       <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Başkan</p>
-                      <p className="text-sm font-bold text-slate-800">{selectedClub.president?.name || 'Belirtilmedi'}</p>
+                      <p className="text-sm font-bold text-red-900">{selectedClub.president?.name || 'Belirtilmedi'}</p>
                     </div>
                   </div>
                 </div>
@@ -238,11 +238,11 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                 </div>
                 <div className="p-4 space-y-4">
                   <div className="bg-slate-50 p-3 rounded-xl rounded-tl-none border border-slate-100 w-11/12">
-                    <p className="text-xs text-slate-800">Yarınki tanışma toplantımız saat 14:00'te A Blok Konferans Salonunda. Bekliyoruz! 🎉</p>
+                    <p className="text-xs text-red-900">Yarınki tanışma toplantımız saat 14:00'te A Blok Konferans Salonunda. Bekliyoruz! 🎉</p>
                     <span className="text-[10px] text-slate-400 mt-1 block">10:45 AM</span>
                   </div>
                   {userIsMember ? (
-                    <button className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-colors">
+                    <button className="w-full py-2 bg-red-950 hover:bg-red-900 text-white text-xs font-bold rounded-lg transition-colors">
                       Kanala Git
                     </button>
                   ) : (
@@ -276,7 +276,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <div className="flex items-center gap-3 cursor-pointer group">
                       <img src={post.author.logo} alt={post.author.name} className="w-10 h-10 rounded-xl border border-slate-100 shadow-sm" />
                       <div>
-                        <h4 className="font-bold text-sm text-slate-900 group-hover:text-emerald-600 transition-colors">{post.author.name}</h4>
+                        <h4 className="font-bold text-sm text-red-950 group-hover:text-emerald-600 transition-colors">{post.author.name}</h4>
                         <p className="text-[11px] text-slate-500">{post.time}</p>
                       </div>
                     </div>
@@ -296,7 +296,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <button className="flex items-center gap-1.5 text-slate-500 hover:text-rose-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-rose-50">
                       <Heart size={18} /> {post.likes}
                     </button>
-                    <button className="flex items-center gap-1.5 text-slate-500 hover:text-blue-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-blue-50">
+                    <button className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
                       <MessageCircle size={18} /> {post.comments}
                     </button>
                     <button className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-emerald-50">
@@ -317,21 +317,21 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView || 'landing')}>
-            <Logo className="h-8 w-auto text-slate-900" />
-            <h1 className="text-lg font-black text-slate-900 border-l-2 border-slate-200 pl-3">Öğrenci Kulüpleri Havuzu</h1>
+            <Logo className="h-8 w-auto text-red-950" />
+            <h1 className="text-lg font-black text-red-950 border-l-2 border-slate-200 pl-3">Öğrenci Kulüpleri Havuzu</h1>
           </div>
-          <button onClick={() => setView(previousView || 'landing')} className="text-sm font-bold text-slate-500 hover:text-slate-900 flex items-center gap-1">
+          <button onClick={() => setView(previousView || 'landing')} className="text-sm font-bold text-slate-500 hover:text-red-950 flex items-center gap-1">
             <ArrowLeft size={16} /> Geri Dön
           </button>
         </div>
         <div className="max-w-7xl mx-auto px-6 flex gap-6">
-          <button onClick={() => setActiveTab('discover')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'discover' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-slate-900'}`}>Keşfet</button>
-          <button onClick={() => setActiveTab('my_clubs')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'my_clubs' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-slate-900'}`}>
+          <button onClick={() => setActiveTab('discover')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'discover' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-red-950'}`}>Keşfet</button>
+          <button onClick={() => setActiveTab('my_clubs')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'my_clubs' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-red-950'}`}>
             Kulüplerim
             {myJoinedClubs.length > 0 && <span className="ml-1.5 bg-emerald-100 text-emerald-700 text-[10px] font-black px-1.5 py-0.5 rounded-full">{myJoinedClubs.length}</span>}
           </button>
           {(isAdmin || isDean) && (
-            <button onClick={() => setActiveTab('admin')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'admin' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-500 hover:text-slate-900'}`}>
+            <button onClick={() => setActiveTab('admin')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'admin' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-500 hover:text-red-950'}`}>
               Dekanlık Onayları
               {applications.filter(a => a.status === 'pending').length > 0 && (
                 <span className="ml-1.5 bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{applications.filter(a => a.status === 'pending').length}</span>
@@ -355,7 +355,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <button onClick={handleApplyClub} className="w-full md:w-auto px-6 py-3 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition shadow flex items-center justify-center gap-2">
+              <button onClick={handleApplyClub} className="w-full md:w-auto px-6 py-3 bg-red-950 hover:bg-black text-white font-bold rounded-xl transition shadow flex items-center justify-center gap-2">
                 <Plus size={20} /> Yeni Kulüp Kur
               </button>
             </div>
@@ -373,7 +373,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                         {club.logo ? <img src={club.logo} alt={club.name} className="w-full h-full object-cover rounded-2xl" /> : <Building2 size={28} className="text-slate-300" />}
                       </div>
                       <div>
-                        <h3 className="font-black text-slate-900 leading-tight mb-1 group-hover:text-emerald-600 transition-colors">{club.name}</h3>
+                        <h3 className="font-black text-red-950 leading-tight mb-1 group-hover:text-emerald-600 transition-colors">{club.name}</h3>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{club.category || 'Genel'}</p>
                       </div>
                     </div>
@@ -396,7 +396,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
           <div className="animate-fade-in space-y-8">
             {myManagedClubs.length > 0 && (
               <>
-                <h2 className="text-2xl font-black text-slate-900">Yönettiğim Kulüpler</h2>
+                <h2 className="text-2xl font-black text-red-950">Yönettiğim Kulüpler</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {myManagedClubs.map(club => (
                     <div key={club.id} className="bg-white rounded-xl p-6 border border-emerald-100 shadow-sm relative overflow-hidden">
@@ -404,7 +404,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                       <div className="flex items-center gap-4 mb-6">
                         <div className="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100"><Trophy size={24} /></div>
                         <div>
-                          <h3 className="font-black text-lg text-slate-900">{club.name}</h3>
+                          <h3 className="font-black text-lg text-red-950">{club.name}</h3>
                           <p className="text-sm text-slate-500">{(club.memberRequests || []).filter(r => r.status === 'pending').length} Yeni Üyelik Talebi</p>
                         </div>
                       </div>
@@ -418,7 +418,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
               </>
             )}
 
-            <h2 className="text-2xl font-black text-slate-900">Üye Olduğum Kulüpler</h2>
+            <h2 className="text-2xl font-black text-red-950">Üye Olduğum Kulüpler</h2>
             {myJoinedClubs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {myJoinedClubs.map(club => (
@@ -426,7 +426,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <div className="flex items-center gap-4">
                       <img src={club.logo} alt={club.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
                       <div>
-                        <h3 className="font-black text-slate-900 group-hover:text-emerald-600 transition-colors">{club.name}</h3>
+                        <h3 className="font-black text-red-950 group-hover:text-emerald-600 transition-colors">{club.name}</h3>
                         <p className="text-xs text-slate-500">{club.category || 'Genel'}</p>
                       </div>
                     </div>
@@ -447,7 +447,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
         {activeTab === 'admin' && (isAdmin || isDean) && (
           <div className="animate-fade-in space-y-6">
              <div className="bg-white rounded-xl p-6 md:p-8 border border-slate-200 shadow-sm">
-               <h2 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2"><ShieldCheck className="text-amber-500"/> Dekanlık Onay Bekleyenler</h2>
+               <h2 className="text-xl font-black text-red-950 mb-6 flex items-center gap-2"><ShieldCheck className="text-amber-500"/> Dekanlık Onay Bekleyenler</h2>
                {applications.length === 0 ? (
                  <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                    <CheckCircle2 size={40} className="mx-auto text-slate-300 mb-3" />
@@ -468,7 +468,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                              </span>
                              <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1"><Clock size={12} /> {app.date}</span>
                            </div>
-                           <h3 className="font-bold text-slate-900 text-base">{app.name || app.eventName}</h3>
+                           <h3 className="font-bold text-red-950 text-base">{app.name || app.eventName}</h3>
                            <p className="text-xs font-medium text-slate-500 mt-1">{app.applicant ? `Başvuran: ${app.applicant}` : `Kulüp: ${app.club}`} {app.amount && ` • Talep: ${app.amount}`}</p>
                          </div>
                        </div>
@@ -506,11 +506,11 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
       {/* CREATE CLUB MODAL */}
       {showCreateModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowCreateModal(false)}></div>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="absolute inset-0 bg-red-950/60 backdrop-blur-sm" onClick={() => setShowCreateModal(false)}></div>
           <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-fade-in-up">
             <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-100 p-6 flex items-center justify-between z-20">
               <div>
-                <h2 className="text-xl font-black text-slate-900">EK-1: Yeni Kulüp Kurma</h2>
+                <h2 className="text-xl font-black text-red-950">EK-1: Yeni Kulüp Kurma</h2>
                 <p className="text-xs text-slate-500 font-medium mt-1">Öğrenci Kulübü Resmi Başvuru Formu</p>
               </div>
               <button onClick={() => setShowCreateModal(false)} className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors">
@@ -532,7 +532,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <input 
                     type="text" required value={createForm.name} onChange={(e) => setCreateForm({...createForm, name: e.target.value})}
                     placeholder="Örn: Yapay Zeka ve Robotik Kulübü" 
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
                   />
                 </div>
 
@@ -541,7 +541,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Kategori</label>
                     <select 
                       value={createForm.category} onChange={(e) => setCreateForm({...createForm, category: e.target.value})}
-                      className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm appearance-none"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm appearance-none"
                     >
                       <option>Bilim ve Teknoloji</option>
                       <option>Kültür ve Sanat</option>
@@ -555,7 +555,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <input 
                       type="text" value={createForm.advisor} onChange={(e) => setCreateForm({...createForm, advisor: e.target.value})}
                       placeholder="Örn: Dr. Öğr. Üyesi Ahmet Yılmaz" 
-                      className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
                     />
                   </div>
                 </div>
@@ -565,7 +565,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <textarea 
                     required value={createForm.purpose} onChange={(e) => setCreateForm({...createForm, purpose: e.target.value})}
                     placeholder="Kulübün üniversite hayatına ve öğrencilere katacağı değerleri detaylıca açıklayınız..." 
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm min-h-[100px] resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm min-h-[100px] resize-none"
                   ></textarea>
                 </div>
 
@@ -574,7 +574,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <textarea 
                     required value={createForm.description} onChange={(e) => setCreateForm({...createForm, description: e.target.value})}
                     placeholder="Diğer öğrencilerin göreceği kısa bir tanıtım yazısı..." 
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm min-h-[80px] resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm min-h-[80px] resize-none"
                   ></textarea>
                 </div>
 
@@ -582,7 +582,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <button type="button" onClick={() => setShowCreateModal(false)} className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm">
                     İptal
                   </button>
-                  <button type="submit" className="px-6 py-2.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-colors shadow-md flex items-center gap-2 text-sm">
+                  <button type="submit" className="px-6 py-2.5 bg-red-950 hover:bg-black text-white font-bold rounded-xl transition-colors shadow-md flex items-center gap-2 text-sm">
                     <CheckCircle2 size={16} /> Başvuruyu Gönder
                   </button>
                 </div>
@@ -595,11 +595,11 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
       {/* EVENT APPLICATION MODAL (EK-2) */}
       {showEventModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowEventModal(false)}></div>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="absolute inset-0 bg-red-950/60 backdrop-blur-sm" onClick={() => setShowEventModal(false)}></div>
           <div className="bg-white rounded-xl w-full max-w-xl overflow-hidden relative z-10 shadow-2xl animate-fade-in-up">
             <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-100 p-6 flex items-center justify-between z-20">
               <div>
-                <h2 className="text-xl font-black text-slate-900">EK-2: Etkinlik Başvurusu</h2>
+                <h2 className="text-xl font-black text-red-950">EK-2: Etkinlik Başvurusu</h2>
                 <p className="text-xs text-slate-500 font-medium mt-1">Bütçe ve Mekan Talep Formu</p>
               </div>
               <button onClick={() => setShowEventModal(false)} className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-colors">
@@ -608,7 +608,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
             </div>
             <div className="p-6 md:p-8">
               <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 mb-6 flex gap-3 text-sky-800">
-                <Calendar className="shrink-0 mt-0.5 text-sky-500" size={20} />
+                <Calendar className="shrink-0 mt-0.5 text-red-500" size={20} />
                 <div className="text-sm">
                   <p className="font-bold mb-1">Dekanlık Onayı</p>
                   <p className="opacity-90 leading-relaxed text-xs">Etkinlik mekanının tahsisi ve varsa bütçe talebiniz Öğrenci Dekanlığı tarafından incelenecektir. Lütfen etkinlik tarihinden en az 15 gün önce başvurunuzu yapınız.</p>
@@ -621,7 +621,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <input 
                     type="text" required value={eventForm.name} onChange={(e) => setEventForm({...eventForm, name: e.target.value})}
                     placeholder="Örn: Kariyer Zirvesi 2026" 
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
                   />
                 </div>
 
@@ -630,7 +630,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Tarih ve Saat *</label>
                     <input 
                       type="datetime-local" required value={eventForm.date} onChange={(e) => setEventForm({...eventForm, date: e.target.value})}
-                      className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
                     />
                   </div>
                   <div>
@@ -638,7 +638,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                     <input 
                       type="text" value={eventForm.location} onChange={(e) => setEventForm({...eventForm, location: e.target.value})}
                       placeholder="Örn: Ana Konferans Salonu" 
-                      className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
                     />
                   </div>
                 </div>
@@ -648,7 +648,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <input 
                     type="number" value={eventForm.budget} onChange={(e) => setEventForm({...eventForm, budget: e.target.value})}
                     placeholder="Bütçe talebiniz yoksa boş bırakın" 
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
                   />
                 </div>
 
@@ -657,7 +657,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <textarea 
                     required value={eventForm.description} onChange={(e) => setEventForm({...eventForm, description: e.target.value})}
                     placeholder="Etkinlikte neler yapılacak? Konuşmacılar kimler?" 
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-slate-800 rounded-xl px-4 py-3 outline-none transition-colors text-sm min-h-[100px] resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm min-h-[100px] resize-none"
                   ></textarea>
                 </div>
 
@@ -665,7 +665,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <button type="button" onClick={() => setShowEventModal(false)} className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm">
                     İptal
                   </button>
-                  <button type="submit" className="px-6 py-2.5 bg-slate-900 hover:bg-black text-white font-bold rounded-xl transition-colors shadow-md flex items-center gap-2 text-sm">
+                  <button type="submit" className="px-6 py-2.5 bg-red-950 hover:bg-black text-white font-bold rounded-xl transition-colors shadow-md flex items-center gap-2 text-sm">
                     <CheckCircle2 size={16} /> Gönder
                   </button>
                 </div>

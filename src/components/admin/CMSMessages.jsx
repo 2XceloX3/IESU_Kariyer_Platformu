@@ -97,7 +97,7 @@ export default function CMSMessages({ messages, setMessages }) {
           <div className="flex-1 bg-white border border-gray-100 rounded-2xl shadow-sm p-6 overflow-y-auto">
             <div className="max-w-3xl mx-auto">
               <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-50">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center shrink-0">
                   <Send size={24} />
                 </div>
                 <div>
@@ -185,7 +185,7 @@ export default function CMSMessages({ messages, setMessages }) {
                       key={msg.id} 
                       onClick={() => markAsRead(msg.id)}
                       className={`w-full text-left p-4 hover:bg-red-50/50 transition border-l-4 
-                        ${selectedMessageId === msg.id ? 'border-red-600 bg-red-50' : !msg.read ? 'border-blue-500 bg-white' : 'border-transparent bg-white'}`}
+                        ${selectedMessageId === msg.id ? 'border-red-600 bg-red-50' : !msg.read ? 'border-red-500 bg-white' : 'border-transparent bg-white'}`}
                     >
                       <div className="flex justify-between items-start mb-1">
                         <h4 className={`text-sm truncate pr-2 ${!msg.read ? 'font-black text-gray-900' : 'font-bold text-gray-700'}`}>

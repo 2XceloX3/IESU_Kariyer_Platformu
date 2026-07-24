@@ -35,7 +35,7 @@ export default function ExploreFeed({ posts = [] }) {
               window.toast && window.toast.success("✅ AI Algoritması: İlgi alanlarınıza (React, UI/UX) en uygun gönderiler öne çıkarıldı.");
             }, 2000);
           }}
-          className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 rounded-2xl font-bold flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap"
+          className="bg-gradient-to-r from-purple-500 to-red-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 rounded-2xl font-bold flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap"
         >
           <Compass size={18} /> AI ile Özelleştir
         </button>

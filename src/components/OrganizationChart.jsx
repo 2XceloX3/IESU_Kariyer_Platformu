@@ -9,13 +9,13 @@ export default function OrganizationChart({ setView, userRole }) {
       <header className="bg-white shadow-sm sticky top-0 z-50 border-b-4 border-iesu-blue">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-4 cursor-pointer" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 sm:h-12 w-auto text-[#0A2342]" />
+            <Logo className="h-10 sm:h-12 w-auto text-[#990000]" />
             <div className="hidden sm:block">
               <h1 className="text-[16px] md:text-xl font-black text-gray-900 leading-tight tracking-tight whitespace-nowrap">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] md:text-[12px] text-iesu-blue font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Kariyer Geliştirme Merkezi</p>
+              <p className="text-[10px] md:text-[12px] text-iesu-primary font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
-          <button onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="text-gray-500 hover:text-[#0A2342] flex items-center gap-2 font-bold transition">
+          <button onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="text-gray-500 hover:text-[#990000] flex items-center gap-2 font-bold transition">
             <ArrowLeft size={18} /> Ana Sayfaya Dön
           </button>
         </div>
@@ -24,7 +24,7 @@ export default function OrganizationChart({ setView, userRole }) {
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="flex items-center gap-3 mb-10">
-          <span className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-[#0A2342]">
+          <span className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-[#990000]">
             <Users size={24} />
           </span>
           <h2 className="text-3xl md:text-2xl font-black text-gray-900 tracking-tight">Organizasyon Şeması</h2>
@@ -50,7 +50,7 @@ export default function OrganizationChart({ setView, userRole }) {
                   e.target.src = 'https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/be71ba02764646fc8f14a9bb97c5b9a8_(375_300).jpg';
                 } else {
                   e.target.src = 'https://www.esenyurt.edu.tr/assets/frontend/images/empty.png';
-                  e.target.parentElement.innerHTML = '<div class="text-center py-20"><p class="text-[#0A2342] font-bold text-lg">Organizasyon Şeması Görseli Güncellenmektedir.</p><p class="text-gray-500 mt-2">Daha fazla bilgi için Kariyer Merkezimize ulaşabilirsiniz.</p></div>';
+                  e.target.parentElement.innerHTML = '<div class="text-center py-20"><p class="text-[#990000] font-bold text-lg">Organizasyon Şeması Görseli Güncellenmektedir.</p><p class="text-gray-500 mt-2">Daha fazla bilgi için Kariyer Merkezimize ulaşabilirsiniz.</p></div>';
                 }
               }}
             />
@@ -69,12 +69,12 @@ export default function OrganizationChart({ setView, userRole }) {
                     window.toast && window.toast.success("✅ AI Yönlendirmesi: Sorunuz 'Kariyer Danışmanlığı' birimine yönlendirildi. Beklenen yanıt süresi: 12 dk.");
                   }, 2500);
                 }}
-                className="bg-indigo-50 text-indigo-600 px-6 py-3 rounded-xl font-bold text-[15px] hover:bg-indigo-100 transition shadow-sm flex items-center justify-center gap-2"
+                className="bg-indigo-50 text-red-600 px-6 py-3 rounded-xl font-bold text-[15px] hover:bg-indigo-100 transition shadow-sm flex items-center justify-center gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> 
                 AI ile Doğru Kişiye Ulaş
               </button>
-              <button className="bg-[#0A2342] text-white px-8 py-3 rounded-xl font-bold text-[15px] hover:bg-[#0A2342] transition shadow-lg flex items-center justify-center gap-2 group">
+              <button className="bg-[#990000] text-white px-8 py-3 rounded-xl font-bold text-[15px] hover:bg-[#990000] transition shadow-lg flex items-center justify-center gap-2 group">
                 Ofisimizle İletişime Geçin <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

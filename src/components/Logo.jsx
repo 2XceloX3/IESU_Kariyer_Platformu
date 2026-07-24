@@ -45,12 +45,12 @@ export default function Logo({ className = '', size = 'md', ...props }) {
         />
       ) : (
         // Fallback Logo (If network drops or CDN blocks SVG)
-        <div className="flex items-center gap-2 shrink-0 border-2 border-[#0A2342]/10 p-1.5 rounded-xl bg-[#0A2342]/5">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm" style={{ background: '#0A2342' }}>
+        <div className="flex items-center gap-2 shrink-0 border-2 border-[#990000]/10 p-1.5 rounded-xl bg-[#990000]/5">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm" style={{ background: '#990000' }}>
             İ
           </div>
           <div className="flex flex-col leading-none pr-2">
-            <span className="font-black text-[13px]" style={{ color: '#0A2342' }}>İESÜ</span>
+            <span className="font-black text-[13px]" style={{ color: '#990000' }}>İESÜ</span>
             <span className="font-bold text-[9px] text-[#cca26d] uppercase">Kariyer</span>
           </div>
         </div>

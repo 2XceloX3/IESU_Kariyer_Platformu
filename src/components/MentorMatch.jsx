@@ -82,14 +82,14 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
         <div className="flex items-center gap-4 w-full max-w-[1200px] mx-auto">
           <button 
             onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="flex items-center gap-2 text-gray-500 hover:text-[#0A2342] font-semibold transition-colors"
+            className="flex items-center gap-2 text-gray-500 hover:text-[#990000] font-semibold transition-colors"
           >
             <ChevronLeft size={20} /> Ana Sayfa
           </button>
           
           <div className="hidden md:flex items-center gap-2 ml-4">
             <Award className="text-[#0A66C2]" size={24} />
-            <h1 className="font-black text-[#0A2342] text-lg tracking-tight">Mezun Mentor Ağı</h1>
+            <h1 className="font-black text-[#990000] text-lg tracking-tight">Mezun Mentor Ağı</h1>
           </div>
           
           <div className="flex-1"></div>
@@ -120,7 +120,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                   window.toast && window.toast.success("✅ AI Eşleşmesi: Kariyer hedeflerinize %95 uyumlu 2 mentör bulundu.");
                 }, 2500);
               }}
-              className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-md font-bold text-sm shadow-md transition-all shrink-0"
+              className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white px-4 py-2 rounded-md font-bold text-sm shadow-md transition-all shrink-0"
             >
               <Star size={16} className="fill-white/50" /> AI ile Eşleş
             </button>
@@ -150,7 +150,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
               className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col"
             >
               {/* Cover & Avatar */}
-              <div className="h-24 bg-gradient-to-r from-[#0A2342] to-[#0A66C2] relative">
+              <div className="h-24 bg-gradient-to-r from-[#990000] to-[#0A66C2] relative">
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm border border-white/20">
                   <span className="text-[10px] font-black text-[#0A66C2] uppercase tracking-wide">Uyum Skoru</span>
                   <span className="text-xs font-black text-emerald-600">%{(mentor.id.length * 15 + mentor.name.length * 3) % 15 + 85}</span>
@@ -198,7 +198,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                   ) : (
                     <button 
                       onClick={() => handleRequest(mentor.id)}
-                      className="w-full py-2 bg-[#0A66C2] hover:bg-blue-800 text-white font-bold rounded-md text-sm transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-2 bg-[#0A66C2] hover:bg-red-800 text-white font-bold rounded-md text-sm transition-colors flex items-center justify-center gap-2"
                     >
                       <CalendarCheck size={16} /> Mentorluk Talep Et
                     </button>

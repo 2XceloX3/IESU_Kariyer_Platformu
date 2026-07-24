@@ -65,9 +65,9 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Logo className="h-8 w-auto text-[#0A2342]" />
+            <Logo className="h-8 w-auto text-[#990000]" />
             <div className="hidden sm:block">
-              <h1 className="font-black text-[#0A2342] leading-tight">Canlı Kariyer Odaları</h1>
+              <h1 className="font-black text-[#990000] leading-tight">Canlı Kariyer Odaları</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Spaces</p>
             </div>
           </div>
@@ -83,7 +83,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                 <h2 className="text-2xl font-black text-gray-900 mb-2">Keşfet</h2>
                 <p className="text-gray-500 text-sm">Şu an aktif olan sesli odalara katıl veya kendi odanı oluştur.</p>
               </div>
-              <button className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition flex items-center gap-2 shadow-lg shadow-indigo-500/20">
+              <button className="bg-red-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition flex items-center gap-2 shadow-lg shadow-red-500/20">
                 <Plus size={18} /> Oda Kur
               </button>
             </div>
@@ -96,7 +96,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                   className="bg-white rounded-xl p-6 text-left border border-gray-100 hover:border-indigo-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group"
                 >
                   {/* Background decoration */}
-                  <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-10 transition-transform group-hover:scale-110 ${room.type === 'official' ? 'bg-indigo-500' : room.type === 'club' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-10 transition-transform group-hover:scale-110 ${room.type === 'official' ? 'bg-red-500' : room.type === 'club' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
 
                   <div className="flex items-center justify-between mb-4">
                     <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md ${room.type === 'official' ? 'bg-indigo-50 text-indigo-700' : room.type === 'club' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
@@ -107,7 +107,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                     </div>
                   </div>
 
-                  <h3 className="text-lg font-bold text-gray-900 mb-6 group-hover:text-indigo-600 transition-colors pr-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-6 group-hover:text-red-600 transition-colors pr-8">
                     {room.title}
                   </h3>
 
@@ -136,7 +136,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
             >
               <div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden relative">
                 {/* Gradient Header */}
-                <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#0A2342] p-8 lg:p-12 text-white relative">
+                <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#990000] p-8 lg:p-12 text-white relative">
                   <button onClick={leaveRoom} className="absolute top-6 left-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition">
                     <ChevronLeft size={24} />
                   </button>
@@ -158,9 +158,9 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                         <div className="relative">
                           {/* Pulse effect for talking (simulated for host) */}
                           {speaker.role === 'Host' && (
-                            <div className="absolute inset-0 rounded-full border-2 border-indigo-500 animate-ping opacity-30" />
+                            <div className="absolute inset-0 rounded-full border-2 border-red-500 animate-ping opacity-30" />
                           )}
-                          <img src={speaker.avatar} alt={speaker.name} className={`w-24 h-24 rounded-full object-cover border-4 ${speaker.role === 'Host' ? 'border-indigo-500' : 'border-gray-100'}`} />
+                          <img src={speaker.avatar} alt={speaker.name} className={`w-24 h-24 rounded-full object-cover border-4 ${speaker.role === 'Host' ? 'border-red-500' : 'border-gray-100'}`} />
                           <div className="absolute -bottom-2 right-0 bg-white p-1.5 rounded-full shadow-md text-gray-400">
                             <Mic size={14} />
                           </div>
@@ -198,7 +198,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                           window.toast && window.toast.success("✅ AI Özeti: 'Kariyer mülakatlarında stres yönetimi üzerine konuşuluyor...' (Özet Anka Chat'e gönderildi)");
                         }, 3000);
                       }}
-                      className="text-blue-600 font-bold text-sm px-6 py-3 rounded-full bg-blue-50 hover:bg-blue-100 transition flex items-center gap-2"
+                      className="text-red-600 font-bold text-sm px-6 py-3 rounded-full bg-red-50 hover:bg-red-100 transition flex items-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M13 8H7"></path><path d="M17 12H7"></path></svg>
                       AI Kaçırdıklarımı Özetle
@@ -208,7 +208,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                     <button className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 shadow-sm transition">
                       <Plus size={20} />
                     </button>
-                    <button className="px-6 py-3 rounded-full bg-[#0A2342] text-white font-bold text-sm shadow-xl shadow-indigo-900/20 hover:scale-105 transition flex items-center gap-2">
+                    <button className="px-6 py-3 rounded-full bg-[#990000] text-white font-bold text-sm shadow-xl shadow-indigo-900/20 hover:scale-105 transition flex items-center gap-2">
                       <Hand size={18} /> Söz İste
                     </button>
                   </div>

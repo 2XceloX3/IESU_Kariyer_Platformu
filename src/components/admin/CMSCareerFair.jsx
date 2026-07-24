@@ -135,20 +135,20 @@ const CMSCareerFair = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-gradient-to-r from-blue-900 to-[#0A2342] p-8 rounded-xl text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
+      <div className="bg-gradient-to-r from-red-900 to-[#990000] p-8 rounded-xl text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
         <div className="absolute top-0 right-0 p-12 opacity-10">
           <Calendar size={120} />
         </div>
         <div className="relative z-10">
           <h2 className="text-3xl font-black mb-2">Kariyer Günleri Yönetimi</h2>
-          <p className="text-blue-100 text-[15px] max-w-xl">
+          <p className="text-red-100 text-[15px] max-w-xl">
             Geleneksel kariyer günleri etkinliklerini planlayın, firma başvuru formunu tasarlayın, onay süreçlerini yönetip masaları belirleyin.
           </p>
         </div>
         <div className="relative z-10 mt-6 md:mt-0 flex bg-white/10 p-1.5 rounded-xl backdrop-blur-md">
-          <button onClick={() => setActiveTab('form_builder')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'form_builder' ? 'bg-white text-blue-900 shadow-md' : 'text-white hover:bg-white/10'}`}>Form & Önizleme</button>
-          <button onClick={() => setActiveTab('applications')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'applications' ? 'bg-white text-blue-900 shadow-md' : 'text-white hover:bg-white/10'}`}>Firma Başvuruları ({careerFairApplications.length})</button>
-          <button onClick={() => setActiveTab('announcements')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'announcements' ? 'bg-white text-blue-900 shadow-md' : 'text-white hover:bg-white/10'}`}>Duyuru Çık</button>
+          <button onClick={() => setActiveTab('form_builder')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'form_builder' ? 'bg-white text-red-900 shadow-md' : 'text-white hover:bg-white/10'}`}>Form & Önizleme</button>
+          <button onClick={() => setActiveTab('applications')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'applications' ? 'bg-white text-red-900 shadow-md' : 'text-white hover:bg-white/10'}`}>Firma Başvuruları ({careerFairApplications.length})</button>
+          <button onClick={() => setActiveTab('announcements')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'announcements' ? 'bg-white text-red-900 shadow-md' : 'text-white hover:bg-white/10'}`}>Duyuru Çık</button>
         </div>
       </div>
 
@@ -157,19 +157,19 @@ const CMSCareerFair = () => {
           {/* Sol Kolon: Etkinlik Ayarları ve Form Builder */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><Settings size={18} className="text-blue-600"/> Etkinlik Detayları</h3>
+              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><Settings size={18} className="text-red-600"/> Etkinlik Detayları</h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1">Etkinlik Başlığı</label>
-                  <input type="text" value={eventDetails.title} onChange={e => setEventDetails({...eventDetails, title: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <input type="text" value={eventDetails.title} onChange={e => setEventDetails({...eventDetails, title: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-red-500 outline-none transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1">Etkinlik Tarihi</label>
-                  <input type="text" value={eventDetails.date} onChange={e => setEventDetails({...eventDetails, date: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                  <input type="text" value={eventDetails.date} onChange={e => setEventDetails({...eventDetails, date: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-red-500 outline-none transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1">Kısa Açıklama</label>
-                  <textarea rows="2" value={eventDetails.description} onChange={e => setEventDetails({...eventDetails, description: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"></textarea>
+                  <textarea rows="2" value={eventDetails.description} onChange={e => setEventDetails({...eventDetails, description: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-red-500 outline-none transition-all resize-none"></textarea>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1">Banner Görseli Yükle</label>
@@ -185,10 +185,10 @@ const CMSCareerFair = () => {
                 </div>
                 <div className="flex items-center justify-between pt-2">
                   <label className="flex items-center gap-2 text-sm font-bold text-gray-700 cursor-pointer">
-                    <input type="checkbox" checked={eventDetails.isActive} onChange={e => setEventDetails({...eventDetails, isActive: e.target.checked})} className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+                    <input type="checkbox" checked={eventDetails.isActive} onChange={e => setEventDetails({...eventDetails, isActive: e.target.checked})} className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500" />
                     Başvuruları Açık Tut (Firmalar Görebilir)
                   </label>
-                  <button onClick={handleSaveEventDetails} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all">Kaydet</button>
+                  <button onClick={handleSaveEventDetails} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all">Kaydet</button>
                 </div>
               </div>
             </div>
@@ -277,7 +277,7 @@ const CMSCareerFair = () => {
                         </div>
                       ))}
                       
-                      <button disabled className="w-full bg-[#0A2342] text-white font-bold py-3.5 rounded-xl opacity-50 cursor-not-allowed mt-4">
+                      <button disabled className="w-full bg-[#990000] text-white font-bold py-3.5 rounded-xl opacity-50 cursor-not-allowed mt-4">
                         Başvuruyu Gönder (Önizleme)
                       </button>
                     </div>
@@ -291,7 +291,7 @@ const CMSCareerFair = () => {
 
       {activeTab === 'applications' && (
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2"><Briefcase size={18} className="text-blue-600"/> Firmalardan Gelen Başvurular</h3>
+          <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2"><Briefcase size={18} className="text-red-600"/> Firmalardan Gelen Başvurular</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -305,7 +305,7 @@ const CMSCareerFair = () => {
               </thead>
               <tbody>
                 {careerFairApplications.map(app => (
-                  <tr key={app.id} className="border-b border-gray-50 hover:bg-blue-50/30 transition-colors">
+                  <tr key={app.id} className="border-b border-gray-50 hover:bg-red-50/30 transition-colors">
                     <td className="p-4">
                       <div className="font-bold text-gray-900">{app.companyName}</div>
                       <div className="text-[11px] text-gray-500">ID: {app.id}</div>
@@ -330,7 +330,7 @@ const CMSCareerFair = () => {
                           ) : (
                             <div className="flex items-center gap-2 text-xs font-bold text-gray-700">
                               Masa: {app.tableNumber || 'Atanmadı'} 
-                              <button onClick={() => {setEditingTableId(app.id); setTableNumber(app.tableNumber || '');}} className="text-blue-500 hover:text-blue-700"><Edit3 size={12}/></button>
+                              <button onClick={() => {setEditingTableId(app.id); setTableNumber(app.tableNumber || '');}} className="text-red-500 hover:text-red-700"><Edit3 size={12}/></button>
                             </div>
                           )}
                         </div>
@@ -342,7 +342,7 @@ const CMSCareerFair = () => {
                         <div className="text-xs"><span className="font-bold text-gray-700">İsimler:</span> <span className="text-gray-600">{app.answers?.f_names}</span></div>
                         <div className="text-xs"><span className="font-bold text-gray-700">TC:</span> <span className="text-gray-600">{app.answers?.f_tc}</span></div>
                         <div className="text-xs truncate"><span className="font-bold text-gray-700">Eşantiyon:</span> <span className="text-gray-600">{app.answers?.f_swag || '-'}</span></div>
-                        {app.answers?.f_logo && <a href={app.answers.f_logo} target="_blank" rel="noreferrer" className="text-[10px] text-blue-500 hover:underline flex items-center gap-1 mt-1"><Eye size={10}/> Logoyu Görüntüle</a>}
+                        {app.answers?.f_logo && <a href={app.answers.f_logo} target="_blank" rel="noreferrer" className="text-[10px] text-red-500 hover:underline flex items-center gap-1 mt-1"><Eye size={10}/> Logoyu Görüntüle</a>}
                       </div>
                     </td>
                     <td className="p-4 text-right">
@@ -369,7 +369,7 @@ const CMSCareerFair = () => {
       {activeTab === 'announcements' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h3 className="text-lg font-black text-gray-900 mb-2 flex items-center gap-2"><Megaphone size={18} className="text-blue-600"/> Ana Akışa Duyuru Çık</h3>
+            <h3 className="text-lg font-black text-gray-900 mb-2 flex items-center gap-2"><Megaphone size={18} className="text-red-600"/> Ana Akışa Duyuru Çık</h3>
             <p className="text-sm text-gray-500 mb-6">Öğrencilerin ana akışında (Haber Kaynağı) "Kariyer Günleri" etiketiyle profesyonel duyurular paylaşın.</p>
             
             <textarea 
@@ -377,10 +377,10 @@ const CMSCareerFair = () => {
               placeholder="Örn: Kariyer günlerine katılacak firmalar belli oldu! Hemen inceleyin..."
               value={announcementText}
               onChange={e => setAnnouncementText(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none mb-4"
+              className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 outline-none transition-all resize-none mb-4"
             ></textarea>
             
-            <button onClick={handlePostAnnouncement} className="w-full bg-gradient-to-r from-blue-600 to-[#0A2342] text-white font-bold py-3.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2">
+            <button onClick={handlePostAnnouncement} className="w-full bg-gradient-to-r from-red-600 to-[#990000] text-white font-bold py-3.5 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2">
               <Send size={18} /> Öğrencilere Duyur
             </button>
           </div>

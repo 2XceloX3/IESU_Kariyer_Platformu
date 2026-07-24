@@ -41,7 +41,7 @@ export default function ForgotPassword({ setView }) {
         <div className="bg-white/95 backdrop-blur-2xl rounded-xl shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-navy via-iesu-blue to-iesu-navy"></div>
 
-          <div className="flex justify-center mb-6 text-[#0A2342]">
+          <div className="flex justify-center mb-6 text-[#990000]">
             {step === 4 ? <CheckCircle2 size={56} className="text-green-500" /> : <KeyRound size={56} />}
           </div>
 
@@ -109,7 +109,7 @@ export default function ForgotPassword({ setView }) {
             {step < 4 ? (
               <button 
                 type="submit" 
-                className="w-full flex items-center justify-center bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#0A2342] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2"
+                className="w-full flex items-center justify-center bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#990000] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2"
               >
                 {step === 1 ? "Devam Et" : step === 2 ? "Doğrula" : "Şifreyi Kaydet"}
               </button>

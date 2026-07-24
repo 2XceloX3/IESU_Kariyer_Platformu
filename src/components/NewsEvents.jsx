@@ -81,7 +81,7 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent z-10 transition-opacity duration-500"></div>
               <img src={item?.imageUrl} alt={item?.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out" />
               <div className="absolute top-6 left-6 z-20 flex gap-2">
-                <span className="bg-[#0A2342] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider">{item.category}</span>
+                <span className="bg-[#990000] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider">{item.category}</span>
               </div>
               <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full transform group-hover:-translate-y-2 transition-transform duration-500">
                 <div className="flex items-center gap-3 text-red-200 mb-4 font-bold text-[13px] tracking-wide">
@@ -90,7 +90,7 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
                 <h3 className="text-2xl md:text-2xl font-black text-white leading-tight mb-4 group-hover:text-red-50 transition drop-shadow-md">{item?.title}</h3>
                 <p className="text-gray-400 text-[15px] max-w-2xl mb-6 line-clamp-2">{item.description}</p>
                 <div className="flex items-center gap-2 text-white font-bold text-[14px]">
-                  Detayları Gör <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md group-hover:bg-[#0A2342] transition-colors ml-1"><ArrowRight size={16} /></div>
+                  Detayları Gör <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md group-hover:bg-[#990000] transition-colors ml-1"><ArrowRight size={16} /></div>
                 </div>
               </div>
             </div>
@@ -102,19 +102,19 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  onClick={() => setSelectedItem(item)} key={index} className="md:col-span-4 group bg-white rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-500 flex flex-col h-full">
             <div className="h-48 overflow-hidden relative bg-gray-100">
               <img src={item?.imageUrl} alt={item?.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm text-[#0A2342] font-black text-[11px] uppercase tracking-wider">
+              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm text-[#990000] font-black text-[11px] uppercase tracking-wider">
                 {item.category}
               </div>
             </div>
             <div className="p-6 flex flex-col flex-grow bg-white">
               <div className="flex items-center gap-2 text-[12px] font-bold text-gray-500 mb-3">
-                <Calendar size={14} className="text-iesu-blue" /> {item.date}
+                <Calendar size={14} className="text-iesu-primary" /> {item.date}
               </div>
-              <h4 className="font-extrabold text-[16px] text-gray-900 group-hover:text-[#0A2342] transition line-clamp-2 leading-snug mb-3">{item?.title}</h4>
+              <h4 className="font-extrabold text-[16px] text-gray-900 group-hover:text-[#990000] transition line-clamp-2 leading-snug mb-3">{item?.title}</h4>
               <p className="text-gray-500 text-[13px] line-clamp-2 mb-6 flex-grow">{item.description}</p>
               <div className="mt-auto flex items-center justify-between border-t border-gray-50 pt-4">
-                <span className="text-[13px] font-bold text-gray-500 group-hover:text-iesu-blue transition">Devamını Oku</span>
-                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-[#0A2342] group-hover:bg-[#0A2342] group-hover:text-white transition-all transform group-hover:translate-x-1">
+                <span className="text-[13px] font-bold text-gray-500 group-hover:text-iesu-primary transition">Devamını Oku</span>
+                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-[#990000] group-hover:bg-[#990000] group-hover:text-white transition-all transform group-hover:translate-x-1">
                   <ChevronRight size={16} strokeWidth={3} />
                 </div>
               </div>
@@ -139,9 +139,9 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
       <div className="md:col-span-8 flex flex-col gap-4">
         {(announcements || []).map((item, index) => (
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  onClick={() => setSelectedItem(item)} key={index} className="group relative bg-white p-6 md:p-8 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl hover:border-red-100 transition-all duration-500 flex flex-col sm:flex-row gap-6 items-start sm:items-center overflow-hidden cursor-pointer">
-            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gray-200 group-hover:bg-iesu-blue transition-colors duration-500"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gray-200 group-hover:bg-iesu-primary transition-colors duration-500"></div>
             
-            <div className="flex-shrink-0 w-20 h-20 bg-gray-50 rounded-2xl flex flex-col items-center justify-center text-gray-900 border border-gray-100 group-hover:bg-red-50 group-hover:text-[#0A2342] group-hover:border-red-100 transition-all duration-500 transform group-hover:-rotate-3">
+            <div className="flex-shrink-0 w-20 h-20 bg-gray-50 rounded-2xl flex flex-col items-center justify-center text-gray-900 border border-gray-100 group-hover:bg-red-50 group-hover:text-[#990000] group-hover:border-red-100 transition-all duration-500 transform group-hover:-rotate-3">
               {(() => {
                 const { day, month } = getParsedDate(item.date);
                 if (day && month) {
@@ -158,18 +158,18 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
             
             <div className="flex-grow">
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-[10px] uppercase tracking-widest font-black text-iesu-blue bg-red-50 px-2 py-1 rounded-md">{item.tag}</span>
+                <span className="text-[10px] uppercase tracking-widest font-black text-iesu-primary bg-red-50 px-2 py-1 rounded-md">{item.tag}</span>
                 {item.attachments && item.attachments.length > 0 && (
                   <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md"><FileText size={12}/> Ekli Dosya</span>
                 )}
               </div>
-              <h3 className="font-extrabold text-[17px] text-gray-900 group-hover:text-[#0A2342] transition-colors leading-snug mb-2 pr-8">
+              <h3 className="font-extrabold text-[17px] text-gray-900 group-hover:text-[#990000] transition-colors leading-snug mb-2 pr-8">
                 {item?.title}
               </h3>
               <p className="text-gray-500 text-[14px] leading-relaxed line-clamp-2">{item.description}</p>
             </div>
             
-            <div className="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-gray-50 items-center justify-center text-gray-500 group-hover:bg-[#0A2342] group-hover:text-white transition-all duration-500 transform group-hover:translate-x-2">
+            <div className="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-gray-50 items-center justify-center text-gray-500 group-hover:bg-[#990000] group-hover:text-white transition-all duration-500 transform group-hover:translate-x-2">
               <ChevronRight size={20} />
             </div>
           </div>
@@ -195,12 +195,12 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
                   if (day && month) {
                     return (
                       <>
-                        <div className="text-2xl font-black text-[#0A2342] leading-none">{day}</div>
+                        <div className="text-2xl font-black text-[#990000] leading-none">{day}</div>
                         <div className="text-[11px] font-bold text-gray-500 uppercase mt-1 tracking-wider">{month}</div>
                       </>
                     );
                   }
-                  return <Calendar size={28} className="text-[#0A2342] opacity-70 mx-auto" />;
+                  return <Calendar size={28} className="text-[#990000] opacity-70 mx-auto" />;
                 })()}
               </div>
             </div>
@@ -241,7 +241,7 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
                 if (userRole === 'employer') { setView('company'); return; }
                 setView(userRole === 'admin' ? 'admin' : userRole);
               }} 
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-gray-600 hover:bg-[#0A2342] hover:text-white hover:shadow-lg transition-all duration-300 group"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-gray-600 hover:bg-[#990000] hover:text-white hover:shadow-lg transition-all duration-300 group"
             >
               <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
             </button>
@@ -263,21 +263,21 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
           <div className="inline-flex bg-white/10 backdrop-blur-xl p-1.5 rounded-2xl shadow-2xl border border-white/20">
             <button 
               onClick={() => handleTabChange('haberler')}
-              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'haberler' ? 'text-[#0A2342] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'haberler' ? 'text-[#990000] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
             >
               <Newspaper size={18} /> Haberler
             </button>
             
             <button 
               onClick={() => handleTabChange('duyurular')}
-              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'duyurular' ? 'text-[#0A2342] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'duyurular' ? 'text-[#990000] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
             >
               <Bell size={18} /> Duyurular
             </button>
             
             <button 
               onClick={() => handleTabChange('etkinlikler')}
-              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'etkinlikler' ? 'text-[#0A2342] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'etkinlikler' ? 'text-[#990000] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
             >
               <Calendar size={18} /> Etkinlikler
             </button>
@@ -318,7 +318,7 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
             <div className="p-8 md:p-10 flex-grow flex flex-col">
               <div className="flex flex-wrap items-center gap-4 mb-5">
                 {(selectedItem.category || selectedItem.tag) && (
-                  <span className="bg-red-50 text-[#0A2342] text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">
+                  <span className="bg-red-50 text-[#990000] text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">
                     {selectedItem.category || selectedItem.tag}
                   </span>
                 )}
@@ -342,7 +342,7 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
                       window.toast && window.toast.success("🔊 AI: 'Bu içerikte bahsedilen ana konu...' (Sesli Okuma Simülasyonu)");
                     }, 2500);
                   }}
-                  className="shrink-0 w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors shadow-sm"
+                  className="shrink-0 w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-red-600 hover:bg-red-600 hover:text-white transition-colors shadow-sm"
                   title="AI ile Özetle ve Dinle"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
@@ -356,7 +356,7 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
               {/* Registration Link for Events */}
               {selectedItem.registrationLink && (
                 <div className="mt-6 mb-2">
-                  <a href={selectedItem.registrationLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#0A2342] hover:bg-[#0A2342] text-white px-6 py-3 rounded-xl font-bold transition-colors shadow-lg shadow-red-500/30">
+                  <a href={selectedItem.registrationLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#990000] hover:bg-[#990000] text-white px-6 py-3 rounded-xl font-bold transition-colors shadow-lg shadow-red-500/30">
                     Etkinliğe Kayıt Ol <ExternalLink size={16} />
                   </a>
                 </div>
@@ -366,13 +366,13 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
               {selectedItem.attachments && selectedItem.attachments.length > 0 && (
                 <div className="mt-8 pt-8 border-t border-gray-100">
                   <h4 className="text-[15px] font-black text-gray-900 mb-4 flex items-center gap-2">
-                    <FileText size={18} className="text-[#0A2342]" /> Ekler ve İlgili Belgeler
+                    <FileText size={18} className="text-[#990000]" /> Ekler ve İlgili Belgeler
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedItem.attachments.map((attachment, idx) => (
                       <a key={idx} href={attachment.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3.5 rounded-xl border border-gray-200 hover:border-iesu-navy hover:shadow-md transition-all group bg-gray-50 hover:bg-white cursor-pointer">
-                        <span className="font-bold text-gray-700 group-hover:text-[#0A2342] transition-colors text-[13px] pr-2">{attachment.title}</span>
-                        <div className="w-8 h-8 rounded-full bg-white flex-shrink-0 flex items-center justify-center text-gray-500 group-hover:bg-[#0A2342] group-hover:text-white transition-colors shadow-sm">
+                        <span className="font-bold text-gray-700 group-hover:text-[#990000] transition-colors text-[13px] pr-2">{attachment.title}</span>
+                        <div className="w-8 h-8 rounded-full bg-white flex-shrink-0 flex items-center justify-center text-gray-500 group-hover:bg-[#990000] group-hover:text-white transition-colors shadow-sm">
                           <Download size={14} />
                         </div>
                       </a>

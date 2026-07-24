@@ -7,11 +7,11 @@ import useAppStore from '../store/useAppStore';
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
   const getClasses = () => {
     switch (label) {
-      case 'Akış': return { text: 'text-blue-500', bg: 'bg-blue-50', badge: 'bg-blue-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
+      case 'Akış': return { text: 'text-red-500', bg: 'bg-red-50', badge: 'bg-red-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
       case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
       case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
-      case 'Topluluklar': return { text: 'text-teal-500', bg: 'bg-teal-50', badge: 'bg-teal-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
-      default: return { text: 'text-[#0A2342]', bg: 'bg-red-50', badge: 'bg-[#0A2342]', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
+      case 'Topluluklar': return { text: 'text-orange-500', bg: 'bg-teal-50', badge: 'bg-orange-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
+      default: return { text: 'text-[#990000]', bg: 'bg-red-50', badge: 'bg-[#990000]', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
     }
   };
   const theme = getClasses();
@@ -78,9 +78,9 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto text-[#0A2342] hover:scale-105 transition-transform" />
+            <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
       <div className="pt-24 max-w-[1200px] mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-2">
-            <Users className="text-[#0A2342]" size={28} /> Topluluklar ve Gruplar
+            <Users className="text-[#990000]" size={28} /> Topluluklar ve Gruplar
           </h1>
         </div>
         
@@ -117,7 +117,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
             />
           </div>
           {['student', 'academic', 'alumni'].includes(userRole) && (
-            <button onClick={() => setShowCreateModal(true)} className="flex items-center justify-center gap-2 bg-[#0A2342] text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-[#0A2342] transition shadow-sm shrink-0">
+            <button onClick={() => setShowCreateModal(true)} className="flex items-center justify-center gap-2 bg-[#990000] text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-[#990000] transition shadow-sm shrink-0">
               <Plus size={18} /> <span className="hidden sm:inline">Topluluk Kur</span>
             </button>
           )}
@@ -139,7 +139,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
                 
                 <div className="pt-8">
                   <h3 className="text-lg font-black text-gray-900 flex items-center gap-1.5 mb-1 line-clamp-1">
-                    {group.name} {group.verified && <ShieldCheck size={16} className="text-blue-500 shrink-0" />}
+                    {group.name} {group.verified && <ShieldCheck size={16} className="text-red-500 shrink-0" />}
                   </h3>
                   <p className="text-xs font-medium text-gray-500 mb-3">{group.type} • {group.memberCount} Üye</p>
                   <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed mb-4">
@@ -147,8 +147,8 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
                   </p>
                   
                   {group.events?.length > 0 && (
-                    <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50 mb-4">
-                      <p className="text-xs font-bold text-blue-700 flex items-center gap-1.5 mb-1">
+                    <div className="bg-red-50/50 rounded-xl p-3 border border-red-100/50 mb-4">
+                      <p className="text-xs font-bold text-red-700 flex items-center gap-1.5 mb-1">
                         <Calendar size={12} /> Yaklaşan Etkinlik
                       </p>
                       <p className="text-sm text-gray-800 font-medium truncate">{group.events[0].title}</p>
@@ -216,7 +216,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
                 ></textarea>
               </div>
               <div className="pt-4">
-                <button type="submit" className="w-full py-3 bg-[#0A2342] text-white font-bold rounded-xl hover:bg-[#0A2342] transition shadow-md">
+                <button type="submit" className="w-full py-3 bg-[#990000] text-white font-bold rounded-xl hover:bg-[#990000] transition shadow-md">
                   Kuruluş Talebini Oluştur
                 </button>
               </div>

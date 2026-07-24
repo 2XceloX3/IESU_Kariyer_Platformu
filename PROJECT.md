@@ -1,22 +1,27 @@
-# Project: IESU Kariyer Platformu Data Integration & QA
+# Project: IESU Kariyer Platformu Data Integration & Branding QA
 
 ## Architecture
-- Frontend: React application with mock data files located in `src/utils/` (`mockData.js`, `innerPagesData.js`, `universityData.js`, etc.).
-- Data Source: Esenyurt University Career Development Office web page (https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu).
+- Frontend: React application with components and data files in `src/` (`LandingPage.jsx`, `HeroSlider.jsx`, `mockData.js`, `innerPagesData.js`, `universityData.js`, `liveData.js`, etc.).
+- Target Sources: 
+  - https://www.esenyurt.edu.tr/
+  - https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu
 
 ## Code Layout
 - `src/utils/mockData.js`
 - `src/utils/innerPagesData.js`
 - `src/utils/universityData.js`
-- `src/components/` (UI components referencing mock data)
+- `src/utils/liveData.js` (or related data adapters)
+- `src/components/` (LandingPage, HeroSlider, etc.)
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| 1 | Web Data Extraction & Analysis | Inspect target URL and codebase structures | none | DONE |
-| 2 | Mock Data Integration | Update mock data files with extracted structured data | M1 | DONE |
-| 3 | Verification & Chaos QA | Run build, verify UI components, null/undefined checks & forensic audit | M2 | DONE |
+| 1 | Web Data Extraction & Analysis | Scrape Esenyurt University sites & analyze codebase schema/branding | none | IN_PROGRESS |
+| 2 | UI Integration & Branding Scrub | Integrate extracted data into React components/data files & scrub blue/Gelişim/İGÜ | M1 | PLANNED |
+| 3 | Verification & Chaos QA | Run build, unit tests, render crash checks, adversarial testing & forensic audit | M2 | PLANNED |
 
-## Interface Contracts
-- All mock data objects must maintain existing property keys and types expected by components.
+## Interface Contracts & Branding Rules
+- All mock data objects must maintain existing property keys and expected types.
 - Arrays must remain arrays (non-null), image strings must be valid URLs or fallbacks, object fields must never cause undefined pointer exceptions during render.
+- Strictly adhere to Red (#990000 or #D32F2F), Coral (#FF6F61), and White branding.
+- Zero blue classes (`bg-blue-*`, `text-blue-*`, `#0A2342`) and zero "Gelişim" or "İGÜ" text references anywhere in UI text.

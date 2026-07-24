@@ -23,7 +23,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f8fafc] text-red-900 flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
@@ -37,7 +37,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
           </button>
           <div className="flex items-center gap-2">
             <ShieldCheck className="text-emerald-600" size={24} />
-            <h1 className="font-black tracking-tight text-slate-900">Akıllı Sertifikalar</h1>
+            <h1 className="font-black tracking-tight text-red-950">Akıllı Sertifikalar</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -46,7 +46,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
       <main className="flex-1 w-full max-w-6xl mx-auto p-4 lg:p-8 flex flex-col">
         
         {/* Header Hero */}
-        <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-8 md:p-12 shadow-2xl relative overflow-hidden text-white mb-8">
+        <div className="bg-gradient-to-r from-red-950 to-red-900 rounded-xl p-8 md:p-12 shadow-2xl relative overflow-hidden text-white mb-8">
           <div className="absolute right-0 top-0 w-64 h-full bg-white/5 skew-x-12 translate-x-16 pointer-events-none" />
           <Hexagon className="absolute -left-10 -bottom-10 w-48 h-48 text-emerald-500/20 blur-2xl pointer-events-none" />
           
@@ -74,7 +74,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                   <Award size={40} />
                 </div>
                 <h3 className="text-slate-500 font-bold uppercase tracking-widest text-sm mb-2">Başarı Sertifikası</h3>
-                <h2 className="text-3xl md:text-2xl font-black text-slate-900 mb-8">{selectedCert.title}</h2>
+                <h2 className="text-3xl md:text-2xl font-black text-red-950 mb-8">{selectedCert.title}</h2>
                 
                 <p className="text-slate-600 text-lg mb-2">Bu sertifika,</p>
                 <p className="text-2xl font-bold text-indigo-700 mb-8">{currentUser?.name || "Kullanıcı"}</p>
@@ -86,11 +86,11 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left border-t border-b border-slate-100 py-6 mb-8">
                   <div>
                     <p className="text-xs text-slate-400 font-bold uppercase">Veriliş Tarihi</p>
-                    <p className="text-sm font-bold text-slate-800">{selectedCert.date}</p>
+                    <p className="text-sm font-bold text-red-900">{selectedCert.date}</p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-400 font-bold uppercase">Sertifika ID</p>
-                    <p className="text-sm font-bold text-slate-800">{selectedCert.id}</p>
+                    <p className="text-sm font-bold text-red-900">{selectedCert.id}</p>
                   </div>
                   <div className="col-span-2">
                     <p className="text-xs text-slate-400 font-bold uppercase">Blockchain Hash</p>
@@ -112,7 +112,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
                     AI Yetkinlik Çevirmeni
                   </button>
-                  <button className="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center justify-center gap-2">
+                  <button className="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center justify-center gap-2">
                     <Share2 size={18} /> LinkedIn'de Paylaş
                   </button>
                   <button className="w-full sm:w-auto px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition flex items-center justify-center gap-2">
@@ -134,7 +134,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                 ) : null}
 
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-indigo-50 text-red-600 rounded-xl flex items-center justify-center">
                     <Award size={24} />
                   </div>
                   <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
@@ -142,7 +142,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                   </span>
                 </div>
                 
-                <h3 className="font-black text-slate-900 text-lg leading-tight mb-2">{cert.title}</h3>
+                <h3 className="font-black text-red-950 text-lg leading-tight mb-2">{cert.title}</h3>
                 <p className="text-sm text-slate-500 font-medium mb-6 flex-1">{cert.issuer}</p>
                 
                 <div className="pt-4 border-t border-slate-100 mt-auto">

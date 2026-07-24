@@ -16,7 +16,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
 
   // Mock data for graphs
   const engagementStats = [
-    { label: 'Öğrenci Girişi', value: 85, color: 'bg-blue-500' },
+    { label: 'Öğrenci Girişi', value: 85, color: 'bg-red-500' },
     { label: 'Mezun Girişi', value: 45, color: 'bg-emerald-500' },
     { label: 'Firma Girişi', value: 20, color: 'bg-amber-500' },
     { label: 'Akademisyen Girişi', value: 30, color: 'bg-purple-500' }
@@ -99,7 +99,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
       <div className="bg-indigo-50/50 rounded-2xl border border-indigo-100 shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h3 className="font-black text-indigo-900 flex items-center gap-2"><CheckCircle2 size={18} className="text-indigo-600"/> Kariyer Check-up & İletişim Havuzu</h3>
+            <h3 className="font-black text-indigo-900 flex items-center gap-2"><CheckCircle2 size={18} className="text-red-600"/> Kariyer Check-up & İletişim Havuzu</h3>
             <p className="text-xs text-indigo-700/70 mt-1">Sistem üzerinden güncellenen veriler ve mezun istihdam durumları</p>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           
           <div className="bg-white rounded-xl p-5 border border-indigo-50 shadow-sm flex flex-col justify-center">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center shrink-0">
                 <MailCheck size={20}/>
               </div>
               <div>
@@ -128,7 +128,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                 <p className="text-xs text-gray-500">Havuzda biriken yeni veri</p>
               </div>
             </div>
-            <div className="text-3xl font-black text-blue-600">85 <span className="text-sm font-bold text-gray-400">kişi</span></div>
+            <div className="text-3xl font-black text-red-600">85 <span className="text-sm font-bold text-gray-400">kişi</span></div>
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-indigo-50 shadow-sm flex flex-col items-center justify-center">
@@ -183,9 +183,9 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         {/* Demographics */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
           <div>
-            <h3 className="font-black text-gray-900 flex items-center gap-2 mb-6"><Target size={18} className="text-blue-500"/> Kullanıcı Dağılımı</h3>
+            <h3 className="font-black text-gray-900 flex items-center gap-2 mb-6"><Target size={18} className="text-red-500"/> Kullanıcı Dağılımı</h3>
             <div className="space-y-1">
-              <StatProgress label="Öğrenciler" value={totalStudents} max={500} colorClass="bg-blue-500" />
+              <StatProgress label="Öğrenciler" value={totalStudents} max={500} colorClass="bg-red-500" />
               <StatProgress label="Mezunlar" value={totalAlumni} max={500} colorClass="bg-emerald-500" />
               <StatProgress label="Firmalar" value={(companies || []).length || 45} max={100} colorClass="bg-amber-500" />
             </div>

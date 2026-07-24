@@ -30,7 +30,7 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
@@ -40,8 +40,8 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <HelpCircle className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">BİDB Teknik Destek (Helpdesk)</h1>
+            <HelpCircle className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight">BİDB Teknik Destek (Helpdesk)</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -52,7 +52,7 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <h2 className="text-xl font-black text-slate-900 mb-1">Destek Talebi Oluştur</h2>
+                <h2 className="text-xl font-black text-red-950 mb-1">Destek Talebi Oluştur</h2>
                 <p className="text-xs font-semibold text-slate-500">Siteden ayrılmadan şifre sıfırlama veya bilişim destek biletinizi iletin.</p>
               </div>
 
@@ -61,7 +61,7 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
                 <select 
                   value={form.subject}
                   onChange={e => setForm({...form, subject: e.target.value})}
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-500"
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-red-500"
                 >
                   <option>E-Posta / Wi-Fi Şifre Sıfırlama</option>
                   <option>LMS Ders Erişim Sorunu</option>
@@ -76,7 +76,7 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
                   type="email" 
                   value={form.email}
                   onChange={e => setForm({...form, email: e.target.value})}
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-500"
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-red-500"
                   required
                 />
               </div>
@@ -88,14 +88,14 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
                   value={form.details}
                   onChange={e => setForm({...form, details: e.target.value})}
                   placeholder="Lütfen karşılaştığınız sorunu detaylıca açıklayın..."
-                  className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-indigo-500 resize-none"
+                  className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-red-500 resize-none"
                   required
                 ></textarea>
               </div>
 
               <button 
                 type="submit"
-                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg"
+                className="w-full py-4 bg-red-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg"
               >
                 <Send size={16} /> Destek Biletini Gönder
               </button>
@@ -105,14 +105,14 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
               <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-100">
                 <CheckCircle size={32} />
               </div>
-              <h3 className="text-xl font-black text-slate-900">Destek Biletiniz Oluşturuldu</h3>
+              <h3 className="text-xl font-black text-red-950">Destek Biletiniz Oluşturuldu</h3>
               <p className="text-xs font-semibold text-slate-500 max-w-sm mx-auto">
-                Bilet Numarası: <span className="font-mono text-indigo-600 font-bold">#BIDB-2026-849</span><br/>
+                Bilet Numarası: <span className="font-mono text-red-600 font-bold">#BIDB-2026-849</span><br/>
                 Yanıtınız en geç 2 saat içinde kayıtlı e-posta adresinize iletilecektir.
               </p>
               <button 
                 onClick={() => setIsSubmitted(false)}
-                className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wider"
+                className="px-6 py-2.5 bg-red-950 text-white rounded-xl text-xs font-black uppercase tracking-wider"
               >
                 Yeni Bilet Oluştur
               </button>

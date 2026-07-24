@@ -73,7 +73,7 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
           <ArrowLeft size={20} /> <span className="font-bold text-sm">Geri</span>
         </button>
         <div className="font-black text-gray-900 text-lg">Yeni İlan Oluştur</div>
-        <button onClick={handleSubmit} className="px-5 py-2 bg-[#0A2342] text-white text-sm font-bold rounded-full hover:bg-red-700 transition shadow-md flex items-center gap-2">
+        <button onClick={handleSubmit} className="px-5 py-2 bg-[#990000] text-white text-sm font-bold rounded-full hover:bg-red-700 transition shadow-md flex items-center gap-2">
           <CheckCircle2 size={16} /> Onaya Gönder
         </button>
       </nav>
@@ -94,7 +94,7 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
           )}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-              <Layout className="text-[#0A2342]" size={20} /> İlan Detayları
+              <Layout className="text-[#990000]" size={20} /> İlan Detayları
             </h2>
 
             <div className="space-y-5">
@@ -152,12 +152,12 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
 
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Upload className="text-[#0A2342]" size={20} /> Afiş / Görsel Yükle
+              <Upload className="text-[#990000]" size={20} /> Afiş / Görsel Yükle
             </h2>
             <div className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-iesu-navy transition-colors rounded-2xl flex flex-col items-center justify-center bg-gray-50 relative cursor-pointer group overflow-hidden">
               <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-              <Upload size={32} className="text-gray-500 group-hover:text-[#0A2342] mb-2 transition-colors" />
-              <p className="text-sm font-bold text-gray-600 group-hover:text-[#0A2342] transition-colors">Tıkla veya Sürükle Bırak</p>
+              <Upload size={32} className="text-gray-500 group-hover:text-[#990000] mb-2 transition-colors" />
+              <p className="text-sm font-bold text-gray-600 group-hover:text-[#990000] transition-colors">Tıkla veya Sürükle Bırak</p>
               <p className="text-[10px] text-gray-500 mt-1">PNG, JPG, JPEG (Maks 5MB)</p>
             </div>
           </div>
@@ -165,11 +165,11 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
 
         {/* RIGHT: LIVE PREVIEW */}
         <div className="lg:w-1/2 flex flex-col gap-4">
-           <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex items-start gap-3">
-             <AlertCircle className="text-blue-500 shrink-0 mt-0.5" size={20} />
+           <div className="bg-red-50 border border-red-100 rounded-2xl p-4 flex items-start gap-3">
+             <AlertCircle className="text-red-500 shrink-0 mt-0.5" size={20} />
              <div>
-               <h4 className="font-bold text-blue-900 text-sm">Canlı Önizleme (Live Preview)</h4>
-               <p className="text-xs text-blue-700">İlanınız, platformdaki öğrencilere tam olarak bu şekilde görünecektir.</p>
+               <h4 className="font-bold text-red-900 text-sm">Canlı Önizleme (Live Preview)</h4>
+               <p className="text-xs text-red-700">İlanınız, platformdaki öğrencilere tam olarak bu şekilde görünecektir.</p>
              </div>
            </div>
 
@@ -185,7 +185,7 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
                       <span className="text-xs font-bold text-gray-500">Görsel Yüklenmedi</span>
                     </div>
                   )}
-                  <div className={`absolute top-4 left-4 text-white text-[12px] font-bold px-4 py-1.5 rounded-full shadow-md ${formData.type === 'STAJ' ? 'bg-iesu-blue' : 'bg-[#0A2342]'}`}>
+                  <div className={`absolute top-4 left-4 text-white text-[12px] font-bold px-4 py-1.5 rounded-full shadow-md ${formData.type === 'STAJ' ? 'bg-iesu-primary' : 'bg-[#990000]'}`}>
                     {formData.type}
                   </div>
                 </div>

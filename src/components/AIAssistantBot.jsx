@@ -273,7 +273,7 @@ export default function AIAssistantBot({ currentUser }) {
       {/* Floating Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-[9999] w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.5)] flex items-center justify-center text-white hover:scale-110 transition-transform group"
+        className="fixed bottom-6 right-6 z-[9999] w-14 h-14 bg-gradient-to-tr from-red-600 to-violet-500 rounded-full shadow-[0_0_20px_rgba(79,70,229,0.5)] flex items-center justify-center text-white hover:scale-110 transition-transform group"
       >
         {isOpen ? <X size={24} /> : <BrainCircuit size={24} className="group-hover:animate-pulse" />}
         {!isOpen && (
@@ -288,7 +288,7 @@ export default function AIAssistantBot({ currentUser }) {
       {isOpen && (
         <div className="fixed bottom-24 right-6 z-[9999] w-[350px] sm:w-[400px] h-[550px] bg-white rounded-2xl shadow-2xl border border-indigo-100 flex flex-col overflow-hidden animate-fade-in-up">
           {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-violet-600 p-4 text-white shrink-0 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-red-600 to-violet-600 p-4 text-white shrink-0 relative overflow-hidden">
             <div className="absolute -right-4 -top-4 opacity-10">
               <BrainCircuit size={100} />
             </div>
@@ -310,7 +310,7 @@ export default function AIAssistantBot({ currentUser }) {
               <div className="flex gap-2 items-center">
                 <button 
                   onClick={() => setIsVoiceMode(!isVoiceMode)}
-                  className={`p-1.5 rounded-lg transition-colors ${isVoiceMode ? 'bg-indigo-500 text-white' : 'hover:bg-indigo-500/30 text-indigo-100'}`}
+                  className={`p-1.5 rounded-lg transition-colors ${isVoiceMode ? 'bg-red-500 text-white' : 'hover:bg-red-500/30 text-indigo-100'}`}
                   title={isVoiceMode ? "Sesli Yanıt Kapat" : "Sesli Yanıt Aç"}
                 >
                   {isVoiceMode ? <Volume2 size={18} /> : <VolumeX size={18} />}
@@ -341,9 +341,9 @@ export default function AIAssistantBot({ currentUser }) {
           {/* Chat / Stats Area */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 relative scrollbar-thin scrollbar-thumb-gray-200">
             {isOmniScanning && (
-              <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex flex-col items-center justify-center text-white p-6 rounded-t-none animate-fade-in">
+              <div className="absolute inset-0 bg-red-950/90 backdrop-blur-md z-50 flex flex-col items-center justify-center text-white p-6 rounded-t-none animate-fade-in">
                 <div className="relative w-24 h-24 mb-6">
-                  <div className="absolute inset-0 border-4 border-indigo-500/30 rounded-full"></div>
+                  <div className="absolute inset-0 border-4 border-red-500/30 rounded-full"></div>
                   <div className="absolute inset-0 border-4 border-emerald-400 rounded-full border-t-transparent animate-spin"></div>
                   <BrainCircuit size={40} className="absolute inset-0 m-auto text-emerald-400 animate-pulse" />
                 </div>
@@ -361,7 +361,7 @@ export default function AIAssistantBot({ currentUser }) {
                   </p>
                 </div>
 
-                <div className="w-full bg-slate-800 rounded-full h-1.5 mt-8 overflow-hidden">
+                <div className="w-full bg-red-900 rounded-full h-1.5 mt-8 overflow-hidden">
                   <div 
                     className="bg-gradient-to-r from-emerald-400 to-cyan-400 h-full transition-all duration-1000 ease-linear"
                     style={{ width: `${(thinkingStage / 4) * 100}%` }}
@@ -375,12 +375,12 @@ export default function AIAssistantBot({ currentUser }) {
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-indigo-100 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-indigo-50 to-transparent rounded-bl-full pointer-events-none"></div>
                   <h4 className="font-bold text-indigo-900 mb-3 flex items-center gap-2">
-                    <Brain size={16} className="text-indigo-500" /> 
+                    <Brain size={16} className="text-red-500" /> 
                     Nöral Bellek İstatistikleri
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-indigo-50/50 p-3 rounded-lg border border-indigo-50">
-                      <div className="text-xs text-indigo-600/80 mb-1">Toplam Etkileşim</div>
+                      <div className="text-xs text-red-600/80 mb-1">Toplam Etkileşim</div>
                       <div className="text-xl font-bold text-indigo-700">{SelfLearningMemory.getStats().totalConversations}</div>
                     </div>
                     <div className="bg-emerald-50/50 p-3 rounded-lg border border-emerald-50">
@@ -408,7 +408,7 @@ export default function AIAssistantBot({ currentUser }) {
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-indigo-100">
                   <h4 className="font-bold text-indigo-900 mb-2 text-xs uppercase tracking-wider flex items-center justify-between">
                     <span>Otomatik Öğrenilenler</span>
-                    <span className="bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded text-[10px]">{learnedFacts.length}</span>
+                    <span className="bg-indigo-100 text-red-600 px-1.5 py-0.5 rounded text-[10px]">{learnedFacts.length}</span>
                   </h4>
                   {learnedFacts.length > 0 ? (
                     <ul className="space-y-2">
@@ -430,11 +430,11 @@ export default function AIAssistantBot({ currentUser }) {
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}>
                     {msg.sender === 'ai' && (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center mr-2 shrink-0 shadow-sm text-white relative">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-red-500 to-violet-500 flex items-center justify-center mr-2 shrink-0 shadow-sm text-white relative">
                         <Sparkles size={14} />
                       </div>
                     )}
-                    <div className={`p-3 rounded-2xl text-[13px] leading-relaxed shadow-sm max-w-[80%] ${msg.sender === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border border-gray-100 text-gray-700 rounded-bl-none'}`}>
+                    <div className={`p-3 rounded-2xl text-[13px] leading-relaxed shadow-sm max-w-[80%] ${msg.sender === 'user' ? 'bg-red-600 text-white rounded-br-none' : 'bg-white border border-gray-100 text-gray-700 rounded-bl-none'}`}>
                       <div className="whitespace-pre-line">{msg.text}</div>
                       
                       {msg.actions && msg.actions.map((act, i) => (
@@ -444,7 +444,7 @@ export default function AIAssistantBot({ currentUser }) {
                             setIsOpen(false);
                             navigate(act.path);
                           }}
-                          className="mt-3 flex items-center gap-1.5 w-full justify-center bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-2 rounded-xl text-xs font-semibold transition-colors border border-indigo-100/50"
+                          className="mt-3 flex items-center gap-1.5 w-full justify-center bg-indigo-50 text-red-600 hover:bg-indigo-100 px-3 py-2 rounded-xl text-xs font-semibold transition-colors border border-indigo-100/50"
                         >
                           {act.label} <ExternalLink size={12} />
                         </button>
@@ -486,7 +486,7 @@ export default function AIAssistantBot({ currentUser }) {
                 
                 {isThinking && (
                   <div className="flex gap-3 items-end">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shrink-0 shadow-sm text-white">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-red-500 to-violet-500 flex items-center justify-center shrink-0 shadow-sm text-white">
                       <Sparkles size={14} className="animate-spin-slow" />
                     </div>
                     <div className="p-3 bg-white border border-gray-100 text-gray-500 rounded-2xl rounded-bl-none shadow-sm max-w-[80%] text-[13px] flex flex-col gap-1.5 animate-pulse">
@@ -496,7 +496,7 @@ export default function AIAssistantBot({ currentUser }) {
                           <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></span>
                           <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></span>
                         </span>
-                        <span className="text-xs font-medium text-indigo-500">
+                        <span className="text-xs font-medium text-red-500">
                           {thinkingStage === 1 && "Düşünüyorum..."}
                           {thinkingStage === 2 && "Bilgilerimi tarıyorum..."}
                           {thinkingStage === 3 && "Sana en iyi cevabı hazırlıyorum..."}
@@ -529,12 +529,12 @@ export default function AIAssistantBot({ currentUser }) {
               onKeyDown={(e) => e.key === 'Enter' && !isThinking && handleSend()}
               disabled={isThinking}
               placeholder={isThinking ? "Ajanlar veri işliyor..." : isListening ? "Dinleniyor..." : "Yapay Zeka'ya sor..."}
-              className={`flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all ${isThinking ? 'opacity-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-indigo-500/50'}`}
+              className={`flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all ${isThinking ? 'opacity-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-red-500/50'}`}
             />
             <button 
               onClick={handleSend}
               disabled={isThinking || !input.trim()}
-              className={`w-11 h-11 bg-indigo-600 text-white rounded-xl flex items-center justify-center transition-all shadow-sm shrink-0 ${(isThinking || !input.trim()) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700 hover:scale-105 active:scale-95'}`}
+              className={`w-11 h-11 bg-red-600 text-white rounded-xl flex items-center justify-center transition-all shadow-sm shrink-0 ${(isThinking || !input.trim()) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700 hover:scale-105 active:scale-95'}`}
             >
               <Send size={18} />
             </button>

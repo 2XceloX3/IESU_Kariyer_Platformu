@@ -105,7 +105,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
                       <div>
                         <p className="font-black text-gray-900 flex items-center gap-1.5">
                           {group.name} 
-                          {group.verified && <ShieldCheck size={14} className="text-blue-500" title="Resmi Onaylı" />}
+                          {group.verified && <ShieldCheck size={14} className="text-red-500" title="Resmi Onaylı" />}
                         </p>
                         <p className="text-[11px] font-medium text-gray-500 mt-0.5">ID: {group.id}</p>
                       </div>
@@ -118,7 +118,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
                     <p className="font-black text-gray-900">{group.memberCount} Üye</p>
                     <button 
                       onClick={() => handleToggleVerified(group.id)}
-                      className={`text-[10px] font-bold uppercase tracking-wider mt-1 flex items-center gap-1 ${group.verified ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
+                      className={`text-[10px] font-bold uppercase tracking-wider mt-1 flex items-center gap-1 ${group.verified ? 'text-red-600' : 'text-gray-500 hover:text-red-600'}`}
                     >
                       {group.verified ? <CheckCircle2 size={12} /> : <XCircle size={12} />} 
                       {group.verified ? 'Onaylı' : 'Onaysız'}
@@ -131,7 +131,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => setSelectedGroup(group)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition" title="Detaylar & Etkinlikler">
+                      <button onClick={() => setSelectedGroup(group)} className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition" title="Detaylar & Etkinlikler">
                         <Eye size={18} />
                       </button>
                       <button onClick={() => handleDelete(group.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition" title="Sil">
@@ -169,7 +169,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
                 <div className="text-white pb-1">
                   <h2 className="text-2xl font-black flex items-center gap-2">
                     {selectedGroup.name}
-                    {selectedGroup.verified && <ShieldCheck size={20} className="text-blue-400" />}
+                    {selectedGroup.verified && <ShieldCheck size={20} className="text-red-400" />}
                   </h2>
                   <p className="text-white/80 font-medium text-sm">{selectedGroup.type} • {selectedGroup.memberCount} Üye</p>
                 </div>
@@ -179,17 +179,17 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
             <div className="p-6 overflow-y-auto flex-1">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><AlignLeft size={18} className="text-[#0A2342]" /> Genel Açıklama</h3>
+                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><AlignLeft size={18} className="text-[#990000]" /> Genel Açıklama</h3>
                   <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-6">
                     {selectedGroup.description || 'Açıklama girilmemiş.'}
                   </p>
 
-                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><Users size={18} className="text-[#0A2342]" /> Yönetim Ekibi (8 Kişi)</h3>
+                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><Users size={18} className="text-[#990000]" /> Yönetim Ekibi (8 Kişi)</h3>
                   <div className="space-y-2">
                     {selectedGroup.boardMembers?.length > 0 ? selectedGroup.boardMembers.map((member, idx) => (
                       <div key={idx} className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#0A2342]/10 flex items-center justify-center text-[#0A2342] shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-[#990000]/10 flex items-center justify-center text-[#990000] shrink-0">
                             <User size={14} />
                           </div>
                           <div>
@@ -208,7 +208,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
                 </div>
                 
                 <div>
-                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><Calendar size={18} className="text-[#0A2342]" /> Etkinlikler</h3>
+                  <h3 className="text-lg font-black text-gray-900 mb-3 flex items-center gap-2"><Calendar size={18} className="text-[#990000]" /> Etkinlikler</h3>
                   <div className="space-y-3">
                     {selectedGroup.events?.length > 0 ? selectedGroup.events.map(evt => (
                       <div key={evt.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">

@@ -19,9 +19,9 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Logo className="h-8 w-auto text-[#0A2342]" />
+            <Logo className="h-8 w-auto text-[#990000]" />
             <div className="hidden sm:block">
-              <h1 className="font-black text-[#0A2342] leading-tight">Dijital Mezun Kartı</h1>
+              <h1 className="font-black text-[#990000] leading-tight">Dijital Mezun Kartı</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Mezunlar Derneği</p>
             </div>
           </div>
@@ -32,7 +32,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
       <main className="flex-1 max-w-4xl w-full mx-auto p-4 lg:p-8 flex flex-col items-center">
         
         <div className="text-center mb-10 mt-6">
-          <div className="w-16 h-16 bg-[#0A2342]/10 rounded-2xl flex items-center justify-center text-[#0A2342] mx-auto mb-4">
+          <div className="w-16 h-16 bg-[#990000]/10 rounded-2xl flex items-center justify-center text-[#990000] mx-auto mb-4">
             <CreditCard size={32} />
           </div>
           <h2 className="text-3xl font-black text-gray-900 mb-2">Sanal Cüzdanınız Hazır</h2>
@@ -51,7 +51,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
             animate={{ rotateY: flipped ? 180 : 0 }}
           >
             {/* FRONT FACE */}
-            <div className="absolute inset-0 backface-hidden rounded-2xl bg-gradient-to-br from-[#0A2342] to-blue-900 text-white p-6 shadow-2xl border border-white/10 overflow-hidden flex flex-col justify-between">
+            <div className="absolute inset-0 backface-hidden rounded-2xl bg-gradient-to-br from-[#990000] to-red-900 text-white p-6 shadow-2xl border border-white/10 overflow-hidden flex flex-col justify-between">
               {/* Abstract waves */}
               <div className="absolute -top-10 -right-10 w-48 h-48 bg-red-600/20 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl pointer-events-none" />
@@ -67,9 +67,9 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
               </div>
 
               <div className="relative z-10">
-                <p className="text-sm text-blue-200 mb-1">Mezun ID: 9845 2311 0048</p>
+                <p className="text-sm text-red-200 mb-1">Mezun ID: 9845 2311 0048</p>
                 <h3 className="text-2xl font-black tracking-tight">{currentUser?.name || 'Değerli Mezunumuz'}</h3>
-                <p className="text-xs text-blue-300 mt-1">{currentUser?.department || 'İstanbul Esenyurt Üniversitesi'}</p>
+                <p className="text-xs text-red-300 mt-1">{currentUser?.department || 'İstanbul Esenyurt Üniversitesi'}</p>
               </div>
             </div>
 
@@ -115,7 +115,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
               </div>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-4">
-              <div className="bg-blue-50 text-blue-600 p-3 rounded-xl"><BookOpen size={20} /></div>
+              <div className="bg-red-50 text-red-600 p-3 rounded-xl"><BookOpen size={20} /></div>
               <div>
                 <h4 className="font-bold text-gray-900 text-sm">Kütüphane</h4>
                 <p className="text-xs text-gray-500 mt-1">Ömür Boyu Erişim</p>
@@ -132,7 +132,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
 
           <div className="mt-8 bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6 shadow-sm w-full">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shrink-0 shadow-sm border border-indigo-50">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-indigo-600"><path d="M12 2v20"></path><path d="m17 5-5-3-5 3v14l5 3 5-3V5z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-600"><path d="M12 2v20"></path><path d="m17 5-5-3-5 3v14l5 3 5-3V5z"></path></svg>
             </div>
             <div className="flex-1 text-center sm:text-left">
               <h4 className="text-lg font-black text-indigo-950 mb-1">Anka AI Cüzdan Asistanı</h4>
@@ -148,7 +148,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
                   window.toast && window.toast.success("💡 AI Önerisi: 'Teknoloji Marketleri' kampanyaları profilinize çok uygun! Size özel %15 indirim kodu tanımlandı.");
                 }, 2500);
               }}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-indigo-600/30 whitespace-nowrap"
+              className="bg-red-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-red-600/30 whitespace-nowrap"
             >
               Bana Özel Fırsat Bul
             </button>

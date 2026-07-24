@@ -71,7 +71,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
           {/* CENTER: Logo & Brand */}
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
@@ -79,9 +79,9 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
           {/* RIGHT: Heart Icon & Profile (ONLY INTERNAL) */}
           {userRole ? (
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-              <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#0A2342]`} title="Bildirimler">
+              <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
                 <div className="relative">
-                  <Bell size={24} strokeWidth={2.5} className="fill-current text-[#0A2342]/10" />
+                  <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
                 </div>
               </button>
               <TopProfileMenu currentUser={currentUser || { name: 'Kullanıcı' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="jobs" />
@@ -107,7 +107,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
           <div className="mb-8 w-full">
             <div className="flex items-center justify-between gap-4 mb-2">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#0A2342]/10 flex items-center justify-center text-[#0A2342] shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-[#990000]/10 flex items-center justify-center text-[#990000] shrink-0">
                   <Briefcase size={24} strokeWidth={2.5} />
                 </div>
                 <h2 className="text-3xl md:text-2xl font-black text-gray-900 tracking-tight">
@@ -116,7 +116,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
               </div>
               
               {userRole === 'employer' && (
-                <button onClick={() => setIsCreatingJob(true)} className="bg-[#0A2342] text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-bold shadow-md hover:shadow-lg hover:bg-red-700 flex items-center gap-2 shrink-0 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 group">
+                <button onClick={() => setIsCreatingJob(true)} className="bg-[#990000] text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-bold shadow-md hover:shadow-lg hover:bg-red-700 flex items-center gap-2 shrink-0 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 group">
                   <span className="text-xl leading-none group-hover:rotate-90 transition-transform duration-300">+</span> <span className="hidden sm:inline">İlan Oluştur</span>
                 </button>
               )}
@@ -130,19 +130,19 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
           <div className="flex bg-white rounded-full p-1.5 shadow-sm border border-gray-200 overflow-x-auto hide-scrollbar">
             <button 
               onClick={() => setActiveTab('ilanlar')} 
-              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap active:scale-95 duration-200 ${activeTab === 'ilanlar' ? 'bg-[#0A2342] text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap active:scale-95 duration-200 ${activeTab === 'ilanlar' ? 'bg-[#990000] text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
             >
               Aktif İlanlar
             </button>
             <button 
               onClick={() => setActiveTab('ulusal')} 
-              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap active:scale-95 duration-200 ${activeTab === 'ulusal' ? 'bg-[#0A2342] text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap active:scale-95 duration-200 ${activeTab === 'ulusal' ? 'bg-[#990000] text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
             >
               Ulusal Staj Programı
             </button>
             <button 
               onClick={() => setActiveTab('gonullu')} 
-              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap active:scale-95 duration-200 ${activeTab === 'gonullu' ? 'bg-[#0A2342] text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+              className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all whitespace-nowrap active:scale-95 duration-200 ${activeTab === 'gonullu' ? 'bg-[#990000] text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
             >
               Gönüllü Staj
             </button>
@@ -165,14 +165,14 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                         window.toast && window.toast.success("✅ AI Filtresi: Sizin için en uygun %90+ eşleşen 3 ilan öne çıkarıldı.");
                       }, 2500);
                     }}
-                    className="hidden md:flex bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-3 py-1.5 rounded-md text-xs font-bold items-center gap-1.5 transition-all shadow-md"
+                    className="hidden md:flex bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white px-3 py-1.5 rounded-md text-xs font-bold items-center gap-1.5 transition-all shadow-md"
                   >
                     <Compass size={14} /> AI ile Filtrele
                   </button>
                 </div>
                 <div className="flex bg-gray-100 rounded-lg p-1">
                   <button onClick={() => setViewMode('list')} className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${viewMode === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>Liste</button>
-                  <button onClick={() => setViewMode('swipe')} className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-1 ${viewMode === 'swipe' ? 'bg-[#0A2342] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}><Flame size={14}/> Kariyer Swipe</button>
+                  <button onClick={() => setViewMode('swipe')} className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all flex items-center gap-1 ${viewMode === 'swipe' ? 'bg-[#990000] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}><Flame size={14}/> Kariyer Swipe</button>
                 </div>
               </div>
               {(() => {
@@ -196,7 +196,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                         <CheckCircle2 size={48} className="text-emerald-400 mb-4" />
                         <p className="text-gray-900 font-black text-xl mb-2 text-center">Harikasın!</p>
                         <p className="text-gray-500 font-medium text-center">Bütün ilanları inceledin. Yeni ilanlar eklendiğinde tekrar görüşürüz.</p>
-                        <button onClick={() => { setSwipedJobs([]); setSwipeIndex(0); }} className="mt-6 text-sm font-bold text-indigo-600 hover:underline">Başa Dön</button>
+                        <button onClick={() => { setSwipedJobs([]); setSwipeIndex(0); }} className="mt-6 text-sm font-bold text-red-600 hover:underline">Başa Dön</button>
                       </div>
                     );
                   }
@@ -241,7 +241,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                               </div>
                               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                                 <div 
-                                  className="h-full bg-gradient-to-r from-blue-400 to-[#0A66C2] rounded-full" 
+                                  className="h-full bg-gradient-to-r from-red-400 to-[#0A66C2] rounded-full" 
                                   style={{ width: `${((currentJob.id.length * 7 + currentJob.title.length * 3) % 30) + 70}%` }}
                                 ></div>
                               </div>
@@ -300,7 +300,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                   Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda yürütülen Ulusal Staj Programı ile kamu kurumları ve özel sektörde staj imkanı bulabilirsiniz. 
                 </p>
                 
-                <h4 className="font-bold text-lg text-[#0A2342] mb-4">Nasıl Başvuru Yapılır?</h4>
+                <h4 className="font-bold text-lg text-[#990000] mb-4">Nasıl Başvuru Yapılır?</h4>
                 <ul className="space-y-4">
                   {[
                     "Kariyer Kapısı (ulusalstajprogrami.iskur.gov.tr) adresine gidin.",
@@ -310,7 +310,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                     "Başvurunuzu onaylayın ve durumunu Kariyer Kapısı üzerinden takip edin."
                   ].map((step, i) => (
                     <li key={i} className="flex gap-3 items-start">
-                      <span className="w-6 h-6 rounded-full bg-red-100 text-[#0A2342] flex items-center justify-center font-bold text-[12px] flex-shrink-0 mt-0.5">{i+1}</span>
+                      <span className="w-6 h-6 rounded-full bg-red-100 text-[#990000] flex items-center justify-center font-bold text-[12px] flex-shrink-0 mt-0.5">{i+1}</span>
                       <span className="text-[14.5px] text-gray-700 font-medium">{step}</span>
                     </li>
                   ))}
@@ -319,7 +319,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
 
               <div className="lg:w-1/2 bg-gray-50 p-6 md:p-8 rounded-2xl border border-gray-100">
                 <h4 className="font-extrabold text-lg text-gray-900 mb-5 flex items-center gap-2">
-                  <FileText className="text-iesu-blue" size={20} /> İlgili Formlar ve Belgeler
+                  <FileText className="text-iesu-primary" size={20} /> İlgili Formlar ve Belgeler
                 </h4>
                 <div className="space-y-3">
                   {[
@@ -330,12 +330,12 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                     { title: "Ulusal Staj Başvuru Formu", link: "/docs/ulusal_staj.pdf" }
                   ].map((doc, i) => (
                     <a key={i} href={doc.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 hover:border-iesu-navy hover:shadow-md transition group cursor-pointer">
-                      <span className="font-semibold text-[14px] text-gray-700 group-hover:text-[#0A2342] transition">{doc.title}</span>
-                      <Download size={18} className="text-gray-500 group-hover:text-[#0A2342] transition" />
+                      <span className="font-semibold text-[14px] text-gray-700 group-hover:text-[#990000] transition">{doc.title}</span>
+                      <Download size={18} className="text-gray-500 group-hover:text-[#990000] transition" />
                     </a>
                   ))}
                 </div>
-                <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 text-[13px] text-[#0A2342] font-medium">
+                <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 text-[13px] text-[#990000] font-medium">
                   <strong>Not:</strong> İstenilen evrakların eksiksiz doldurulması ve onaylatılması zorunludur. İşveren onayı olmadan staja başlanamaz.
                 </div>
               </div>
@@ -354,7 +354,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                 <div className="relative border-l-2 border-gray-100 ml-4 space-y-8 pb-4">
                   {/* Step 1 */}
                   <div className="relative pl-8">
-                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-[#0A2342] font-black text-[14px] shadow-sm">1</span>
+                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-[#990000] font-black text-[14px] shadow-sm">1</span>
                     <h5 className="font-extrabold text-gray-900 text-lg mb-1">Başvuru Formunun Doldurulması</h5>
                     <p className="text-gray-600 text-[14px]">
                       "Uygulamalı Eğitim Başvuru Formu" doldurulmalıdır. Form; <strong>öğrenci</strong>, <strong>staj yapılacak kurum yetkilisi</strong> ve <strong>bölüm staj sorumlusu</strong> tarafından ıslak imzalı olmalıdır.
@@ -363,7 +363,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                   
                   {/* Step 2 */}
                   <div className="relative pl-8">
-                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-[#0A2342] font-black text-[14px] shadow-sm">2</span>
+                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-[#990000] font-black text-[14px] shadow-sm">2</span>
                     <h5 className="font-extrabold text-gray-900 text-lg mb-1">SGK Müstehaklık Belgesi</h5>
                     <p className="text-gray-600 text-[14px] mb-3">
                       e-Devlet sistemi üzerinden barkodlu olarak güncel tarihli temin edilmelidir.
@@ -375,7 +375,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
 
                   {/* Step 3 */}
                   <div className="relative pl-8">
-                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-[#0A2342] font-black text-[14px] shadow-sm">3</span>
+                    <span className="absolute -left-[17px] top-1 w-8 h-8 rounded-full bg-red-100 border-4 border-white flex items-center justify-center text-[#990000] font-black text-[14px] shadow-sm">3</span>
                     <h5 className="font-extrabold text-gray-900 text-lg mb-1">Kimlik Fotokopisi</h5>
                     <p className="text-gray-600 text-[14px]">
                       Öğrencinin geçerli T.C. Kimlik Kartı fotokopisi dosyaya eklenmelidir.
@@ -402,7 +402,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
               <div className="lg:w-2/5 flex flex-col gap-6">
                 <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm group">
                   <div className="bg-red-50 px-5 py-4 border-b border-red-100">
-                    <h4 className="font-bold text-[#0A2342] text-[15px] flex items-center gap-2"><FileText size={18} /> Görsel Kılavuz (İnfografik)</h4>
+                    <h4 className="font-bold text-[#990000] text-[15px] flex items-center gap-2"><FileText size={18} /> Görsel Kılavuz (İnfografik)</h4>
                   </div>
                   <div className="p-4 flex items-center justify-center bg-gray-50 h-56 overflow-hidden">
                      <img 
@@ -424,7 +424,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                   </div>
                   <h4 className="font-bold text-lg mb-2 relative z-10">Formlar ve Şablonlar</h4>
                   <p className="text-gray-500 text-[13px] mb-5 relative z-10 leading-relaxed">Başvuru süreci için ihtiyaç duyduğunuz tüm formlara ve belge şablonlarına Formlar sayfasından ulaşabilirsiniz.</p>
-                  <a href="https://www.esenyurt.edu.tr/icerik/4540-kariyer-gelistirme-ofisi-koordinatorlugu-formlar-ve-belgeler" target="_blank" rel="noreferrer" className="relative z-10 w-full bg-[#0A2342] hover:bg-white hover:text-[#0A2342] border-2 border-iesu-navy text-white py-3 rounded-xl font-bold text-[14px] transition flex items-center justify-center gap-2">
+                  <a href="https://www.esenyurt.edu.tr/icerik/4540-kariyer-gelistirme-ofisi-koordinatorlugu-formlar-ve-belgeler" target="_blank" rel="noreferrer" className="relative z-10 w-full bg-[#990000] hover:bg-white hover:text-[#990000] border-2 border-iesu-navy text-white py-3 rounded-xl font-bold text-[14px] transition flex items-center justify-center gap-2">
                     Formlar Sayfasına Git <ExternalLink size={16} />
                   </a>
                 </div>
@@ -443,7 +443,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
               <Home size={26} strokeWidth={2} />
             </button>
             
-            <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-[#0A2342]`} title="İlanlar">
+            <button onClick={() => setView('jobs')} className={`p-2.5 rounded-full transition-all flex items-center justify-center text-[#990000]`} title="İlanlar">
               <Briefcase size={24} strokeWidth={2} />
             </button>
             
@@ -484,7 +484,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
             </div>
             
             <div className="flex flex-wrap gap-2 mb-8">
-              <span className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><MapPin size={14}/> {selectedJob.location}</span>
+              <span className="bg-red-50 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><MapPin size={14}/> {selectedJob.location}</span>
               <span className="bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><Briefcase size={14}/> {selectedJob.type}</span>
               <span className="bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><Calendar size={14}/> {selectedJob.deadline}</span>
             </div>

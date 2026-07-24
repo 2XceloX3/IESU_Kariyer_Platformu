@@ -1,0 +1,1115 @@
+[
+  {
+    "file": "src/App.jsx",
+    "line": 144,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const saved = localStorage.getItem('igu_mock_user');"
+  },
+  {
+    "file": "src/App.jsx",
+    "line": 186,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem('igu_mock_user', JSON.stringify(currentUser));"
+  },
+  {
+    "file": "src/App.jsx",
+    "line": 188,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.removeItem('igu_mock_user');"
+  },
+  {
+    "file": "src/App.jsx",
+    "line": 189,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.removeItem('igu_user_role_v1');"
+  },
+  {
+    "file": "src/App.jsx",
+    "line": 230,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "if (!localStorage.getItem('igu_likes_reset_v4')) {"
+  },
+  {
+    "file": "src/App.jsx",
+    "line": 236,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem('igu_likes_reset_v4', 'true');"
+  },
+  {
+    "file": "src/components/AICVBuilder.jsx",
+    "line": 20,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const saved = localStorage.getItem(`igu_cv_draft_${currentUser?.id || 'guest'}`);"
+  },
+  {
+    "file": "src/components/AICVBuilder.jsx",
+    "line": 56,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem(`igu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));"
+  },
+  {
+    "file": "src/components/AlumniFeed.jsx",
+    "line": 372,
+    "rule": "Gelişim",
+    "matched": "GELISIM",
+    "content": "<p className=\"w-full mt-2 uppercase tracking-wider text-[10px]\">© 2026 GELISIM KARIYER</p>"
+  },
+  {
+    "file": "src/components/AlumniFeed.jsx",
+    "line": 653,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const storedMentorships = JSON.parse(localStorage.getItem('igu_mentorships_v2')) || [];"
+  },
+  {
+    "file": "src/components/AlumniFeed.jsx",
+    "line": 654,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem('igu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));"
+  },
+  {
+    "file": "src/components/AnkaCoverLetterModal.jsx",
+    "line": 16,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const cvDataStr = localStorage.getItem(`igu_cv_draft_${currentUser?.id || 'guest'}`);"
+  },
+  {
+    "file": "src/components/BirlikAgiPortal.jsx",
+    "line": 34,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const s = JSON.parse(localStorage.getItem('igu_students_v3')) || [];"
+  },
+  {
+    "file": "src/components/BirlikAgiPortal.jsx",
+    "line": 35,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const a = JSON.parse(localStorage.getItem('igu_alumni_v3')) || [];"
+  },
+  {
+    "file": "src/components/CalendarView.jsx",
+    "line": 16,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const saved = localStorage.getItem(`igu_personal_events_${currentUser?.id}`);"
+  },
+  {
+    "file": "src/components/CalendarView.jsx",
+    "line": 29,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem(`igu_personal_events_${currentUser?.id}`, JSON.stringify(personalEvents));"
+  },
+  {
+    "file": "src/components/CompanyFeed.jsx",
+    "line": 434,
+    "rule": "Gelişim",
+    "matched": "GELISIM",
+    "content": "<p className=\"w-full mt-2 uppercase tracking-wider text-[10px]\">© 2026 GELISIM KARIYER</p>"
+  },
+  {
+    "file": "src/components/CompanyFeed.jsx",
+    "line": 714,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const storedMentorships = JSON.parse(localStorage.getItem('igu_mentorships_v2')) || [];"
+  },
+  {
+    "file": "src/components/CompanyFeed.jsx",
+    "line": 715,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem('igu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));"
+  },
+  {
+    "file": "src/components/landing/Footer.jsx",
+    "line": 46,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "<a href=\"https://www.instagram.com/iguiesu/\" target=\"_blank\" rel=\"noopener noreferrer\" className=\"w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300\">"
+  },
+  {
+    "file": "src/components/LandingPage.jsx",
+    "line": 118,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "<a href=\"https://www.instagram.com/igukariyer/\" target=\"_blank\" className=\"w-10 h-10 bg-white shadow-lg rounded-l-xl flex items-center justify-center text-[#E1306C] border border-gray-100 hover:-translate-x-2 transition-transform pointer-events-auto group\">"
+  },
+  {
+    "file": "src/components/LandingPage.jsx",
+    "line": 145,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "<a href=\"https://www.instagram.com/iguiesu/\" target=\"_blank\" rel=\"noopener noreferrer\" className=\"hover:text-iesu-accent transition\" aria-label=\"Instagram\">"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 94,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const students = JSON.parse(localStorage.getItem('igu_students_v3')) || [];"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 95,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const alumni = JSON.parse(localStorage.getItem('igu_alumni_v3')) || [];"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 108,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "navigator.clipboard.writeText(`https://igu-kariyer-platformu.vercel.app/post/${post.id}`);"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 113,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const text = `Bu ilana göz at: ${post.title || 'Kariyer İlanı'} \\nhttps://igu-kariyer-platformu.vercel.app/post/${post.id}`;"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 118,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "navigator.clipboard.writeText(`https://igu-kariyer-platformu.vercel.app/post/${post.id}`);"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 138,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const msgs = JSON.parse(localStorage.getItem('igu_messages_v2')) || [];"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 139,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem('igu_messages_v2', JSON.stringify([...msgs, newMsg]));"
+  },
+  {
+    "file": "src/components/PostCard.jsx",
+    "line": 574,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "{(currentUser?.role === 'admin' || window.localStorage.getItem('igu_user_role_v1') === '\"admin\"') ? ("
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 202,
+    "rule": "from-blue",
+    "matched": "from-blue-600",
+    "content": "<div className=\"w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 215,
+    "rule": "from-blue",
+    "matched": "from-blue-600",
+    "content": "hasChanges ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:-translate-y-0.5 cursor-pointer' : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-70'"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 231,
+    "rule": "from-blue",
+    "matched": "from-blue-500",
+    "content": "<div className=\"h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-1000\" style={{ width: `${completeness}%` }}></div>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 235,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<span className={`text-sm font-black ${completeness === 100 ? 'text-green-600' : 'text-blue-600'}`}>%{completeness}</span>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 251,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "? 'bg-blue-50/80 text-blue-700 shadow-sm border border-blue-100/50'"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 251,
+    "rule": "text-blue",
+    "matched": "text-blue-700",
+    "content": "? 'bg-blue-50/80 text-blue-700 shadow-sm border border-blue-100/50'"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 251,
+    "rule": "border-blue",
+    "matched": "border-blue-100",
+    "content": "? 'bg-blue-50/80 text-blue-700 shadow-sm border border-blue-100/50'"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 256,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<span className={`${isActive ? 'text-blue-600' : 'text-gray-400'}`}>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 261,
+    "rule": "text-blue",
+    "matched": "text-blue-500",
+    "content": "{isActive && <ChevronRight size={16} className=\"text-blue-500\" />}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 293,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Zamir (Pronoun)</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 294,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<select value={formData.pronouns || ''} onChange={e => handleInputChange('pronouns', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 focus:ring-0 outline-none transition-all appearance-none\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 303,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "<button type=\"button\" className=\"w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 303,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<button type=\"button\" className=\"w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 303,
+    "rule": "border-blue",
+    "matched": "border-blue-300",
+    "content": "<button type=\"button\" className=\"w-full h-full border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 312,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">E-Posta</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 313,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"email\" value={formData.email || ''} onChange={e => handleInputChange('email', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 focus:ring-0 outline-none transition-all\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 317,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Telefon</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 318,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"tel\" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 322,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Şehir</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 323,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"text\" value={formData.city || ''} onChange={e => handleInputChange('city', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 327,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Doğum Tarihi</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 328,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"date\" value={formData.birthDate || ''} onChange={e => handleInputChange('birthDate', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 332,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Kısa Özgeçmiş (Bio)</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 333,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<textarea rows=\"4\" value={formData.bio || ''} onChange={e => handleInputChange('bio', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all resize-none\" placeholder=\"Kendinizden etkileyici bir şekilde bahsedin...\"></textarea>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 348,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "className={`border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${uploadedFileName ? 'border-blue-500 bg-blue-50/50' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'}`}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 348,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "className={`border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${uploadedFileName ? 'border-blue-500 bg-blue-50/50' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'}`}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 348,
+    "rule": "border-blue",
+    "matched": "border-blue-400",
+    "content": "className={`border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer group ${uploadedFileName ? 'border-blue-500 bg-blue-50/50' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'}`}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 352,
+    "rule": "bg-blue",
+    "matched": "bg-blue-100",
+    "content": "<div className=\"w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600 shadow-inner\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 352,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<div className=\"w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600 shadow-inner\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 355,
+    "rule": "text-blue",
+    "matched": "text-blue-700",
+    "content": "<p className=\"text-base font-bold text-blue-700\">{uploadedFileName}</p>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 356,
+    "rule": "text-blue",
+    "matched": "text-blue-500",
+    "content": "<p className=\"text-sm text-blue-500 mt-1\">Değiştirmek için tıklayın</p>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 360,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "<div className=\"w-16 h-16 bg-gray-100 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-4 text-gray-400 group-hover:text-blue-500 transition-colors\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 360,
+    "rule": "text-blue",
+    "matched": "text-blue-500",
+    "content": "<div className=\"w-16 h-16 bg-gray-100 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-4 text-gray-400 group-hover:text-blue-500 transition-colors\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 386,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Eğitim Düzeyi</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 387,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<select value={formData.educationLevel || ''} onChange={e => handleInputChange('educationLevel', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all appearance-none\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 396,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Fakülte</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 397,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<select value={selectedFaculty} onChange={(e) => { setSelectedFaculty(e.target.value); setSelectedDept(''); handleInputChange('faculty', e.target.value); }} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all appearance-none\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 404,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Bölüm</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 412,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Sınıf / Yıl</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 425,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">Genel Not Ortalaması (GNO)</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 426,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"number\" step=\"0.01\" max=\"4\" min=\"0\" placeholder=\"Örn: 3.25\" value={formData.gpa || ''} onChange={e => handleInputChange('gpa', e.target.value)} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 hover:border-gray-300 focus:border-blue-500 outline-none transition-all\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 440,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<button onClick={() => setShowExpModal(true)} className=\"flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition-all hover:scale-105\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 440,
+    "rule": "bg-blue",
+    "matched": "bg-blue-700",
+    "content": "<button onClick={() => setShowExpModal(true)} className=\"flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition-all hover:scale-105\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 448,
+    "rule": "border-blue",
+    "matched": "border-blue-300",
+    "content": "<div key={exp.id} className=\"bg-white border border-gray-200 p-5 rounded-2xl shadow-sm flex justify-between items-center hover:border-blue-300 transition-colors\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 450,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "<div className=\"w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 450,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<div className=\"w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 484,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "<button onClick={() => setShowLangModal(true)} className=\"flex items-center gap-1.5 text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-xl transition-colors text-sm border border-blue-100\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 484,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<button onClick={() => setShowLangModal(true)} className=\"flex items-center gap-1.5 text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-xl transition-colors text-sm border border-blue-100\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 484,
+    "rule": "border-blue",
+    "matched": "border-blue-100",
+    "content": "<button onClick={() => setShowLangModal(true)} className=\"flex items-center gap-1.5 text-blue-600 font-bold hover:bg-blue-50 px-4 py-2 rounded-xl transition-colors text-sm border border-blue-100\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 532,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<button onClick={() => setShowCertModal(true)} className=\"flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition-all hover:scale-105\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 532,
+    "rule": "bg-blue",
+    "matched": "bg-blue-700",
+    "content": "<button onClick={() => setShowCertModal(true)} className=\"flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-md transition-all hover:scale-105\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 540,
+    "rule": "border-blue",
+    "matched": "border-blue-300",
+    "content": "<div key={cert.id} className=\"bg-white border border-gray-200 p-5 rounded-2xl shadow-sm flex justify-between items-center hover:border-blue-300 transition-colors\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 583,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold transition-all border-2 ${isSelected ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-gray-50'}`}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 583,
+    "rule": "text-blue",
+    "matched": "text-blue-700",
+    "content": "className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold transition-all border-2 ${isSelected ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-gray-50'}`}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 583,
+    "rule": "border-blue",
+    "matched": "border-blue-600",
+    "content": "className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold transition-all border-2 ${isSelected ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-gray-50'}`}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 583,
+    "rule": "border-blue",
+    "matched": "border-blue-300",
+    "content": "className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold transition-all border-2 ${isSelected ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-gray-50'}`}"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 585,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<div className={`w-5 h-5 rounded flex items-center justify-center ${isSelected ? 'bg-blue-600 text-white' : 'border-2 border-gray-300'}`}>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 611,
+    "rule": "border-blue",
+    "matched": "border-blue-300",
+    "content": "<div key={setting.key} className=\"flex items-start gap-4 p-5 bg-white border border-gray-200 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all cursor-pointer\" onClick={() => handleNestedChange('privacySettings', setting.key, !formData.privacySettings?.[setting.key])}>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 612,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-colors mt-0.5 ${formData.privacySettings?.[setting.key] ? 'bg-blue-600 text-white' : 'border-2 border-gray-300'}`}>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 635,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${formData.isDoubleMajor ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 border-2 border-gray-300'}`}>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 644,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">ÇAP Fakültesi</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 645,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<select value={selectedCapFaculty} onChange={(e) => { setSelectedCapFaculty(e.target.value); handleInputChange('capFaculty', e.target.value); }} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none appearance-none focus:border-blue-500\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 651,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600 transition-all\">ÇAP Bölümü</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 652,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"text\" placeholder=\"Bölüm adını yazın...\" onChange={(e) => handleInputChange('capDept', e.target.value)} value={formData.capDept || ''} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 664,
+    "rule": "bg-blue",
+    "matched": "bg-blue-50",
+    "content": "<div className=\"bg-blue-50 border border-blue-100 p-6 rounded-2xl mb-8\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 664,
+    "rule": "border-blue",
+    "matched": "border-blue-100",
+    "content": "<div className=\"bg-blue-50 border border-blue-100 p-6 rounded-2xl mb-8\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 665,
+    "rule": "text-blue",
+    "matched": "text-blue-800",
+    "content": "<p className=\"text-blue-800 text-sm font-medium leading-relaxed\">Topluluk Temsilcisi veya Öğrenci Elçisi olarak üniversitemizi ve bölümünüzü temsil edebilirsiniz. Başvurunuz kariyer ofisimiz tarafından değerlendirilecektir.</p>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 670,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Başvurulan Rol</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 671,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<select className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500 appearance-none\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 678,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Neden Temsilci Olmak İstiyorsunuz?</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 679,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<textarea rows=\"4\" className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium text-gray-900 outline-none focus:border-blue-500 resize-none\" placeholder=\"Motivasyonunuzu kısaca açıklayın...\"></textarea>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 681,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<button onClick={() => window.toast.success(\"Temsilcilik başvurunuz Kariyer Ofisine iletildi!\")} className=\"bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 transition\">Başvuruyu Gönder</button>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 681,
+    "rule": "bg-blue",
+    "matched": "bg-blue-700",
+    "content": "<button onClick={() => window.toast.success(\"Temsilcilik başvurunuz Kariyer Ofisine iletildi!\")} className=\"bg-blue-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-blue-700 transition\">Başvuruyu Gönder</button>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 696,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<h3 className=\"text-xl font-black text-gray-900 flex items-center gap-2\"><Briefcase size={22} className=\"text-blue-600\"/> Deneyim Ekle</h3>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 701,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Ünvan / Pozisyon</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 702,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"text\" value={tempExp.title} onChange={e => setTempExp({...tempExp, title: e.target.value})} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500\" placeholder=\"Örn: Yazılım Stajyeri\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 705,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Firma / Kurum</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 706,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"text\" value={tempExp.company} onChange={e => setTempExp({...tempExp, company: e.target.value})} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500\" placeholder=\"Örn: İESÜ Kariyer\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 709,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Çalışma Tipi</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 710,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<select value={tempExp.type} onChange={e => setTempExp({...tempExp, type: e.target.value})} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500 appearance-none\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 714,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<button onClick={addExperience} className=\"w-full bg-blue-600 text-white font-bold py-4 rounded-2xl mt-4 hover:bg-blue-700 transition-colors shadow-md\">Listeye Ekle</button>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 714,
+    "rule": "bg-blue",
+    "matched": "bg-blue-700",
+    "content": "<button onClick={addExperience} className=\"w-full bg-blue-600 text-white font-bold py-4 rounded-2xl mt-4 hover:bg-blue-700 transition-colors shadow-md\">Listeye Ekle</button>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 749,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Dil Adı</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 750,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"text\" autoFocus value={tempLang.name} onChange={e => setTempLang({...tempLang, name: e.target.value})} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500\" placeholder=\"Örn: İngilizce\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 753,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Seviye</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 754,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<select value={tempLang.level} onChange={e => setTempLang({...tempLang, level: e.target.value})} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500 appearance-none\">"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 758,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<button onClick={addLanguage} className=\"w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-md\">Listeye Ekle</button>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 758,
+    "rule": "bg-blue",
+    "matched": "bg-blue-700",
+    "content": "<button onClick={addLanguage} className=\"w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-md\">Listeye Ekle</button>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 774,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Sertifika / Eğitim Adı</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 775,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"text\" autoFocus value={tempCert.name} onChange={e => setTempCert({...tempCert, name: e.target.value})} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500\" placeholder=\"Örn: Dijital Pazarlama Eğitimi\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 778,
+    "rule": "text-blue",
+    "matched": "text-blue-600",
+    "content": "<label className=\"absolute -top-2.5 left-4 bg-white px-2 text-[11px] font-bold text-blue-600\">Veren Kurum</label>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 779,
+    "rule": "border-blue",
+    "matched": "border-blue-500",
+    "content": "<input type=\"text\" value={tempCert.issuer} onChange={e => setTempCert({...tempCert, issuer: e.target.value})} className=\"w-full bg-transparent border-2 border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium outline-none focus:border-blue-500\" placeholder=\"Örn: Google\" />"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 781,
+    "rule": "bg-blue",
+    "matched": "bg-blue-600",
+    "content": "<button onClick={addCert} className=\"w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-md\">Listeye Ekle</button>"
+  },
+  {
+    "file": "src/components/ProfileUpdate.jsx.bak",
+    "line": 781,
+    "rule": "bg-blue",
+    "matched": "bg-blue-700",
+    "content": "<button onClick={addCert} className=\"w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-md\">Listeye Ekle</button>"
+  },
+  {
+    "file": "src/components/StudentClubPortal.jsx",
+    "line": 23,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const isAdmin = currentUser?.role === 'admin' || window.localStorage.getItem('igu_user_role_v1') === '\"admin\"';"
+  },
+  {
+    "file": "src/components/StudentFeed.jsx",
+    "line": 382,
+    "rule": "Gelişim",
+    "matched": "GELISIM",
+    "content": "<p className=\"w-full mt-2 uppercase tracking-wider text-[10px]\">© 2026 GELISIM KARIYER</p>"
+  },
+  {
+    "file": "src/components/StudentFeed.jsx",
+    "line": 663,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "const storedMentorships = JSON.parse(localStorage.getItem('igu_mentorships_v2')) || [];"
+  },
+  {
+    "file": "src/components/StudentFeed.jsx",
+    "line": 664,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "localStorage.setItem('igu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));"
+  },
+  {
+    "file": "src/components/TopProfileMenu.jsx",
+    "line": 31,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "window?.localStorage?.removeItem?.('igu_mock_user');"
+  },
+  {
+    "file": "src/components/TopProfileMenu.jsx",
+    "line": 32,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "window?.localStorage?.removeItem?.('igu_user_role_v1');"
+  },
+  {
+    "file": "src/components/TopProfileMenu.jsx",
+    "line": 33,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "window?.localStorage?.removeItem?.('igu_view_v1');"
+  },
+  {
+    "file": "src/data/knowledge_base/announcements_media.json",
+    "line": 12,
+    "rule": "İGÜ",
+    "matched": "İGÜ",
+    "content": "\"title\": \"İGÜ Kariyer Zirvesi 2026 Kayıtları Açıldı\","
+  },
+  {
+    "file": "src/data/knowledge_base/corporate_hierarchy.json",
+    "line": 2,
+    "rule": "Gelişim",
+    "matched": "Gelişim",
+    "content": "\"university\": \"İstanbul Gelişim Üniversitesi\","
+  },
+  {
+    "file": "src/data/knowledge_base/corporate_hierarchy.json",
+    "line": 3,
+    "rule": "Gelişim",
+    "matched": "Gelişim",
+    "content": "\"motto\": \"Gelişime Açık Olun\","
+  },
+  {
+    "file": "src/data/knowledge_base/corporate_hierarchy.json",
+    "line": 17,
+    "rule": "Gelişim",
+    "matched": "gelisim",
+    "content": "\"email\": \"rehber@gelisim.edu.tr\","
+  },
+  {
+    "file": "src/data/knowledge_base/route_map.json",
+    "line": 10,
+    "rule": "Gelişim",
+    "matched": "gelisim",
+    "content": "{ \"name\": \"OBİS\", \"url\": \"https://obis.gelisim.edu.tr\", \"tooltip\": \"Bu işlem sizi resmi OBİS öğrenci bilgi sistemine yönlendirecektir.\" },"
+  },
+  {
+    "file": "src/data/knowledge_base/units_services.json",
+    "line": 22,
+    "rule": "Gelişim",
+    "matched": "gelisim",
+    "content": "\"helpdeskEmail\": \"bidb@gelisim.edu.tr\""
+  },
+  {
+    "file": "src/index.css",
+    "line": 8,
+    "rule": "Gelişim",
+    "matched": "Gelişim",
+    "content": "/* === İstanbul Gelişim Üniversitesi Brand Colors === */"
+  },
+  {
+    "file": "src/index.css",
+    "line": 9,
+    "rule": "hex-0A2342",
+    "matched": "#0A2342",
+    "content": "--brand-primary: #0A2342;"
+  },
+  {
+    "file": "src/index.css",
+    "line": 11,
+    "rule": "hex-0A2342",
+    "matched": "#0A2342",
+    "content": "--brand-navy: #0A2342;"
+  },
+  {
+    "file": "src/index.css",
+    "line": 26,
+    "rule": "hex-0A2342",
+    "matched": "#0A2342",
+    "content": "--brand-red: #0A2342;"
+  },
+  {
+    "file": "src/index.css",
+    "line": 27,
+    "rule": "hex-0A2342",
+    "matched": "#0A2342",
+    "content": "--brand-pomegranate: #0A2342;"
+  },
+  {
+    "file": "src/index.css",
+    "line": 85,
+    "rule": "Gelişim",
+    "matched": "Gelişim",
+    "content": "/* Gelişim brand utility classes */"
+  },
+  {
+    "file": "src/lib/gemini.js",
+    "line": 13,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "// Fallback if API key is not configured"
+  },
+  {
+    "file": "src/lib/supabaseClient.js",
+    "line": 12,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "export const isSupabaseConfigured ="
+  },
+  {
+    "file": "src/lib/supabaseClient.js",
+    "line": 24,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "if (!isSupabaseConfigured) {"
+  },
+  {
+    "file": "src/lib/supabaseClient.js",
+    "line": 26,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "return JSON.parse(localStorage.getItem('igu_posts') || '[]');"
+  },
+  {
+    "file": "src/lib/supabaseClient.js",
+    "line": 34,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "if (!isSupabaseConfigured) {"
+  },
+  {
+    "file": "src/services/dbService.js",
+    "line": 1,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';"
+  },
+  {
+    "file": "src/services/dbService.js",
+    "line": 6,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "* When Supabase is not configured, it gracefully defaults to local store only."
+  },
+  {
+    "file": "src/services/dbService.js",
+    "line": 11,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "if (!isSupabaseConfigured) return profileData;"
+  },
+  {
+    "file": "src/services/dbService.js",
+    "line": 28,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "if (!isSupabaseConfigured) {"
+  },
+  {
+    "file": "src/services/dbService.js",
+    "line": 50,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "if (!isSupabaseConfigured) {"
+  },
+  {
+    "file": "src/store/useAppStore.js",
+    "line": 340,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "name: 'igu-career-store',"
+  },
+  {
+    "file": "src/tests/challenger.test.js",
+    "line": 160,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "it('2.2 Should verify tailwind.config.js configures colors.iesu palette correctly', () => {"
+  },
+  {
+    "file": "src/utils/firebase.js",
+    "line": 9,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "authDomain: \"igu-kariyer-platformu.firebaseapp.com\","
+  },
+  {
+    "file": "src/utils/firebase.js",
+    "line": 10,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "projectId: \"igu-kariyer-platformu\","
+  },
+  {
+    "file": "src/utils/firebase.js",
+    "line": 11,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "storageBucket: \"igu-kariyer-platformu.firebasestorage.app\","
+  },
+  {
+    "file": "src/utils/mockData.js",
+    "line": 531,
+    "rule": "İGÜ",
+    "matched": "igu",
+    "content": "createdBy: \"admin_igu\","
+  }
+]

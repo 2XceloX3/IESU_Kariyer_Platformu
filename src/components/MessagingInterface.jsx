@@ -489,7 +489,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                 </div>
                 <div className="flex justify-between items-center">
                   <p className={`text-[14px] truncate pr-2 ${conv.unread > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                    {conv.lastMessage?.senderId === currentUser?.id ? <CheckCheck size={14} className="inline mr-1 text-blue-500"/> : null}
+                    {conv.lastMessage?.senderId === currentUser?.id ? <CheckCheck size={14} className="inline mr-1 text-red-500"/> : null}
                     {conv.lastMessage?.type === 'image' ? '📷 Fotoğraf' : conv.lastMessage?.type === 'audio' ? '🎤 Ses Kaydı' : conv.lastMessage?.content}
                   </p>
                   {conv.unread > 0 && (
@@ -601,7 +601,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
               {showAttachmentMenu && (
                 <div className="absolute bottom-16 left-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 flex flex-col gap-1 z-30">
                   <button onClick={() => handleSendMedia('image')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
-                    <ImageIcon size={18} className="text-blue-500"/> Fotoğraf & Video
+                    <ImageIcon size={18} className="text-red-500"/> Fotoğraf & Video
                   </button>
                   <button onClick={() => handleSendMedia('camera')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
                     <Aperture size={18} className="text-red-500"/> Kamera Aç
@@ -737,7 +737,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
 
       {/* CALL OVERLAY */}
       {callStatus && (
-        <div className="fixed inset-0 z-[250] bg-slate-900 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
+        <div className="fixed inset-0 z-[250] bg-red-950 flex flex-col items-center justify-between py-16 animate-fade-in font-sans">
           <div className="absolute inset-0 z-0 opacity-30">
             <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-full h-full object-cover blur-3xl" />
           </div>

@@ -42,14 +42,14 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col font-sans selection:bg-teal-500/30">
+    <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col font-sans selection:bg-orange-500/30">
       
       {/* Header */}
-      <header className="h-16 bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
+      <header className="h-16 bg-red-950/80 backdrop-blur-xl border-b border-red-900 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition"
+            className="p-2 rounded-full bg-red-900 text-slate-300 hover:bg-slate-700 transition"
           >
             <ChevronLeft size={20} />
           </button>
@@ -68,7 +68,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
         <div className="w-full xl:w-[350px] shrink-0 flex flex-col gap-6">
           
           {/* Header Info */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <div className="bg-red-950 border border-red-900 rounded-3xl p-6 shadow-xl">
             <h2 className="text-2xl font-black text-white mb-2 tracking-tight">Canlı Yoğunluk Haritası</h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               Kampüsteki tüm istasyonların doluluk durumunu, gürültü seviyelerini ve çalışma konforunu gerçek zamanlı izleyin.
@@ -77,14 +77,14 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
             <div className="flex flex-col gap-3 mt-5">
               <button 
                 onClick={handleSmartRoute}
-                className="w-full py-3 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white rounded-2xl text-xs font-black shadow-lg hover:shadow-teal-500/20 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-gradient-to-r from-orange-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white rounded-2xl text-xs font-black shadow-lg hover:shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
               >
                 <Navigation size={14} className="animate-bounce" /> AI Sakin Çalışma Rotası Çiz
               </button>
               
               <button 
                 onClick={resetMap}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 border border-slate-700/50"
+                className="w-full py-2.5 bg-red-900 hover:bg-slate-700 text-slate-300 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 border border-slate-700/50"
               >
                 <RotateCcw size={14} /> Haritayı Sıfırla
               </button>
@@ -107,7 +107,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
           )}
 
           {/* List of Stations */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex-grow">
+          <div className="bg-red-950 border border-red-900 rounded-3xl p-6 shadow-xl flex-grow">
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
               <Activity size={14} className="text-teal-400" /> İstasyon Durumları
             </h3>
@@ -116,9 +116,9 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                 <div 
                   key={loc.id}
                   onClick={() => setSelectedLocation(loc)}
-                  className={`p-3.5 rounded-2xl border transition cursor-pointer flex items-center gap-3 ${selectedLocation?.id === loc.id ? 'bg-teal-500/10 border-teal-500/50 text-white' : 'bg-slate-800/40 border-slate-800/60 hover:bg-slate-800 text-slate-300'}`}
+                  className={`p-3.5 rounded-2xl border transition cursor-pointer flex items-center gap-3 ${selectedLocation?.id === loc.id ? 'bg-orange-500/10 border-orange-500/50 text-white' : 'bg-red-900/40 border-red-900/60 hover:bg-red-900 text-slate-300'}`}
                 >
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 ${loc.type === 'study' ? 'bg-blue-500' : loc.type === 'academic' ? 'bg-indigo-500' : loc.type === 'social' ? 'bg-amber-500' : loc.type === 'tech' ? 'bg-cyan-500' : 'bg-emerald-500'}`}>
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 ${loc.type === 'study' ? 'bg-red-500' : loc.type === 'academic' ? 'bg-red-500' : loc.type === 'social' ? 'bg-amber-500' : loc.type === 'tech' ? 'bg-rose-500' : 'bg-emerald-500'}`}>
                     {loc.icon}
                   </div>
                   <div className="flex-grow min-w-0">
@@ -135,41 +135,41 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
         </div>
 
         {/* Right Side: Interactive 2.5D Map */}
-        <div className="flex-grow bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden relative flex flex-col min-h-[550px] shadow-2xl p-6">
+        <div className="flex-grow bg-red-950 border border-red-900 rounded-3xl overflow-hidden relative flex flex-col min-h-[550px] shadow-2xl p-6">
           
           {/* Map Controls */}
           <div className="absolute bottom-6 left-6 z-20 flex gap-2">
             <button 
               onClick={() => setPerspectiveX(prev => Math.min(80, prev + 5))}
-              className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
               title="Yukarı Eğ"
             >
               ▲
             </button>
             <button 
               onClick={() => setPerspectiveX(prev => Math.max(30, prev - 5))}
-              className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
               title="Aşağı Eğ"
             >
               ▼
             </button>
             <button 
               onClick={() => setPerspectiveZ(prev => prev - 15)}
-              className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
               title="Sola Döndür"
             >
               ◀
             </button>
             <button 
               onClick={() => setPerspectiveZ(prev => prev + 15)}
-              className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
               title="Sağa Döndür"
             >
               ▶
             </button>
           </div>
 
-          <div className="absolute top-6 right-6 z-20 flex items-center gap-2 bg-slate-800/80 backdrop-blur border border-slate-700 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-teal-400">
+          <div className="absolute top-6 right-6 z-20 flex items-center gap-2 bg-red-900/80 backdrop-blur border border-slate-700 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-teal-400">
             <div className="w-2 h-2 rounded-full bg-teal-400 animate-ping"></div> Live WebGL Canvas
           </div>
 
@@ -178,7 +178,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
             
             {/* Grid base */}
             <div 
-              className="relative w-full max-w-4xl aspect-[4/3] bg-gradient-to-br from-slate-800 to-slate-950 rounded-3xl border-4 border-slate-800 shadow-[0_30px_60px_rgba(0,0,0,0.8)] transition-all duration-700"
+              className="relative w-full max-w-4xl aspect-[4/3] bg-gradient-to-br from-red-900 to-slate-950 rounded-3xl border-4 border-red-900 shadow-[0_30px_60px_rgba(0,0,0,0.8)] transition-all duration-700"
               style={{ 
                 transform: `rotateX(${perspectiveX}deg) rotateZ(${perspectiveZ}deg)`, 
                 transformStyle: 'preserve-3d', 
@@ -242,13 +242,13 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                         }}
                         transition={{ type: 'spring', stiffness: 200 }}
                         className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white border shadow-2xl relative transition-all duration-300
-                          ${loc.type === 'study' ? 'bg-blue-600 border-blue-400' : loc.type === 'academic' ? 'bg-indigo-600 border-indigo-400' : loc.type === 'social' ? 'bg-amber-500 border-amber-400' : loc.type === 'tech' ? 'bg-cyan-600 border-cyan-400' : 'bg-emerald-600 border-emerald-400'}
-                          ${isSelected ? 'ring-4 ring-teal-400 ring-offset-4 ring-offset-slate-900 shadow-[0_0_30px_rgba(20,184,166,0.5)]' : ''}`}
+                          ${loc.type === 'study' ? 'bg-red-600 border-red-400' : loc.type === 'academic' ? 'bg-red-600 border-indigo-400' : loc.type === 'social' ? 'bg-amber-500 border-amber-400' : loc.type === 'tech' ? 'bg-cyan-600 border-cyan-400' : 'bg-emerald-600 border-emerald-400'}
+                          ${isSelected ? 'ring-4 ring-teal-400 ring-offset-4 ring-offset-red-950 shadow-[0_0_30px_rgba(20,184,166,0.5)]' : ''}`}
                       >
                         {loc.icon}
                         
                         {/* Tiny live indicator */}
-                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-slate-950 border border-slate-800 rounded-full flex items-center justify-center">
+                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-slate-950 border border-red-900 rounded-full flex items-center justify-center">
                           <span className={`w-1.5 h-1.5 rounded-full ${loc.status.includes('Yoğun') ? 'bg-red-500 animate-pulse' : loc.status.includes('Orta') ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
                         </div>
                       </motion.div>
@@ -257,7 +257,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                       <div className={`w-0.5 h-10 bg-gradient-to-b opacity-60 ${isSelected ? 'from-teal-400 to-transparent' : 'from-slate-400 to-transparent'}`} />
 
                       {/* Floor spot shadow */}
-                      <div className={`w-8 h-2.5 rounded-full blur-xs transition-all duration-300 ${isSelected ? 'bg-teal-500/40 w-10' : 'bg-black/60'}`} />
+                      <div className={`w-8 h-2.5 rounded-full blur-xs transition-all duration-300 ${isSelected ? 'bg-orange-500/40 w-10' : 'bg-black/60'}`} />
                     </div>
                   </div>
                 );
@@ -272,11 +272,11 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                 initial={{ opacity: 0, y: 30, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.95 }}
-                className="absolute top-6 left-6 right-6 lg:right-auto lg:w-96 bg-slate-900/95 backdrop-blur-xl border border-slate-800 p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20"
+                className="absolute top-6 left-6 right-6 lg:right-auto lg:w-96 bg-red-950/95 backdrop-blur-xl border border-red-900 p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20"
               >
                 <div className="flex justify-between items-start gap-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${selectedLocation.type === 'study' ? 'bg-blue-500' : selectedLocation.type === 'academic' ? 'bg-indigo-500' : selectedLocation.type === 'social' ? 'bg-amber-500' : selectedLocation.type === 'tech' ? 'bg-cyan-500' : 'bg-emerald-500'}`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${selectedLocation.type === 'study' ? 'bg-red-500' : selectedLocation.type === 'academic' ? 'bg-red-500' : selectedLocation.type === 'social' ? 'bg-amber-500' : selectedLocation.type === 'tech' ? 'bg-rose-500' : 'bg-emerald-500'}`}>
                       {selectedLocation.icon}
                     </div>
                     <div>
@@ -286,7 +286,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                   </div>
                   <button 
                     onClick={() => setSelectedLocation(null)}
-                    className="p-1 text-slate-500 hover:text-slate-300 hover:bg-slate-800 rounded-lg transition"
+                    className="p-1 text-slate-500 hover:text-slate-300 hover:bg-red-900 rounded-lg transition"
                   >
                     ✕
                   </button>
@@ -297,11 +297,11 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                 </p>
 
                 <div className="grid grid-cols-2 gap-3 mb-5 text-xs font-bold text-slate-300">
-                  <div className="bg-slate-800/60 p-3 rounded-2xl border border-slate-800">
+                  <div className="bg-red-900/60 p-3 rounded-2xl border border-red-900">
                     <span className="block text-[9px] text-slate-500 uppercase tracking-widest mb-1">Doluluk Durumu</span>
                     <span className="text-white font-extrabold">{selectedLocation.status}</span>
                   </div>
-                  <div className="bg-slate-800/60 p-3 rounded-2xl border border-slate-800">
+                  <div className="bg-red-900/60 p-3 rounded-2xl border border-red-900">
                     <span className="block text-[9px] text-slate-500 uppercase tracking-widest mb-1">Gürültü Düzeyi</span>
                     <span className="text-white font-extrabold">{selectedLocation.quietLevel}</span>
                   </div>
@@ -311,7 +311,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                   onClick={() => {
                     window.toast && window.toast.info(`📍 ${selectedLocation.name} için sanal kapı açılıyor...`);
                   }}
-                  className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition"
+                  className="w-full py-3 bg-red-900 hover:bg-slate-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition"
                 >
                   Metaverse Giriş Yap
                 </button>

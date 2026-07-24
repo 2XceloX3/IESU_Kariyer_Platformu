@@ -14,7 +14,7 @@ export default function OperasyonPanel() {
           <p className="text-3xl font-black text-gray-900">{(jobs || []).filter(j=>j?.status==='Beklemede').length}</p>
           <p className="text-xs font-bold text-gray-500 uppercase mt-1">Onay Bekleyen İlan</p>
         </Card>
-        <Card className="p-5 border-l-4 border-blue-400">
+        <Card className="p-5 border-l-4 border-red-400">
           <p className="text-3xl font-black text-gray-900">{(voluntaryInternships || []).filter(v=>v.status==='Onay Bekliyor').length}</p>
           <p className="text-xs font-bold text-gray-500 uppercase mt-1">Staj Onay Bekliyor</p>
         </Card>

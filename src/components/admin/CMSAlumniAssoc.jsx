@@ -75,7 +75,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser }) {
       {/* İstatistikler */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"><Heart size={24}/></div>
+          <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-600"><Heart size={24}/></div>
           <div><p className="text-sm font-bold text-gray-500">Toplam İçerik</p><p className="text-2xl font-black text-gray-900">{assocPosts.length}</p></div>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -172,7 +172,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser }) {
               <div className="sticky top-24">
                 <div className="flex items-center justify-between mb-3">
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <Eye size={14} className="text-blue-500" /> Canlı Akış Ön İzlemesi
+                    <Eye size={14} className="text-red-500" /> Canlı Akış Ön İzlemesi
                   </label>
                 </div>
                 
@@ -208,7 +208,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser }) {
                 </div>
 
                 <div className="flex gap-3 mt-6">
-                  <button type="submit" form="assoc-post-form" className="flex-1 bg-[#0A2342] text-white py-3 rounded-xl font-bold text-sm hover:bg-red-700 shadow-[0_4px_12px_rgb(185,28,28,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2">
+                  <button type="submit" form="assoc-post-form" className="flex-1 bg-[#990000] text-white py-3 rounded-xl font-bold text-sm hover:bg-red-700 shadow-[0_4px_12px_rgb(185,28,28,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2">
                     <CheckCircle size={18} /> Hemen Yayınla
                   </button>
                   <button type="button" onClick={() => setShowForm(false)} className="px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold text-sm rounded-xl hover:bg-gray-50 transition-colors">İptal</button>
@@ -250,7 +250,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser }) {
                   </td>
                   <td className="py-3 px-5">
                     <div className="flex flex-col gap-1 items-start">
-                      <span className="text-[11px] font-bold px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-100">{post.contentType}</span>
+                      <span className="text-[11px] font-bold px-2 py-0.5 bg-red-50 text-red-700 rounded-md border border-red-100">{post.contentType}</span>
                       <span className="text-[10px] font-medium text-gray-500 flex items-center gap-1"><Users size={10}/> {post.visibility === 'public' ? 'Herkes' : post.visibility === 'alumni' ? 'Sadece Mezunlar' : 'Öğrenciler & Mezunlar'}</span>
                     </div>
                   </td>

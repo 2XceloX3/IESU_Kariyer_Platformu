@@ -27,3 +27,41 @@ Eklenecek verilerin formatı (özellikle array'ler, image URL'leri, tanımlamala
 ### Kaos (QA) Doğrulaması
 - [ ] Bir "Chaos Engineer" veya Hakem ajan (QA), yeni veriler eklendikten sonra `npm run build` komutunun veya geliştirme sunucusunun başarıyla render alabildiğini doğrulamalıdır.
 - [ ] UI tarafında verilerin "undefined" olması sebebiyle "Rendered fewer hooks" veya "Beyaz Sayfa" çökmesi yaşanmadığı ajanlar tarafından objektif olarak kontrol edilmelidir.
+
+## Follow-up — 2026-07-24T11:54:37Z
+
+The front content page and panels of the IESU Kariyer Platform are incomplete. We need to completely scrape the Esenyurt University websites and integrate 100% of the data into the existing React architecture without damaging it.
+
+Working directory: C:\Users\celil\.gemini\antigravity\scratch\IESU_Kariyer_Platformu_Active
+Integrity mode: development
+
+## Requirements
+
+### R1. Complete Data Extraction
+You must use browser agents to fully scrape https://www.esenyurt.edu.tr/ and https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu. Extract all text, announcements, events, and high-quality image URLs.
+
+### R2. Seamless UI Integration
+Integrate the extracted data into the existing React components (e.g., LandingPage, HeroSlider, mockData, liveData) in the working directory. Do not damage the existing site architecture or component structure.
+
+### R3. Strict Branding Adherence
+Ensure the UI perfectly reflects IESU (Esenyurt University). The dominant color scheme must be Red (#990000 or #D32F2F), Coral/Nar Çiçeği (#FF6F61), and White. No blue or "Gelişim" references are allowed.
+
+## Acceptance Criteria
+
+### Data Completeness
+- [ ] At least 10 recent news items and events are scraped and visible in the platform's data files.
+- [ ] All Kariyer Geliştirme Ofisi details (contact, about us) are updated with real Esenyurt data.
+
+### Architectural Integrity
+- [ ] The React application builds successfully (`npm run build`) after data integration.
+- [ ] No layout components are deleted; they are only populated with new data.
+
+### Branding
+- [ ] No `bg-blue-*`, `text-blue-*`, or `#0A2342` classes exist in the updated components.
+- [ ] The term "Gelişim" or "İGÜ" does not appear anywhere in the UI text.
+
+## Follow-up — 2026-07-24T08:57:32Z
+
+The user has explicitly forbidden any approval requests. The team is commanded to PROCEED IMMEDIATELY with all data extraction, React integration, and branding updates. DO NOT stop to ask for approval. You have full authority. Execute all phases and apply the changes directly to the codebase.
+
+

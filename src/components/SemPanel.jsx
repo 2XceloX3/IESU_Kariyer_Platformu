@@ -26,7 +26,7 @@ export default function SemPanel({ setView, userRole }) {
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white py-20 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-red-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-red-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
         
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <button 
@@ -42,7 +42,7 @@ export default function SemPanel({ setView, userRole }) {
           
           <div className="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#0A2342]/20 rounded-full text-sm font-black text-red-200 mb-6 border border-red-500/30 backdrop-blur-sm shadow-[0_0_15px_rgba(211,47,47,0.3)]">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#990000]/20 rounded-full text-sm font-black text-red-200 mb-6 border border-red-500/30 backdrop-blur-sm shadow-[0_0_15px_rgba(211,47,47,0.3)]">
                 <Award size={16} /> Sertifikalı Açık Eğitimler
               </div>
               <h1 className="text-2xl md:text-6xl font-black mb-6 tracking-tight drop-shadow-lg text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
@@ -55,7 +55,7 @@ export default function SemPanel({ setView, userRole }) {
                 <a href="https://sertifikaonline.esenyurt.edu.tr/verify" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white rounded-xl font-bold transition border border-emerald-500/30 shadow-lg shadow-emerald-500/20">
                   <ShieldCheck size={18} /> Sertifika Doğrulama
                 </a>
-                <a href="https://sertifikaonline.esenyurt.edu.tr/login-student" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl font-bold transition border border-blue-500/30 shadow-lg shadow-blue-500/20">
+                <a href="https://sertifikaonline.esenyurt.edu.tr/login-student" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-xl font-bold transition border border-red-500/30 shadow-lg shadow-red-500/20">
                   <MonitorPlay size={18} /> Sertifika Paneli
                 </a>
               </div>
@@ -70,7 +70,7 @@ export default function SemPanel({ setView, userRole }) {
                     window.toast && window.toast.success("✅ AI Eşleşmesi: Sizin için en uygun 3 sertifika programı öne çıkarıldı.");
                   }, 2500);
                 }}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-900/30 flex items-center gap-2"
+                className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-900/30 flex items-center gap-2"
               >
                 <MonitorPlay size={18} /> AI ile Eğitim Öner
               </button>
@@ -102,7 +102,7 @@ export default function SemPanel({ setView, userRole }) {
           <div className="space-y-16 animate-fade-in">
             <div>
               <h2 className="text-3xl font-black text-gray-900 mb-10 flex items-center gap-4">
-                <span className="w-2 h-10 bg-[#0A2342] rounded-full shadow-[0_0_10px_rgba(211,47,47,0.5)]"></span> 
+                <span className="w-2 h-10 bg-[#990000] rounded-full shadow-[0_0_10px_rgba(211,47,47,0.5)]"></span> 
                 Tüm Eğitim Programları
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -127,12 +127,12 @@ export default function SemPanel({ setView, userRole }) {
                     </div>
                     
                     <div className="p-8 flex flex-col flex-grow">
-                      <h3 className="font-black text-lg text-gray-800 group-hover:text-[#0A2342] transition-colors mb-4 leading-tight">{egitim.title}</h3>
+                      <h3 className="font-black text-lg text-gray-800 group-hover:text-[#990000] transition-colors mb-4 leading-tight">{egitim.title}</h3>
                       <p className="text-gray-500 text-sm font-medium line-clamp-2 mb-6">{egitim.desc || "Eğitim detayları ve içerik bilgisi için tıklayınız."}</p>
                       
                       <div className="mt-auto pt-5 border-t border-gray-100 flex items-center justify-between">
-                        <span className="text-[#0A2342] font-bold text-sm tracking-wide">Programa Katıl</span>
-                        <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-[#0A2342] group-hover:bg-[#0A2342] group-hover:text-white transition-colors duration-300 shadow-sm">
+                        <span className="text-[#990000] font-bold text-sm tracking-wide">Programa Katıl</span>
+                        <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-[#990000] group-hover:bg-[#990000] group-hover:text-white transition-colors duration-300 shadow-sm">
                           <ArrowRight size={18} />
                         </div>
                       </div>
@@ -145,20 +145,20 @@ export default function SemPanel({ setView, userRole }) {
             {/* Duyurular (Glassmorphic Side by Side) */}
             <div className="bg-white/60 backdrop-blur-3xl rounded-[2.5rem] p-10 lg:p-14 shadow-xl shadow-gray-200/50 border border-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-red-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
               
               <h2 className="text-3xl font-black text-gray-900 mb-10 relative z-10 flex items-center gap-3">
-                <Megaphone className="text-[#0A2342]" size={28} /> SEM Duyuruları
+                <Megaphone className="text-[#990000]" size={28} /> SEM Duyuruları
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 {duyurular.map((duyuru, i) => (
                   <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={i} onClick={() => setSelectedItem({...duyuru, type: 'duyuru'})} className="flex gap-5 p-6 rounded-xl bg-white/80 hover:bg-white transition-all duration-300 border border-white shadow-sm hover:shadow-lg cursor-pointer group">
-                    <div className="w-14 h-14 flex-shrink-0 bg-red-50 rounded-2xl flex items-center justify-center text-[#0A2342] group-hover:bg-[#0A2342] group-hover:text-white transition-colors shadow-inner">
+                    <div className="w-14 h-14 flex-shrink-0 bg-red-50 rounded-2xl flex items-center justify-center text-[#990000] group-hover:bg-[#990000] group-hover:text-white transition-colors shadow-inner">
                       <Calendar size={24} />
                     </div>
                     <div className="flex flex-col justify-center">
                       <span className="text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider block">{duyuru.date}</span>
-                      <h4 className="font-bold text-[15px] text-gray-800 group-hover:text-[#0A2342] transition-colors leading-relaxed">{duyuru.title}</h4>
+                      <h4 className="font-bold text-[15px] text-gray-800 group-hover:text-[#990000] transition-colors leading-relaxed">{duyuru.title}</h4>
                     </div>
                   </div>
                 ))}
@@ -181,12 +181,12 @@ export default function SemPanel({ setView, userRole }) {
                     <img src={haber.img || `https://ui-avatars.com/api/?name=${encodeURIComponent(haber.title || 'Haber')}&background=random`} alt={haber.title} onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(haber.title || 'Haber')}&background=random&size=512`; }} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="absolute top-5 left-5 bg-white/95 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg text-gray-900 font-black text-xs flex items-center gap-2">
-                      <Calendar size={14} className="text-[#0A2342]" /> {haber.date}
+                      <Calendar size={14} className="text-[#990000]" /> {haber.date}
                     </div>
                   </div>
                   <div className="p-8">
-                    <h3 className="text-xl font-black text-gray-800 mb-4 leading-relaxed group-hover:text-[#0A2342] transition-colors">{haber.title}</h3>
-                    <p className="text-gray-500 text-sm font-bold flex items-center gap-2 group-hover:gap-3 group-hover:text-[#0A2342] transition-all">
+                    <h3 className="text-xl font-black text-gray-800 mb-4 leading-relaxed group-hover:text-[#990000] transition-colors">{haber.title}</h3>
+                    <p className="text-gray-500 text-sm font-bold flex items-center gap-2 group-hover:gap-3 group-hover:text-[#990000] transition-all">
                       Haberin Devamı <ArrowRight size={18} />
                     </p>
                   </div>
@@ -227,7 +227,7 @@ export default function SemPanel({ setView, userRole }) {
             
             <div className={`p-8 ${!selectedItem.img && !selectedItem.image ? 'pt-14' : ''}`}>
               <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-[#0A2342]/10 text-[#0A2342] text-xs font-black uppercase tracking-wider rounded-lg border border-red-100">
+                <span className="px-3 py-1 bg-[#990000]/10 text-[#990000] text-xs font-black uppercase tracking-wider rounded-lg border border-red-100">
                   {selectedItem.type === 'egitim' ? 'Eğitim Programı' : selectedItem.type === 'duyuru' ? 'Duyuru' : 'Haber'}
                 </span>
                 {selectedItem.date && <span className="text-gray-500 font-bold text-sm flex items-center gap-1.5"><Calendar size={14} /> {selectedItem.date}</span>}
@@ -247,7 +247,7 @@ export default function SemPanel({ setView, userRole }) {
 
               {selectedItem.type === 'egitim' && (
                 <div className="mt-8 flex justify-end">
-                  <button onClick={() => { toast.info('Ön kayıt sistemine yönlendiriliyorsunuz...'); setSelectedItem(null); }} className="bg-[#0A2342] hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-[0_4px_20px_rgba(211,47,47,0.3)] transition-all flex items-center gap-2 transform hover:-translate-y-1">
+                  <button onClick={() => { toast.info('Ön kayıt sistemine yönlendiriliyorsunuz...'); setSelectedItem(null); }} className="bg-[#990000] hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-[0_4px_20px_rgba(211,47,47,0.3)] transition-all flex items-center gap-2 transform hover:-translate-y-1">
                     Programa Ön Kayıt Yap <ArrowRight size={18} />
                   </button>
                 </div>

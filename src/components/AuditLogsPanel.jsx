@@ -18,13 +18,13 @@ export default function AuditLogsPanel({ setView, previousView }) {
   const getModuleBadgeClass = (module) => {
     switch (module?.toLowerCase()) {
       case 'navigasyon':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
+        return 'bg-red-100 text-red-800 border border-red-200';
       case 'sosyal':
         return 'bg-purple-100 text-purple-800 border border-purple-200';
       case 'sistem':
         return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
       default:
-        return 'bg-slate-100 text-slate-800 border border-slate-200';
+        return 'bg-slate-100 text-red-900 border border-slate-200';
     }
   };
 
@@ -36,7 +36,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
         <div className="flex items-center justify-between mb-8">
           <button 
             onClick={() => setView(previousView || 'landing')} 
-            className="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 px-4 py-2.5 rounded-full border border-slate-800 transition"
+            className="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white bg-red-950 hover:bg-red-900 px-4 py-2.5 rounded-full border border-red-900 transition"
           >
             <ArrowLeft size={16} /> Geri Dön
           </button>
@@ -47,7 +47,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
         </div>
 
         {/* Hero Alert Box */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 mb-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="bg-red-950 border border-red-900 rounded-3xl p-6 sm:p-8 mb-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="max-w-xl">
             <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -58,7 +58,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
               Sistemdeki sayfa geçişleri, proje beğenileri, doküman indirmeleri ve diğer tüm kullanıcı hareketleri kripto-güvenli şekilde anlık olarak loglanır.
             </p>
           </div>
-          <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 rounded-2xl px-6 py-4 shrink-0">
+          <div className="flex items-center gap-3 bg-slate-950 border border-red-900 rounded-2xl px-6 py-4 shrink-0">
             <div className="text-center">
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Toplam Log</p>
               <p className="text-3xl font-black text-slate-100">{auditLogs.length}</p>
@@ -67,7 +67,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
         </div>
 
         {/* Controls: Search & Filters */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6 bg-slate-900 border border-slate-800 rounded-2xl p-4">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6 bg-red-950 border border-red-900 rounded-2xl p-4">
           {/* Search */}
           <div className="relative w-full md:max-w-xs">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
@@ -76,7 +76,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
               placeholder="Kullanıcı veya işlem ara..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-emerald-500 transition text-slate-100 placeholder-slate-500"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-red-900 rounded-xl text-sm focus:outline-none focus:border-emerald-500 transition text-slate-100 placeholder-slate-500"
             />
           </div>
 
@@ -92,7 +92,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
                 className={`px-4 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   filterModule === mod 
                     ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400'
-                    : 'bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200'
+                    : 'bg-slate-950 border border-red-900 text-slate-400 hover:text-slate-200'
                 }`}
               >
                 {mod}
@@ -102,11 +102,11 @@ export default function AuditLogsPanel({ setView, previousView }) {
         </div>
 
         {/* Table wrapper */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="bg-red-950 border border-red-900 rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left text-sm text-slate-300">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-900/50">
+                <tr className="border-b border-red-900 bg-red-950/50">
                   <th className="p-4 font-black text-slate-400 uppercase tracking-wider text-xs">Zaman Damgası</th>
                   <th className="p-4 font-black text-slate-400 uppercase tracking-wider text-xs">Kullanıcı / Ajan</th>
                   <th className="p-4 font-black text-slate-400 uppercase tracking-wider text-xs">İşlem / Eylem</th>
@@ -114,7 +114,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
                   <th className="p-4 font-black text-slate-400 uppercase tracking-wider text-xs">IP Adresi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800 bg-slate-950/20">
+              <tbody className="divide-y divide-red-900 bg-slate-950/20">
                 {filteredLogs.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="p-8 text-center text-slate-500 font-medium">
@@ -123,7 +123,7 @@ export default function AuditLogsPanel({ setView, previousView }) {
                   </tr>
                 ) : (
                   filteredLogs.map(log => (
-                    <tr key={log.id} className="hover:bg-slate-900/30 transition">
+                    <tr key={log.id} className="hover:bg-red-950/30 transition">
                       <td className="p-4 font-bold text-emerald-400 font-mono text-xs">{log.timestamp}</td>
                       <td className="p-4 font-bold text-slate-100">{log.user}</td>
                       <td className="p-4 font-medium text-slate-200">{log.action}</td>

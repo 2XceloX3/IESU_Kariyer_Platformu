@@ -115,7 +115,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         <div className={`flex flex-col sm:flex-row items-center justify-between mt-3 transition-all duration-300`}>
           <div className="flex items-center justify-between w-full sm:w-auto px-1">
             <label className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md cursor-pointer transition-colors font-semibold text-[14px]">
-              <ImageIcon size={20} className="text-blue-500" /> <span className="hidden sm:inline">Medya</span>
+              <ImageIcon size={20} className="text-red-500" /> <span className="hidden sm:inline">Medya</span>
               <input type="file" accept="image/*,video/*" className="sr-only" onChange={(e) => handleFileUpload(e, e.target.files[0]?.type?.includes('video') ? 'video' : 'image')} disabled={isSubmitting} />
             </label>
             <button type="button" onClick={() => { setIsFocused(true); window.toast?.info('Yakında!'); }} className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md transition-colors font-semibold text-[14px]">
@@ -155,7 +155,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
               type="submit" 
               disabled={isSubmitting || (!content.trim() && !media)} 
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full font-semibold text-[14px] transition-all
-                ${(content.trim() || media) && !isSubmitting ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+                ${(content.trim() || media) && !isSubmitting ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
               `}
             >
               {isSubmitting ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : 'Gönder'}

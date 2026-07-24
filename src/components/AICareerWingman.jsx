@@ -69,15 +69,15 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
         <div className={`${isExpanded ? 'w-[600px] h-[700px] fixed bottom-6 right-6' : 'w-80 sm:w-[400px] h-[550px]'} bg-white/90 backdrop-blur-xl rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-white flex flex-col overflow-hidden animate-fade-in transition-all duration-300`}>
           
           {/* HEADER */}
-          <div className="p-4 bg-gradient-to-r from-[#0A2342] to-blue-900 text-white flex justify-between items-center relative overflow-hidden">
+          <div className="p-4 bg-gradient-to-r from-[#990000] to-red-900 text-white flex justify-between items-center relative overflow-hidden">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
             <div className="flex items-center gap-3 relative z-10">
               <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-sm">
-                <Bot size={22} className="text-blue-100" />
+                <Bot size={22} className="text-red-100" />
               </div>
               <div>
                 <h3 className="font-black text-base flex items-center gap-1">AI Wingman <Sparkles size={14} className="text-yellow-400"/></h3>
-                <p className="text-[11px] text-blue-200 font-medium">Sohbetsel Kariyer Koçu</p>
+                <p className="text-[11px] text-red-200 font-medium">Sohbetsel Kariyer Koçu</p>
               </div>
             </div>
             <div className="flex items-center gap-1 relative z-10">
@@ -91,13 +91,13 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
           </div>
 
           {/* GAMIFICATION BAR */}
-          <div className="px-4 py-2.5 bg-blue-50/50 border-b border-blue-100 flex items-center justify-between backdrop-blur-md">
+          <div className="px-4 py-2.5 bg-red-50/50 border-b border-red-100 flex items-center justify-between backdrop-blur-md">
              <div className="flex items-center gap-3">
                <div className="flex items-center gap-1.5 text-orange-600 font-black text-xs bg-orange-100/50 px-2.5 py-1 rounded-lg">
                  <Flame size={14} fill="currentColor" />
                  {streak} Gün Seri
                </div>
-               <div className="flex items-center gap-1.5 text-indigo-600 font-black text-xs bg-indigo-100/50 px-2.5 py-1 rounded-lg">
+               <div className="flex items-center gap-1.5 text-red-600 font-black text-xs bg-indigo-100/50 px-2.5 py-1 rounded-lg">
                  <Zap size={14} fill="currentColor" />
                  {xp} XP
                </div>
@@ -112,7 +112,7 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
                 <div className={`max-w-[85%] p-3.5 text-[13px] leading-relaxed font-medium shadow-sm ${
                   m.sender === 'ai' 
                     ? 'bg-white border border-gray-100 text-gray-800 rounded-2xl rounded-tl-sm' 
-                    : 'bg-gradient-to-r from-[#0A2342] to-blue-800 text-white rounded-2xl rounded-tr-sm'
+                    : 'bg-gradient-to-r from-[#990000] to-red-800 text-white rounded-2xl rounded-tr-sm'
                 }`}>
                   {m.text.split('\n').map((line, idx) => (
                     <React.Fragment key={idx}>
@@ -133,9 +133,9 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
             {isTyping && (
               <div className="flex justify-start">
                 <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm p-4 max-w-[80%] flex gap-1.5 items-center shadow-sm">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.15s' }}></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
+                  <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: '0.15s' }}></div>
+                  <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
                 </div>
               </div>
             )}
@@ -145,7 +145,7 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
           {/* QUICK CHIPS */}
           {messages.length === 1 && (
             <div className="px-4 pb-2 bg-gray-50/30 flex gap-2 overflow-x-auto hide-scrollbar">
-              <button onClick={() => setInput("Staj mülakatım var, bana STAR metodunu anlat.")} className="shrink-0 text-[11px] font-bold text-blue-600 bg-white border border-blue-100 px-3 py-1.5 rounded-full hover:bg-blue-50 transition shadow-sm">🎯 Mülakat Pratiği</button>
+              <button onClick={() => setInput("Staj mülakatım var, bana STAR metodunu anlat.")} className="shrink-0 text-[11px] font-bold text-red-600 bg-white border border-red-100 px-3 py-1.5 rounded-full hover:bg-red-50 transition shadow-sm">🎯 Mülakat Pratiği</button>
               <button onClick={() => setInput("Sürekli reddediliyorum, moralim çok bozuk.")} className="shrink-0 text-[11px] font-bold text-rose-600 bg-white border border-rose-100 px-3 py-1.5 rounded-full hover:bg-rose-50 transition shadow-sm">❤️ Dertleş</button>
               <button onClick={() => setInput("CV'mi ATS uyumlu nasıl yaparım?")} className="shrink-0 text-[11px] font-bold text-emerald-600 bg-white border border-emerald-100 px-3 py-1.5 rounded-full hover:bg-emerald-50 transition shadow-sm">📄 CV Kontrolü</button>
             </div>
@@ -159,12 +159,12 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
                 onChange={e=>setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSend()}
                 placeholder="Wingman'e sor..." 
-                className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-5 pr-14 py-3.5 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 outline-none transition-all placeholder-gray-400"
+                className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-5 pr-14 py-3.5 text-sm font-medium focus:ring-4 focus:ring-red-500/10 focus:border-red-400 outline-none transition-all placeholder-gray-400"
               />
               <button 
                 onClick={handleSend} 
                 disabled={!input.trim() || isTyping}
-                className="absolute right-1.5 top-1.5 w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 disabled:opacity-50 hover:shadow-lg text-white rounded-xl flex items-center justify-center transition-all active:scale-95 shrink-0"
+                className="absolute right-1.5 top-1.5 w-10 h-10 bg-gradient-to-r from-red-600 to-red-600 disabled:opacity-50 hover:shadow-lg text-white rounded-xl flex items-center justify-center transition-all active:scale-95 shrink-0"
               >
                 <Send size={18} className="-ml-0.5" />
               </button>
@@ -184,7 +184,7 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
 
           <button 
             onClick={() => setIsOpen(true)}
-            className="w-16 h-16 bg-gradient-to-br from-[#0A2342] to-blue-800 text-white rounded-[1.2rem] shadow-2xl shadow-blue-900/30 flex items-center justify-center hover:scale-110 transition-all duration-300 relative border-2 border-white/20"
+            className="w-16 h-16 bg-gradient-to-br from-[#990000] to-red-800 text-white rounded-[1.2rem] shadow-2xl shadow-red-900/30 flex items-center justify-center hover:scale-110 transition-all duration-300 relative border-2 border-white/20"
           >
             <Bot size={28} />
             <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 border-2 border-white rounded-full flex items-center justify-center animate-pulse shadow-md">

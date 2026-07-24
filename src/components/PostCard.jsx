@@ -63,7 +63,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       <div className="flex items-center gap-1 ml-1.5">
         {badges.map((badge, idx) => {
           const k = `badge-${badge}-${idx}`;
-          if (badge === 'verified' || badge === 'Doğrulanmış') return <ShieldCheck key={k} size={14} className="text-blue-500" title="Doğrulanmış" />;
+          if (badge === 'verified' || badge === 'Doğrulanmış') return <ShieldCheck key={k} size={14} className="text-red-500" title="Doğrulanmış" />;
           if (badge === 'top_voice' || badge === 'Top Voice') return <Crown key={k} size={14} className="text-amber-500" title="Top Voice" />;
           if (badge === 'president' || badge === 'Kulüp Başkanı') return <Crown key={k} size={14} className="text-purple-600" title="Kulüp Başkanı" />;
           if (badge === 'rep' || badge === 'Sınıf Temsilcisi') return <Award key={k} size={14} className="text-emerald-500" title="Sınıf Temsilcisi" />;
@@ -177,9 +177,9 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
             <img src={post?.author?.avatar || `https://ui-avatars.com/api/?name=U&background=0A2342&color=fff`} alt="Author" className="w-11 h-11 rounded-full object-cover shadow-sm border border-gray-100 shrink-0" />
           )}
           <div className="flex flex-col">
-            <h4 className="font-bold text-[14px] text-gray-900 leading-tight group-hover:text-[#0A2342] transition-colors flex items-center flex-wrap">
+            <h4 className="font-bold text-[14px] text-gray-900 leading-tight group-hover:text-[#990000] transition-colors flex items-center flex-wrap">
               {typeof post.author === 'string' ? post.author : (post.author?.name || 'Kullanıcı')}
-              {post.author?.role === 'admin' && <ShieldCheck size={14} className="text-blue-500 ml-1.5" title="Yönetici" />}
+              {post.author?.role === 'admin' && <ShieldCheck size={14} className="text-red-500 ml-1.5" title="Yönetici" />}
               {post.author?.role === 'company' && <ShieldCheck size={14} className="text-amber-500 ml-1.5" title="Onaylı Firma" />}
               {post.author?.role === 'club' && <ShieldCheck size={14} className="text-emerald-500 ml-1.5" title="Onaylı Kulüp" />}
               {renderBadges(post.author?.badge || post.author?.badges)}
@@ -281,7 +281,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           <button 
             aria-label="Beğen"
             onClick={handleLikeToggle}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-all font-bold text-[13px] sm:text-[14px] active:scale-95 ${liked ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'}`}
+            className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg transition-all font-bold text-[13px] sm:text-[14px] active:scale-95 ${liked ? 'text-red-600 bg-red-50' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'}`}
           >
             <Heart size={20} className={`${liked ? 'fill-current scale-110' : ''} transition-transform`} /> 
             <span className="hidden sm:inline">Beğen</span>
@@ -316,7 +316,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100">
             <div className="flex justify-between items-center p-4 border-b border-gray-100">
-              <h3 className="font-black text-gray-900 flex items-center gap-2"><Share2 size={18} className="text-[#0A2342]" /> Yorumla Paylaş</h3>
+              <h3 className="font-black text-gray-900 flex items-center gap-2"><Share2 size={18} className="text-[#990000]" /> Yorumla Paylaş</h3>
               <button aria-label="Kapat" onClick={() => setIsRepostModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition active:scale-95"><X size={20} /></button>
             </div>
             
@@ -366,7 +366,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   setIsRepostModalOpen(false);
                   setRepostComment('');
                 }}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-[#0A2342] text-white hover:bg-indigo-900 transition shadow-md active:scale-95"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-[#990000] text-white hover:bg-indigo-900 transition shadow-md active:scale-95"
               >
                 Paylaş
               </button>
@@ -380,7 +380,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100">
             <div className="flex justify-between items-center p-4 border-b border-gray-100">
-              <h3 className="font-black text-gray-900 flex items-center gap-2"><Send size={18} className="text-[#0A2342]" /> Gönderiyi Paylaş</h3>
+              <h3 className="font-black text-gray-900 flex items-center gap-2"><Send size={18} className="text-[#990000]" /> Gönderiyi Paylaş</h3>
               <button aria-label="Kapat" onClick={() => setIsShareModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition active:scale-95"><X size={20} /></button>
             </div>
             <div className="p-5 space-y-4">
@@ -455,7 +455,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       {/* Fast Action for Surveys */}
       {post.type === 'anket' && (
         <div className="px-4 pb-4">
-          <button aria-label="Ankete Katıl" onClick={() => setIsSurveyModalOpen(true)} className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-lg text-white font-bold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-95">
+          <button aria-label="Ankete Katıl" onClick={() => setIsSurveyModalOpen(true)} className="w-full bg-gradient-to-r from-red-600 to-indigo-700 hover:shadow-lg text-white font-bold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-95">
             <ClipboardList size={18} /> Ankete Katıl
           </button>
         </div>
@@ -465,8 +465,8 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       {isSurveyModalOpen && post.surveyData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-gray-100 overflow-hidden">
-            <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-blue-50/50">
-              <h3 className="font-black text-blue-900 flex items-center gap-2"><ClipboardList size={20} className="text-blue-600" /> {post.surveyData.title}</h3>
+            <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-red-50/50">
+              <h3 className="font-black text-red-900 flex items-center gap-2"><ClipboardList size={20} className="text-red-600" /> {post.surveyData.title}</h3>
               <button aria-label="Kapat" onClick={() => setIsSurveyModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1.5 rounded-lg hover:bg-white transition bg-gray-50 active:scale-95"><X size={20} /></button>
             </div>
             
@@ -490,7 +490,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   {post.surveyData.questions?.map((q, idx) => (
                     <div key={q.id || idx} className="space-y-4">
                       <label className="text-sm font-bold text-gray-900 flex items-start gap-2">
-                        <span className="text-blue-600 shrink-0">{idx + 1}.</span> {q.text}
+                        <span className="text-red-600 shrink-0">{idx + 1}.</span> {q.text}
                       </label>
                       
                       {q.type === 'likert' ? (
@@ -505,8 +505,8 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                                   onClick={() => setSurveyAnswers({...surveyAnswers, [q.id]: score})}
                                   className={`w-10 h-10 rounded-full font-bold transition-all active:scale-95 ${
                                     surveyAnswers[q.id] === score 
-                                    ? 'bg-blue-600 text-white shadow-md scale-110' 
-                                    : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-600 border border-gray-200'
+                                    ? 'bg-red-600 text-white shadow-md scale-110' 
+                                    : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-600 border border-gray-200'
                                   }`}
                                 >
                                   {score}
@@ -518,7 +518,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                         </div>
                       ) : (
                         <textarea 
-                          className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20"
                           rows={3}
                           placeholder="Yanıtınızı buraya yazın..."
                           value={surveyAnswers[q.id] || ''}
@@ -533,7 +533,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                       aria-label="Gönder"
                       onClick={handleSurveySubmit}
                       disabled={Object.keys(surveyAnswers).length === 0}
-                      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
+                      className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
                     >
                       Anketi Tamamla ve Gönder
                     </button>
@@ -591,7 +591,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
             <button aria-label="Yorum Gönder" 
               onClick={handleAddComment}
               disabled={!newComment.trim()}
-              className="absolute right-1 w-8 h-8 flex items-center justify-center bg-[#0A2342] text-white rounded-full disabled:opacity-50 disabled:bg-gray-300 transition-colors active:scale-95"
+              className="absolute right-1 w-8 h-8 flex items-center justify-center bg-[#990000] text-white rounded-full disabled:opacity-50 disabled:bg-gray-300 transition-colors active:scale-95"
             >
               <Send size={14} className="ml-0.5" />
             </button>

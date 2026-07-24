@@ -3,8 +3,8 @@ import { Search } from 'lucide-react';
 
 export function TopInfoCard({ title, count, icon, trend, color = 'blue' }) {
   const gradients = {
-    blue: 'from-blue-500/10 to-blue-500/5 hover:from-blue-500/20 hover:to-blue-500/10 border-blue-100 text-blue-600',
-    red: 'from-iesu-navy/10 to-red-500/5 hover:from-iesu-navy/20 hover:to-red-500/10 border-red-100 text-[#0A2342]',
+    blue: 'from-red-500/10 to-red-500/5 hover:from-red-500/20 hover:to-red-500/10 border-red-100 text-red-600',
+    red: 'from-iesu-navy/10 to-red-500/5 hover:from-iesu-navy/20 hover:to-red-500/10 border-red-100 text-[#990000]',
     emerald: 'from-emerald-500/10 to-emerald-500/5 hover:from-emerald-500/20 hover:to-emerald-500/10 border-emerald-100 text-emerald-600',
     orange: 'from-orange-500/10 to-orange-500/5 hover:from-orange-500/20 hover:to-orange-500/10 border-orange-100 text-orange-600',
     purple: 'from-purple-500/10 to-purple-500/5 hover:from-purple-500/20 hover:to-purple-500/10 border-purple-100 text-purple-600'
@@ -48,7 +48,7 @@ export function Badge({ children, type = 'default' }) {
     success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     warning: 'bg-amber-50 text-amber-700 border-amber-200',
     danger: 'bg-red-50 text-red-700 border-red-200',
-    info: 'bg-blue-50 text-blue-700 border-blue-200',
+    info: 'bg-red-50 text-red-700 border-red-200',
     default: 'bg-gray-50 text-gray-700 border-gray-200'
   };
   return (
@@ -61,30 +61,30 @@ export function Badge({ children, type = 'default' }) {
 export function PanelHeader({ badge = 'Esenyurt Kariyer', title, sub, action }) {
   const t = (title || '').toLowerCase();
   let theme = {
-    bg: 'from-blue-950 via-indigo-900 to-slate-900',
-    orb1: 'bg-blue-500',
+    bg: 'from-red-950 via-indigo-900 to-red-950',
+    orb1: 'bg-red-500',
     orb2: 'bg-purple-600',
-    textGradient: 'from-blue-400 to-purple-400'
+    textGradient: 'from-red-400 to-purple-400'
   };
 
   if (t.includes('etkinlik') || t.includes('duyuru')) {
     // Nar çiçeği / Kırmızı tonları
     theme = {
-      bg: 'from-red-950 via-rose-900 to-slate-900',
+      bg: 'from-red-950 via-rose-900 to-red-950',
       orb1: 'bg-red-500',
       orb2: 'bg-orange-600',
       textGradient: 'from-red-400 to-orange-400'
     };
   } else if (t.includes('mesaj') || t.includes('iletişim')) {
     theme = {
-      bg: 'from-emerald-950 via-teal-900 to-slate-900',
+      bg: 'from-emerald-950 via-teal-900 to-red-950',
       orb1: 'bg-emerald-500',
       orb2: 'bg-teal-600',
       textGradient: 'from-emerald-400 to-teal-400'
     };
   } else if (t.includes('ilan') || t.includes('iş') || t.includes('staj') || t.includes('başvuru')) {
     theme = {
-      bg: 'from-orange-950 via-amber-900 to-slate-900',
+      bg: 'from-orange-950 via-amber-900 to-red-950',
       orb1: 'bg-orange-500',
       orb2: 'bg-yellow-600',
       textGradient: 'from-orange-400 to-yellow-400'
@@ -92,14 +92,14 @@ export function PanelHeader({ badge = 'Esenyurt Kariyer', title, sub, action }) 
   } else if (t.includes('firma') || t.includes('işveren')) {
     // Kurumsal ve ferah his için Camgöbeği/Gökyüzü Mavisi tonları
     theme = {
-      bg: 'from-cyan-950 via-sky-900 to-slate-900',
-      orb1: 'bg-cyan-500',
-      orb2: 'bg-blue-600',
+      bg: 'from-cyan-950 via-sky-900 to-red-950',
+      orb1: 'bg-rose-500',
+      orb2: 'bg-red-600',
       textGradient: 'from-cyan-400 to-sky-400'
     };
   } else if (t.includes('kullanıcı') || t.includes('öğrenci') || t.includes('mezun')) {
     theme = {
-      bg: 'from-purple-950 via-fuchsia-900 to-slate-900',
+      bg: 'from-purple-950 via-fuchsia-900 to-red-950',
       orb1: 'bg-purple-500',
       orb2: 'bg-pink-600',
       textGradient: 'from-purple-400 to-pink-400'
@@ -107,7 +107,7 @@ export function PanelHeader({ badge = 'Esenyurt Kariyer', title, sub, action }) 
   } else if (t.includes('fırsat')) {
     // Fırsatlar için Enerjik Neon Yeşil / Sarı
     theme = {
-      bg: 'from-lime-950 via-green-900 to-slate-900',
+      bg: 'from-lime-950 via-green-900 to-red-950',
       orb1: 'bg-lime-500',
       orb2: 'bg-yellow-500',
       textGradient: 'from-lime-400 to-yellow-400'
@@ -115,7 +115,7 @@ export function PanelHeader({ badge = 'Esenyurt Kariyer', title, sub, action }) 
   } else if (t.includes('mentorluk')) {
     // Mentorluk için İnsani Bağ / Rehberlik (Sıcak Pembe ve Gül Kurusu / Pink & Rose)
     theme = {
-      bg: 'from-pink-950 via-rose-900 to-slate-900',
+      bg: 'from-pink-950 via-rose-900 to-red-950',
       orb1: 'bg-pink-500',
       orb2: 'bg-rose-500',
       textGradient: 'from-pink-400 to-rose-400'
@@ -189,7 +189,7 @@ export default function AdminCMSLayout({ title, sub, isEditing, listView, formVi
             {feedPreviewView && (
               <div className="mt-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                   <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Akışta Görünüm</h3>
                 </div>
                 <div className="bg-[#F8F9FC] rounded-2xl border border-gray-200 p-3 shadow-inner relative overflow-hidden">

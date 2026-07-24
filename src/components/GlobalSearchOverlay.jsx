@@ -64,15 +64,15 @@ export default function GlobalSearchOverlay({ isOpen, onClose, setView }) {
                 title={item.tooltip || ''}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 text-red-600 flex items-center justify-center">
                     {item.icon}
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs text-slate-800">{item.title}</h4>
+                    <h4 className="font-bold text-xs text-red-900">{item.title}</h4>
                     {item.tooltip && <p className="text-[10px] text-amber-600 font-semibold">{item.tooltip}</p>}
                   </div>
                 </div>
-                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${item.type === 'Internal' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'}`}>
+                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${item.type === 'Internal' ? 'bg-indigo-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>
                   {item.type}
                 </span>
               </div>

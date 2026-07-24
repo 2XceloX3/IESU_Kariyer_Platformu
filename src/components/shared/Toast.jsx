@@ -51,13 +51,13 @@ export function ToastContainer() {
             t.type === 'success' ? 'border-emerald-200 shadow-emerald-100' :
             t.type === 'error' ? 'border-red-200 shadow-red-100' :
             t.type === 'warning' ? 'border-amber-200 shadow-amber-100' :
-            'border-blue-200 shadow-blue-100'
+            'border-red-200 shadow-red-100'
           }`}
         >
           {t.type === 'success' && <CheckCircle size={20} className="text-emerald-500 shrink-0" />}
           {t.type === 'error' && <XCircle size={20} className="text-red-500 shrink-0" />}
           {t.type === 'warning' && <AlertCircle size={20} className="text-amber-500 shrink-0" />}
-          {t.type === 'info' && <Info size={20} className="text-blue-500 shrink-0" />}
+          {t.type === 'info' && <Info size={20} className="text-red-500 shrink-0" />}
           
           <p className="text-sm font-bold text-gray-800 flex-1">{t.message}</p>
           

@@ -14,7 +14,7 @@ export default function Events({ onSelectEvent, limit }) {
             <span className="text-[11px] font-black uppercase tracking-widest text-[#A80016] bg-red-50 px-3.5 py-1.5 rounded-full border border-red-100">
               Kariyer Etkinlikleri Takvimi
             </span>
-            <h2 className="text-2xl md:text-3xl font-black text-slate-900 mt-2 tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-black text-red-950 mt-2 tracking-tight">
               Öne Çıkan Kariyer Etkinlikleri & Seminerler
             </h2>
           </div>

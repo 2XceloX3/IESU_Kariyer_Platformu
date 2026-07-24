@@ -110,7 +110,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Portalı</p>
             </div>
           </div>
@@ -118,21 +118,21 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           <div className="hidden md:flex flex-1 max-w-md mx-6">
             <div className="relative w-full group">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search size={16} className="text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                <Search size={16} className="text-gray-400 group-focus-within:text-red-500 transition-colors" />
               </div>
               <input 
                 type="text" 
                 placeholder="Öğrenci, firma, mezun veya içerik ara..." 
-                className="w-full bg-[#EEF3F8] text-gray-900 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none block pl-10 p-2 transition-all"
+                className="w-full bg-[#EEF3F8] text-gray-900 text-sm rounded-md focus:ring-2 focus:ring-red-500 focus:bg-white focus:outline-none block pl-10 p-2 transition-all"
               />
             </div>
           </div>
 
           
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#0A2342]`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
               <div className="relative">
-                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#0A2342]/10" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
                 {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                 )}
@@ -246,14 +246,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'for_you' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Senin İçin
-              {feedFilter === 'for_you' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#0A2342] rounded-t-full"></div>}
+              {feedFilter === 'for_you' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
             </button>
             <button 
               onClick={() => setFeedFilter('following')} 
               className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'following' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Ağım
-              {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#0A2342] rounded-t-full"></div>}
+              {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
             </button>
           </div>
 
@@ -266,7 +266,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               if (filtered.length === 0) {
                 return (
                   <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-16 h-16 bg-red-50 text-[#0A2342] rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
+                    <div className="w-16 h-16 bg-red-50 text-[#990000] rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
                     <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
                     <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
                   </div>
@@ -303,7 +303,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-black text-gray-900 text-[15px]">KGM Haberleri</h3>
-              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div>
             </div>
             
             <div className="flex flex-col gap-3">
@@ -317,7 +317,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   <div className="flex items-start gap-2">
                     <span className="text-gray-400 mt-1">•</span>
                     <div className="flex flex-col">
-                      <span className="text-[13px] font-bold text-gray-800 group-hover:text-blue-600 transition-colors leading-tight">
+                      <span className="text-[13px] font-bold text-gray-800 group-hover:text-red-600 transition-colors leading-tight">
                         {news.title}
                       </span>
                       <span className="text-[11px] text-gray-500 mt-0.5">
@@ -356,14 +356,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                       alt={user.name} 
                     />
                     <div className="flex flex-col">
-                      <span className="text-[13px] font-bold text-gray-900 flex items-center gap-1 group-hover:text-blue-500 transition-colors">
+                      <span className="text-[13px] font-bold text-gray-900 flex items-center gap-1 group-hover:text-red-500 transition-colors">
                         {user.name.toLowerCase().replace(' ', '_')}
-                        {user.verified && <span className="text-blue-500"><CheckCircle2 size={12} className="fill-current text-white" /></span>}
+                        {user.verified && <span className="text-red-500"><CheckCircle2 size={12} className="fill-current text-white" /></span>}
                       </span>
                       <span className="text-[11px] text-gray-500 truncate w-32">{user.subtitle}</span>
                     </div>
                   </div>
-                  <button className="text-[12px] font-bold text-blue-500 hover:text-gray-900 transition-colors">Takip Et</button>
+                  <button className="text-[12px] font-bold text-red-500 hover:text-gray-900 transition-colors">Takip Et</button>
                 </div>
               ))}
             </div>
@@ -422,7 +422,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mb-1">Hızlı Erişim</p>
             <h3 className="font-black text-base leading-tight mb-2">Mezun Bilgi Sistemi</h3>
             <p className="text-xs text-red-100 mb-4">Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.</p>
-            <button onClick={() => setView('mbs')} className="w-full py-2.5 bg-white text-[#0A2342] hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Mezun Bilgi Sistemi'ne Git</button>
+            <button onClick={() => setView('mbs')} className="w-full py-2.5 bg-white text-[#990000] hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Mezun Bilgi Sistemi'ne Git</button>
           </div>
 
           {/* Featured Opportunities */}
@@ -452,12 +452,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           {mentorships && (mentorships || []).filter(m => m.status === 'Aktif').length > 0 && (
             <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
               <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
-                <UserCheck size={18} className="text-blue-500" /> Mentorluk Başvuruları
+                <UserCheck size={18} className="text-red-500" /> Mentorluk Başvuruları
               </h3>
               <div className="space-y-3">
                 {(mentorships || []).filter(m => m.status === 'Aktif').slice(0,3).map(mnt => (
-                  <div key={mnt.id} className="p-3 bg-blue-50/50 rounded-xl border border-blue-100 hover:border-blue-300 transition cursor-pointer group">
-                    <p className="text-[12px] font-black text-gray-900 group-hover:text-blue-700 transition">{mnt.programTitle}</p>
+                  <div key={mnt.id} className="p-3 bg-red-50/50 rounded-xl border border-red-100 hover:border-red-300 transition cursor-pointer group">
+                    <p className="text-[12px] font-black text-gray-900 group-hover:text-red-700 transition">{mnt.programTitle}</p>
                     <p className="text-[11px] text-gray-500">{mnt.mentorName} • {mnt.department}</p>
                   </div>
                 ))}
@@ -472,14 +472,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
           {/* PROFESSIONAL RIGHT SIDEBAR FOOTER */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-6 text-[12px] text-gray-500 font-medium px-4 text-center">
-            <a href="#" className="hover:text-blue-600 transition-colors">Hakkımızda</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">Erişilebilirlik</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">Yardım Merkezi</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">Gizlilik ve Şartlar</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">Reklam Seçenekleri</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">Kariyer</a>
+            <a href="#" className="hover:text-red-600 transition-colors">Hakkımızda</a>
+            <a href="#" className="hover:text-red-600 transition-colors">Erişilebilirlik</a>
+            <a href="#" className="hover:text-red-600 transition-colors">Yardım Merkezi</a>
+            <a href="#" className="hover:text-red-600 transition-colors">Gizlilik ve Şartlar</a>
+            <a href="#" className="hover:text-red-600 transition-colors">Reklam Seçenekleri</a>
+            <a href="#" className="hover:text-red-600 transition-colors">Kariyer</a>
             <div className="w-full flex items-center justify-center gap-1 mt-2">
-              <span className="font-bold text-[#0A2342]">İESÜ Kariyer Portalı</span>
+              <span className="font-bold text-[#990000]">İESÜ Kariyer Portalı</span>
               <span>© 2026</span>
             </div>
           </div>
@@ -617,7 +617,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 
                 <div className="pt-4 mt-4 border-t border-gray-100 flex gap-3">
                   <button type="button" onClick={() => setShowCardModal(false)} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition">İptal</button>
-                  <button type="submit" className="flex-[2] bg-[#0A2342] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-700 transition shadow-sm">Başvuruyu Tamamla</button>
+                  <button type="submit" className="flex-[2] bg-[#990000] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-700 transition shadow-sm">Başvuruyu Tamamla</button>
                 </div>
               </form>
             </div>
@@ -661,16 +661,16 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               }} className="p-5 space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Uzmanlık / Program Başlığı</label>
-                  <input required type="text" value={mentorshipForm.title} onChange={e => setMentorshipForm({...mentorshipForm, title: e.target.value})} placeholder="Örn: Yazılım Mühendisliği Kariyer Rehberliği" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500" />
+                  <input required type="text" value={mentorshipForm.title} onChange={e => setMentorshipForm({...mentorshipForm, title: e.target.value})} placeholder="Örn: Yazılım Mühendisliği Kariyer Rehberliği" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500" />
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <label className="block text-xs font-bold text-gray-700 mb-1">Haftalık Uygunluk (Saat)</label>
-                    <input required type="number" min="1" max="20" value={mentorshipForm.hours} onChange={e => setMentorshipForm({...mentorshipForm, hours: e.target.value})} placeholder="Örn: 2" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500" />
+                    <input required type="number" min="1" max="20" value={mentorshipForm.hours} onChange={e => setMentorshipForm({...mentorshipForm, hours: e.target.value})} placeholder="Örn: 2" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500" />
                   </div>
                   <div className="flex-1">
                     <label className="block text-xs font-bold text-gray-700 mb-1">Çalışma Åekli</label>
-                    <select value={mentorshipForm.mode} onChange={e => setMentorshipForm({...mentorshipForm, mode: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500">
+                    <select value={mentorshipForm.mode} onChange={e => setMentorshipForm({...mentorshipForm, mode: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
                       <option value="Online">Online</option>
                       <option value="Yüz Yüze">Yüz Yüze</option>
                       <option value="Hibrit">Hibrit</option>
@@ -679,7 +679,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Motivasyon / Kısa Özgeçmiş</label>
-                  <textarea required rows={3} value={mentorshipForm.motivation} onChange={e => setMentorshipForm({...mentorshipForm, motivation: e.target.value})} placeholder="Öğrencilerimize nasıl destek olabileceğinizi kısaca anlatın..." className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-teal-500"></textarea>
+                  <textarea required rows={3} value={mentorshipForm.motivation} onChange={e => setMentorshipForm({...mentorshipForm, motivation: e.target.value})} placeholder="Öğrencilerimize nasıl destek olabileceğinizi kısaca anlatın..." className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500"></textarea>
                 </div>
                 <div className="pt-2">
                   <button type="submit" className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors">Başvuruyu Gönder</button>
@@ -693,7 +693,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
       {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
         <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-[#0A2342]' : 'text-gray-500 hover:text-gray-900'}`} title="Akış">
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Akış">
             <Home size={26} strokeWidth={2} />
           </button>
           
@@ -714,7 +714,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           )}
           
           {/* MESSAGES */}
-          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#0A2342]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
+          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
             <MessageCircle size={24} strokeWidth={2} />
           </button>
           

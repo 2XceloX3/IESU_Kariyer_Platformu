@@ -4,7 +4,7 @@ import TopProfileMenu from './TopProfileMenu';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 
 const STATS = [
-  { label: 'Topluma Kazandırılan Mezun', value: '77.000+', icon: <GraduationCap size={22} className="text-indigo-600" /> },
+  { label: 'Topluma Kazandırılan Mezun', value: '77.000+', icon: <GraduationCap size={22} className="text-red-600" /> },
   { label: 'Uluslararası Akredite Program', value: '65+', icon: <ShieldCheck size={22} className="text-emerald-600" /> },
   { label: 'Ar-Ge & Uygulama Laboratuvarı', value: '110+', icon: <Building size={22} className="text-amber-600" /> },
   { label: 'Farklı Ülkeden Uluslararası Öğrenci', value: '130+', icon: <Globe size={22} className="text-purple-600" /> }
@@ -25,7 +25,7 @@ const TIMELINE = [
 
 export default function AboutUsPage({ setView, currentUser, userRole, setSelectedUserId }) {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
@@ -35,8 +35,8 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Award className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">Hakkımızda & Kurumsal Yapı</h1>
+            <Award className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight">Hakkımızda & Kurumsal Yapı</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -45,7 +45,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
       <main className="flex-1 w-full max-w-[1150px] mx-auto p-4 lg:p-8 flex flex-col gap-10">
         
         {/* Ultra-Premium Hero Section */}
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-8 md:p-12 shadow-2xl border border-slate-800 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-950 via-red-950 to-indigo-950 text-white rounded-3xl p-8 md:p-12 shadow-2xl border border-red-900 relative overflow-hidden">
           <div className="max-w-3xl relative z-10">
             <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 bg-indigo-950/70 px-4 py-1.5 rounded-full border border-indigo-900/60">
               {corporateData.motto}
@@ -66,7 +66,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
               <div className="p-3 bg-slate-50 rounded-2xl mb-3 border border-slate-100">
                 {st.icon}
               </div>
-              <h3 className="text-2xl md:text-3xl font-black text-slate-900">{st.value}</h3>
+              <h3 className="text-2xl md:text-3xl font-black text-red-950">{st.value}</h3>
               <p className="text-xs font-bold text-slate-500 mt-1">{st.label}</p>
             </div>
           ))}
@@ -76,10 +76,10 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
             <div>
-              <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-4 border border-indigo-100">
+              <div className="w-12 h-12 bg-indigo-50 text-red-600 rounded-2xl flex items-center justify-center mb-4 border border-indigo-100">
                 <Globe size={24} />
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3">Objektif Vizyonumuz</h3>
+              <h3 className="text-xl font-black text-red-950 mb-3">Objektif Vizyonumuz</h3>
               <p className="text-slate-600 text-sm font-medium leading-relaxed">
                 {corporateData.vision} Ar-Ge ve yenilikçi projeleri destekleyerek uluslararası düzeyde bilime ve sanata yön veren saygın bir yükseköğretim kurumu olmaktır.
               </p>
@@ -91,7 +91,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
               <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-4 border border-emerald-100">
                 <HeartHandshake size={24} />
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-3">Kurumsal Misyonumuz</h3>
+              <h3 className="text-xl font-black text-red-950 mb-3">Kurumsal Misyonumuz</h3>
               <p className="text-slate-600 text-sm font-medium leading-relaxed">
                 {corporateData.mission} Toplumsal ve ekonomik esenyurte yüksek katma değer katan sürdürülebilir eğitim modelleri geliştirmektir.
               </p>
@@ -101,7 +101,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
 
         {/* Accreditations Section */}
         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-          <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
+          <h3 className="text-xl font-black text-red-950 mb-6 flex items-center gap-2">
             <ShieldCheck className="text-emerald-600" size={24} /> Uluslararası Akreditasyon Standartlarımız
           </h3>
 
@@ -121,14 +121,14 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
         </div>
 
         {/* Timeline Section */}
-        <div className="bg-slate-950 text-white p-8 md:p-10 rounded-3xl border border-slate-800 shadow-xl">
+        <div className="bg-slate-950 text-white p-8 md:p-10 rounded-3xl border border-red-900 shadow-xl">
           <h3 className="text-xl font-black text-slate-100 mb-8 flex items-center gap-2">
             <Clock className="text-indigo-400" size={24} /> Üniversite Tarihçesi & Kilometre Taşları
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
             {TIMELINE.map((t, idx) => (
-              <div key={idx} className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800/90 flex flex-col justify-between">
+              <div key={idx} className="bg-red-950/90 p-5 rounded-2xl border border-red-900/90 flex flex-col justify-between">
                 <div>
                   <span className="text-2xl font-black text-indigo-400 block mb-2">{t.year}</span>
                   <h4 className="font-black text-slate-100 text-xs mb-2 leading-snug">{t.title}</h4>

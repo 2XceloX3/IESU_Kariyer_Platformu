@@ -63,7 +63,7 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans selection:bg-indigo-500/20">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans selection:bg-red-500/20">
       
       {/* Header */}
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
@@ -75,8 +75,8 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Landmark className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">Mezunlar Meclisi (DAO)</h1>
+            <Landmark className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight">Mezunlar Meclisi (DAO)</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -99,15 +99,15 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
                 <div>
                   <span className="block text-[9px] text-slate-400 font-black uppercase tracking-wider">Aktif Seçmen</span>
-                  <span className="text-lg font-black text-slate-800">15.4K</span>
+                  <span className="text-lg font-black text-red-900">15.4K</span>
                 </div>
-                <Users size={20} className="text-indigo-600" />
+                <Users size={20} className="text-red-600" />
               </div>
 
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
                 <div>
                   <span className="block text-[9px] text-slate-400 font-black uppercase tracking-wider">Yönetilen Fon</span>
-                  <span className="text-lg font-black text-slate-800">₺1.2M</span>
+                  <span className="text-lg font-black text-red-900">₺1.2M</span>
                 </div>
                 <Coins size={20} className="text-emerald-600" />
               </div>
@@ -115,7 +115,7 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
 
             <button 
               onClick={() => setShowAddProposal(true)}
-              className="w-full mt-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-lg flex items-center justify-center gap-1.5"
+              className="w-full mt-6 py-3.5 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-lg flex items-center justify-center gap-1.5"
             >
               <Plus size={16} /> Önerge Gönder
             </button>
@@ -125,8 +125,8 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
         {/* Right column: active proposals list */}
         <div className="flex-grow space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <ClipboardList className="text-indigo-500" /> Aktif Önergeler
+            <h3 className="text-lg font-black text-red-950 flex items-center gap-2">
+              <ClipboardList className="text-red-500" /> Aktif Önergeler
             </h3>
             <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
               {proposals.length} Toplam
@@ -159,7 +159,7 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
                     )}
                   </div>
 
-                  <h4 className="text-md sm:text-lg font-black text-slate-900 mb-2 leading-tight">{prop.title}</h4>
+                  <h4 className="text-md sm:text-lg font-black text-red-950 mb-2 leading-tight">{prop.title}</h4>
                   
                   <div className="flex items-center gap-2 text-xs font-bold text-slate-500 mb-6">
                     <span>Yazar: {prop.author}</span>
@@ -264,7 +264,7 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
 
                 <button 
                   type="submit"
-                  className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg"
+                  className="w-full py-3.5 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg"
                 >
                   Oylamaya Başlat
                 </button>

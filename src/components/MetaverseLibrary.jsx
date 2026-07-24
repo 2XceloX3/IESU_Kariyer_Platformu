@@ -66,7 +66,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       
       {/* Header */}
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
@@ -78,8 +78,8 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Library className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">Metaverse Kütüphanesi</h1>
+            <Library className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight">Metaverse Kütüphanesi</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -93,11 +93,11 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-3xl mx-auto py-12 flex flex-col items-center text-center"
           >
-            <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center shadow-lg border border-indigo-100 mb-8 relative">
+            <div className="w-24 h-24 bg-indigo-50 text-red-600 rounded-3xl flex items-center justify-center shadow-lg border border-indigo-100 mb-8 relative">
               <BookOpen size={48} />
             </div>
             
-            <h2 className="text-3xl font-black mb-4 text-slate-900 tracking-tight">
+            <h2 className="text-3xl font-black mb-4 text-red-950 tracking-tight">
               Dijital Bilgi Ağacı
             </h2>
             <p className="text-slate-500 text-base mb-8 max-w-xl leading-relaxed font-semibold">
@@ -108,7 +108,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               <Search className="text-slate-400 ml-4" size={22} />
               <input 
                 type="text" 
-                className="flex-1 bg-transparent border-none outline-none text-sm font-semibold text-slate-800 placeholder-slate-400"
+                className="flex-1 bg-transparent border-none outline-none text-sm font-semibold text-red-900 placeholder-slate-400"
                 placeholder="Örn: Kuantum Hesaplama, Blokzincir, Derin Öğrenme..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -117,7 +117,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               <button 
                 onClick={() => handleSearch()}
                 disabled={!query.trim()}
-                className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider transition shadow-md"
+                className="bg-red-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider transition shadow-md"
               >
                 Ara
               </button>
@@ -129,7 +129,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                 <button
                   key={idx}
                   onClick={() => handleSearch(trend)}
-                  className="bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 font-bold px-3.5 py-1.5 rounded-xl text-xs transition border border-slate-200/40"
+                  className="bg-slate-100 hover:bg-indigo-50 hover:text-red-600 text-slate-600 font-bold px-3.5 py-1.5 rounded-xl text-xs transition border border-slate-200/40"
                 >
                   {trend}
                 </button>
@@ -140,8 +140,8 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
 
         {isSearching && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-6"></div>
-            <h3 className="text-2xl font-black text-slate-900 mb-2">Yapay Zeka Taraması Yapılıyor...</h3>
+            <div className="w-16 h-16 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mb-6"></div>
+            <h3 className="text-2xl font-black text-red-950 mb-2">Yapay Zeka Taraması Yapılıyor...</h3>
             <p className="text-slate-500 max-w-sm font-semibold">Binlerce akademik kaynak, tez ve makale taranarak sizin için özetleniyor.</p>
           </div>
         )}
@@ -156,7 +156,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                 <button 
                   onClick={() => { setResults(null); setQuery(''); }}
-                  className="text-slate-500 hover:text-slate-800 font-bold flex items-center gap-2 transition bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-xs"
+                  className="text-slate-500 hover:text-red-900 font-bold flex items-center gap-2 transition bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-xs"
                 >
                   <ChevronLeft size={16} /> Yeni Araştırma
                 </button>
@@ -168,7 +168,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                       window.toast && window.toast.success("✅ Öğrenme Rotası başarıyla Kariyer Yol Haritanıza eklendi.");
                     }}
                     disabled={learningPathStatus}
-                    className={`px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-md transition flex items-center gap-1.5 ${learningPathStatus ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                    className={`px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-md transition flex items-center gap-1.5 ${learningPathStatus ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-600 text-white hover:bg-indigo-700'}`}
                   >
                     {learningPathStatus ? <Check size={14}/> : <BrainCircuit size={14} />}
                     {learningPathStatus ? 'Rotaya Eklendi' : 'Öğrenme Rotası Çıkar'}
@@ -181,35 +181,35 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                 <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
                   <Library size={150} />
                 </div>
-                <h3 className="text-xs font-black text-indigo-600 mb-3 uppercase tracking-widest flex items-center gap-1.5">
+                <h3 className="text-xs font-black text-red-600 mb-3 uppercase tracking-widest flex items-center gap-1.5">
                   <Sparkles size={14}/> Yapay Zeka Konu Analizi
                 </h3>
-                <h2 className="text-2xl font-black text-slate-900 mb-4">"{query}"</h2>
+                <h2 className="text-2xl font-black text-red-950 mb-4">"{query}"</h2>
                 <p className="text-slate-600 text-sm md:text-base leading-relaxed font-semibold">
                   {results.summary}
                 </p>
               </div>
 
               {/* Resources list */}
-              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2 pt-4">
-                <GraduationCap className="text-indigo-600"/> Akademik Kaynak Önerileri
+              <h3 className="text-lg font-black text-red-950 flex items-center gap-2 pt-4">
+                <GraduationCap className="text-red-600"/> Akademik Kaynak Önerileri
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {results.resources.map((res, idx) => (
                   <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200/80 hover:shadow-md transition-shadow flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center gap-2 text-[10px] font-black text-indigo-600 uppercase tracking-wider mb-4">
+                      <div className="flex items-center gap-2 text-[10px] font-black text-red-600 uppercase tracking-wider mb-4">
                         <span className="bg-indigo-50 border border-indigo-100/50 px-2 py-0.5 rounded">{res.type}</span>
                         <span className="flex items-center gap-1"><Clock size={12}/> {res.year}</span>
                       </div>
-                      <h4 className="text-sm font-black text-slate-800 mb-2 leading-snug line-clamp-2">{res.title}</h4>
+                      <h4 className="text-sm font-black text-red-900 mb-2 leading-snug line-clamp-2">{res.title}</h4>
                       <p className="text-slate-400 font-bold text-[11px] mb-6">{res.author}</p>
                     </div>
                     
                     <button 
                       onClick={() => setSelectedBook(res)}
-                      className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition"
+                      className="w-full py-2.5 bg-red-950 hover:bg-red-900 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition"
                     >
                       İncele
                     </button>
@@ -236,7 +236,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
             >
               <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div>
-                  <span className="text-[9px] text-indigo-600 font-black uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">{selectedBook.type}</span>
+                  <span className="text-[9px] text-red-600 font-black uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">{selectedBook.type}</span>
                   <h3 className="font-black text-slate-950 text-sm mt-1">Akademik Yayın Özeti</h3>
                 </div>
                 <button onClick={() => setSelectedBook(null)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 transition">
@@ -247,17 +247,17 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               <div className="p-6 space-y-4 text-xs font-bold text-slate-500">
                 <div>
                   <label className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Yayın Adı</label>
-                  <h4 className="text-slate-800 font-black text-sm mt-1">{selectedBook.title}</h4>
+                  <h4 className="text-red-900 font-black text-sm mt-1">{selectedBook.title}</h4>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Yazar</label>
-                    <p className="text-slate-800 mt-1">{selectedBook.author}</p>
+                    <p className="text-red-900 mt-1">{selectedBook.author}</p>
                   </div>
                   <div>
                     <label className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Yayın Yılı</label>
-                    <p className="text-slate-800 mt-1">{selectedBook.year}</p>
+                    <p className="text-red-900 mt-1">{selectedBook.year}</p>
                   </div>
                 </div>
 
@@ -275,7 +275,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                         window.toast && window.toast.success("✅ Yayın başarıyla doğrulandı ve cihazınıza indirildi!");
                       }, 2000);
                     }}
-                    className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black uppercase tracking-widest text-center"
+                    className="flex-1 py-3 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-black uppercase tracking-widest text-center"
                   >
                     PDF Olarak İndir
                   </button>

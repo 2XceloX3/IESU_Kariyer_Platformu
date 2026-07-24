@@ -81,16 +81,16 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
           
           {/* LEFT: Logo & Brand */}
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto text-[#0A2342] hover:scale-105 transition-transform" />
+            <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
           {/* MIDDLE: Search Bar */}
           <div className="hidden md:flex relative group flex-1 max-w-md mx-auto shrink">
-            <Search className="absolute left-3 top-2.5 text-gray-500 group-focus-within:text-[#0A2342] transition-colors" size={18} />
+            <Search className="absolute left-3 top-2.5 text-gray-500 group-focus-within:text-[#990000] transition-colors" size={18} />
             <input 
               type="text" 
               placeholder="Takvimde etkinlik ara..." 
@@ -108,14 +108,14 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
                   window.toast && window.toast.success("✅ AI Planlaması: Etkinlik 15 Kasım Cuma günü saat 14:00'e başarıyla yerleştirildi.");
                 }, 2500);
               }}
-              className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-md transition-all mr-2"
+              className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-md transition-all mr-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
               <span className="text-[13px]">AI Planlayıcı</span>
             </button>
             <button 
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1.5 md:gap-2 bg-[#0A2342] text-white px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl font-bold hover:bg-[#0A2342] transition shadow-sm mr-2"
+              className="flex items-center gap-1.5 md:gap-2 bg-[#990000] text-white px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl font-bold hover:bg-[#990000] transition shadow-sm mr-2"
             >
               <Plus size={16} /> <span className="hidden md:inline text-[13px]">Etkinlik Ekle</span>
             </button>
@@ -173,14 +173,14 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
                       key={'day-'+i}
                       onClick={() => setSelectedDate(d)}
                       className={`aspect-square rounded-xl flex flex-col items-center justify-center relative transition-all ${
-                        isSelected ? 'bg-[#0A2342] text-white shadow-md shadow-red-600/20' : 
-                        isToday ? 'bg-red-50 text-[#0A2342] font-bold' :
+                        isSelected ? 'bg-[#990000] text-white shadow-md shadow-red-600/20' : 
+                        isToday ? 'bg-red-50 text-[#990000] font-bold' :
                         'hover:bg-gray-100 text-gray-700'
                       }`}
                     >
                       <span>{day}</span>
                       {hasEvents && !isSelected && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-iesu-blue mt-1"></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-iesu-primary mt-1"></div>
                       )}
                       {hasEvents && isSelected && (
                         <div className="w-1.5 h-1.5 rounded-full bg-white mt-1 opacity-80"></div>
@@ -196,7 +196,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
           <div className="space-y-6">
             <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[400px]">
               <h3 className="font-black text-gray-900 mb-6 flex items-center gap-2">
-                <Clock className="text-[#0A2342]" size={20} /> 
+                <Clock className="text-[#990000]" size={20} /> 
                 {selectedDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })}
               </h3>
               
@@ -208,9 +208,9 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
                   </div>
                 ) : (
                   (dayEvents || []).map((item, idx) => {
-                    let typeColor = 'bg-blue-100 text-blue-700';
+                    let typeColor = 'bg-red-100 text-red-700';
                     if (item.calendarType !== 'personal') {
-                      typeColor = item.type === 'Eğitim' ? 'bg-emerald-100 text-emerald-700' : 'bg-[#0A2342]/10 text-[#0A2342]';
+                      typeColor = item.type === 'Eğitim' ? 'bg-emerald-100 text-emerald-700' : 'bg-[#990000]/10 text-[#990000]';
                     } else {
                       switch (item.type) {
                         case 'Gönüllü Staj': typeColor = 'bg-purple-100 text-purple-700'; break;
@@ -219,7 +219,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
                         case 'Dönem Stajı': typeColor = 'bg-indigo-100 text-indigo-700'; break;
                         case 'Sınav': typeColor = 'bg-orange-100 text-orange-700'; break;
                         case 'Mülakat': typeColor = 'bg-teal-100 text-teal-700'; break;
-                        default: typeColor = 'bg-blue-100 text-blue-700'; break;
+                        default: typeColor = 'bg-red-100 text-red-700'; break;
                       }
                     }
 
@@ -269,7 +269,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
                               }}
                               className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm"
                             >
-                              <Send size={14} className="text-[#0A2342]" />
+                              <Send size={14} className="text-[#990000]" />
                               Kariyer Merkezine Mesaj/Evrak Gönder
                             </button>
                           </div>
@@ -317,7 +317,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
               </div>
               <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-xl transition">İptal</button>
-                <button type="submit" className="px-6 py-2 bg-[#0A2342] text-white font-bold rounded-xl hover:bg-[#0A2342] transition shadow-sm">Ekle</button>
+                <button type="submit" className="px-6 py-2 bg-[#990000] text-white font-bold rounded-xl hover:bg-[#990000] transition shadow-sm">Ekle</button>
               </div>
             </form>
           </div>

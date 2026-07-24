@@ -95,7 +95,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
               placeholder="İçerik başlığında ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/20"
             />
           </div>
           <div className="flex gap-2">
@@ -112,7 +112,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
               onClick={handleImportAll}
               disabled={pendingCount === 0 || isImporting}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition ${
-                pendingCount > 0 ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                pendingCount > 0 ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-gray-100 text-gray-500 cursor-not-allowed'
               }`}
             >
               <DownloadCloud size={16} />
@@ -123,7 +123,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
 
         <div className="space-y-4">
           {filtered.map(item => (
-            <div key={item.id} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/30 transition items-start">
+            <div key={item.id} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:bg-red-50/30 transition items-start">
               <div className="w-full md:w-32 h-24 bg-gray-100 rounded-lg shrink-0 overflow-hidden flex items-center justify-center relative group">
                 {item.originalImageUrl ? (
                   <img src={item.originalImageUrl} alt={item.title} className="w-full h-full object-cover" onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
@@ -143,7 +143,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                     item.type === 'Haber' ? 'bg-purple-100 text-purple-700' :
-                    item.type === 'Etkinlik' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'
+                    item.type === 'Etkinlik' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
                   }`}>
                     {item.type}
                   </span>
@@ -168,7 +168,7 @@ export default function OfficialContentImport({ news, setNews, announcements, se
                     <CheckCircle2 size={16} /> Aktarıldı
                   </div>
                 ) : (
-                  <button onClick={() => handleImport(item)} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 text-gray-700 rounded-lg text-xs font-bold transition shadow-sm">
+                  <button onClick={() => handleImport(item)} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:border-red-500 hover:bg-red-50 hover:text-red-700 text-gray-700 rounded-lg text-xs font-bold transition shadow-sm">
                     <Plus size={16} /> İçe Aktar
                   </button>
                 )}

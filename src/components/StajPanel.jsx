@@ -6,22 +6,22 @@ export default function StajPanel({ setView, userRole }) {
 
   const adimlar = [
     {
-      icon: <FileText className="text-iesu-blue" size={24} />,
+      icon: <FileText className="text-iesu-primary" size={24} />,
       title: "1. Staj Kabul Formunun Doldurulması",
       desc: "Öğrenci, staj yapacağı kurumu bulduktan sonra 'Staj Kabul Formu'nu eksiksiz doldurmalı ve kurum yetkilisine imzalatarak kaşeletmelidir."
     },
     {
-      icon: <FileSignature className="text-iesu-blue" size={24} />,
+      icon: <FileSignature className="text-iesu-primary" size={24} />,
       title: "2. Koordinatörlük Onayı",
       desc: "İmzalı kabul formu, Kariyer Geliştirme Merkezi'ne (veya ilgili fakülte sekreterliğine) teslim edilmeli ve staj komisyonundan onay alınmalıdır."
     },
     {
-      icon: <Clock className="text-iesu-blue" size={24} />,
+      icon: <Clock className="text-iesu-primary" size={24} />,
       title: "3. Sigorta Giriş İşlemleri",
       desc: "Staja başlamadan en az 1 hafta önce SGK iş kazası ve meslek hastalığı sigortası giriş işlemleri üniversitemiz tarafından yapılacaktır."
     },
     {
-      icon: <CheckCircle className="text-iesu-blue" size={24} />,
+      icon: <CheckCircle className="text-iesu-primary" size={24} />,
       title: "4. Staj Defterinin Teslimi",
       desc: "Staj bitiminde, kurum tarafından değerlendirilen Staj Defteri ve kapalı zarftaki değerlendirme formu bölüme teslim edilmelidir."
     }
@@ -39,7 +39,7 @@ export default function StajPanel({ setView, userRole }) {
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-900 to-iesu-navy text-white py-16 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://panel.esenyurt.edu.tr/assets/2026/resimler/kurumsaliletisim/62874c3cf50e414a8630cf9be5f17172_aa25bf7819ce46e4b5208f35658a624f.jpg')] opacity-10 bg-cover bg-center mix-blend-overlay"></div>
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#0A2342]/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#990000]/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <button 
             onClick={() => {
@@ -89,7 +89,7 @@ export default function StajPanel({ setView, userRole }) {
             {/* Timeline */}
             <div className="lg:col-span-8">
               <h2 className="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3">
-                <span className="w-2 h-8 bg-iesu-blue rounded-full"></span> Başvuru ve Uygulama Adımları
+                <span className="w-2 h-8 bg-iesu-primary rounded-full"></span> Başvuru ve Uygulama Adımları
               </h2>
               
               <div className="space-y-6">
@@ -143,7 +143,7 @@ export default function StajPanel({ setView, userRole }) {
               {dokumanlar.map((doc, idx) => (
                 <div key={idx} className="flex items-center justify-between p-6 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#0A2342] group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-[#990000] group-hover:scale-110 transition-transform">
                       <Download size={20} />
                     </div>
                     <div>
@@ -172,12 +172,12 @@ export default function StajPanel({ setView, userRole }) {
                           window.toast && window.toast.success("✅ AI Onayı: İmza ve tarih alanları eksiksiz. Belgeyi komisyona iletebilirsiniz.");
                         }, 2500);
                       }}
-                      className="px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-100 text-blue-600 font-bold text-[13px] hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+                      className="px-4 py-2.5 rounded-lg bg-red-50 border border-red-100 text-red-600 font-bold text-[13px] hover:bg-red-100 transition-colors flex items-center gap-1.5"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="m9 15 2 2 4-4"></path></svg>
                       AI Ön Kontrol
                     </button>
-                    <button className="px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-gray-600 font-bold text-[13px] hover:border-[#0A2342] hover:text-[#0A2342] transition-colors">
+                    <button className="px-4 py-2.5 rounded-lg bg-white border border-gray-200 text-gray-600 font-bold text-[13px] hover:border-[#990000] hover:text-[#990000] transition-colors">
                       Boş İndir
                     </button>
                   </div>

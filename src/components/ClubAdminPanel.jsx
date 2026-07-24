@@ -282,7 +282,7 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
           {activeTab === 'members' && (
             <div className="animate-fade-in">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
                   <Users size={20} />
                 </div>
                 <div>
@@ -291,8 +291,8 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
                 </div>
               </div>
               
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl text-sm text-blue-800 font-medium flex items-start gap-3">
-                <Shield className="shrink-0 text-blue-500 mt-0.5" size={18} />
+              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-800 font-medium flex items-start gap-3">
+                <Shield className="shrink-0 text-red-500 mt-0.5" size={18} />
                 <p>Kulüp başkanı olarak üyelerinize "Yönetici" yetkisi verebilirsiniz. Yöneticiler, katılım isteklerini onaylayabilir ve kulüp adına gönderi paylaşabilir.</p>
               </div>
 
@@ -310,13 +310,13 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
                     return (
                       <div key={member.id} className={`p-4 border rounded-2xl flex items-center justify-between transition-all ${isMemberPresident ? 'bg-amber-50 border-amber-200' : isMemberAdmin ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-gray-200 hover:border-gray-300'}`}>
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${isMemberPresident ? 'bg-amber-500' : isMemberAdmin ? 'bg-indigo-500' : 'bg-gray-300'}`}>
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${isMemberPresident ? 'bg-amber-500' : isMemberAdmin ? 'bg-red-500' : 'bg-gray-300'}`}>
                             {member.name ? member.name.charAt(0).toUpperCase() : 'Ü'}
                           </div>
                           <div>
                             <p className="font-bold text-gray-900 text-sm">{member.name}</p>
                             <p className="text-[10px] font-bold mt-0.5 uppercase tracking-wider">
-                              {isMemberPresident ? <span className="text-amber-600">Başkan</span> : isMemberAdmin ? <span className="text-indigo-600">Yönetici</span> : <span className="text-gray-500">Üye</span>}
+                              {isMemberPresident ? <span className="text-amber-600">Başkan</span> : isMemberAdmin ? <span className="text-red-600">Yönetici</span> : <span className="text-gray-500">Üye</span>}
                             </p>
                           </div>
                         </div>
@@ -324,7 +324,7 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
                         {isPresident && !isMemberPresident && (
                           <button 
                             onClick={() => handleToggleAdmin(member.userId)}
-                            className={`p-2 rounded-xl transition-colors ${isMemberAdmin ? 'text-indigo-600 bg-indigo-100 hover:bg-indigo-200' : 'text-gray-500 bg-gray-100 hover:bg-gray-200 hover:text-gray-700'}`}
+                            className={`p-2 rounded-xl transition-colors ${isMemberAdmin ? 'text-red-600 bg-indigo-100 hover:bg-indigo-200' : 'text-gray-500 bg-gray-100 hover:bg-gray-200 hover:text-gray-700'}`}
                             title={isMemberAdmin ? "Yöneticilikten Al" : "Yönetici Yap"}
                           >
                             <Shield size={16} />
@@ -432,7 +432,7 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
           {activeTab === 'post' && (
             <form onSubmit={handleCreatePost} className="animate-fade-in max-w-2xl">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-red-600">
                   <Megaphone size={20} />
                 </div>
                 <div className="flex-1 flex justify-between items-center">
@@ -460,26 +460,26 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
               <div className="space-y-5">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Gönderi Başlığı</label>
-                  <input type="text" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: Yeni Dönem Tanışma Toplantısı!" />
+                  <input type="text" value={postTitle} onChange={(e) => setPostTitle(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none" placeholder="Örn: Yeni Dönem Tanışma Toplantısı!" />
                 </div>
                 
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">İçerik</label>
-                  <textarea value={postContent} onChange={(e) => setPostContent(e.target.value)} rows={5} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none resize-none" placeholder="Öğrencilerle paylaşmak istediğiniz mesajınızı yazın..." />
+                  <textarea value={postContent} onChange={(e) => setPostContent(e.target.value)} rows={5} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none resize-none" placeholder="Öğrencilerle paylaşmak istediğiniz mesajınızı yazın..." />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 flex items-center gap-1"><MapPin size={12}/> Konum (Opsiyonel)</label>
-                    <input type="text" value={postLocation} onChange={(e) => setPostLocation(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="Örn: C Blok Konferans Salonu" />
+                    <input type="text" value={postLocation} onChange={(e) => setPostLocation(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none" placeholder="Örn: C Blok Konferans Salonu" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1 flex items-center gap-1"><ImageIcon size={12}/> Görsel URL (Opsiyonel)</label>
-                    <input type="url" value={postImage} onChange={(e) => setPostImage(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" placeholder="https://..." />
+                    <input type="url" value={postImage} onChange={(e) => setPostImage(e.target.value)} className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none" placeholder="https://..." />
                   </div>
                 </div>
 
-                <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl py-4 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 mt-2 hover:-translate-y-0.5">
+                <button type="submit" className="w-full bg-red-600 hover:bg-indigo-700 text-white rounded-2xl py-4 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 mt-2 hover:-translate-y-0.5">
                   <Send size={18} /> Paylaş
                 </button>
               </div>

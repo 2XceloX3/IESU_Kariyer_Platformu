@@ -24,7 +24,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         {payload.map((pld, idx) => (
           <div key={idx} className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: pld.color || pld.fill }}></span>
-            <span className="text-slate-800 font-bold">{pld.value} <span className="text-[10px] text-slate-400 font-medium ml-1">İşlem</span></span>
+            <span className="text-red-900 font-bold">{pld.value} <span className="text-[10px] text-slate-400 font-medium ml-1">İşlem</span></span>
           </div>
         ))}
       </div>
@@ -143,7 +143,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] font-sans text-slate-800 pb-20 selection:bg-blue-200">
+    <div className="min-h-screen bg-[#F4F7FA] font-sans text-red-900 pb-20 selection:bg-red-200">
       
       {/* Navbar */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-white/20 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
@@ -151,8 +151,8 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer group" onClick={() => setView(previousView || 'student')}>
             <Logo className="h-10 w-auto group-hover:scale-105 transition-transform duration-300" />
             <div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1">
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest flex items-center gap-1">
                 <Sparkles size={10} className="animate-pulse" /> Analitik Merkezi
               </p>
             </div>
@@ -171,8 +171,8 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             <button onClick={() => setView(previousView || 'student')} className="flex items-center gap-2 text-slate-500 hover:text-[#0A66C2] font-bold mb-4 transition-colors text-xs uppercase tracking-wider group">
               <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Platforma Dön
             </button>
-            <h2 className="text-3xl lg:text-4xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
-              Kariyer Analitiği Merkezi <span className="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full uppercase tracking-widest font-bold">Premium</span>
+            <h2 className="text-3xl lg:text-4xl font-black text-red-950 flex items-center gap-3 tracking-tight">
+              Kariyer Analitiği Merkezi <span className="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-full uppercase tracking-widest font-bold">Premium</span>
             </h2>
             <p className="text-slate-500 mt-2 font-medium text-sm lg:text-base max-w-2xl">
               Veriye dayalı öngörülerle kariyer rotanızı optimize edin. İK profesyonelleri tarafından nasıl algılandığınızı ve rakiplerinize göre konumunuzu keşfedin.
@@ -184,20 +184,20 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               onClick={handleExportReport}
               className="flex-1 lg:flex-none flex justify-center items-center gap-2 bg-white/60 backdrop-blur-md border border-slate-200/50 text-slate-700 font-bold px-5 py-2.5 rounded-2xl text-xs hover:bg-white hover:shadow-lg transition-all shadow-sm"
             >
-              <Download size={16} className="text-blue-500" /> Detaylı PDF İndir
+              <Download size={16} className="text-red-500" /> Detaylı PDF İndir
             </button>
             <div className="relative flex-1 lg:flex-none">
               <select 
                 value={timeRange} 
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="w-full lg:w-auto appearance-none bg-blue-600 text-white text-xs sm:text-sm rounded-2xl font-bold p-2.5 pl-4 pr-10 hover:bg-blue-700 transition shadow-[0_4px_20px_rgba(37,99,235,0.25)] outline-none cursor-pointer"
+                className="w-full lg:w-auto appearance-none bg-red-600 text-white text-xs sm:text-sm rounded-2xl font-bold p-2.5 pl-4 pr-10 hover:bg-red-700 transition shadow-[0_4px_20px_rgba(37,99,235,0.25)] outline-none cursor-pointer"
               >
                 <option value="7">Son 7 gün görünümü</option>
                 <option value="30">Son 30 gün görünümü</option>
                 <option value="90">Son 90 gün görünümü</option>
                 <option value="365">Son 1 yıl görünümü</option>
               </select>
-              <Clock size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-200 pointer-events-none" />
+              <Clock size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-red-200 pointer-events-none" />
             </div>
           </div>
         </motion.div>
@@ -222,11 +222,11 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                 </div>
                 <div>
                   <div className="flex items-baseline gap-1">
-                    <h3 className="text-5xl font-black text-slate-900">{calculatedMetrics.score}</h3>
+                    <h3 className="text-5xl font-black text-red-950">{calculatedMetrics.score}</h3>
                     <span className="text-lg font-bold text-slate-400">/ 100</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-1.5 mt-4 overflow-hidden">
-                    <div className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full" style={{ width: `${calculatedMetrics.score}%` }}></div>
+                    <div className="bg-gradient-to-r from-emerald-400 to-orange-500 h-full rounded-full" style={{ width: `${calculatedMetrics.score}%` }}></div>
                   </div>
                 </div>
               </div>
@@ -235,15 +235,15 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             {/* Card 2: Views */}
             <motion.div variants={itemVars} className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                <Eye size={120} className="text-blue-600" />
+                <Eye size={120} className="text-red-600" />
               </div>
               <div className="relative z-10 flex flex-col justify-between h-full">
                 <div className="flex items-center gap-2 text-slate-500 font-black mb-3 text-xs uppercase tracking-widest">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center"><Eye size={14} className="text-blue-500" /></div>
+                  <div className="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center"><Eye size={14} className="text-red-500" /></div>
                   İncelemeler
                 </div>
                 <div>
-                  <h3 className="text-4xl font-black text-slate-900 mb-2">{calculatedMetrics.views}</h3>
+                  <h3 className="text-4xl font-black text-red-950 mb-2">{calculatedMetrics.views}</h3>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 w-max px-2.5 py-1.5 rounded-xl border border-emerald-100">
                     <TrendingUp size={14} /> +%{calculatedMetrics.viewsPercent} artış
                   </div>
@@ -262,7 +262,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                   Aramalar
                 </div>
                 <div>
-                  <h3 className="text-4xl font-black text-slate-900 mb-2">{calculatedMetrics.searches}</h3>
+                  <h3 className="text-4xl font-black text-red-950 mb-2">{calculatedMetrics.searches}</h3>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 w-max px-2.5 py-1.5 rounded-xl border border-emerald-100">
                     <TrendingUp size={14} /> +%{calculatedMetrics.searchesPercent} artış
                   </div>
@@ -271,19 +271,19 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             </motion.div>
 
             {/* Card 4: Ranking */}
-            <motion.div variants={itemVars} className="bg-gradient-to-br from-[#0A2342] via-[#0d315c] to-[#0A66C2] rounded-3xl border border-blue-800 p-6 shadow-[0_15px_40px_rgba(10,102,194,0.3)] relative overflow-hidden group text-white">
+            <motion.div variants={itemVars} className="bg-gradient-to-br from-[#990000] via-[#0d315c] to-[#0A66C2] rounded-3xl border border-red-800 p-6 shadow-[0_15px_40px_rgba(10,102,194,0.3)] relative overflow-hidden group text-white">
               <div className="absolute -right-8 -top-8 text-white/10 group-hover:rotate-12 transition-transform duration-700">
                 <Award size={150} />
               </div>
               <div className="relative z-10 flex flex-col justify-between h-full">
-                <div className="flex items-center gap-2 text-blue-200 font-black mb-3 text-xs uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-red-200 font-black mb-3 text-xs uppercase tracking-widest">
                   <Star size={16} className="text-amber-400 fill-amber-400" /> Bölüm Sıralaması
                 </div>
                 <div>
                   <div className="flex items-baseline gap-1">
                     <h3 className="text-5xl font-black text-white">%10</h3>
                   </div>
-                  <p className="text-blue-100 text-[11px] mt-2 font-medium leading-relaxed opacity-90">
+                  <p className="text-red-100 text-[11px] mt-2 font-medium leading-relaxed opacity-90">
                     Kariyer merkezinin veritabanında yazılım mühendisliği öğrencileri arasında elit gruptasınız.
                   </p>
                 </div>
@@ -293,9 +293,9 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
 
           {/* AI Career Assistant Panel (Expanding) */}
           <motion.div variants={itemVars} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className={`p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-500 ${aiResponse ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100' : 'bg-gradient-to-r from-slate-900 to-indigo-950 text-white'}`}>
+            <div className={`p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 transition-all duration-500 ${aiResponse ? 'bg-gradient-to-r from-red-50 to-indigo-50 border-b border-red-100' : 'bg-gradient-to-r from-red-950 to-indigo-950 text-white'}`}>
               <div className="flex items-center gap-4 w-full md:w-auto">
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${aiResponse ? 'bg-white text-indigo-600' : 'bg-white/10 text-white backdrop-blur-md border border-white/20'}`}>
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${aiResponse ? 'bg-white text-red-600' : 'bg-white/10 text-white backdrop-blur-md border border-white/20'}`}>
                   {aiReportLoading ? <Sparkles size={28} className="animate-spin" /> : <Brain size={28} />}
                 </div>
                 <div>
@@ -308,7 +308,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                 <button 
                   onClick={handleAIRequest}
                   disabled={aiReportLoading}
-                  className="w-full md:w-auto whitespace-nowrap bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black px-8 py-3.5 rounded-2xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full md:w-auto whitespace-nowrap bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-indigo-700 text-white font-black px-8 py-3.5 rounded-2xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] flex items-center justify-center gap-2 disabled:opacity-70"
                 >
                   {aiReportLoading ? 'Analiz Ediliyor...' : 'Derin Analizi Başlat'}
                   {!aiReportLoading && <Zap size={18} className="fill-current animate-bounce" />}
@@ -330,7 +330,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                       <div className="space-y-4">
                         {aiResponse.tips.map((tip, idx) => (
                           <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-indigo-200 transition-colors group">
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-sm shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-sm shrink-0 group-hover:bg-red-600 group-hover:text-white transition-colors">
                               {idx + 1}
                             </div>
                             <p className="text-slate-700 text-sm font-semibold leading-relaxed mt-1">{tip}</p>
@@ -345,7 +345,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                         <div className="text-3xl font-black text-indigo-900 mb-1">%85</div>
                         <span className="text-xs font-bold text-indigo-700">Mülakata Çağrılma İhtimali</span>
                       </div>
-                      <button className="w-full bg-white border-2 border-indigo-600 text-indigo-700 hover:bg-indigo-50 font-black py-3 rounded-2xl transition text-sm">
+                      <button className="w-full bg-white border-2 border-red-600 text-indigo-700 hover:bg-indigo-50 font-black py-3 rounded-2xl transition text-sm">
                         Mentorluk Randevusu Al
                       </button>
                     </div>
@@ -361,8 +361,8 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             {/* Area Chart: Traffic Trend */}
             <motion.div variants={itemVars} className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm hover:shadow-md transition">
               <div className="flex justify-between items-center mb-8">
-                <h3 className="text-base font-black text-slate-800 flex items-center gap-2">
-                  <BarChart2 size={20} className="text-blue-500" /> Profil Trafiği
+                <h3 className="text-base font-black text-red-900 flex items-center gap-2">
+                  <BarChart2 size={20} className="text-red-500" /> Profil Trafiği
                 </h3>
                 <span className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{calculatedMetrics.period}</span>
               </div>
@@ -393,7 +393,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             {/* Radar Chart: Skills vs Average */}
             <motion.div variants={itemVars} className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm hover:shadow-md transition">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-base font-black text-slate-800 flex items-center gap-2">
+                <h3 className="text-base font-black text-red-900 flex items-center gap-2">
                   <Activity size={20} className="text-purple-500" /> Yetenek Kıyaslaması
                 </h3>
               </div>
@@ -414,7 +414,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               
               <div className="flex justify-center gap-6 mt-2 border-t border-slate-100 pt-4">
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                  <span className="w-3 h-3 rounded bg-blue-500"></span> Siz
+                  <span className="w-3 h-3 rounded bg-red-500"></span> Siz
                 </div>
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
                   <span className="w-3 h-3 rounded bg-slate-300 border border-slate-400 border-dashed"></span> Ortanca
@@ -429,7 +429,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             {/* Top Viewers */}
             <motion.div variants={itemVars} className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex flex-col h-full relative">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 uppercase tracking-widest">
+                <h3 className="text-sm font-black text-red-900 flex items-center gap-2 uppercase tracking-widest">
                   <Building2 size={16} className="text-slate-400" /> Profil İnceleyenler
                 </h3>
               </div>
@@ -438,7 +438,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                   <div key={idx} className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-xl transition cursor-pointer">
                     <img src={comp.logo} alt={comp.name} className="w-10 h-10 rounded-xl border border-slate-100 object-cover shadow-sm" />
                     <div className="flex-grow min-w-0">
-                      <h4 className="font-black text-slate-800 text-sm truncate">{comp.name}</h4>
+                      <h4 className="font-black text-red-900 text-sm truncate">{comp.name}</h4>
                       <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{comp.sector}</p>
                     </div>
                     <span className="text-[10px] text-slate-400 font-black shrink-0 bg-slate-100 px-2 py-1 rounded">{comp.time}</span>
@@ -455,7 +455,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
 
             {/* Keyword Performance */}
             <motion.div variants={itemVars} className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex flex-col h-full">
-              <h3 className="text-sm font-black text-slate-800 mb-5 flex items-center gap-2 uppercase tracking-widest">
+              <h3 className="text-sm font-black text-red-900 mb-5 flex items-center gap-2 uppercase tracking-widest">
                 <Search size={16} className="text-slate-400" /> Arama Anahtar Kelimeleri
               </h3>
               <div className="space-y-5 flex-grow">
@@ -463,14 +463,14 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                   <div key={idx} className="flex flex-col gap-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-xs font-bold text-slate-700">{item.name}</span>
-                      <span className="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded uppercase">{item.count} Kez</span>
+                      <span className="text-[10px] font-black text-red-950 bg-slate-100 px-2 py-0.5 rounded uppercase">{item.count} Kez</span>
                     </div>
                     <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden shadow-inner">
                       <motion.div 
                         initial={{ width: 0 }}
                         whileInView={{ width: `${Math.min(100, (item.count / 75) * 100)}%` }}
                         transition={{ duration: 1, ease: "easeOut" }}
-                        className="bg-gradient-to-r from-blue-400 to-indigo-500 h-full rounded-full" 
+                        className="bg-gradient-to-r from-red-400 to-red-500 h-full rounded-full" 
                       />
                     </div>
                   </div>
@@ -480,7 +480,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
 
             {/* Competitor Board */}
             <motion.div variants={itemVars} className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex flex-col h-full bg-gradient-to-b from-white to-orange-50/30">
-              <h3 className="text-sm font-black text-slate-800 mb-2 flex items-center gap-2 uppercase tracking-widest">
+              <h3 className="text-sm font-black text-red-900 mb-2 flex items-center gap-2 uppercase tracking-widest">
                 <Medal size={16} className="text-orange-500" /> Sınıf İçi Liderlik
               </h3>
               <p className="text-[10px] font-bold text-slate-500 mb-4">Esenyurt Ekosistemindeki genel durumunuz (Anonimleştirilmiş veriler)</p>
@@ -494,11 +494,11 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                     </div>
                     <div className="flex-grow min-w-0 flex items-center justify-between">
                       <div>
-                        <h4 className="font-black text-slate-800 text-xs">{comp.init}</h4>
+                        <h4 className="font-black text-red-900 text-xs">{comp.init}</h4>
                         <p className="text-[10px] text-slate-500 font-bold">{comp.projects} Proje</p>
                       </div>
                       <div className="text-right">
-                        <span className="block text-xs font-black text-slate-900">{comp.ssp}</span>
+                        <span className="block text-xs font-black text-red-950">{comp.ssp}</span>
                         <span className="block text-[9px] font-bold text-slate-400 uppercase">SSP Puanı</span>
                       </div>
                     </div>
@@ -508,7 +508,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                 {/* User's position indicator */}
                 <div className="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between px-2">
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sizin Sıranız</span>
-                  <span className="text-sm font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">#42</span>
+                  <span className="text-sm font-black text-red-600 bg-indigo-50 px-3 py-1 rounded-full">#42</span>
                 </div>
               </div>
             </motion.div>
@@ -522,7 +522,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
         {showVisitorsModal && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] bg-red-950/40 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setShowVisitorsModal(false)}
           >
             <motion.div 
@@ -532,7 +532,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             >
               <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div>
-                  <h3 className="font-black text-slate-900 text-lg">Profilini İnceleyenler</h3>
+                  <h3 className="font-black text-red-950 text-lg">Profilini İnceleyenler</h3>
                   <p className="text-xs font-bold text-slate-500 mt-1">Son 90 günde inceleyen 12 şirket</p>
                 </div>
                 <button onClick={() => setShowVisitorsModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 transition">
@@ -544,12 +544,12 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                   <div key={idx} className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl transition cursor-pointer group border-b border-slate-50 last:border-0">
                     <img src={comp.logo} alt={comp.name} className="w-12 h-12 rounded-xl border border-slate-200 object-cover shadow-sm group-hover:scale-105 transition-transform" />
                     <div className="flex-grow">
-                      <h4 className="font-black text-slate-900 text-sm">{comp.name}</h4>
+                      <h4 className="font-black text-red-950 text-sm">{comp.name}</h4>
                       <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">{comp.sector}</p>
                     </div>
                     <div className="text-right flex flex-col items-end gap-1">
                       <span className="text-[10px] text-slate-400 font-black bg-slate-100 px-2 py-0.5 rounded">{comp.time}</span>
-                      <button className="text-[10px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-wider">İncele</button>
+                      <button className="text-[10px] font-black text-red-600 hover:text-red-800 uppercase tracking-wider">İncele</button>
                     </div>
                   </div>
                 ))}
@@ -557,7 +557,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                 <div className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl transition cursor-pointer border-b border-slate-50">
                   <div className="w-12 h-12 rounded-xl border border-slate-200 bg-slate-100 flex items-center justify-center text-slate-400 font-black shadow-sm">GZ</div>
                   <div className="flex-grow">
-                    <h4 className="font-black text-slate-900 text-sm">Gizia Teknoloji</h4>
+                    <h4 className="font-black text-red-950 text-sm">Gizia Teknoloji</h4>
                     <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Yazılım Danışmanlık</p>
                   </div>
                   <div className="text-right flex flex-col items-end gap-1">

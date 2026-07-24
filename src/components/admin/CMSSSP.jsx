@@ -171,7 +171,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
               <div className="flex-1 bg-gray-100 p-3 overflow-y-auto custom-scrollbar">
                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
                   <div className="p-3 flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">İESÜ</div>
+                    <div className="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold text-xs shrink-0">İESÜ</div>
                     <div>
                       <p className="text-[11px] font-bold leading-tight">Esenyurt Kariyer Merkezi</p>
                       <p className="text-[9px] text-gray-500">Şimdi paylaştı</p>
@@ -194,7 +194,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   )}
                   
                   <div className="p-3">
-                    <button className={`w-full text-white font-bold text-[11px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-md ${type === 'mission' ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gradient-to-r from-blue-600 to-indigo-700'}`}>
+                    <button className={`w-full text-white font-bold text-[11px] py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-md ${type === 'mission' ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-gradient-to-r from-red-600 to-indigo-700'}`}>
                       <CheckCircle2 size={14}/> {btnText}
                     </button>
                     {points !== null && (
@@ -219,7 +219,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
       
       {/* SOL MENÜ (SIDEBAR) */}
       <div className="w-64 shrink-0 space-y-4">
-        <div className="bg-slate-900 rounded-2xl p-5 text-white shadow-xl">
+        <div className="bg-red-950 rounded-2xl p-5 text-white shadow-xl">
           <Award className="text-amber-500 w-10 h-10 mb-3" />
           <h2 className="text-xl font-black leading-tight">İçerik & SSP<br/>Merkezi</h2>
           <p className="text-xs text-slate-400 mt-2">Gelişmiş Yönetim Modülü</p>
@@ -253,7 +253,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                 <div className="flex gap-3">
                   <div className="relative w-64">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input type="text" placeholder="Öğrenci Ara..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:border-indigo-500 outline-none" />
+                    <input type="text" placeholder="Öğrenci Ara..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:border-red-500 outline-none" />
                   </div>
                   <button onClick={handleExportSPSS} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition active:scale-95 shadow-sm">
                     <FileSpreadsheet size={16} /> SPSS Excel İndir
@@ -266,7 +266,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   <span className="font-bold text-gray-500">#{index + 1}</span>,
                   <span className="font-bold text-gray-900">{u.name}</span>,
                   <span className="text-sm text-gray-600">{u.department}</span>,
-                  <span className="font-black text-indigo-600">{u.points.toLocaleString()} SSP</span>,
+                  <span className="font-black text-red-600">{u.points.toLocaleString()} SSP</span>,
                   <Badge status={index === 0 ? 'Aktif' : index < 3 ? 'Yayında' : 'Beklemede'} label={index === 0 ? 'Lider' : index < 3 ? 'Elit' : 'Katılımcı'} />
                 ])}
               />
@@ -276,13 +276,13 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
 
         {/* ======================= 2. EVENT POOL ======================= */}
         {activePool === 'event_pool' && viewState === 'list' && (
-          <Card className="p-6 animate-fade-in border-t-4 border-indigo-500">
+          <Card className="p-6 animate-fade-in border-t-4 border-red-500">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="font-black text-gray-900 text-lg">Etkinlik Havuzu</h3>
                 <p className="text-xs text-gray-500">Kayıt gerektiren ve katılımcılara SSP kazandıran etkinlikler.</p>
               </div>
-              <button onClick={() => setViewState('create_event')} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2">
+              <button onClick={() => setViewState('create_event')} className="bg-red-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2">
                 <Plus size={16}/> Yeni Etkinlik
               </button>
             </div>
@@ -294,7 +294,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                 <span className="font-medium text-gray-600">{e.attendees} Kişi</span>,
                 <span className="font-black text-amber-600">{e.totalPoints} SSP</span>,
                 <Badge status={e.status === 'Aktif' ? 'Aktif' : 'Bitti'} label={e.status} />,
-                <button className="text-indigo-600 font-bold flex items-center gap-1 text-xs"><Edit3 size={14}/> Yönet</button>
+                <button className="text-red-600 font-bold flex items-center gap-1 text-xs"><Edit3 size={14}/> Yönet</button>
               ])}
             />
           </Card>
@@ -304,7 +304,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 animate-fade-in">
             <div className="lg:col-span-3 space-y-6">
                <button onClick={resetForm} className="text-sm font-bold text-gray-500 hover:text-gray-800">← Havuza Dön</button>
-               <Card className="p-6 border-t-4 border-indigo-600">
+               <Card className="p-6 border-t-4 border-red-600">
                  <h3 className="text-xl font-black text-gray-900 mb-6">Etkinlik Yayınla</h3>
                  <div className="space-y-4">
                     <div>
@@ -313,8 +313,8 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                     </div>
                     <div>
                       <label className="text-sm font-bold text-gray-700 block mb-2">Kapak Görseli</label>
-                      <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`w-full h-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer ${dragActive ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 hover:bg-gray-50'}`}>
-                        <UploadCloud className={`mb-2 ${dragActive ? 'text-indigo-500' : 'text-gray-400'}`} />
+                      <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`w-full h-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer ${dragActive ? 'border-red-500 bg-indigo-50' : 'border-gray-300 hover:bg-gray-50'}`}>
+                        <UploadCloud className={`mb-2 ${dragActive ? 'text-red-500' : 'text-gray-400'}`} />
                         <p className="text-sm font-bold text-gray-600">Görseli Sürükleyin</p>
                       </div>
                     </div>
@@ -322,7 +322,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                       <label className="text-sm font-bold text-gray-700 block mb-2">Kazanılacak SSP</label>
                       <input type="number" value={eventPoints} onChange={e=>setEventPoints(Number(e.target.value))} className="w-full p-3 border rounded-xl font-bold text-amber-600" />
                     </div>
-                    <button onClick={() => { toast.success('Etkinlik Yayınlandı'); resetForm(); }} className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl mt-4">Yayınla</button>
+                    <button onClick={() => { toast.success('Etkinlik Yayınlandı'); resetForm(); }} className="w-full bg-red-600 text-white font-bold py-3 rounded-xl mt-4">Yayınla</button>
                  </div>
                </Card>
             </div>
@@ -332,7 +332,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
 
         {/* ======================= 3. MISSION POOL ======================= */}
         {activePool === 'mission_pool' && viewState === 'list' && (
-          <Card className="p-6 animate-fade-in border-t-4 border-teal-500">
+          <Card className="p-6 animate-fade-in border-t-4 border-orange-500">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="font-black text-gray-900 text-lg">Haftalık Görev Havuzu</h3>
@@ -360,7 +360,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 animate-fade-in">
             <div className="lg:col-span-3 space-y-6">
                <button onClick={resetForm} className="text-sm font-bold text-gray-500 hover:text-gray-800">← Havuza Dön</button>
-               <Card className="p-6 border-t-4 border-teal-500">
+               <Card className="p-6 border-t-4 border-orange-500">
                  <h3 className="text-xl font-black text-gray-900 mb-6">Haftalık Görev Yayınla</h3>
                  <div className="space-y-4">
                     <div>
@@ -371,7 +371,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                       <label className="text-sm font-bold text-gray-700 block mb-2">Görev Açıklaması</label>
                       <textarea value={missionDesc} onChange={e=>setMissionDesc(e.target.value)} rows={3} className="w-full p-3 border rounded-xl resize-none"></textarea>
                     </div>
-                    <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`w-full h-24 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer ${dragActive ? 'border-teal-500 bg-teal-50' : 'border-gray-300 hover:bg-gray-50'}`}>
+                    <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`w-full h-24 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer ${dragActive ? 'border-orange-500 bg-teal-50' : 'border-gray-300 hover:bg-gray-50'}`}>
                         <UploadCloud className="mb-1 text-gray-400" size={24}/>
                         <p className="text-xs font-bold text-gray-600">İkon / Görsel Sürükleyin</p>
                     </div>
@@ -389,13 +389,13 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
 
         {/* ======================= 4. ANNOUNCEMENT POOL ======================= */}
         {activePool === 'announcement_pool' && viewState === 'list' && (
-          <Card className="p-6 animate-fade-in border-t-4 border-blue-500">
+          <Card className="p-6 animate-fade-in border-t-4 border-red-500">
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="font-black text-gray-900 text-lg">Duyurular Havuzu</h3>
                 <p className="text-xs text-gray-500">Puan içermeyen, genel bilgilendirme amaçlı duyurular.</p>
               </div>
-              <button onClick={() => setViewState('create_announce')} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2">
+              <button onClick={() => setViewState('create_announce')} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2">
                 <Plus size={16}/> Yeni Duyuru
               </button>
             </div>
@@ -406,7 +406,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                 <span className="font-bold text-gray-900">{a.title}</span>,
                 <span className="font-medium text-gray-600">{a.views}</span>,
                 <Badge status={a.status === 'Aktif' ? 'Aktif' : 'Bitti'} label={a.status} />,
-                <button className="text-blue-600 font-bold flex items-center gap-1 text-xs"><Edit3 size={14}/> Yönet</button>
+                <button className="text-red-600 font-bold flex items-center gap-1 text-xs"><Edit3 size={14}/> Yönet</button>
               ])}
             />
           </Card>
@@ -416,7 +416,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 animate-fade-in">
             <div className="lg:col-span-3 space-y-6">
                <button onClick={resetForm} className="text-sm font-bold text-gray-500 hover:text-gray-800">← Havuza Dön</button>
-               <Card className="p-6 border-t-4 border-blue-600">
+               <Card className="p-6 border-t-4 border-red-600">
                  <h3 className="text-xl font-black text-gray-900 mb-6">Duyuru Yayınla</h3>
                  <div className="space-y-4">
                     <div>
@@ -427,11 +427,11 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                       <label className="text-sm font-bold text-gray-700 block mb-2">Duyuru Detayı</label>
                       <textarea value={announceDesc} onChange={e=>setAnnounceDesc(e.target.value)} rows={4} className="w-full p-3 border rounded-xl resize-none"></textarea>
                     </div>
-                    <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`w-full h-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:bg-gray-50'}`}>
+                    <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`w-full h-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer ${dragActive ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:bg-gray-50'}`}>
                         <UploadCloud className="mb-2 text-gray-400" size={32}/>
                         <p className="text-sm font-bold text-gray-600">Afiş / Görsel Sürükleyin</p>
                     </div>
-                    <button onClick={() => { toast.success('Duyuru Yayınlandı'); resetForm(); }} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl mt-4">Herkese Duyur</button>
+                    <button onClick={() => { toast.success('Duyuru Yayınlandı'); resetForm(); }} className="w-full bg-red-600 text-white font-bold py-3 rounded-xl mt-4">Herkese Duyur</button>
                  </div>
                </Card>
             </div>
@@ -459,7 +459,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                 <span className="font-medium text-gray-600">{s.event}</span>,
                 <span className="font-black text-emerald-600">{s.responses}</span>,
                 <button onClick={handleExportSPSS} className="text-emerald-600 bg-emerald-50 px-3 py-1 rounded font-bold text-[11px] flex items-center gap-1 hover:bg-emerald-100"><FileSpreadsheet size={12}/> SPSS İndir</button>,
-                <button onClick={() => handleManageSurvey(s.id)} className="text-indigo-600 font-bold flex items-center gap-1 text-xs"><Edit3 size={14}/> Yönet</button>
+                <button onClick={() => handleManageSurvey(s.id)} className="text-red-600 font-bold flex items-center gap-1 text-xs"><Edit3 size={14}/> Yönet</button>
               ])}
             />
           </Card>

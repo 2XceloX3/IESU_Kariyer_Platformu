@@ -71,8 +71,8 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Target className="text-[#0A2342]" size={24} />
-            <h1 className="font-black text-[#0A2342]">Kariyer Simülasyonu</h1>
+            <Target className="text-[#990000]" size={24} />
+            <h1 className="font-black text-[#990000]">Kariyer Simülasyonu</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -82,7 +82,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
         
         {!roadmap && !isGenerating && (
           <div className="text-center py-20 px-4">
-            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600 shadow-inner">
+            <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600 shadow-inner">
               <Target size={48} />
             </div>
             <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Hayalindeki Rolü Söyle</h2>
@@ -90,7 +90,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
               Anka AI, hedefine giden en kısa ve verimli yolu hesaplayarak sana özel, adım adım bir kariyer haritası (Roadmap) çıkarsın.
             </p>
             
-            <div className="max-w-md mx-auto bg-white p-2 rounded-2xl shadow-xl shadow-blue-900/5 flex items-center border border-gray-100 focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100 transition-all">
+            <div className="max-w-md mx-auto bg-white p-2 rounded-2xl shadow-xl shadow-red-900/5 flex items-center border border-gray-100 focus-within:border-red-400 focus-within:ring-4 focus-within:ring-red-100 transition-all">
               <input 
                 type="text" 
                 className="flex-1 bg-transparent border-none outline-none px-4 text-gray-700 placeholder-gray-400 font-medium"
@@ -102,7 +102,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
               <button 
                 onClick={handleGenerate}
                 disabled={!dreamRole.trim()}
-                className="bg-[#0A2342] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition disabled:opacity-50"
+                className="bg-[#990000] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-red-700 transition disabled:opacity-50"
               >
                 Rota Oluştur <Sparkles size={18} />
               </button>
@@ -111,7 +111,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
             <div className="mt-8 flex flex-wrap justify-center gap-2 max-w-md mx-auto">
               <span className="text-xs font-bold text-gray-400 uppercase w-full mb-1">Popüler Hedefler</span>
               {['Google Yazılım Mühendisi', 'THY Kabin Memuru', 'Aselsan Siber Güvenlik Uzmanı', 'Akbank Finansal Analist'].map(r => (
-                <button key={r} onClick={() => setDreamRole(r)} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-blue-50 hover:text-blue-600 transition">
+                <button key={r} onClick={() => setDreamRole(r)} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 transition">
                   {r}
                 </button>
               ))}
@@ -122,9 +122,9 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
         {isGenerating && (
           <div className="flex flex-col items-center justify-center py-32 text-center">
             <div className="relative w-24 h-24 mb-6">
-              <div className="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-50" />
-              <div className="relative bg-white rounded-full p-6 border-4 border-blue-50 shadow-sm flex items-center justify-center h-full">
-                <Zap size={40} className="text-blue-600 animate-pulse" />
+              <div className="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-50" />
+              <div className="relative bg-white rounded-full p-6 border-4 border-red-50 shadow-sm flex items-center justify-center h-full">
+                <Zap size={40} className="text-red-600 animate-pulse" />
               </div>
             </div>
             <h3 className="text-2xl font-black text-gray-900 mb-2">Kariyer Rotası Hesaplanıyor...</h3>
@@ -141,7 +141,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
             >
               <div className="flex justify-between items-end mb-12">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-black uppercase tracking-wider mb-4 border border-blue-100">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-black uppercase tracking-wider mb-4 border border-red-100">
                     <MapPin size={14} /> Hedef Kilitlendi
                   </div>
                   <h2 className="text-3xl lg:text-2xl font-black text-gray-900 leading-tight">
@@ -157,7 +157,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
               </div>
 
               {/* Vertical Timeline */}
-              <div className="relative border-l-4 border-blue-100 ml-6 md:ml-10 space-y-12">
+              <div className="relative border-l-4 border-red-100 ml-6 md:ml-10 space-y-12">
                 {roadmap.phases.map((phase, idx) => (
                   <motion.div 
                     initial={{ opacity: 0, x: -50 }}
@@ -167,11 +167,11 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
                     className="relative pl-8 md:pl-12"
                   >
                     {/* Node marker */}
-                    <div className="absolute -left-[22px] top-0 w-10 h-10 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center shadow-sm z-10">
-                      <span className="text-blue-600 font-black text-sm">{phase.id}</span>
+                    <div className="absolute -left-[22px] top-0 w-10 h-10 bg-white border-4 border-red-500 rounded-full flex items-center justify-center shadow-sm z-10">
+                      <span className="text-red-600 font-black text-sm">{phase.id}</span>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 md:p-8 shadow-xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden group hover:border-blue-200 transition-colors">
+                    <div className="bg-white rounded-xl p-6 md:p-8 shadow-xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden group hover:border-red-200 transition-colors">
                       {/* Decorative Background */}
                       <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-5 transition-opacity pointer-events-none">
                         {idx === 0 ? <Code size={150} /> : idx === 1 ? <Users size={150} /> : idx === 2 ? <Rocket size={150} /> : <Award size={150} />}
@@ -188,7 +188,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
                       
                       <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
                         <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                          <Target size={18} className="text-blue-500"/> Hedef Görevler
+                          <Target size={18} className="text-red-500"/> Hedef Görevler
                         </h4>
                         <ul className="space-y-3">
                           {phase.tasks.map((task, tIdx) => (
@@ -205,10 +205,10 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
               </div>
               
               <div className="mt-16 text-center">
-                 <div className="inline-flex items-center justify-center w-16 h-16 bg-[#0A2342] rounded-full text-white shadow-sm mb-4">
+                 <div className="inline-flex items-center justify-center w-16 h-16 bg-[#990000] rounded-full text-white shadow-sm mb-4">
                    <CheckCircle2 size={32} />
                  </div>
-                 <h3 className="text-2xl font-black text-[#0A2342]">Kariyer Hedefine Ulaşıldı</h3>
+                 <h3 className="text-2xl font-black text-[#990000]">Kariyer Hedefine Ulaşıldı</h3>
                  <p className="text-gray-500 mt-2">Bu adımları izlediğinizde hedefinize ulaşmak için gerekli kurumsal yetkinlikleri kazanmış olacaksınız. Kariyer Geliştirme Merkezi tüm bu süreçte yanınızda.</p>
               </div>
 

@@ -4,17 +4,17 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
   const getClasses = () => {
     switch(label) {
       case 'Ana Akış':
-      case 'Akış': return { text: 'text-blue-500', bg: 'bg-blue-50', badge: 'bg-blue-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
+      case 'Akış': return { text: 'text-red-500', bg: 'bg-red-50', badge: 'bg-red-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
       case 'Radar & Onaylar': return { text: 'text-red-500', bg: 'bg-red-50', badge: 'bg-red-500', glow: 'drop-shadow-[0_0_12px_rgba(239,68,68,0.8)]' };
       case 'Gündem': 
       case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
       case 'İlanlar': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
       case 'Yeni İlan': return { text: 'text-orange-500', bg: 'bg-orange-50', badge: 'bg-orange-500', glow: 'drop-shadow-[0_0_12px_rgba(249,115,22,0.8)]' };
-      case 'Topluluklar': return { text: 'text-teal-500', bg: 'bg-teal-50', badge: 'bg-teal-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
+      case 'Topluluklar': return { text: 'text-orange-500', bg: 'bg-teal-50', badge: 'bg-orange-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
       case 'Anketler': return { text: 'text-fuchsia-500', bg: 'bg-fuchsia-50', badge: 'bg-fuchsia-500', glow: 'drop-shadow-[0_0_12px_rgba(217,70,239,0.8)]' };
       case 'Mesajlar': return { text: 'text-amber-500', bg: 'bg-amber-50', badge: 'bg-amber-500', glow: 'drop-shadow-[0_0_12px_rgba(245,158,11,0.8)]' };
       case 'Bildirimler': return { text: 'text-rose-500', bg: 'bg-rose-50', badge: 'bg-rose-500', glow: 'drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]' };
-      default: return { text: 'text-[#0A2342]', bg: 'bg-red-50', badge: 'bg-[#0A2342]', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
+      default: return { text: 'text-[#990000]', bg: 'bg-red-50', badge: 'bg-[#990000]', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
     }
   };
   const c = getClasses();

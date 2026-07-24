@@ -130,8 +130,8 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
           <div className="space-y-4">
             {(events || []).slice(0, 2).map(e => (
               <div key={e.id} className="flex items-start gap-3 border-b border-gray-50 pb-3">
-                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                  <Calendar size={14} className="text-blue-600" />
+                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                  <Calendar size={14} className="text-red-600" />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900">Yeni Etkinlik Eklendi: {e?.title}</p>
@@ -178,7 +178,7 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
           <p className="text-3xl font-black text-gray-900">{(jobs || []).filter(j=>j?.status==='Beklemede').length}</p>
           <p className="text-xs font-bold text-gray-500 uppercase mt-1">Onay Bekleyen İlan</p>
         </Card>
-        <Card className="p-5 border-l-4 border-blue-400">
+        <Card className="p-5 border-l-4 border-red-400">
           <p className="text-3xl font-black text-gray-900">{(voluntaryInternships || []).filter(v=>v.status==='Onay Bekliyor').length}</p>
           <p className="text-xs font-bold text-gray-500 uppercase mt-1">Staj Onay Bekliyor</p>
         </Card>
@@ -276,7 +276,7 @@ function AkademikPanel({ students = [] }) {
               <span className="font-bold text-gray-900">{s?.name}</span>,
               s?.dept,
               `${s?.year}. Sınıf`,
-              <span className={`font-black ${s?.gpa>=3.5?'text-emerald-600':s?.gpa>=3.0?'text-blue-600':'text-orange-600'}`}>{s?.gpa}</span>,
+              <span className={`font-black ${s?.gpa>=3.5?'text-emerald-600':s?.gpa>=3.0?'text-red-600':'text-orange-600'}`}>{s?.gpa}</span>,
               s?.cv?<CheckCircle size={15} className="text-emerald-500"/>:<XCircle size={15} className="text-gray-400"/>,
               <Badge status={s?.status}/>
             ])}
@@ -548,12 +548,12 @@ export default function AdminDashboard({
                 activeCategory === cat.id 
                   ? (() => {
                       switch (cat.id) {
-                        case 'genel': return 'bg-slate-100 text-slate-800 border border-slate-300 shadow-sm';
-                        case 'kullanici': return 'bg-slate-100 text-slate-800 border border-slate-300 shadow-sm';
-                        case 'icerik': return 'bg-slate-100 text-slate-800 border border-slate-300 shadow-sm';
-                        case 'sistem': return 'bg-slate-100 text-slate-800 border border-slate-300 shadow-sm';
-                        case 'birlik': return 'bg-slate-100 text-slate-800 border border-slate-300 shadow-sm';
-                        default: return 'bg-slate-100 text-slate-800 border border-slate-300 shadow-sm';
+                        case 'genel': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
+                        case 'kullanici': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
+                        case 'icerik': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
+                        case 'sistem': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
+                        case 'birlik': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
+                        default: return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
                       }
                     })()
                   : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:shadow-sm'
@@ -563,17 +563,17 @@ export default function AdminDashboard({
                 activeCategory === cat.id 
                   ? (() => {
                       switch (cat.id) {
-                        case 'genel': return 'text-[#0A2342]';
-                        case 'kullanici': return 'text-[#0A2342]';
-                        case 'icerik': return 'text-[#0A2342]';
-                        case 'sistem': return 'text-[#0A2342]';
-                        case 'birlik': return 'text-[#0A2342]';
+                        case 'genel': return 'text-[#990000]';
+                        case 'kullanici': return 'text-[#990000]';
+                        case 'icerik': return 'text-[#990000]';
+                        case 'sistem': return 'text-[#990000]';
+                        case 'birlik': return 'text-[#990000]';
                         default: return 'text-red-600 shadow-sm';
                       }
                     })()
                   : (() => {
                       switch (cat.id) {
-                        case 'genel': return 'text-gray-500 group-hover:text-blue-500 group-hover:shadow-sm';
+                        case 'genel': return 'text-gray-500 group-hover:text-red-500 group-hover:shadow-sm';
                         case 'kullanici': return 'text-gray-500 group-hover:text-purple-500 group-hover:shadow-sm';
                         case 'icerik': return 'text-gray-500 group-hover:text-emerald-500 group-hover:shadow-sm';
                         case 'sistem': return 'text-gray-500 group-hover:text-amber-500 group-hover:shadow-sm';
@@ -614,11 +614,11 @@ export default function AdminDashboard({
             {filteredPanels.map(tab => {
               const catId = PANEL_CATEGORIES.find(c => c.panels.includes(tab.id))?.id || 'genel';
               const theme = {
-                genel: { active: 'bg-[#0A2342] text-white border-[#0A2342] shadow-sm', hoverText: 'group-hover:text-blue-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                kullanici: { active: 'bg-[#0A2342] text-white border-[#0A2342] shadow-sm', hoverText: 'group-hover:text-purple-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                icerik: { active: 'bg-[#0A2342] text-white border-[#0A2342] shadow-sm', hoverText: 'group-hover:text-emerald-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                sistem: { active: 'bg-[#0A2342] text-white border-[#0A2342] shadow-sm', hoverText: 'group-hover:text-amber-500', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-              }[catId] || { active: 'bg-[#0A2342] text-white border-[#0A2342] shadow-sm', hoverText: 'group-hover:text-red-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' };
+                genel: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-red-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                kullanici: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-purple-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                icerik: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-emerald-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                sistem: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-amber-500', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+              }[catId] || { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-red-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' };
 
               return (
                 <button

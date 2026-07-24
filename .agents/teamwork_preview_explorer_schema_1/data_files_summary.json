@@ -1,0 +1,108 @@
+{
+  "src/utils/mockData.js": {
+    "exists": true,
+    "exports": [
+      "generateStudents",
+      "generateAlumni",
+      "generateCompanies",
+      "generateAcademicStaff",
+      "initialNews",
+      "initialEvents",
+      "initialAnnouncements",
+      "initialSemCourses",
+      "initialJobs",
+      "initialFeatured",
+      "initialMentorships",
+      "initialVoluntaryInternships",
+      "initialAcademicCatalog",
+      "academicStaff",
+      "initialInternships",
+      "initialAcademicApprovals",
+      "initialGroups",
+      "initialSurveys",
+      "initialPosts"
+    ],
+    "lineCount": 601
+  },
+  "src/utils/liveData.js": {
+    "exists": true,
+    "exports": [
+      "liveSliderData",
+      "liveNewsData",
+      "liveAnnouncementsData",
+      "liveStatsData"
+    ],
+    "lineCount": 156
+  },
+  "src/utils/innerPagesData.js": {
+    "exists": true,
+    "exports": [
+      "innerPagesData"
+    ],
+    "lineCount": 121
+  },
+  "src/utils/universityData.js": {
+    "exists": true,
+    "exports": [
+      "IESU_FACULTIES",
+      "IESU_YUKSEKOKUL",
+      "IESU_MYO",
+      "IESU_ENSTITU",
+      "getAllDepartments",
+      "getAllFacultyNames",
+      "getDepartmentsByFaculty"
+    ],
+    "lineCount": 166
+  },
+  "src/components/liveData.js": {
+    "exists": true,
+    "exports": [
+      "liveData"
+    ],
+    "lineCount": 8
+  },
+  "src/data/mockAdminData.js": {
+    "exists": true,
+    "exports": [
+      "STUDENTS",
+      "ALUMNI",
+      "COMPANIES",
+      "ALUMNI_CARDS",
+      "JOBS_INIT",
+      "MENTORSHIPS_INIT",
+      "VOLUNTEER_INIT",
+      "MESSAGES_INIT",
+      "SURVEYS_INIT",
+      "SEM_INIT",
+      "NEWS_INIT",
+      "EVENTS_INIT",
+      "ORG"
+    ],
+    "lineCount": 56
+  },
+  "src/data/knowledge_base/announcements_media.json": {
+    "exists": true,
+    "exports": [],
+    "lineCount": 35
+  },
+  "src/data/knowledge_base/corporate_hierarchy.json": {
+    "exists": true,
+    "exports": [],
+    "lineCount": 21
+  },
+  "src/data/knowledge_base/documents_forms.json": {
+    "exists": true,
+    "exports": [],
+    "lineCount": 26
+  },
+  "src/data/knowledge_base/route_map.json": {
+    "exists": true,
+    "exports": [],
+    "lineCount": 15
+  },
+  "src/data/knowledge_base/units_services.json": {
+    "exists": true,
+    "exports": [],
+    "lineCount": 30
+  }
+}

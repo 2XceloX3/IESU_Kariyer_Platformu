@@ -55,7 +55,7 @@ export default function HeroSlider() {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent pointer-events-none"></div>
           <div className="absolute bottom-12 left-6 md:left-12 right-6 md:right-12 z-10 text-white max-w-3xl pointer-events-none">
             {slide.badge && (
-              <span className="inline-block text-[11px] font-black uppercase tracking-widest text-indigo-300 bg-indigo-950/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-indigo-500/30 mb-3">
+              <span className="inline-block text-[11px] font-black uppercase tracking-widest text-indigo-300 bg-indigo-950/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-red-500/30 mb-3">
                 {slide.badge}
               </span>
             )}
@@ -74,7 +74,7 @@ export default function HeroSlider() {
             onClick={() => setCurrentSlide(idx)}
             aria-label={`Slayt ${idx + 1}`}
             aria-current={idx === currentSlide ? "true" : "false"}
-            className={`h-2 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/50 ${idx === currentSlide ? 'w-10 bg-[#0A2342]' : 'w-2 bg-white/50 hover:bg-white'}`}
+            className={`h-2 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-white/50 ${idx === currentSlide ? 'w-10 bg-[#990000]' : 'w-2 bg-white/50 hover:bg-white'}`}
           />
         ))}
       </div>

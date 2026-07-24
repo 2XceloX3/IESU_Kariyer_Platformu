@@ -66,7 +66,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
 
   const getPersona = () => {
     const maxTrait = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-    if (maxTrait === 'logic') return { title: 'Sistem Mimarı', icon: <Brain className="text-blue-500" size={48} />, desc: 'Analitik zekasıyla karmaşık sorunları çözen stratejist.', color: 'from-blue-500 to-indigo-600', paths: ['Yazılım Geliştirme', 'Veri Bilimi', 'Finansal Analiz'] };
+    if (maxTrait === 'logic') return { title: 'Sistem Mimarı', icon: <Brain className="text-red-500" size={48} />, desc: 'Analitik zekasıyla karmaşık sorunları çözen stratejist.', color: 'from-red-500 to-red-600', paths: ['Yazılım Geliştirme', 'Veri Bilimi', 'Finansal Analiz'] };
     if (maxTrait === 'creative') return { title: 'Vizyoner Tasarımcı', icon: <Sparkles className="text-purple-500" size={48} />, desc: 'Sınırları zorlayan, inovatif ve sanatsal düşünen yaratıcı güç.', color: 'from-purple-500 to-pink-600', paths: ['UI/UX Tasarım', 'Pazarlama İletişimi', 'Oyun Tasarımı'] };
     if (maxTrait === 'social') return { title: 'Lider & Takım Oyuncusu', icon: <Target className="text-emerald-500" size={48} />, desc: 'İnsanları bir araya getiren, iletişimi güçlü organizatör.', color: 'from-emerald-400 to-teal-600', paths: ['İnsan Kaynakları', 'Proje Yöneticisi', 'Satış & İş Geliştirme'] };
     return { title: 'Uygulama Uzmanı', icon: <Rocket className="text-orange-500" size={48} />, desc: 'Düşünceleri anında eyleme döken, sonuç odaklı hız makinesi.', color: 'from-orange-400 to-red-500', paths: ['Operasyon Yönetimi', 'Girişimcilik', 'Saha Mühendisliği'] };
@@ -130,7 +130,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Brain className="text-indigo-600" size={24} />
+            <Brain className="text-red-600" size={24} />
             <h1 className="font-black text-gray-900">Anka Kariyer Analizi</h1>
           </div>
         </div>
@@ -149,7 +149,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
               exit={{ opacity: 0, y: -20 }}
               className="max-w-xl w-full text-center"
             >
-              <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-600 shadow-inner">
+              <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600 shadow-inner">
                 <Brain size={48} />
               </div>
               <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Potansiyelini Keşfet!</h2>
@@ -158,7 +158,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
               </p>
               <button 
                 onClick={() => setCurrentStep(1)}
-                className="bg-[#0A2342] text-white px-8 py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-900/20 transition-all flex items-center justify-center gap-2 mx-auto group"
+                className="bg-[#990000] text-white px-8 py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-900/20 transition-all flex items-center justify-center gap-2 mx-auto group"
               >
                 Analize Başla <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
@@ -178,7 +178,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                 <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Soru {currentStep} / {QUESTIONS.length}</span>
                 <div className="flex gap-1">
                   {[1,2,3].map(i => (
-                    <div key={i} className={`h-1.5 w-8 rounded-full ${i <= currentStep ? 'bg-indigo-600' : 'bg-gray-200'}`} />
+                    <div key={i} className={`h-1.5 w-8 rounded-full ${i <= currentStep ? 'bg-red-600' : 'bg-gray-200'}`} />
                   ))}
                 </div>
               </div>
@@ -192,10 +192,10 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                   <button 
                     key={idx}
                     onClick={() => handleAnswer(opt.traits)}
-                    className="w-full text-left p-5 bg-white border border-gray-200 rounded-2xl hover:border-indigo-500 hover:shadow-md hover:bg-indigo-50/30 transition-all group"
+                    className="w-full text-left p-5 bg-white border border-gray-200 rounded-2xl hover:border-red-500 hover:shadow-md hover:bg-indigo-50/30 transition-all group"
                   >
                     <span className="flex items-center gap-4">
-                      <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                      <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold group-hover:bg-indigo-100 group-hover:text-red-600 transition-colors">
                         {String.fromCharCode(65 + idx)}
                       </span>
                       <span className="text-gray-700 font-medium text-lg">{opt.text}</span>
@@ -218,7 +218,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                <div className="relative w-24 h-24 mx-auto mb-6">
                  <div className="absolute inset-0 bg-indigo-100 rounded-full animate-ping opacity-50" />
                  <div className="relative bg-white rounded-full p-6 border-4 border-indigo-50 shadow-sm flex items-center justify-center h-full">
-                   <Zap size={40} className="text-indigo-600 animate-pulse" />
+                   <Zap size={40} className="text-red-600 animate-pulse" />
                  </div>
                </div>
                <h3 className="text-2xl font-black text-gray-900 mb-2">Anka Analiz Ediyor...</h3>
@@ -248,7 +248,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                 </div>
               </div>
 
-              <h2 className="text-2xl font-black text-gray-900 mb-2">Sen Bir <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">"{getPersona().title}"</span>sin!</h2>
+              <h2 className="text-2xl font-black text-gray-900 mb-2">Sen Bir <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600">"{getPersona().title}"</span>sin!</h2>
               <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto">{getPersona().desc}</p>
 
               <div className="bg-gray-50 rounded-xl p-8 mb-8">
@@ -284,7 +284,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                 </button>
                 <button 
                   onClick={() => setView('jobs')}
-                  className="w-full bg-[#0A2342] text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-900/20"
+                  className="w-full bg-[#990000] text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-900/20"
                 >
                   Bu Yollara Uygun İlanları Gör
                 </button>

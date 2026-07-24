@@ -17,8 +17,8 @@ const VERIFIED_SKILLS = [
 const CERTIFICATES = [
   { id: 1, name: 'Google Proje Yönetimi', issuer: 'Google (Coursera)', icon: 'G', color: 'bg-indigo-50 text-iesu-darkRed border-indigo-100' },
   { id: 2, name: 'AWS Cloud Practitioner', issuer: 'Amazon Web Services', icon: 'AWS', color: 'bg-orange-50 text-orange-500 border-orange-100' },
-  { id: 3, name: 'Agile Metodolojileri', issuer: 'İESÜ SEM', icon: 'SEM', color: 'bg-slate-900 text-white border-slate-800' },
-  { id: 4, name: 'Liderlik ve Yönetim', issuer: 'LinkedIn Learning', icon: 'in', color: 'bg-sky-50 text-sky-600 border-sky-100' },
+  { id: 3, name: 'Agile Metodolojileri', issuer: 'İESÜ SEM', icon: 'SEM', color: 'bg-red-950 text-white border-red-900' },
+  { id: 4, name: 'Liderlik ve Yönetim', issuer: 'LinkedIn Learning', icon: 'in', color: 'bg-sky-50 text-red-600 border-sky-100' },
 ];
 
 export default function EsenyurtWallet({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -34,7 +34,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       
       {/* Header */}
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
@@ -47,7 +47,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
           </button>
           <div className="flex items-center gap-2">
             <Wallet className="text-iesu-darkRed" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">Yetkinlik Cüzdanı</h1>
+            <h1 className="font-black text-red-950 tracking-tight">Yetkinlik Cüzdanı</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -56,7 +56,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
       <main className="flex-1 w-full max-w-[1200px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
         {/* Wallet Balance Hero */}
-        <div className="bg-slate-950 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden text-white flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-800">
+        <div className="bg-slate-950 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden text-white flex flex-col md:flex-row items-center justify-between gap-8 border border-red-900">
           <div className="absolute right-0 top-0 w-1/2 h-full bg-iesu-darkRed/10 skew-x-12 transform origin-bottom pointer-events-none"></div>
           
           <div className="relative z-10 text-center md:text-left max-w-xl">
@@ -92,7 +92,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
           {/* Left Column: Certificates */}
           <div className="lg:col-span-2 space-y-8">
             <div>
-              <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-black text-red-950 mb-6 flex items-center gap-2">
                 <Award className="text-iesu-darkRed" size={22} /> Doğrulanmış Sertifikalar
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -102,7 +102,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
                       {cert.icon}
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-800 text-xs sm:text-sm mb-1 group-hover:text-iesu-darkRed transition">{cert.name}</h4>
+                      <h4 className="font-bold text-red-900 text-xs sm:text-sm mb-1 group-hover:text-iesu-darkRed transition">{cert.name}</h4>
                       <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1">
                         <CheckCircle2 size={12} className="text-emerald-500" /> {cert.issuer}
                       </p>
@@ -114,7 +114,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
 
             {/* Progress / Career Readiness */}
             <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/85 shadow-sm">
-              <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-black text-red-950 mb-6 flex items-center gap-2">
                 <TrendingUp className="text-iesu-darkRed" size={22}/> İstihdam Edilebilirlik Skoru
               </h3>
               <div className="flex items-center justify-between mb-2">
@@ -130,7 +130,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
 
           {/* Right Column: Transaction History -> Professional Activities */}
           <div className="space-y-6">
-            <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-black text-red-950 mb-6 flex items-center gap-2">
               <History className="text-iesu-darkRed" size={22} /> Kayıtlı Aktiviteler
             </h3>
             
@@ -143,7 +143,7 @@ export default function EsenyurtWallet({ setView, currentUser, userRole, setSele
                         {trx.icon}
                       </div>
                       <div>
-                        <h4 className="text-xs font-black text-slate-800 leading-tight mb-1">{trx.desc}</h4>
+                        <h4 className="text-xs font-black text-red-900 leading-tight mb-1">{trx.desc}</h4>
                         <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{trx.date}</p>
                       </div>
                     </div>

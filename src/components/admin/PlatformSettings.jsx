@@ -2,9 +2,9 @@ import React from 'react';
 import { Check, X, Shield, Settings, Database, Server, Smartphone, Globe, Cloud, Layout, Bell, BookOpen, Users, Briefcase, CalendarHeart, Trophy, Award } from 'lucide-react';
 
 const Toggle = ({ label, description, enabled, onChange, icon: Icon }) => (
-  <div className="flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:border-blue-100 transition-all group">
+  <div className="flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:border-red-100 transition-all group">
     <div className="flex items-start gap-4">
-      <div className={`p-3 rounded-xl mt-1 transition-colors ${enabled ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100'}`}>
+      <div className={`p-3 rounded-xl mt-1 transition-colors ${enabled ? 'bg-red-50 text-red-600' : 'bg-gray-50 text-gray-400 group-hover:bg-gray-100'}`}>
         <Icon size={20} />
       </div>
       <div>
@@ -14,7 +14,7 @@ const Toggle = ({ label, description, enabled, onChange, icon: Icon }) => (
     </div>
     <button 
       onClick={onChange}
-      className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0 ml-4 ${enabled ? 'bg-blue-600' : 'bg-gray-200'}`}
+      className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex-shrink-0 ml-4 ${enabled ? 'bg-red-600' : 'bg-gray-200'}`}
     >
       <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${enabled ? 'translate-x-8' : 'translate-x-1'}`} />
     </button>
@@ -33,13 +33,13 @@ const PlatformSettings = ({
 }) => {
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="bg-gradient-to-r from-[#0A2342] to-blue-900 p-8 rounded-xl text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#990000] to-red-900 p-8 rounded-xl text-white shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 p-12 opacity-10">
           <Settings size={120} />
         </div>
         <div className="relative z-10 max-w-2xl">
           <h2 className="text-3xl font-black mb-3">Platform Ayarları</h2>
-          <p className="text-blue-100 text-lg leading-relaxed">
+          <p className="text-red-100 text-lg leading-relaxed">
             Sistemin temel modüllerini (açılır kapanır özellikleri) buradan yönetebilir, dilediğiniz özellikleri öğrencilere ve mezunlara açıp kapatabilirsiniz.
           </p>
         </div>
@@ -50,7 +50,7 @@ const PlatformSettings = ({
         {/* MODÜL YÖNETİMİ */}
         <div className="bg-white rounded-xl p-8 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="flex items-center gap-3 mb-6">
-            <Layout className="text-blue-600" size={24} />
+            <Layout className="text-red-600" size={24} />
             <h3 className="text-xl font-bold text-gray-900">Modül Yönetimi</h3>
           </div>
           <div className="space-y-4">
@@ -139,10 +139,10 @@ const PlatformSettings = ({
             
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
               <div className="flex items-center gap-3">
-                <Database className="text-blue-500" size={20} />
+                <Database className="text-red-500" size={20} />
                 <span className="font-bold text-gray-700">Önbellek (Redis/Cache)</span>
               </div>
-              <span className="flex items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-md">Temizlendi</span>
+              <span className="flex items-center gap-1.5 text-xs font-bold text-red-600 bg-red-100 px-2 py-1 rounded-md">Temizlendi</span>
             </div>
           </div>
         </div>

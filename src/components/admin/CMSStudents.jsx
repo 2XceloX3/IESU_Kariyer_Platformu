@@ -122,7 +122,7 @@ import { exportToCSV } from '../../utils/export';export default function CMSStud
       <div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><GraduationCap size={24}/></div>
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><GraduationCap size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Öğrenci</p><p className="text-2xl font-black text-gray-900">{safeStudents.length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -207,14 +207,14 @@ import { exportToCSV } from '../../utils/export';export default function CMSStud
                         ${s.status === 'Aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
                         {s.status}
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider bg-blue-50 text-blue-600 flex items-center gap-1">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider bg-red-50 text-red-600 flex items-center gap-1">
                         <Briefcase size={10}/> {s.internshipStatus}
                       </span>
                     </div>
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(s)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(s)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(s.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>

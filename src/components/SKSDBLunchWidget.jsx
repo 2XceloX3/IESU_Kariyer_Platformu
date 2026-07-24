@@ -49,7 +49,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
   const idealProtein = Math.round(weight * 1.4);
 
   const getBmiCategory = (val) => {
-    if (val < 18.5) return { label: 'Zayıf', color: 'text-indigo-600 bg-indigo-50 border-indigo-200', desc: 'İdeal kilonuzun altındasınız. Sağlıklı kilo alımı için beslenme uzmanımızla görüşebilirsiniz.' };
+    if (val < 18.5) return { label: 'Zayıf', color: 'text-red-600 bg-indigo-50 border-indigo-200', desc: 'İdeal kilonuzun altındasınız. Sağlıklı kilo alımı için beslenme uzmanımızla görüşebilirsiniz.' };
     if (val <= 24.9) return { label: 'İdeal / Sağlıklı Kilo', color: 'text-emerald-600 bg-emerald-50 border-emerald-200', desc: 'Tebrikler! Vücut kitle indeksiniz dengede. Formunuzu koruyun.' };
     if (val <= 29.9) return { label: 'Fazla Kilolu', color: 'text-amber-600 bg-amber-50 border-amber-200', desc: 'İdeal kilonuzun hafif üzerindesiniz. Düzenli yürüyüş ve dengeli beslenme önerilir.' };
     return { label: 'Yüksek Kilo (Obez)', color: 'text-rose-600 bg-rose-50 border-rose-200', desc: 'Sağlıklı yaşam ve beslenme programı için Mediko-Sosyal Diyetisyenimizden randevu alabilirsiniz.' };
@@ -78,7 +78,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
@@ -89,7 +89,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
           </button>
           <div className="flex items-center gap-2">
             <Activity className="text-emerald-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">SKSDB Öğrenci Sağlık & Vücut İndeksi (BMI) Merkezi</h1>
+            <h1 className="font-black text-red-950 tracking-tight">SKSDB Öğrenci Sağlık & Vücut İndeksi (BMI) Merkezi</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -98,7 +98,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
       <main className="flex-1 w-full max-w-[1150px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
         {/* Top Hero Banner */}
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-8 md:p-10 shadow-xl border border-slate-800 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-950 via-red-950 to-indigo-950 text-white rounded-3xl p-8 md:p-10 shadow-xl border border-red-900 relative overflow-hidden">
           <div className="max-w-2xl">
             <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-950/60 px-3.5 py-1.5 rounded-full border border-emerald-900/40">
               SKSDB Mediko-Sosyal Sağlık Rehberi
@@ -118,10 +118,10 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
           {/* Left: Interactive Calculator Form (5 cols) */}
           <div className="lg:col-span-5 bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                <Scale className="text-indigo-600" size={20} /> Ölçüm Formu
+              <h3 className="text-lg font-black text-red-950 flex items-center gap-2">
+                <Scale className="text-red-600" size={20} /> Ölçüm Formu
               </h3>
-              <span className="text-[10px] font-black uppercase text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Anlık Analiz</span>
+              <span className="text-[10px] font-black uppercase text-red-600 bg-indigo-50 px-2.5 py-1 rounded-md">Anlık Analiz</span>
             </div>
 
             {/* Gender Toggle */}
@@ -129,14 +129,14 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
               <button 
                 type="button"
                 onClick={() => setGender('male')}
-                className={`py-3 rounded-2xl font-black text-xs transition border ${gender === 'male' ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                className={`py-3 rounded-2xl font-black text-xs transition border ${gender === 'male' ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
               >
                 Erkek
               </button>
               <button 
                 type="button"
                 onClick={() => setGender('female')}
-                className={`py-3 rounded-2xl font-black text-xs transition border ${gender === 'female' ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                className={`py-3 rounded-2xl font-black text-xs transition border ${gender === 'female' ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
               >
                 Kadın
               </button>
@@ -147,7 +147,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="text-xs font-black text-slate-600 uppercase">Boy</label>
-                  <span className="text-sm font-black text-indigo-600">{height} cm</span>
+                  <span className="text-sm font-black text-red-600">{height} cm</span>
                 </div>
                 <input 
                   type="range" 
@@ -155,14 +155,14 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
                   max="220" 
                   value={height}
                   onChange={(e) => setHeight(Number(e.target.value))}
-                  className="w-full accent-indigo-600 cursor-pointer"
+                  className="w-full accent-red-600 cursor-pointer"
                 />
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="text-xs font-black text-slate-600 uppercase">Kilo</label>
-                  <span className="text-sm font-black text-indigo-600">{weight} kg</span>
+                  <span className="text-sm font-black text-red-600">{weight} kg</span>
                 </div>
                 <input 
                   type="range" 
@@ -170,14 +170,14 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
                   max="160" 
                   value={weight}
                   onChange={(e) => setWeight(Number(e.target.value))}
-                  className="w-full accent-indigo-600 cursor-pointer"
+                  className="w-full accent-red-600 cursor-pointer"
                 />
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="text-xs font-black text-slate-600 uppercase">Yaş</label>
-                  <span className="text-sm font-black text-indigo-600">{age} Yaş</span>
+                  <span className="text-sm font-black text-red-600">{age} Yaş</span>
                 </div>
                 <input 
                   type="range" 
@@ -185,7 +185,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
                   max="80" 
                   value={age}
                   onChange={(e) => setAge(Number(e.target.value))}
-                  className="w-full accent-indigo-600 cursor-pointer"
+                  className="w-full accent-red-600 cursor-pointer"
                 />
               </div>
 
@@ -194,7 +194,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
                 <select 
                   value={activity}
                   onChange={(e) => setActivity(Number(e.target.value))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-red-500"
                 >
                   <option value={1.2}>Masa Başı / Sedanter (Spor Yapmıyor)</option>
                   <option value={1.375}>Hafif Aktif (Haftada 1-3 Gün Yürüyüş/Egzersiz)</option>
@@ -213,7 +213,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Vücut Kitle İndeksiniz (BMI)</span>
-                  <h3 className="text-4xl font-black text-slate-900 mt-1">{bmi} <span className="text-sm font-bold text-slate-400">kg/m²</span></h3>
+                  <h3 className="text-4xl font-black text-red-950 mt-1">{bmi} <span className="text-sm font-bold text-slate-400">kg/m²</span></h3>
                 </div>
                 <div className={`px-4 py-2 rounded-2xl border font-black text-xs ${bmiStatus.color}`}>
                   {bmiStatus.label}
@@ -227,27 +227,27 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
               {/* Metrics Grid */}
               <div className="grid grid-cols-3 gap-3 pt-2">
                 <div className="bg-indigo-50/60 p-4 rounded-2xl border border-indigo-100 text-center">
-                  <Flame className="text-indigo-600 mx-auto mb-1" size={20} />
+                  <Flame className="text-red-600 mx-auto mb-1" size={20} />
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">Günlük İdeal Kalori</span>
-                  <h4 className="font-black text-slate-900 text-base">{dailyCalories} <span className="text-[10px]">kcal</span></h4>
+                  <h4 className="font-black text-red-950 text-base">{dailyCalories} <span className="text-[10px]">kcal</span></h4>
                 </div>
 
                 <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 text-center">
                   <Droplets className="text-emerald-600 mx-auto mb-1" size={20} />
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">Su İhtiyacı</span>
-                  <h4 className="font-black text-slate-900 text-base">{idealWater} <span className="text-[10px]">Litre</span></h4>
+                  <h4 className="font-black text-red-950 text-base">{idealWater} <span className="text-[10px]">Litre</span></h4>
                 </div>
 
                 <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-100 text-center">
                   <Dumbbell className="text-amber-600 mx-auto mb-1" size={20} />
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">Protein Hedefi</span>
-                  <h4 className="font-black text-slate-900 text-base">{idealProtein} <span className="text-[10px]">Gram</span></h4>
+                  <h4 className="font-black text-red-950 text-base">{idealProtein} <span className="text-[10px]">Gram</span></h4>
                 </div>
               </div>
             </div>
 
             {/* Ideal Weight Goal & Mediko-Sosyal Dietitian Appointment Panel (Replaced Cafeteria Menu Box) */}
-            <div className="bg-slate-950 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+            <div className="bg-slate-950 text-white p-6 md:p-8 rounded-3xl border border-red-900 shadow-xl flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -256,12 +256,12 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
                       <Award size={20} className="text-amber-400" /> İdeal Kilo Aralığınız: {minIdeal} - {maxIdeal} kg
                     </h4>
                   </div>
-                  <span className={`text-xs font-black px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900 ${weightDeltaColor}`}>
+                  <span className={`text-xs font-black px-3 py-1.5 rounded-xl border border-red-900 bg-red-950 ${weightDeltaColor}`}>
                     {weightDeltaText}
                   </span>
                 </div>
 
-                <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2">
+                <div className="bg-red-950/80 p-4 rounded-2xl border border-red-900 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
                     <HeartPulse className="text-emerald-400 shrink-0" size={16} /> 
                     <span>SKSDB Mediko-Sosyal birimi öğrencilerimize ücretsiz beslenme danışmanlığı sağlamaktadır.</span>

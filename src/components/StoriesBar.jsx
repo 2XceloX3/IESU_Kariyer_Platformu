@@ -71,7 +71,7 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
               </div>
               
               {!myStory && (
-                <div className="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-white">
+                <div className="absolute bottom-0 right-0 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white">
                   <Plus size={12} strokeWidth={3} />
                 </div>
               )}

@@ -162,11 +162,11 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
         </div>
       </div>
 
-      <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100 mb-8">
-        <h3 className="font-bold text-blue-800 flex items-center gap-2 mb-3">
+      <div className="bg-red-50 rounded-2xl p-6 border border-red-100 mb-8">
+        <h3 className="font-bold text-red-800 flex items-center gap-2 mb-3">
           <Lightbulb size={20} /> Yapay Zeka Önerisi (STAR-L Metodu)
         </h3>
-        <p className="text-blue-700 text-[15px] leading-relaxed">
+        <p className="text-red-700 text-[15px] leading-relaxed">
           Bir dahaki sefere deneyimlerinizi anlatırken doğrudan "Ben bu projeyi yaptım" yerine, <strong>STAR(L)</strong> metodunu kullanın: Durum (Situation), Görev (Task), Eylem (Action), Sonuç (Result) ve en önemlisi <strong>Öğrenilenler (Learnings)</strong> formatını eklemek ikna ediciliğinizi %40 artıracaktır.
         </p>
       </div>
@@ -193,7 +193,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
               setRecordingState('idle');
             }
           }}
-          className="px-8 py-3 rounded-xl font-bold text-white bg-[#0A2342] hover:bg-red-700 transition shadow-lg shadow-red-500/20"
+          className="px-8 py-3 rounded-xl font-bold text-white bg-[#990000] hover:bg-red-700 transition shadow-lg shadow-red-500/20"
         >
           {currentQuestionIndex < activeScenario.questions.length - 1 ? 'Sıradaki Soruya Geç' : 'Mülakatı Tamamla'}
         </button>
@@ -212,7 +212,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
             <ChevronLeft size={24} />
           </button>
           <div className="flex items-center gap-3">
-            <Logo className="h-10 w-auto text-[#0A2342]" />
+            <Logo className="h-10 w-auto text-[#990000]" />
             <div className="hidden sm:block">
               <h1 className="font-black text-gray-900 text-lg leading-tight">Yapay Zeka Mülakat</h1>
               <p className="text-[12px] font-bold text-gray-500">Simülasyon Merkezi</p>
@@ -233,7 +233,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
               className="max-w-4xl mx-auto"
             >
               <div className="text-center mb-12">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-red-50 text-[#0A2342] mb-6 shadow-inner">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-red-50 text-[#990000] mb-6 shadow-inner">
                   <Mic size={40} />
                 </div>
                 <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Gerçekçi Bir Mülakata Hazır mısın?</h2>
@@ -253,9 +253,9 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                     className="bg-white rounded-xl p-8 text-left border border-gray-100 hover:border-iesu-navy/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group"
                   >
                     <div className="text-3xl mb-6">{scenario.icon}</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#0A2342] transition-colors">{scenario.title}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#990000] transition-colors">{scenario.title}</h3>
                     <p className="text-gray-500 text-sm">{scenario.questions.length} Kritik Soru</p>
-                    <div className="mt-6 flex items-center text-[#0A2342] font-bold text-sm">
+                    <div className="mt-6 flex items-center text-[#990000] font-bold text-sm">
                       Simülasyonu Başlat <Play size={16} className="ml-2" />
                     </div>
                   </button>
@@ -285,10 +285,10 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                     </h2>
 
                     {/* 2026 Spatial Computing (VR) Integration */}
-                    <div className="bg-indigo-900/90 backdrop-blur border border-indigo-500/30 rounded-2xl p-4 sm:p-6 mb-6">
+                    <div className="bg-indigo-900/90 backdrop-blur border border-red-500/30 rounded-2xl p-4 sm:p-6 mb-6">
                       <div className="flex items-center justify-between flex-wrap gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-300">
+                          <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center text-indigo-300">
                             <Glasses size={20} />
                           </div>
                           <div>
@@ -314,8 +314,8 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                             exit={{ opacity: 0, height: 0 }}
                             className="flex flex-col items-center mb-8"
                           >
-                            <div className="flex items-center gap-2 text-[#0A2342] font-bold text-xl mb-4">
-                              <span className="w-3 h-3 rounded-full bg-[#0A2342] animate-pulse" />
+                            <div className="flex items-center gap-2 text-[#990000] font-bold text-xl mb-4">
+                              <span className="w-3 h-3 rounded-full bg-[#990000] animate-pulse" />
                               {formatTime(timer)}
                             </div>
                             <div className="flex items-end justify-center gap-1 h-12 w-48">
@@ -324,7 +324,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                                   key={i}
                                   animate={{ height: ['20%', `${Math.random() * 80 + 20}%`, '20%'] }}
                                   transition={{ repeat: Infinity, duration: Math.random() * 0.5 + 0.5 }}
-                                  className="w-1.5 bg-[#0A2342]/60 rounded-t-full"
+                                  className="w-1.5 bg-[#990000]/60 rounded-t-full"
                                 />
                               ))}
                             </div>
@@ -335,7 +335,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                       {recordingState === 'idle' ? (
                         <button aria-label="İşlem Butonu" 
                           onClick={handleStartRecording}
-                          className="w-24 h-24 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(185,28,28,0.3)] hover:shadow-[0_0_60px_rgba(185,28,28,0.5)]"
+                          className="w-24 h-24 rounded-full bg-[#990000] text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(185,28,28,0.3)] hover:shadow-[0_0_60px_rgba(185,28,28,0.5)]"
                         >
                           <Mic size={40} />
                         </button>

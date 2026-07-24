@@ -59,14 +59,14 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
   }, [job, currentUser]);
 
   return (
-    <div className="fixed inset-0 bg-[#0A2342]/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-[#990000]/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className="bg-white rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl border border-white/20"
       >
-        <div className="bg-gradient-to-r from-indigo-600 to-[#0A2342] p-6 text-white flex justify-between items-start relative overflow-hidden">
+        <div className="bg-gradient-to-r from-red-600 to-[#990000] p-6 text-white flex justify-between items-start relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
           <div className="relative z-10">
             <h2 className="text-xl font-black flex items-center gap-2 mb-1">
@@ -87,7 +87,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
               <div className="relative w-20 h-20 mb-6">
                 <div className="absolute inset-0 bg-indigo-100 rounded-full animate-ping opacity-50" />
                 <div className="relative bg-white rounded-full p-4 border-4 border-indigo-50 shadow-sm flex items-center justify-center h-full">
-                  <Wand2 size={32} className="text-indigo-600 animate-pulse" />
+                  <Wand2 size={32} className="text-red-600 animate-pulse" />
                 </div>
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-2">Ön Yazınız Üretiliyor...</h3>
@@ -117,7 +117,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
                 </button>
                 <button 
                   onClick={() => onConfirm(coverLetter)}
-                  className="px-6 py-2.5 rounded-xl bg-[#0A2342] text-white font-bold hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-900/20 transition flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-[#990000] text-white font-bold hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-900/20 transition flex items-center gap-2"
                 >
                   <Send size={18} /> Başvuruyu Tamamla
                 </button>

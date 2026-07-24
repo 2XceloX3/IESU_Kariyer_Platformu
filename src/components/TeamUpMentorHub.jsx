@@ -50,7 +50,7 @@ export default function TeamUpMentorHub({ currentUser }) {
     <div className="w-full shrink-0 animate-fade-in mb-6">
       <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm mb-6">
         <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2 mb-2">
-          <Target className="text-indigo-600" size={28} />
+          <Target className="text-red-600" size={28} />
           TeamUp & MentorMatch
         </h2>
         <p className="text-gray-500 font-medium">Hayalindeki projeyi hayata geçir veya kariyerin için doğru mentoru bul.</p>
@@ -59,10 +59,10 @@ export default function TeamUpMentorHub({ currentUser }) {
         <div className="flex border-b border-gray-100 mt-6 gap-6">
           <button 
             onClick={() => setActiveTab('teams')}
-            className={`pb-4 text-sm font-bold transition-all relative ${activeTab === 'teams' ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`pb-4 text-sm font-bold transition-all relative ${activeTab === 'teams' ? 'text-red-600' : 'text-gray-400 hover:text-gray-600'}`}
           >
             <span className="flex items-center gap-2"><Users size={18} /> Proje Arkadaşı Bul</span>
-            {activeTab === 'teams' && <div className="absolute bottom-0 left-0 w-full h-1 bg-indigo-600 rounded-t-full"></div>}
+            {activeTab === 'teams' && <div className="absolute bottom-0 left-0 w-full h-1 bg-red-600 rounded-t-full"></div>}
           </button>
           <button 
             onClick={() => setActiveTab('mentors')}
@@ -78,7 +78,7 @@ export default function TeamUpMentorHub({ currentUser }) {
         <div className="space-y-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-bold text-gray-800">Aktif Takım Arayışları</h3>
-            <button className="text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-xl transition-all shadow-sm">
+            <button className="text-sm font-bold text-white bg-red-600 hover:bg-indigo-700 px-4 py-2 rounded-xl transition-all shadow-sm">
               İlan Ver
             </button>
           </div>
@@ -92,7 +92,7 @@ export default function TeamUpMentorHub({ currentUser }) {
                     <p className="text-xs text-gray-500">{team.author.department} • {team.time}</p>
                   </div>
                 </div>
-                <div className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full flex items-center shrink-0 h-7">
+                <div className="bg-indigo-50 text-red-600 text-xs font-bold px-3 py-1 rounded-full flex items-center shrink-0 h-7">
                   Aranan: {team.role}
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default function TeamUpMentorHub({ currentUser }) {
               <div className="flex items-center justify-between border-t border-gray-50 pt-4 mt-2 flex-wrap gap-2">
                 <div className="flex gap-4">
                   <button className="text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"><Heart size={16} /> Beğen</button>
-                  <button className="text-gray-400 hover:text-indigo-500 transition-colors flex items-center gap-1 text-sm font-medium"><MessageCircle size={16} /> Sor</button>
+                  <button className="text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"><MessageCircle size={16} /> Sor</button>
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
@@ -117,11 +117,11 @@ export default function TeamUpMentorHub({ currentUser }) {
                         window.toast && window.toast.success("✅ AI Analizi: Bu takıma katılım için %88 uyumlusunuz. Eksik görülen: D3.js deneyimi.");
                       }, 2500);
                     }}
-                    className="text-indigo-600 hover:text-indigo-800 font-bold text-sm flex items-center gap-1 px-3 py-2 rounded-xl transition-colors"
+                    className="text-red-600 hover:text-indigo-800 font-bold text-sm flex items-center gap-1 px-3 py-2 rounded-xl transition-colors"
                   >
                     <Star size={14} /> AI Uyumluluk
                   </button>
-                  <button className="text-indigo-600 hover:text-indigo-700 font-bold text-sm flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition-colors">
+                  <button className="text-red-600 hover:text-indigo-700 font-bold text-sm flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition-colors">
                     Takıma Katıl <ArrowRight size={16} />
                   </button>
                 </div>

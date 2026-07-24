@@ -95,7 +95,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Target size={24}/></div>
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><Target size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Program</p><p className="text-2xl font-black text-gray-900">{(mentorships || []).length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -155,7 +155,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                 <tr key={mnt.id} className="hover:bg-gray-50/50 transition group">
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0">
                         {mnt.image ? <img src={mnt.image} className="w-full h-full rounded-lg object-cover" /> : <BookOpen size={18} />}
                       </div>
                       <div>
@@ -177,7 +177,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                   <td className="py-3 px-5">
                     <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider
                       ${(mnt.status === 'Aktif' || mnt.status === 'Yayında') ? 'bg-emerald-100 text-emerald-700' : 
-                        (mnt.status === 'Beklemede') ? 'bg-blue-100 text-blue-700' :
+                        (mnt.status === 'Beklemede') ? 'bg-red-100 text-red-700' :
                         mnt.status === 'Taslak' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-600'}`}>
                       {mnt.status}
                     </span>
@@ -187,7 +187,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                       {mnt.status === 'Beklemede' && (
                         <button onClick={() => setMentorships(mentorships.map(m => m.id === mnt.id ? {...m, status: 'Aktif'} : m))} className="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition" title="Onayla"><CheckCircle2 size={16}/></button>
                       )}
-                      <button onClick={() => handleEdit(mnt)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(mnt)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(mnt.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
@@ -315,7 +315,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
             {/* Content Area */}
             <div className="p-5">
               <div className="flex items-center gap-2 mb-3">
-                <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">{form.mentorType || 'MENTOR'}</span>
+                <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">{form.mentorType || 'MENTOR'}</span>
                 {form.department && <span className="text-[10px] font-bold text-gray-500 uppercase">{form.department}</span>}
               </div>
               

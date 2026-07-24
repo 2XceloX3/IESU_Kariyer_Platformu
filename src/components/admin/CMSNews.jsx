@@ -170,7 +170,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
                 <tr key={a.id} className="hover:bg-gray-50/50 transition group">
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${a.importanceLevel === 'Önemli' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${a.importanceLevel === 'Önemli' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
                         {a.imageUrl ? <img src={a.imageUrl} className="w-full h-full object-cover rounded-lg" /> : <Megaphone size={18}/>}
                       </div>
                       <div>
@@ -197,7 +197,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
@@ -289,14 +289,14 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
       <div className="p-5">
         {!form.imageUrl && (
            <div className="flex justify-between items-start mb-4">
-             <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider inline-block">HABER</span>
+             <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider inline-block">HABER</span>
              <span className={`text-[10px] font-black uppercase tracking-wider ${(form.status === 'Yayında') ? 'text-emerald-600' : 'text-orange-600'}`}>
               {form.status}
             </span>
            </div>
         )}
         {form.imageUrl && (
-           <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider inline-block mb-3">HABER</span>
+           <span className="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider inline-block mb-3">HABER</span>
         )}
 
         <h3 className="text-[17px] font-black text-gray-900 leading-tight mb-2">
@@ -324,8 +324,8 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="p-4">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
-            <FileText size={16} className="text-blue-600" />
+          <div className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center">
+            <FileText size={16} className="text-red-600" />
           </div>
           <div>
             <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>

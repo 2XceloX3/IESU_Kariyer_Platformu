@@ -127,11 +127,11 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center font-sans overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-100">
+    <div className="min-h-screen relative flex items-center justify-center font-sans overflow-hidden bg-gradient-to-br from-red-50 via-white to-gray-100">
       
       {/* Floating Elements (Abstract) */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-iesu-blue/20 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-red-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-iesu-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
       
       {/* Top Left Back Button */}
       <button 
@@ -172,28 +172,28 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             <button 
               type="button"
               onClick={() => setLoginRole('student')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'student' ? 'bg-white text-[#0A2342] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'student' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
             >
               <GraduationCap size={16} /> <span className="hidden sm:inline">Öğrenci</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('alumni')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'alumni' ? 'bg-white text-[#0A2342] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'alumni' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
             >
               <Users size={16} /> <span className="hidden sm:inline">Mezun</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('employer')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'employer' ? 'bg-white text-[#0A2342] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'employer' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
             >
               <Building2 size={16} /> <span className="hidden sm:inline">İşveren</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('admin')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'admin' ? 'bg-white text-[#0A2342] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'admin' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
             >
               <ShieldCheck size={16} /> <span className="hidden sm:inline">Akademik</span>
             </button>
@@ -211,7 +211,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 type="text" 
                 aria-label={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci Numarası" : "Kullanıcı Adı veya E-Posta"}
                 placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : "Kullanıcı Adı / E-Posta"} 
-                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium text-[#0A2342] placeholder:text-gray-400 placeholder:font-normal" 
+                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium text-[#990000] placeholder:text-gray-400 placeholder:font-normal" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -226,7 +226,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 type="password" 
                 aria-label="Şifre"
                 placeholder="Şifre" 
-                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium text-[#0A2342] placeholder:text-gray-400 placeholder:font-normal" 
+                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium text-[#990000] placeholder:text-gray-400 placeholder:font-normal" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -235,10 +235,10 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
               <div className="flex items-center justify-between text-sm">
                 <label htmlFor="rememberMe" className="flex items-center gap-2 text-gray-600 font-medium">
-                  <input id="rememberMe" type="checkbox" className="rounded border-gray-300 text-[#0A2342] focus:ring-iesu-navy" />
+                  <input id="rememberMe" type="checkbox" className="rounded border-gray-300 text-[#990000] focus:ring-iesu-navy" />
                   Beni Unutma
                 </label>
-                <button type="button" onClick={() => setView('forgot_password')} className="text-[#0A2342] font-bold hover:text-[#0A2342] hover:underline transition">
+                <button type="button" onClick={() => setView('forgot_password')} className="text-[#990000] font-bold hover:text-[#990000] hover:underline transition">
                   Şifremi Unuttum
                 </button>
               </div>
@@ -246,7 +246,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#0A2342] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#990000] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2 group disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Giriş Yapılıyor...' : 'Giriş Yap'} {!isLoading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
             </button>
@@ -256,13 +256,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             <div className="mt-8 pt-6 border-t border-gray-100">
               <div className="bg-gradient-to-r from-iesu-navy/5 to-iesu-blue/5 rounded-2xl p-5 border border-iesu-navy/10 flex flex-col sm:flex-row items-center justify-between gap-4 group hover:border-iesu-navy/20 transition-all">
                 <div className="text-center sm:text-left">
-                  <h4 className="text-[#0A2342] font-bold text-sm">İlk Kez Mi Giriyorsunuz?</h4>
+                  <h4 className="text-[#990000] font-bold text-sm">İlk Kez Mi Giriyorsunuz?</h4>
                   <p className="text-gray-500 text-xs mt-0.5">Sisteme kayıt olmak ve şifre belirlemek için tıklayın.</p>
                 </div>
                 <button 
                   onClick={() => setView('register')} 
                   type="button" 
-                  className="w-full sm:w-auto px-5 py-2.5 bg-white text-[#0A2342] rounded-xl font-bold text-sm shadow-sm border border-iesu-navy/10 hover:bg-[#0A2342] hover:text-white transition-all active:scale-[0.98]"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-white text-[#990000] rounded-xl font-bold text-sm shadow-sm border border-iesu-navy/10 hover:bg-[#990000] hover:text-white transition-all active:scale-[0.98]"
                 >
                   Hesabımı Aktifleştir
                 </button>
@@ -281,9 +281,9 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
               <button 
                 onClick={handleEDevlet}
-                className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-[#0A2342] py-3.5 px-4 rounded-xl hover:bg-gray-50 transition-all shadow-md active:scale-[0.98] group relative overflow-hidden"
+                className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-[#990000] py-3.5 px-4 rounded-xl hover:bg-gray-50 transition-all shadow-md active:scale-[0.98] group relative overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0A2342]/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#990000]/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
                 
                 <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-7 w-auto object-contain drop-shadow-sm" />
                 <span className="font-bold text-[15px] tracking-wide">ile Giriş Yap</span>
@@ -296,7 +296,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               <p className="text-gray-500 text-sm font-medium">
                 Sistemde kaydınız yok mu?
               </p>
-              <button onClick={() => setView('register')} type="button" className="mt-2 px-6 py-2 bg-red-50 text-[#0A2342] rounded-xl font-black hover:bg-red-100 transition-colors inline-block">
+              <button onClick={() => setView('register')} type="button" className="mt-2 px-6 py-2 bg-red-50 text-[#990000] rounded-xl font-black hover:bg-red-100 transition-colors inline-block">
                 Kayıt Ol
               </button>
             </div>

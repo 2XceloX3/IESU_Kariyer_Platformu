@@ -8,6 +8,7 @@ import {
   initialInternships, initialGroups, initialSurveys 
 , generateStudents, generateAlumni, generateCompanies, generateAcademicStaff, initialPosts
 } from '../utils/mockData';
+import { liveEventData, liveAnnouncementData, liveNewsData } from '../utils/liveData';
 
 const initialRealCompanies = [];
 
@@ -176,13 +177,13 @@ const useAppStore = create(
         clubApplications: initialClubApplications,
         setClubApplications: setter('clubApplications'),
 
-        news: initialNews,
+        news: liveNewsData,
         setNews: setter('news'),
 
-        events: initialEvents,
+        events: liveEventData,
         setEvents: setter('events'),
 
-        announcements: initialAnnouncements,
+        announcements: liveAnnouncementData,
         setAnnouncements: setter('announcements'),
 
         semCourses: initialSemCourses,

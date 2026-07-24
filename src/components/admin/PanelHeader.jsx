@@ -3,57 +3,57 @@ import React from 'react';
 export default function PanelHeader({ badge = 'Esenyurt Kariyer', title, sub, action }) {
   const t = (title || '').toLowerCase();
   let theme = {
-    bg: 'from-blue-950 via-indigo-900 to-slate-900',
-    orb1: 'bg-blue-500',
-    orb2: 'bg-indigo-600',
-    textGradient: 'from-blue-400 to-indigo-400'
+    bg: 'from-red-950 via-indigo-900 to-red-950',
+    orb1: 'bg-red-500',
+    orb2: 'bg-red-600',
+    textGradient: 'from-red-400 to-indigo-400'
   };
 
   if (t.includes('etkinlik') || t.includes('duyuru') || t.includes('kontrol merkezi')) {
     theme = {
-      bg: 'from-red-950 via-rose-900 to-slate-900',
+      bg: 'from-red-950 via-rose-900 to-red-950',
       orb1: 'bg-red-500',
       orb2: 'bg-orange-600',
       textGradient: 'from-red-400 to-orange-400'
     };
   } else if (t.includes('mesaj') || t.includes('iletişim') || t.includes('anket') || t.includes('veri') || t.includes('organizasyon')) {
     theme = {
-      bg: 'from-emerald-950 via-teal-900 to-slate-900',
+      bg: 'from-emerald-950 via-teal-900 to-red-950',
       orb1: 'bg-emerald-500',
       orb2: 'bg-teal-600',
       textGradient: 'from-emerald-400 to-teal-400'
     };
   } else if (t.includes('ilan') || t.includes('iş') || t.includes('staj') || t.includes('başvuru') || t.includes('kart')) {
     theme = {
-      bg: 'from-orange-950 via-amber-900 to-slate-900',
+      bg: 'from-orange-950 via-amber-900 to-red-950',
       orb1: 'bg-orange-500',
       orb2: 'bg-yellow-600',
       textGradient: 'from-orange-400 to-yellow-400'
     };
   } else if (t.includes('firma') || t.includes('işveren')) {
     theme = {
-      bg: 'from-cyan-950 via-sky-900 to-slate-900',
-      orb1: 'bg-cyan-500',
-      orb2: 'bg-blue-600',
+      bg: 'from-cyan-950 via-sky-900 to-red-950',
+      orb1: 'bg-rose-500',
+      orb2: 'bg-red-600',
       textGradient: 'from-cyan-400 to-sky-400'
     };
   } else if (t.includes('kullanıcı') || t.includes('öğrenci') || t.includes('mezun') || t.includes('personel') || t.includes('akademik')) {
     theme = {
-      bg: 'from-purple-950 via-fuchsia-900 to-slate-900',
+      bg: 'from-purple-950 via-fuchsia-900 to-red-950',
       orb1: 'bg-purple-500',
       orb2: 'bg-pink-600',
       textGradient: 'from-purple-400 to-pink-400'
     };
   } else if (t.includes('fırsat') || t.includes('analiti') || t.includes('performans')) {
     theme = {
-      bg: 'from-lime-950 via-green-900 to-slate-900',
+      bg: 'from-lime-950 via-green-900 to-red-950',
       orb1: 'bg-lime-500',
       orb2: 'bg-yellow-500',
       textGradient: 'from-lime-400 to-yellow-400'
     };
   } else if (t.includes('mentorluk') || t.includes('operasyon')) {
     theme = {
-      bg: 'from-pink-950 via-rose-900 to-slate-900',
+      bg: 'from-pink-950 via-rose-900 to-red-950',
       orb1: 'bg-pink-500',
       orb2: 'bg-rose-500',
       textGradient: 'from-pink-400 to-rose-400'

@@ -170,7 +170,7 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
                 <tr key={a.id} className="hover:bg-gray-50/50 transition group">
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${a.importanceLevel === 'Önemli' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border ${a.importanceLevel === 'Önemli' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
                         {a.imageUrl ? <img src={a.imageUrl} className="w-full h-full object-cover rounded-lg" /> : <Megaphone size={18}/>}
                       </div>
                       <div>
@@ -197,7 +197,7 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>

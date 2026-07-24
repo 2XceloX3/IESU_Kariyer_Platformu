@@ -46,7 +46,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between px-1">
           <h3 className="font-black text-gray-900 text-sm">Resmi Firmalar ({networkCompanies.length})</h3>
-          {networkCompanies.length > 0 && <button className="text-xs font-bold text-[#0A2342] hover:underline">Tümünü Gör</button>}
+          {networkCompanies.length > 0 && <button className="text-xs font-bold text-[#990000] hover:underline">Tümünü Gör</button>}
         </div>
 
         {networkCompanies.length === 0 ? (
@@ -71,7 +71,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-[#0A2342] transition-colors">{company.name}</h4>
+                    <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-[#990000] transition-colors">{company.name}</h4>
                     <p className="text-xs text-gray-500 truncate mb-1">{company.sector || 'Sektör bilgisi yok'}</p>
                     <div className="flex items-center gap-2">
                       <span className="text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-100">
@@ -88,7 +88,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                       setView('user_profile');
                     }
                   }}
-                  className="w-full mt-3 bg-gray-50 group-hover:bg-red-50 text-gray-700 group-hover:text-[#0A2342] text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-gray-100 group-hover:border-red-100"
+                  className="w-full mt-3 bg-gray-50 group-hover:bg-red-50 text-gray-700 group-hover:text-[#990000] text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-gray-100 group-hover:border-red-100"
                 >
                   Firma Profiline Git <ChevronRight size={14} />
                 </button>
@@ -102,7 +102,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
       <div className="flex flex-col gap-4 mt-2">
         <div className="flex items-center justify-between px-1">
           <h3 className="font-black text-gray-900 text-sm">Akademik Kadro ({networkAcademics.length})</h3>
-          {networkAcademics.length > 0 && <button className="text-xs font-bold text-[#0A2342] hover:underline">Tümünü Gör</button>}
+          {networkAcademics.length > 0 && <button className="text-xs font-bold text-[#990000] hover:underline">Tümünü Gör</button>}
         </div>
 
         {networkAcademics.length === 0 ? (
@@ -130,7 +130,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-[#0A2342] transition-colors">{academic.name}</h4>
+                    <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-[#990000] transition-colors">{academic.name}</h4>
                     <p className="text-[11px] font-bold text-gray-500 truncate mb-1">{academic.title || 'Akademisyen'} / {academic.department}</p>
                     <div className="flex items-center gap-2">
                       <span className="text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-100">
@@ -138,7 +138,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                       </span>
                     </div>
                   </div>
-                  <button className="w-8 h-8 rounded-full bg-red-50 text-[#0A2342] flex items-center justify-center hover:bg-[#0A2342] hover:text-white transition-colors" title="Mesaj Gönder" onClick={(e) => {
+                  <button className="w-8 h-8 rounded-full bg-red-50 text-[#990000] flex items-center justify-center hover:bg-[#990000] hover:text-white transition-colors" title="Mesaj Gönder" onClick={(e) => {
                     e.stopPropagation();
                     if (setSelectedUserId) setSelectedUserId(academic.id);
                     if (setView) setView('messaging');

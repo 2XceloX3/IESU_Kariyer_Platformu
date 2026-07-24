@@ -7,11 +7,11 @@ import Logo from './Logo';
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
   const getClasses = () => {
     switch (label) {
-      case 'Akış': return { text: 'text-blue-500', bg: 'bg-blue-50', badge: 'bg-blue-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
+      case 'Akış': return { text: 'text-red-500', bg: 'bg-red-50', badge: 'bg-red-500', glow: 'drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]' };
       case 'Kariyer Ağı': return { text: 'text-purple-500', bg: 'bg-purple-50', badge: 'bg-purple-500', glow: 'drop-shadow-[0_0_12px_rgba(168,85,247,0.8)]' };
       case 'İş ve Staj': return { text: 'text-emerald-500', bg: 'bg-emerald-50', badge: 'bg-emerald-500', glow: 'drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' };
-      case 'Topluluklar': return { text: 'text-teal-500', bg: 'bg-teal-50', badge: 'bg-teal-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
-      default: return { text: 'text-[#0A2342]', bg: 'bg-red-50', badge: 'bg-[#0A2342]', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
+      case 'Topluluklar': return { text: 'text-orange-500', bg: 'bg-teal-50', badge: 'bg-orange-500', glow: 'drop-shadow-[0_0_12px_rgba(20,184,166,0.8)]' };
+      default: return { text: 'text-[#990000]', bg: 'bg-red-50', badge: 'bg-[#990000]', glow: 'drop-shadow-[0_0_12px_rgba(220,38,38,0.8)]' };
     }
   };
   const theme = getClasses();
@@ -65,9 +65,9 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto text-[#0A2342] hover:scale-105 transition-transform" />
+            <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Merkezi</p>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
       <main className="max-w-[1000px] mx-auto px-4 lg:px-8 pt-24">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 min-h-[500px]">
       <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
-        <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
           <Briefcase size={24} />
         </div>
         <div>
@@ -161,7 +161,7 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
                 
                 {userRole === 'student' && (
                   <div className="pt-4 mt-2 border-t border-gray-100 flex justify-end">
-                    <button className="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition">
+                    <button className="text-sm font-bold text-red-600 hover:text-red-800 flex items-center gap-1 transition">
                       İlan Detayı <ChevronRight size={16} />
                     </button>
                   </div>

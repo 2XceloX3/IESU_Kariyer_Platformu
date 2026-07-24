@@ -169,7 +169,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800 pb-20 selection:bg-indigo-500/20">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-red-900 pb-20 selection:bg-red-500/20">
       
       {/* Header */}
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
@@ -181,8 +181,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <GraduationCap className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight text-md sm:text-lg">Mezun Bilgi Sistemi (MBS)</h1>
+            <GraduationCap className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight text-md sm:text-lg">Mezun Bilgi Sistemi (MBS)</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -198,21 +198,21 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
             <div className="flex items-center gap-3 mb-6">
               <img src={currentUser?.avatar || "https://i.pravatar.cc/150?img=11"} alt="Profile" className="w-14 h-14 rounded-2xl object-cover shadow-md" />
               <div>
-                <h2 className="font-black text-slate-800 text-sm sm:text-base leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
-                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase mt-1 inline-block">Mezun Üye</span>
+                <h2 className="font-black text-red-900 text-sm sm:text-base leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
+                <span className="text-[10px] font-bold text-red-600 bg-indigo-50 px-2 py-0.5 rounded uppercase mt-1 inline-block">Mezun Üye</span>
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-black">
                 <span className="text-slate-500">Profil Doluluk Oranı</span>
-                <span className="text-indigo-600">%{completeness}</span>
+                <span className="text-red-600">%{completeness}</span>
               </div>
               <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${completeness}%` }}
-                  className="bg-indigo-600 h-full rounded-full" 
+                  className="bg-red-600 h-full rounded-full" 
                 />
               </div>
               <p className="text-[10px] font-medium text-slate-400 leading-relaxed mt-1">
@@ -228,7 +228,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full text-left px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/10' : 'text-slate-600 hover:bg-slate-50'}`}
+                  className={`w-full text-left px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${activeTab === tab.id ? 'bg-red-600 text-white shadow-lg shadow-red-600/10' : 'text-slate-600 hover:bg-slate-50'}`}
                 >
                   {tab.label}
                 </button>
@@ -251,7 +251,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'ozluk' && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Kişisel Bilgiler</h3>
+                    <h3 className="text-lg font-black text-red-950">Kişisel Bilgiler</h3>
                     <button 
                       onClick={handleAiEnhanceSummary}
                       disabled={aiEnhancing}
@@ -301,8 +301,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'akademik' && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Eğitim Bilgileri</h3>
-                    <button className="text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
+                    <h3 className="text-lg font-black text-red-950">Eğitim Bilgileri</h3>
+                    <button className="text-xs font-black bg-red-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
                       <Plus size={14} /> Yeni Ekle
                     </button>
                   </div>
@@ -311,9 +311,9 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                     {profileData.education.map(edu => (
                       <div key={edu.id} className="p-5 rounded-2xl border border-slate-100 bg-slate-50/50 flex justify-between items-start gap-4">
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600"><GraduationCap size={22}/></div>
+                          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-red-600"><GraduationCap size={22}/></div>
                           <div>
-                            <h4 className="font-black text-sm text-slate-800">{edu.school}</h4>
+                            <h4 className="font-black text-sm text-red-900">{edu.school}</h4>
                             <p className="text-xs text-slate-500 font-semibold mt-1">{edu.degree} - {edu.major} ({edu.startYear} - {edu.endYear})</p>
                             <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded mt-2 inline-block">Not Ortalaması: {edu.gpa}</span>
                           </div>
@@ -330,8 +330,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                 <div className="space-y-8">
                   <div>
                     <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-slate-900">İş ve Staj Deneyimleri</h3>
-                      <button className="text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
+                      <h3 className="text-lg font-black text-red-950">İş ve Staj Deneyimleri</h3>
+                      <button className="text-xs font-black bg-red-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
                         <Plus size={14} /> Yeni Ekle
                       </button>
                     </div>
@@ -340,9 +340,9 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       {profileData.experience.map(exp => (
                         <div key={exp.id} className="p-5 rounded-2xl border border-slate-100 bg-slate-50/50 flex justify-between items-start gap-4">
                           <div className="flex gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600"><Building2 size={20}/></div>
+                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-red-600"><Building2 size={20}/></div>
                             <div>
-                              <h4 className="font-black text-sm text-slate-800">{exp.role}</h4>
+                              <h4 className="font-black text-sm text-red-900">{exp.role}</h4>
                               <p className="text-xs text-slate-500 font-semibold mt-1">{exp.company} • {exp.type} ({exp.startYear} - {exp.endYear})</p>
                               <p className="text-xs text-slate-400 font-medium leading-relaxed mt-2.5">{exp.desc}</p>
                             </div>
@@ -355,7 +355,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                   <div>
                     <div className="border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-slate-900">Yetenekler</h3>
+                      <h3 className="text-lg font-black text-red-950">Yetenekler</h3>
                     </div>
                     
                     <div className="flex gap-3 mb-4 max-w-sm">
@@ -372,7 +372,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           setProfileData(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
                           setNewSkill('');
                         }}
-                        className="bg-indigo-600 text-white font-black px-4 py-2 rounded-xl text-xs"
+                        className="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-xs"
                       >
                         Ekle
                       </button>
@@ -400,7 +400,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                 <div className="space-y-8">
                   <div>
                     <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-slate-900">Sertifikalar</h3>
+                      <h3 className="text-lg font-black text-red-950">Sertifikalar</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
@@ -426,7 +426,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             setProfileData(prev => ({ ...prev, certs: [...prev.certs, { id: Date.now(), ...newCert }] }));
                             setNewCert({ title: '', issuer: '', date: '' });
                           }}
-                          className="flex-grow bg-indigo-600 text-white font-black rounded-xl text-xs"
+                          className="flex-grow bg-red-600 text-white font-black rounded-xl text-xs"
                         >
                           Ekle
                         </button>
@@ -437,7 +437,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       {profileData.certs.map(c => (
                         <div key={c.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between">
                           <div>
-                            <h4 className="font-bold text-xs text-slate-800">{c.title}</h4>
+                            <h4 className="font-bold text-xs text-red-900">{c.title}</h4>
                             <p className="text-[10px] text-slate-400 mt-0.5">{c.issuer} • {c.date}</p>
                           </div>
                           <button 
@@ -453,7 +453,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                   <div>
                     <div className="border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-slate-900">Kariyer Hedefleri</h3>
+                      <h3 className="text-lg font-black text-red-950">Kariyer Hedefleri</h3>
                     </div>
                     <div className="space-y-3">
                       {profileData.goals.map(g => (
@@ -462,7 +462,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           onClick={() => toggleGoal(g.id)}
                           className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100/70 transition"
                         >
-                          <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${g.done ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300'}`}>
+                          <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${g.done ? 'bg-red-600 border-red-600 text-white' : 'border-slate-300'}`}>
                             {g.done && <Check size={12} strokeWidth={3} />}
                           </div>
                           <span className={`text-xs font-bold ${g.done ? 'line-through text-slate-400' : 'text-slate-700'}`}>{g.text}</span>
@@ -477,7 +477,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'dil' && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Yabancı Dil Seviyeleri</h3>
+                    <h3 className="text-lg font-black text-red-950">Yabancı Dil Seviyeleri</h3>
                   </div>
 
                   <div className="flex gap-3 max-w-md mb-6">
@@ -499,7 +499,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         setProfileData(prev => ({ ...prev, languages: [...prev.languages, { id: Date.now(), language: newLang.name, level: newLang.level }] }));
                         setNewLang({ name: '', level: 'Orta (B1-B2)' });
                       }}
-                      className="bg-indigo-600 text-white font-black px-4 py-2 rounded-xl text-xs"
+                      className="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-xs"
                     >
                       Ekle
                     </button>
@@ -511,8 +511,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         <div className="flex items-center gap-3">
                           <Languages size={18} className="text-slate-400" />
                           <div>
-                            <h4 className="font-bold text-xs text-slate-800">{lang.language}</h4>
-                            <p className="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mt-0.5">{lang.level}</p>
+                            <h4 className="font-bold text-xs text-red-900">{lang.language}</h4>
+                            <p className="text-[10px] text-red-600 font-bold uppercase tracking-wider mt-0.5">{lang.level}</p>
                           </div>
                         </div>
                         <button 
@@ -531,23 +531,23 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'cv' && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Akıllı CV Çıktı Yönetimi</h3>
+                    <h3 className="text-lg font-black text-red-950">Akıllı CV Çıktı Yönetimi</h3>
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => setCvTemplate('modern')}
-                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'modern' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'modern' ? 'bg-red-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                       >
                         Modern
                       </button>
                       <button 
                         onClick={() => setCvTemplate('academic')}
-                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'academic' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'academic' ? 'bg-red-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                       >
                         Akademik
                       </button>
                       <button 
                         onClick={() => setCvTemplate('creative')}
-                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'creative' ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'creative' ? 'bg-red-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                       >
                         Kreatif
                       </button>
@@ -556,8 +556,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                   {/* Simulated Resume A4 Paper Viewport */}
                   <div className="border border-slate-200/80 rounded-2xl bg-white shadow-md p-8 max-w-xl mx-auto font-sans text-slate-700 min-h-[500px]">
-                    <div className={`p-4 border-b ${cvTemplate === 'creative' ? 'border-amber-400 bg-amber-50/30' : cvTemplate === 'academic' ? 'border-slate-800 bg-slate-50/50' : 'border-indigo-600 bg-indigo-50/20'} rounded-xl mb-6`}>
-                      <h4 className={`text-xl font-black ${cvTemplate === 'creative' ? 'text-amber-800' : cvTemplate === 'academic' ? 'text-slate-900' : 'text-indigo-900'}`}>{currentUser?.name || 'Ad Soyad'}</h4>
+                    <div className={`p-4 border-b ${cvTemplate === 'creative' ? 'border-amber-400 bg-amber-50/30' : cvTemplate === 'academic' ? 'border-red-900 bg-slate-50/50' : 'border-red-600 bg-indigo-50/20'} rounded-xl mb-6`}>
+                      <h4 className={`text-xl font-black ${cvTemplate === 'creative' ? 'text-amber-800' : cvTemplate === 'academic' ? 'text-red-950' : 'text-indigo-900'}`}>{currentUser?.name || 'Ad Soyad'}</h4>
                       <p className="text-xs text-slate-500 font-semibold mt-1">Yazılım Mühendisliği Mezunu</p>
                       <div className="flex gap-4 mt-2 text-[10px] text-slate-400 font-bold">
                         <span>{profileData.phone}</span>
@@ -602,7 +602,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           window.toast && window.toast.success("Akıllı CV başarıyla bilgisayarınıza indirildi!");
                         }, 1200);
                       }}
-                      className="bg-slate-900 hover:bg-slate-800 text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg flex items-center gap-1.5"
+                      className="bg-red-950 hover:bg-red-900 text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg flex items-center gap-1.5"
                     >
                       <Download size={14} /> PDF Olarak Dışa Aktar
                     </button>
@@ -614,22 +614,22 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'kariyer_checkup' && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Kariyer Check-up Analizi (12 Soru)</h3>
+                    <h3 className="text-lg font-black text-red-950">Kariyer Check-up Analizi (12 Soru)</h3>
                   </div>
 
                   {!checkupCompleted ? (
                     <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm max-w-xl mx-auto">
                       <div className="flex justify-between items-center mb-6">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Soru {checkupStep + 1} / {CHECKUP_QUESTIONS.length}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-red-600">Soru {checkupStep + 1} / {CHECKUP_QUESTIONS.length}</span>
                         <div className="w-24 bg-slate-200 h-1.5 rounded-full overflow-hidden">
                           <div 
-                            className="bg-indigo-600 h-full transition-all duration-300" 
+                            className="bg-red-600 h-full transition-all duration-300" 
                             style={{ width: `${((checkupStep + 1) / CHECKUP_QUESTIONS.length) * 100}%` }}
                           />
                         </div>
                       </div>
 
-                      <h4 className="font-black text-slate-800 text-sm sm:text-base leading-relaxed mb-6">
+                      <h4 className="font-black text-red-900 text-sm sm:text-base leading-relaxed mb-6">
                         {CHECKUP_QUESTIONS[checkupStep].text}
                       </h4>
 
@@ -638,7 +638,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           <button
                             key={i}
                             onClick={() => handleCheckupAnswer(opt)}
-                            className="w-full text-left p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-500 hover:bg-indigo-50/20 text-xs sm:text-sm font-bold text-slate-700 transition"
+                            className="w-full text-left p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-red-500 hover:bg-indigo-50/20 text-xs sm:text-sm font-bold text-slate-700 transition"
                           >
                             {opt}
                           </button>
@@ -648,7 +648,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   ) : (
                     <div className="space-y-6">
                       <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
-                        <div className="w-20 h-20 rounded-2xl bg-white shadow-md flex items-center justify-center shrink-0 text-indigo-600">
+                        <div className="w-20 h-20 rounded-2xl bg-white shadow-md flex items-center justify-center shrink-0 text-red-600">
                           <Compass size={36} />
                         </div>
                         <div>
@@ -662,16 +662,16 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       <div className="space-y-4">
                         <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs font-black text-slate-800">1. Sektör Trendlerine Uyum</span>
-                            <span className="text-xs font-black text-indigo-600">%95</span>
+                            <span className="text-xs font-black text-red-900">1. Sektör Trendlerine Uyum</span>
+                            <span className="text-xs font-black text-red-600">%95</span>
                           </div>
                           <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-indigo-600 h-full w-[95%]"></div>
+                            <div className="bg-red-600 h-full w-[95%]"></div>
                           </div>
                         </div>
                         <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs font-black text-slate-800">2. Proje Pratikliği & Kod Kalitesi</span>
+                            <span className="text-xs font-black text-red-900">2. Proje Pratikliği & Kod Kalitesi</span>
                             <span className="text-xs font-black text-emerald-600">%88</span>
                           </div>
                           <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
@@ -687,7 +687,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             setCheckupCompleted(false);
                             setCheckupAnswers({});
                           }}
-                          className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black uppercase tracking-widest transition"
+                          className="px-6 py-2.5 bg-red-950 hover:bg-red-900 text-white rounded-xl text-xs font-black uppercase tracking-widest transition"
                         >
                           Analizi Yeniden Başlat
                         </button>
@@ -701,12 +701,12 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'mezun_kart' && (
                 <div className="space-y-6 flex flex-col items-center">
                   <div className="border-b border-slate-100 pb-4 w-full">
-                    <h3 className="text-lg font-black text-slate-900">Dijital İESÜ Mezun Kart</h3>
+                    <h3 className="text-lg font-black text-red-950">Dijital İESÜ Mezun Kart</h3>
                   </div>
 
                   {cardAppStatus === 'form' && (
                     <form onSubmit={handleCardApplication} className="w-full max-w-md bg-slate-50 border border-slate-200 p-6 rounded-3xl space-y-4">
-                      <h4 className="font-black text-sm text-slate-800 mb-2">Akıllı Mezun Kart Başvuru Formu</h4>
+                      <h4 className="font-black text-sm text-red-900 mb-2">Akıllı Mezun Kart Başvuru Formu</h4>
                       
                       <div className="flex flex-col gap-2">
                         <label className="text-xs font-black text-slate-500 uppercase">Ad Soyad</label>
@@ -754,7 +754,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                       <button
                         type="submit"
-                        className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4"
+                        className="w-full py-3 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4"
                       >
                         Akıllı Kartı Oluştur & Dağıt
                       </button>
@@ -763,8 +763,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                   {cardAppStatus === 'loading' && (
                     <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-                      <h4 className="font-black text-slate-800 mb-1">Kartınız Dağıtılıyor...</h4>
+                      <div className="w-12 h-12 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mb-4"></div>
+                      <h4 className="font-black text-red-900 mb-1">Kartınız Dağıtılıyor...</h4>
                       <p className="text-slate-400 text-xs max-w-xs leading-relaxed font-semibold">
                         Kimlik verileriniz kriptografik olarak imzalanıp İESÜ Mezun DAG ağına yazılıyor.
                       </p>
@@ -791,7 +791,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         >
                           {/* Front Side */}
                           <div 
-                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-6 flex flex-col justify-between text-white shadow-2xl"
+                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-red-950 via-indigo-950 to-red-950 border border-red-900 p-6 flex flex-col justify-between text-white shadow-2xl"
                             style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                           >
                             <div className="flex justify-between items-start">
@@ -821,7 +821,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                           {/* Back Side */}
                           <div 
-                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-950 border border-slate-800 p-6 flex flex-col justify-between text-white shadow-2xl"
+                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-indigo-950 via-red-950 to-indigo-950 border border-red-900 p-6 flex flex-col justify-between text-white shadow-2xl"
                             style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                           >
                             <div className="flex justify-between items-start">
@@ -834,7 +834,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                               </div>
                             </div>
 
-                            <div className="text-center text-[10px] text-slate-400 font-bold border-t border-slate-800 pt-4 leading-relaxed">
+                            <div className="text-center text-[10px] text-slate-400 font-bold border-t border-red-900 pt-4 leading-relaxed">
                               Bu kart İESÜ Mezuniyet Ağı akıllı kimlik doğrulama protokolüyle şifrelenmiştir.
                             </div>
                           </div>
@@ -843,7 +843,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                       <button
                         onClick={() => setCardAppStatus('form')}
-                        className="text-xs font-black text-slate-500 hover:text-slate-800 transition uppercase tracking-wider"
+                        className="text-xs font-black text-slate-500 hover:text-red-900 transition uppercase tracking-wider"
                       >
                         Yeni Başvuru Yap
                       </button>
@@ -856,14 +856,14 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'kulup_basvuru' && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Aktif Kulüp Başvuruları</h3>
+                    <h3 className="text-lg font-black text-red-950">Aktif Kulüp Başvuruları</h3>
                   </div>
 
                   <div className="space-y-3">
                     {profileData.clubApplications.map(app => (
                       <div key={app.id} className="p-4 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-between">
                         <div>
-                          <h4 className="font-bold text-xs text-slate-800">{app.name}</h4>
+                          <h4 className="font-bold text-xs text-red-900">{app.name}</h4>
                           <span className="text-[9px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-black uppercase tracking-wider inline-block mt-1">Başvuru {app.status}</span>
                         </div>
                         <button className="text-slate-400 hover:text-red-500 transition"><Trash2 size={16}/></button>
@@ -872,11 +872,11 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   </div>
 
                   <div className="mt-8">
-                    <h4 className="font-black text-sm text-slate-800 mb-4">Başvurabileceğin Popüler Kulüpler</h4>
+                    <h4 className="font-black text-sm text-red-900 mb-4">Başvurabileceğin Popüler Kulüpler</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center">
                         <div>
-                          <h5 className="font-bold text-xs text-slate-800">Girişimcilik ve İnovasyon Kulübü</h5>
+                          <h5 className="font-bold text-xs text-red-900">Girişimcilik ve İnovasyon Kulübü</h5>
                           <p className="text-[10px] text-slate-400 mt-0.5">142 Üye • Aktif</p>
                         </div>
                         <button 
@@ -887,7 +887,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             }));
                             window.toast && window.toast.success("Kulüp başvurunuz iletildi!");
                           }}
-                          className="bg-indigo-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
+                          className="bg-red-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
                         >
                           Katıl
                         </button>
@@ -895,7 +895,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                       <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center">
                         <div>
-                          <h5 className="font-bold text-xs text-slate-800">Blockchain Araştırmaları Topluluğu</h5>
+                          <h5 className="font-bold text-xs text-red-900">Blockchain Araştırmaları Topluluğu</h5>
                           <p className="text-[10px] text-slate-400 mt-0.5">85 Üye • Aktif</p>
                         </div>
                         <button 
@@ -906,7 +906,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             }));
                             window.toast && window.toast.success("Kulüp başvurunuz iletildi!");
                           }}
-                          className="bg-indigo-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
+                          className="bg-red-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
                         >
                           Katıl
                         </button>
@@ -919,7 +919,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'anket' && userRole === 'alumni' && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Mezun Memnuniyet & Anket Merkezi</h3>
+                    <h3 className="text-lg font-black text-red-950">Mezun Memnuniyet & Anket Merkezi</h3>
                     <p className="text-xs text-slate-500 font-bold mt-1">
                       Geri bildirimleriniz üniversitemizin kalitesini artırmasında büyük rol oynuyor. Aktif anketlere katılarak düşüncelerinizi bizimle paylaşın.
                     </p>
@@ -928,7 +928,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   {!surveyCompleted ? (
                     <div className="space-y-4">
                       <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
-                        <h4 className="font-black text-xs text-indigo-600 uppercase tracking-wider mb-2">Aktif Anket: 2026 İstihdam ve Memnuniyet Anketi</h4>
+                        <h4 className="font-black text-xs text-red-600 uppercase tracking-wider mb-2">Aktif Anket: 2026 İstihdam ve Memnuniyet Anketi</h4>
                         <p className="text-xs text-slate-500 font-bold mb-4">Mezunlarımızın iş bulma süreleri ve aldıkları eğitimin sektörel geçerliliği ölçülmektedir.</p>
                         
                         <div className="space-y-4 pt-2">
@@ -940,7 +940,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                   key={star} 
                                   type="button"
                                   onClick={() => setSurveyAnswers({...surveyAnswers, q1: star})}
-                                  className={`w-10 h-10 rounded-xl font-black text-xs border transition ${surveyAnswers.q1 === star ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                  className={`w-10 h-10 rounded-xl font-black text-xs border transition ${surveyAnswers.q1 === star ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                                 >
                                   {star} ★
                                 </button>
@@ -956,7 +956,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                   key={opt}
                                   type="button"
                                   onClick={() => setSurveyAnswers({...surveyAnswers, q2: opt})}
-                                  className={`px-4 py-2 rounded-xl font-bold text-xs border transition ${surveyAnswers.q2 === opt ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                  className={`px-4 py-2 rounded-xl font-bold text-xs border transition ${surveyAnswers.q2 === opt ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                                 >
                                   {opt}
                                 </button>
@@ -975,7 +975,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           setSurveyCompleted(true);
                           window.toast && window.toast.success("📝 Anket geri bildiriminiz başarıyla kaydedildi. Katkınız için teşekkür ederiz!");
                         }}
-                        className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition"
+                        className="px-6 py-3 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition"
                       >
                         Yanıtları Gönder
                       </button>
@@ -983,7 +983,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   ) : (
                     <div className="py-12 text-center bg-slate-50 border border-slate-200 rounded-3xl p-6">
                       <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100"><CheckCircle size={28}/></div>
-                      <h4 className="font-black text-slate-800 mb-2">Katılımınız İçin Teşekkürler</h4>
+                      <h4 className="font-black text-red-900 mb-2">Katılımınız İçin Teşekkürler</h4>
                       <p className="text-slate-500 text-xs font-bold max-w-sm mx-auto leading-relaxed">
                         Anket yanıtlarınız kalite geliştirme koordinatörlüğüne iletilmiştir.
                       </p>

@@ -53,16 +53,16 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-100 flex flex-col font-sans">
-      <header className="h-16 bg-[#0f172a]/80 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
+      <header className="h-16 bg-[#0f172a]/80 backdrop-blur-xl border-b border-red-900 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 transition"
+            className="p-2 rounded-full bg-red-900 text-slate-300 hover:bg-slate-700 transition"
           >
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Bot className="text-blue-400" size={24} />
+            <Bot className="text-red-400" size={24} />
             <h1 className="font-black tracking-tight text-white">Anka AI Mentor</h1>
           </div>
         </div>
@@ -74,14 +74,14 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
         {/* Chat Area */}
         <div 
           ref={scrollRef}
-          className="flex-1 overflow-y-auto rounded-xl bg-[#1e293b] border border-slate-800 p-4 md:p-6 mb-4 flex flex-col gap-6 custom-scrollbar scroll-smooth"
+          className="flex-1 overflow-y-auto rounded-xl bg-[#1e293b] border border-red-900 p-4 md:p-6 mb-4 flex flex-col gap-6 custom-scrollbar scroll-smooth"
         >
           {messages.map((msg) => (
             <div key={msg.id} className={`flex items-start gap-4 max-w-[85%] ${msg.isBot ? 'self-start' : 'self-end flex-row-reverse'}`}>
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${msg.isBot ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${msg.isBot ? 'bg-gradient-to-br from-red-500 to-red-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
                 {msg.isBot ? <Brain size={20} /> : <User size={20} />}
               </div>
-              <div className={`p-4 rounded-xl ${msg.isBot ? 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-sm' : 'bg-blue-600 text-white rounded-tr-sm shadow-blue-600/20 shadow-lg'}`}>
+              <div className={`p-4 rounded-xl ${msg.isBot ? 'bg-red-900 border border-slate-700 text-slate-200 rounded-tl-sm' : 'bg-red-600 text-white rounded-tr-sm shadow-red-600/20 shadow-lg'}`}>
                 <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">{msg.text}</p>
               </div>
             </div>
@@ -89,11 +89,11 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
           
           {isTyping && (
             <div className="flex items-start gap-4 max-w-[85%] self-start">
-              <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-lg bg-gradient-to-br from-red-500 to-red-600 text-white">
                 <Brain size={20} />
               </div>
-              <div className="p-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-sm flex items-center gap-2">
-                <Loader2 size={16} className="animate-spin text-blue-400" />
+              <div className="p-4 rounded-xl bg-red-900 border border-slate-700 text-slate-200 rounded-tl-sm flex items-center gap-2">
+                <Loader2 size={16} className="animate-spin text-red-400" />
                 <span className="text-sm text-slate-400 animate-pulse">Anka düşünüyor...</span>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
         </div>
 
         {/* Input Area */}
-        <div className="bg-[#1e293b] p-2 rounded-2xl border border-slate-800 flex items-center gap-2 shadow-2xl focus-within:border-blue-500/50 transition-colors">
+        <div className="bg-[#1e293b] p-2 rounded-2xl border border-red-900 flex items-center gap-2 shadow-2xl focus-within:border-red-500/50 transition-colors">
           <input 
             type="text" 
             className="flex-1 bg-transparent border-none outline-none text-white px-4 py-3 placeholder-slate-500"
@@ -114,7 +114,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
           <button 
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="p-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-xl transition shadow-lg flex items-center justify-center"
+            className="p-3 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-xl transition shadow-lg flex items-center justify-center"
           >
             <Send size={20} />
           </button>

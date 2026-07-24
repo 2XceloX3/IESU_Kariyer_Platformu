@@ -105,8 +105,8 @@ export default function OverviewPanel({ setView }) {
           <div className="space-y-4">
             {(events || []).slice(0, 2).map(e => (
               <div key={e.id} className="flex items-start gap-3 border-b border-gray-50 pb-3">
-                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                  <Calendar size={14} className="text-blue-600" />
+                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                  <Calendar size={14} className="text-red-600" />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900">Yeni Etkinlik Eklendi: {e?.title}</p>

@@ -48,7 +48,7 @@ export default function CMSLiveRooms({ currentUser, userRole, liveRooms }) {
             <p className="text-3xl font-black text-gray-900">{activeCount}</p>
           </div>
         </Card>
-        <Card className="p-5 border-l-4 border-indigo-500 flex flex-col justify-center">
+        <Card className="p-5 border-l-4 border-red-500 flex flex-col justify-center">
           <p className="text-xs font-bold text-gray-500 uppercase">Toplam Dinleyici</p>
           <p className="text-3xl font-black text-gray-900 mt-2">{totalListeners}</p>
         </Card>

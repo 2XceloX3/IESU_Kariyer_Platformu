@@ -114,7 +114,7 @@ export default function ClubsDirectory({
       <div className="bg-white border-b border-slate-200 p-4 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center justify-between mb-4 px-2">
           <div>
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+            <h2 className="text-2xl font-black text-red-900 tracking-tight flex items-center gap-2">
               Birlik Ağı <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Yeni</span>
             </h2>
             <p className="text-sm text-slate-500 font-medium mt-1">Kulüpler, topluluklar ve senin için fırsatlar.</p>
@@ -136,7 +136,7 @@ export default function ClubsDirectory({
             {featureClubApplications && (
               <button 
                 onClick={() => setShowApplicationModal(true)}
-                className="px-4 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-sm font-bold transition shadow flex items-center gap-2"
+                className="px-4 py-2 bg-red-950 hover:bg-black text-white rounded-xl text-sm font-bold transition shadow flex items-center gap-2"
               >
                 <Plus size={16} /> Kulüp Kur
               </button>
@@ -171,7 +171,7 @@ export default function ClubsDirectory({
         <div className="lg:col-span-3 space-y-6">
           {/* Professional Profile Card */}
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:border-slate-300 transition-colors">
-            <div className="h-16 bg-gradient-to-r from-slate-800 to-slate-700 relative">
+            <div className="h-16 bg-gradient-to-r from-red-900 to-slate-700 relative">
               <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-14 h-14 bg-white rounded-full p-1 border border-slate-200">
                 <div className="w-full h-full bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold text-lg">
                   {currentUser?.name?.charAt(0) || 'Ö'}
@@ -179,7 +179,7 @@ export default function ClubsDirectory({
               </div>
             </div>
             <div className="pt-8 pb-4 text-center px-4">
-              <h3 className="font-bold text-slate-900">{currentUser?.name || 'Öğrenci'}</h3>
+              <h3 className="font-bold text-red-950">{currentUser?.name || 'Öğrenci'}</h3>
               <p className="text-xs text-slate-500 mb-4">{currentUser?.department || 'Bilgisayar Mühendisliği'}</p>
               
               <div className="flex items-center justify-center gap-2 mb-4">
@@ -189,15 +189,15 @@ export default function ClubsDirectory({
               </div>
 
               <div className="border-t border-slate-100 pt-3 flex justify-between text-xs font-medium text-slate-500 px-2">
-                <span className="flex flex-col items-center"><strong className="text-slate-800 text-sm">2</strong> Üye Olunan</span>
-                <span className="flex flex-col items-center"><strong className="text-slate-800 text-sm">5</strong> Görevler</span>
+                <span className="flex flex-col items-center"><strong className="text-red-900 text-sm">2</strong> Üye Olunan</span>
+                <span className="flex flex-col items-center"><strong className="text-red-900 text-sm">5</strong> Görevler</span>
               </div>
             </div>
           </div>
 
           {/* Micro-Missions (Görev Havuzu) */}
           <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:border-slate-300 transition-colors">
-            <h3 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
+            <h3 className="font-bold text-red-900 mb-1 flex items-center gap-2">
               <Zap size={16} className="text-amber-500 fill-amber-500" /> Görev Havuzu
             </h3>
             <p className="text-xs text-slate-500 mb-4">Kulüplere destek ol, puan kazan.</p>
@@ -207,7 +207,7 @@ export default function ClubsDirectory({
                 <div key={m.id} className="p-3 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-100 transition-colors group">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h4 className="font-bold text-sm text-slate-800 group-hover:text-emerald-700 transition-colors">{m.title}</h4>
+                      <h4 className="font-bold text-sm text-red-900 group-hover:text-emerald-700 transition-colors">{m.title}</h4>
                       <p className="text-[11px] text-slate-500">{m.club}</p>
                     </div>
                     <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">+{m.points}p</span>
@@ -241,7 +241,7 @@ export default function ClubsDirectory({
                 <div className="flex items-center gap-3 cursor-pointer group">
                   <img src={post.author.logo} alt={post.author.name} className="w-10 h-10 rounded-xl border border-slate-100 shadow-sm group-hover:scale-105 transition-transform" />
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 group-hover:text-emerald-600 transition-colors">{post.author.name}</h4>
+                    <h4 className="font-bold text-sm text-red-950 group-hover:text-emerald-600 transition-colors">{post.author.name}</h4>
                     <p className="text-[11px] text-slate-500">{post.time}</p>
                   </div>
                 </div>
@@ -262,7 +262,7 @@ export default function ClubsDirectory({
                 <button className="flex items-center gap-1.5 text-slate-500 hover:text-rose-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-rose-50">
                   <Heart size={18} /> {post.likes}
                 </button>
-                <button className="flex items-center gap-1.5 text-slate-500 hover:text-blue-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-blue-50">
+                <button className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
                   <MessageCircle size={18} /> {post.comments}
                 </button>
                 <button className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-emerald-50">
@@ -279,7 +279,7 @@ export default function ClubsDirectory({
           <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm sticky top-28">
             
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-slate-800 text-lg">Keşfet</h3>
+              <h3 className="font-bold text-red-900 text-lg">Keşfet</h3>
               <div className="relative group w-40 sm:w-48">
                 <Search className="absolute left-3 top-2.5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={14} />
                 <input 
@@ -300,7 +300,7 @@ export default function ClubsDirectory({
                   <div key={club.id} onClick={() => setSelectedClub(club)} className="flex gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 cursor-pointer transition-all group">
                     <img src={club.logo} alt={club.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-sm" />
                     <div className="flex-1">
-                      <h4 className="font-bold text-sm text-slate-900 group-hover:text-emerald-600 transition-colors">{club.name}</h4>
+                      <h4 className="font-bold text-sm text-red-950 group-hover:text-emerald-600 transition-colors">{club.name}</h4>
                       <p className="text-[11px] text-slate-500 mb-1">{club.category}</p>
                       <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 w-fit px-1.5 py-0.5 rounded">
                         <Users size={10} /> {club.memberCount} Üye
@@ -317,11 +317,11 @@ export default function ClubsDirectory({
 
       {/* Selected Club Modal (LinkedIn Company Page Style) */}
       {selectedClub && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] bg-red-950/60 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-fade-in relative">
             <button onClick={() => setSelectedClub(null)} className="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors backdrop-blur-md"><X size={18}/></button>
             
-            <div className="h-48 relative bg-slate-800">
+            <div className="h-48 relative bg-red-900">
               {selectedClub.coverImage && <img src={selectedClub.coverImage} alt={selectedClub.name} className="w-full h-full object-cover opacity-70" />}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             </div>
@@ -339,7 +339,7 @@ export default function ClubsDirectory({
               </div>
 
               <div>
-                <h2 className="text-3xl font-black text-slate-900 leading-tight">{selectedClub.name}</h2>
+                <h2 className="text-3xl font-black text-red-950 leading-tight">{selectedClub.name}</h2>
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">{selectedClub.category}</span>
                   <span className="text-sm font-bold text-slate-500 flex items-center gap-1"><Users size={16}/> {selectedClub.memberCount} Üye</span>
@@ -347,7 +347,7 @@ export default function ClubsDirectory({
               </div>
 
               <div className="mt-8">
-                <h3 className="text-base font-bold text-slate-900 mb-3 flex items-center gap-2"><Info size={18} className="text-slate-400"/> Hakkımızda</h3>
+                <h3 className="text-base font-bold text-red-950 mb-3 flex items-center gap-2"><Info size={18} className="text-slate-400"/> Hakkımızda</h3>
                 <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-5 rounded-2xl border border-slate-100">{selectedClub.description}</p>
               </div>
               
@@ -356,14 +356,14 @@ export default function ClubsDirectory({
                   <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-500"><Users size={20}/></div>
                   <div>
                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Danışman</p>
-                    <p className="text-sm font-bold text-slate-800">Dr. Öğr. Üyesi Ahmet Y.</p>
+                    <p className="text-sm font-bold text-red-900">Dr. Öğr. Üyesi Ahmet Y.</p>
                   </div>
                 </div>
                 <div className="border border-slate-200 bg-white rounded-2xl p-4 flex items-center gap-4 hover:border-emerald-200 transition-colors">
                   <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-500"><Briefcase size={20}/></div>
                   <div>
                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Başkan</p>
-                    <p className="text-sm font-bold text-slate-800">Caner M. (Psikoloji)</p>
+                    <p className="text-sm font-bold text-red-900">Caner M. (Psikoloji)</p>
                   </div>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export default function ClubsDirectory({
 
       {/* Join Request Modal (Skills Based) */}
       {showJoinModal && selectedClub && (
-        <div className="fixed inset-0 z-[110] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[110] bg-red-950/60 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl w-full max-w-lg overflow-hidden shadow-2xl animate-fade-in relative">
             <div className="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 text-white flex justify-between items-start">
               <div>
@@ -426,9 +426,9 @@ export default function ClubsDirectory({
 
       {/* New Application Modal (EK-1) */}
       {showApplicationModal && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] bg-red-950/60 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl w-full max-w-xl overflow-hidden shadow-2xl animate-fade-in relative">
-            <div className="bg-slate-900 p-6 text-white flex justify-between items-start">
+            <div className="bg-red-950 p-6 text-white flex justify-between items-start">
               <div>
                 <FileText size={28} className="mb-2 text-emerald-400"/>
                 <h2 className="text-xl font-black">EK-1: Yeni Kulüp Kurma</h2>
@@ -440,18 +440,18 @@ export default function ClubsDirectory({
             <form onSubmit={handleApplyClub} className="p-6 space-y-5">
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Planlanan Kulüp Adı</label>
-                <input required value={applicationForm.name} onChange={e => setApplicationForm({...applicationForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 text-sm transition-all" placeholder="Örn: Yapay Zeka Kulübü" />
+                <input required value={applicationForm.name} onChange={e => setApplicationForm({...applicationForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-950/10 focus:border-red-950 text-sm transition-all" placeholder="Örn: Yapay Zeka Kulübü" />
               </div>
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Kulübün Amacı</label>
-                <textarea required rows={4} value={applicationForm.purpose} onChange={e => setApplicationForm({...applicationForm, purpose: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 text-sm resize-none transition-all" placeholder="Kurulum amacı ve hedefleri detaylıca açıklayınız..." />
+                <textarea required rows={4} value={applicationForm.purpose} onChange={e => setApplicationForm({...applicationForm, purpose: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-950/10 focus:border-red-950 text-sm resize-none transition-all" placeholder="Kurulum amacı ve hedefleri detaylıca açıklayınız..." />
               </div>
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Planlanan Danışman</label>
-                <input required value={applicationForm.advisorName} onChange={e => setApplicationForm({...applicationForm, advisorName: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 text-sm transition-all" placeholder="Örn: Prof. Dr. Ahmet Yılmaz" />
+                <input required value={applicationForm.advisorName} onChange={e => setApplicationForm({...applicationForm, advisorName: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-950/10 focus:border-red-950 text-sm transition-all" placeholder="Örn: Prof. Dr. Ahmet Yılmaz" />
               </div>
               <div className="pt-3">
-                <button type="submit" className="w-full py-3.5 bg-slate-900 hover:bg-black text-white rounded-xl text-sm font-bold transition shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                <button type="submit" className="w-full py-3.5 bg-red-950 hover:bg-black text-white rounded-xl text-sm font-bold transition shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                   Dekanlığa Gönder <ChevronRight size={16} />
                 </button>
               </div>

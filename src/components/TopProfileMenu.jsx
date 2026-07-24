@@ -71,7 +71,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       <div className="flex items-center gap-2">
         <button 
           onClick={() => setView?.('login')}
-          className="flex items-center gap-2 bg-[#0A2342] hover:bg-[#163B65] text-white px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg"
+          className="flex items-center gap-2 bg-[#990000] hover:bg-[#163B65] text-white px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg"
         >
           <User size={14} /> Giriş Yap
         </button>
@@ -127,8 +127,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     </div>
                     <span className="text-[11px] font-bold text-gray-700">Yönetim</span>
                   </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('student'); }} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-gray-50 hover:bg-blue-50 transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200 shadow-sm">
-                    <div className="bg-blue-100 text-blue-600 p-2 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
+                  <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('student'); }} className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-gray-50 hover:bg-red-50 transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-red-200 shadow-sm">
+                    <div className="bg-red-100 text-red-600 p-2 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-all duration-200">
                       <GraduationCap size={18} />
                     </div>
                     <span className="text-[11px] font-bold text-gray-700">Öğrenci</span>
@@ -174,9 +174,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     <button 
                       role="menuitem"
                       onClick={() => { setIsOpen(false); setView?.('alumni_card'); }}
-                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 transition-all duration-200 flex items-center gap-3 group"
+                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-red-700 bg-red-50 hover:bg-red-100 hover:text-red-800 transition-all duration-200 flex items-center gap-3 group"
                     >
-                      <CreditCard size={16} className="text-blue-500 group-hover:text-blue-600 transition-all duration-200" /> Dijital Mezun Kartım
+                      <CreditCard size={16} className="text-red-500 group-hover:text-red-600 transition-all duration-200" /> Dijital Mezun Kartım
                     </button>
                     <button 
                       role="menuitem"
@@ -197,35 +197,35 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       onClick={() => { setIsOpen(false); setView?.('hackathon_market'); }}
                       className="w-full text-left px-4 py-2 text-[13px] font-bold text-cyan-400 bg-gray-900 hover:bg-black transition-all duration-200 flex items-center gap-3 group"
                     >
-                      <Terminal size={16} className="text-cyan-500 group-hover:text-cyan-400 transition-all duration-200" /> AI Hackathon Alanı
+                      <Terminal size={16} className="text-rose-500 group-hover:text-cyan-400 transition-all duration-200" /> AI Hackathon Alanı
                     </button>
                     <button 
                       role="menuitem"
                       onClick={() => { setIsOpen(false); setView?.('alumni_dao'); }}
                       className="w-full text-left px-4 py-2 text-[13px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all duration-200 flex items-center gap-3 group"
                     >
-                      <Landmark size={16} className="text-indigo-500 group-hover:text-indigo-700 transition-all duration-200" /> Mezunlar Meclisi (DAO)
+                      <Landmark size={16} className="text-red-500 group-hover:text-indigo-700 transition-all duration-200" /> Mezunlar Meclisi (DAO)
                     </button>
                     <button 
                       role="menuitem"
                       onClick={() => { setIsOpen(false); setView?.('campus_map'); }}
                       className="w-full text-left px-4 py-2 text-[13px] font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 transition-all duration-200 flex items-center gap-3 group"
                     >
-                      <Map size={16} className="text-teal-500 group-hover:text-teal-700 transition-all duration-200" /> İESÜ Metaverse Kampüs
+                      <Map size={16} className="text-orange-500 group-hover:text-teal-700 transition-all duration-200" /> İESÜ Metaverse Kampüs
                     </button>
                     <button 
                       role="menuitem"
                       onClick={() => { setIsOpen(false); setView?.('global_map'); }}
-                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 transition-all duration-200 flex items-center gap-3 group"
+                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-red-700 bg-red-50 hover:bg-red-100 hover:text-red-800 transition-all duration-200 flex items-center gap-3 group"
                     >
-                      <Globe size={16} className="text-blue-500 group-hover:text-blue-700 transition-all duration-200" /> Küresel Mezun Haritası
+                      <Globe size={16} className="text-red-500 group-hover:text-red-700 transition-all duration-200" /> Küresel Mezun Haritası
                     </button>
                     <button 
                       role="menuitem"
                       onClick={() => { setIsOpen(false); setView?.('anka_chat'); }}
-                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 transition-all duration-200 flex items-center gap-3 group"
+                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-red-700 bg-red-50 hover:bg-red-100 transition-all duration-200 flex items-center gap-3 group"
                     >
-                      <Bot size={16} className="text-blue-500 group-hover:text-blue-700 transition-all duration-200" /> Anka AI Sohbet
+                      <Bot size={16} className="text-red-500 group-hover:text-red-700 transition-all duration-200" /> Anka AI Sohbet
                     </button>
                     <button 
                       role="menuitem"
@@ -237,9 +237,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     <button 
                       role="menuitem"
                       onClick={() => { setIsOpen(false); setView?.('mentor_booking'); }}
-                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center gap-3"
+                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-red-600 hover:bg-indigo-50 transition-colors flex items-center gap-3"
                     >
-                      <CalendarCheck size={16} className="text-indigo-500" /> Mentor Ajandası
+                      <CalendarCheck size={16} className="text-red-500" /> Mentor Ajandası
                     </button>
                     <button 
                       role="menuitem"
@@ -258,45 +258,45 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                                       <button 
                       role="menuitem"
                       onClick={() => { setIsOpen(false); setView?.('idari_portal'); }}
-                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-3"
+                      className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
                     >
-                      <Building2 size={16} className="text-blue-500" /> İESÜ İdari Portal
+                      <Building2 size={16} className="text-red-500" /> İESÜ İdari Portal
                     </button>
                     <div className="border-t border-slate-100 my-1 pt-1">
                       <button 
                         role="menuitem"
                         onClick={() => { setIsOpen(false); setView?.('about_us'); }}
-                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-red-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
-                        <Award size={16} className="text-indigo-500" /> Hakkımızda
+                        <Award size={16} className="text-red-500" /> Hakkımızda
                       </button>
                       <button 
                         role="menuitem"
                         onClick={() => { setIsOpen(false); setView?.('services'); }}
-                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-red-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
-                        <BookOpen size={16} className="text-indigo-500" /> Hizmetlerimiz
+                        <BookOpen size={16} className="text-red-500" /> Hizmetlerimiz
                       </button>
                       <button 
                         role="menuitem"
                         onClick={() => { setIsOpen(false); setView?.('research_hub'); }}
-                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-red-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
-                        <Atom size={16} className="text-indigo-500" /> Araştırma & Ar-Ge OS
+                        <Atom size={16} className="text-red-500" /> Araştırma & Ar-Ge OS
                       </button>
                       <button 
                         role="menuitem"
                         onClick={() => { setIsOpen(false); setView?.('events_list'); }}
-                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-red-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
-                        <Calendar size={16} className="text-indigo-500" /> Etkinliklerimiz
+                        <Calendar size={16} className="text-red-500" /> Etkinliklerimiz
                       </button>
                       <button 
                         role="menuitem"
                         onClick={() => { setIsOpen(false); setView?.('contact_us'); }}
-                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                        className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:text-red-600 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
-                        <Globe size={16} className="text-indigo-500" /> İletişim
+                        <Globe size={16} className="text-red-500" /> İletişim
                       </button>
                     </div>
                     <button 
@@ -313,9 +313,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <button 
                     role="menuitem"
                     onClick={() => { setIsOpen(false); setView?.('company_ats'); }}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 transition-all duration-200 flex items-center gap-3 group"
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-red-700 bg-red-50 hover:bg-red-100 hover:text-red-800 transition-all duration-200 flex items-center gap-3 group"
                   >
-                    <Briefcase size={16} className="text-blue-500 group-hover:text-blue-600 transition-all duration-200" /> İşe Alım Panosu (ATS)
+                    <Briefcase size={16} className="text-red-500 group-hover:text-red-600 transition-all duration-200" /> İşe Alım Panosu (ATS)
                   </button>
                 )}
                 
@@ -323,9 +323,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <button 
                   role="menuitem" 
                   onClick={() => { setIsOpen(false); setView?.('student_analytics'); }} 
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-[#0A66C2] bg-blue-50 hover:bg-blue-100 transition-all duration-200 flex items-center gap-3 group"
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-[#0A66C2] bg-red-50 hover:bg-red-100 transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <BarChart2 size={16} className="text-[#0A66C2] group-hover:text-blue-800 transition-all duration-200" /> Kariyer Analitiği <span className="bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-auto shadow-sm">PREMIUM</span>
+                  <BarChart2 size={16} className="text-[#0A66C2] group-hover:text-red-800 transition-all duration-200" /> Kariyer Analitiği <span className="bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-auto shadow-sm">PREMIUM</span>
                 </button>
                 
                 <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('cvbuilder'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group">
@@ -340,7 +340,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   }}
                   className="w-full text-left px-4 py-2 text-[13px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <Globe size={16} className="text-indigo-500 group-hover:text-indigo-700 transition-all duration-200" /> Birlik Ağı (Ana Akış)
+                  <Globe size={16} className="text-red-500 group-hover:text-indigo-700 transition-all duration-200" /> Birlik Ağı (Ana Akış)
                 </button>
                 <button 
                   role="menuitem"
@@ -369,7 +369,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <p className="text-sm font-black text-gray-900 truncate flex items-center gap-1 transition-all duration-200">
                     {currentUser?.name || 'Kullanıcı'}
-                    {currentUser?.badge && <ShieldCheck size={14} className="text-blue-500 shrink-0" title={currentUser?.badge} />}
+                    {currentUser?.badge && <ShieldCheck size={14} className="text-red-500 shrink-0" title={currentUser?.badge} />}
                   </p>
                 </div>
                 <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5 flex items-center gap-1 transition-all duration-200">
@@ -414,18 +414,18 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <button 
                     role="menuitem"
                     onClick={() => { setIsOpen(false); setView?.('applications'); }}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#0A2342]/10 hover:text-[#0A2342] transition-all duration-200 flex items-center gap-3 group"
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000] transition-all duration-200 flex items-center gap-3 group"
                   >
-                    <FileText size={16} className="text-gray-500 group-hover:text-[#0A2342] transition-all duration-200" /> Başvurularım
+                    <FileText size={16} className="text-gray-500 group-hover:text-[#990000] transition-all duration-200" /> Başvurularım
                   </button>
                 )}
 
                 <button 
                   role="menuitem"
                   onClick={() => { setIsOpen(false); setView?.('calendar'); }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#0A2342]/10 hover:text-[#0A2342] transition-all duration-200 flex items-center gap-3 group"
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000] transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <Calendar size={16} className="text-gray-500 group-hover:text-[#0A2342] transition-all duration-200" /> Takvim
+                  <Calendar size={16} className="text-gray-500 group-hover:text-[#990000] transition-all duration-200" /> Takvim
                 </button>
 
                 {isClubAdmin && (
@@ -445,13 +445,13 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <button 
                     role="menuitem"
                     onClick={() => setGhostMode?.(!ghostMode)}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200 flex items-center justify-between group"
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-indigo-50 hover:text-red-600 transition-all duration-200 flex items-center justify-between group"
                     title="Aktifken şirketler ve İK uzmanları profilinizi görüntüleyemez."
                   >
                     <div className="flex items-center gap-3">
-                      <Ghost size={16} className={ghostMode ? "text-indigo-500 transition-all duration-200" : "text-gray-500 group-hover:text-indigo-500 transition-all duration-200"} /> Hayalet Mod (Gizli İş Arama)
+                      <Ghost size={16} className={ghostMode ? "text-red-500 transition-all duration-200" : "text-gray-500 group-hover:text-red-500 transition-all duration-200"} /> Hayalet Mod (Gizli İş Arama)
                     </div>
-                    <div className={`w-8 h-4 rounded-full relative transition-all duration-200 ${ghostMode ? 'bg-indigo-500' : 'bg-gray-200'}`}>
+                    <div className={`w-8 h-4 rounded-full relative transition-all duration-200 ${ghostMode ? 'bg-red-500' : 'bg-gray-200'}`}>
                       <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-all duration-200 ${ghostMode ? 'left-4.5' : 'left-0.5'}`}></div>
                     </div>
                   </button>
@@ -482,7 +482,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   }}
                   className="w-full text-left px-4 py-2 text-[13px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <Globe size={16} className="text-indigo-500 group-hover:text-indigo-700 transition-all duration-200" /> Birlik Ağı (Yeni)
+                  <Globe size={16} className="text-red-500 group-hover:text-indigo-700 transition-all duration-200" /> Birlik Ağı (Yeni)
                 </button>
                 <button 
                   role="menuitem"
@@ -500,18 +500,18 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <button 
                     role="menuitem"
                     onClick={() => { setIsOpen(false); setView?.('cvbuilder'); }}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#0A2342]/10 hover:text-[#0A2342] transition-all duration-200 flex items-center gap-3 group"
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000] transition-all duration-200 flex items-center gap-3 group"
                   >
-                    <Wand2 size={16} className="text-gray-500 group-hover:text-[#0A2342] transition-all duration-200" /> Yapay Zekâ CV
+                    <Wand2 size={16} className="text-gray-500 group-hover:text-[#990000] transition-all duration-200" /> Yapay Zekâ CV
                   </button>
                 )}
 
                 <button 
                   role="menuitem"
                   onClick={() => { setIsOpen(false); setView?.('messaging'); }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#0A2342]/10 hover:text-[#0A2342] transition-all duration-200 flex items-center gap-3 group"
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000] transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <MessageSquare size={16} className="text-gray-500 group-hover:text-[#0A2342] transition-all duration-200" /> Mesajlarım
+                  <MessageSquare size={16} className="text-gray-500 group-hover:text-[#990000] transition-all duration-200" /> Mesajlarım
                 </button>
               </div>
 

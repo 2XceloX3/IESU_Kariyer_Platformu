@@ -11,7 +11,7 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
   const highlights = [];
   
   activeAnnouncements.forEach(a => {
-    highlights.push({ type: 'announcement', icon: <Megaphone size={18} />, title: a.title, desc: 'Kariyer Merkezi Duyurusu', color: 'bg-blue-50 text-blue-600', link: 'duyurular' });
+    highlights.push({ type: 'announcement', icon: <Megaphone size={18} />, title: a.title, desc: 'Kariyer Merkezi Duyurusu', color: 'bg-red-50 text-red-600', link: 'duyurular' });
   });
 
   activeEvents.forEach(e => {
@@ -41,7 +41,7 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
                 window.toast && window.toast.success("✅ AI Sinyali: Hedefiniz olan 'Yazılım' alanında radarınıza 3 yeni staj ilanı ve 1 kulüp etkinliği takıldı.");
               }, 2500);
             }}
-            className="flex items-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full hover:opacity-90 transition shadow-md shadow-blue-500/20"
+            className="flex items-center gap-1 bg-gradient-to-r from-red-600 to-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full hover:opacity-90 transition shadow-md shadow-red-500/20"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"></path><path d="m17 5-5-3-5 3v14l5 3 5-3V5z"></path></svg>
             AI ile Tara

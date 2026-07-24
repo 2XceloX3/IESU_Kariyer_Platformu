@@ -94,7 +94,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
             animate={{ opacity: 1, y: 0 }}
             className="flex-1 flex flex-col items-center justify-center text-center max-w-3xl mx-auto py-12"
           >
-            <div className="w-20 h-20 bg-blue-50 text-[#0A66C2] rounded-2xl flex items-center justify-center shadow-sm mb-6 border border-blue-100">
+            <div className="w-20 h-20 bg-red-50 text-[#0A66C2] rounded-2xl flex items-center justify-center shadow-sm mb-6 border border-red-100">
               <LineChart size={40} />
             </div>
             
@@ -105,7 +105,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
               Yapay Zeka Destekli Yatırım Analiz platformumuz, projenizin pazar potansiyelini değerlendirip sizin için otomatik bir Yalın Kanvas (Lean Canvas) iş modeli oluşturur.
             </p>
 
-            <div className="w-full bg-white p-6 rounded-2xl border border-gray-200 shadow-sm transition-all focus-within:border-[#0A66C2] focus-within:ring-4 focus-within:ring-blue-50">
+            <div className="w-full bg-white p-6 rounded-2xl border border-gray-200 shadow-sm transition-all focus-within:border-[#0A66C2] focus-within:ring-4 focus-within:ring-red-50">
               <div className="text-left mb-2 text-sm font-bold text-gray-700">Proje Özeti (Executive Summary)</div>
               <textarea 
                 className="w-full bg-gray-50 border border-gray-100 rounded-xl outline-none resize-none text-gray-800 placeholder-gray-400 text-base p-4 min-h-[150px] mb-4 focus:bg-white transition-colors"
@@ -120,7 +120,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
                 <button 
                   onClick={handlePitch}
                   disabled={pitch.length < 10}
-                  className="bg-[#0A66C2] hover:bg-blue-700 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-sm"
+                  className="bg-[#0A66C2] hover:bg-red-700 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-sm"
                 >
                   Fizibilite Raporu Oluştur <ArrowRight size={18} />
                 </button>
@@ -241,7 +241,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
                     </div>
 
                     {/* Unique Value */}
-                    <div className="bg-blue-50/50 p-5 col-span-1 border-r border-b border-blue-100 relative">
+                    <div className="bg-red-50/50 p-5 col-span-1 border-r border-b border-red-100 relative">
                       <div className="absolute inset-x-0 top-0 h-1 bg-[#0A66C2]" />
                       <h5 className="font-bold text-gray-900 text-sm mb-3 uppercase tracking-wider flex items-center gap-2">
                         <Zap size={16} className="text-[#0A66C2]"/> Değer Önerisi

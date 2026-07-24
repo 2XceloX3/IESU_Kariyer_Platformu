@@ -201,7 +201,7 @@ export default function CMSEvents({ events = [], setEvents }) {
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(e)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(e)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(e.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
@@ -266,7 +266,7 @@ export default function CMSEvents({ events = [], setEvents }) {
           
           <div className="pt-6 border-t border-gray-100 mt-6">
             <div className="flex items-center gap-3 mb-4">
-              <input type="checkbox" id="hasSurvey" checked={form.hasSurvey} onChange={(e) => setForm({...form, hasSurvey: e.target.checked})} className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500" />
+              <input type="checkbox" id="hasSurvey" checked={form.hasSurvey} onChange={(e) => setForm({...form, hasSurvey: e.target.checked})} className="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500" />
               <label htmlFor="hasSurvey" className="text-sm font-black text-gray-900">Etkinlik Sonrası Değerlendirme Anketi (Likert) Ekle</label>
             </div>
             
@@ -279,7 +279,7 @@ export default function CMSEvents({ events = [], setEvents }) {
                 {form.surveyQuestions.map((q, index) => (
                   <div key={q.id} className="flex items-start gap-2">
                     <span className="text-xs font-bold text-indigo-400 mt-2">{index+1}.</span>
-                    <input type="text" value={q.text} onChange={(e) => updateSurveyQuestion(q.id, e.target.value)} placeholder="Likert sorusu (Örn: Eğitmen yeterliydi)" className="flex-1 bg-white border border-indigo-200 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500" />
+                    <input type="text" value={q.text} onChange={(e) => updateSurveyQuestion(q.id, e.target.value)} placeholder="Likert sorusu (Örn: Eğitmen yeterliydi)" className="flex-1 bg-white border border-indigo-200 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-red-500" />
                     <button type="button" onClick={() => removeSurveyQuestion(q.id)} className="p-1.5 text-red-400 hover:bg-red-50 rounded"><Trash2 size={14}/></button>
                   </div>
                 ))}

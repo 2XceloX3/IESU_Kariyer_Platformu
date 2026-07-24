@@ -107,7 +107,7 @@ export default function CMSGallery({ galleryImages = [], setGalleryImages }) {
             <div className="h-40 overflow-hidden relative">
               <img src={img.url} alt={img.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
               <div className="absolute top-2 right-2 flex gap-1">
-                <button onClick={() => handleEdit(img)} className="p-1.5 bg-white/95 text-gray-600 rounded-lg hover:text-indigo-600 shadow transition">
+                <button onClick={() => handleEdit(img)} className="p-1.5 bg-white/95 text-gray-600 rounded-lg hover:text-red-600 shadow transition">
                   <Edit size={14} />
                 </button>
                 <button onClick={() => handleDelete(img.id)} className="p-1.5 bg-white/95 text-red-600 rounded-lg hover:bg-red-50 shadow transition">

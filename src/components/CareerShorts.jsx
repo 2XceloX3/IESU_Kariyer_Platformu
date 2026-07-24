@@ -102,7 +102,7 @@ export default function CareerShorts({ setView, onClose }) {
           {/* Avatar */}
           <div className="relative group cursor-pointer">
             <img src={currentShort.author.avatar} className="w-12 h-12 rounded-full border-2 border-white object-cover" alt="Author" />
-            <button aria-label="İşlem Butonu" className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#0A2342] text-white rounded-full p-1 shadow-lg">
+            <button aria-label="İşlem Butonu" className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#990000] text-white rounded-full p-1 shadow-lg">
               <UserPlus size={14} />
             </button>
           </div>
@@ -110,7 +110,7 @@ export default function CareerShorts({ setView, onClose }) {
           {/* Like */}
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex flex-col items-center gap-1 cursor-pointer group" onClick={(e) => { e.stopPropagation(); toggleLike(currentShort.id); }}>
             <div className="w-12 h-12 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-black/40 transition">
-              <Heart size={26} className={liked[currentShort.id] ? "fill-iesu-navy text-[#0A2342]" : "text-white"} />
+              <Heart size={26} className={liked[currentShort.id] ? "fill-iesu-navy text-[#990000]" : "text-white"} />
             </div>
             <span className="text-white text-xs font-bold">{liked[currentShort.id] ? currentShort.likes + 1 : currentShort.likes}</span>
           </div>
@@ -137,7 +137,7 @@ export default function CareerShorts({ setView, onClose }) {
               }, 2500);
             }}
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center group-hover:scale-110 shadow-lg shadow-indigo-500/50 transition-all">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-purple-600 rounded-full flex items-center justify-center group-hover:scale-110 shadow-lg shadow-red-500/50 transition-all">
               <Sparkles size={22} className="text-white fill-white/50" />
             </div>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 text-[10px] font-black uppercase tracking-wider">AI Analiz</span>

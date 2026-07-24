@@ -16,10 +16,10 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
 
   const getIcon = (type) => {
     switch(type) {
-      case 'message': return <MessageSquare size={18} className="text-blue-500" />;
+      case 'message': return <MessageSquare size={18} className="text-red-500" />;
       case 'application': return <Briefcase size={18} className="text-emerald-500" />;
       case 'event': return <Calendar size={18} className="text-purple-500" />;
-      case 'system': return <Info size={18} className="text-[#0A2342]" />;
+      case 'system': return <Info size={18} className="text-[#990000]" />;
       default: return <Bell size={18} className="text-gray-500" />;
     }
   };
@@ -59,14 +59,14 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
           {/* CENTER: Logo & Brand */}
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
           {/* RIGHT: Notifications & Profile Menu */}
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center bg-red-50 text-[#0A2342]`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center bg-red-50 text-[#990000]`} title="Bildirimler">
               <div className="relative">
                 <Bell size={24} strokeWidth={2.5} className="fill-current" />
               </div>
@@ -83,7 +83,7 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
             Bildirimler
           </h1>
           {unreadCount > 0 && (
-            <button onClick={markAllAsRead} className="text-sm font-bold text-gray-500 hover:text-[#0A2342] flex items-center gap-1 transition">
+            <button onClick={markAllAsRead} className="text-sm font-bold text-gray-500 hover:text-[#990000] flex items-center gap-1 transition">
               <CheckCircle size={16} /> Tümünü Okundu İşaretle
             </button>
           )}
@@ -121,7 +121,7 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
                     </span>
                   </div>
                   {!notification.read && (
-                    <div className="w-2 h-2 rounded-full bg-[#0A2342] shrink-0 absolute right-6 top-8"></div>
+                    <div className="w-2 h-2 rounded-full bg-[#990000] shrink-0 absolute right-6 top-8"></div>
                   )}
                   <button 
                     onClick={(e) => handleDelete(notification.id, e)}

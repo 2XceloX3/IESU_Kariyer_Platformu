@@ -77,7 +77,7 @@ export default function CMSFeatured({ featuredOpportunities = [], setFeaturedOpp
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Star size={24}/></div>
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><Star size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Fırsat</p><p className="text-2xl font-black text-gray-900">{(featuredOpportunities || []).length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -154,7 +154,7 @@ export default function CMSFeatured({ featuredOpportunities = [], setFeaturedOpp
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(f)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(f)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(f.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>

@@ -94,7 +94,7 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
             <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-xs font-black rounded-lg shadow-sm text-gray-700">
               {job.type}
             </span>
-            <span className="px-3 py-1 bg-[#0A2342]/90 backdrop-blur-sm text-xs font-black rounded-lg shadow-sm text-white flex items-center gap-1">
+            <span className="px-3 py-1 bg-[#990000]/90 backdrop-blur-sm text-xs font-black rounded-lg shadow-sm text-white flex items-center gap-1">
               <Heart size={10} fill="currentColor" /> Hızlı Başvur
             </span>
           </div>
@@ -129,7 +129,7 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
             {/* Flexibility Indicator */}
             <div className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
               job.location?.toLowerCase().includes('uzaktan') || job.location?.toLowerCase().includes('remote') 
-                ? 'bg-blue-50 text-blue-600 border border-blue-100' 
+                ? 'bg-red-50 text-red-600 border border-red-100' 
                 : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
             }`}>
               {job.location?.toLowerCase().includes('uzaktan') || job.location?.toLowerCase().includes('remote') ? <><Home size={12}/> %100 Remote</> : <><Compass size={12}/> Hibrit (Ofis + Ev)</>}
@@ -149,7 +149,7 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
               </div>
               <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-blue-400 to-[#0A66C2] rounded-full" 
+                  className="h-full bg-gradient-to-r from-red-400 to-[#0A66C2] rounded-full" 
                   style={{ width: `${((job.id.length * 7 + job.title.length * 3) % 30) + 70}%` }}
                 ></div>
               </div>
@@ -172,7 +172,7 @@ export default function SwipeableJobCard({ job, hasApplied, onApply, onDismiss, 
               controls.start({ x: 250, opacity: 0, transition: { duration: 0.2 } });
               setTimeout(() => onApply(job), 200);
             }} 
-            className="w-full py-2.5 bg-[#0A2342] hover:bg-red-700 text-white font-bold rounded-xl transition text-sm flex items-center justify-center gap-1.5 shadow-md shadow-red-200"
+            className="w-full py-2.5 bg-[#990000] hover:bg-red-700 text-white font-bold rounded-xl transition text-sm flex items-center justify-center gap-1.5 shadow-md shadow-red-200"
           >
             <Heart size={14} fill="currentColor" /> Başvur
           </button>

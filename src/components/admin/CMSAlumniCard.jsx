@@ -77,7 +77,7 @@ export default function CMSAlumniCard({ alumniCardApplications = [], setAlumniCa
           </button>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"><FileText size={24}/></div>
+          <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-600"><FileText size={24}/></div>
           <div><p className="text-sm font-bold text-gray-500">Toplam Başvuru</p><p className="text-2xl font-black text-gray-900">{(alumniCardApplications || []).length}</p></div>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -124,13 +124,13 @@ export default function CMSAlumniCard({ alumniCardApplications = [], setAlumniCa
                     <p className="text-xs text-gray-500">{app.gradYear} Mezunu</p>
                   </td>
                   <td className="py-3 px-5">
-                    <p className="text-xs text-blue-600 font-medium">{app.email}</p>
+                    <p className="text-xs text-red-600 font-medium">{app.email}</p>
                     <p className="text-xs text-gray-500">{app.phone}</p>
                   </td>
                   <td className="py-3 px-5">
                     <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border 
                       ${app.status === 'Bekliyor' ? 'bg-orange-50 text-orange-700 border-orange-200' : ''}
-                      ${app.status === 'Onaylandı' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
+                      ${app.status === 'Onaylandı' ? 'bg-red-50 text-red-700 border-red-200' : ''}
                       ${app.status === 'Verildi' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ''}
                       ${app.status === 'Reddedildi' ? 'bg-red-50 text-red-700 border-red-200' : ''}
                     `}>

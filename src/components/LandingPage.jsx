@@ -196,28 +196,28 @@ export default function LandingPage({ setView }) {
           <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-indigo-300 transition-colors shadow-sm">
             <div className="p-3 bg-indigo-100/80 text-indigo-700 rounded-xl shrink-0"><ShieldCheck size={22} /></div>
             <div>
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">Avrupa Akredite</h4>
+              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">Avrupa Akredite</h4>
               <p className="text-[11px] font-semibold text-slate-500 mt-0.5">AQAS & AHPGS Uluslararası Eğitim Kalite Standartları</p>
             </div>
           </div>
           <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-emerald-300 transition-colors shadow-sm">
             <div className="p-3 bg-emerald-100/80 text-emerald-700 rounded-xl shrink-0"><Zap size={22} /></div>
             <div>
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">AI Destekli Portföy</h4>
+              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">AI Destekli Portföy</h4>
               <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Otomatik ATS Uyum Analizi & Canlı Mülakat Provası</p>
             </div>
           </div>
           <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-amber-300 transition-colors shadow-sm">
             <div className="p-3 bg-amber-100/80 text-amber-700 rounded-xl shrink-0"><Target size={22} /></div>
             <div>
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">CBİKO Entegre</h4>
+              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">CBİKO Entegre</h4>
               <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Cumhurbaşkanlığı İKO Liyakatli Ulusal Staj Programı</p>
             </div>
           </div>
           <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-purple-300 transition-colors shadow-sm">
             <div className="p-3 bg-purple-100/80 text-purple-700 rounded-xl shrink-0"><Search size={22} /></div>
             <div>
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">Research OS</h4>
+              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">Research OS</h4>
               <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Disiplinlerarası Ar-Ge Laboratuvar & Yayın Portalı</p>
             </div>
           </div>
@@ -229,22 +229,22 @@ export default function LandingPage({ setView }) {
             onClick={() => setView('startup_incubator')} 
             className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
           >
-            <div className="bg-indigo-100 p-1.5 rounded-full text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors"><Building size={18} /></div>
-            <span className="font-bold text-slate-800 text-[13px]">İESÜMER Kuluçka & Girişimcilik</span>
+            <div className="bg-indigo-100 p-1.5 rounded-full text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors"><Building size={18} /></div>
+            <span className="font-bold text-red-900 text-[13px]">İESÜMER Kuluçka & Girişimcilik</span>
           </button>
           <button 
             onClick={() => setView('staj')} 
             className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
           >
             <div className="bg-emerald-100 p-1.5 rounded-full text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Target size={18} /></div>
-            <span className="font-bold text-slate-800 text-[13px]">Yetenek & Staj Kapısı</span>
+            <span className="font-bold text-red-900 text-[13px]">Yetenek & Staj Kapısı</span>
           </button>
           <button 
             onClick={() => setView('cvbuilder')} 
             className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
           >
             <div className="bg-purple-100 p-1.5 rounded-full text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors"><FileText size={18} /></div>
-            <span className="font-bold text-slate-800 text-[13px]">AI Özgeçmiş & CV Oluşturucu</span>
+            <span className="font-bold text-red-900 text-[13px]">AI Özgeçmiş & CV Oluşturucu</span>
           </button>
         </div>
       </section>
@@ -256,7 +256,7 @@ export default function LandingPage({ setView }) {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black mb-3 tracking-tight text-[#0A2342]">
+            <h2 className="text-3xl md:text-4xl font-black mb-3 tracking-tight text-[#990000]">
               Geleceğe Odaklan.
             </h2>
             <p className="text-slate-500 font-medium text-sm md:text-base max-w-xl mx-auto leading-relaxed">
@@ -266,24 +266,24 @@ export default function LandingPage({ setView }) {
 
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-5 md:gap-6 auto-rows-[minmax(200px,auto)] min-h-[400px] perspective-1000">
             {/* Bento 1: Ulusal Staj */}
-            <SpotlightCard spotlightColor="rgba(255,255,255,0.15)" className="md:col-span-2 md:row-span-2 md:col-start-1 md:row-start-1 !bg-[#0A2342] !border-none !p-0">
+            <SpotlightCard spotlightColor="rgba(255,255,255,0.15)" className="md:col-span-2 md:row-span-2 md:col-start-1 md:row-start-1 !bg-[#990000] !border-none !p-0">
               <div className="h-full flex flex-col justify-end p-8 md:p-10 relative">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A2342] via-[#0A2342]/80 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#990000] via-[#990000]/80 to-transparent"></div>
                 <div className="relative z-10">
                   <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white mb-6 border border-white/20">
                     <Briefcase size={28} />
                   </div>
                   <h3 className="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">Ulusal Staj<br/>Programı</h3>
-                  <p className="text-blue-100 text-sm font-medium mb-8 max-w-md leading-relaxed opacity-90">Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda liyakat esaslı staj imkanı. Profesyonel hayata sağlam bir adım atın.</p>
-                  <button onClick={() => setView('staj')} className="bg-white text-[#0A2342] px-7 py-3 rounded-full font-bold text-[13px] w-max hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xl shadow-black/10 z-20 pointer-events-auto cursor-pointer relative">Detayları İncele <ArrowRight size={16}/></button>
+                  <p className="text-red-100 text-sm font-medium mb-8 max-w-md leading-relaxed opacity-90">Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda liyakat esaslı staj imkanı. Profesyonel hayata sağlam bir adım atın.</p>
+                  <button onClick={() => setView('staj')} className="bg-white text-[#990000] px-7 py-3 rounded-full font-bold text-[13px] w-max hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xl shadow-black/10 z-20 pointer-events-auto cursor-pointer relative">Detayları İncele <ArrowRight size={16}/></button>
                 </div>
               </div>
             </SpotlightCard>
 
             {/* Bento 2: Kariyer Esenyurtim */}
             <SpotlightCard spotlightColor="rgba(10,35,66,0.05)" className="col-span-1 row-span-1 md:col-start-3 md:row-start-1 p-6 md:p-8 flex flex-col !bg-white cursor-pointer hover:-translate-y-1 transition-transform" onClick={() => setView('services')}>
-              <div className="w-12 h-12 bg-blue-50/80 rounded-xl flex items-center justify-center text-[#24548A] mb-5 border border-blue-100/50">
+              <div className="w-12 h-12 bg-red-50/80 rounded-xl flex items-center justify-center text-[#24548A] mb-5 border border-red-100/50">
                 <TrendingUp size={24} />
               </div>
               <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight">Kariyer Esenyurtim</h3>
@@ -298,7 +298,7 @@ export default function LandingPage({ setView }) {
                   <Users size={24} />
                 </div>
                 <h3 className="text-xl font-black text-white mb-2 tracking-tight">Akran Mentor</h3>
-                <p className="text-blue-100/80 text-[13px] font-medium leading-relaxed">Deneyimli öğrencilerin rehberliğinde vizyonunuzu şekillendirin.</p>
+                <p className="text-red-100/80 text-[13px] font-medium leading-relaxed">Deneyimli öğrencilerin rehberliğinde vizyonunuzu şekillendirin.</p>
               </div>
             </SpotlightCard>
 
@@ -331,10 +331,10 @@ export default function LandingPage({ setView }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-              <span className="text-[11px] font-black uppercase tracking-widest text-[#24548A] bg-blue-50 px-3.5 py-1.5 rounded-full border border-blue-100">
+              <span className="text-[11px] font-black uppercase tracking-widest text-[#24548A] bg-red-50 px-3.5 py-1.5 rounded-full border border-red-100">
                 Resmi İdari Hizmetler & Birimler
               </span>
-              <h2 className="text-2xl md:text-3xl font-black text-[#0A2342] mt-3 tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-black text-[#990000] mt-3 tracking-tight">
                 İESÜ Kariyer & İdari Hizmetler Portalı
               </h2>
               <p className="text-slate-500 font-semibold text-xs md:text-sm mt-1">
@@ -350,13 +350,13 @@ export default function LandingPage({ setView }) {
               className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
             >
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-red-600 flex items-center justify-center mb-4 group-hover:bg-red-600 group-hover:text-white transition-colors">
                   <GraduationCap size={24} />
                 </div>
-                <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors">Kariyer & Özgeçmiş Danışmanlığı</h3>
+                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-red-600 transition-colors">Kariyer & Özgeçmiş Danışmanlığı</h3>
                 <p className="text-xs font-semibold text-slate-500 leading-relaxed">Uzman kariyer danışmanlarımızdan 1-on-1 randevu alın, mülakat simülasyonlarına katılın.</p>
               </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-indigo-600 border-t border-slate-100 pt-4">
+              <div className="mt-6 flex items-center justify-between text-xs font-black text-red-600 border-t border-slate-100 pt-4">
                 <span>Randevu Al</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </div>
@@ -371,7 +371,7 @@ export default function LandingPage({ setView }) {
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                   <Target size={24} />
                 </div>
-                <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-emerald-600 transition-colors">SKSDB Öğrenci Sağlık & BMI</h3>
+                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-emerald-600 transition-colors">SKSDB Öğrenci Sağlık & BMI</h3>
                 <p className="text-xs font-semibold text-slate-500 leading-relaxed">İdeal kilo aralığınızı hesaplayın, Mediko-Sosyal diyetisyeninden ücretsiz randevu alın.</p>
               </div>
               <div className="mt-6 flex items-center justify-between text-xs font-black text-emerald-600 border-t border-slate-100 pt-4">
@@ -389,7 +389,7 @@ export default function LandingPage({ setView }) {
                 <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4 group-hover:bg-amber-600 group-hover:text-white transition-colors">
                   <Zap size={24} />
                 </div>
-                <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-amber-600 transition-colors">BİDB Altyapı & Teknik Destek</h3>
+                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-amber-600 transition-colors">BİDB Altyapı & Teknik Destek</h3>
                 <p className="text-xs font-semibold text-slate-500 leading-relaxed">Kampüs Wi-Fi, OBS ve LMS sunucu durumlarını izleyin, teknik destek bileti açın.</p>
               </div>
               <div className="mt-6 flex items-center justify-between text-xs font-black text-amber-600 border-t border-slate-100 pt-4">
@@ -407,7 +407,7 @@ export default function LandingPage({ setView }) {
                 <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                   <Search size={24} />
                 </div>
-                <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-purple-600 transition-colors">Ar-Ge Lab & Makale İndeksi</h3>
+                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-purple-600 transition-colors">Ar-Ge Lab & Makale İndeksi</h3>
                 <p className="text-xs font-semibold text-slate-500 leading-relaxed">Ar-Ge laboratuvarlarından ekipman rezerve edin, YÖK/Scopus makalelerini inceleyin.</p>
               </div>
               <div className="mt-6 flex items-center justify-between text-xs font-black text-purple-600 border-t border-slate-100 pt-4">
@@ -422,13 +422,13 @@ export default function LandingPage({ setView }) {
               className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
             >
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#0A2342]/10 text-[#0A2342] flex items-center justify-center mb-4 group-hover:bg-[#0A2342] group-hover:text-white transition-colors">
+                <div className="w-12 h-12 rounded-2xl bg-[#990000]/10 text-[#990000] flex items-center justify-center mb-4 group-hover:bg-[#990000] group-hover:text-white transition-colors">
                   <Building size={24} />
                 </div>
-                <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-[#0A2342] transition-colors">Vizyon, Yönerge & Kurumsal</h3>
+                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-[#990000] transition-colors">Vizyon, Yönerge & Kurumsal</h3>
                 <p className="text-xs font-semibold text-slate-500 leading-relaxed">İESÜ Kariyer Yönergesi, AQAS/AHPGS uluslararası akreditasyonlar ve mezun iletişim ağı.</p>
               </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-[#0A2342] border-t border-slate-100 pt-4">
+              <div className="mt-6 flex items-center justify-between text-xs font-black text-[#990000] border-t border-slate-100 pt-4">
                 <span>Hakkımızda & Detaylar</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </div>
@@ -443,7 +443,7 @@ export default function LandingPage({ setView }) {
                 <div className="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-4 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
                   <Calendar size={24} />
                 </div>
-                <h3 className="text-lg font-black text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">Kariyer Günleri & Bilet alma</h3>
+                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-cyan-600 transition-colors">Kariyer Günleri & Bilet alma</h3>
                 <p className="text-xs font-semibold text-slate-500 leading-relaxed">Geleneksel Kariyer Günleri panellerine dijital katılım bileti oluşturun.</p>
               </div>
               <div className="mt-6 flex items-center justify-between text-xs font-black text-cyan-600 border-t border-slate-100 pt-4">
@@ -460,7 +460,7 @@ export default function LandingPage({ setView }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           
           <div className="mb-12">
-            <h2 className="text-3xl md:text-2xl font-black text-[#0A2342] mb-2 tracking-tight">Güncel İçerikler</h2>
+            <h2 className="text-3xl md:text-2xl font-black text-[#990000] mb-2 tracking-tight">Güncel İçerikler</h2>
             <p className="text-gray-500 font-medium">Kariyer merkezimizden en son haberler, etkinlikler ve duyurular.</p>
           </div>
 
@@ -516,7 +516,7 @@ export default function LandingPage({ setView }) {
                 <img src={events[0].imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800'} alt="Event 1" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/90 via-indigo-900/20 to-transparent"></div>
                 <div className="absolute bottom-5 left-5 right-5">
-                  <span className="bg-indigo-600/90 backdrop-blur text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">Etkinlik</span>
+                  <span className="bg-red-600/90 backdrop-blur text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">Etkinlik</span>
                   <h3 className="text-white font-bold leading-tight line-clamp-2 text-sm md:text-base group-hover:text-indigo-200 transition-colors">{events[0].title}</h3>
                 </div>
               </div>
@@ -526,10 +526,10 @@ export default function LandingPage({ setView }) {
             {events[1] && (
               <div onClick={() => setSelectedItem(events[1])} className="col-span-1 row-span-1 relative bg-gray-100 rounded-xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all">
                 <img src={events[1].imageUrl || 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=800'} alt="Event 2" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-red-900/90 via-red-900/20 to-transparent"></div>
                 <div className="absolute bottom-5 left-5 right-5">
-                  <span className="bg-blue-600/90 backdrop-blur text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">Etkinlik</span>
-                  <h3 className="text-white font-bold leading-tight line-clamp-2 text-sm md:text-base group-hover:text-blue-200 transition-colors">{events[1].title}</h3>
+                  <span className="bg-red-600/90 backdrop-blur text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">Etkinlik</span>
+                  <h3 className="text-white font-bold leading-tight line-clamp-2 text-sm md:text-base group-hover:text-red-200 transition-colors">{events[1].title}</h3>
                 </div>
               </div>
             )}
@@ -569,7 +569,7 @@ export default function LandingPage({ setView }) {
                 </button>
               </div>
             ) : (
-              <div className="w-full bg-[#0A2342] p-4 flex justify-end">
+              <div className="w-full bg-[#990000] p-4 flex justify-end">
                 <button 
                   onClick={() => setSelectedItem(null)}
                   className="w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white rounded-full flex items-center justify-center transition-all"
@@ -582,7 +582,7 @@ export default function LandingPage({ setView }) {
             <div className="p-8 md:p-10 flex-grow flex flex-col">
               <div className="flex flex-wrap items-center gap-4 mb-5">
                 {(selectedItem.category || selectedItem.tag) && (
-                  <span className="bg-[#0A2342]/10 text-[#0A2342] text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">
+                  <span className="bg-[#990000]/10 text-[#990000] text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">
                     {selectedItem.category || selectedItem.tag}
                   </span>
                 )}

@@ -236,9 +236,9 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
           
           {/* LEFT: Logo & Brand */}
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto text-[#0A2342] hover:scale-105 transition-transform" />
+            <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-[#0A2342] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
@@ -267,12 +267,12 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
       <div className="w-full lg:w-5/12 bg-white flex flex-col border-r border-gray-100 z-10 shrink-0">
         <div className="p-6 border-b border-gray-100 shrink-0">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-indigo-50 text-red-600 rounded-xl flex items-center justify-center">
               <Wand2 size={20} />
             </div>
             <div>
               <h2 className="text-lg font-black text-gray-900 leading-tight">Akıllı CV Oluşturucu</h2>
-              <p className="text-xs font-bold text-indigo-600">Yapay Zekâ Destekli Asistan</p>
+              <p className="text-xs font-bold text-red-600">Yapay Zekâ Destekli Asistan</p>
             </div>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                   rows="4"
                   value={(cvData || {})?.academicProjects}
                   onChange={e => setCvData({...cvData, academicProjects: e.target.value})}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 hover:border-indigo-300 transition outline-none resize-none"
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 hover:border-indigo-300 transition outline-none resize-none"
                   placeholder="Üniversitede tamamladığınız ana projeler..."
                 ></textarea>
               </div>
@@ -376,7 +376,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                   <button 
                     onClick={handleAIGenerateSummary}
                     disabled={isGenerating || isEvolving}
-                    className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
+                    className="bg-indigo-50 text-red-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
                   >
                     <Wand2 size={12} className={isGenerating ? "animate-pulse" : ""} /> 
                     {isGenerating ? 'Yazılıyor...' : 'AI ile Oluştur'}
@@ -389,11 +389,11 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                 rows="6"
                 value={(cvData || {})?.summary}
                 onChange={e => setCvData({...cvData, summary: e.target.value})}
-                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 hover:border-indigo-300 transition outline-none resize-none"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 hover:border-indigo-300 transition outline-none resize-none"
                 placeholder="Kendinizi kısaca tanıtın..."
               ></textarea>
-              <p className="text-[11px] text-gray-500 font-medium bg-blue-50 p-3 rounded-lg border border-blue-100">
-                <span className="font-bold text-blue-700 block mb-1">İpucu:</span>
+              <p className="text-[11px] text-gray-500 font-medium bg-red-50 p-3 rounded-lg border border-red-100">
+                <span className="font-bold text-red-700 block mb-1">İpucu:</span>
                 Yapay Zekâ asistanımız, eğitim ve yetenek bilgilerinizi kullanarak size özel, profesyonel bir özet metni oluşturabilir.
               </p>
             </div>
@@ -404,7 +404,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
             <div className="space-y-6 animate-fade-in">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-black text-gray-900">İş Deneyimi & Stajlar</h3>
-                <button onClick={handleAddExperience} className="text-indigo-600 hover:text-indigo-700 flex items-center gap-1 text-xs font-bold">
+                <button onClick={handleAddExperience} className="text-red-600 hover:text-indigo-700 flex items-center gap-1 text-xs font-bold">
                   <Plus size={14} /> Yeni Ekle
                 </button>
               </div>
@@ -431,7 +431,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                           rows="3"
                           value={exp.desc}
                           onChange={e => updateExperience(exp.id, 'desc', e.target.value)}
-                          className="w-full bg-gray-50 border border-transparent rounded-lg px-3 py-2 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 hover:border-indigo-300 outline-none resize-none transition"
+                          className="w-full bg-gray-50 border border-transparent rounded-lg px-3 py-2 text-sm focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 hover:border-indigo-300 outline-none resize-none transition"
                           placeholder="Görev ve sorumluluklarınız..."
                         ></textarea>
                       </div>
@@ -447,7 +447,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
             <div className="space-y-6 animate-fade-in">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-black text-gray-900">Eğitim Bilgileri</h3>
-                <button onClick={handleAddEducation} className="text-indigo-600 hover:text-indigo-700 flex items-center gap-1 text-xs font-bold">
+                <button onClick={handleAddEducation} className="text-red-600 hover:text-indigo-700 flex items-center gap-1 text-xs font-bold">
                   <Plus size={14} /> Yeni Ekle
                 </button>
               </div>
@@ -474,7 +474,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                           rows="3"
                           value={edu.desc}
                           onChange={e => updateEducation(edu.id, 'desc', e.target.value)}
-                          className="w-full bg-gray-50 border border-transparent rounded-lg px-3 py-2 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 hover:border-indigo-300 outline-none resize-none transition"
+                          className="w-full bg-gray-50 border border-transparent rounded-lg px-3 py-2 text-sm focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 hover:border-indigo-300 outline-none resize-none transition"
                           placeholder="Not ortalaması, onur listesi, öne çıkan dersler..."
                         ></textarea>
                       </div>
@@ -499,12 +499,12 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                     value={newSkill}
                     onChange={e => setNewSkill(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleAddSkill()}
-                    className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
+                    className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
                     placeholder="Yeni yetenek yazın..."
                   />
                   <button
                     onClick={handleAddSkill}
-                    className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:shadow-sm px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
+                    className="bg-indigo-50 text-red-600 hover:bg-indigo-100 hover:shadow-sm px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
                   >
                     <Plus size={14} /> Ekle
                   </button>
@@ -543,7 +543,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                     value={newLang}
                     onChange={e => setNewLang(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleAddLanguage()}
-                    className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
+                    className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
                     placeholder="Dil adı (Örn: İngilizce)"
                   />
                   <label htmlFor="new-lang-level" className="sr-only">Dil Seviyesi</label>
@@ -551,7 +551,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                     id="new-lang-level"
                     value={newLangLevel}
                     onChange={e => setNewLangLevel(e.target.value)}
-                    className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
+                    className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
                   >
                     <option value="Başlangıç">Başlangıç</option>
                     <option value="Orta">Orta</option>
@@ -560,7 +560,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                   </select>
                   <button
                     onClick={handleAddLanguage}
-                    className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:shadow-sm px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
+                    className="bg-indigo-50 text-red-600 hover:bg-indigo-100 hover:shadow-sm px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
                   >
                     <Plus size={14} /> Ekle
                   </button>
@@ -597,7 +597,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
             <div className="space-y-6 animate-fade-in">
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-black text-gray-900">Sertifikalar</h3>
-                <button onClick={handleAddCertificate} className="text-indigo-600 hover:text-indigo-700 flex items-center gap-1 text-xs font-bold">
+                <button onClick={handleAddCertificate} className="text-red-600 hover:text-indigo-700 flex items-center gap-1 text-xs font-bold">
                   <Plus size={14} /> Yeni Ekle
                 </button>
               </div>
@@ -624,7 +624,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                           rows="3"
                           value={cert.desc}
                           onChange={e => updateCertificate(cert.id, 'desc', e.target.value)}
-                          className="w-full bg-gray-50 border border-transparent rounded-lg px-3 py-2 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 hover:border-indigo-300 outline-none resize-none transition"
+                          className="w-full bg-gray-50 border border-transparent rounded-lg px-3 py-2 text-sm focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 hover:border-indigo-300 outline-none resize-none transition"
                           placeholder="Sertifika hakkında kısa açıklama..."
                         ></textarea>
                       </div>
@@ -649,10 +649,10 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
           }} className="bg-emerald-500/90 backdrop-blur-md text-white hover:bg-emerald-600 p-2.5 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-2" title="ATS Analizi">
             <ShieldCheck size={16} /> <span className="text-xs font-bold hidden sm:inline">ATS Check</span>
           </button>
-          <button onClick={() => window.print()} className="bg-white/80 backdrop-blur-md text-gray-700 hover:text-indigo-600 p-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-100 transition flex items-center gap-2" title="Yazdır">
+          <button onClick={() => window.print()} className="bg-white/80 backdrop-blur-md text-gray-700 hover:text-red-600 p-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-100 transition flex items-center gap-2" title="Yazdır">
             <Printer size={16} /> <span className="text-xs font-bold hidden sm:inline">Yazdır</span>
           </button>
-          <button onClick={() => exportPDF('cv-print-area', 'Ozgecmisim.pdf')} className="bg-indigo-600 text-white hover:bg-indigo-700 p-2.5 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-2" title="PDF İndir">
+          <button onClick={() => exportPDF('cv-print-area', 'Ozgecmisim.pdf')} className="bg-red-600 text-white hover:bg-indigo-700 p-2.5 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-2" title="PDF İndir">
             <Download size={16} /> <span className="text-xs font-bold hidden sm:inline">PDF İndir</span>
           </button>
         </div>
@@ -660,7 +660,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
         {/* ATS Score Meter */}
         <div className="absolute top-20 right-6 z-20 w-64 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border border-gray-100">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-black text-[#0A2342] uppercase tracking-wider">ATS Uyumluluk Skoru</span>
+            <span className="text-xs font-black text-[#990000] uppercase tracking-wider">ATS Uyumluluk Skoru</span>
             <span className="text-sm font-black text-emerald-600">
               %{Math.min(100, Math.round(((cvData?.experience?.length || 0) * 15) + ((cvData?.education?.length || 0) * 10) + ((cvData?.skills?.length || 0) * 5) + ((cvData?.summary?.length > 10 ? 1 : 0) * 15) + 30))}
             </span>
@@ -832,7 +832,7 @@ function SectionBtn({ id, icon, label, active, set }) {
     <button 
       onClick={() => set(id)}
       className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-bold transition whitespace-nowrap
-        ${active === id ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+        ${active === id ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
     >
       {icon} {label}
     </button>
@@ -849,7 +849,7 @@ function Input({ label, value, onChange, placeholder, id }) {
         type="text" 
         value={value || ''} 
         onChange={e => onChange(e.target.value)} 
-        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
+        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
         placeholder={placeholder}
       />
     </div>

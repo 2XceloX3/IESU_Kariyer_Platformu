@@ -118,7 +118,7 @@ export default function CMSPortfolios() {
 
                 <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-3">
                   <h4 className="text-xs font-black text-indigo-900 flex items-center gap-1.5">
-                    <Sparkles size={14} className="text-indigo-600 animate-pulse" /> AI ATS ve Analiz Raporu
+                    <Sparkles size={14} className="text-red-600 animate-pulse" /> AI ATS ve Analiz Raporu
                   </h4>
                   <div className="grid grid-cols-2 gap-2 text-center">
                     <div className="bg-white p-2.5 rounded-lg border border-indigo-100">

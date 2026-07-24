@@ -45,7 +45,7 @@ export default function PWAInstallPrompt() {
           exit={{ opacity: 0, y: 50, scale: 0.9 }}
           className="fixed bottom-6 left-6 z-[100] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 max-w-sm flex items-center gap-4"
         >
-          <div className="w-12 h-12 rounded-xl bg-[#0A2342]/10 flex items-center justify-center text-[#0A2342] shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-[#990000]/10 flex items-center justify-center text-[#990000] shrink-0">
             <Download size={24} />
           </div>
           <div className="flex-1">
@@ -55,7 +55,7 @@ export default function PWAInstallPrompt() {
           <div className="flex flex-col gap-2 ml-2">
             <button 
               onClick={handleInstallClick}
-              className="px-4 py-1.5 bg-[#0A2342] text-white text-xs font-bold rounded-lg hover:bg-[#163B65] transition-colors shadow-md"
+              className="px-4 py-1.5 bg-[#990000] text-white text-xs font-bold rounded-lg hover:bg-[#163B65] transition-colors shadow-md"
             >
               Yükle
             </button>

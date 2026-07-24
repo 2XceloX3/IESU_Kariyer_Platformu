@@ -20,7 +20,7 @@ export default function ContactModal({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-red-950/60 backdrop-blur-sm animate-fade-in"
       data-testid="contact-modal"
       onClick={onClose}
     >
@@ -37,7 +37,7 @@ export default function ContactModal({ isOpen, onClose }) {
         </button>
 
         <div className="mb-6">
-          <h2 className="text-2xl font-black text-slate-900">İletişim & Bize Ulaşın</h2>
+          <h2 className="text-2xl font-black text-red-950">İletişim & Bize Ulaşın</h2>
           <p className="text-xs text-slate-500 font-semibold mt-1">
             İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü
           </p>
@@ -46,7 +46,7 @@ export default function ContactModal({ isOpen, onClose }) {
         <OfficeInfo />
 
         <div className="mt-8 pt-8 border-t border-slate-200">
-          <h3 className="text-lg font-black text-slate-900 mb-4">Mesaj Gönderin</h3>
+          <h3 className="text-lg font-black text-red-950 mb-4">Mesaj Gönderin</h3>
 
           {submitted ? (
             <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl flex items-center gap-3" data-testid="contact-success-msg">

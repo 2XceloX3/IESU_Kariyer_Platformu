@@ -79,7 +79,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Building2 size={24}/></div>
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><Building2 size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Firma</p><p className="text-2xl font-black text-gray-900">{safeCompanies.length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -155,7 +155,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                     <p className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mt-1"><Mail size={10}/> {c.email || '-'}</p>
                   </td>
                   <td className="py-3 px-5">
-                    <span className="text-[11px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 px-2 py-1 rounded-md">
+                    <span className="text-[11px] font-black uppercase tracking-wider bg-red-50 text-red-600 px-2 py-1 rounded-md">
                       {c.activeJobs || 0} Aktif İlan
                     </span>
                   </td>
@@ -169,7 +169,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(c)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(c)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(c.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>

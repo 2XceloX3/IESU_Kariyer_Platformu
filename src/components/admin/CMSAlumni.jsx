@@ -146,7 +146,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><GraduationCap size={24}/></div>
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><GraduationCap size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Mezun</p><p className="text-2xl font-black text-gray-900">{safeAlumni.length}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -154,7 +154,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">İstihdam Oranı</p><p className="text-2xl font-black text-gray-900">%{employmentRate}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
+            <div className="w-12 h-12 bg-indigo-50 text-red-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
             <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alan Uyumu</p><p className="text-2xl font-black text-gray-900">%{matchRate}</p></div>
           </div>
           <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -233,7 +233,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                   <td className="py-3 px-5">
                     {a.careerStatus && a.careerStatus !== 'Belirtilmedi' ? (
                       <div>
-                        <p className={`text-xs font-bold px-2 py-0.5 rounded w-fit uppercase ${a.careerStatus === 'Çalışıyorum' ? 'bg-emerald-50 text-emerald-700' : a.careerStatus === 'İş Arıyorum' ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'}`}>{a.careerStatus}</p>
+                        <p className={`text-xs font-bold px-2 py-0.5 rounded w-fit uppercase ${a.careerStatus === 'Çalışıyorum' ? 'bg-emerald-50 text-emerald-700' : a.careerStatus === 'İş Arıyorum' ? 'bg-orange-50 text-orange-700' : 'bg-red-50 text-red-700'}`}>{a.careerStatus}</p>
                         {a.currentCompany && <p className="text-[10px] font-bold text-gray-500 mt-1">{a.currentCompany} - {a.currentPosition}</p>}
                         {a.careerStatus === 'Çalışıyorum' && (
                           <p className="text-[9px] font-bold mt-1 uppercase" style={{color: a.isMatch === 'Evet' ? '#10B981' : '#F43F5E'}}>
@@ -260,12 +260,12 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                             const sr = alumniSurveyResponses.find(r => r.email === a.email || r.department === a.department);
                             setSelectedSurvey({ alumni: a, response: sr });
                           }} 
-                          className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                          className="p-2 text-gray-500 hover:text-red-600 hover:bg-indigo-50 rounded-lg transition"
                         >
                           <Compass size={16}/>
                         </button>
                       )}
-                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><Edit size={16}/></button>
+                      <button onClick={() => handleEdit(a)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
                       <button onClick={() => handleDelete(a.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
                     </div>
                   </td>
@@ -424,7 +424,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
             <div className="md:w-2/3 flex flex-col bg-white h-full max-h-[90vh]">
               <div className="p-6 flex items-center justify-between border-b border-gray-100 bg-white sticky top-0 z-10">
                 <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-                  <Compass className="text-indigo-600" size={20} />
+                  <Compass className="text-red-600" size={20} />
                   Kariyer Check-up Yanıtları
                 </h3>
                 <button onClick={() => setSelectedSurvey(null)} className="p-2 text-gray-500 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-full transition-colors">

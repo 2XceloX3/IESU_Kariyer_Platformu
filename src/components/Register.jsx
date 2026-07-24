@@ -263,28 +263,28 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                   <button 
                     type="button"
                     onClick={() => setAccountType('student')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'student' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'student' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <GraduationCap size={18} /> Öğrenci Numarası ile Kayıt
                   </button>
                   <button 
                     type="button"
                     onClick={() => setAccountType('employer')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'employer' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'employer' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <Building2 size={18} /> Firma Kaydı
                   </button>
                   <button 
                     type="button"
                     onClick={() => setAccountType('academic')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'academic' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'academic' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <User size={18} /> Akademik Personel
                   </button>
                   <button 
                     type="button"
                     onClick={() => setAccountType('alumni')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'alumni' ? 'bg-white text-[#0A2342] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'alumni' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     <GraduationCap size={18} /> Mezun
                   </button>
@@ -344,12 +344,12 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       {/* Logo Yükleme */}
                       <div className="relative col-span-1 sm:col-span-2 mt-2">
                         <label htmlFor="companyLogo" className="block text-[13px] font-bold text-gray-700 mb-2">Firma Logosu Yükle</label>
-                        <input id="companyLogo" type="file" accept="image/*" className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#0A2342]/10 file:text-[#0A2342] hover:file:bg-[#0A2342]/20 transition-all cursor-pointer border border-gray-200 rounded-xl bg-gray-50" />
+                        <input id="companyLogo" type="file" accept="image/*" className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#990000]/10 file:text-[#990000] hover:file:bg-[#990000]/20 transition-all cursor-pointer border border-gray-200 rounded-xl bg-gray-50" />
                       </div>
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Firma Kayıt Talebini Gönder
                       </button>
@@ -397,7 +397,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Akademik Hesabımı Aktifleştir
                       </button>
@@ -458,7 +458,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Mezun Hesabımı Aktifleştir
                       </button>
@@ -506,7 +506,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                     </div>
 
                     <div className="pt-4">
-                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#0A2342] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
+                      <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
                         Öğrenci Hesabımı Oluştur
                       </button>

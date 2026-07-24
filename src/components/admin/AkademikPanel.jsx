@@ -56,7 +56,7 @@ export default function AkademikPanel() {
               <span className="font-bold text-gray-900">{s?.name}</span>,
               s?.dept,
               `${s?.year}. Sınıf`,
-              <span className={`font-black ${s?.gpa>=3.5?'text-emerald-600':s?.gpa>=3.0?'text-blue-600':'text-orange-600'}`}>{s?.gpa}</span>,
+              <span className={`font-black ${s?.gpa>=3.5?'text-emerald-600':s?.gpa>=3.0?'text-red-600':'text-orange-600'}`}>{s?.gpa}</span>,
               s?.cv?<CheckCircle size={15} className="text-emerald-500"/>:<XCircle size={15} className="text-gray-400"/>,
               <Badge status={s?.status}/>
             ])}

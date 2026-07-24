@@ -148,8 +148,143 @@ export const liveAnnouncementsData = [
 ];
 
 export const liveStatsData = [
-  { label: "Anlaşmalı Firma", value: "850+", color: "bg-blue-100 text-blue-700" },
+  { label: "Anlaşmalı Firma", value: "850+", color: "bg-red-100 text-red-700" },
   { label: "İşe Yerleşen Mezun", value: "15.000+", color: "bg-emerald-100 text-emerald-700" },
   { label: "Kariyer Etkinliği", value: "240", color: "bg-orange-100 text-orange-700" },
   { label: "Aktif İş İlanı", value: "1.200+", color: "bg-purple-100 text-purple-700" }
+];
+
+
+export const liveEventData = [
+  {
+    "id": "event-1",
+    "title": "Geleceğin dünyasını şekillendiren teknolojiler ve dijital dönüşüm Bilim Kafe’de konuşuluyor!",
+    "date": "27 TEMMUZ 14:00",
+    "category": "Etkinlik",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+  },
+  {
+    "id": "event-2",
+    "title": "III. Yönetim Bilimleri Sempozyumu",
+    "date": "26 KASIM 10:00",
+    "category": "Etkinlik",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+  },
+  {
+    "id": "event-3",
+    "title": "🇹🇷 Karanlık bir geceyi, aydınlık bir geleceğe dönüştürenlerin hikayesi...",
+    "date": "14 TEMMUZ 13:30",
+    "category": "Etkinlik",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+  },
+  {
+    "id": "event-4",
+    "title": "15 Temmuz Milli İrade Paneli'ne davetlisiniz!",
+    "date": "14 TEMMUZ 14:00",
+    "category": "Etkinlik",
+    "description": "Detaylı bilgi için tıklayınız...",
+    "imageUrl": "https://www.esenyurt.edu.tr/assets/frontend/images/empty.png"
+  }
+];
+
+export const liveAnnouncementData = [
+  {
+    "id": "ann-1",
+    "title": "ADAY ÖĞRENCİ",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Aday Öğrenci Portalı ve Bilgilendirme",
+    "url": "https://aday.esenyurt.edu.tr/"
+  },
+  {
+    "id": "ann-2",
+    "title": "ÖĞRENCİ İŞLERİ",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Öğrenci İşleri Daire Başkanlığı Hizmet ve Duyuruları",
+    "url": "https://www.esenyurt.edu.tr/icerik/1269-ogrenci-isleri-daire-baskanligi"
+  },
+  {
+    "id": "ann-3",
+    "title": "ÖĞRENCİ BİLGİ SİSTEMİ",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "OBS Öğrenci ve Akademisyen Portalı",
+    "url": "https://obs.esenyurt.edu.tr/"
+  },
+  {
+    "id": "ann-4",
+    "title": "AKADEMİK TAKVİM",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "2025-2026 Akademik Takvim Detayları",
+    "url": "https://www.esenyurt.edu.tr/icerik/1031-akademik-takvim"
+  },
+  {
+    "id": "ann-5",
+    "title": "DERS PROGRAMLARI",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Yaz Okulu ve Dönem Ders Programları",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1459-2025-2026-yaz-okulu-ders-programi-2025%E2%80%932026-summer-school-course-schedule"
+  },
+  {
+    "id": "ann-6",
+    "title": "SINAV PROGRAMLARI",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Tek Ders ve Not Yükseltme Sınav Programları",
+    "url": "https://www.esenyurt.edu.tr/duyuru/1445-tek-ders-not-yukseltme-sinav-programlari-hk"
+  },
+  {
+    "id": "ann-7",
+    "title": "KALİTE KOORDİNATÖRLÜĞÜ",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Kalite ve Akreditasyon Süreçleri",
+    "url": "https://www.esenyurt.edu.tr/icerik/3748-kalite-koordinatorlugu"
+  },
+  {
+    "id": "ann-8",
+    "title": "UZAKTAN EĞİTİM MERKEZİ",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "LMS Uzaktan Eğitim Portalı",
+    "url": "https://eslms.esenyurt.edu.tr/Account/LoginBefore"
+  },
+  {
+    "id": "ann-9",
+    "title": "KÜTÜPHANE SİSTEMİ",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Prof. Dr. Aziz Sancar Kütüphanesi Kataloğu ve Veritabanları",
+    "url": "https://www.esenyurt.edu.tr/icerik/1188-istanbul-esenyurt-universitesi-prof-dr-aziz-sancar-kutuphanesi"
+  },
+  {
+    "id": "ann-10",
+    "title": "WEBMAİL SİSTEMİ",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Kurumsal E-posta Portalı",
+    "url": "https://posta.esenyurt.edu.tr/"
+  },
+  {
+    "id": "ann-11",
+    "title": "YAYINLAR, DERGİLER VE KONFERANSLAR",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Akademik Yayınlar ve Dergiler Portal",
+    "url": "https://www.esenyurt.edu.tr/icerik/2625-yayinlar-dergiler-ve-konferanslar"
+  },
+  {
+    "id": "ann-12",
+    "title": "ETİK KURUL BAŞVURULARI",
+    "date": "Sürekli",
+    "category": "Duyuru",
+    "description": "Etik Kurul Başvuru Form ve Rehberleri",
+    "url": "https://www.esenyurt.edu.tr/icerik/1084-etik-kurul-basvurulari"
+  }
 ];

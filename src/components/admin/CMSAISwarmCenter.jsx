@@ -73,7 +73,7 @@ export default function CMSAISwarmCenter() {
           <p className="text-3xl font-black text-gray-900">{agents.filter(a => a.status === 'Durduruldu').length}</p>
           <p className="text-xs font-bold text-gray-500 uppercase mt-1">Durduruldu</p>
         </Card>
-        <Card className="p-5 border-l-4 border-blue-500">
+        <Card className="p-5 border-l-4 border-red-500">
           <p className="text-3xl font-black text-gray-900">45ms - 1240ms</p>
           <p className="text-xs font-bold text-gray-500 uppercase mt-1">Gecikme Penceresi</p>
         </Card>
@@ -119,12 +119,12 @@ export default function CMSAISwarmCenter() {
           <h3 className="font-black text-[#A80016] mb-4 flex items-center gap-2">
             <Terminal size={18} className="text-slate-600 animate-pulse" /> Canlı Swarm Log Konsolu
           </h3>
-          <div className="bg-slate-900 rounded-xl p-4 font-mono text-[11px] text-emerald-400 space-y-3 h-[320px] overflow-y-auto">
+          <div className="bg-red-950 rounded-xl p-4 font-mono text-[11px] text-emerald-400 space-y-3 h-[320px] overflow-y-auto">
             {logs.map((l, idx) => (
-              <div key={idx} className="border-b border-slate-800 pb-2 last:border-0">
+              <div key={idx} className="border-b border-red-900 pb-2 last:border-0">
                 <div className="flex justify-between text-slate-500 mb-0.5">
                   <span>[{l.time}] {l.agent}</span>
-                  <span className={l.type === 'WARNING' ? 'text-amber-400' : l.type === 'SUCCESS' ? 'text-emerald-300' : 'text-blue-400'}>{l.type}</span>
+                  <span className={l.type === 'WARNING' ? 'text-amber-400' : l.type === 'SUCCESS' ? 'text-emerald-300' : 'text-red-400'}>{l.type}</span>
                 </div>
                 <p className="text-slate-200">{l.message}</p>
               </div>

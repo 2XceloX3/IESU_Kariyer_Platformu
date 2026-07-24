@@ -60,7 +60,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       
       {/* Header */}
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
@@ -72,11 +72,11 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
+            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-sm">
               <Rocket className="text-white" size={16} />
             </div>
             <div>
-              <h1 className="font-black text-slate-900 leading-tight">İnovasyon & Proje Pazarı</h1>
+              <h1 className="font-black text-red-950 leading-tight">İnovasyon & Proje Pazarı</h1>
             </div>
           </div>
         </div>
@@ -86,8 +86,8 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
       <main className="flex-1 max-w-[1200px] mx-auto w-full p-4 lg:p-8 flex flex-col">
         
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-8 md:p-12 shadow-xl mb-8 relative overflow-hidden flex flex-col md:flex-row items-center gap-8 text-white">
-          <div className="absolute right-0 top-0 w-1/2 h-full bg-indigo-500/5 skew-x-12 transform origin-bottom pointer-events-none"></div>
+        <div className="bg-gradient-to-br from-red-950 via-indigo-950 to-red-950 rounded-3xl p-8 md:p-12 shadow-xl mb-8 relative overflow-hidden flex flex-col md:flex-row items-center gap-8 text-white">
+          <div className="absolute right-0 top-0 w-1/2 h-full bg-red-500/5 skew-x-12 transform origin-bottom pointer-events-none"></div>
           
           <div className="flex-1 relative z-10 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-indigo-200 rounded-full text-[10px] font-black uppercase tracking-wider mb-6 border border-white/20">
@@ -108,7 +108,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                     window.toast && window.toast.success("✅ Yetkinliklerinize en uygun 3 takım arkadaşı bulundu. Eşleşme yüzdeleri: %92, %88, %85");
                   }, 2000);
                 }}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition shadow-lg"
+                className="bg-red-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition shadow-lg"
               >
                 <Zap size={16} /> AI ile Takım Arkadaşı Bul
               </button>
@@ -116,11 +116,11 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
           </div>
 
           <div className="hidden lg:flex w-64 h-64 bg-white/5 border border-white/10 backdrop-blur rounded-3xl relative z-10 p-6 flex-col justify-center items-center">
-             <div className="absolute -top-4 -right-4 w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg border border-indigo-400">
+             <div className="absolute -top-4 -right-4 w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg border border-indigo-400">
                <Trophy size={28} className="text-white" />
              </div>
              <Code2 size={56} className="text-indigo-400 mb-6" />
-             <div className="text-center w-full bg-slate-900/50 p-4 rounded-2xl border border-white/10">
+             <div className="text-center w-full bg-red-950/50 p-4 rounded-2xl border border-white/10">
                <div className="text-white font-black text-xs mb-1">Kurumsal İnovasyon</div>
                <div className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">3 Aktif Yarışma</div>
              </div>
@@ -130,7 +130,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
         {/* Hackathons List */}
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-lg font-black text-slate-950 flex items-center gap-2">
-            <Building2 className="text-indigo-600" size={20} /> Kurumsal Yarışmalar
+            <Building2 className="text-red-600" size={20} /> Kurumsal Yarışmalar
           </h3>
         </div>
 
@@ -141,18 +141,18 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                 <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded bg-slate-100 text-slate-500 border border-slate-200/50 flex items-center gap-1">
                   <Calendar size={12} /> {hack.deadline}
                 </span>
-                <span className="text-[10px] text-indigo-600 font-bold px-2.5 py-1 bg-indigo-50 border border-indigo-100/50 rounded-md">
+                <span className="text-[10px] text-red-600 font-bold px-2.5 py-1 bg-indigo-50 border border-indigo-100/50 rounded-md">
                   {hack.type}
                 </span>
               </div>
               
-              <h4 className="text-md sm:text-base font-black text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2">{hack.title}</h4>
+              <h4 className="text-md sm:text-base font-black text-red-950 mb-1 group-hover:text-red-600 transition-colors line-clamp-2">{hack.title}</h4>
               <p className="text-xs text-slate-400 font-bold mb-6">{hack.company}</p>
               
               <div className="flex flex-col gap-3 text-xs mb-6 flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-200/50">
                  <div className="flex items-center justify-between font-bold">
                    <span className="text-slate-500 flex items-center gap-1.5"><Users size={16}/> Başvuru:</span>
-                   <span className="text-slate-800">{hack.participants} Takım</span>
+                   <span className="text-red-900">{hack.participants} Takım</span>
                  </div>
                  <div className="w-full h-px bg-slate-200"></div>
                  <div className="flex items-center justify-between font-bold">
@@ -170,14 +170,14 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                       window.toast && window.toast.success("💡 AI Fikri: 'IoT tabanlı akıllı atık yönetimi sistemi'. Şansınız: Yüksek.");
                     }, 2500);
                   }}
-                  className="w-12 h-12 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-2xl border border-indigo-200 flex items-center justify-center transition shrink-0"
+                  className="w-12 h-12 bg-indigo-50 hover:bg-indigo-100 text-red-600 rounded-2xl border border-indigo-200 flex items-center justify-center transition shrink-0"
                   title="AI Proje Fikri Üret"
                 >
                   <Sparkles size={18} />
                 </button>
                 <button 
                   onClick={() => handleOpenTeamModal(hack)}
-                  className="flex-1 py-3 bg-indigo-600 text-white hover:bg-indigo-700 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2"
+                  className="flex-1 py-3 bg-red-600 text-white hover:bg-indigo-700 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2"
                 >
                   Takım Kur & Katıl <ArrowRight size={14} />
                 </button>
@@ -241,13 +241,13 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                       return (
                         <div key={member.id} className="p-3 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-between">
                           <div>
-                            <h5 className="font-bold text-xs text-slate-800">{member.name} <span className="text-[9px] text-indigo-600 bg-indigo-50 px-1 py-0.5 rounded font-black">%{member.compatibility} AI Eşleşme</span></h5>
+                            <h5 className="font-bold text-xs text-red-900">{member.name} <span className="text-[9px] text-red-600 bg-indigo-50 px-1 py-0.5 rounded font-black">%{member.compatibility} AI Eşleşme</span></h5>
                             <p className="text-[10px] text-slate-400 font-bold mt-0.5">{member.role} • {member.dept}</p>
                           </div>
                           <button
                             type="button"
                             onClick={() => handleToggleMember(member)}
-                            className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${isAdded ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
+                            className={`w-7 h-7 rounded-xl flex items-center justify-center transition-all ${isAdded ? 'bg-red-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
                           >
                             {isAdded ? <X size={14} /> : <UserPlus size={14} />}
                           </button>
@@ -259,7 +259,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
 
                 <button 
                   type="submit"
-                  className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4"
+                  className="w-full py-3.5 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4"
                 >
                   Kayıt Yap ve Katıl
                 </button>

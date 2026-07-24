@@ -3,7 +3,7 @@ import { Briefcase, MapPin, Building2, ChevronLeft, Search, Plus, MoreHorizontal
 import useAppStore from '../store/useAppStore';
 
 const INITIAL_COLUMNS = [
-  { id: 'new', title: 'Yeni Başvuru', count: 5, color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { id: 'new', title: 'Yeni Başvuru', count: 5, color: 'bg-red-50 text-red-700 border-red-200' },
   { id: 'review', title: 'İnceleniyor', count: 3, color: 'bg-amber-50 text-amber-700 border-amber-200' },
   { id: 'interview', title: 'Mülakat', count: 2, color: 'bg-purple-50 text-purple-700 border-purple-200' },
   { id: 'offer', title: 'Teklif Aşaması', count: 1, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
@@ -103,8 +103,8 @@ export default function CompanyATSBoard({ setView, currentUser }) {
                 <ChevronLeft size={20} />
               </button>
               <div>
-                <h1 className="text-xl font-black text-[#0A2342] flex items-center gap-2">
-                  <Briefcase className="text-blue-600" size={24} />
+                <h1 className="text-xl font-black text-[#990000] flex items-center gap-2">
+                  <Briefcase className="text-red-600" size={24} />
                   İşe Alım Panosu (ATS)
                 </h1>
                 <p className="text-sm text-gray-500 font-medium">Aday takip ve süreç yönetimi</p>
@@ -119,10 +119,10 @@ export default function CompanyATSBoard({ setView, currentUser }) {
                   placeholder="Aday ara..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-gray-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full pl-9 pr-4 py-2 bg-gray-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
                 />
               </div>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-blue-700 transition shadow-sm shrink-0">
+              <button className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-red-700 transition shadow-sm shrink-0">
                 <Plus size={16} /> İlan Ekle
               </button>
             </div>
@@ -169,7 +169,7 @@ export default function CompanyATSBoard({ setView, currentUser }) {
                         <div>
                           <h4 className="font-bold text-sm text-gray-900 leading-tight flex items-center gap-1">
                             {app.name}
-                            <ShieldCheck size={14} className="text-blue-500" title="Doğrulanmış Öğrenci" />
+                            <ShieldCheck size={14} className="text-red-500" title="Doğrulanmış Öğrenci" />
                           </h4>
                           <p className="text-xs text-gray-500 font-medium">{app.uni}</p>
                         </div>
@@ -177,12 +177,12 @@ export default function CompanyATSBoard({ setView, currentUser }) {
                     </div>
                     
                     <div className="mb-3">
-                      <div className="text-xs font-bold text-[#0A2342] bg-blue-50 px-2 py-1 rounded inline-block mb-2">
+                      <div className="text-xs font-bold text-[#990000] bg-red-50 px-2 py-1 rounded inline-block mb-2">
                         {app.role}
                       </div>
                       <div className="flex items-center justify-between text-xs text-gray-500">
                         <span className="flex items-center gap-1"><Clock size={12} /> {app.date}</span>
-                        <span className={`font-bold flex items-center gap-1 ${app.match >= 90 ? 'text-emerald-600' : app.match >= 75 ? 'text-blue-600' : 'text-amber-600'}`}>
+                        <span className={`font-bold flex items-center gap-1 ${app.match >= 90 ? 'text-emerald-600' : app.match >= 75 ? 'text-red-600' : 'text-amber-600'}`}>
                           Uyum: %{app.match}
                         </span>
                       </div>
@@ -192,14 +192,14 @@ export default function CompanyATSBoard({ setView, currentUser }) {
                       <button className="flex-1 py-1.5 text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded transition flex items-center justify-center gap-1.5">
                         <FileText size={14} /> CV'yi Gör
                       </button>
-                      <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="Mesaj Gönder">
+                      <button className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition" title="Mesaj Gönder">
                         <MessageSquare size={16} />
                       </button>
                       
                       {/* Mobile Move Buttons (Visible on hover or touch) */}
                       <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition flex flex-col gap-1 bg-white p-1 rounded-lg shadow-sm border border-gray-100 z-10">
                         {column.id !== 'new' && (
-                          <button onClick={() => moveApplicant(app, column.id, 'new')} className="text-[10px] p-1 text-gray-500 hover:text-blue-600 text-left">Yeni'ye</button>
+                          <button onClick={() => moveApplicant(app, column.id, 'new')} className="text-[10px] p-1 text-gray-500 hover:text-red-600 text-left">Yeni'ye</button>
                         )}
                         {column.id !== 'review' && (
                           <button onClick={() => moveApplicant(app, column.id, 'review')} className="text-[10px] p-1 text-gray-500 hover:text-amber-600 text-left">İnceleme'ye</button>

@@ -42,12 +42,12 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
       <main className="flex-1 max-w-[1200px] w-full mx-auto p-4 lg:p-8">
         
         {/* Banner */}
-        <div className="bg-[#0A2342] rounded-2xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        <div className="bg-[#990000] rounded-2xl p-8 mb-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
           <div className="absolute right-0 top-0 w-1/3 h-full bg-[#0A66C2]/20 skew-x-12 transform origin-bottom pointer-events-none"></div>
           
           <div className="relative z-10 max-w-xl">
             <h2 className="text-3xl font-black mb-3">Kariyerinde Fark Yaratanlar</h2>
-            <p className="text-blue-100 text-lg leading-relaxed">
+            <p className="text-red-100 text-lg leading-relaxed">
               Kariyer Geliştirme Merkezi verilerine göre yetenek onayları (endorsements) ve sektörel etkileşimleriyle bu ay en çok öne çıkan Esenyurtliler.
             </p>
           </div>
@@ -159,7 +159,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                   <div className="flex items-center gap-1.5 text-emerald-600 font-bold bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 text-sm">
                     <ShieldCheck size={16} /> {user.endorsements} Onay
                   </div>
-                  <button className="p-2 text-gray-400 hover:text-[#0A66C2] hover:bg-blue-50 rounded-lg transition-colors">
+                  <button className="p-2 text-gray-400 hover:text-[#0A66C2] hover:bg-red-50 rounded-lg transition-colors">
                     <LinkIcon size={18} />
                   </button>
                 </div>

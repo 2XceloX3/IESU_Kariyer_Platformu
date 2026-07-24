@@ -24,13 +24,13 @@ export default function RewardStore() {
       id: 'item_frame_neon',
       title: 'Neon Profil Çerçevesi',
       desc: 'Profil fotoğrafının etrafında havalı, dikkat çeken mavi neon bir çerçeve.',
-      icon: <Zap size={24} className="text-blue-500" />,
+      icon: <Zap size={24} className="text-red-500" />,
       cost: 1000,
       type: 'frame',
-      frameClass: 'ring-4 ring-blue-500 ring-offset-2',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-      borderColor: 'border-blue-200 dark:border-blue-800',
-      iconBg: 'bg-blue-100 dark:bg-blue-800'
+      frameClass: 'ring-4 ring-red-500 ring-offset-2',
+      bgColor: 'bg-red-50 dark:bg-red-900/20',
+      borderColor: 'border-red-200 dark:border-red-800',
+      iconBg: 'bg-red-100 dark:bg-red-800'
     },
     {
       id: 'item_frame_gold',
@@ -86,22 +86,22 @@ export default function RewardStore() {
     <div className="w-full max-w-5xl mx-auto p-4 md:p-6 animate-fade-in relative pb-safe">
       {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={200} />}
       
-      <div className="mb-8 p-6 bg-gradient-to-r from-[#0A2342] to-[#163B65] rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+      <div className="mb-8 p-6 bg-gradient-to-r from-[#990000] to-[#163B65] rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/20 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-40 h-40 bg-red-500/20 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
         
         <div className="relative z-10 flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <ShoppingBag className="text-blue-300" size={28} />
+            <ShoppingBag className="text-red-300" size={28} />
             <h1 className="text-2xl md:text-3xl font-bold">Esenyurt Mağazası</h1>
           </div>
-          <p className="text-blue-100 max-w-lg">
+          <p className="text-red-100 max-w-lg">
             Kazandığın BP (Başarı Puanı) değerlerini harca! Profilini özelleştir, kampüs avantajlarını yakala ve kariyer fırsatlarını hızlandır.
           </p>
         </div>
         
         <div className="relative z-10 bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 flex flex-col items-center">
-          <p className="text-sm text-blue-200 font-medium mb-1 uppercase tracking-wider">Mevcut Bakiye</p>
+          <p className="text-sm text-red-200 font-medium mb-1 uppercase tracking-wider">Mevcut Bakiye</p>
           <div className="flex items-center gap-2">
             <Sparkles size={24} className="text-yellow-400" />
             <span className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">
@@ -143,7 +143,7 @@ export default function RewardStore() {
                   ${isPurchased 
                     ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed' 
                     : canAfford 
-                      ? 'bg-[#0A2342] hover:bg-[#163B65] text-white shadow-md hover:shadow-xl hover:-translate-y-0.5' 
+                      ? 'bg-[#990000] hover:bg-[#163B65] text-white shadow-md hover:shadow-xl hover:-translate-y-0.5' 
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
               >
                 {isPurchased ? (

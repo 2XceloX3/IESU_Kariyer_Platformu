@@ -36,7 +36,7 @@ export default function PlatformAnalytics() {
         {!isPredicted && (
           <button 
             onClick={handlePredict}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-red-600 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-colors"
           >
             <Sparkles size={14} /> AI ile Öngörü Üret
           </button>
@@ -63,7 +63,7 @@ export default function PlatformAnalytics() {
             <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#6b7280'}} />
             <Tooltip 
               contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)'}} 
-              itemStyle={{color: '#0A2342', fontWeight: 'bold'}}
+              itemStyle={{color: '#990000', fontWeight: 'bold'}}
             />
             <Area type="monotone" dataKey="basvuru" stroke="#cca26d" strokeWidth={3} fillOpacity={1} fill="url(#colorBasvuru)" />
             {isPredicted && (

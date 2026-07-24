@@ -20,9 +20,9 @@ export default function AIMatchmaker({ alumniList = [] }) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border border-indigo-100 shadow-sm mb-6">
+    <div className="bg-gradient-to-br from-indigo-50 to-red-50 p-6 rounded-xl border border-indigo-100 shadow-sm mb-6">
       <h3 className="text-[15px] font-black text-indigo-900 mb-2 flex items-center gap-2">
-        <Wand2 className="text-indigo-600" size={18} /> AI Kariyer Eşleşmesi
+        <Wand2 className="text-red-600" size={18} /> AI Kariyer Eşleşmesi
       </h3>
       <p className="text-[12px] text-indigo-700 mb-4 font-medium leading-relaxed">
         Yapay zeka profilini ve yeteneklerini analiz ederek sana en uygun mentorü veya şirketi bulsun.
@@ -34,7 +34,7 @@ export default function AIMatchmaker({ alumniList = [] }) {
           whileTap={{ scale: 0.98 }}
           onClick={findMatch}
           disabled={isMatching}
-          className="w-full bg-indigo-600 text-white text-[13px] font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-md relative overflow-hidden"
+          className="w-full bg-red-600 text-white text-[13px] font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-md relative overflow-hidden"
         >
           {isMatching ? 'Profiller Analiz Ediliyor...' : 'Yapay Zeka ile Eşleş'}
           {isMatching && (

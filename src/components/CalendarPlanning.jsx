@@ -121,7 +121,7 @@ export default function CalendarPlanning({ events = [], jobs = [], userRole }) {
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-bold text-gray-600"><span className="w-3 h-3 rounded bg-emerald-500"></span> Etkinlikler & Fuarlar</div>
               <div className="flex items-center gap-2 text-xs font-bold text-gray-600"><span className="w-3 h-3 rounded bg-red-500"></span> Son Başvuru Tarihleri</div>
-              <div className="flex items-center gap-2 text-xs font-bold text-gray-600"><span className="w-3 h-3 rounded bg-blue-500"></span> Mentorluk Görüşmeleri</div>
+              <div className="flex items-center gap-2 text-xs font-bold text-gray-600"><span className="w-3 h-3 rounded bg-red-500"></span> Mentorluk Görüşmeleri</div>
             </div>
           </div>
         </div>

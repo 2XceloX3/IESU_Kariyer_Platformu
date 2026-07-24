@@ -150,7 +150,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
             
             {/* Empty State */}
             {!newImage && !isCameraActive && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-red-950">
                 <Camera size={48} className="text-white/20" />
               </div>
             )}
@@ -203,7 +203,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
                 window.toast && window.toast.success("✅ AI Metin Üretimi: Görüntüye/içeriğe uygun hashtagli açıklama oluşturuldu.");
               }, 2500);
             }}
-            className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full font-bold hover:opacity-90 transition shadow-lg shadow-indigo-500/30"
+            className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-red-600 text-white rounded-full font-bold hover:opacity-90 transition shadow-lg shadow-red-500/30"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
             AI Metin Yaz
@@ -212,7 +212,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
           <button 
             onClick={handleCreate}
             disabled={!newContent.trim() && !newImage}
-            className="flex items-center gap-2 px-6 py-3 bg-[#0A2342] text-white rounded-full font-bold hover:bg-blue-900 transition disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-[#990000] text-white rounded-full font-bold hover:bg-red-900 transition disabled:opacity-50"
           >
             Paylaş <Send size={20} />
           </button>

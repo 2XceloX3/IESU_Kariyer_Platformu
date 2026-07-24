@@ -20,7 +20,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-red-900 flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
@@ -37,8 +37,8 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <CalendarCheck className="text-indigo-600" size={24} />
-            <h1 className="font-black tracking-tight text-slate-900">Mentor Ajandası</h1>
+            <CalendarCheck className="text-red-600" size={24} />
+            <h1 className="font-black tracking-tight text-red-950">Mentor Ajandası</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -48,7 +48,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
         
         {bookingStep === 1 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-            <div className="bg-indigo-600 rounded-xl p-8 md:p-12 shadow-lg text-white relative overflow-hidden">
+            <div className="bg-red-600 rounded-xl p-8 md:p-12 shadow-lg text-white relative overflow-hidden">
               <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
               <div className="relative z-10 max-w-xl">
                 <h2 className="text-3xl md:text-3xl font-black mb-4">Birebir Mentorluk<br/>Randevusu Al</h2>
@@ -57,7 +57,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <h3 className="text-xl font-bold text-slate-900">Öne Çıkan Mentorlar</h3>
+              <h3 className="text-xl font-bold text-red-950">Öne Çıkan Mentorlar</h3>
               <div className="flex items-center gap-2 w-full md:w-auto">
                 <button 
                   onClick={(e) => {
@@ -79,7 +79,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                     placeholder="Uzmanlık veya şirket ara..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-full pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-shadow"
+                    className="w-full bg-white border border-slate-200 rounded-full pl-10 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-red-500 outline-none transition-shadow"
                   />
                 </div>
               </div>
@@ -91,8 +91,8 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                   <div className="flex items-start gap-4 mb-4">
                     <img src={mentor.avatar} alt={mentor.name} className="w-16 h-16 rounded-full object-cover shadow-sm" />
                     <div>
-                      <h4 className="font-bold text-slate-900 leading-tight">{mentor.name}</h4>
-                      <p className="text-xs text-indigo-600 font-bold mb-1">{mentor.role}</p>
+                      <h4 className="font-bold text-red-950 leading-tight">{mentor.name}</h4>
+                      <p className="text-xs text-red-600 font-bold mb-1">{mentor.role}</p>
                       <p className="text-xs text-slate-500 font-medium">{mentor.company}</p>
                     </div>
                   </div>
@@ -108,7 +108,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                     </p>
                     <button 
                       onClick={() => { setSelectedMentor(mentor); setBookingStep(2); }}
-                      className="w-full py-3 bg-slate-100 hover:bg-indigo-600 text-slate-700 hover:text-white rounded-xl font-bold transition-colors"
+                      className="w-full py-3 bg-slate-100 hover:bg-red-600 text-slate-700 hover:text-white rounded-xl font-bold transition-colors"
                     >
                       Takvimi Görüntüle
                     </button>
@@ -125,38 +125,38 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
               <div className="flex items-center gap-4 mb-8 pb-8 border-b border-slate-100">
                 <img src={selectedMentor.avatar} alt={selectedMentor.name} className="w-20 h-20 rounded-full object-cover shadow-sm" />
                 <div>
-                  <h2 className="text-2xl font-black text-slate-900">{selectedMentor.name}</h2>
-                  <p className="text-indigo-600 font-medium">{selectedMentor.role} @ {selectedMentor.company}</p>
+                  <h2 className="text-2xl font-black text-red-950">{selectedMentor.name}</h2>
+                  <p className="text-red-600 font-medium">{selectedMentor.role} @ {selectedMentor.company}</p>
                 </div>
               </div>
 
-              <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2"><CalendarIcon size={18} className="text-slate-400"/> Uygun Tarihler</h3>
+              <h3 className="text-lg font-bold text-red-950 mb-4 flex items-center gap-2"><CalendarIcon size={18} className="text-slate-400"/> Uygun Tarihler</h3>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                 {['12 Eki Salı', '13 Eki Çar', '15 Eki Cuma'].map((day, i) => (
-                  <div key={i} className={`p-3 rounded-xl border-2 text-center cursor-pointer transition-colors ${i === 0 ? 'border-indigo-600 bg-indigo-50 text-indigo-700 font-bold' : 'border-slate-100 hover:border-indigo-200 text-slate-600'}`}>
+                  <div key={i} className={`p-3 rounded-xl border-2 text-center cursor-pointer transition-colors ${i === 0 ? 'border-red-600 bg-indigo-50 text-indigo-700 font-bold' : 'border-slate-100 hover:border-indigo-200 text-slate-600'}`}>
                     <span className="block text-xs uppercase tracking-wider mb-1 opacity-70">{day.split(' ')[2]}</span>
                     <span className="block text-lg">{day.split(' ')[0]} {day.split(' ')[1]}</span>
                   </div>
                 ))}
               </div>
 
-              <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2"><Clock size={18} className="text-slate-400"/> Saat Seçimi</h3>
+              <h3 className="text-lg font-bold text-red-950 mb-4 flex items-center gap-2"><Clock size={18} className="text-slate-400"/> Saat Seçimi</h3>
               
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-8">
                 {['10:00', '11:30', '14:00', '16:30'].map((time, i) => (
-                  <div key={i} className={`py-2 rounded-lg border text-center cursor-pointer font-bold transition-colors ${i === 2 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'border-slate-200 text-slate-600 hover:border-indigo-300'}`}>
+                  <div key={i} className={`py-2 rounded-lg border text-center cursor-pointer font-bold transition-colors ${i === 2 ? 'bg-red-600 text-white border-red-600 shadow-md' : 'border-slate-200 text-slate-600 hover:border-indigo-300'}`}>
                     {time}
                   </div>
                 ))}
               </div>
 
               <div className="mb-8">
-                <h3 className="text-sm font-bold text-slate-900 mb-2">Mentorluk Beklentiniz (Opsiyonel)</h3>
-                <textarea rows="3" placeholder="Örn: Özgeçmiş incelemesi, mülakat taktikleri..." className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"></textarea>
+                <h3 className="text-sm font-bold text-red-950 mb-2">Mentorluk Beklentiniz (Opsiyonel)</h3>
+                <textarea rows="3" placeholder="Örn: Özgeçmiş incelemesi, mülakat taktikleri..." className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none resize-none"></textarea>
               </div>
 
-              <button onClick={handleBookSession} className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-lg transition-colors flex items-center justify-center gap-2">
+              <button onClick={handleBookSession} className="w-full py-4 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-black text-lg transition-colors flex items-center justify-center gap-2">
                 Randevuyu Onayla (1 Saat)
               </button>
             </div>
@@ -168,7 +168,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
             <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 mb-6 shadow-sm">
               <CheckCircle2 size={48} />
             </div>
-            <h2 className="text-3xl font-black text-slate-900 mb-2">Randevu Onaylandı!</h2>
+            <h2 className="text-3xl font-black text-red-950 mb-2">Randevu Onaylandı!</h2>
             <p className="text-slate-600 mb-8 leading-relaxed">
               <strong>{selectedMentor.name}</strong> ile 12 Ekim Salı, 14:00'da olan mentorluk görüşmen takvimine eklendi. Bağlantı linki e-posta adresine gönderildi.
             </p>
@@ -176,7 +176,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
               <button onClick={() => setView('landing')} className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors">
                 Ana Sayfaya Dön
               </button>
-              <button onClick={() => {setBookingStep(1); setSelectedMentor(null);}} className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors">
+              <button onClick={() => {setBookingStep(1); setSelectedMentor(null);}} className="flex-1 py-3 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors">
                 Yeni Randevu Al
               </button>
             </div>

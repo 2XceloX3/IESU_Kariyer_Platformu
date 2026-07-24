@@ -184,10 +184,10 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
       {/* TEPE ANALİTİK ALANI */}
       <div className="relative overflow-hidden rounded-xl p-8 shadow-2xl text-white mb-8 group">
         {/* Zengin Arkaplan Tasarımı */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-indigo-900 to-slate-900"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-red-950 via-indigo-900 to-red-950"></div>
         
         {/* Hareketli Işık / Glow Efektleri */}
-        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-blue-500 rounded-full blur-[100px] opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse"></div>
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-red-500 rounded-full blur-[100px] opacity-40 group-hover:opacity-60 transition-opacity duration-1000 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-purple-600 rounded-full blur-[100px] opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-overlay"></div>
         
@@ -195,11 +195,11 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
         <div className="relative z-10">
           <div className="flex items-center gap-4 mb-2">
             <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md border border-white/20 shadow-inner">
-              <BookOpen size={28} className="text-blue-300" />
+              <BookOpen size={28} className="text-red-300" />
             </div>
             <div>
-              <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-md">SEM Kontrol Merkezi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-black">Pro</span></h2>
-              <p className="text-blue-200 text-sm font-medium opacity-90">Sürekli Eğitim Merkezi gelişmiş operasyon ve analitik yönetim portalı.</p>
+              <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-md">SEM Kontrol Merkezi <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-purple-400 font-black">Pro</span></h2>
+              <p className="text-red-200 text-sm font-medium opacity-90">Sürekli Eğitim Merkezi gelişmiş operasyon ve analitik yönetim portalı.</p>
             </div>
           </div>
           
@@ -207,10 +207,10 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
             {/* Kart 1 */}
             <div className="bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-md hover:bg-white/20 transition-all cursor-default shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div className="flex items-center gap-4 mb-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30"><BookOpen size={22} className="text-white"/></div>
-                <div><p className="text-xs font-bold text-blue-200 uppercase tracking-wider">Aktif Program</p><p className="text-2xl font-black drop-shadow-sm">{activeCourses.length}</p></div>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/30"><BookOpen size={22} className="text-white"/></div>
+                <div><p className="text-xs font-bold text-red-200 uppercase tracking-wider">Aktif Program</p><p className="text-2xl font-black drop-shadow-sm">{activeCourses.length}</p></div>
               </div>
-              <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden"><div className="bg-blue-400 h-full w-3/4 rounded-full"></div></div>
+              <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden"><div className="bg-red-400 h-full w-3/4 rounded-full"></div></div>
             </div>
             {/* Kart 2 */}
             <div className="bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-md hover:bg-white/20 transition-all cursor-default shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
@@ -251,7 +251,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
           <button 
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-red-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}
           >
             <tab.icon size={18} /> {tab.label}
           </button>
@@ -268,27 +268,27 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
               <button onClick={() => exportToExcel('havuz')} className="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-bold transition">
                 <Download size={16} /> Excel'e Aktar
               </button>
-              <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition">
+              <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition">
                 {showForm ? <Trash2 size={16}/> : <Plus size={16} />} {showForm ? 'İptal Et' : 'Yeni Program / Duyuru Ekle'}
               </button>
             </div>
           </div>
 
           {showForm && (
-            <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-[0_8px_30px_rgb(37,99,235,0.05)]">
+            <div className="bg-white p-6 rounded-xl border border-red-100 shadow-[0_8px_30px_rgb(37,99,235,0.05)]">
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                 {/* SOL: FORM */}
                 <div className="lg:col-span-3 space-y-5">
                   <form id="sem-post-form" onSubmit={handleAddCoursePost} className="space-y-5">
                     <div>
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Eğitim/Program Başlığı</label>
-                      <input type="text" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="Örn: İleri Düzey Excel Eğitimi" className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium text-gray-900" />
+                      <input type="text" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="Örn: İleri Düzey Excel Eğitimi" className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all font-medium text-gray-900" />
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">İçerik Türü</label>
-                        <select value={form.contentType} onChange={e => setForm({...form, contentType: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-medium text-gray-900">
+                        <select value={form.contentType} onChange={e => setForm({...form, contentType: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none font-medium text-gray-900">
                           <option value="Sertifika Programı">Sertifika Programı</option>
                           <option value="Eğitim">Eğitim</option>
                           <option value="Seminer">Seminer</option>
@@ -296,7 +296,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                       </div>
                       <div>
                         <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Görünürlük</label>
-                        <select value={form.visibility} onChange={e => setForm({...form, visibility: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-medium text-gray-900">
+                        <select value={form.visibility} onChange={e => setForm({...form, visibility: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none font-medium text-gray-900">
                           <option value="public">Herkes (Genel Akış)</option>
                           <option value="students">Sadece Öğrenciler</option>
                         </select>
@@ -306,9 +306,9 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                     <div>
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Afiş/Görsel Yükle (Esenyurt SEM Sistemi İle Entegre)</label>
                       {!form.imageUrl ? (
-                        <label className="w-full bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl px-4 py-8 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 hover:border-blue-300 transition-all group">
+                        <label className="w-full bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl px-4 py-8 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 hover:border-red-300 transition-all group">
                           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
-                            <ImagePlus size={24} className="text-gray-500 group-hover:text-blue-500" />
+                            <ImagePlus size={24} className="text-gray-500 group-hover:text-red-500" />
                           </div>
                           <span className="text-sm font-bold text-gray-700">Görsel seçmek için tıklayın</span>
                           <span className="text-xs font-medium text-gray-500 mt-1">Sistem gerçek afişleri işleyebilir</span>
@@ -332,7 +332,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
 
                     <div>
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Program Detayı / Açıklama</label>
-                      <textarea required value={form.content} onChange={e => setForm({...form, content: e.target.value})} rows="4" placeholder="Eğitim içeriğini ve şartlarını yazın..." className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none font-medium text-gray-900"></textarea>
+                      <textarea required value={form.content} onChange={e => setForm({...form, content: e.target.value})} rows="4" placeholder="Eğitim içeriğini ve şartlarını yazın..." className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none resize-none font-medium text-gray-900"></textarea>
                     </div>
                   </form>
                 </div>
@@ -341,7 +341,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                 <div className="lg:col-span-2">
                   <div className="sticky top-24">
                     <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3">
-                      <Eye size={14} className="text-blue-500" /> Canlı Sosyal Akış Ön İzlemesi
+                      <Eye size={14} className="text-red-500" /> Canlı Sosyal Akış Ön İzlemesi
                     </label>
                     <div className="bg-slate-50/50 rounded-2xl p-4 border border-dashed border-gray-200 pointer-events-none">
                       {(form.title || form.content || form.imageUrl) ? (
@@ -371,7 +371,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                         </div>
                       )}
                     </div>
-                    <button type="submit" form="sem-post-form" className="w-full mt-6 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 shadow-lg transition-all flex items-center justify-center gap-2">
+                    <button type="submit" form="sem-post-form" className="w-full mt-6 bg-red-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-red-700 shadow-lg transition-all flex items-center justify-center gap-2">
                       <CheckCircle size={18} /> Programı Kaydet & Akışta Paylaş
                     </button>
                   </div>
@@ -384,7 +384,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
             <div className="p-5 border-b border-gray-100 flex items-center justify-between">
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input value={search} onChange={e => setSearch(e.target.value)} type="text" placeholder="Programlarda ara..." className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-300 w-64" />
+                <input value={search} onChange={e => setSearch(e.target.value)} type="text" placeholder="Programlarda ara..." className="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-red-300 w-64" />
               </div>
             </div>
             <div className="overflow-x-auto">
@@ -410,7 +410,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                         </div>
                       </td>
                       <td className="py-4 px-5 text-center font-bold text-gray-600">{course.applicants}</td>
-                      <td className="py-4 px-5 text-center font-black text-blue-600">{course.enrolled}</td>
+                      <td className="py-4 px-5 text-center font-black text-red-600">{course.enrolled}</td>
                       <td className="py-4 px-5">
                         <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${course.status === 'Yayında' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {course.status}
@@ -452,7 +452,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                   <React.Fragment key={user.id}>
                     <tr 
                       onClick={() => setExpandedUser(expandedUser === user.id ? null : user.id)}
-                      className={`hover:bg-gray-50 transition cursor-pointer ${expandedUser === user.id ? 'bg-blue-50/50' : ''}`}
+                      className={`hover:bg-gray-50 transition cursor-pointer ${expandedUser === user.id ? 'bg-red-50/50' : ''}`}
                     >
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-3">
@@ -542,25 +542,25 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                 <form className="space-y-5">
                   <div>
                     <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Anket Başlığı</label>
-                    <input type="text" value={surveyForm.title} onChange={e => setSurveyForm({...surveyForm, title: e.target.value})} placeholder="Örn: Memnuniyet Anketi" className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none font-medium" />
+                    <input type="text" value={surveyForm.title} onChange={e => setSurveyForm({...surveyForm, title: e.target.value})} placeholder="Örn: Memnuniyet Anketi" className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 outline-none font-medium" />
                   </div>
                   
                   <div className="space-y-3 pt-2">
                     <div className="flex items-center justify-between mb-2">
                       <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Anket Soruları (Likert Ölçeği)</label>
-                      <button type="button" onClick={() => setSurveyForm({...surveyForm, questions: [...surveyForm.questions, 'Yeni Soru']})} className="text-xs font-bold text-blue-600 hover:bg-blue-50 px-2 py-1 rounded flex items-center gap-1">
+                      <button type="button" onClick={() => setSurveyForm({...surveyForm, questions: [...surveyForm.questions, 'Yeni Soru']})} className="text-xs font-bold text-red-600 hover:bg-red-50 px-2 py-1 rounded flex items-center gap-1">
                         <Plus size={14} /> Soru Ekle
                       </button>
                     </div>
 
                     {surveyForm.questions.map((q, i) => (
                       <div key={i} className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded bg-blue-100 text-blue-700 font-black flex items-center justify-center shrink-0">S{i+1}</div>
+                        <div className="w-8 h-8 rounded bg-red-100 text-red-700 font-black flex items-center justify-center shrink-0">S{i+1}</div>
                         <input type="text" value={q} onChange={(e) => {
                           const newQ = [...surveyForm.questions];
                           newQ[i] = e.target.value;
                           setSurveyForm({...surveyForm, questions: newQ});
-                        }} className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 font-medium" />
+                        }} className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-red-500 font-medium" />
                         <button type="button" onClick={() => {
                           const newQ = surveyForm.questions.filter((_, idx) => idx !== i);
                           setSurveyForm({...surveyForm, questions: newQ});
@@ -572,13 +572,13 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                   </div>
 
                   <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200 mt-6 cursor-pointer hover:bg-gray-100 transition" onClick={() => setSurveyForm({...surveyForm, kvkkConfirmed: !surveyForm.kvkkConfirmed})}>
-                    <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${surveyForm.kvkkConfirmed ? 'bg-blue-600' : 'border-2 border-gray-300 bg-white'}`}>
+                    <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${surveyForm.kvkkConfirmed ? 'bg-red-600' : 'border-2 border-gray-300 bg-white'}`}>
                       {surveyForm.kvkkConfirmed && <CheckCircle size={14} className="text-white" />}
                     </div>
                     <span className="text-sm font-bold text-gray-700 select-none">Öğrenci anket öncesi KVKK onay metnini kabul etmek zorundadır.</span>
                   </div>
 
-                  <button type="button" onClick={() => window.toast.success('Anket başarıyla oluşturuldu ve hedef kitleye atandı.')} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 shadow-md transition-all">
+                  <button type="button" onClick={() => window.toast.success('Anket başarıyla oluşturuldu ve hedef kitleye atandı.')} className="w-full bg-red-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-red-700 shadow-md transition-all">
                     Anketi Kaydet ve Aktifleştir
                   </button>
                 </form>
@@ -587,13 +587,13 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
               {/* SAĞ: ÖN İZLEME */}
               <div className="bg-slate-50/50 rounded-2xl p-6 border border-dashed border-gray-200 relative">
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-6">
-                  <Eye size={14} className="text-blue-500" /> Öğrenci Ekranı Ön İzlemesi
+                  <Eye size={14} className="text-red-500" /> Öğrenci Ekranı Ön İzlemesi
                 </label>
                 
                 <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden pointer-events-none">
-                  <div className="bg-blue-600 p-4 text-white">
+                  <div className="bg-red-600 p-4 text-white">
                     <h4 className="font-black text-lg">{surveyForm.title || 'Anket Başlığı'}</h4>
-                    <p className="text-blue-100 text-xs">Lütfen aşağıdaki ifadelere ne derece katıldığınızı belirtiniz.</p>
+                    <p className="text-red-100 text-xs">Lütfen aşağıdaki ifadelere ne derece katıldığınızı belirtiniz.</p>
                   </div>
                   
                   <div className="p-5 space-y-6">
@@ -638,7 +638,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                 <h3 className="text-lg font-black text-gray-900 mb-1">Oluşturulan Anketler ve Sonuç Analizi</h3>
                 <p className="text-xs font-bold text-gray-500">YÖK akreditasyon süreçleri için katılımcı geri bildirim istatistikleri.</p>
               </div>
-              <button onClick={() => exportToExcel('anket_sonuclar')} className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition">
+              <button onClick={() => exportToExcel('anket_sonuclar')} className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition">
                 <Download size={16} /> Excel Olarak İndir
               </button>
             </div>
@@ -655,12 +655,12 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-sm">
                   <tr 
-                    className="hover:bg-blue-50/50 transition cursor-pointer group"
+                    className="hover:bg-red-50/50 transition cursor-pointer group"
                     onClick={() => setExpandedSurvey(!expandedSurvey)}
                   >
                     <td className="py-5 px-6 font-bold text-gray-900 align-top">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-blue-600 transition-transform duration-300" style={{ transform: expandedSurvey ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+                        <span className="text-red-600 transition-transform duration-300" style={{ transform: expandedSurvey ? 'rotate(90deg)' : 'rotate(0deg)' }}>
                           ▶
                         </span>
                         <p>{surveyForm.title || 'Yeni SEM Anketi'}</p>
@@ -677,7 +677,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                           e.stopPropagation(); // Satırın açılmasını engelle
                           exportToExcel('anket_sonuclar');
                         }}
-                        className="p-2 bg-gray-50 text-blue-600 hover:bg-blue-100 rounded-xl transition font-bold text-xs flex items-center justify-center gap-1 w-full"
+                        className="p-2 bg-gray-50 text-red-600 hover:bg-red-100 rounded-xl transition font-bold text-xs flex items-center justify-center gap-1 w-full"
                       >
                         <Download size={14}/> İndir
                       </button>
@@ -687,9 +687,9 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                   {expandedSurvey && (
                     <tr className="bg-slate-50/50 border-none">
                       <td colSpan="4" className="p-0">
-                        <div className="px-12 py-6 border-l-2 border-blue-500 ml-4 mb-4 mt-2 bg-white rounded-r-xl shadow-sm">
+                        <div className="px-12 py-6 border-l-2 border-red-500 ml-4 mb-4 mt-2 bg-white rounded-r-xl shadow-sm">
                           <h4 className="text-xs font-black tracking-wider text-gray-500 mb-4 uppercase flex items-center gap-2">
-                            <BookOpen size={14} className="text-blue-500" />
+                            <BookOpen size={14} className="text-red-500" />
                             Anket Soruları (SPSS Referansı)
                           </h4>
                           {surveyForm.questions.length === 0 ? (
@@ -698,7 +698,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                             <ul className="space-y-3">
                               {surveyForm.questions.map((q, idx) => (
                                 <li key={idx} className="flex gap-3 text-sm">
-                                  <span className="font-black text-blue-600 w-6">S{idx+1}.</span>
+                                  <span className="font-black text-red-600 w-6">S{idx+1}.</span>
                                   <span className="text-gray-700 font-medium">{q}</span>
                                 </li>
                               ))}

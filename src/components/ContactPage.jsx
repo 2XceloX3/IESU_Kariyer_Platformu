@@ -18,7 +18,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
@@ -28,8 +28,8 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Mail className="text-indigo-600" size={24} />
-            <h1 className="font-black text-slate-900 tracking-tight">İletişim</h1>
+            <Mail className="text-red-600" size={24} />
+            <h1 className="font-black text-red-950 tracking-tight">İletişim</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -40,17 +40,17 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
           {/* Contact Details */}
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-black text-slate-900 mb-2">Bizimle İletişime Geçin</h2>
+              <h2 className="text-2xl font-black text-red-950 mb-2">Bizimle İletişime Geçin</h2>
               <p className="text-xs font-semibold text-slate-500">Sorularınız, önerileriniz ve talepleriniz için santralimiz hizmetinizdedir.</p>
             </div>
 
             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl shrink-0">
+                <div className="p-3 bg-indigo-50 text-red-600 rounded-2xl shrink-0">
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <h4 className="font-black text-xs text-slate-900 uppercase">Santral & Adres</h4>
+                  <h4 className="font-black text-xs text-red-950 uppercase">Santral & Adres</h4>
                   <p className="text-xs font-semibold text-slate-500 mt-1 leading-relaxed">{corporateData.contact.address}</p>
                 </div>
               </div>
@@ -60,7 +60,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
                   <Phone size={20} />
                 </div>
                 <div>
-                  <h4 className="font-black text-xs text-slate-900 uppercase">Telefon & Çağrı Merkezi</h4>
+                  <h4 className="font-black text-xs text-red-950 uppercase">Telefon & Çağrı Merkezi</h4>
                   <p className="text-xs font-semibold text-slate-500 mt-1">{corporateData.contact.phone} / {corporateData.contact.callCenter}</p>
                 </div>
               </div>
@@ -70,7 +70,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
                   <Mail size={20} />
                 </div>
                 <div>
-                  <h4 className="font-black text-xs text-slate-900 uppercase">E-Posta</h4>
+                  <h4 className="font-black text-xs text-red-950 uppercase">E-Posta</h4>
                   <p className="text-xs font-semibold text-slate-500 mt-1">{corporateData.contact.email}</p>
                 </div>
               </div>
@@ -81,7 +81,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl flex flex-col justify-center">
             {!sent ? (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <h3 className="text-lg font-black text-slate-900 mb-1">İletişim Formu</h3>
+                <h3 className="text-lg font-black text-red-950 mb-1">İletişim Formu</h3>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-black text-slate-500 uppercase">Adınız Soyadınız</label>
@@ -89,7 +89,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
                     type="text" 
                     value={form.name} 
                     onChange={e => setForm({...form, name: e.target.value})}
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold focus:outline-none focus:border-indigo-500"
+                    className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold focus:outline-none focus:border-red-500"
                     required
                   />
                 </div>
@@ -100,7 +100,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
                     type="email" 
                     value={form.email} 
                     onChange={e => setForm({...form, email: e.target.value})}
-                    className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold focus:outline-none focus:border-indigo-500"
+                    className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold focus:outline-none focus:border-red-500"
                     required
                   />
                 </div>
@@ -112,14 +112,14 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
                     value={form.message} 
                     onChange={e => setForm({...form, message: e.target.value})}
                     placeholder="İletmek istediğiniz mesaj..."
-                    className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-indigo-500 resize-none"
+                    className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-red-500 resize-none"
                     required
                   ></textarea>
                 </div>
 
                 <button 
                   type="submit"
-                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full py-4 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg"
                 >
                   <Send size={16} /> Formu Gönder
                 </button>
@@ -129,7 +129,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
                 <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-100">
                   <CheckCircle size={28} />
                 </div>
-                <h4 className="font-black text-slate-900 text-base">Mesajınız Alındı</h4>
+                <h4 className="font-black text-red-950 text-base">Mesajınız Alındı</h4>
                 <p className="text-xs font-semibold text-slate-500">Talebiniz ilgili üniversite birimine iletilmiştir.</p>
               </div>
             )}

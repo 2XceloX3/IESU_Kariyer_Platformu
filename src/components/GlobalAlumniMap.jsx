@@ -41,12 +41,12 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Globe2 className="text-blue-500" size={24} />
+            <Globe2 className="text-red-500" size={24} />
             <h1 className="font-black text-white tracking-tight">Küresel Mezun Haritası</h1>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex bg-blue-500/20 text-blue-400 px-3 py-1.5 rounded-full items-center gap-2 text-xs font-bold border border-blue-500/30">
+          <div className="hidden md:flex bg-red-500/20 text-red-400 px-3 py-1.5 rounded-full items-center gap-2 text-xs font-bold border border-red-500/30">
             <Users size={14} /> {totalAlumni.toLocaleString()}+ Mezun Dünya Çapında
           </div>
           <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -58,8 +58,8 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
         {/* Map Area */}
         <div className="flex-1 relative h-[60vh] lg:h-auto overflow-hidden bg-gradient-to-b from-[#020817] to-[#0f172a]">
           {/* Decorative Background Elements */}
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[100px] pointer-events-none" />
 
           <ComposableMap 
             projection="geoMercator" 
@@ -148,18 +148,18 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                 exit={{ opacity: 0, x: -50 }}
                 className="p-6 md:p-8 flex flex-col"
               >
-                <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-widest mb-2">
+                <div className="flex items-center gap-2 text-red-400 font-bold text-xs uppercase tracking-widest mb-2">
                   <MapPin size={14} /> Hub Detayı
                 </div>
                 <h2 className="text-2xl font-black text-white mb-6 leading-tight">{activeHub.name}</h2>
                 
                 <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 flex flex-col justify-center">
-                    <Users className="text-blue-500 mb-2" size={20} />
+                  <div className="bg-red-900/50 p-4 rounded-2xl border border-slate-700/50 flex flex-col justify-center">
+                    <Users className="text-red-500 mb-2" size={20} />
                     <span className="text-3xl font-black text-white">{activeHub.count.toLocaleString()}</span>
                     <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mt-1">Aktif Mezun</span>
                   </div>
-                  <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 flex flex-col justify-center">
+                  <div className="bg-red-900/50 p-4 rounded-2xl border border-slate-700/50 flex flex-col justify-center">
                     <Star className="text-amber-500 mb-2" size={20} />
                     <span className="text-3xl font-black text-white">#1</span>
                     <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mt-1">Bölge Sıralaması</span>
@@ -186,7 +186,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {activeHub.topRoles.map((role, idx) => (
-                        <div key={idx} className="bg-blue-500/10 text-blue-300 border border-blue-500/20 px-3 py-1.5 rounded-lg text-sm font-bold">
+                        <div key={idx} className="bg-red-500/10 text-red-300 border border-red-500/20 px-3 py-1.5 rounded-lg text-sm font-bold">
                           {role}
                         </div>
                       ))}
@@ -204,7 +204,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                           window.toast && window.toast.success("🌍 AI Analizi: Hedef bölge için Start-up Vizesi ve Ankara Antlaşması alternatifleri raporlandı.");
                         }, 2500);
                       }}
-                      className="w-full bg-slate-800 hover:bg-slate-700 text-blue-300 border border-blue-500/30 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
+                      className="w-full bg-red-900 hover:bg-slate-700 text-red-300 border border-red-500/30 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
                       AI Vize & Relocation Raporu
@@ -217,7 +217,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                           window.toast && window.toast.success("✅ AI Taslağı Hazır: 'Merhaba, ben de İESÜ mezunuyum...' taslağı Anka Chat'e aktarıldı.");
                         }, 2500);
                       }}
-                      className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-900/50 transition-all flex items-center justify-center gap-2 group"
+                      className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/50 transition-all flex items-center justify-center gap-2 group"
                     >
                       Bu Bölgedeki Mezunlarla İletişime Geç
                       <ExternalLink size={16} className="group-hover:translate-x-1 transition-transform" />

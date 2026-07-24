@@ -14,7 +14,7 @@ export function Badge({ status }) {
     'Pasif':'bg-gray-100 text-gray-500 border-gray-200',
     'Dolu':'bg-orange-100 text-orange-700 border-orange-200',
     'PART TIME':'bg-purple-100 text-purple-700 border-purple-200',
-    'TAM ZAMANLI':'bg-blue-100 text-blue-700 border-blue-200',
+    'TAM ZAMANLI':'bg-red-100 text-red-700 border-red-200',
     'STAJ':'bg-indigo-100 text-indigo-700 border-indigo-200',
     'Reddedildi':'bg-red-100 text-red-700 border-red-200',
   };
@@ -28,7 +28,7 @@ export function Card({ children, className='' }) {
 export function StatCard({ icon, label, value, sub, color='red' }) {
   const colors = {
     red:   { bg:'bg-red-50',    text:'text-red-600',    ring:'ring-red-200'    },
-    blue:  { bg:'bg-blue-50',   text:'text-blue-600',   ring:'ring-blue-200'   },
+    blue:  { bg:'bg-red-50',   text:'text-red-600',   ring:'ring-red-200'   },
     green: { bg:'bg-emerald-50',text:'text-emerald-600',ring:'ring-emerald-200'},
     purple:{ bg:'bg-purple-50', text:'text-purple-600', ring:'ring-purple-200' },
     orange:{ bg:'bg-orange-50', text:'text-orange-600', ring:'ring-orange-200' },
@@ -46,7 +46,7 @@ export function StatCard({ icon, label, value, sub, color='red' }) {
 
 export function Progress({ value, max, color='red' }) {
   const pct = Math.round((value / (max || 1)) * 100);
-  const colors = { red:'bg-red-500', blue:'bg-blue-500', green:'bg-emerald-500', orange:'bg-orange-500', purple:'bg-purple-500' };
+  const colors = { red:'bg-red-500', blue:'bg-red-500', green:'bg-emerald-500', orange:'bg-orange-500', purple:'bg-purple-500' };
   return (
     <div className="flex items-center gap-3">
       <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
