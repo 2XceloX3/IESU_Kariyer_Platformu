@@ -31,9 +31,13 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
           
           {/* Column 1: Brand & About */}
           <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="bg-white p-2 rounded-xl flex items-center justify-center shadow-sm">
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="bg-white p-2 rounded-xl flex items-center justify-center shadow-sm shrink-0">
                 <img src="/iesu-logo.svg" alt="İESÜ" className="h-10 w-auto" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-white leading-tight tracking-tight uppercase">İstanbul Esenyurt Üniversitesi</h3>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mt-0.5">Kariyer Geliştirme Merkezi</p>
               </div>
             </div>
             <p className="text-[14px] text-red-50 leading-relaxed mb-6 font-medium">
