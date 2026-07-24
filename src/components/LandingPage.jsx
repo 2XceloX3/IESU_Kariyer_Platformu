@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, ArrowRight, Mail, MapPin, Download, FileText, ExternalLink, X, LogIn, Briefcase, Search, Users, Handshake, TrendingUp, Target, Sparkles, Zap, GraduationCap, Building, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Calendar, ArrowRight, ArrowLeft, Printer, Mail, MapPin, Download, FileText, ExternalLink, X, LogIn, Briefcase, Search, Users, Handshake, TrendingUp, Target, Sparkles, Zap, GraduationCap, Building, ChevronRight, ShieldCheck } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { liveSliderData } from '../utils/liveData';
@@ -555,57 +555,120 @@ export default function LandingPage({ setView }) {
 
       <Footer setSelectedItem={setSelectedItem} legalData={legalData} setView={setView} />
 
-      {/* News/Event Detail Modal */}
+      {/* Full-Screen Dedicated News/Announcement/Tuition Detail View */}
       {selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col relative animate-scale-up">
-            {selectedItem.imageUrl ? (
-              <div className="w-full h-64 md:h-80 relative flex-shrink-0">
+        <div className="fixed inset-0 z-50 bg-gray-50 overflow-y-auto animate-fade-in">
+          {/* Top Sticky Bar */}
+          <div className="sticky top-0 z-30 bg-[#0A2342] text-white px-6 py-4 shadow-xl flex items-center justify-between">
+            <button
+              onClick={() => setSelectedItem(null)}
+              className="flex items-center gap-2 text-sm font-black bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition"
+            >
+              <ArrowLeft size={18} /> Ana Sayfaya Dön
+            </button>
+
+            <div className="text-xs font-bold text-blue-200 hidden md:block">
+              İstanbul Esenyurt Üniversitesi Resmi İçerik & Kariyer Portalı
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => window.print()}
+                className="flex items-center gap-1.5 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-2 rounded-xl transition"
+              >
+                <Printer size={16} /> Yazdır / PDF
+              </button>
+              <button 
+                onClick={() => setSelectedItem(null)}
+                className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Full Container Content */}
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 mb-6">
+              <span>Ana Sayfa</span>
+              <ChevronRight size={14} />
+              <span>Duyurular & Haberler</span>
+              <ChevronRight size={14} />
+              <span className="text-[#990000] font-black truncate max-w-xs">{selectedItem.title}</span>
+            </div>
+
+            {/* Hero Banner Image */}
+            {selectedItem.imageUrl && (
+              <div className="w-full h-72 md:h-96 rounded-3xl overflow-hidden shadow-2xl mb-8 relative">
                 <img src={selectedItem.imageUrl} alt={selectedItem.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent"></div>
-                <button 
-                  onClick={() => setSelectedItem(null)}
-                  className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white rounded-full flex items-center justify-center transition-all z-20"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-            ) : (
-              <div className="w-full bg-[#990000] p-4 flex justify-end">
-                <button 
-                  onClick={() => setSelectedItem(null)}
-                  className="w-10 h-10 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white rounded-full flex items-center justify-center transition-all"
-                >
-                  <X size={20} />
-                </button>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-6 left-6 right-6 text-white">
+                  <span className="bg-[#990000] text-white text-xs font-black px-3.5 py-1.5 rounded-lg uppercase tracking-wider mb-3 inline-block">
+                    {selectedItem.category || selectedItem.badge || 'Resmi Duyuru'}
+                  </span>
+                  <h1 className="text-2xl md:text-4xl font-black leading-tight drop-shadow-md">{selectedItem.title}</h1>
+                </div>
               </div>
             )}
-            
-            <div className="p-8 md:p-10 flex-grow flex flex-col">
-              <div className="flex flex-wrap items-center gap-4 mb-5">
-                {(selectedItem.category || selectedItem.tag) && (
-                  <span className="bg-[#990000]/10 text-[#990000] text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">
-                    {selectedItem.category || selectedItem.tag}
-                  </span>
-                )}
-                <div className="flex items-center gap-1.5 text-[13px] font-bold text-gray-500">
-                  <Calendar size={16} /> {selectedItem.date}
+
+            {!selectedItem.imageUrl && (
+              <div className="bg-[#0A2342] text-white p-8 md:p-12 rounded-3xl shadow-xl mb-8">
+                <span className="bg-[#990000] text-white text-xs font-black px-3.5 py-1.5 rounded-lg uppercase tracking-wider mb-3 inline-block">
+                  {selectedItem.category || selectedItem.badge || 'Resmi Duyuru'}
+                </span>
+                <h1 className="text-2xl md:text-4xl font-black leading-tight">{selectedItem.title}</h1>
+              </div>
+            )}
+
+            {/* Metadata Bar */}
+            <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex flex-wrap items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-4 text-xs font-bold text-gray-600">
+                <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
+                  <Calendar size={16} className="text-[#990000]" /> {selectedItem.date || 'Güncel'}
                 </div>
                 {selectedItem.location && (
-                  <div className="flex items-center gap-1.5 text-[13px] font-bold text-gray-500">
-                    <MapPin size={16} /> {selectedItem.location}
+                  <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
+                    <MapPin size={16} className="text-[#990000]" /> {selectedItem.location}
                   </div>
                 )}
+                <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-xl">
+                  <ShieldCheck size={16} /> Doğrulanmış Üniversite Yayın Verisi
+                </div>
               </div>
-              
-              <h2 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight mb-5">{selectedItem.title}</h2>
-              
-              <div className="mb-2">
-                <RichContentRenderer content={selectedItem.content || selectedItem.description} />
-                {(selectedItem.title?.includes('Ücret') || selectedItem.title?.includes('Tercih') || selectedItem.title?.includes('İndirim') || selectedItem.category?.includes('Burs')) && (
+
+              {selectedItem.url && (
+                <a
+                  href={selectedItem.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                >
+                  Orijinal Kaynak Bağlantısı <ExternalLink size={14} />
+                </a>
+              )}
+            </div>
+
+            {/* Main Rich Content & Full Width Tables */}
+            <div className="bg-white p-6 md:p-10 rounded-3xl border border-gray-200 shadow-lg">
+              <RichContentRenderer content={selectedItem.content || selectedItem.description} />
+
+              {/* Full Width Tuition Accordion */}
+              {(selectedItem.title?.includes('Ücret') || selectedItem.title?.includes('Tercih') || selectedItem.title?.includes('İndirim') || selectedItem.category?.includes('Burs')) && (
+                <div className="mt-8 pt-8 border-t border-gray-200">
                   <TuitionAccordion />
-                )}
-              </div>
+                </div>
+              )}
+            </div>
+
+            {/* Back Button Footer */}
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="bg-[#0A2342] hover:bg-blue-950 text-white text-sm font-black px-8 py-3.5 rounded-2xl flex items-center gap-3 shadow-xl transition-transform hover:scale-105"
+              >
+                <ArrowLeft size={20} /> Ana Sayfaya Dön
+              </button>
             </div>
           </div>
         </div>
