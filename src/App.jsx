@@ -227,6 +227,17 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // Flush old cached stores to ensure fresh Esenyurt live data is loaded
+    try {
+      localStorage.removeItem('igu-career-store');
+      localStorage.removeItem('iesu-kariyer-storage-v10');
+      localStorage.removeItem('iesu-kariyer-storage-v11');
+    } catch (err) {
+      console.warn("Storage flush:", err);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!localStorage.getItem('igu_likes_reset_v4')) {
       setPosts(prev => (prev || []).map(p => ({ ...p, likes: 0, comments: 0 })));
       setNews(prev => (prev || []).map(p => ({ ...p, likes: 0, comments: 0 })));

@@ -338,7 +338,7 @@ const useAppStore = create(
       };
     },
     {
-      name: 'igu-career-store',
+      name: 'iesu-career-store-v20',
       partialize: (state) => ({
 
         userRole: state.userRole,
