@@ -191,7 +191,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
   );
 
   return (
-    <div className="min-h-screen bg-[#070D18] text-slate-100 flex flex-col font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans relative overflow-x-hidden">
       {/* Background Aurora Lighting */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-indigo-900/20 via-red-900/10 to-transparent blur-3xl pointer-events-none"></div>
 

@@ -17,10 +17,10 @@ const ACCREDITATIONS = [
 ];
 
 const TIMELINE = [
-  { year: '2008', title: 'İstanbul Esenyurt Meslek Yüksekokulu Kuruluşu', desc: 'Mütevelli Heyeti tarafından mesleki eğitimi güçlendirme vizyonuyla kuruldu.' },
-  { year: '2011', title: 'Üniversite Statüsünün Kazanılması', desc: 'Kanun kararıyla İstanbul Esenyurt Üniversitesi olarak yükseköğretim dünyasına katıldı.' },
-  { year: '2018', title: 'Türkiye Rekorlu Uluslararası Akreditasyon Hamlesi', desc: '60\'tan fazla lisans ve önlisans programına Avrupa standartlarında akreditasyon kazandırıldı.' },
-  { year: '2026', title: 'Dünya Sıralamaları & Sürdürülebilirlik Liderliği', desc: 'Times Higher Education (THE) etki sıralamasında Türkiye\'nin öncü üniversiteleri arasında yer aldı.' }
+  { year: '2013', title: 'Resmi Kuruluş ve Kanun Kararı (18 Haziran 2013)', desc: 'Yeşilköy 2001 Eğitim, Kültür ve Sağlık Vakfı tarafından 6492 sayılı kanun ile kuruldu (Resmi Gazete No: 28681).' },
+  { year: '2013 - 2014', title: 'İlk Öğrenci Alımı ve Eğitime Başlangıç', desc: '6 bölüm ve 8 önlisans programında 296 öğrenci ile ilk akademik eğitime başlandı.' },
+  { year: '2018', title: 'Fakülte ve Laboratuvar Altyapı Hamlesi', desc: 'Sağlık Bilimleri, Mühendislik ve Spor Bilimleri alanında 110+ uygulama laboratuvarı hizmete açıldı.' },
+  { year: '2026', title: '6 Fakülte, 3 MYO, 1 Enstitü ile Dev Kampüs', desc: '77.000+ mezun ve küresel ölçekli kariyer entegrasyonuyla geleceğe yön veren dünya üniversitesi.' }
 ];
 
 export default function AboutUsPage({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -40,7 +40,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
               {corporateData.university}
             </h2>
             <p className="text-slate-300 text-sm md:text-base leading-relaxed font-medium">
-              Geleceğin dünyasını şekillendiren, uluslararası akreditasyon başarısıyla küresel standartlarda eğitim veren ve sürdürülebilir kalkınmayı ilke edinen dünya üniversitesi.
+              İstanbul Esenyurt Üniversitesi; T.C. Anayasası ve 2547 sayılı Yükseköğretim Kanunu doğrultusunda Yeşilköy 2001 Eğitim, Kültür ve Sağlık Vakfı tarafından 18.06.2013 tarihinde (6492 Sayılı Kanun) kurulmuş; 6 Fakülte, 3 Meslek Yüksekokulu, 1 Yüksekokul ve Lisansüstü Eğitim Enstitüsü ile geleceğe yön veren dünya üniversitesidir.
             </p>
           </div>
         </div>
