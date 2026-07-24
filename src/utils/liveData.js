@@ -13,7 +13,7 @@ export const liveSliderData = [
   },
   {
     "badge": "İESÜ Duyuru",
-    "title": ".",
+    "title": "İstanbul Esenyurt Üniversitesi Duyurusu",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/07/27vgbj6d8e8ma-.jpg",
     "actionLink": "https://www.esenyurt.edu.tr#"
   },
@@ -21,37 +21,37 @@ export const liveSliderData = [
     "badge": "İESÜ Duyuru",
     "title": "Bahar Senligi",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg",
-    "actionLink": "https://www.esenyurt.edu.tr/etkinlik/1648-iesu-bahar-senligi-26%E2%80%99-basliyor"
+    "actionLink": "https://www.esenyurt.edu.tr/etkinlik/1648-iesu-bahar-senligi-26’-basliyor"
   },
   {
     "badge": "İESÜ Duyuru",
     "title": "Ödül Töreni",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/05/257y8y0atcmgq-odul-toreni.jpg",
-    "actionLink": "https://www.esenyurt.edu.tr/haber/1880-universitemizde-bilim-ruzg%C3%A2ri-akademik-basari-odulleri-sahiplerini-buldu"
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1880-universitemizde-bilim-ruzgâri-akademik-basari-odulleri-sahiplerini-buldu"
   },
   {
     "badge": "İESÜ Duyuru",
     "title": "Teknofest",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/05/qwap0drtzge6m-teknofest.jpg",
-    "actionLink": "https://www.esenyurt.edu.tr/haber/1864-istanbul-esenyurt-universitesi%E2%80%99nde-teknofest-yolculugu-basladi"
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1864-istanbul-esenyurt-universitesi’nde-teknofest-yolculugu-basladi"
   },
   {
     "badge": "İESÜ Duyuru",
-    "title": ".",
+    "title": "İstanbul Esenyurt Üniversitesi Duyurusu",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/04/z6zk51zk7l2gc-.jpg",
-    "actionLink": "https://www.esenyurt.edu.tr/haber/1807-akredite-program-sayisi-12%E2%80%99ye-sureci-devam-edenler-ve-yeni-basvurularla-birlikte-toplam-sayi-31%E2%80%99e-ulasti"
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1807-akredite-program-sayisi-12’ye-sureci-devam-edenler-ve-yeni-basvurularla-birlikte-toplam-sayi-31’e-ulasti"
   },
   {
     "badge": "İESÜ Duyuru",
     "title": "ÜNİLİG",
     "image": "https://www.esenyurt.edu.tr/uploads/2026/01/i3o6f0hqu7iwb-unilig.png",
-    "actionLink": "https://www.esenyurt.edu.tr/haber/1715-universitemiz-unilig-wushu-sampiyonasi%E2%80%99ndan-altin-ve-bronz-madalya-ile-dondu"
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1715-universitemiz-unilig-wushu-sampiyonasi’ndan-altin-ve-bronz-madalya-ile-dondu"
   },
   {
     "badge": "İESÜ Duyuru",
-    "title": ".",
+    "title": "İstanbul Esenyurt Üniversitesi Duyurusu",
     "image": "https://www.esenyurt.edu.tr/uploads/2025/12/k4uxc14eu2fto-2026-yiliniz-kutlu-olsun.jpg",
-    "actionLink": "https://www.esenyurt.edu.tr/haber/1669-yok-universite-izleme-ve-degerlendirme-genel-raporu-2025%E2%80%99te-onemli-basari"
+    "actionLink": "https://www.esenyurt.edu.tr/haber/1669-yok-universite-izleme-ve-degerlendirme-genel-raporu-2025’te-onemli-basari"
   },
   {
     "badge": "İESÜ Duyuru",

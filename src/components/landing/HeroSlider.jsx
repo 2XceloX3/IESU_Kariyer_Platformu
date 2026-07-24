@@ -16,15 +16,25 @@ export default function HeroSlider({ onSelectSlide }) {
   }, [isCarouselPaused, heroSlides.length]);
 
   const handleSlideClick = (slide) => {
+    let cleanTitle = (slide.title || '').replace(/^#+\s*/g, '').replace(/^\.\s*$/g, '').trim();
+    if (!cleanTitle || cleanTitle === '.') {
+      cleanTitle = "İstanbul Esenyurt Üniversitesi Resmi Duyurusu";
+    }
+    
+    let cleanUrl = slide.actionLink || 'https://www.esenyurt.edu.tr';
+    try {
+      cleanUrl = decodeURIComponent(cleanUrl);
+    } catch (e) {}
+
     if (onSelectSlide) {
       onSelectSlide({
-        title: slide.title,
+        title: cleanTitle,
         date: "Güncel Duyuru",
         category: slide.badge || "Duyuru",
-        description: `${slide.title} - İstanbul Esenyurt Üniversitesi Resmi Duyurusudur.`,
-        content: `### ${slide.title}\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü portalında yayınlanan bu duyuru ve görsel ile ilgili tüm detaylar ve etkinlik takvimi için öğrenci panellerimizi kullanabilirsiniz.\n\nİlgili Başvuru Adresi: ${slide.actionLink || 'https://www.esenyurt.edu.tr'}`,
+        description: `${cleanTitle} - İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü Resmi Duyurusu.`,
+        content: `İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü portalında yayınlanan bu duyuru ve afiş ile ilgili tüm detaylar, başvuru bilgileri ve akademik takvim güncellemeleri için öğrenci panellerimizi kullanabilirsiniz.\n\nİlgili Başvuru Bağlantısı: ${cleanUrl}`,
         imageUrl: slide.image,
-        url: slide.actionLink
+        url: cleanUrl
       });
     } else if (slide.actionLink) {
       window.open(slide.actionLink, '_blank');
