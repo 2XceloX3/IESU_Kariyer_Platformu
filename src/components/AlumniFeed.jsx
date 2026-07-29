@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe , ChevronDown } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe , ChevronDown } from 'lucide-react', MapPin }
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -66,6 +66,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const [mentorshipForm, setMentorshipForm] = useState({ title: '', hours: '', mode: 'Online', motivation: '' });
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
+  const [showEventsModal, setShowEventsModal] = useState(false);
 
   const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
   const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
@@ -239,7 +240,35 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           {/* STORIES */}
           <StoriesBar currentUser={currentUser} stories={stories} setStories={setStories} />
           
-          {/* FEED TABS (LINKEDIN STYLE) */}
+          {/* MEZUNA OZEL HIZLI AKSIYONLAR */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
+            <button onClick={() => setView?.('jobs')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-emerald-200 hover:shadow-sm transition-all group">
+              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-100 transition">
+                <Briefcase size={20} />
+              </div>
+              <span className="text-[11px] font-bold text-gray-600 group-hover:text-emerald-600 transition">Is Ilanlari</span>
+            </button>
+            <button onClick={() => setActiveTab('cvbuilder')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-red-200 hover:shadow-sm transition-all group">
+              <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-100 transition">
+                <FileText size={20} />
+              </div>
+              <span className="text-[11px] font-bold text-gray-600 group-hover:text-red-600 transition">CV Olustur</span>
+            </button>
+            <button onClick={() => setShowEventsModal(true)} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-amber-200 hover:shadow-sm transition-all group">
+              <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-100 transition">
+                <Calendar size={20} />
+              </div>
+              <span className="text-[11px] font-bold text-gray-600 group-hover:text-amber-600 transition">Etkinlikler</span>
+            </button>
+            <button onClick={() => setView?.('network')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-blue-200 hover:shadow-sm transition-all group">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100 transition">
+                <Users size={20} />
+              </div>
+              <span className="text-[11px] font-bold text-gray-600 group-hover:text-blue-600 transition">Mezun Agi</span>
+            </button>
+          </div>
+
+                    {/* FEED TABS (LINKEDIN STYLE) */}
           <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">
             <button 
               onClick={() => setFeedFilter('for_you')} 
@@ -727,7 +756,46 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         </div>
       </div>
       
-      {/* CAREER SHORTS FULLSCREEN MODAL */}
+
+      {/* EVENTS MODAL */}
+      {showEventsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto mx-4 shadow-2xl animate-scale-in">
+            <div className="flex items-center justify-between p-5 border-b border-gray-100">
+              <h3 className="font-bold text-lg text-gray-900">Etkinlikler</h3>
+              <button onClick={() => setShowEventsModal(false)} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition"><X size={18} className="text-gray-500"/></button>
+            </div>
+            <div className="p-5 space-y-4">
+              {(events || []).length === 0 ? (
+                <div className="text-center py-10 text-gray-400">
+                  <Calendar size={40} className="mx-auto mb-3 opacity-30" />
+                  <p className="font-semibold">Henuz etkinlik bulunmuyor</p>
+                  <p className="text-sm">Yeni etkinlikler eklendiginde burada gorunecek</p>
+                </div>
+              ) : (
+                (events || []).map(e => (
+                  <div key={e?.id} className="flex gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition group cursor-pointer">
+                    <div className="w-14 h-14 rounded-xl bg-red-50 flex flex-col items-center justify-center shrink-0">
+                      <span className="text-lg font-black text-red-600 leading-none">{(e?.date || '').split(' ')[0] || '--'}</span>
+                      <span className="text-[10px] font-bold text-red-500 uppercase">{(e?.date || '').split(' ')[1] || ''}</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-gray-900 text-sm group-hover:text-red-600 transition">{e?.title}</p>
+                      <p className="text-xs text-gray-500 mt-1">{e?.description || e?.location || ''}</p>
+                      <div className="flex items-center gap-3 mt-2 text-[11px] text-gray-400">
+                        <span className="flex items-center gap-1"><Calendar size={11}/> {e?.date || 'TBD'}</span>
+                        {e?.location && <span className="flex items-center gap-1"><MapPin size={11}/> {e?.location}</span>}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+            {/* CAREER SHORTS FULLSCREEN MODAL */}
       {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
     </div>
   );
