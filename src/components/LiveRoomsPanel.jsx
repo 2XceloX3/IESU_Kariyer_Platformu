@@ -7,7 +7,7 @@ import TopProfileMenu from './TopProfileMenu';
 const MOCK_ROOMS = [
   {
     id: 'room_1',
-    title: 'Yapay Zeka Mülakat Stratejileri',
+    title: 'Mülakat Stratejileri',
     host: 'Kariyer Geliştirme Koordinatörlüğü',
     type: 'official', // official, club, student
     speakers: [
@@ -201,7 +201,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                       className="text-red-600 font-bold text-sm px-6 py-3 rounded-full bg-red-50 hover:bg-red-100 transition flex items-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M13 8H7"></path><path d="M17 12H7"></path></svg>
-                      AI Kaçırdıklarımı Özetle
+                      Kaçırdıklarımı Özetle
                     </button>
                   </div>
                   <div className="flex gap-4">

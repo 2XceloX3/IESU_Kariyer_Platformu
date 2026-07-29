@@ -39,7 +39,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
     <div className="animate-fade-in space-y-6">
       <PanelHeader 
         title="Topluluklar ve Gruplar (CMS)" 
-        sub="Platformdaki öğrenci kulüpleri, mezun ağları ve çalışma gruplarının yönetimi." 
+        sub="Platformdaki öğrenci toplulukları, mezun ağları ve çalışma gruplarının yönetimi." 
         action={
           <button 
             onClick={() => {
@@ -59,7 +59,7 @@ export default function CMSGroups({ groups, setGroups, currentUser }) {
               const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: 'text/csv;charset=utf-8;' });
               const link = document.createElement('a');
               link.href = URL.createObjectURL(blob);
-              link.download = 'Kulupler_Faaliyet_Raporu.csv';
+              link.download = 'Topluluklar_Faaliyet_Raporu.csv';
               link.click();
             }}
             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm active:scale-95"

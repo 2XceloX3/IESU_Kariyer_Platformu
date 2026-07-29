@@ -161,7 +161,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                   }}
                   className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold rounded-lg shadow-sm hover:shadow-md transition-all"
                 >
-                  <Star size={14} /> AI ile Filtrele
+                  <Star size={14} /> Filtrele
                 </button>
               </div>
               <div className="relative w-full sm:w-72">

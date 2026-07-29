@@ -155,7 +155,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
         <div className="sticky top-6">
           <div className="flex items-center gap-2 mb-3 justify-center">
             <Smartphone size={18} className="text-gray-400" />
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Canlı Önizleme (Birlik Ağı)</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Canlı Önizleme (İESÜ Akış)</span>
           </div>
           
           <div className="w-[320px] h-[650px] mx-auto bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl relative border-8 border-gray-900">

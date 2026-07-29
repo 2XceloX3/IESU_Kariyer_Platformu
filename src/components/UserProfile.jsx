@@ -177,8 +177,17 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
         <div className="absolute inset-0 bg-black/10"></div>
       </div>
       <div className="px-6 sm:px-8 pb-8 relative">
-        <div className="w-32 h-32 sm:w-[152px] sm:h-[152px] rounded-full border-4 border-white bg-white absolute -top-16 sm:-top-24 left-6 sm:left-8 overflow-hidden">
-          <img src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}&background=0A2342&color=fff&size=200`} alt={user?.name} className="w-full h-full object-cover" />
+        <div className="w-32 h-32 sm:w-[152px] sm:h-[152px] rounded-full border-4 border-white bg-white absolute -top-16 sm:-top-24 left-6 sm:left-8 overflow-hidden flex items-center justify-center p-2">
+          {userType === 'admin' || user?.role === 'admin' || user?.name === 'Kariyer Geliştirme Koordinatörlüğü' ? (
+            <Logo size="xl" className="w-full h-full justify-center" />
+          ) : (
+            <img 
+              src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=0A2342&color=fff&size=200`} 
+              alt={user?.name} 
+              className="w-full h-full object-cover rounded-full" 
+              onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }}
+            />
+          )}
         </div>
         
         <div className="pt-20 sm:pt-24 flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -262,7 +271,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm sm:text-base">Web3 Otonom Geliştirici Sertifikası</h4>
-                    <p className="text-indigo-200 text-xs sm:text-sm font-medium">Birlik Ağı DAO tarafından onaylandı.</p>
+                    <p className="text-indigo-200 text-xs sm:text-sm font-medium">İESÜ Akreditasyon Kurulu tarafından onaylandı.</p>
                     <div className="mt-3 inline-flex items-center gap-1.5 bg-black/30 px-2 py-1 rounded border border-white/10">
                       <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
                       <span className="text-[10px] text-indigo-100 font-mono">IPFS CID: QmYwAPJ...x5G7</span>
@@ -344,7 +353,16 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
       <div className="h-32 sm:h-48 bg-gradient-to-r from-red-700 to-red-900 relative"></div>
       <div className="px-6 sm:px-8 pb-8 relative">
         <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border-4 border-white bg-white shadow-lg absolute -top-12 sm:-top-16 left-6 sm:left-8 overflow-hidden flex items-center justify-center p-1 sm:p-2">
-          <img src={user.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}&background=2563EB&color=fff&size=200`} alt={user?.name} className="w-full h-full object-contain" />
+          {userType === 'admin' || user?.role === 'admin' || user?.name === 'Kariyer Geliştirme Koordinatörlüğü' || user?.department === 'Yönetim' ? (
+            <Logo size="xl" className="w-full h-full justify-center" />
+          ) : (
+            <img 
+              src={user?.logo || user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'A')}&background=2563EB&color=fff&size=200`} 
+              alt={user?.name} 
+              className="w-full h-full object-contain p-1" 
+              onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }}
+            />
+          )}
         </div>
         
         <div className="pt-20 sm:pt-24 flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -489,7 +507,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
               </div>
               <div className="px-6 pb-6 flex-1 relative flex flex-col sm:flex-row gap-6">
                 <div className="w-32 h-32 rounded-2xl border-4 border-white bg-white shadow-xl -mt-12 overflow-hidden flex items-center justify-center relative shrink-0 p-2 z-10">
-                  <img src="/logo.png" alt="Admin" className="w-full h-full object-contain" />
+                  <Logo size="xl" className="w-full h-full justify-center" />
                 </div>
                 <div className="pt-4 flex-1">
                   <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
@@ -721,7 +739,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           
           {/* PROFILE AVATAR */}
           <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-iesu-navy" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanıcı')}&background=0A2342&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+            <img src={(currentUser?.role === 'admin' || currentUser?.avatar === '/iesu-logo.svg') ? '/iesu-logo.svg' : (currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Kullanıcı')}&background=0A2342&color=fff`)} className="w-8 h-8 rounded-full object-contain p-0.5" alt="Profile" />
           </button>
         </div>
       </div>

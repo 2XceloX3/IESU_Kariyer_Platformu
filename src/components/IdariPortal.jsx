@@ -41,8 +41,8 @@ const MOCK_ANNOUNCEMENTS = [
   },
   {
     id: 4,
-    title: "Öğrenci Kulüpleri Yıllık Faaliyet ve Bütçe Planlama Formları",
-    summary: "Aktif 84 öğrenci kulübümüzün faaliyetlerini sürdürebilmesi için SKSDB'ye teslim etmesi gereken formlar.",
+    title: "Öğrenci Etkinlik & Organizasyon Başvuru Formları",
+    summary: "Öğrencilerimizin bilimsel, kültürel ve sanatsal etkinliklerini sürdürebilmesi için SKSDB'ye teslim etmesi gereken formlar.",
     category: "SKSDB",
     date: "2026-07-19",
     link: "https://sksdb.esenyurt.edu.tr/tr/idari-anasayfa",

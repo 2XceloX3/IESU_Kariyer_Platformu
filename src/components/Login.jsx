@@ -127,91 +127,97 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center font-sans overflow-hidden bg-gradient-to-br from-red-50 via-white to-gray-100">
-      
-      {/* Floating Elements (Abstract) */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-red-400/20 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-iesu-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
-      
+    <div className="min-h-screen relative flex items-center justify-center font-sans overflow-hidden bg-slate-950 text-white">
+      {/* Background Auditorium / Campus Image Overlay */}
+      <img 
+        src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&auto=format&fit=crop&q=80" 
+        alt="İESÜ Konferans Salonu" 
+        className="absolute inset-0 w-full h-full object-cover opacity-35 filter brightness-75 scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950/90"></div>
+
       {/* Top Left Back Button */}
       <button 
         onClick={() => setView('landing')} 
-        className="absolute top-8 left-8 text-gray-500 hover:text-iesu-navy flex items-center gap-2 font-bold transition-all z-20 hover:-translate-x-1"
+        className="absolute top-8 left-8 text-white/90 hover:text-white flex items-center gap-2 font-bold transition-all z-20 hover:-translate-x-1"
       >
-        <ArrowLeft size={20} /> <span className="hidden sm:block">Ana Sayfaya Dön</span>
+        <ArrowLeft size={18} /> <span className="hidden sm:block">Ana Sayfaya Dön</span>
       </button>
 
-      {/* Centered Glass Card */}
-      <div className="relative z-10 w-full max-w-lg p-4 sm:p-8">
+      {/* Centered Container */}
+      <div className="relative z-10 w-full max-w-lg p-4 sm:p-6">
         
-        {/* Logo outside the card */}
-        <div className="flex flex-col items-center justify-center mb-8">
-          <div className="mb-5 drop-shadow-sm">
-            <Logo className="h-24 w-auto" />
+        {/* Header Title with Official Logo */}
+        <div className="flex flex-col items-center justify-center mb-6">
+          <div 
+            onClick={() => setView('landing')}
+            className="mb-4 cursor-pointer hover:scale-105 transition-transform"
+          >
+            <Logo size="xl" variant="white" />
           </div>
-          <h1 className="text-2xl font-black text-iesu-navy tracking-tight text-center">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-          <p className="text-[12px] text-gray-500 font-bold uppercase tracking-widest mt-1 text-center">Kariyer Geliştirme Koordinatörlüğü</p>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-wider text-center drop-shadow-md uppercase">
+            İSTANBUL ESENYURT ÜNİVERSİTESİ
+          </h1>
+          <p className="text-[11px] text-red-200 font-extrabold uppercase tracking-widest mt-1 text-center">
+            Kariyer Geliştirme Ofisi Koordinatörlüğü
+          </p>
         </div>
 
-        <div className="bg-white/95 backdrop-blur-2xl rounded-xl shadow-2xl border border-white/20 p-8 sm:p-10 relative overflow-hidden">
-          
-          {/* Decorative Top Bar */}
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-navy via-iesu-blue to-iesu-navy"></div>
+        {/* Main Card with Curved Top Red Line */}
+        <div className="bg-[#f8f9fa] text-slate-900 rounded-[32px] shadow-2xl p-6 sm:p-10 relative overflow-hidden border-t-4 border-[#dc2626]">
 
-          <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">Portala Giriş Yapın</h2>
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-6 text-center tracking-tight">
+            Portala Giriş Yapın
+          </h2>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl font-bold animate-fade-in text-sm flex items-center gap-2">
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-600 text-red-700 rounded-r-xl font-bold text-sm flex items-center gap-2">
               <ShieldCheck size={18} />
               {error}
             </div>
           )}
 
-          {/* Role Selector Tabs */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1.5 bg-gray-100/80 rounded-xl mb-8">
+          {/* Role Selector Pill Tabs */}
+          <div className="flex items-center justify-center gap-1.5 p-1 bg-slate-200/60 rounded-2xl mb-8">
             <button 
               type="button"
               onClick={() => setLoginRole('student')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'student' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'student' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              <GraduationCap size={16} /> <span className="hidden sm:inline">Öğrenci</span>
+              <GraduationCap size={15} /> <span>Öğrenci</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('alumni')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'alumni' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'alumni' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              <Users size={16} /> <span className="hidden sm:inline">Mezun</span>
+              <Users size={15} /> <span>Mezun</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('employer')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'employer' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'employer' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              <Building2 size={16} /> <span className="hidden sm:inline">İşveren</span>
+              <Building2 size={15} /> <span>Firma</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('admin')}
-              className={`py-2 text-[11px] sm:text-[12px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all duration-300 ${loginRole === 'admin' ? 'bg-white text-[#990000] shadow-sm border border-gray-200/50' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 hover:shadow-sm'}`}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'admin' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              <ShieldCheck size={16} /> <span className="hidden sm:inline">Akademik</span>
+              <ShieldCheck size={15} /> <span>Akademik</span>
             </button>
           </div>
 
-          {/* Standard Login Form */}
-          <form className="space-y-5" onSubmit={handleLogin}>
+          {/* Login Form */}
+          <form className="space-y-4" onSubmit={handleLogin}>
             <div className="relative">
-              <label htmlFor="username" className="sr-only">
-                {loginRole === 'student' ? "T.C. Kimlik veya Öğrenci Numarası" : "Kullanıcı Adı veya E-Posta"}
-              </label>
-              <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
+              <User className="absolute left-4 top-3.5 text-slate-400" size={18} />
               <input 
                 id="username"
                 type="text" 
-                aria-label={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci Numarası" : "Kullanıcı Adı veya E-Posta"}
                 placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : "Kullanıcı Adı / E-Posta"} 
-                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium text-[#990000] placeholder:text-gray-400 placeholder:font-normal" 
+                className="w-full pl-11 pr-4 py-3 bg-white border border-red-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 placeholder:text-slate-400" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -219,50 +225,51 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </div>
             
             <div className="relative">
-              <label htmlFor="password" className="sr-only">Şifre</label>
-              <Lock className="absolute left-4 top-3.5 text-gray-500" size={18} />
+              <Lock className="absolute left-4 top-3.5 text-slate-400" size={18} />
               <input 
                 id="password"
                 type="password" 
-                aria-label="Şifre"
                 placeholder="Şifre" 
-                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium text-[#990000] placeholder:text-gray-400 placeholder:font-normal" 
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 placeholder:text-slate-400" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <label htmlFor="rememberMe" className="flex items-center gap-2 text-gray-600 font-medium">
-                  <input id="rememberMe" type="checkbox" className="rounded border-gray-300 text-[#990000] focus:ring-iesu-navy" />
-                  Beni Unutma
-                </label>
-                <button type="button" onClick={() => setView('forgot_password')} className="text-[#990000] font-bold hover:text-[#990000] hover:underline transition">
-                  Şifremi Unuttum
-                </button>
-              </div>
+            <div className="flex items-center justify-between text-xs pt-1">
+              <label htmlFor="rememberMe" className="flex items-center gap-2 text-slate-600 font-bold cursor-pointer">
+                <input id="rememberMe" type="checkbox" className="rounded border-slate-300 text-red-600 focus:ring-red-500" />
+                Beni Unutma
+              </label>
+              <button type="button" onClick={() => setView('forgot_password')} className="text-red-600 font-extrabold hover:underline transition">
+                Şifremi Unuttum
+              </button>
+            </div>
             
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#990000] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-[#dc2626] hover:bg-red-700 text-white font-extrabold py-3.5 px-4 rounded-2xl transition-all shadow-lg hover:shadow-red-600/30 active:scale-[0.98] mt-3 group cursor-pointer disabled:opacity-70"
             >
               {isLoading ? 'Giriş Yapılıyor...' : 'Giriş Yap'} {!isLoading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
             </button>
           </form>
 
+          {/* First Time Login Card (Soft Red Light Palette from Screenshot) */}
           {(loginRole === 'student' || loginRole === 'admin' || loginRole === 'alumni') && (
-            <div className="mt-8 pt-6 border-t border-gray-100">
-              <div className="bg-gradient-to-r from-iesu-navy/5 to-iesu-blue/5 rounded-2xl p-5 border border-iesu-navy/10 flex flex-col sm:flex-row items-center justify-between gap-4 group hover:border-iesu-navy/20 transition-all">
+            <div className="mt-8 pt-6 border-t border-slate-200/80">
+              <div className="bg-[#fef2f2] rounded-3xl p-5 border border-red-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
                 <div className="text-center sm:text-left">
-                  <h4 className="text-[#990000] font-bold text-sm">İlk Kez Mi Giriyorsunuz?</h4>
-                  <p className="text-gray-500 text-xs mt-0.5">Sisteme kayıt olmak ve şifre belirlemek için tıklayın.</p>
+                  <h4 className="text-[#dc2626] font-extrabold text-xs sm:text-sm">İlk Kez Mi Giriyorsunuz?</h4>
+                  <p className="text-slate-500 text-[11px] font-semibold mt-0.5 leading-snug">
+                    Sisteme kayıt olmak ve şifre belirlemek için tıklayın.
+                  </p>
                 </div>
                 <button 
                   onClick={() => setView('register')} 
                   type="button" 
-                  className="w-full sm:w-auto px-5 py-2.5 bg-white text-[#990000] rounded-xl font-bold text-sm shadow-sm border border-iesu-navy/10 hover:bg-[#990000] hover:text-white transition-all active:scale-[0.98]"
+                  className="w-full sm:w-auto px-5 py-3 bg-white text-[#dc2626] hover:bg-red-50 rounded-2xl font-extrabold text-xs shadow-md border border-red-100 transition-all active:scale-[0.98] shrink-0 cursor-pointer text-center"
                 >
                   Hesabımı Aktifleştir
                 </button>
@@ -270,42 +277,28 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </div>
           )}
 
-          {/* e-Devlet Login Button (Moved BELOW the form, Only for Students) */}
+          {/* e-Devlet Login Button */}
           {loginRole === 'student' && (
             <>
-              <div className="relative flex items-center py-6">
-                <div className="flex-grow border-t border-gray-200"></div>
-                <span className="flex-shrink-0 mx-4 text-gray-500 text-[11px] font-bold uppercase tracking-wider">veya</span>
-                <div className="flex-grow border-t border-gray-200"></div>
+              <div className="relative flex items-center py-5">
+                <div className="flex-grow border-t border-slate-200"></div>
+                <span className="flex-shrink-0 mx-4 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">veya</span>
+                <div className="flex-grow border-t border-slate-200"></div>
               </div>
 
               <button 
                 onClick={handleEDevlet}
-                className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-[#990000] py-3.5 px-4 rounded-xl hover:bg-gray-50 transition-all shadow-md active:scale-[0.98] group relative overflow-hidden"
+                className="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 py-3 px-4 rounded-2xl hover:bg-slate-50 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#990000]/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
-                
-                <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-7 w-auto object-contain drop-shadow-sm" />
-                <span className="font-bold text-[15px] tracking-wide">ile Giriş Yap</span>
+                <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-6 w-auto object-contain" />
+                <span className="font-bold text-xs">ile Giriş Yap</span>
               </button>
             </>
           )}
-          
-          {loginRole === 'employer' && (
-            <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-              <p className="text-gray-500 text-sm font-medium">
-                Sistemde kaydınız yok mu?
-              </p>
-              <button onClick={() => setView('register')} type="button" className="mt-2 px-6 py-2 bg-red-50 text-[#990000] rounded-xl font-black hover:bg-red-100 transition-colors inline-block">
-                Kayıt Ol
-              </button>
-            </div>
-          )}
-          
         </div>
         
         {/* Footer Text */}
-        <p className="text-center text-red-200/60 text-[11px] font-medium mt-8">
+        <p className="text-center text-red-200/60 text-[11px] font-medium mt-6">
           © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü.
         </p>
       </div>

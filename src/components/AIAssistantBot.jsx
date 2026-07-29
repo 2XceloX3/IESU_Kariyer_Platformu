@@ -296,7 +296,7 @@ export default function AIAssistantBot({ currentUser }) {
               <div 
                 className="cursor-pointer hover:bg-white/10 p-1.5 -ml-1.5 rounded-lg transition-colors group"
                 onClick={() => setShowStats(!showStats)}
-                title="Yapay Zeka Belleğini Görüntüle"
+                title="Belleği Görüntüle"
               >
                 <h3 className="font-bold text-lg flex items-center gap-2">
                   <BrainCircuit size={20} className="text-indigo-200 group-hover:animate-spin-slow" />
@@ -528,7 +528,7 @@ export default function AIAssistantBot({ currentUser }) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !isThinking && handleSend()}
               disabled={isThinking}
-              placeholder={isThinking ? "Ajanlar veri işliyor..." : isListening ? "Dinleniyor..." : "Yapay Zeka'ya sor..."}
+              placeholder={isThinking ? "Ajanlar veri işliyor..." : isListening ? "Dinleniyor..." : "Asistan'a sor..."}
               className={`flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-all ${isThinking ? 'opacity-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-red-500/50'}`}
             />
             <button 

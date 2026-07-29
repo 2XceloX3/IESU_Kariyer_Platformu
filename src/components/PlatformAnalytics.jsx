@@ -25,7 +25,7 @@ export default function PlatformAnalytics() {
         { name: 'Eyl', basvuru: 850, kayit: 620, predicted: true },
       ]);
       setIsPredicted(true);
-      window.toast && window.toast.success("✅ AI Öngörüsü: Eylüle kadar başvurularda %41 artış bekleniyor.");
+      window.toast && window.toast.success("✅ Öngörü: Eylüle kadar başvurularda %41 artış bekleniyor.");
     }, 2500);
   };
 
@@ -38,11 +38,11 @@ export default function PlatformAnalytics() {
             onClick={handlePredict}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-red-600 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-colors"
           >
-            <Sparkles size={14} /> AI ile Öngörü Üret
+            <Sparkles size={14} /> Öngörü Üret
           </button>
         )}
         {isPredicted && (
-           <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg">AI Tahminleri Aktif</span>
+           <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg">Tahminler Aktif</span>
         )}
       </div>
       <div className="flex-1 min-h-0">

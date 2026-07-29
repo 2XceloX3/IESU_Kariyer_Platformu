@@ -12,11 +12,29 @@ import { liveEventData, liveAnnouncementData, liveNewsData } from '../utils/live
 
 const initialRealCompanies = [];
 
-const initialClubs = [
-  { id: 'CLUB-001', name: 'Genç Yeşilay Kulübü', category: 'Sosyal Sorumluluk', description: 'Bağımlılıklarla mücadele ve sağlıklı yaşam bilincini artırma.', presidentId: 'STU-001', advisorId: 'ACAD-001', status: 'Aktif', memberCount: 45, coverImage: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=500&q=80', logo: 'https://ui-avatars.com/api/?name=GY&background=10B981&color=fff', forms: [], admins: ['STU-002'], memberRequests: [] }
-];
-
+const initialClubs = [];
 const initialClubApplications = [];
+
+const initialStaffList = [
+  {
+    id: 'STAFF-1',
+    name: 'Zuhal ŞAHİN',
+    title: 'Kariyer Geliştirme Ofis Sorumlusu',
+    phone: '444 9 123 (Dahili: 1102)',
+    email: 'zsahin@esenyurt.edu.tr',
+    photo: 'https://www.esenyurt.edu.tr/uploads/staffs/405.jpg',
+    yokLink: 'https://www.esenyurt.edu.tr/kadro/kariyer-gelistirme-ofisi-kadro-1'
+  },
+  {
+    id: 'STAFF-2',
+    name: 'Mutlu Gülsev YAĞIZ',
+    title: 'Kariyer Geliştirme Ofisi Sorumlusu',
+    phone: '444 9 123 (Dahili: 1102)',
+    email: 'myagiz@esenyurt.edu.tr',
+    photo: 'https://www.esenyurt.edu.tr/uploads/staffs/278.jpg',
+    yokLink: 'http://akademik.yok.gov.tr/AkademikArama/AkademisyenGorevOgrenimBilgileri?islem=direct&authorId=CAC066B35D650BC1'
+  }
+];
 
 const useAppStore = create(
   persist(
@@ -33,7 +51,10 @@ const useAppStore = create(
         
         notifications: [],
         setNotifications: setter('notifications'),
-        addNotification: (notif) => set((state) => ({ notifications: [notif, ...(state.notifications || [])].slice(0, 50) })),
+        addNotification: (notif) => set((state) => ({
+          ...(notif ? { notifications: [notif, ...(state.notifications || [])].slice(0, 50) } : {}),
+          unreadNotificationsCount: (state.unreadNotificationsCount || 0) + 1
+        })),
         
         userBP: 150, // Starting BP
         setUserBP: setter('userBP'),
@@ -63,6 +84,17 @@ const useAppStore = create(
         
         unlockedBadges: [],
         setUnlockedBadges: setter('unlockedBadges'),
+
+        showInstitutionalStats: false, // Default false until official real stats are entered
+        setShowInstitutionalStats: setter('showInstitutionalStats'),
+
+        institutionalStatsData: [
+          { id: 1, title: 'Topluma Kazandırılan Mezun', val: '65.000+', icon: 'GraduationCap' },
+          { id: 2, title: 'Uluslararası Akredite Program', val: '65+', icon: 'ShieldCheck' },
+          { id: 3, title: 'Ar-Ge & Uygulama Laboratuvarı', val: '110+', icon: 'FlaskConical' },
+          { id: 4, title: 'Farklı Ülkeden Uluslararası Öğrenci', val: '130+', icon: 'Users' }
+        ],
+        setInstitutionalStatsData: setter('institutionalStatsData'),
 
         chaosMode: false,
         setChaosMode: setter('chaosMode'),
@@ -213,8 +245,29 @@ const useAppStore = create(
         surveys: initialSurveys,
         setSurveys: setter('surveys'),
 
+        alumniAssocBoard: [
+          { id: 'MEMBER-1', name: 'Dr. Caner ŞAHİN', role: 'Mezun Derneği Başkanı', email: 'csahin@esenyurt.edu.tr', phone: '444 9 123 (Dahili: 1105)' },
+          { id: 'MEMBER-2', name: 'Alperen KAYA', role: 'Genel Sekreter & Bilişim Sorumlusu', email: 'alperen@esenyurt.edu.tr', phone: '444 9 123' }
+        ],
+        setAlumniAssocBoard: setter('alumniAssocBoard'),
+
+        alumniAssocApplications: [
+          { id: 'APP-101', name: 'Alperen YILMAZ', type: 'Asıl Üyelik', department: 'Bilgisayar Mühendisliği', graduationYear: '2024', email: 'alperen@gmail.com', phone: '0532 000 0000', appliedAt: '2026-07-24', status: 'Beklemede' },
+          { id: 'APP-102', name: 'Selin DEMİR', type: 'Yönetim Ekibi Adaylığı', department: 'İşletme', graduationYear: '2023', email: 'selin@gmail.com', phone: '0533 111 2233', appliedAt: '2026-07-25', status: 'Beklemede' }
+        ],
+        setAlumniAssocApplications: setter('alumniAssocApplications'),
+
+        featureAlumniAssocToggle: true,
+        setFeatureAlumniAssocToggle: setter('featureAlumniAssocToggle'),
+
         academicCatalog: initialAcademicCatalog,
         setAcademicCatalog: setter('academicCatalog'),
+
+        staffList: initialStaffList,
+        setStaffList: setter('staffList'),
+        addStaffMember: (member) => set((state) => ({ staffList: [member, ...(state.staffList || [])] })),
+        updateStaffMember: (updated) => set((state) => ({ staffList: (state.staffList || []).map(s => s.id === updated.id ? updated : s) })),
+        deleteStaffMember: (id) => set((state) => ({ staffList: (state.staffList || []).filter(s => s.id !== id) })),
 
         academicApprovals: initialAcademicApprovals,
         setAcademicApprovals: setter('academicApprovals'),
@@ -246,23 +299,48 @@ const useAppStore = create(
         setLabReservations: setter('labReservations'),
         addLabReservation: (res) => set(state => ({ labReservations: [res, ...(state.labReservations || [])] })),
 
-        eventRegistrations: [
-          { id: 'TKT-EVT-101', name: 'Elif Şahin', eventTitle: 'Yapay Zeka ve Geleceğin Meslekleri Paneli', ticketCode: 'IESU-AI-883', date: '2026-07-21 10:20', status: 'Aktif Bilet' }
+        newsletterSubscribers: [
+          {
+            id: 'SUB-2026-001',
+            email: 'ogrenci@esenyurt.edu.tr',
+            fullName: 'Ahmet Yılmaz',
+            faculty: 'Mühendislik ve Mimarlık Fakültesi',
+            department: 'Yazılım Mühendisliği',
+            grade: '3. Sınıf',
+            birthDate: '2004-05-15',
+            date: '2026-07-21 11:20',
+            status: 'Onaylandı (KVKK İzinli)'
+          }
         ],
-        setEventRegistrations: setter('eventRegistrations'),
-        addEventRegistration: (reg) => set(state => ({ eventRegistrations: [reg, ...(state.eventRegistrations || [])] })),
+        setNewsletterSubscribers: setter('newsletterSubscribers'),
+        addNewsletterSubscriber: (sub) => set(state => ({ newsletterSubscribers: [sub, ...(state.newsletterSubscribers || [])] })),
 
-        isProfileDrawerOpen: false,
-        setIsProfileDrawerOpen: setter('isProfileDrawerOpen'),
-
-        unreadNotificationsCount: 3,
-        setUnreadNotificationsCount: setter('unreadNotificationsCount'),
-
-        addNotification: () => set((state) => ({
-          unreadNotificationsCount: state.unreadNotificationsCount + 1
-        })),
-
-        markNotificationsRead: () => set({ unreadNotificationsCount: 0 }),
+        checkupRecords: [
+          {
+            id: 'CHECKUP-101',
+            name: 'Alperen YILMAZ',
+            graduationYear: '2024',
+            department: 'Bilgisayar Mühendisliği',
+            employed: 'Evet',
+            jobTiming: '0 - 3 Ay İçinde',
+            sector: 'Yazılım & Bilişim',
+            companyType: 'Özel Şirket',
+            title: 'Kıdemli Yazılım Geliştirici',
+            relatedToMajor: 'Evet',
+            newJobTitleIfNo: '-',
+            city: 'İstanbul / Türkiye',
+            workMode: 'Hibrit',
+            postgrad: 'Hayır',
+            phoneUpdated: 'Hayır',
+            newPhone: '+90 532 999 8877',
+            emailUpdated: 'Hayır',
+            newEmail: 'alperen.yeni@gmail.com',
+            notes: 'Platform harika olmuş, teşekkürler.',
+            date: '2026-07-27 10:25'
+          }
+        ],
+        setCheckupRecords: setter('checkupRecords'),
+        addCheckupRecord: (rec) => set(state => ({ checkupRecords: [rec, ...(state.checkupRecords || [])] })),
 
         // AI Swarm Intelligence Metrics
         swarmMetrics: {
@@ -277,94 +355,204 @@ const useAppStore = create(
           }
         })),
 
-        resetStore: () => set({ 
-          userRole: null, 
-          viewState: 'landing',
-          selectedUserId: null,
-          selectedGroupId: null,
-          focusMode: false,
-          ghostMode: false
-        }),
-
-        
-        liveRooms: [
-          { id: 1, title: 'Yapay Zeka Mülakatları Nasıl Geçilir?', host: { id: 'AI-101', name: 'Yapay Zeka Kulübü', logo: 'https://ui-avatars.com/api/?name=AI&background=0f172a&color=fff' }, listeners: 124, isActive: true },
-          { id: 2, title: 'Yurtdışı Staj Fırsatları Soru-Cevap', host: { id: 'GV-102', name: 'Girişimcilik Vakfı', logo: 'https://ui-avatars.com/api/?name=GV&background=16a34a&color=fff' }, listeners: 89, isActive: true },
-          { id: 3, title: 'Diksiyon ve Etkili İletişim', host: { id: 'TK-103', name: 'Tiyatro Kulübü', logo: 'https://ui-avatars.com/api/?name=TK&background=9333ea&color=fff' }, listeners: 45, isActive: true },
-        ],
-        setLiveRooms: setter('liveRooms'),
-
         featureSurveys: true,
         setFeatureSurveys: setter('featureSurveys'),
         featureCareerCheckup: true,
         setFeatureCareerCheckup: setter('featureCareerCheckup'),
-        featureAlumniCard: true,
+        featureAlumniCard: false,
         setFeatureAlumniCard: setter('featureAlumniCard'),
+        featureAlumniAssocToggle: false,
+        setFeatureAlumniAssocToggle: setter('featureAlumniAssocToggle'),
         featureClubsShowcase: true,
         setFeatureClubsShowcase: setter('featureClubsShowcase'),
         featureClubApplications: true,
         setFeatureClubApplications: setter('featureClubApplications'),
         featureCareerFair: false,
         setFeatureCareerFair: setter('featureCareerFair'),
-        
-        featureSSPLeaderboard: true,
-        setFeatureSSPLeaderboard: setter('featureSSPLeaderboard'),
-        
+
+        // Kariyer Günleri (Google Stitch Upgrade) States & Actions
         careerFairEvent: {
-          title: "İESÜ Geleneksel Kariyer Günleri 2026",
-          date: "15-16 Mayıs 2026",
-          description: "Öğrencilerimizle sektörün önde gelen firmalarını buluşturuyoruz.",
-          banner: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
-          isActive: false
+          id: 'cfe-2026',
+          title: 'İESÜ 2026 Bahar Kariyer Zirvesi & Fuarı',
+          date: '15-18 Mayıs 2026',
+          location: 'Merkez Kampüs Rektörlük Bahçesi & Fuaye Alanı',
+          description: 'Esenyurt Üniversitesi öğrencilerini ve mezunlarını sektör lideri şirketlerle buluşturan resmî kariyer etkinliği.',
+          banner: 'https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg',
+          isActive: true,
+          quota: 50
         },
         setCareerFairEvent: setter('careerFairEvent'),
 
         careerFairFormTemplate: [
-          { id: 'f_tc', label: 'Katılımcı TC Kimlik No(lar)', type: 'text', required: true, description: 'Kampüse giriş için gereklidir. Birden fazla kişi katılacaksa virgülle ayırabilirsiniz.' },
-          { id: 'f_names', label: 'Katılımcı Ad Soyad(lar)', type: 'text', required: true, description: 'Görevli kartları için kullanılacaktır.' },
-          { id: 'f_booth', label: 'Katılım Türü', type: 'select', options: ['Sadece Konuşmacı', 'Stant (Masa) Açılacak', 'Hem Konuşmacı Hem Stant'], required: true },
-          { id: 'f_swag', label: 'Eşantiyon/Hediye Dağıtımı', type: 'textarea', required: false, description: 'Öğrencilerimize dağıtmayı planladığınız eşantiyon (promosyon) ürünlerini buraya yazabilirsiniz.' },
-          { id: 'f_logo', label: 'Firma Logosu (URL veya Dosya)', type: 'text', required: true, description: 'Tanıtım materyallerinde kullanılmak üzere yüksek çözünürlüklü logo linkiniz.' }
+          { id: 'q_1', label: 'Katılımcı Sayısı & Yetkili İsimleri', type: 'text', required: true, description: 'Stant başında duracak personel sayısı ve ad-soyad bilgileri', order: 1 },
+          { id: 'q_2', label: 'Elektrik & İnternet İhtiyacı', type: 'select', required: true, options: ['Yalnızca Standart Priz (220V)', 'Yüksek Güç + Kablolu İnternet', 'İhtiyaç Yok'], order: 2 },
+          { id: 'q_3', label: 'Özel Ekipman / Roll-up Detayları', type: 'textarea', required: false, description: 'Getirilecek görseller ve stand alan gereksinimleri', order: 3 },
+          { id: 'q_4', label: 'Eşantiyon & Promosyon Dağıtımı', type: 'checkbox', required: false, description: 'Stantta promosyon ürün dağıtılacak mı?', order: 4 },
+          { id: 'q_5', label: 'Firma Logosu (Vektörel/PNG)', type: 'file', required: true, description: 'Fuar kataloğu ve afişler için yüksek çözünürlüklü logo', order: 5 }
         ],
         setCareerFairFormTemplate: setter('careerFairFormTemplate'),
 
         careerFairApplications: [
-          { id: 'CFA-001', companyId: 'CMP-011', companyName: 'MACFİT', status: 'Onaylandı', tableNumber: 'A-12', appliedAt: '2026-05-01T10:00:00Z', answers: { f_tc: '12345678901', f_names: 'Ahmet Yılmaz', f_booth: 'Stant (Masa) Açılacak', f_swag: 'Protein tozu, spor havlusu', f_logo: 'https://logo.com/macfit.png' } }
+          { id: 'APP-101', companyId: 'CMP-001', companyName: 'Baykar Teknoloji', appliedAt: '2026-07-20', status: 'Onaylandı', tableNumber: 'Stant A-01', answers: { q_1: '3 Personel - Ahmet Yılmaz, Ayşe Kaya', q_2: 'Yüksek Güç + Kablolu İnternet', q_3: '2 Adet Roll-up Banner', f_booth: 'Stant Katılımı', f_names: 'Ahmet Yılmaz, Ayşe Kaya', f_tc: '12345678901' } },
+          { id: 'APP-102', companyId: 'CMP-002', companyName: 'Aselsan', appliedAt: '2026-07-21', status: 'Onaylandı', tableNumber: 'Stant A-02', answers: { q_1: '2 Personel - Mehmet Demir', q_2: 'Yalnızca Standart Priz (220V)', f_booth: 'Stant Katılımı', f_names: 'Mehmet Demir', f_tc: '98765432109' } },
+          { id: 'APP-103', companyId: 'CMP-003', companyName: 'Trendyol Tech', appliedAt: '2026-07-22', status: 'Beklemede', tableNumber: null, answers: { q_1: '4 Personel - Caner Şahin', f_booth: 'Sponsorluk + Stant', f_names: 'Caner Şahin', f_tc: '45678912300' } },
+          { id: 'APP-104', companyId: 'CMP-004', companyName: 'Havelsan', appliedAt: '2026-07-23', status: 'Onaylandı', tableNumber: null, answers: { q_1: '2 Personel - Zeynep Ak', f_booth: 'Stant Katılımı', f_names: 'Zeynep Ak', f_tc: '65432198700' } }
         ],
         setCareerFairApplications: setter('careerFairApplications'),
 
-        featuredOpportunities: initialFeatured,
-        setFeaturedOpportunities: setter('featuredOpportunities')
+        careerFairStands: [
+          // Zone A (A-01 to A-12)
+          { id: 'A-01', code: 'Stant A-01', zone: 'A', status: 'Atandı', assignedCompanyId: 'CMP-001', assignedCompanyName: 'Baykar Teknoloji', tableNumber: 'Stant A-01' },
+          { id: 'A-02', code: 'Stant A-02', zone: 'A', status: 'Atandı', assignedCompanyId: 'CMP-002', assignedCompanyName: 'Aselsan', tableNumber: 'Stant A-02' },
+          { id: 'A-03', code: 'Stant A-03', zone: 'A', status: 'Rezerve', assignedCompanyId: null, assignedCompanyName: 'Protokol Rezervasyonu', tableNumber: 'Stant A-03' },
+          { id: 'A-04', code: 'Stant A-04', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-04' },
+          { id: 'A-05', code: 'Stant A-05', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-05' },
+          { id: 'A-06', code: 'Stant A-06', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-06' },
+          { id: 'A-07', code: 'Stant A-07', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-07' },
+          { id: 'A-08', code: 'Stant A-08', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-08' },
+          { id: 'A-09', code: 'Stant A-09', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-09' },
+          { id: 'A-10', code: 'Stant A-10', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-10' },
+          { id: 'A-11', code: 'Stant A-11', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-11' },
+          { id: 'A-12', code: 'Stant A-12', zone: 'A', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant A-12' },
+
+          // Zone B (B-01 to B-12)
+          { id: 'B-01', code: 'Stant B-01', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-01' },
+          { id: 'B-02', code: 'Stant B-02', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-02' },
+          { id: 'B-03', code: 'Stant B-03', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-03' },
+          { id: 'B-04', code: 'Stant B-04', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-04' },
+          { id: 'B-05', code: 'Stant B-05', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-05' },
+          { id: 'B-06', code: 'Stant B-06', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-06' },
+          { id: 'B-07', code: 'Stant B-07', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-07' },
+          { id: 'B-08', code: 'Stant B-08', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-08' },
+          { id: 'B-09', code: 'Stant B-09', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-09' },
+          { id: 'B-10', code: 'Stant B-10', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-10' },
+          { id: 'B-11', code: 'Stant B-11', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-11' },
+          { id: 'B-12', code: 'Stant B-12', zone: 'B', status: 'Boş', assignedCompanyId: null, assignedCompanyName: null, tableNumber: 'Stant B-12' }
+        ],
+        setCareerFairStands: setter('careerFairStands'),
+
+        addFormField: (field) => set((state) => ({
+          careerFairFormTemplate: [...(state.careerFairFormTemplate || []), field]
+        })),
+        removeFormField: (id) => set((state) => ({
+          careerFairFormTemplate: (state.careerFairFormTemplate || []).filter(f => f.id !== id)
+        })),
+        updateFormField: (id, updated) => set((state) => ({
+          careerFairFormTemplate: (state.careerFairFormTemplate || []).map(f => f.id === id ? { ...f, ...updated } : f)
+        })),
+        reorderFormFields: (startIndex, endIndex) => set((state) => {
+          const list = Array.from(state.careerFairFormTemplate || []);
+          const [removed] = list.splice(startIndex, 1);
+          list.splice(endIndex, 0, removed);
+          return { careerFairFormTemplate: list };
+        }),
+        assignStandToCompany: (standId, companyName, companyId = null, newStatus = 'Atandı') => set((state) => {
+          const targetStand = (state.careerFairStands || []).find(s => s.id === standId || s.code === standId);
+          const standCode = targetStand ? targetStand.code : standId;
+
+          const updatedStands = (state.careerFairStands || []).map(s => {
+            if (s.id === standId || s.code === standId) {
+              return {
+                ...s,
+                status: newStatus,
+                assignedCompanyId: companyId,
+                assignedCompanyName: newStatus === 'Boş' ? null : companyName
+              };
+            }
+            if (companyName && newStatus !== 'Boş' && s.assignedCompanyName === companyName && s.code !== standCode) {
+              return {
+                ...s,
+                status: 'Boş',
+                assignedCompanyId: null,
+                assignedCompanyName: null
+              };
+            }
+            return s;
+          });
+
+          const updatedApps = (state.careerFairApplications || []).map(app => {
+            if (companyName && app.companyName === companyName) {
+              return { ...app, tableNumber: newStatus === 'Boş' ? null : standCode };
+            }
+            if (app.tableNumber === standCode && (newStatus === 'Boş' || app.companyName !== companyName)) {
+              return { ...app, tableNumber: null };
+            }
+            return app;
+          });
+
+          const now = new Date();
+          const timeString = now.toLocaleTimeString('tr-TR');
+          const auditLog = {
+            id: 'log_' + Math.random().toString(36).substr(2, 9),
+            timestamp: timeString,
+            user: 'Kariyer Ofisi Yöneticisi',
+            action: `Kariyer Günleri: ${standCode} -> ${newStatus === 'Boş' ? 'Stant Boşaltıldı' : companyName + ' (' + newStatus + ')'}`,
+            module: 'Kariyer Günleri',
+            ip: '192.168.1.101'
+          };
+
+          const notif = {
+            id: 'NOTIF-' + Math.random().toString(36).substr(2, 9),
+            type: 'system',
+            title: 'Stant Ataması Güncellendi',
+            message: `${standCode} yerleşimi "${companyName || 'Boş'}" olarak güncellendi.`,
+            read: false,
+            date: new Date().toLocaleDateString('tr-TR')
+          };
+
+          return {
+            careerFairStands: updatedStands,
+            careerFairApplications: updatedApps,
+            auditLogs: [auditLog, ...(state.auditLogs || [])].slice(0, 100),
+            notifications: [notif, ...(state.notifications || [])].slice(0, 50),
+            unreadNotificationsCount: (state.unreadNotificationsCount || 0) + 1
+          };
+        }),
+
+        lastUpdated: new Date().toISOString(),
+        setLastUpdated: setter('lastUpdated'),
+        source: 'live',
+        setSource: setter('source'),
+        status: 'aktif',
+        setStatus: setter('status'),
+        isScraperLoading: false,
+        setIsScraperLoading: setter('isScraperLoading'),
+        refreshScrapedData: async (forceRefresh = false) => {
+          set({ isScraperLoading: true });
+          try {
+            const { scrapeLiveOrFallback } = await import('../services/scraper');
+            const data = await scrapeLiveOrFallback({ forceRefresh });
+            set((state) => ({
+              ...(data.announcements && data.announcements.length > 0 ? { announcements: data.announcements } : {}),
+              ...(data.events && data.events.length > 0 ? { events: data.events } : {}),
+              lastUpdated: data.lastUpdated || new Date().toISOString(),
+              source: data.source || 'live',
+              status: data.status || 'aktif',
+              isScraperLoading: false
+            }));
+            return data;
+          } catch (err) {
+            console.error("Failed to refresh scraped data:", err);
+            set({ isScraperLoading: false, status: 'error' });
+            throw err;
+          }
+        }
       };
     },
     {
-      name: 'iesu-career-store-v20',
+      name: 'iesu-career-store-v22',
       partialize: (state) => ({
-
         userRole: state.userRole,
         auditLogs: state.auditLogs,
-        focusMode: state.focusMode,
-        ghostMode: state.ghostMode,
-        companies: state.companies,
-        clubs: state.clubs,
-        clubApplications: state.clubApplications,
-        stories: state.stories,
-        posts: state.posts,
-        internships: state.internships,
-        voluntaryInternships: state.voluntaryInternships,
-        mentorships: state.mentorships,
-        academicApprovals: state.academicApprovals,
-        groups: state.groups,
         featureSurveys: state.featureSurveys,
         featureCareerCheckup: state.featureCareerCheckup,
         featureAlumniCard: state.featureAlumniCard,
-        featureClubsShowcase: state.featureClubsShowcase,
-        featureClubApplications: state.featureClubApplications,
+        featureAlumniAssocToggle: state.featureAlumniAssocToggle,
         featureCareerFair: state.featureCareerFair,
-        featureSSPLeaderboard: state.featureSSPLeaderboard,
         careerFairEvent: state.careerFairEvent,
         careerFairFormTemplate: state.careerFairFormTemplate,
-        careerFairApplications: state.careerFairApplications
+        careerFairApplications: state.careerFairApplications,
+        careerFairStands: state.careerFairStands
       })
     }
   )

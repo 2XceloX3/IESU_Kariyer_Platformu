@@ -114,7 +114,7 @@ export default function TeamUpMentorHub({ currentUser }) {
                       e.preventDefault();
                       window.toast && window.toast.info("Anka AI: Profiliniz ve takımın teknik gereksinimleri analiz ediliyor...");
                       setTimeout(() => {
-                        window.toast && window.toast.success("✅ AI Analizi: Bu takıma katılım için %88 uyumlusunuz. Eksik görülen: D3.js deneyimi.");
+                        window.toast && window.toast.success("✅ Analiz: Bu takıma katılım için %88 uyumlusunuz. Eksik görülen: D3.js deneyimi.");
                       }, 2500);
                     }}
                     className="text-red-600 hover:text-indigo-800 font-bold text-sm flex items-center gap-1 px-3 py-2 rounded-xl transition-colors"

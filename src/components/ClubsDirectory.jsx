@@ -115,7 +115,7 @@ export default function ClubsDirectory({
         <div className="flex items-center justify-between mb-4 px-2">
           <div>
             <h2 className="text-2xl font-black text-red-900 tracking-tight flex items-center gap-2">
-              Birlik Ağı <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Yeni</span>
+              Öğrenci Kulüpleri & Topluluklar
             </h2>
             <p className="text-sm text-slate-500 font-medium mt-1">Kulüpler, topluluklar ve senin için fırsatlar.</p>
           </div>
@@ -123,15 +123,15 @@ export default function ClubsDirectory({
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                window.toast && window.toast.info("Anka AI: Profilinizdeki yetkinlikler ve ilgi alanlarınız taranıyor...");
+                window.toast && window.toast.info("Profilinizdeki yetkinlikler ve ilgi alanlarınız taranıyor...");
                 setTimeout(() => {
-                  window.toast && window.toast.success("✅ AI Eşleşmesi: İlgi alanlarınıza en uygun kulüp '%95 eşleşme' ile 'Yapay Zeka ve Yazılım Kulübü'. Kulüp daveti size iletildi.");
+                  window.toast && window.toast.success("✅ İlgi alanlarınıza en uygun kulüp '%95 eşleşme' ile 'Yazılım Kulübü'. Kulüp daveti size iletildi.");
                 }, 2500);
               }}
               className="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100 rounded-xl text-sm font-bold transition flex items-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
-              AI ile Bana Kulüp Bul
+              Bana Kulüp Bul
             </button>
             {featureClubApplications && (
               <button 
@@ -440,7 +440,7 @@ export default function ClubsDirectory({
             <form onSubmit={handleApplyClub} className="p-6 space-y-5">
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Planlanan Kulüp Adı</label>
-                <input required value={applicationForm.name} onChange={e => setApplicationForm({...applicationForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-950/10 focus:border-red-950 text-sm transition-all" placeholder="Örn: Yapay Zeka Kulübü" />
+                <input required value={applicationForm.name} onChange={e => setApplicationForm({...applicationForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-950/10 focus:border-red-950 text-sm transition-all" placeholder="Örn: Teknoloji Kulübü" />
               </div>
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Kulübün Amacı</label>

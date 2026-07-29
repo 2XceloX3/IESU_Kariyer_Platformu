@@ -452,7 +452,7 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
                     }}
                     className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg hover:bg-emerald-100 transition flex items-center gap-1.5 border border-emerald-200 shadow-sm"
                   >
-                    <Check size={14} /> AI ile Oluştur
+                    <Check size={14} /> Oluştur
                   </button>
                 </div>
               </div>

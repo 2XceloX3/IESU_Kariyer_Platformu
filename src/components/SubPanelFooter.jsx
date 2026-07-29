@@ -95,7 +95,7 @@ export default function SubPanelFooter({ setView }) {
   };
 
   return (
-    <div className="w-full font-sans">
+    <div className="w-full flex flex-col mt-auto font-sans">
       
       {/* KVKK MODAL POPUP */}
       {showKvkkModal && (
@@ -283,23 +283,35 @@ export default function SubPanelFooter({ setView }) {
         </div>
       )}
       
+      {/* 🌊 TOP ORGANIC SVG WAVE DIVIDER TRANSITION */}
+      <div className="w-full overflow-hidden leading-none bg-[#F8FAFC]">
+        <svg 
+          className="relative block w-full h-12 sm:h-16 text-[#8F0808]" 
+          viewBox="0 0 1440 120" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+        >
+          <path 
+            d="M0 60C240 120 480 10 720 65C960 120 1200 15 1440 60V120H0V60Z" 
+            fill="currentColor"
+          />
+          <path 
+            d="M0 45C320 100 640 5 960 80C1280 20 1440 60 1440 60V120H0V45Z" 
+            fill="#750606" 
+            fillOpacity="0.4"
+          />
+        </svg>
+      </div>
 
       {/* SUB-PANEL FOOTER MAIN CONTAINER */}
-      <footer className="w-full bg-[#8F0808] text-white pt-8 pb-6 shadow-2xl relative overflow-hidden">
+      <footer className="w-full bg-[#8F0808] text-white pt-8 pb-6 px-4 sm:px-8 lg:px-12 shadow-2xl relative overflow-hidden">
         
         {/* Subtle Background Accent Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
-        
-        {/* Abstract Background Wave */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <svg className="absolute w-[150%] h-[150%] -top-[20%] -left-[10%] opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path d="M0,50 C20,70 40,30 60,60 C80,90 100,50 100,50 L100,100 L0,100 Z" fill="#ffffff" />
-          </svg>
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
-        </div>
 
         {/* Social Top Circle Strip Header */}
-        <div className="w-full px-6 sm:px-10 lg:px-16 flex flex-col md:flex-row items-center justify-between gap-4 pb-6 mb-8 border-b border-white/20 relative z-10">
+        <div className="max-w-[1250px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 pb-6 mb-8 border-b border-white/20 relative z-10">
           <div className="flex items-center gap-3">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             <h4 className="font-extrabold text-sm text-white tracking-wide uppercase">Resmî Sosyal Medya Hesaplarımız</h4>
@@ -324,7 +336,7 @@ export default function SubPanelFooter({ setView }) {
           </div>
         </div>
 
-        <div className="w-full px-6 sm:px-10 lg:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 relative z-10">
+        <div className="max-w-[1250px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 relative z-10">
           
           {/* Column 1: Logo, Mission & Social Circle Icons */}
           <div className="space-y-4">
@@ -489,7 +501,7 @@ export default function SubPanelFooter({ setView }) {
         </div>
 
         {/* Bottom Copyright & Legal Links */}
-        <div className="w-full px-6 sm:px-10 lg:px-16 pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-white/90 relative z-10">
+        <div className="max-w-[1250px] mx-auto pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-white/90 relative z-10">
           <p>2026 © İstanbul Esenyurt Üniversitesi Bilgi İşlem Daire Başkanlığı tarafından hazırlanmıştır.</p>
           <div className="flex items-center gap-4 text-white">
             <button onClick={() => setView && setView('gizlilik')} className="hover:underline transition cursor-pointer">Gizlilik Politikası</button>

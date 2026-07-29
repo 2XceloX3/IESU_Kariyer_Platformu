@@ -103,7 +103,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                window.toast && window.toast.info("Anka AI: Ajandanızdaki boşluklar taranarak 'Kariyer Fuarı' için ideal gün hesaplanıyor...");
+                window.toast && window.toast.info("Ajandanızdaki boşluklar taranarak 'Kariyer Fuarı' için ideal gün hesaplanıyor...");
                 setTimeout(() => {
                   window.toast && window.toast.success("✅ AI Planlaması: Etkinlik 15 Kasım Cuma günü saat 14:00'e başarıyla yerleştirildi.");
                 }, 2500);
@@ -111,7 +111,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
               className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-md transition-all mr-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
-              <span className="text-[13px]">AI Planlayıcı</span>
+              <span className="text-[13px]">Planlayıcı</span>
             </button>
             <button 
               onClick={() => setShowAddModal(true)}

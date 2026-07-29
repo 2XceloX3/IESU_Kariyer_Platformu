@@ -103,14 +103,14 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  window.toast && window.toast.info("AI Yetkinlik Analizi Yapılıyor...");
+                  window.toast && window.toast.info("Yetkinlik Analizi Yapılıyor...");
                   setTimeout(() => {
                     window.toast && window.toast.success("✅ Yetkinliklerinize en uygun 3 takım arkadaşı bulundu. Eşleşme yüzdeleri: %92, %88, %85");
                   }, 2000);
                 }}
                 className="bg-red-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition shadow-lg"
               >
-                <Zap size={16} /> AI ile Takım Arkadaşı Bul
+                <Zap size={16} /> Takım Arkadaşı Bul
               </button>
             </div>
           </div>
@@ -171,7 +171,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                     }, 2500);
                   }}
                   className="w-12 h-12 bg-indigo-50 hover:bg-indigo-100 text-red-600 rounded-2xl border border-indigo-200 flex items-center justify-center transition shrink-0"
-                  title="AI Proje Fikri Üret"
+                  title="Proje Fikri Üret"
                 >
                   <Sparkles size={18} />
                 </button>
@@ -234,14 +234,14 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-black text-slate-500 uppercase">AI Önerilen Takım Arkadaşları Ekle</label>
+                  <label className="text-xs font-black text-slate-500 uppercase">Önerilen Takım Arkadaşları Ekle</label>
                   <div className="space-y-2 mt-1">
                     {MOCK_TEAMMATES.map(member => {
                       const isAdded = teamForm.members.find(m => m.id === member.id);
                       return (
                         <div key={member.id} className="p-3 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-between">
                           <div>
-                            <h5 className="font-bold text-xs text-red-900">{member.name} <span className="text-[9px] text-red-600 bg-indigo-50 px-1 py-0.5 rounded font-black">%{member.compatibility} AI Eşleşme</span></h5>
+                            <h5 className="font-bold text-xs text-red-900">{member.name} <span className="text-[9px] text-red-600 bg-indigo-50 px-1 py-0.5 rounded font-black">%{member.compatibility} Eşleşme</span></h5>
                             <p className="text-[10px] text-slate-400 font-bold mt-0.5">{member.role} • {member.dept}</p>
                           </div>
                           <button

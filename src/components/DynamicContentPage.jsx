@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { ArrowLeft, ChevronRight, CheckCircle, ExternalLink } from 'lucide-react';
 import { innerPagesData } from '../utils/innerPagesData';
+import SubPanelFooter from './SubPanelFooter';
 import * as Icons from 'lucide-react';
 
 export default function DynamicContentPage({ contentId, setView, previousView = 'landing' }) {
@@ -117,7 +118,7 @@ export default function DynamicContentPage({ contentId, setView, previousView = 
               <h3 className="text-sm font-black text-indigo-900 mb-2 flex items-center gap-2 relative z-10">
                 <Icons.Sparkles size={16} className="text-red-600" /> Zamanın Kısıtlı Mı?
               </h3>
-              <p className="text-xs text-indigo-800 font-medium mb-4 relative z-10">Anka AI bu sayfadaki uzun metinleri senin için 2 cümlede özetlesin.</p>
+              <p className="text-xs text-indigo-800 font-medium mb-4 relative z-10">Bu sayfadaki uzun metinleri 2 cümlede özetle.</p>
               <button 
                 onClick={(e) => {
                   e.preventDefault();
@@ -128,7 +129,7 @@ export default function DynamicContentPage({ contentId, setView, previousView = 
                 }}
                 className="w-full bg-red-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg text-sm transition relative z-10 shadow-md shadow-red-600/20"
               >
-                AI ile Özetle
+                Özetle
               </button>
             </div>
 
@@ -165,6 +166,8 @@ export default function DynamicContentPage({ contentId, setView, previousView = 
           </div>
         </div>
       </div>
+
+      <SubPanelFooter setView={setView} />
     </div>
   );
 }

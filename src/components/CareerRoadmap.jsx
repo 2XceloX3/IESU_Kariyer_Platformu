@@ -87,7 +87,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
             </div>
             <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Hayalindeki Rolü Söyle</h2>
             <p className="text-lg text-gray-600 mb-10 max-w-xl mx-auto leading-relaxed">
-              Anka AI, hedefine giden en kısa ve verimli yolu hesaplayarak sana özel, adım adım bir kariyer haritası (Roadmap) çıkarsın.
+              Hedefine giden en kısa ve verimli yolu hesaplayarak sana özel, adım adım bir kariyer haritası çıkarsın.
             </p>
             
             <div className="max-w-md mx-auto bg-white p-2 rounded-2xl shadow-xl shadow-red-900/5 flex items-center border border-gray-100 focus-within:border-red-400 focus-within:ring-4 focus-within:ring-red-100 transition-all">

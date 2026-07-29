@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, ArrowRight, ArrowLeft, Printer, Mail, MapPin, Download, FileText, ExternalLink, X, LogIn, Briefcase, Search, Users, Handshake, TrendingUp, Target, Sparkles, Zap, GraduationCap, Building, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Calendar, ArrowRight, ArrowLeft, Printer, Mail, MapPin, Download, FileText, ExternalLink, X, LogIn, Briefcase, Search, Users, Handshake, TrendingUp, Target, Sparkles, Zap, GraduationCap, Building, ChevronRight, ShieldCheck, Heart, MessageSquare, Send, Bookmark } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { liveSliderData, liveNewsData } from '../utils/liveData';
 import Logo from './Logo';
+import MainHeader from './MainHeader';
 import SpotlightCard from './shared/SpotlightCard';
 import HeroSlider from './landing/HeroSlider';
 import Footer from './landing/Footer';
+import SubPanelFooter from './SubPanelFooter';
 import SEO from './SEO';
 import RichContentRenderer from './RichContentRenderer';
 import TuitionAccordion from './TuitionAccordion';
+import ScraperSyncBar from './ScraperSyncBar';
+import KgmNewsSection from './KgmNewsSection';
+import Events from './Events';
+import OfficeInfo from './OfficeInfo';
 
 
 const style = document.createElement('style');
@@ -36,13 +42,32 @@ document.head.appendChild(style);
 
 export default function LandingPage({ setView }) {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedPillModal, setSelectedPillModal] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const [activeTab, setActiveTab] = useState('haberler');
+  const [itemLiked, setItemLiked] = useState(false);
+  const [itemSaved, setItemSaved] = useState(false);
+  const [itemLikesCount, setItemLikesCount] = useState(24);
+  const [newCommentText, setNewCommentText] = useState('');
+  const [commentsList, setCommentsList] = useState([
+    { author: 'Ayşe Kaya (Bilgisayar Müh.)', text: 'Çok harika bir etkinlik, ben katıldım!', time: '10 dk önce' },
+    { author: 'Mehmet Demir (İşletme)', text: 'Detaylar ve staj başvuruları için mükemmel bir fırsat.', time: '1 saat önce' }
+  ]);
+
+  const mockLikers = [
+    { name: 'Ayşe K.', dept: 'Bilgisayar Müh.' },
+    { name: 'Mehmet D.', dept: 'İşletme' },
+    { name: 'Elif Ş.', dept: 'Yazılım Müh.' },
+    { name: 'Can A.', dept: 'Endüstri Müh.' },
+    { name: 'Zeynep K.', dept: 'Sağlık B.' }
+  ];
 
   const news = useAppStore(state => state.news) || [];
   const announcements = useAppStore(state => state.announcements) || [];
   const events = useAppStore(state => state.events) || [];
+  const showInstitutionalStats = useAppStore(state => state.showInstitutionalStats);
+  const institutionalStatsData = useAppStore(state => state.institutionalStatsData);
 
   const heroSlides = liveSliderData;
 
@@ -73,14 +98,14 @@ export default function LandingPage({ setView }) {
       category: "Kurumsal",
       date: "2026 - Güncel",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
-      content: `### Hakkımızda\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü, öğrencilerimizin ve mezunlarımızın mesleki gelişimlerini desteklemek, onları iş dünyasına hazırlamak ve kariyer yolculuklarında rehberlik etmek amacıyla kurulmuştur.\n\n---\n\n#### 🎯 Misyonumuz\nÖğrenci ve mezunlarımızın, küresel ölçekte rekabet edebilir, yenilikçi ve etik değerlere sahip profesyoneller olarak iş dünyasına hazırlanmalarını sağlamak; onların potansiyellerini en üst düzeye çıkaracak kariyer planlama ve geliştirme hizmetleri sunmaktır.\n\n---\n\n#### 🚀 Vizyonumuz\nUlusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, öncü bir kariyer koordinatörlüğü olmak.\n\n---\n\n#### 📞 İletişim ve Yerleşke Bilgileri\n- **E-Posta:** kariyer@esenyurt.edu.tr\n- **Telefon:** 444 9 123 / 0 (212) 422 70 00\n- **Ofis:** Kariyer Geliştirme Koordinatörlüğü / Rektörlük Binası Esenyurt Kampüsü`
+      content: `### Hakkımızda\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü, öğrencilerimizin ve mezunlarımızın mesleki gelişimlerini desteklemek, onları iş dünyasına hazırlamak ve kariyer yolculuklarında rehberlik etmek amacıyla kurulmuştur.\n\n---\n\n#### 🎯 Misyonumuz\nÖğrenci ve mezunlarımızın, küresel ölçekte rekabet edebilir, yenilikçi ve etik değerlere sahip profesyoneller olarak iş dünyasına hazırlanmalarını sağlamak; onların potansiyellerini en üst düzeye çıkaracak kariyer planlama ve geliştirme hizmetleri sunmaktır.\n\n---\n\n#### 🚀 Vizyonumuz\nUlusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, öncü bir kariyer koordinatörlüğü olmak.\n\n---\n\n#### 👥 Ekip Üyeleri & Resmî Ofis Kadrosu\nKariyer merkezimiz, öğrencilerimize en iyi hizmeti sunmak için alanında uzman profesyonellerden oluşmaktadır:\n- **Kariyer Geliştirme Koordinatörü:** Genel yönetim, stratejik planlama ve kurumsal işbirlikleri.\n- **Kariyer Danışmanları:** Birebir danışmanlık, özgeçmiş (CV) kontrolü, mülakat simülasyonları.\n- **Staj ve İstihdam Uzmanları:** Yetenek Kapısı yönetimi, firma protokolleri ve iş ilanları takibi.\n- **Etkinlik & İletişim Sorumluları:** Kariyer fuarları, seminer organizasyonları ve mezun ilişkileri.\n\n---\n\n#### 📞 İletişim ve Yerleşke Bilgileri\n- **E-Posta:** kariyer@esenyurt.edu.tr\n- **Telefon:** 444 9 123 / 0 (212) 422 70 00\n- **Ofis:** Kariyer Geliştirme Koordinatörlüğü / Rektörlük Binası Esenyurt Kampüsü`
     },
     services: {
       title: "Kariyer Geliştirme Hizmetlerimiz",
       category: "Hizmet Portföyü",
       date: "2026 - Güncel",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-ogrenci.png",
-      content: `### Sizin İçin Neler Yapıyoruz?\n\nKariyer Geliştirme Koordinatörlüğü olarak öğrencilerimize ve mezunlarımıza sunduğumuz ana hizmetlerimiz aşağıda detaylandırılmıştır:\n\n---\n\n#### 1. 🎯 Birebir Kariyer Danışmanlığı\nÖğrenci ve mezunlarımızın kariyer hedeflerine ulaşmalarına yardımcı olmak amacıyla profesyonel kariyer danışmanlığı hizmetleri sunulmaktadır.\n\n---\n\n#### 2. 📄 Özgeçmiş (CV) ve Niyet Mektubu Rehberliği\nKişisel, eğitim ve mesleki bilgileri içeren kritik bir belge olan özgeçmişin oluşturulması ve ATS uyumlu format düzenlemeleri konusunda birebir rehberlik sağlanır.\n\n---\n\n#### 3. 💼 Staj ve İstihdam Fırsatları (Yetenek Kapısı)\nSektör lideri firmalarla yapılan kurumsal iş birlikleri ve Yetenek Kapısı entegrasyonu ile zorunlu ve gönüllü staj başvuruları yönetilmektedir.\n\n---\n\n#### 4. 🏆 Kariyer Günleri ve Sektör Buluşmaları\nHer akademik yılda düzenlenen Kariyer Günleri, mülakat simülasyonları ve teknik geziler ile öğrenciler iş dünyasının lider temsilcileriyle doğrudan bir araya getirilmektedir.`
+      content: `### Sizin İçin Neler Yapıyoruz?\n\nKariyer Geliştirme Koordinatörlüğü olarak öğrencilerimize ve mezunlarımıza sunduğumuz ana hizmetlerimiz aşağıda detaylandırılmıştır:\n\n---\n\n#### 1. 🎯 Birebir Kariyer Danışmanlığı\nÖğrenci ve mezunlarımızın kariyer hedeflerine ulaşmalarına yardımcı olmak amacıyla profesyonel kariyer danışmanlığı hizmetleri sunulmaktadır.\n\n---\n\n#### 2. 📄 Özgeçmiş (CV) ve Niyet Mektubu Rehberliği\nKişisel, eğitim ve mesleki bilgileri içeren kritik bir belge olan özgeçmişin oluşturulması ve profesyonel format düzenlemeleri konusunda birebir rehberlik sağlanır.\n\n---\n\n#### 3. 💼 Staj ve İstihdam Fırsatları (Yetenek Kapısı)\nSektör lideri firmalarla yapılan kurumsal iş birlikleri ve Yetenek Kapısı entegrasyonu ile zorunlu ve gönüllü staj başvuruları yönetilmektedir.\n\n---\n\n#### 4. 🏆 Kariyer Günleri ve Sektör Buluşmaları\nHer akademik yılda düzenlenen Kariyer Günleri, mülakat simülasyonları ve teknik geziler ile öğrenciler iş dünyasının lider temsilcileriyle doğrudan bir araya getirilmektedir.`
     },
     events_list: {
       title: "Akademik ve Sektörel Etkinliklerimiz",
@@ -147,14 +172,7 @@ export default function LandingPage({ setView }) {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
-      <div className="fixed right-0 top-[75%] -translate-y-1/2 z-50 flex flex-col gap-2 p-2 pointer-events-none">
-        <a href="https://www.instagram.com/igukariyer/" target="_blank" className="w-10 h-10 bg-white shadow-lg rounded-l-xl flex items-center justify-center text-[#E1306C] border border-gray-100 hover:-translate-x-2 transition-transform pointer-events-auto group">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
-        </a>
-        <a href="https://www.youtube.com/channel/UCgrDyt7yFm4cnayZzffcijg" target="_blank" className="w-10 h-10 bg-white shadow-lg rounded-l-xl flex items-center justify-center text-[#FF0000] border border-gray-100 hover:-translate-x-2 transition-transform pointer-events-auto group">
-           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
-        </a>
-      </div>
+
 
       <SEO 
         title="Ana Sayfa" 
@@ -162,143 +180,100 @@ export default function LandingPage({ setView }) {
         url="https://kariyer.esenyurt.edu.tr/"
       />
 
-      {/* Top Bar - Contact Info */}
-      <div className="bg-iesu-secondary text-white text-[13px] py-2 px-4 hidden md:flex justify-between items-center w-full">
-        <div className="flex gap-6 max-w-7xl mx-auto w-full justify-between font-medium">
-          <div className="flex gap-6">
-            <span className="flex items-center gap-1.5"><Mail size={14} /> kariyer@esenyurt.edu.tr</span>
-            <span className="flex items-center gap-1.5">T: 0 (212) 422 70 00</span>
-          </div>
-          <div className="flex gap-6 items-center">
-            <a href="https://obs.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="hover:text-iesu-accent transition">Öğrenci Bilgi Sistemi</a>
-            <div className="w-px h-4 bg-white/20"></div>
-            <a href="https://tr-tr.facebook.com/iesuedu/" target="_blank" rel="noopener noreferrer" className="hover:text-iesu-accent transition" aria-label="Facebook">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-            </a>
-            <a href="https://www.instagram.com/iguiesu/" target="_blank" rel="noopener noreferrer" className="hover:text-iesu-accent transition" aria-label="Instagram">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
-            </a>
-            <a href="https://www.youtube.com/@IesuUniversitesi" target="_blank" rel="noopener noreferrer" className="hover:text-iesu-accent transition" aria-label="YouTube">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
-            </a>
-            <a href="https://www.linkedin.com/school/iesuedu/" target="_blank" rel="noopener noreferrer" className="hover:text-iesu-accent transition" aria-label="LinkedIn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-            </a>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Navbar — identical Crimson Red / Nar Çiçeği styling */}
-      <nav className="bg-gradient-to-r from-[#990000] via-[#800000] to-[#660000] text-white border-b border-red-800 sticky top-0 z-40 shadow-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between py-3.5 gap-4">
-          {/* Left: White Logo + Title */}
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView('landing')}>
-            <div className="brightness-0 invert flex-shrink-0">
-              <Logo className="h-10 w-auto" />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
-            </div>
-          </div>
 
-          {/* Right Group: Search Bar + Nav Links + Portala Giriş */}
-          <div className="flex items-center gap-4 md:gap-6 overflow-x-auto py-1">
-            {/* Search Bar immediately to the left of Hakkımızda */}
-            <div className="relative hidden md:block w-44 lg:w-56 flex-shrink-0">
-              <Search className="absolute left-3 top-2.5 text-white/60" size={14} />
-              <input
-                type="text"
-                placeholder="İçerik veya Bölüm Ara..."
-                className="w-full bg-white/10 text-white placeholder-white/60 text-xs font-medium pl-9 pr-3 py-1.5 rounded-xl border border-white/20 focus:outline-none focus:bg-white/20 transition"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value) {
-                    if (setView) setView('explore');
-                  }
-                }}
-              />
-            </div>
-
-            {/* Nav Links immediately to the left of Portala Giriş */}
-            <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
-              <button onClick={() => setView('about_us')} className="hover:text-white hover:underline transition">Hakkımızda</button>
-              <button onClick={() => setView('services')} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
-              <button onClick={() => setView('events_list')} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
-              <button onClick={() => setView('contact_us')} className="hover:text-white hover:underline transition">İletişim</button>
-            </div>
-
-            {/* Far Right: Portala Giriş Button */}
-            <button 
-              onClick={() => setView('login')}
-              className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg whitespace-nowrap flex-shrink-0"
-            >
-              <LogIn size={15} /> Portala Giriş
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* Unified Main Header for identical alignment */}
+      <MainHeader setView={setView} />
 
       {/* Hero Slider with internal detail modal on click */}
       <HeroSlider slides={heroSlides} currentSlide={currentSlide} onSelectSlide={setSelectedItem} />
 
-      {/* 1. QUALITATIVE INSTITUTIONAL VALUE RIBBON (NO HARDCODED NUMBERS) */}
-      <section className="relative z-10 pt-10 pb-6 max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-indigo-300 transition-colors shadow-sm">
-            <div className="p-3 bg-indigo-100/80 text-indigo-700 rounded-xl shrink-0"><ShieldCheck size={22} /></div>
-            <div>
-              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">Avrupa Akredite</h4>
-              <p className="text-[11px] font-semibold text-slate-500 mt-0.5">AQAS & AHPGS Uluslararası Eğitim Kalite Standartları</p>
-            </div>
+      {/* 1. INSTITUTIONAL STATISTICAL RIBBON (Controlled via Admin Panel) */}
+      {showInstitutionalStats && (
+        <section className="relative z-10 pt-10 pb-6 max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {(institutionalStatsData || []).map((stat) => (
+              <div key={stat.id} className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-[#990000]/30 transition-colors shadow-sm">
+                <div className="p-3 bg-red-50 text-[#990000] rounded-xl shrink-0">
+                  <ShieldCheck size={22} />
+                </div>
+                <div>
+                  <h4 className="text-xl font-black text-slate-900 tracking-tight">{stat.val}</h4>
+                  <p className="text-[11px] font-semibold text-slate-500 mt-0.5">{stat.title}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-emerald-300 transition-colors shadow-sm">
-            <div className="p-3 bg-emerald-100/80 text-emerald-700 rounded-xl shrink-0"><Zap size={22} /></div>
-            <div>
-              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">AI Destekli Portföy</h4>
-              <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Otomatik ATS Uyum Analizi & Canlı Mülakat Provası</p>
-            </div>
-          </div>
-          <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-amber-300 transition-colors shadow-sm">
-            <div className="p-3 bg-amber-100/80 text-amber-700 rounded-xl shrink-0"><Target size={22} /></div>
-            <div>
-              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">CBİKO Entegre</h4>
-              <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Cumhurbaşkanlığı İKO Liyakatli Ulusal Staj Programı</p>
-            </div>
-          </div>
-          <div className="bg-slate-50/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 flex items-center gap-4 hover:border-purple-300 transition-colors shadow-sm">
-            <div className="p-3 bg-purple-100/80 text-purple-700 rounded-xl shrink-0"><Search size={22} /></div>
-            <div>
-              <h4 className="text-xs font-black text-red-950 uppercase tracking-wider">Research OS</h4>
-              <p className="text-[11px] font-semibold text-slate-500 mt-0.5">Disiplinlerarası Ar-Ge Laboratuvar & Yayın Portalı</p>
-            </div>
-          </div>
-        </div>
+        </section>
+      )}
 
-        {/* Action Pills */}
-        <div className="flex justify-center flex-wrap gap-4 mt-6">
-          <button 
-            onClick={() => setView('startup_incubator')} 
-            className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
-          >
-            <div className="bg-indigo-100 p-1.5 rounded-full text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors"><Building size={18} /></div>
-            <span className="font-bold text-red-900 text-[13px]">İESÜMER Kuluçka & Girişimcilik</span>
-          </button>
-          <button 
-            onClick={() => setView('staj')} 
-            className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
-          >
-            <div className="bg-emerald-100 p-1.5 rounded-full text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Target size={18} /></div>
-            <span className="font-bold text-red-900 text-[13px]">Yetenek & Staj Kapısı</span>
-          </button>
-          <button 
-            onClick={() => setView('cvbuilder')} 
-            className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
-          >
-            <div className="bg-purple-100 p-1.5 rounded-full text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors"><FileText size={18} /></div>
-            <span className="font-bold text-red-900 text-[13px]">AI Özgeçmiş & CV Oluşturucu</span>
-          </button>
-        </div>
-      </section>
+        {/* Action Pills with Informative Modals */}
+        <section className="relative z-10 py-4 max-w-7xl mx-auto px-4">
+          <div className="flex justify-center flex-wrap gap-4">
+            <button 
+              onClick={() => setSelectedPillModal({
+                id: 'startup_incubator',
+                title: 'İESÜMER Kuluçka & Girişimcilik Merkezi',
+                badge: '🚀 Girişimcilik & Ar-Ge',
+                imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&auto=format&fit=crop&q=60',
+                desc: 'İESÜMER Kuluçka Merkezi; öğrencilerimizin yenilikçi iş fikirlerini prototipe dönüştürmelerini sağlayan, prototip laboratuvarları, 3D yazıcı parkı, patent rehberliği ve yatırımcı buluşmaları sunan resmî girişimcilik merkezimizdir.',
+                features: [
+                  '7/24 Kesintisiz Paylaşımlı Ofis ve Çalışma Alanı',
+                  'TÜBİTAK BİGG ve KOSGEB Hibe Destek Danışmanlığı',
+                  'Mentör Akademisyenler Eşliğinde Şirketleşme Desteği',
+                  'Yatırımcı ve Melek Yatırım Ağı Sunum Günleri (Demo Day)'
+                ],
+                targetView: 'startup_incubator'
+              })} 
+              className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+            >
+              <div className="bg-indigo-100 p-1.5 rounded-full text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors"><Building size={18} /></div>
+              <span className="font-bold text-red-900 text-[13px]">İESÜMER Kuluçka & Girişimcilik</span>
+            </button>
+
+            <button 
+              onClick={() => setSelectedPillModal({
+                id: 'staj',
+                title: 'CBİKO Ulusal Staj & Yetenek Kapısı',
+                badge: '💼 Kariyer & İstihdam',
+                imageUrl: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&auto=format&fit=crop&q=60',
+                desc: 'Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO) koordinasyonunda yürütülen Ulusal Staj Programı ve Yetenek Kapısı platformu ile öğrencilerimize liyakat esaslı zorunlu ve gönüllü staj imkanları sunulmaktadır.',
+                features: [
+                  'Liyakat Esaslı Kamu ve Özel Sektör Staj Fırsatları',
+                  'Resmî Staj Evrakları ve SGK Giriş Onay Portalı',
+                  '500+ Kurumsal Şirketin Staj İlanlarına Doğrudan Başvuru',
+                  'Kariyer Danışmanları Eşliğinde Başvuru Takibi'
+                ],
+                targetView: 'staj'
+              })} 
+              className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+            >
+              <div className="bg-emerald-100 p-1.5 rounded-full text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Target size={18} /></div>
+              <span className="font-bold text-red-900 text-[13px]">Yetenek & Staj Kapısı</span>
+            </button>
+
+            <button 
+              onClick={() => setSelectedPillModal({
+                id: 'cvbuilder',
+                title: 'Özgeçmiş & CV Oluşturucu',
+                badge: '🤖 Kariyer Asistanı',
+                imageUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop&q=60',
+                desc: 'Akıllı CV Sihirbazı ile uluslararası İnsan Kaynakları standartlarına tam uyumlu profesyonel özgeçmişler ve ön yazılar hazırlayabilirsiniz.',
+                features: [
+                  'Uluslararası Standartlarda Profesyonel Şablonlar',
+                  'Beceriler ve Deneyim Önerileri',
+                  'PDF / Word Formatında Anında İndirme ve Düzenleme',
+                  'Çoklu Dili Destekleyen Profesyonel Özgeçmiş Formatı'
+                ],
+                targetView: 'cvbuilder'
+              })} 
+              className="group bg-white border border-slate-200 shadow-md hover:shadow-xl rounded-full px-6 py-3 flex items-center gap-3 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+            >
+              <div className="bg-purple-100 p-1.5 rounded-full text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors"><FileText size={18} /></div>
+              <span className="font-bold text-red-900 text-[13px]">Özgeçmiş & CV Oluşturucu</span>
+            </button>
+          </div>
+        </section>
 
       {/* 3. BENTO BOX GRID: GELECEĞİN YETENEKLERİ (ULTRA PREMIUM CORPORATE) */}
       <section className="py-20 sm:py-28 bg-[#fdfdfd] relative overflow-hidden">
@@ -316,10 +291,27 @@ export default function LandingPage({ setView }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-5 md:gap-6 auto-rows-[minmax(200px,auto)] min-h-[400px] perspective-1000">
-            {/* Bento 1: Ulusal Staj */}
-            <SpotlightCard spotlightColor="rgba(255,255,255,0.15)" className="md:col-span-2 md:row-span-2 md:col-start-1 md:row-start-1 !bg-[#990000] !border-none !p-0">
+            {/* Bento 1: Ulusal Staj Programı */}
+            <SpotlightCard 
+              spotlightColor="rgba(255,255,255,0.15)" 
+              className="md:col-span-2 md:row-span-2 md:col-start-1 md:row-start-1 !bg-[#990000] !border-none !p-0 cursor-pointer group"
+              onClick={() => setSelectedPillModal({
+                id: 'bento_ulusal_staj',
+                title: 'Ulusal Staj Programı & Yetenek Kapısı',
+                badge: '🏛️ CBİKO Resmî Staj Programı',
+                imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+                desc: 'Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO) tarafından yürütülen Ulusal Staj Programı, fırsat eşitliği ve liyakat esaslarına göre yükseköğretim öğrencilerinin kamu kurumları ve özel sektörde staj imkanına erişimini sağlar.',
+                features: [
+                  'Kamu Kurumları ve Bakanlıklarda Liyakat Esaslı Staj',
+                  'Özel Sektör Devlerinde Öncelikli Staj İlanları',
+                  'SGK ve Resmî Staj Evraklarının Portaldan Onaylanması',
+                  'Birebir Kariyer Danışmanı İncelemesi ve Takibi'
+                ],
+                targetView: 'staj'
+              })}
+            >
               <div className="h-full flex flex-col justify-end p-8 md:p-10 relative">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center mix-blend-overlay opacity-20 group-hover:scale-105 transition-transform duration-700"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#990000] via-[#990000]/80 to-transparent"></div>
                 <div className="relative z-10">
                   <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white mb-6 border border-white/20">
@@ -327,22 +319,56 @@ export default function LandingPage({ setView }) {
                   </div>
                   <h3 className="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">Ulusal Staj<br/>Programı</h3>
                   <p className="text-red-100 text-sm font-medium mb-8 max-w-md leading-relaxed opacity-90">Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda liyakat esaslı staj imkanı. Profesyonel hayata sağlam bir adım atın.</p>
-                  <button onClick={() => setView('staj')} className="bg-white text-[#990000] px-7 py-3 rounded-full font-bold text-[13px] w-max hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xl shadow-black/10 z-20 pointer-events-auto cursor-pointer relative">Detayları İncele <ArrowRight size={16}/></button>
+                  <button type="button" className="bg-white text-[#990000] px-7 py-3 rounded-full font-bold text-[13px] w-max hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xl shadow-black/10 z-20 cursor-pointer relative">Detayları İncele <ArrowRight size={16}/></button>
                 </div>
               </div>
             </SpotlightCard>
 
-            {/* Bento 2: Kariyer Esenyurtim */}
-            <SpotlightCard spotlightColor="rgba(10,35,66,0.05)" className="col-span-1 row-span-1 md:col-start-3 md:row-start-1 p-6 md:p-8 flex flex-col !bg-white cursor-pointer hover:-translate-y-1 transition-transform" onClick={() => setView('services')}>
-              <div className="w-12 h-12 bg-red-50/80 rounded-xl flex items-center justify-center text-[#24548A] mb-5 border border-red-100/50">
+            {/* Bento 2: Kariyer Danışmanlığı & Değerlendirme */}
+            <SpotlightCard 
+              spotlightColor="rgba(10,35,66,0.05)" 
+              className="col-span-1 row-span-1 md:col-start-3 md:row-start-1 p-6 md:p-8 flex flex-col !bg-white cursor-pointer hover:-translate-y-1 transition-transform border border-slate-100 shadow-sm hover:shadow-xl"
+              onClick={() => setSelectedPillModal({
+                id: 'bento_kariyer_rehberligi',
+                title: 'Birebir Kariyer Danışmanlığı & Yetenek Testleri',
+                badge: '🎯 Profesyonel Kariyer Koçluğu',
+                imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=60',
+                desc: 'İstanbul Esenyurt Üniversitesi Kariyer Danışmanları tarafından öğrencilerimize yetkinlik haritası çıkarma, mülakat simülasyonları, CV inceleme ve kariyer hedefleri belirleme alanlarında birebir danışmanlık verilmektedir.',
+                features: [
+                  'Birebir Yüz Yüze veya Online Mülakat Simülasyonu',
+                  'Kişilik ve Yetkinlik Değerlendirme Envanterleri',
+                  'Profesyonel Özgeçmiş (CV) ve Niyet Mektubu Analizi',
+                  'Kariyer Haritası ve Mezuniyet Sonrası İstihdam Planı'
+                ],
+                targetView: 'services'
+              })}
+            >
+              <div className="w-12 h-12 bg-red-50/80 rounded-xl flex items-center justify-center text-[#990000] mb-5 border border-red-100/50">
                 <TrendingUp size={24} />
               </div>
-              <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight">Kariyer Esenyurtim</h3>
+              <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight">Kariyer Danışmanlığı</h3>
               <p className="text-gray-500 text-[13px] font-medium leading-relaxed">Bilimsel ölçümlere dayalı öz değerlendirme envanterleri ve yetenek testleri.</p>
             </SpotlightCard>
 
-            {/* Bento 3: Akran Mentor */}
-            <SpotlightCard spotlightColor="rgba(255,255,255,0.1)" className="col-span-1 row-span-1 md:col-start-4 md:row-start-1 p-6 md:p-8 flex flex-col !bg-gradient-to-br !from-[#1C4173] !to-[#11294D] !border-none cursor-pointer hover:-translate-y-1 transition-transform" onClick={() => setView('mentor_match')}>
+            {/* Bento 3: Akran Mentorluk Programı */}
+            <SpotlightCard 
+              spotlightColor="rgba(255,255,255,0.1)" 
+              className="col-span-1 row-span-1 md:col-start-4 md:row-start-1 p-6 md:p-8 flex flex-col !bg-gradient-to-br !from-[#1C4173] !to-[#11294D] !border-none cursor-pointer hover:-translate-y-1 transition-transform shadow-lg"
+              onClick={() => setSelectedPillModal({
+                id: 'bento_akran_mentor',
+                title: 'İESÜ Akran Mentorluk Programı',
+                badge: '🤝 Öğrenci Rehberlik Ağı',
+                imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&auto=format&fit=crop&q=60',
+                desc: 'Üst sınıf başarılı öğrenciler ile yeni başlayan öğrencileri bir araya getiren Akran Mentorluk Programı; akademik uyum, ders çalışma teknikleri, kampüs yaşamı ve kariyer vizyonu kazandırmayı amaçlar.',
+                features: [
+                  'Deneyimli Üst Sınıf Öğrencilerinden Birebir Mentorluk',
+                  'Akademik Uyum ve Ders Başarısı Yöntemleri',
+                  'Kampüs ve Öğrenci Kulüpleri Etkinlik Entegrasyonu',
+                  'Rozet ve Puan (BP) Ödüllü Sosyal Paylaşım Ağı'
+                ],
+                targetView: 'mentor_match'
+              })}
+            >
               <div className="absolute -right-6 -bottom-6 opacity-[0.07] pointer-events-none"><Users size={160} /></div>
               <div className="relative z-10">
                 <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-5 border border-white/20">
@@ -353,17 +379,51 @@ export default function LandingPage({ setView }) {
               </div>
             </SpotlightCard>
 
-            {/* Bento 4: İşbirliklerimiz */}
-            <SpotlightCard spotlightColor="rgba(10,35,66,0.05)" className="col-span-1 row-span-1 md:col-start-3 md:row-start-2 p-6 md:p-8 flex flex-col justify-center items-center text-center !bg-white cursor-pointer hover:-translate-y-1 transition-transform" onClick={() => setView('about_us')}>
-              <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-700 mb-5 border border-gray-100">
-                <Handshake size={32} />
+            {/* Bento 4: Sektörel İşbirliklerimiz */}
+            <SpotlightCard 
+              spotlightColor="rgba(10,35,66,0.05)" 
+              className="col-span-1 row-span-1 md:col-start-3 md:row-start-2 p-6 md:p-8 flex flex-col justify-center items-center text-center !bg-white cursor-pointer hover:-translate-y-1 transition-transform border border-slate-100 shadow-sm hover:shadow-xl"
+              onClick={() => setSelectedPillModal({
+                id: 'bento_isbirlikleri',
+                title: 'Kurumsal Sektör İşbirlikleri & Protokoller',
+                badge: '🤝 Dev Markalarla Güçlü Bağlar',
+                imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&auto=format&fit=crop&q=60',
+                desc: 'İstanbul Esenyurt Üniversitesi; sanayi, teknoloji, sağlık ve finans sektörlerinin önde gelen 500+ kurumsal şirketiyle stratejik iş birliği protokollerine imza atmaktadır.',
+                features: [
+                  '500+ Kurumsal Şirketle İmzalanan Resmî Staj Protokolü',
+                  'Sektör Liderleriyle Mülakat ve İş İlanı Buluşmaları',
+                  'Teknik Geziler ve Saha Projesi Uygulama İmkânı',
+                  'Mezuniyet Sonrası Doğrudan İşe Alım Önceliği'
+                ],
+                targetView: 'about_us'
+              })}
+            >
+              <div className="w-14 h-14 bg-red-50/80 rounded-2xl flex items-center justify-center text-[#990000] mb-4 border border-red-100/50">
+                <Handshake size={28} />
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-1 tracking-tight">İşbirliklerimiz</h3>
               <p className="text-gray-500 text-[12px] font-medium leading-relaxed">Sektörün dev markalarıyla güçlü protokoller.</p>
             </SpotlightCard>
 
-            {/* Bento 5: Araştırma */}
-            <SpotlightCard spotlightColor="rgba(255,255,255,0.05)" className="col-span-1 row-span-1 md:col-start-4 md:row-start-2 p-6 md:p-8 flex flex-col justify-between !bg-[#051121] !border-none text-white cursor-pointer hover:-translate-y-1 transition-transform" onClick={() => setView('research_hub')}>
+            {/* Bento 5: Araştırma Faaliyetleri */}
+            <SpotlightCard 
+              spotlightColor="rgba(255,255,255,0.05)" 
+              className="col-span-1 row-span-1 md:col-start-4 md:row-start-2 p-6 md:p-8 flex flex-col justify-between !bg-[#051121] !border-none text-white cursor-pointer hover:-translate-y-1 transition-transform shadow-lg"
+              onClick={() => setSelectedPillModal({
+                id: 'bento_arastirma',
+                title: 'Geleceğin Meslekleri & Araştırma Hub',
+                badge: '📊 Sektörel Analiz & Ar-Ge',
+                imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60',
+                desc: 'Kariyer Geliştirme Koordinatörlüğü Araştırma Birimi; yapay zeka, dijitalleşme ve iş dünyasının geleceğine yönelik düzenli istihdam analizleri ve sektör raporları yayımlar.',
+                features: [
+                  'Yıllık Mezun İstihdam Endeksi ve Sektör Raporları',
+                  'Mesleklere Etki Analizleri',
+                  'Öğrenci Ar-Ge Projeleri ve TÜBİTAK Başvuru Desteği',
+                  'Akademik Yayın ve Sektörel Makale Arşivi'
+                ],
+                targetView: 'research_hub'
+              })}
+            >
               <div>
                 <h3 className="text-lg font-black mb-2 tracking-tight text-white/90">Araştırma Faaliyetleri</h3>
                 <p className="text-gray-400 text-[12px] font-medium mb-6 leading-relaxed">Geleceğin meslek analizleri ve sektörel istihdam raporları.</p>
@@ -373,135 +433,6 @@ export default function LandingPage({ setView }) {
                 <ArrowRight size={20} className="text-gray-500" />
               </div>
             </SpotlightCard>
-          </div>
-        </div>
-      </section>
-
-      {/* 3.5 İESÜ KURUMSAL HİZMETLER & HIZLI ERİŞİM HUB (QUALITATIVE LIGHT GLASSMORPHISM) */}
-      <section className="py-16 bg-gradient-to-b from-[#fdfdfd] via-[#f8f9fc] to-[#ffffff] border-y border-slate-200/60 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-            <div>
-              <span className="text-[11px] font-black uppercase tracking-widest text-[#24548A] bg-red-50 px-3.5 py-1.5 rounded-full border border-red-100">
-                Resmi İdari Hizmetler & Birimler
-              </span>
-              <h2 className="text-2xl md:text-3xl font-black text-[#990000] mt-3 tracking-tight">
-                İESÜ Kariyer & İdari Hizmetler Portalı
-              </h2>
-              <p className="text-slate-500 font-semibold text-xs md:text-sm mt-1">
-                Öğrenci, akademisyen ve mezunlarımızın tüm idari işlemleri için hızlı erişim panelleri.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {/* Card 1: Kariyer Danışmanlığı Randevu */}
-            <div 
-              onClick={() => setView('mentor_booking')}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-red-600 flex items-center justify-center mb-4 group-hover:bg-red-600 group-hover:text-white transition-colors">
-                  <GraduationCap size={24} />
-                </div>
-                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-red-600 transition-colors">Kariyer & Özgeçmiş Danışmanlığı</h3>
-                <p className="text-xs font-semibold text-slate-500 leading-relaxed">Uzman kariyer danışmanlarımızdan 1-on-1 randevu alın, mülakat simülasyonlarına katılın.</p>
-              </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-red-600 border-t border-slate-100 pt-4">
-                <span>Randevu Al</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Card 2: SKSDB Vücut Kitle İndeksi & Diyetisyen */}
-            <div 
-              onClick={() => setView('sksdb_lunch')}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                  <Target size={24} />
-                </div>
-                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-emerald-600 transition-colors">SKSDB Öğrenci Sağlık & BMI</h3>
-                <p className="text-xs font-semibold text-slate-500 leading-relaxed">İdeal kilo aralığınızı hesaplayın, Mediko-Sosyal diyetisyeninden ücretsiz randevu alın.</p>
-              </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-emerald-600 border-t border-slate-100 pt-4">
-                <span>BMI İndeksini Ölç</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Card 3: BİDB Canlı Durum & Destek Biletleri */}
-            <div 
-              onClick={() => setView('bidb_status')}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                  <Zap size={24} />
-                </div>
-                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-amber-600 transition-colors">BİDB Altyapı & Teknik Destek</h3>
-                <p className="text-xs font-semibold text-slate-500 leading-relaxed">Kampüs Wi-Fi, OBS ve LMS sunucu durumlarını izleyin, teknik destek bileti açın.</p>
-              </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-amber-600 border-t border-slate-100 pt-4">
-                <span>Sistem Durumunu Gör</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Card 4: Research OS & Ar-Ge Lab */}
-            <div 
-              onClick={() => setView('research_hub')}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                  <Search size={24} />
-                </div>
-                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-purple-600 transition-colors">Ar-Ge Lab & Makale İndeksi</h3>
-                <p className="text-xs font-semibold text-slate-500 leading-relaxed">Ar-Ge laboratuvarlarından ekipman rezerve edin, YÖK/Scopus makalelerini inceleyin.</p>
-              </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-purple-600 border-t border-slate-100 pt-4">
-                <span>Research OS Merkezi</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Card 5: Vizyon, Misyon & Akreditasyonlar */}
-            <div 
-              onClick={() => setView('about_us')}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#990000]/10 text-[#990000] flex items-center justify-center mb-4 group-hover:bg-[#990000] group-hover:text-white transition-colors">
-                  <Building size={24} />
-                </div>
-                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-[#990000] transition-colors">Vizyon, Yönerge & Kurumsal</h3>
-                <p className="text-xs font-semibold text-slate-500 leading-relaxed">İESÜ Kariyer Yönergesi, AQAS/AHPGS uluslararası akreditasyonlar ve mezun iletişim ağı.</p>
-              </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-[#990000] border-t border-slate-100 pt-4">
-                <span>Hakkımızda & Detaylar</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Card 6: Etkinlikler & Sertifikasyon */}
-            <div 
-              onClick={() => setView('events_list')}
-              className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-4 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                  <Calendar size={24} />
-                </div>
-                <h3 className="text-lg font-black text-red-950 mb-1 group-hover:text-cyan-600 transition-colors">Kariyer Günleri & Bilet alma</h3>
-                <p className="text-xs font-semibold text-slate-500 leading-relaxed">Geleneksel Kariyer Günleri panellerine dijital katılım bileti oluşturun.</p>
-              </div>
-              <div className="mt-6 flex items-center justify-between text-xs font-black text-cyan-600 border-t border-slate-100 pt-4">
-                <span>Etkinlik Takvimini Aç</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -548,12 +479,21 @@ export default function LandingPage({ setView }) {
               </div>
 
               <div className="flex flex-col gap-6 flex-grow">
-                {announcements.slice(0, 3).map((ann, idx) => (
-                  <div key={idx} className="group cursor-pointer border-l-2 border-transparent hover:border-red-500 pl-4 -ml-4 transition-all" onClick={() => setSelectedItem(ann)}>
-                    <p className="text-[11px] font-black text-red-500 uppercase tracking-wider mb-1">{ann.date || 'Yakın Zaman'}</p>
-                    <h4 className="text-[13px] font-bold text-gray-800 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">{ann.title}</h4>
-                  </div>
-                ))}
+                {announcements.slice(0, 3).map((ann, idx) => {
+                  const cleanAnnTitle = (ann.title || '')
+                    .replace(/<[^>]+>/g, ' ')
+                    .replace(/&nbsp;/gi, ' ')
+                    .replace(/&amp;/gi, '&')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                  return (
+                    <div key={idx} className="group cursor-pointer border-l-2 border-transparent hover:border-red-500 pl-4 -ml-4 transition-all" onClick={() => setSelectedItem(ann)}>
+                      <p className="text-[11px] font-black text-red-500 uppercase tracking-wider mb-1">{ann.date || 'Yakın Zaman'}</p>
+                      <h4 className="text-[13px] font-bold text-gray-800 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">{cleanAnnTitle}</h4>
+                    </div>
+                  );
+                })}
               </div>
 
               <button onClick={() => setView('duyurular')} className="mt-8 w-full py-3 rounded-xl border border-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-50 hover:text-red-600 transition-all flex items-center justify-center gap-2">
@@ -601,8 +541,13 @@ export default function LandingPage({ setView }) {
       </section>
 
       {/* Footer */}
-
-      <Footer setSelectedItem={setSelectedItem} legalData={legalData} setView={setView} />
+      <SubPanelFooter setView={(v) => {
+        if (v === 'gizlilik') { setSelectedItem(legalData.gizlilik); return; }
+        if (v === 'kullanim') { setSelectedItem(legalData.kullanim); return; }
+        if (v === 'kvkk') { setSelectedItem(legalData.kvkk); return; }
+        setSelectedItem(null);
+        if (setView) setView(v);
+      }} />
 
       {/* Full-Screen Dedicated News/Announcement/Tuition Detail View */}
       {selectedItem && (
@@ -657,26 +602,40 @@ export default function LandingPage({ setView }) {
           </div>
 
           {/* Full Container Content */}
-          <div className="max-w-7xl mx-auto px-4 py-8">
-            {/* Breadcrumb */}
+          <div className="max-w-7xl mx-auto px-4 pt-8 pb-0">
+            {/* Interactive Breadcrumb */}
             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 mb-6">
-              <span>Ana Sayfa</span>
+              <button 
+                type="button"
+                onClick={() => { setSelectedItem(null); setView && setView('landing'); }} 
+                className="hover:text-[#990000] hover:underline transition cursor-pointer"
+              >
+                Ana Sayfa
+              </button>
               <ChevronRight size={14} />
-              <span>Duyurular & Haberler</span>
+              <button 
+                type="button"
+                onClick={() => { setSelectedItem(null); setView && setView('duyurular'); }} 
+                className="hover:text-[#990000] hover:underline transition cursor-pointer"
+              >
+                Duyurular & Haberler
+              </button>
               <ChevronRight size={14} />
               <span className="text-[#990000] font-black truncate max-w-xs">{selectedItem.title}</span>
             </div>
 
-            {/* 2-Column Professional Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Left Column (8 cols): Main Content */}
-              <div className="lg:col-span-8 space-y-6">
+            {/* Full Width Dedicated Content Layout */}
+            <div className="w-full space-y-6">
+              <div className="w-full space-y-6">
                 {/* Hero Banner Image */}
                 {selectedItem.imageUrl && (
-                  <div className="w-full h-72 md:h-96 rounded-3xl overflow-hidden shadow-xl relative">
-                    <img src={selectedItem.imageUrl} alt={selectedItem.title} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent"></div>
-                    <div className="absolute bottom-6 left-6 right-6 text-white">
+                  <div className="w-full h-72 md:h-96 rounded-3xl overflow-hidden shadow-xl relative bg-black">
+                    {/* Blurred background layer for aesthetic fit */}
+                    <img src={selectedItem.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl" />
+                    {/* Main image fully contained */}
+                    <img src={selectedItem.imageUrl} alt={selectedItem.title} className="absolute inset-0 w-full h-full object-contain p-4" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/20 to-transparent"></div>
+                    <div className="absolute bottom-6 left-6 right-6 text-white z-10">
                       <span className="bg-[#990000] text-white text-xs font-black px-3.5 py-1.5 rounded-lg uppercase tracking-wider mb-3 inline-block">
                         {selectedItem.category || selectedItem.badge || 'Resmi Duyuru'}
                       </span>
@@ -732,98 +691,125 @@ export default function LandingPage({ setView }) {
                       <TuitionAccordion />
                     </div>
                   )}
-                </div>
-              </div>
 
-              {/* Right Column (4 cols): Sidebar Action Panels */}
-              <div className="lg:col-span-4 space-y-6">
-                {/* 1. Quick Action Panel */}
-                <div className="bg-gradient-to-br from-[#0A2342] to-blue-950 text-white p-6 rounded-3xl shadow-lg border border-blue-900/50">
-                  <h3 className="text-base font-black flex items-center gap-2 mb-4">
-                    <Sparkles size={18} className="text-yellow-400" /> Kariyer & Öğrenci İşlemleri
-                  </h3>
-                  <p className="text-xs text-blue-200 mb-5 leading-relaxed">
-                    İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü aracılığıyla tüm işlemlerinizi tek tıkla başlatın.
-                  </p>
-                  
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => { setSelectedItem(null); setView && setView('mentor-match'); }}
-                      className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-xs font-bold py-3 px-4 rounded-xl flex items-center justify-between transition border border-white/10"
-                    >
-                      <span className="flex items-center gap-2">🎯 Kariyer Danışmanlığı Al</span>
-                      <ChevronRight size={16} />
-                    </button>
-
-                    <button
-                      onClick={() => { setSelectedItem(null); setView && setView('jobs'); }}
-                      className="w-full bg-[#990000] hover:bg-red-700 text-white text-xs font-bold py-3 px-4 rounded-xl flex items-center justify-between transition shadow-md"
-                    >
-                      <span className="flex items-center gap-2">💼 Yetenek Kapısı İlanları</span>
-                      <ChevronRight size={16} />
-                    </button>
-
-                    <button
-                      onClick={() => { setSelectedItem(null); setView && setView('contact'); }}
-                      className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-xs font-bold py-3 px-4 rounded-xl flex items-center justify-between transition border border-white/10"
-                    >
-                      <span className="flex items-center gap-2">📞 Koordinatörlük İletişim</span>
-                      <ChevronRight size={16} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* 2. Related News Panel */}
-                <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
-                  <h3 className="text-sm font-black text-gray-900 border-b border-gray-100 pb-3 mb-4 flex items-center gap-2">
-                    <span className="w-2 h-4 bg-[#990000] rounded-full inline-block"></span>
-                    Son Duyurular ve İlanlar
-                  </h3>
-
-                  <div className="space-y-4">
-                    {liveNewsData.slice(0, 4).map((item, idx) => (
-                      <div
-                        key={idx}
-                        onClick={() => setSelectedItem(item)}
-                        className="group flex items-center gap-3 p-2 rounded-xl hover:bg-red-50/50 transition cursor-pointer"
-                      >
-                        {item.imageUrl ? (
-                          <img src={item.imageUrl} alt="" className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
-                        ) : (
-                          <div className="w-14 h-14 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center font-bold text-xs flex-shrink-0">
-                            İESÜ
+                  {/* Official Team Grid (Ekip & Kadro) */}
+                  {(selectedItem.category === "Kurumsal" || selectedItem.title?.includes("Kariyer Geliştirme")) && (
+                    <div className="mt-10 pt-10 border-t border-gray-100">
+                      <h3 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
+                        <Users className="text-[#990000]" size={28} />
+                        Ekip & İletişim (Resmî Kadro)
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {[
+                          { name: "Öğr. Gör. Mutlu Gülsev YAĞIZ", title: "Müdür", phone: "444 9 123", email: "mutluyagiz@esenyurt.edu.tr", img: "https://www.esenyurt.edu.tr/uploads/staffs/278.jpg" },
+                          { name: "Zuhal ŞAHİN", title: "Memur", email: "zuhalsahin@esenyurt.edu.tr", img: "https://www.esenyurt.edu.tr/uploads/staffs/405.jpg" }
+                        ].map((member, idx) => (
+                          <div key={idx} className="bg-slate-50 rounded-2xl p-5 flex items-center gap-5 border border-slate-200 hover:shadow-lg transition-all group hover:-translate-y-1">
+                            <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden shrink-0 border-4 border-white shadow-md group-hover:scale-105 transition-transform">
+                              <img src={member.img} alt={member.name} className="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                              <h4 className="text-[15px] font-black text-gray-900 mb-0.5 leading-tight">{member.name}</h4>
+                              <p className="text-xs font-extrabold text-[#990000] mb-2">{member.title}</p>
+                              {member.email && <div className="text-[11px] font-medium text-gray-600 flex items-center gap-1.5 mb-1"><Mail size={12} className="text-gray-400"/> {member.email}</div>}
+                            </div>
                           </div>
-                        )}
-                        <div className="flex-grow min-w-0">
-                          <h4 className="text-xs font-bold text-gray-900 group-hover:text-[#990000] transition line-clamp-2 leading-snug">
-                            {item.title}
-                          </h4>
-                          <span className="text-[10px] font-semibold text-gray-500 mt-1 block">{item.date}</span>
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* 3. Official Verification Box */}
-                <div className="bg-emerald-50/60 p-5 rounded-3xl border border-emerald-200 text-emerald-900">
-                  <div className="flex items-center gap-2 font-black text-xs text-emerald-800 mb-2">
-                    <ShieldCheck size={18} /> Resmi Senkronizasyon Onayı
-                  </div>
-                  <p className="text-[11px] text-emerald-700 font-medium leading-relaxed">
-                    Bu sayfadaki tüm bilgi, duyuru ve tablolar <strong>esenyurt.edu.tr</strong> resmi kaynaklarından canlı senkronize edilmiş olup %100 doğruluk garantisi taşımaktadır.
-                  </p>
+                {/* Full Width Edge-to-Edge SubPanelFooter Integration */}
+                <div className="mt-16 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mb-0 pb-0">
+                  <SubPanelFooter setView={(v) => {
+                    if (v === 'gizlilik') { setSelectedItem(legalData.gizlilik); return; }
+                    if (v === 'kullanim') { setSelectedItem(legalData.kullanim); return; }
+                    if (v === 'kvkk') { setSelectedItem(legalData.kvkk); return; }
+                    setSelectedItem(null);
+                    if (setView) setView(v);
+                  }} />
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Back Button Footer */}
-            <div className="mt-12 flex justify-center border-t border-gray-200 pt-8">
+      {/* Action Pill Informative Modal */}
+      {selectedPillModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl text-slate-800 relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Close X Button */}
+            <button 
+              onClick={() => setSelectedPillModal(null)}
+              className="absolute top-6 right-6 w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-600 transition flex items-center justify-center font-black cursor-pointer shadow-sm border border-slate-200"
+              title="Kapat"
+            >
+              ✕
+            </button>
+
+            {/* Header Badge & Title */}
+            <div className="mb-4 pr-8">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#990000] bg-red-50 px-3 py-1 rounded-full border border-red-100 inline-block mb-2">
+                {selectedPillModal.badge}
+              </span>
+              <h3 className="text-2xl font-black text-slate-900 leading-tight">
+                {selectedPillModal.title}
+              </h3>
+            </div>
+
+            {/* Feature Banner Image */}
+            {selectedPillModal.imageUrl && (
+              <div className="h-44 w-full rounded-2xl overflow-hidden mb-5 border border-slate-100 shadow-inner">
+                <img src={selectedPillModal.imageUrl} alt="" className="w-full h-full object-cover" />
+              </div>
+            )}
+
+            {/* Description & Feature List */}
+            <div className="space-y-4 mb-8">
+              <p className="text-xs font-medium text-slate-600 leading-relaxed">
+                {selectedPillModal.desc}
+              </p>
+
+              {selectedPillModal.features && (
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
+                  <span className="text-[11px] font-black text-slate-900 block mb-1">
+                    📌 Portala Özel Sunulan İmkânlar:
+                  </span>
+                  {selectedPillModal.features.map((feat, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#990000] shrink-0"></span>
+                      <span>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Direct Portal Entry & Detail View Buttons */}
+            <div className="flex gap-3">
+              {selectedPillModal.targetView && (
+                <button
+                  onClick={() => {
+                    const target = selectedPillModal.targetView;
+                    setSelectedPillModal(null);
+                    if (setView) setView(target);
+                  }}
+                  className="flex-1 py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  Detaylı İncele <ArrowRight size={16} />
+                </button>
+              )}
+
               <button
-                onClick={() => setSelectedItem(null)}
-                className="bg-[#0A2342] hover:bg-blue-950 text-white text-sm font-black px-8 py-3.5 rounded-2xl flex items-center gap-3 shadow-xl transition-transform hover:scale-105"
+                onClick={() => {
+                  setSelectedPillModal(null);
+                  if (setView) setView('login');
+                }}
+                className="flex-1 py-4 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
-                <ArrowLeft size={20} /> Ana Sayfaya Dön
+                Giriş Yap <LogIn size={16} />
               </button>
             </div>
           </div>

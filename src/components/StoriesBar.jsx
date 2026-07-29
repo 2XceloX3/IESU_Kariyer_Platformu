@@ -15,12 +15,13 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
     }
   };
 
+  const safeStories = Array.isArray(stories) ? stories : [];
   const { myStory, otherStories } = useMemo(() => {
     return {
-      myStory: stories.find(s => s.author.name === currentUser?.name),
-      otherStories: stories.filter(s => s.author.name !== currentUser?.name)
+      myStory: safeStories.find(s => s && s.author && s.author.name === currentUser?.name),
+      otherStories: safeStories.filter(s => s && s.author && s.author.name !== currentUser?.name)
     };
-  }, [stories, currentUser]);
+  }, [safeStories, currentUser]);
 
   // Mark story as viewed when opened
   const handleOpenStory = (index) => {
@@ -57,31 +58,6 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
           className="flex gap-4 overflow-x-auto scrollbar-hide snap-x px-2 pb-2"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {/* MY STORY */}
-          <div role="button" tabIndex={0} aria-label="Hikayen" onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex flex-col items-center gap-1.5 shrink-0 w-[76px] cursor-pointer group/story snap-start" onClick={() => handleOpenStory(myStory ? -1 : 'new')}>
-            <div className="relative transition-transform duration-300 group-hover/story:scale-105">
-              <div className={`w-[68px] h-[68px] rounded-full p-[2.5px] ${myStory && (!myStory.viewedBy?.includes(currentUser?.id)) ? 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600' : 'bg-gray-200'}`}>
-                <div className="w-full h-full bg-white rounded-full p-[2.5px]">
-                  <img 
-                    src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=0A2342&color=fff`} 
-                    className="w-full h-full rounded-full object-cover" 
-                    alt="Hikayen" 
-                  />
-                </div>
-              </div>
-              
-              {!myStory && (
-                <div className="absolute bottom-0 right-0 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white">
-                  <Plus size={12} strokeWidth={3} />
-                </div>
-              )}
-            </div>
-            
-            <span className="text-[11px] font-bold text-gray-700 truncate w-full text-center group-hover/story:text-gray-900 transition-colors">
-              Hikayen
-            </span>
-          </div>
-
           {/* OTHER STORIES */}
           {otherStories.map((story, index) => {
             const hasUnseen = !story.viewedBy?.includes(currentUser?.id);
@@ -91,16 +67,16 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
                   <div className={`w-[68px] h-[68px] rounded-full p-[2.5px] ${hasUnseen ? 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600' : 'bg-gray-200'}`}>
                     <div className="w-full h-full bg-white rounded-full p-[2.5px]">
                       <img 
-                        src={story.author.avatar} 
-                        className="w-full h-full rounded-full object-cover" 
+                        src={story.author.avatar === '/logo.png' ? '/iesu-logo.svg' : (story.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(story.author.name || 'U')}&background=0A2342&color=fff`)} 
+                        className="w-full h-full rounded-full object-contain p-0.5" 
                         alt={story.author.name} 
                       />
                     </div>
                   </div>
                   
                   {story.author.role === 'admin' && (
-                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm">
-                      <img src="/logo.png" className="w-4 h-4" alt="Verified" />
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm p-0.5 border border-red-100">
+                      <img src="/iesu-logo.svg" className="w-full h-full object-contain" alt="Verified" />
                     </div>
                   )}
                 </div>

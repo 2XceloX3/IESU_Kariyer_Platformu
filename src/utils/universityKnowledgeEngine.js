@@ -27,15 +27,19 @@ export const universityKnowledgeBase = {
   ],
 
   searchIndex(query, categoryFilter = 'all') {
+    const safeNews = Array.isArray(liveNewsData) ? liveNewsData : [];
+    const safeAnnouncements = Array.isArray(liveAnnouncementData) ? liveAnnouncementData : [];
+    const safeEvents = Array.isArray(liveEventData) ? liveEventData : [];
+
     if (!query && categoryFilter === 'all') {
-      return [...liveNewsData, ...liveAnnouncementData, ...liveEventData];
+      return [...safeNews, ...safeAnnouncements, ...safeEvents];
     }
 
     const q = (query || '').toLowerCase().trim();
     const allItems = [
-      ...liveNewsData.map(item => ({ ...item, section: 'Haber' })),
-      ...liveAnnouncementData.map(item => ({ ...item, section: 'Duyuru' })),
-      ...liveEventData.map(item => ({ ...item, section: 'Etkinlik' }))
+      ...safeNews.map(item => ({ ...item, section: 'Haber' })),
+      ...safeAnnouncements.map(item => ({ ...item, section: 'Duyuru' })),
+      ...safeEvents.map(item => ({ ...item, section: 'Etkinlik' }))
     ];
 
     return allItems.filter(item => {

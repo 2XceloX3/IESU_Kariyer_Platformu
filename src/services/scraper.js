@@ -14,7 +14,10 @@ export const MOCK_IESU_KARIYER_DATA = {
     email: "kariyer@esenyurt.edu.tr",
     phone: "+90 (212) 444 37 98 - Dahili: 1140",
     workingHours: "Hafta içi 08:30 - 17:30",
-    coordinators: []
+    coordinators: [
+      { name: "Dr. Öğr. Üyesi Kevser Soydan", title: "Kariyer Geliştirme Ofisi Koordinatörü", email: "kevser.soydan@esenyurt.edu.tr" },
+      { name: "Öğr. Gör. Caner Ataş", title: "Kariyer Uzmanı", email: "caner.atas@esenyurt.edu.tr" }
+    ]
   },
   announcements: [
     {
@@ -24,6 +27,7 @@ export const MOCK_IESU_KARIYER_DATA = {
       category: "Etkinlik & Staj",
       summary: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi tarafından düzenlenen Kariyer Günleri 2026 için staj ve iş başvurusu kayıtları açılmıştır.",
       content: "Sevgili öğrencilerimiz, 2026 Bahar Dönemi Kariyer Günleri kapsamında 50'den fazla ulusal ve uluslararası firma üniversitemizde sizlerle buluşuyor. Özgeçmişlerinizi hazırlayıp portal üzerinden başvuru yapabilirsiniz.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/bm3ic54a7zlig-2026-ozyes-ozel-yetenek-sinavi-basvurulari-basladi.jfif",
       link: "https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu",
       isPinned: true
     },
@@ -34,6 +38,7 @@ export const MOCK_IESU_KARIYER_DATA = {
       category: "Kariyer Danışmanlığı",
       summary: "Öğrencilerimiz ve mezunlarımız için birebir CV inceleme ve simülasyon mülakat randevuları hafta içi her gün verilmektedir.",
       content: "Kariyer Geliştirme Ofisimiz tarafından sağlanan 1:1 Danışmanlık hizmetinden faydalanmak için Kariyer Portalı üzerinden online randevu alabilirsiniz.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/mnsk4r65vzzss-yuksek-lisans.jpg",
       link: "https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu",
       isPinned: false
     },
@@ -44,6 +49,7 @@ export const MOCK_IESU_KARIYER_DATA = {
       category: "Staj Duyurusu",
       summary: "2025-2026 Akademik Yılı yaz stajı belgeleri ve son teslim tarihleri hakkında bilgilendirme.",
       content: "Staj başvuru formları ve SGK giriş işlemlerine ilişkin takvim Kariyer Ofisi web sayfasında güncellenmiştir.",
+      imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/qd2nc7jccjlfr-universitemizin-14-yil-donumu-kutlu-olsun.jfif",
       link: "https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu",
       isPinned: false
     }
@@ -202,6 +208,8 @@ export function extractAnnouncements(doc, html = '') {
     return `https://www.esenyurt.edu.tr/${url}`;
   };
 
+  const DEFAULT_ANNOUNCEMENT_IMAGE = "https://www.esenyurt.edu.tr/uploads/2026/07/bm3ic54a7zlig-2026-ozyes-ozel-yetenek-sinavi-basvurulari-basladi.jfif";
+
   if (doc && typeof doc.querySelectorAll === 'function') {
     const selector = '.duyuru-list li, .announcement-item, .card-duyuru, .duyuru-item, .news-item, article.duyuru, .duyuru-box';
     const nodes = doc.querySelectorAll(selector);
@@ -209,9 +217,11 @@ export function extractAnnouncements(doc, html = '') {
       const a = node.querySelector('a');
       const dateSpan = node.querySelector('.date, time, .duyuru-tarih, .tarih');
       const summaryEl = node.querySelector('.summary, .ozet, p');
+      const imgEl = node.querySelector('img');
       const title = a ? a.textContent.trim() : (node.querySelector('.title, h3, h4')?.textContent.trim() || '');
       if (title) {
         const rawLink = a ? a.getAttribute('href') : '';
+        const rawImg = imgEl ? (imgEl.getAttribute('src') || imgEl.getAttribute('data-src')) : '';
         items.push({
           id: `ann-${idx + 1}`,
           title: title,
@@ -219,6 +229,7 @@ export function extractAnnouncements(doc, html = '') {
           category: 'Genel Duyuru',
           summary: summaryEl ? summaryEl.textContent.trim() : title,
           content: title,
+          imageUrl: rawImg ? resolveUrl(rawImg) : DEFAULT_ANNOUNCEMENT_IMAGE,
           link: rawLink ? resolveUrl(rawLink) : '#',
           isPinned: idx === 0
         });
@@ -241,6 +252,7 @@ export function extractAnnouncements(doc, html = '') {
           category: 'Genel Duyuru',
           summary: text,
           content: text,
+          imageUrl: DEFAULT_ANNOUNCEMENT_IMAGE,
           link: resolveUrl(href),
           isPinned: count === 1
         });
@@ -282,7 +294,7 @@ export function extractEvents(doc, html = '') {
           title: titleEl.textContent.trim(),
           date: dateEl ? dateEl.textContent.trim() : '2026-04-15 14:00',
           location: locEl ? locEl.textContent.trim() : 'İstanbul Esenyurt Üniversitesi Kampüsü',
-          image: rawImg ? resolveUrl(rawImg) : 'https://www.esenyurt.edu.tr/uploads/2026/05/gxrvs50xxz1up-asdasdasds.jfif',
+          imageUrl: rawImg ? resolveUrl(rawImg) : 'https://www.esenyurt.edu.tr/uploads/2026/05/gxrvs50xxz1up-asdasdasds.jfif',
           speaker: speakerEl ? speakerEl.textContent.trim() : undefined,
           link: rawLink ? resolveUrl(rawLink) : '#',
           status: 'Upcoming'

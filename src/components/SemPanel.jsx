@@ -67,12 +67,12 @@ export default function SemPanel({ setView, userRole }) {
                   e.preventDefault();
                   window.toast && window.toast.info("Anka AI: Bölümünüz ve yeteneklerinize göre en uygun SEM eğitimleri taranıyor...");
                   setTimeout(() => {
-                    window.toast && window.toast.success("✅ AI Eşleşmesi: Sizin için en uygun 3 sertifika programı öne çıkarıldı.");
+                    window.toast && window.toast.success("✅ Eşleşme: Sizin için en uygun 3 sertifika programı öne çıkarıldı.");
                   }, 2500);
                 }}
                 className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-900/30 flex items-center gap-2"
               >
-                <MonitorPlay size={18} /> AI ile Eğitim Öner
+                <MonitorPlay size={18} /> Eğitim Öner
               </button>
 
               <div className="flex bg-white/5 p-2 rounded-2xl backdrop-blur-xl border border-white/10 shadow-2xl">

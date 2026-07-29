@@ -8,12 +8,12 @@ export default function HeroSlider({ onSelectSlide }) {
   const heroSlides = liveSliderData;
 
   useEffect(() => {
-    if (isCarouselPaused) return;
+    if (isCarouselPaused || !heroSlides || heroSlides.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+      setCurrentSlide((prev) => (heroSlides.length > 0 ? (prev + 1) % heroSlides.length : 0));
     }, 5000);
     return () => clearInterval(timer);
-  }, [isCarouselPaused, heroSlides.length]);
+  }, [isCarouselPaused, heroSlides?.length]);
 
   const handleSlideClick = (slide) => {
     let cleanTitle = (slide.title || '').replace(/^#+\s*/g, '').replace(/^\.\s*$/g, '').trim();
@@ -43,7 +43,7 @@ export default function HeroSlider({ onSelectSlide }) {
 
   return (
     <section 
-      className="relative w-full aspect-[16/7] min-h-[300px] max-h-[580px] bg-[#061121] overflow-hidden group shadow-md"
+      className="relative w-full aspect-[16/9] md:aspect-[16/8] lg:aspect-[21/9] min-h-[450px] max-h-[750px] bg-[#061121] overflow-hidden group shadow-md"
       onMouseEnter={() => setIsCarouselPaused(true)}
       onMouseLeave={() => setIsCarouselPaused(false)}
       onFocus={() => setIsCarouselPaused(true)}
@@ -52,7 +52,7 @@ export default function HeroSlider({ onSelectSlide }) {
       {/* Arrow Left */}
       <button 
         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none shadow-lg"
-        onClick={(e) => { e.preventDefault(); setCurrentSlide(p => p === 0 ? heroSlides.length - 1 : p - 1); }}
+        onClick={(e) => { e.preventDefault(); setCurrentSlide(p => heroSlides && heroSlides.length > 0 ? (p === 0 ? heroSlides.length - 1 : p - 1) : 0); }}
         aria-label="Önceki Slayt"
       >
         <ChevronLeft size={24} />
@@ -61,7 +61,7 @@ export default function HeroSlider({ onSelectSlide }) {
       {/* Arrow Right */}
       <button 
         className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 focus:opacity-100 focus:outline-none shadow-lg"
-        onClick={(e) => { e.preventDefault(); setCurrentSlide(p => (p + 1) % heroSlides.length); }}
+        onClick={(e) => { e.preventDefault(); setCurrentSlide(p => heroSlides && heroSlides.length > 0 ? (p + 1) % heroSlides.length : 0); }}
         aria-label="Sonraki Slayt"
       >
         <ChevronRight size={24} />

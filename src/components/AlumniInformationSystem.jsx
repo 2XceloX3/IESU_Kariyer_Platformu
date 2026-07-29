@@ -25,25 +25,26 @@ const TABS = [
   { id: 'cv',              label: '📄 Akıllı CV' },
   { id: 'kariyer_checkup', label: '🧭 Kariyer Check-up' },
   { id: 'mezun_kart',      label: '💳 Mezun Kart' },
-  { id: 'kulup_basvuru',   label: '👥 Kulüp Başvurusu' },
+  { id: 'mezun_dernek_basvuru', label: '🏛️ Mezun Derneği Başvurusu' },
 ];
 
 const CHECKUP_QUESTIONS = [
-  { id: 1, text: "Yazılım geliştirme süreçlerinde hangi alanda çalışmayı tercih edersiniz?", options: ["Frontend Geliştirme", "Backend Servisleri", "Yapay Zeka & Veri Bilimi", "Sistem & DevOps"] },
-  { id: 2, text: "Bir problemle karşılaştığınızda ilk olarak ne yaparsınız?", options: ["Dokümantasyon & StackOverflow okurum", "Kodu satır satır debug ederim", "AI asistanlardan yardım alırım", "Takım arkadaşlarıma danışırım"] },
-  { id: 3, text: "Proje yönetiminde hangi metodolojiyi benimsersiniz?", options: ["Agile/Scrum", "Waterfall", "Kanban", "Kaotik/Serbest Stil"] },
-  { id: 4, text: "Veritabanı teknolojileri konusundaki tecrübeniz nedir?", options: ["İleri düzey SQL & NoSQL", "Temel SQL sorguları", "ORM araçları kullanırım", "Henüz tecrübem yok"] },
-  { id: 5, text: "İngilizce teknik doküman okuma ve yazma düzeyiniz nedir?", options: ["Çok rahat okur yazarım", "Sözlük desteğiyle okurum", "Sadece çeviri araçlarıyla", "Başlangıç seviyesinde"] },
-  { id: 6, text: "Frontend geliştirme araçlarından (React, Vue vb.) hangisine hakimsiniz?", options: ["React.js", "Vue.js / Angular", "Vanilla JS / HTML / CSS", "Mobil (Flutter/React Native)"] },
-  { id: 7, text: "Backend servisleri tasarlarken hangi dili tercih edersiniz?", options: ["Node.js / JavaScript", "Python / Django", "Go / Java / C#", "PHP / Ruby"] },
-  { id: 8, text: "Yapay zeka (AI) ve makine öğrenimi modellerine ne kadar ilgilisiniz?", options: ["Aktif projeler geliştirdim", "Temel kütüphaneleri kullandım", "Sadece teorik bilgim var", "İlgim yok"] },
-  { id: 9, text: "Bulut bilişim platformlarını (AWS, GCP, Azure) kullanma sıklığınız nedir?", options: ["Her projemde kullanırım", "Sadece basit sunucu dağıtımlarında", "Hiç kullanmadım", "Bulut servislerini araştırıyorum"] },
-  { id: 10, text: "Takım çalışmasında kendinizi nasıl tanımlarsınız?", options: ["Lider ruhlu ve yönlendirici", "Verilen görevi kusursuz yapan", "Fikir üreten ve tartışan", "Bireysel çalışmayı tercih eden"] },
-  { id: 11, text: "Kod kalitesi ve temiz kod (Clean Code) standartlarına ne kadar önem verirsiniz?", options: ["Her satırı özenle yazarım", "Çalışması yeterlidir", "Linter kurallarına uyarım", "Proje bitiminde optimize ederim"] },
-  { id: 12, text: "Yeni bir teknolojiyi öğrenirken en çok hangi yöntemi kullanırsınız?", options: ["Uygulamalı küçük projeler yaparak", "Video eğitim setleri izleyerek", "Resmi dokümantasyon okuyarak", "Topluluk formlarını inceleyerek"] }
+  { id: 1, text: "1. Şu anda aktif olarak çalışıyor musunuz?", type: "options", options: ["Evet", "Hayır"] },
+  { id: 2, text: "2. İlk işinizi mezun olduktan ne kadar süre sonra buldunuz?", type: "options", options: ["Mezun Olmadan Önce", "0 - 3 Ay İçinde", "3 - 6 Ay İçinde", "6 Ay ve Üzeri"] },
+  { id: 3, text: "3. Çalıştığınız sektör", type: "input", placeholder: "Örn: Teknoloji & Yazılım, Finans, Sağlık..." },
+  { id: 4, text: "4. Çalıştığınız kurumun türü", type: "input", placeholder: "Örn: Özel Şirket, Kamu Kurumu, Kendi İşletmem..." },
+  { id: 5, text: "5. Mevcut göreviniz / ünvanınız", type: "input", placeholder: "Örn: Yazılım Uzmanı, Ürün Yöneticisi..." },
+  { id: 6, text: "6. Çalıştığınız iş mezun olduğunuz bölümle ilişkili mi?", type: "options", options: ["Evet", "Hayır"] },
+  { id: 7, text: "7. Çalıştığınız il / ülke", type: "input", placeholder: "Örn: İstanbul / Türkiye, Berlin / Almanya..." },
+  { id: 8, text: "8. Çalışma şekliniz", type: "options", options: ["Hibrit", "Uzaktan (Remote)", "Ofisten", "Serbest / Freelance"] },
+  { id: 9, text: "9. Lisansüstü eğitim alıyor musunuz?", type: "options", options: ["Evet", "Hayır"] },
+  { id: 10, text: "10. Telefon numaranız güncel mi?", type: "options", options: ["Evet", "Hayır"] },
+  { id: 11, text: "11. E-posta adresiniz güncel mi?", type: "options", options: ["Evet", "Hayır"] },
+  { id: 12, text: "12. Üniversitemize veya Kariyer Merkezimize iletmek istediğiniz görüş ve önerileriniz var mı?", type: "textarea", placeholder: "Görüş, istek ve önerilerinizi buraya yazabilirsiniz..." }
 ];
 
 export default function AlumniInformationSystem({ setView, currentUser, userRole, setSelectedUserId }) {
+  const addCheckupRecord = useAppStore(state => state.addCheckupRecord);
   const [activeTab, setActiveTab] = useState('ozluk');
   const [cvTemplate, setCvTemplate] = useState('modern'); // 'modern' | 'academic' | 'creative'
   const [aiEnhancing, setAiEnhancing] = useState(false);
@@ -58,51 +59,74 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
   const [cardAppStatus, setCardAppStatus] = useState('form'); // 'form' | 'loading' | 'minted'
   const [cardForm, setCardForm] = useState({
     name: currentUser?.name || '',
-    dept: 'Yazılım Mühendisliği',
+    tcNo: '',
+    dept: currentUser?.department || 'İşletme ve Yönetim Bilimleri',
     gradYear: '2024',
-    studentId: '200201090',
+    studentId: currentUser?.studentId || '200201090',
+    phone: currentUser?.phone || '',
+    email: currentUser?.email || '',
+    deliveryType: 'digital', // 'digital' | 'physical'
+    address: 'Esenyurt, İstanbul',
     agreed: false
   });
 
-  // Survey state
-  const [surveyAnswers, setSurveyAnswers] = useState({});
-  const [surveyCompleted, setSurveyCompleted] = useState(false);
+  const alumniAssocApplications = useAppStore(state => state.alumniAssocApplications) || [];
+  const setAlumniAssocApplications = useAppStore(state => state.setAlumniAssocApplications);
+
+  // Mezun Derneği Başvuru State
+  const [assocAppSubmitted, setAssocAppSubmitted] = useState(false);
+  const [assocForm, setAssocForm] = useState({
+    type: 'Genel Üyelik', // 'Genel Üyelik' | 'Yönetim Ekibi Adaylığı'
+    name: currentUser?.name || '',
+    department: currentUser?.department || '',
+    gradYear: '2024',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
+    notes: '',
+    agreed: false
+  });
+
+  const featureAlumniCard = useAppStore(state => state.featureAlumniCard);
+  const featureAlumniAssocToggle = useAppStore(state => state.featureAlumniAssocToggle);
 
   const filteredTabs = useMemo(() => {
-    const list = [...TABS];
-    if (userRole === 'alumni') {
-      list.push({ id: 'anket', label: '📝 Memnuniyet & Anket' });
+    let list = TABS.filter(tab => tab.id !== 'mezun_kart' && tab.id !== 'mezun_dernek_basvuru');
+    if (featureAlumniCard !== false) {
+      list.push({ id: 'mezun_kart', label: '💳 Mezun Kart' });
+    }
+    if (featureAlumniAssocToggle) {
+      list.push({ id: 'mezun_dernek_basvuru', label: '🏛️ Mezun Derneği Başvurusu' });
     }
     return list;
-  }, [userRole]);
+  }, [featureAlumniCard, featureAlumniAssocToggle]);
   
-  // Local profile state
+  // Local profile state (General University Structure)
   const [profileData, setProfileData] = useState({
-    summary: "Yazılım mühendisliği alanında kendimi geliştiren, yapay zeka ve web teknolojilerine ilgili bir geliştiriciyim.",
-    phone: "+90 555 123 4567",
-    website: "https://myportfolio.dev",
-    linkedin: "https://linkedin.com/in/iesuli",
-    github: "https://github.com/iesuli",
+    name: currentUser?.name || '',
+    email: currentUser?.email || '',
+    summary: currentUser?.summary || "İstanbul Esenyurt Üniversitesi öğrencisi / mezunu olarak kariyer hedefim doğrultusunda nitelikli projelerde yer almak ve kendimi geliştirmektir.",
+    phone: currentUser?.phone || "+90 555 000 0000",
+    city: "İstanbul",
+    address: "Esenyurt, İstanbul",
+    linkedin: "https://linkedin.com",
+    website: "",
     education: [
-      { id: 1, school: "İstanbul Esenyurt Üniversitesi", degree: "Lisans", major: "Yazılım Mühendisliği", startYear: "2020", endYear: "2024", gpa: "3.45" }
+      { id: 1, school: "İstanbul Esenyurt Üniversitesi", degree: "Lisans", major: currentUser?.department || "İşletme ve Yönetim Bilimleri", startYear: "2020", endYear: "2024", gpa: "3.20" }
     ],
     experience: [
-      { id: 1, company: "Trendyol", role: "Stajyer Yazılım Geliştirici", type: "Staj", startYear: "2023", endYear: "2023", desc: "React ve micro-frontend mimarileriyle çalışıldı." }
+      { id: 1, company: "Kurumsal Şirket / Kurum", role: "Uzman / Asistan", type: "Tam Zamanlı", startYear: "2023", endYear: "2024", desc: "Süreç takibi, proje organizasyonu ve kurumsal iletişim çalışmaları yürütüldü." }
     ],
-    skills: ["React", "JavaScript", "CSS", "Git", "Tailwind CSS"],
+    skills: ["İletişim & Sunum", "Proje Yönetimi", "Problem Çözme", "Zaman Yönetimi", "MS Office"],
     languages: [
-      { id: 1, language: "İngilizce", level: "İleri (C1)" }
+      { id: 1, language: "İngilizce", level: "Orta (B1-B2)" }
     ],
     certs: [
-      { id: 1, title: "Google Cloud Engineering Certificate", issuer: "Google", date: "2023" }
+      { id: 1, title: "Proje Yönetimi ve İletişim Sertifikası", issuer: "İESÜ Sürekli Eğitim Merkezi (SEM)", date: "2023" }
     ],
     goals: [
-      { id: 1, text: "Yapay zeka alanında uluslararası bir sertifika almak.", done: true },
-      { id: 2, text: "İngilizce teknik makale yayınlamak.", done: false },
-      { id: 3, text: "Bir açık kaynak projeye katkıda bulunmak.", done: false }
-    ],
-    clubApplications: [
-      { id: 1, name: "Yazılım ve Yapay Zeka Kulübü", status: "Onaylandı" }
+      { id: 1, text: "Sektörde uzmanlaşarak liderlik rolleri üstlenmek.", done: true },
+      { id: 2, text: "Yabancı dil seviyemi akıcı düzeye ulaştırmak.", done: false },
+      { id: 3, text: "Sertifika ve lisansüstü eğitimlerle mesleki donanımımı artırmak.", done: false }
     ]
   });
 
@@ -118,6 +142,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
   const [newSkill, setNewSkill] = useState('');
   const [newLang, setNewLang] = useState({ name: '', level: 'Orta (B1-B2)' });
   const [newCert, setNewCert] = useState({ title: '', issuer: '', date: '' });
+  const [newEdu, setNewEdu] = useState({ school: '', major: '', degree: 'Lisans', startYear: '', endYear: '', gpa: '' });
+  const [newExp, setNewExp] = useState({ company: '', role: '', type: 'Tam Zamanlı', startYear: '', endYear: '', desc: '' });
 
   // Calculate profile completeness
   const completeness = useMemo(() => {
@@ -188,47 +214,51 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
       </header>
 
-      <main className="max-w-[1300px] mx-auto p-4 lg:p-8 flex flex-col lg:flex-row gap-8">
+      <main className="max-w-[1300px] mx-auto p-4 lg:p-8 space-y-6">
         
-        {/* Left Column: Navigation & Profile completeness */}
-        <div className="w-full lg:w-[320px] shrink-0 flex flex-col gap-6">
+        {/* TOP HEADER SUMMARY & NAVIGATION TABS */}
+        <div className="space-y-4">
           
-          {/* Profile Card & Progress */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <img src={currentUser?.avatar || "https://i.pravatar.cc/150?img=11"} alt="Profile" className="w-14 h-14 rounded-2xl object-cover shadow-md" />
+          {/* Top Profile Summary Bar */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <img src={currentUser?.avatar || "https://i.pravatar.cc/150?img=11"} alt="Profile" className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover shadow-md border border-gray-100" />
               <div>
-                <h2 className="font-black text-red-900 text-sm sm:text-base leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
-                <span className="text-[10px] font-bold text-red-600 bg-indigo-50 px-2 py-0.5 rounded uppercase mt-1 inline-block">Mezun Üye</span>
+                <h2 className="font-black text-red-950 text-base sm:text-lg leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] font-black text-red-700 bg-red-50 border border-red-100 px-2 py-0.5 rounded uppercase">Mezun Üye</span>
+                  <span className="text-xs text-slate-500 font-semibold">{currentUser?.department || profileData.education[0]?.major || 'Esenyurt Üniversitesi'}</span>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="w-full sm:w-64 space-y-1.5 shrink-0 bg-slate-50 p-3 rounded-xl border border-slate-100">
               <div className="flex justify-between text-xs font-black">
                 <span className="text-slate-500">Profil Doluluk Oranı</span>
                 <span className="text-red-600">%{completeness}</span>
               </div>
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
+              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${completeness}%` }}
-                  className="bg-red-600 h-full rounded-full" 
+                  className="bg-[#990000] h-full rounded-full" 
                 />
               </div>
-              <p className="text-[10px] font-medium text-slate-400 leading-relaxed mt-1">
-                Eksik alanları tamamlayarak İK yöneticilerinin aramalarında %40 daha fazla görünün.
-              </p>
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-4 shadow-sm">
-            <nav className="flex flex-col gap-1">
+          {/* TOP HORIZONTAL NAVIGATION TABS BAR */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-2 shadow-sm sticky top-16 z-30 overflow-x-auto scrollbar-none">
+            <nav className="flex items-center gap-1.5 min-w-max">
               {filteredTabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full text-left px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${activeTab === tab.id ? 'bg-red-600 text-white shadow-lg shadow-red-600/10' : 'text-slate-600 hover:bg-slate-50'}`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex items-center gap-2 ${
+                    activeTab === tab.id 
+                      ? 'bg-[#990000] text-white shadow-md shadow-red-900/20 scale-[1.02]' 
+                      : 'text-slate-600 hover:bg-red-50 hover:text-[#990000]'
+                  }`}
                 >
                   {tab.label}
                 </button>
@@ -237,8 +267,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
           </div>
         </div>
 
-        {/* Right Column: Tab Content */}
-        <div className="flex-grow bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm">
+        {/* MAIN TAB CONTENT (FULL WIDTH) */}
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -251,48 +281,103 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'ozluk' && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-red-950">Kişisel Bilgiler</h3>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900">👤 Kişisel ve İletişim Bilgileri</h3>
+                      <p className="text-xs text-slate-500 font-medium">Kimlik, iletişim ve profil özetinizi buradan güncelleyebilirsiniz.</p>
+                    </div>
                     <button 
                       onClick={handleAiEnhanceSummary}
                       disabled={aiEnhancing}
-                      className="text-xs font-black bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 px-3 py-2 rounded-xl flex items-center gap-1.5 transition disabled:opacity-50"
+                      className="text-xs font-black bg-red-50 text-[#990000] border border-red-100 hover:bg-red-100 px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition disabled:opacity-50"
                     >
-                      {aiEnhancing ? 'Optimize Ediliyor...' : 'AI ile Özeti Düzenle'}
-                      <Wand2 size={12} />
+                      {aiEnhancing ? 'Optimize Ediliyor...' : 'Yapay Zekâ ile Özeti İyileştir'}
+                      <Wand2 size={14} />
                     </button>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-black text-slate-500 uppercase">Özet Bilgi</label>
-                      <textarea 
-                        value={profileData.summary}
-                        onChange={(e) => setProfileData({...profileData, summary: e.target.value})}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-medium focus:outline-none focus:border-indigo-400 min-h-[120px] leading-relaxed"
-                        placeholder="Kendinizi kısaca tanıtın..."
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-2">
-                        <label className="text-xs font-black text-slate-500 uppercase">Telefon Numarası</label>
+                  <div className="space-y-5">
+                    {/* Kimlik & Genel */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-600">Ad Soyad</label>
+                        <input 
+                          type="text" 
+                          value={profileData.name || currentUser?.name || ''}
+                          onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-600">E-Posta Adresi</label>
+                        <input 
+                          type="email" 
+                          value={profileData.email || currentUser?.email || ''}
+                          onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-600">Telefon Numarası</label>
                         <input 
                           type="text" 
                           value={profileData.phone}
                           onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-indigo-400"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          placeholder="+90 5XX XXX XX XX"
                         />
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-xs font-black text-slate-500 uppercase">Kişisel Portfolyo Linki</label>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-600">Doğum Tarihi / Şehir</label>
+                        <input 
+                          type="text" 
+                          value={profileData.birthCity || '15/05/2001 - İstanbul'}
+                          onChange={(e) => setProfileData({...profileData, birthCity: e.target.value})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-600">LinkedIn Profili</label>
+                        <input 
+                          type="text" 
+                          value={profileData.linkedin}
+                          onChange={(e) => setProfileData({...profileData, linkedin: e.target.value})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          placeholder="https://linkedin.com/in/kullanici"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-600">Kişisel Web Sitesi / Portfolyo</label>
                         <input 
                           type="text" 
                           value={profileData.website}
                           onChange={(e) => setProfileData({...profileData, website: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-indigo-400"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          placeholder="https://kisiselsite.com"
                         />
                       </div>
                     </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold text-slate-600">Profesyonel Özet / Biyografi</label>
+                      <textarea 
+                        value={profileData.summary}
+                        onChange={(e) => setProfileData({...profileData, summary: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs font-medium focus:outline-none focus:border-red-500 min-h-[110px] leading-relaxed text-slate-800"
+                        placeholder="Kariyer hedeflerinizi ve uzmanlık alanlarınızı detaylandırın..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-2">
+                    <button 
+                      onClick={() => window.toast && window.toast.success('Kişisel bilgileriniz kaydedildi!')} 
+                      className="px-6 py-2.5 bg-[#990000] text-white text-xs font-bold rounded-xl hover:bg-red-800 transition flex items-center gap-2 shadow-md"
+                    >
+                      <Save size={14} /> Bilgileri Kaydet
+                    </button>
                   </div>
                 </div>
               )}
@@ -301,24 +386,91 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'akademik' && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-red-950">Eğitim Bilgileri</h3>
-                    <button className="text-xs font-black bg-red-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
-                      <Plus size={14} /> Yeni Ekle
-                    </button>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900">🎓 Akademik Geçmiş & Eğitim</h3>
+                      <p className="text-xs text-slate-500 font-medium">Üniversite, fakülte, bölüm ve not ortalamalarınızı ekleyin.</p>
+                    </div>
                   </div>
 
-                  <div className="space-y-4">
+                  {/* Add Education Form */}
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                    <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                      <Plus size={14} className="text-[#990000]" /> Yeni Eğitim Bilgisi Ekle
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <input 
+                        type="text" placeholder="Üniversite / Okul Adı" 
+                        value={newEdu.school} onChange={e => setNewEdu({...newEdu, school: e.target.value})}
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                      />
+                      <input 
+                        type="text" placeholder="Fakülte & Bölüm" 
+                        value={newEdu.major} onChange={e => setNewEdu({...newEdu, major: e.target.value})}
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                      />
+                      <select 
+                        value={newEdu.degree} onChange={e => setNewEdu({...newEdu, degree: e.target.value})}
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                      >
+                        <option value="Lisans">Lisans</option>
+                        <option value="Önlisans">Önlisans</option>
+                        <option value="Yüksek Lisans">Yüksek Lisans</option>
+                        <option value="Doktora">Doktora</option>
+                      </select>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <input 
+                        type="text" placeholder="Başlangıç Yılı (Örn: 2020)" 
+                        value={newEdu.startYear} onChange={e => setNewEdu({...newEdu, startYear: e.target.value})}
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                      />
+                      <input 
+                        type="text" placeholder="Mezuniyet Yılı (Örn: 2024)" 
+                        value={newEdu.endYear} onChange={e => setNewEdu({...newEdu, endYear: e.target.value})}
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                      />
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" placeholder="GPA (Örn: 3.45)" 
+                          value={newEdu.gpa} onChange={e => setNewEdu({...newEdu, gpa: e.target.value})}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (!newEdu.school || !newEdu.major) return;
+                            setProfileData(prev => ({ ...prev, education: [...prev.education, { id: Date.now(), ...newEdu }] }));
+                            setNewEdu({ school: '', major: '', degree: 'Lisans', startYear: '', endYear: '', gpa: '' });
+                            window.toast && window.toast.success('Eğitim bilgisi eklendi!');
+                          }}
+                          className="px-5 bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-red-800 transition shrink-0"
+                        >
+                          Ekle
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Education List */}
+                  <div className="space-y-3">
                     {profileData.education.map(edu => (
-                      <div key={edu.id} className="p-5 rounded-2xl border border-slate-100 bg-slate-50/50 flex justify-between items-start gap-4">
+                      <div key={edu.id} className="p-5 rounded-2xl border border-slate-200 bg-white flex justify-between items-start gap-4 shadow-sm hover:border-red-200 transition">
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-red-600"><GraduationCap size={22}/></div>
+                          <div className="w-11 h-11 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center shrink-0"><GraduationCap size={24}/></div>
                           <div>
-                            <h4 className="font-black text-sm text-red-900">{edu.school}</h4>
-                            <p className="text-xs text-slate-500 font-semibold mt-1">{edu.degree} - {edu.major} ({edu.startYear} - {edu.endYear})</p>
-                            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded mt-2 inline-block">Not Ortalaması: {edu.gpa}</span>
+                            <h4 className="font-black text-sm text-slate-900">{edu.school}</h4>
+                            <p className="text-xs text-slate-600 font-bold mt-1">{edu.degree} - {edu.major}</p>
+                            <div className="flex items-center gap-3 mt-2 text-[11px] font-semibold text-slate-500">
+                              <span>📅 {edu.startYear} - {edu.endYear}</span>
+                              {edu.gpa && <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-black border border-emerald-100">GPA: {edu.gpa}</span>}
+                            </div>
                           </div>
                         </div>
-                        <button className="text-slate-400 hover:text-red-500 transition"><Trash2 size={16}/></button>
+                        <button 
+                          onClick={() => setProfileData(prev => ({ ...prev, education: prev.education.filter(e => e.id !== edu.id) }))}
+                          className="text-slate-400 hover:text-red-600 transition p-1"
+                        >
+                          <Trash2 size={18}/>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -328,43 +480,101 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {/* TAB 3: Deneyim ve Yetenekler */}
               {activeTab === 'staj' && (
                 <div className="space-y-8">
+                  {/* Experience Section */}
                   <div>
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-red-950">İş ve Staj Deneyimleri</h3>
-                      <button className="text-xs font-black bg-red-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl flex items-center gap-1 transition">
-                        <Plus size={14} /> Yeni Ekle
-                      </button>
+                    <div className="border-b border-slate-100 pb-4 mb-4">
+                      <h3 className="text-lg font-black text-slate-900">💼 İş, Staj ve Proje Deneyimleri</h3>
+                      <p className="text-xs text-slate-500 font-medium">Çalıştığınız kurumlar, görev aldığınız projeler ve staj süreçleriniz.</p>
                     </div>
 
-                    <div className="space-y-4">
+                    {/* Add Experience Form */}
+                    <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 mb-5">
+                      <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                        <Plus size={14} className="text-[#990000]" /> Yeni Deneyim Ekle
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input 
+                          type="text" placeholder="Firma / Kurum Adı" 
+                          value={newExp.company} onChange={e => setNewExp({...newExp, company: e.target.value})}
+                          className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                        />
+                        <input 
+                          type="text" placeholder="Pozisyon / Rol" 
+                          value={newExp.role} onChange={e => setNewExp({...newExp, role: e.target.value})}
+                          className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                        />
+                        <select 
+                          value={newExp.type} onChange={e => setNewExp({...newExp, type: e.target.value})}
+                          className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                        >
+                          {EXP_TYPES.map((t, idx) => <option key={idx} value={t}>{t}</option>)}
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <input 
+                          type="text" placeholder="Başlangıç (Örn: 2022)" 
+                          value={newExp.startYear} onChange={e => setNewExp({...newExp, startYear: e.target.value})}
+                          className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                        />
+                        <input 
+                          type="text" placeholder="Bitiş / Devam (Örn: 2023 veya Aktif)" 
+                          value={newExp.endYear} onChange={e => setNewExp({...newExp, endYear: e.target.value})}
+                          className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none"
+                        />
+                        <button 
+                          onClick={() => {
+                            if (!newExp.company || !newExp.role) return;
+                            setProfileData(prev => ({ ...prev, experience: [...prev.experience, { id: Date.now(), ...newExp }] }));
+                            setNewExp({ company: '', role: '', type: 'Tam Zamanlı', startYear: '', endYear: '', desc: '' });
+                            window.toast && window.toast.success('Deneyim bilgisi eklendi!');
+                          }}
+                          className="bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-red-800 transition"
+                        >
+                          Deneyimi Ekle
+                        </button>
+                      </div>
+                      <textarea 
+                        placeholder="Görev tanımı ve başarılarınız..." 
+                        value={newExp.desc} onChange={e => setNewExp({...newExp, desc: e.target.value})}
+                        className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-medium text-slate-800 focus:outline-none min-h-[60px]"
+                      />
+                    </div>
+
+                    <div className="space-y-3">
                       {profileData.experience.map(exp => (
-                        <div key={exp.id} className="p-5 rounded-2xl border border-slate-100 bg-slate-50/50 flex justify-between items-start gap-4">
+                        <div key={exp.id} className="p-5 rounded-2xl border border-slate-200 bg-white flex justify-between items-start gap-4 shadow-sm hover:border-red-200 transition">
                           <div className="flex gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-red-600"><Building2 size={20}/></div>
+                            <div className="w-11 h-11 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center shrink-0"><Building2 size={22}/></div>
                             <div>
-                              <h4 className="font-black text-sm text-red-900">{exp.role}</h4>
-                              <p className="text-xs text-slate-500 font-semibold mt-1">{exp.company} • {exp.type} ({exp.startYear} - {exp.endYear})</p>
-                              <p className="text-xs text-slate-400 font-medium leading-relaxed mt-2.5">{exp.desc}</p>
+                              <h4 className="font-black text-sm text-slate-900">{exp.role}</h4>
+                              <p className="text-xs text-slate-600 font-bold mt-0.5">{exp.company} • <span className="text-[#990000]">{exp.type}</span> ({exp.startYear} - {exp.endYear})</p>
+                              {exp.desc && <p className="text-xs text-slate-500 font-medium leading-relaxed mt-2">{exp.desc}</p>}
                             </div>
                           </div>
-                          <button className="text-slate-400 hover:text-red-500 transition"><Trash2 size={16}/></button>
+                          <button 
+                            onClick={() => setProfileData(prev => ({ ...prev, experience: prev.experience.filter(e => e.id !== exp.id) }))}
+                            className="text-slate-400 hover:text-red-600 transition p-1"
+                          >
+                            <Trash2 size={18}/>
+                          </button>
                         </div>
                       ))}
                     </div>
                   </div>
 
+                  {/* Skills Section */}
                   <div>
-                    <div className="border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-red-950">Yetenekler</h3>
+                    <div className="border-b border-slate-100 pb-3 mb-4">
+                      <h3 className="text-base font-black text-slate-900">⚡ Teknik ve Sosyal Yetenekler</h3>
                     </div>
                     
-                    <div className="flex gap-3 mb-4 max-w-sm">
+                    <div className="flex gap-2 max-w-md mb-4">
                       <input 
                         type="text" 
-                        placeholder="Yetenek yazın..." 
+                        placeholder="Yetenek ekle (Örn: Python, Liderlik, SQL)..." 
                         value={newSkill}
                         onChange={e => setNewSkill(e.target.value)}
-                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
                       />
                       <button 
                         onClick={() => {
@@ -372,7 +582,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           setProfileData(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
                           setNewSkill('');
                         }}
-                        className="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-xs"
+                        className="bg-[#990000] text-white font-bold px-5 py-2.5 rounded-xl text-xs hover:bg-red-800 transition"
                       >
                         Ekle
                       </button>
@@ -380,14 +590,14 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                     <div className="flex flex-wrap gap-2">
                       {profileData.skills.map((skill, idx) => (
-                        <span key={idx} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5">
+                        <span key={idx} className="bg-slate-100 text-slate-800 font-bold px-3.5 py-2 rounded-xl text-xs border border-slate-200 flex items-center gap-2">
                           {skill} 
-                          <span 
+                          <button 
                             onClick={() => setProfileData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }))}
-                            className="text-[10px] text-slate-400 hover:text-red-500 font-bold ml-1"
+                            className="text-slate-400 hover:text-red-600 font-black ml-1 text-xs"
                           >
                             ✕
-                          </span>
+                          </button>
                         </span>
                       ))}
                     </div>
@@ -398,35 +608,38 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {/* TAB 4: Sertifika & Hedefler */}
               {activeTab === 'sertifika' && (
                 <div className="space-y-8">
+                  {/* Certificates */}
                   <div>
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-red-950">Sertifikalar</h3>
+                    <div className="border-b border-slate-100 pb-4 mb-4">
+                      <h3 className="text-lg font-black text-slate-900">🏆 Sertifikalar ve Başarılar</h3>
+                      <p className="text-xs text-slate-500 font-medium">Katıldığınız eğitimler, aldığınız resmi lisans ve rozetler.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
                       <input 
-                        type="text" placeholder="Sertifika Adı" value={newCert.title}
+                        type="text" placeholder="Sertifika / Belge Adı" value={newCert.title}
                         onChange={e => setNewCert({...newCert, title: e.target.value})}
-                        className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:outline-none"
                       />
                       <input 
-                        type="text" placeholder="Kurum" value={newCert.issuer}
+                        type="text" placeholder="Veren Kurum (Örn: Coursera, Google)" value={newCert.issuer}
                         onChange={e => setNewCert({...newCert, issuer: e.target.value})}
-                        className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:outline-none"
                       />
                       <div className="flex gap-2">
                         <input 
                           type="text" placeholder="Yıl" value={newCert.date}
                           onChange={e => setNewCert({...newCert, date: e.target.value})}
-                          className="w-20 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                          className="w-24 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none"
                         />
                         <button 
                           onClick={() => {
                             if (!newCert.title || !newCert.issuer) return;
                             setProfileData(prev => ({ ...prev, certs: [...prev.certs, { id: Date.now(), ...newCert }] }));
                             setNewCert({ title: '', issuer: '', date: '' });
+                            window.toast && window.toast.success('Sertifika eklendi!');
                           }}
-                          className="flex-grow bg-red-600 text-white font-black rounded-xl text-xs"
+                          className="flex-1 bg-[#990000] text-white font-bold rounded-xl text-xs hover:bg-red-800 transition"
                         >
                           Ekle
                         </button>
@@ -435,35 +648,39 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                     <div className="space-y-3">
                       {profileData.certs.map(c => (
-                        <div key={c.id} className="p-4 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between">
-                          <div>
-                            <h4 className="font-bold text-xs text-red-900">{c.title}</h4>
-                            <p className="text-[10px] text-slate-400 mt-0.5">{c.issuer} • {c.date}</p>
+                        <div key={c.id} className="p-4 rounded-2xl border border-slate-200 bg-white flex items-center justify-between shadow-sm">
+                          <div className="flex items-center gap-3">
+                            <Award className="text-[#990000]" size={22} />
+                            <div>
+                              <h4 className="font-black text-xs text-slate-900">{c.title}</h4>
+                              <p className="text-[11px] text-slate-500 font-semibold mt-0.5">{c.issuer} • {c.date}</p>
+                            </div>
                           </div>
                           <button 
                             onClick={() => setProfileData(prev => ({ ...prev, certs: prev.certs.filter(item => item.id !== c.id) }))}
-                            className="text-slate-400 hover:text-red-500 transition"
+                            className="text-slate-400 hover:text-red-600 transition"
                           >
-                            <Trash2 size={14}/>
+                            <Trash2 size={16}/>
                           </button>
                         </div>
                       ))}
                     </div>
                   </div>
 
+                  {/* Career Goals */}
                   <div>
-                    <div className="border-b border-slate-100 pb-4 mb-4">
-                      <h3 className="text-lg font-black text-red-950">Kariyer Hedefleri</h3>
+                    <div className="border-b border-slate-100 pb-3 mb-4">
+                      <h3 className="text-base font-black text-slate-900">🎯 Kariyer Hedefleri</h3>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {profileData.goals.map(g => (
                         <div 
                           key={g.id} 
                           onClick={() => toggleGoal(g.id)}
-                          className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100/70 transition"
+                          className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition"
                         >
-                          <div className={`w-5 h-5 rounded-lg border flex items-center justify-center ${g.done ? 'bg-red-600 border-red-600 text-white' : 'border-slate-300'}`}>
-                            {g.done && <Check size={12} strokeWidth={3} />}
+                          <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition ${g.done ? 'bg-[#990000] border-[#990000] text-white' : 'border-slate-300 bg-white'}`}>
+                            {g.done && <Check size={14} strokeWidth={3} />}
                           </div>
                           <span className={`text-xs font-bold ${g.done ? 'line-through text-slate-400' : 'text-slate-700'}`}>{g.text}</span>
                         </div>
@@ -477,19 +694,20 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'dil' && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-red-950">Yabancı Dil Seviyeleri</h3>
+                    <h3 className="text-lg font-black text-slate-900">🌍 Yabancı Dil Seviyeleri</h3>
+                    <p className="text-xs text-slate-500 font-medium">Bildiğiniz dilleri ve yetkinlik seviyelerinizi tanımlayın.</p>
                   </div>
 
-                  <div className="flex gap-3 max-w-md mb-6">
+                  <div className="flex gap-3 max-w-lg mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-200">
                     <input 
-                      type="text" placeholder="Dil (Örn: Almanca)" value={newLang.name}
+                      type="text" placeholder="Dil Adı (Örn: Almanca, Fransızca)" value={newLang.name}
                       onChange={e => setNewLang({...newLang, name: e.target.value})}
-                      className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                      className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:outline-none"
                     />
                     <select
                       value={newLang.level}
                       onChange={e => setNewLang({...newLang, level: e.target.value})}
-                      className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-indigo-400"
+                      className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 focus:outline-none"
                     >
                       {LANGUAGE_LEVELS.map((lvl, i) => <option key={i} value={lvl}>{lvl}</option>)}
                     </select>
@@ -498,8 +716,9 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         if (!newLang.name) return;
                         setProfileData(prev => ({ ...prev, languages: [...prev.languages, { id: Date.now(), language: newLang.name, level: newLang.level }] }));
                         setNewLang({ name: '', level: 'Orta (B1-B2)' });
+                        window.toast && window.toast.success('Dil eklendi!');
                       }}
-                      className="bg-red-600 text-white font-black px-4 py-2 rounded-xl text-xs"
+                      className="bg-[#990000] text-white font-bold px-5 py-2 rounded-xl text-xs hover:bg-red-800 transition"
                     >
                       Ekle
                     </button>
@@ -507,17 +726,17 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                   <div className="space-y-3">
                     {profileData.languages.map(lang => (
-                      <div key={lang.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex justify-between items-center">
+                      <div key={lang.id} className="p-4 rounded-2xl bg-white border border-slate-200 flex justify-between items-center shadow-sm">
                         <div className="flex items-center gap-3">
-                          <Languages size={18} className="text-slate-400" />
+                          <Languages size={22} className="text-[#990000]" />
                           <div>
-                            <h4 className="font-bold text-xs text-red-900">{lang.language}</h4>
-                            <p className="text-[10px] text-red-600 font-bold uppercase tracking-wider mt-0.5">{lang.level}</p>
+                            <h4 className="font-black text-xs text-slate-900">{lang.language}</h4>
+                            <p className="text-[11px] text-[#990000] font-bold tracking-wider mt-0.5">{lang.level}</p>
                           </div>
                         </div>
                         <button 
                           onClick={() => setProfileData(prev => ({ ...prev, languages: prev.languages.filter(l => l.id !== lang.id) }))}
-                          className="text-slate-400 hover:text-red-500 transition"
+                          className="text-slate-400 hover:text-red-600 transition"
                         >
                           <Trash2 size={16}/>
                         </button>
@@ -558,7 +777,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   <div className="border border-slate-200/80 rounded-2xl bg-white shadow-md p-8 max-w-xl mx-auto font-sans text-slate-700 min-h-[500px]">
                     <div className={`p-4 border-b ${cvTemplate === 'creative' ? 'border-amber-400 bg-amber-50/30' : cvTemplate === 'academic' ? 'border-red-900 bg-slate-50/50' : 'border-red-600 bg-indigo-50/20'} rounded-xl mb-6`}>
                       <h4 className={`text-xl font-black ${cvTemplate === 'creative' ? 'text-amber-800' : cvTemplate === 'academic' ? 'text-red-950' : 'text-indigo-900'}`}>{currentUser?.name || 'Ad Soyad'}</h4>
-                      <p className="text-xs text-slate-500 font-semibold mt-1">Yazılım Mühendisliği Mezunu</p>
+                      <p className="text-xs text-slate-500 font-semibold mt-1">{currentUser?.department || profileData.education[0]?.major || 'İstanbul Esenyurt Üniversitesi Mezunu'}</p>
                       <div className="flex gap-4 mt-2 text-[10px] text-slate-400 font-bold">
                         <span>{profileData.phone}</span>
                         <span>{currentUser?.email}</span>
@@ -597,14 +816,50 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   <div className="flex justify-center mt-6">
                     <button 
                       onClick={() => {
-                        window.toast && window.toast.info("CV Raporu hazırlanıyor...");
-                        setTimeout(() => {
-                          window.toast && window.toast.success("Akıllı CV başarıyla bilgisayarınıza indirildi!");
-                        }, 1200);
+                        window.toast && window.toast.info("Resmî İESÜ Akıllı CV hazırlanıyor...");
+                        exportPDF({
+                          title: `İESÜ Akıllı CV - ${profileData.name || currentUser?.name || 'Mezun'}`,
+                          filename: `IESU_CV_${(profileData.name || currentUser?.name || 'Mezun').replace(/\s+/g, '_')}.pdf`,
+                          sections: [
+                            {
+                              title: "KİŞİSEL BİLGİLER & İLETİŞİM",
+                              content: [
+                                `Ad Soyad: ${profileData.name || currentUser?.name || 'Belirtilmedi'}`,
+                                `E-Posta: ${profileData.email || currentUser?.email || 'Belirtilmedi'}`,
+                                `Telefon: ${profileData.phone || 'Belirtilmedi'}`,
+                                `LinkedIn: ${profileData.linkedin || 'Belirtilmedi'}`,
+                                `GitHub / Portfolyo: ${profileData.github || 'Belirtilmedi'}`
+                              ]
+                            },
+                            {
+                              title: "PROFESYONEL ÖZET",
+                              content: [profileData.summary || 'Özet bilgi eklenmedi.']
+                            },
+                            {
+                              title: "AKADEMİK EĞİTİM GEÇMİŞİ",
+                              content: profileData.education.map(e => `${e.school} - ${e.degree} ${e.major} (${e.startYear}-${e.endYear}) [GPA: ${e.gpa || 'N/A'}]`)
+                            },
+                            {
+                              title: "İŞ VE STAJ DENEYİMLERİ",
+                              content: profileData.experience.map(exp => `${exp.role} @ ${exp.company} (${exp.type}) [${exp.startYear}-${exp.endYear}]\n- ${exp.desc}`)
+                            },
+                            {
+                              title: "YETENEKLER & YABANCI DİLLER",
+                              content: [
+                                `Yetenekler: ${profileData.skills.join(', ')}`,
+                                `Yabancı Diller: ${profileData.languages.map(l => `${l.language} (${l.level})`).join(', ')}`
+                              ]
+                            },
+                            {
+                              title: "SERTİFİKALAR",
+                              content: profileData.certs.map(c => `${c.title} - ${c.issuer} (${c.date})`)
+                            }
+                          ]
+                        });
                       }}
-                      className="bg-red-950 hover:bg-red-900 text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg flex items-center gap-1.5"
+                      className="bg-[#990000] hover:bg-red-800 text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg flex items-center gap-2"
                     >
-                      <Download size={14} /> PDF Olarak Dışa Aktar
+                      <Download size={16} /> Resmî İESÜ PDF CV İndir
                     </button>
                   </div>
                 </div>
@@ -613,83 +868,368 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {/* TAB 7: Kariyer Check-up */}
               {activeTab === 'kariyer_checkup' && (
                 <div className="space-y-6">
-                  <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-red-950">Kariyer Check-up Analizi (12 Soru)</h3>
+                  <div className="bg-gradient-to-br from-[#0A2342] via-[#0d2d54] to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-blue-900/50">
+                    <div className="absolute top-0 right-0 w-72 h-72 bg-[#990000]/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div>
+                        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#990000] text-white text-[11px] font-black uppercase tracking-wider rounded-xl mb-3 shadow-md">
+                          <Compass size={14} /> Mezunlara Özel Paneli
+                        </span>
+                        <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                          Kariyer Check-up & Envanter Formu
+                        </h3>
+                        <p className="text-xs sm:text-sm text-blue-100/90 mt-2 max-w-2xl leading-relaxed font-medium">
+                          12 soruluk tek tık Kariyer Check-up formunu doldurarak istihdam durumunuzu, sektör konumunuzu ve kariyer hedeflerinizi Kariyer Geliştirme Koordinatörlüğü'ne iletin.
+                        </p>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-md px-5 py-4 rounded-2xl border border-white/10 text-center shrink-0">
+                        <div className="text-2xl font-black text-amber-300">12 / 12</div>
+                        <div className="text-[10px] uppercase font-bold tracking-wider text-blue-200">Tek Ekran Paneli</div>
+                      </div>
+                    </div>
                   </div>
 
                   {!checkupCompleted ? (
-                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm max-w-xl mx-auto">
-                      <div className="flex justify-between items-center mb-6">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-red-600">Soru {checkupStep + 1} / {CHECKUP_QUESTIONS.length}</span>
-                        <div className="w-24 bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                          <div 
-                            className="bg-red-600 h-full transition-all duration-300" 
-                            style={{ width: `${((checkupStep + 1) / CHECKUP_QUESTIONS.length) * 100}%` }}
+                    <form 
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const record = {
+                          id: `CHECKUP-${Date.now()}`,
+                          name: currentUser?.name || 'Mezun',
+                          graduationYear: currentUser?.graduationYear || '2024',
+                          department: currentUser?.department || 'Bilgisayar Mühendisliği',
+                          employed: checkupAnswers[1] || 'Evet',
+                          jobTiming: checkupAnswers[2] || 'Belirtilmedi',
+                          sector: checkupAnswers[3] || 'Belirtilmedi',
+                          companyType: checkupAnswers[4] || 'Belirtilmedi',
+                          title: checkupAnswers[5] || 'Belirtilmedi',
+                          relatedToMajor: checkupAnswers[6] || 'Evet',
+                          newJobTitleIfNo: checkupAnswers['6_sub'] || '-',
+                          city: checkupAnswers[7] || 'Belirtilmedi',
+                          workMode: checkupAnswers[8] || 'Belirtilmedi',
+                          postgrad: checkupAnswers[9] || 'Hayır',
+                          phoneUpdated: checkupAnswers[10] || 'Evet',
+                          newPhone: checkupAnswers['10_sub'] || currentUser?.phone || '-',
+                          emailUpdated: checkupAnswers[11] || 'Evet',
+                          newEmail: checkupAnswers['11_sub'] || currentUser?.email || '-',
+                          notes: checkupAnswers[12] || 'Görüş belirtilmedi.',
+                          date: new Date().toLocaleString('tr-TR')
+                        };
+
+                        if (addCheckupRecord) {
+                          addCheckupRecord(record);
+                        }
+                        setCheckupCompleted(true);
+                        if (window.toast) window.toast.success("🧭 Kariyer Check-up yanıtlarınız kaydedildi ve yönetici paneline iletildi!");
+                      }} 
+                      className="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-sm space-y-8"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Question 1 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            1. Şu anda aktif olarak çalışıyor musunuz?
+                          </label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {["Evet", "Hayır"].map(opt => (
+                              <button
+                                key={opt}
+                                type="button"
+                                onClick={() => setCheckupAnswers({ ...checkupAnswers, 1: opt })}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[1] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Question 2 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            2. İlk işinizi mezun olduktan ne kadar süre sonra buldunuz?
+                          </label>
+                          <select
+                            value={checkupAnswers[2] || ''}
+                            onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 2: e.target.value })}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            required
+                          >
+                            <option value="">Seçiniz...</option>
+                            <option value="Mezun Olmadan Önce">Mezun Olmadan Önce</option>
+                            <option value="0 - 3 Ay İçinde">0 - 3 Ay İçinde</option>
+                            <option value="3 - 6 Ay İçinde">3 - 6 Ay İçinde</option>
+                            <option value="6 Ay ve Üzeri">6 Ay ve Üzeri</option>
+                          </select>
+                        </div>
+
+                        {/* Question 3 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            3. Çalıştığınız sektör
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Örn: Teknoloji & Yazılım, Finans, Sağlık..."
+                            value={checkupAnswers[3] || ''}
+                            onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 3: e.target.value })}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            required
                           />
                         </div>
-                      </div>
 
-                      <h4 className="font-black text-red-900 text-sm sm:text-base leading-relaxed mb-6">
-                        {CHECKUP_QUESTIONS[checkupStep].text}
-                      </h4>
+                        {/* Question 4 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            4. Çalıştığınız kurumun türü
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Örn: Özel Şirket, Kamu Kurumu, Kendi İşletmem..."
+                            value={checkupAnswers[4] || ''}
+                            onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 4: e.target.value })}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            required
+                          />
+                        </div>
 
-                      <div className="space-y-3">
-                        {CHECKUP_QUESTIONS[checkupStep].options.map((opt, i) => (
-                          <button
-                            key={i}
-                            onClick={() => handleCheckupAnswer(opt)}
-                            className="w-full text-left p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-red-500 hover:bg-indigo-50/20 text-xs sm:text-sm font-bold text-slate-700 transition"
+                        {/* Question 5 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            5. Mevcut göreviniz / ünvanınız
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Örn: Yazılım Uzmanı, Ürün Yöneticisi..."
+                            value={checkupAnswers[5] || ''}
+                            onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 5: e.target.value })}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            required
+                          />
+                        </div>
+
+                        {/* Question 6 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            6. Çalıştığınız iş mezun olduğunuz bölümle ilişkili mi?
+                          </label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {["Evet", "Hayır"].map(opt => (
+                              <button
+                                key={opt}
+                                type="button"
+                                onClick={() => setCheckupAnswers({ ...checkupAnswers, 6: opt })}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[6] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
+                          {checkupAnswers[6] === 'Hayır' && (
+                            <div className="pt-2 animate-fade-in">
+                              <label className="text-[11px] font-bold text-[#990000] block mb-1">
+                                Şu an ne iş yapıyorsunuz? (Mevcut Alan / Meslek)
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Örn: Gayrimenkul Danışmanı, Dijital İçerik Üreticisi..."
+                                value={checkupAnswers['6_sub'] || ''}
+                                onChange={(e) => setCheckupAnswers({ ...checkupAnswers, '6_sub': e.target.value })}
+                                className="w-full bg-white border border-red-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                                required
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Question 7 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            7. Çalıştığınız il / ülke
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Örn: İstanbul / Türkiye, Berlin / Almanya..."
+                            value={checkupAnswers[7] || ''}
+                            onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 7: e.target.value })}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            required
+                          />
+                        </div>
+
+                        {/* Question 8 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            8. Çalışma şekliniz
+                          </label>
+                          <select
+                            value={checkupAnswers[8] || ''}
+                            onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 8: e.target.value })}
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            required
                           >
-                            {opt}
-                          </button>
-                        ))}
+                            <option value="">Seçiniz...</option>
+                            <option value="Hibrit">Hibrit</option>
+                            <option value="Uzaktan (Remote)">Uzaktan (Remote)</option>
+                            <option value="Ofisten">Ofisten</option>
+                            <option value="Serbest / Freelance">Serbest / Freelance</option>
+                          </select>
+                        </div>
+
+                        {/* Question 9 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            9. Lisansüstü eğitim alıyor musunuz?
+                          </label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {["Evet", "Hayır"].map(opt => (
+                              <button
+                                key={opt}
+                                type="button"
+                                onClick={() => setCheckupAnswers({ ...checkupAnswers, 9: opt })}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[9] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Question 10 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            10. Telefon numaranız güncel mi?
+                          </label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {["Evet", "Hayır"].map(opt => (
+                              <button
+                                key={opt}
+                                type="button"
+                                onClick={() => setCheckupAnswers({ ...checkupAnswers, 10: opt })}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[10] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
+                          {checkupAnswers[10] === 'Hayır' && (
+                            <div className="pt-2 animate-fade-in">
+                              <label className="text-[11px] font-bold text-[#990000] block mb-1">
+                                Yeni Telefon Numarası
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="+90 5XX XXX XX XX"
+                                value={checkupAnswers['10_sub'] || ''}
+                                onChange={(e) => setCheckupAnswers({ ...checkupAnswers, '10_sub': e.target.value })}
+                                className="w-full bg-white border border-red-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                                required
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Question 11 */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                          <label className="text-xs font-black text-slate-900 block leading-snug">
+                            11. E-posta adresiniz güncel mi?
+                          </label>
+                          <div className="grid grid-cols-2 gap-3">
+                            {["Evet", "Hayır"].map(opt => (
+                              <button
+                                key={opt}
+                                type="button"
+                                onClick={() => setCheckupAnswers({ ...checkupAnswers, 11: opt })}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[11] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                              >
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
+                          {checkupAnswers[11] === 'Hayır' && (
+                            <div className="pt-2 animate-fade-in">
+                              <label className="text-[11px] font-bold text-[#990000] block mb-1">
+                                Yeni E-Posta Adresi
+                              </label>
+                              <input
+                                type="email"
+                                placeholder="yeni.eposta@gmail.com"
+                                value={checkupAnswers['11_sub'] || ''}
+                                onChange={(e) => setCheckupAnswers({ ...checkupAnswers, '11_sub': e.target.value })}
+                                className="w-full bg-white border border-red-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                                required
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+
+                      {/* Question 12 (Full width Textarea) */}
+                      <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                        <label className="text-xs font-black text-slate-900 block leading-snug">
+                          12. Üniversitemize veya Kariyer Merkezimize iletmek istediğiniz görüş ve önerileriniz var mı?
+                        </label>
+                        <textarea
+                          rows={3}
+                          placeholder="Görüş, istek ve önerilerinizi buraya yazabilirsiniz..."
+                          value={checkupAnswers[12] || ''}
+                          onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 12: e.target.value })}
+                          className="w-full bg-white border border-slate-200 rounded-xl p-3.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-red-600 resize-none"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-4 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-sm uppercase tracking-widest transition shadow-xl cursor-pointer active:scale-98 flex items-center justify-center gap-2"
+                      >
+                        <CheckCircle size={18} /> Kariyer Check-up Formunu Gönder
+                      </button>
+                    </form>
                   ) : (
-                    <div className="space-y-6">
-                      <div className="bg-indigo-50 border border-indigo-100 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-sm">
-                        <div className="w-20 h-20 rounded-2xl bg-white shadow-md flex items-center justify-center shrink-0 text-red-600">
-                          <Compass size={36} />
+                    <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 space-y-6 shadow-sm">
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6">
+                        <div className="w-20 h-20 rounded-2xl bg-emerald-600 text-white shadow-md flex items-center justify-center shrink-0 font-black text-2xl">
+                          ✓
                         </div>
                         <div>
-                          <h4 className="font-black text-indigo-950 text-sm md:text-base mb-1">Mevcut Kariyer Sağlığı Endeksi: %92</h4>
-                          <p className="text-xs text-indigo-800 font-semibold leading-relaxed">
-                            Yeteneklerin, projelerin ve mezun başarı endeksin analiz edilerek pazar değerin hesaplandı. Harika bir durumdasın!
+                          <h4 className="font-black text-emerald-950 text-base mb-1">Check-up Analiziniz Tamamlandı & Kaydedildi!</h4>
+                          <p className="text-xs text-emerald-800 font-semibold leading-relaxed">
+                            Formdaki yanıtlarınız Kariyer Geliştirme Koordinatörlüğü mezun veri tabanına işlendi. İhtiyaç duyduğunuz anda koordinatörlük uzmanlarımız sizinle iletişime geçecektir.
                           </p>
                         </div>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs font-black text-red-900">1. Sektör Trendlerine Uyum</span>
-                            <span className="text-xs font-black text-red-600">%95</span>
+                            <span className="text-xs font-black text-slate-900">Sektörel İstihdam Derecesi</span>
+                            <span className="text-xs font-black text-emerald-600">%95</span>
                           </div>
-                          <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-red-600 h-full w-[95%]"></div>
+                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div className="bg-emerald-600 h-full w-[95%]"></div>
                           </div>
                         </div>
-                        <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs font-black text-red-900">2. Proje Pratikliği & Kod Kalitesi</span>
-                            <span className="text-xs font-black text-emerald-600">%88</span>
+                            <span className="text-xs font-black text-slate-900">Profil & İletişim Güncelliği</span>
+                            <span className="text-xs font-black text-[#990000]">%100</span>
                           </div>
-                          <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-emerald-500 h-full w-[88%]"></div>
+                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div className="bg-[#990000] h-full w-[100%]"></div>
                           </div>
                         </div>
                       </div>
 
                       <div className="flex justify-center">
                         <button
+                          type="button"
                           onClick={() => {
-                            setCheckupStep(0);
                             setCheckupCompleted(false);
                             setCheckupAnswers({});
                           }}
-                          className="px-6 py-2.5 bg-red-950 hover:bg-red-900 text-white rounded-xl text-xs font-black uppercase tracking-widest transition"
+                          className="px-6 py-3 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-black uppercase tracking-widest transition cursor-pointer"
                         >
-                          Analizi Yeniden Başlat
+                          Formu Yeniden Düzenle
                         </button>
                       </div>
                     </div>
@@ -701,41 +1241,124 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'mezun_kart' && (
                 <div className="space-y-6 flex flex-col items-center">
                   <div className="border-b border-slate-100 pb-4 w-full">
-                    <h3 className="text-lg font-black text-red-950">Dijital İESÜ Mezun Kart</h3>
+                    <h3 className="text-lg font-black text-slate-900">💳 Resmî İESÜ Mezun Kart Başvurusu</h3>
+                    <p className="text-xs text-slate-500 font-medium">Kampüs geçişleri, kütüphane kullanımı, sosyal tesis ayrıcalıkları ve dijital cüzdan kimliği için Mezun Kart talebi oluşturabilirsiniz.</p>
                   </div>
 
                   {cardAppStatus === 'form' && (
-                    <form onSubmit={handleCardApplication} className="w-full max-w-md bg-slate-50 border border-slate-200 p-6 rounded-3xl space-y-4">
-                      <h4 className="font-black text-sm text-red-900 mb-2">Akıllı Mezun Kart Başvuru Formu</h4>
+                    <form onSubmit={handleCardApplication} className="w-full max-w-xl bg-slate-50 border border-slate-200 p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm">
+                      <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-2">
+                        <CreditCard className="text-[#990000]" size={24} />
+                        <div>
+                          <h4 className="font-black text-sm text-slate-900">Mezun Kart Talep Formu</h4>
+                          <p className="text-[11px] text-slate-500 font-medium">Bilgileriniz Öğrenci İşleri ve Mezun Takip Sistemi verileriyle doğrulanır.</p>
+                        </div>
+                      </div>
                       
-                      <div className="flex flex-col gap-2">
-                        <label className="text-xs font-black text-slate-500 uppercase">Ad Soyad</label>
-                        <input 
-                          type="text" 
-                          value={cardForm.name} 
-                          onChange={e => setCardForm({...cardForm, name: e.target.value})}
-                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Ad Soyad</label>
+                          <input 
+                            type="text" 
+                            value={cardForm.name} 
+                            onChange={e => setCardForm({...cardForm, name: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            placeholder="Ad Soyad"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">T.C. Kimlik / Pasaport No</label>
+                          <input 
+                            type="text" 
+                            value={cardForm.tcNo} 
+                            onChange={e => setCardForm({...cardForm, tcNo: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            placeholder="11 haneli T.C. No"
+                          />
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-2">
-                          <label className="text-xs font-black text-slate-500 uppercase">Bölüm</label>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Mezun Olunan Bölüm</label>
                           <input 
                             type="text" 
                             value={cardForm.dept} 
                             onChange={e => setCardForm({...cardForm, dept: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
                           />
                         </div>
-                        <div className="flex flex-col gap-2">
-                          <label className="text-xs font-black text-slate-500 uppercase">Öğrenci No</label>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Mezuniyet Yılı</label>
+                          <input 
+                            type="text" 
+                            value={cardForm.gradYear} 
+                            onChange={e => setCardForm({...cardForm, gradYear: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Öğrenci / Mezun No</label>
                           <input 
                             type="text" 
                             value={cardForm.studentId} 
                             onChange={e => setCardForm({...cardForm, studentId: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
                           />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Telefon Numarası</label>
+                          <input 
+                            type="text" 
+                            value={cardForm.phone} 
+                            onChange={e => setCardForm({...cardForm, phone: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            placeholder="+90 5XX XXX XX XX"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">E-Posta Adresi</label>
+                          <input 
+                            type="email" 
+                            value={cardForm.email} 
+                            onChange={e => setCardForm({...cardForm, email: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Teslimat Tercihi */}
+                      <div className="flex flex-col gap-1.5 pt-2">
+                        <label className="text-xs font-bold text-slate-700">Kart Formatı & Teslimat Tercihi</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-3 transition ${cardForm.deliveryType === 'digital' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                            <input 
+                              type="radio" 
+                              name="delivery" 
+                              checked={cardForm.deliveryType === 'digital'}
+                              onChange={() => setCardForm({...cardForm, deliveryType: 'digital'})}
+                            />
+                            <div>
+                              <span className="block text-xs font-black">Dijital Kart (Anında Aktif)</span>
+                              <span className="block text-[10px] opacity-75 font-medium">QR kod ile anında cüzdanıma eklensin</span>
+                            </div>
+                          </label>
+
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-3 transition ${cardForm.deliveryType === 'physical' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                            <input 
+                              type="radio" 
+                              name="delivery" 
+                              checked={cardForm.deliveryType === 'physical'}
+                              onChange={() => setCardForm({...cardForm, deliveryType: 'physical'})}
+                            />
+                            <div>
+                              <span className="block text-xs font-black">Fiziksel Kart + Dijital</span>
+                              <span className="block text-[10px] opacity-75 font-medium">Adresime kargo ile gönderilsin</span>
+                            </div>
+                          </label>
                         </div>
                       </div>
 
@@ -745,28 +1368,28 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           id="agree"
                           checked={cardForm.agreed} 
                           onChange={e => setCardForm({...cardForm, agreed: e.target.checked})}
-                          className="mt-1"
+                          className="mt-1 accent-[#990000]"
                         />
-                        <label htmlFor="agree" className="text-[10px] text-slate-500 leading-relaxed font-bold">
-                          Mezun bilgilerimin akıllı sözleşme standartlarında İESÜ Mezuniyet Ağına yazılmasını onaylıyorum.
+                        <label htmlFor="agree" className="text-[11px] text-slate-600 leading-relaxed font-bold">
+                          Mezuniyet beyanımın Öğrenci İşleri kayıtlarıyla doğrulanmasını ve İESÜ Mezun Kimlik Kartı şartlarını kabul ediyorum.
                         </label>
                       </div>
 
                       <button
                         type="submit"
-                        className="w-full py-3 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4"
+                        className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md mt-4"
                       >
-                        Akıllı Kartı Oluştur & Dağıt
+                        Mezun Kart Başvurusunu Tamamla
                       </button>
                     </form>
                   )}
 
                   {cardAppStatus === 'loading' && (
                     <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="w-12 h-12 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mb-4"></div>
-                      <h4 className="font-black text-red-900 mb-1">Kartınız Dağıtılıyor...</h4>
-                      <p className="text-slate-400 text-xs max-w-xs leading-relaxed font-semibold">
-                        Kimlik verileriniz kriptografik olarak imzalanıp İESÜ Mezun DAG ağına yazılıyor.
+                      <div className="w-12 h-12 border-4 border-slate-200 border-t-[#990000] rounded-full animate-spin mb-4"></div>
+                      <h4 className="font-black text-slate-900 mb-1">Başvurunuz İşleniyor...</h4>
+                      <p className="text-slate-500 text-xs max-w-xs leading-relaxed font-semibold">
+                        Öğrenci İşleri ve Mezun Bilgi Sistemi kayıtları kontrol edilerek kartınız tanımlanıyor.
                       </p>
                     </div>
                   )}
@@ -848,6 +1471,191 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         Yeni Başvuru Yap
                       </button>
                     </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB: Mezun Derneği Başvurusu */}
+              {activeTab === 'mezun_dernek_basvuru' && (
+                <div className="space-y-6 flex flex-col items-center">
+                  <div className="border-b border-slate-100 pb-4 w-full">
+                    <h3 className="text-lg font-black text-slate-900">🏛️ Mezunlar Derneği Üyelik & Ekip Başvurusu</h3>
+                    <p className="text-xs text-slate-500 font-medium">
+                      İstanbul Esenyurt Üniversitesi Mezunlar Derneği'ne resmî üyelik başvurusu yapabilir veya dernek yönetim ekibinde görev almak için aday olabilirsiniz.
+                    </p>
+                  </div>
+
+                  {assocAppSubmitted ? (
+                    <div className="w-full max-w-xl py-12 px-6 bg-slate-50 border border-slate-200 rounded-3xl text-center space-y-4 shadow-sm">
+                      <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-100">
+                        <CheckCircle size={32} />
+                      </div>
+                      <h4 className="font-black text-slate-900 text-base">Başvurunuz Başarıyla İletildi!</h4>
+                      <p className="text-slate-500 text-xs font-semibold max-w-md mx-auto leading-relaxed">
+                        Mezunlar Derneği Yönetim Kurulu başvurunuzu inceledikten sonra e-posta ve telefon üzerinden sizinle iletişime geçecektir. Katkılarınız için teşekkür ederiz.
+                      </p>
+                      <button 
+                        onClick={() => setAssocAppSubmitted(false)}
+                        className="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-xs font-bold transition"
+                      >
+                        Yeni Başvuru Formu Aç
+                      </button>
+                    </div>
+                  ) : (
+                    <form 
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (!assocForm.name || !assocForm.phone || !assocForm.email || !assocForm.agreed) {
+                          window.toast && window.toast.error("Lütfen zorunlu alanları doldurun ve KVKK onayını işaretleyin.");
+                          return;
+                        }
+                        const newApp = {
+                          id: `app-assoc-${Date.now()}`,
+                          name: assocForm.name,
+                          type: assocForm.type,
+                          department: assocForm.department || currentUser?.department || 'İşletme ve Yönetim Bilimleri',
+                          graduationYear: assocForm.gradYear || '2024',
+                          email: assocForm.email,
+                          phone: assocForm.phone,
+                          notes: assocForm.notes,
+                          appliedAt: new Date().toLocaleDateString('tr-TR'),
+                          status: 'Beklemede'
+                        };
+                        setAlumniAssocApplications([newApp, ...(alumniAssocApplications || [])]);
+                        setAssocAppSubmitted(true);
+                        window.toast && window.toast.success("🏛️ Mezun Derneği başvurunuz yönetim kuruluna iletildi!");
+                      }} 
+                      className="w-full max-w-xl bg-slate-50 border border-slate-200 p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm"
+                    >
+                      <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-2">
+                        <Users className="text-[#990000]" size={24} />
+                        <div>
+                          <h4 className="font-black text-sm text-slate-900">Dernek Katılım & Adaylık Formu</h4>
+                          <p className="text-[11px] text-slate-500 font-medium">Resmî Dernek Tüzüğü ve Yönetim Kurulu değerlendirmesi için.</p>
+                        </div>
+                      </div>
+
+                      {/* Başvuru Türü Seçimi */}
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-700">Başvuru Niteliği</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2.5 transition ${assocForm.type === 'Genel Üyelik' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                            <input 
+                              type="radio" 
+                              name="assoc_type" 
+                              checked={assocForm.type === 'Genel Üyelik'}
+                              onChange={() => setAssocForm({...assocForm, type: 'Genel Üyelik'})}
+                            />
+                            <div>
+                              <span className="block text-xs font-black">Genel Dernek Üyeliği</span>
+                              <span className="block text-[10px] opacity-75 font-medium">Dernek ağında resmi üye olarak yer al</span>
+                            </div>
+                          </label>
+
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2.5 transition ${assocForm.type === 'Yönetim Ekibi Adaylığı' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                            <input 
+                              type="radio" 
+                              name="assoc_type" 
+                              checked={assocForm.type === 'Yönetim Ekibi Adaylığı'}
+                              onChange={() => setAssocForm({...assocForm, type: 'Yönetim Ekibi Adaylığı'})}
+                            />
+                            <div>
+                              <span className="block text-xs font-black">Yönetim Ekibi Adaylığı</span>
+                              <span className="block text-[10px] opacity-75 font-medium">Dernek projelerinde aktif görev üstlen</span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Ad Soyad</label>
+                          <input 
+                            type="text" 
+                            value={assocForm.name} 
+                            onChange={e => setAssocForm({...assocForm, name: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            placeholder="Ad Soyad"
+                            required
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Bölüm & Program</label>
+                          <input 
+                            type="text" 
+                            value={assocForm.department} 
+                            onChange={e => setAssocForm({...assocForm, department: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            placeholder="Örn: İşletme"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Mezuniyet Yılı</label>
+                          <input 
+                            type="text" 
+                            value={assocForm.gradYear} 
+                            onChange={e => setAssocForm({...assocForm, gradYear: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            placeholder="Örn: 2023"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">Telefon Numarası</label>
+                          <input 
+                            type="text" 
+                            value={assocForm.phone} 
+                            onChange={e => setAssocForm({...assocForm, phone: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            placeholder="+90 5XX XXX XX XX"
+                            required
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-bold text-slate-700">E-Posta Adresi</label>
+                          <input 
+                            type="email" 
+                            value={assocForm.email} 
+                            onChange={e => setAssocForm({...assocForm, email: e.target.value})}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-slate-700">Katkı & Motivasyon Notu (Opsiyonel)</label>
+                        <textarea 
+                          rows={3}
+                          value={assocForm.notes} 
+                          onChange={e => setAssocForm({...assocForm, notes: e.target.value})}
+                          className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500"
+                          placeholder="Dernek çatısı altında yürütmek istediğiniz projeler veya uzmanlık alanlarınız..."
+                        />
+                      </div>
+
+                      <div className="flex items-start gap-2.5 pt-2">
+                        <input 
+                          type="checkbox" 
+                          id="agree_assoc"
+                          checked={assocForm.agreed} 
+                          onChange={e => setAssocForm({...assocForm, agreed: e.target.checked})}
+                          className="mt-1 accent-[#990000]"
+                        />
+                        <label htmlFor="agree_assoc" className="text-[11px] text-slate-600 leading-relaxed font-bold">
+                          Mezunlar Derneği Tüzüğünü okuduğumu ve bilgilerimin Dernek Yönetim Kurulu ile paylaşılmasını onaylıyorum.
+                        </label>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md mt-4"
+                      >
+                        Dernek Başvurusunu Gönder
+                      </button>
+                    </form>
                   )}
                 </div>
               )}

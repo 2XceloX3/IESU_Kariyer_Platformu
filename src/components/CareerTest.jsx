@@ -1,299 +1,388 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, ArrowRight, ChevronLeft, Target, Award, Sparkles, Zap, Rocket, Star } from 'lucide-react';
-import Logo from './Logo';
+import { Brain, ArrowRight, ChevronLeft, Target, Award, Sparkles, Zap, Rocket, Star, CheckCircle2, FileText, User, Building, Compass } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
-import useAppStore from '../store/useAppStore';
 
-const QUESTIONS = [
+const FORM_QUESTIONS = [
   {
     id: 1,
-    text: "Bir problemle karşılaştığında ilk yaklaşımın nedir?",
+    category: "Problem Çözme & Analiz",
+    question: " Bir karmaşık problemle karşılaştığınızda ilk yaklaşımınız nedir?",
     options: [
-      { text: "Verileri analiz eder, mantıksal bir çözüm ararım.", traits: { logic: 10, creative: 2 } },
-      { text: "Hemen farklı, alışılagelmişin dışında yollar denerim.", traits: { creative: 10, logic: 2 } },
-      { text: "Takım arkadaşlarımla konuşur, beyin fırtınası yaparım.", traits: { social: 10, logic: 4 } },
-      { text: "Benzer problemlerin nasıl çözüldüğüne bakar, uygularım.", traits: { practical: 10, logic: 6 } }
+      { text: "Verileri ve geçmiş istatistikleri detaylıca analiz eder, mantıksal bir yol haritası çizerim.", traits: { logic: 10, creative: 2 } },
+      { text: "Yaratıcı, yenilikçi ve alışılagelmişin dışında yollar denerim.", traits: { creative: 10, logic: 2 } },
+      { text: "Takım arkadaşlarımla konuşur, beyin fırtınası yaparak ortak akılla ilerlerim.", traits: { social: 10, logic: 4 } },
+      { text: "Sahaya iner, pratik çözümü hızlıca uygular ve deneme-yanılmayla ilerlerim.", traits: { practical: 10, logic: 6 } }
     ]
   },
   {
     id: 2,
-    text: "Çalışma ortamında en çok neye önem verirsin?",
+    category: "Çalışma Ortamı Tercihi",
+    question: " Size en çok ilham veren ve veriminizi artıran çalışma ortamı hangisidir?",
     options: [
-      { text: "Sıfırdan bir şeyler üretme özgürlüğüne.", traits: { creative: 8, practical: 2 } },
-      { text: "Sistematik, net kuralları olan bir düzene.", traits: { logic: 8, practical: 6 } },
-      { text: "İletişimin ve sosyalliğin yüksek olduğu sıcak bir ekibe.", traits: { social: 10, logic: 2 } },
-      { text: "Hızlı sonuç alınan, tempolu ve rekabetçi bir ortama.", traits: { practical: 8, creative: 4 } }
+      { text: "Sıfırdan özgürce bir şeyler üretme imkanı sunan yenilikçi tasarım ve Ar-Ge alanı.", traits: { creative: 8, practical: 2 } },
+      { text: "Kuralları, iş süreçleri ve sistematik yapısı net belirlenmiş düzenli kurumsal ortam.", traits: { logic: 8, practical: 6 } },
+      { text: "İletişimin, yardımlaşmanın ve sosyalleşmenin yüksek olduğu dinamik ekip ortamı.", traits: { social: 10, logic: 2 } },
+      { text: "Hızlı sonuç alınan, tempolu, yüksek enerjili ve rekabetçi yapı.", traits: { practical: 8, creative: 4 } }
     ]
   },
   {
     id: 3,
-    text: "Yeni bir konuyu öğrenirken hangi yöntemi tercih edersin?",
+    category: "Öğrenme & Gelişim Tarzı",
+    question: " Yeni bir uzmanlık alanını veya teknolojiyi öğrenirken hangisini tercih edersiniz?",
     options: [
-      { text: "Dokümantasyon ve teknik makaleler okumak.", traits: { logic: 9, practical: 3 } },
-      { text: "Başkalarının tasarımlarını inceleyip ilham almak.", traits: { creative: 9, social: 3 } },
-      { text: "Grup çalışmaları veya mentor eşliğinde pratik yapmak.", traits: { social: 9, practical: 4 } },
-      { text: "Hemen deneme-yanılma ile sahaya inmek.", traits: { practical: 10, logic: 2 } }
+      { text: "Teknik dokümantasyon, kılavuzlar ve akademik yayınları detaylıca okumak.", traits: { logic: 9, practical: 3 } },
+      { text: "Örnek tasarımları ve dünyadaki başarılı ilham verici projeleri incelemek.", traits: { creative: 9, social: 3 } },
+      { text: "Mentorluk, atölye çalışmaları ve grup etkinliklerine katılarak pratik yapmak.", traits: { social: 9, practical: 4 } },
+      { text: "Doğrudan canlı projenin içerisine girip uygulama yaparak öğrenmek.", traits: { practical: 10, logic: 2 } }
+    ]
+  },
+  {
+    id: 4,
+    category: "Liderlik & Ekip Çalışması",
+    question: " Bir projeyi yönetmeniz veya ekibe liderlik etmeniz istendiğinde odak noktanız ne olur?",
+    options: [
+      { text: "Zaman çizelgesi, risk analizi ve bütçe planlamasının hatasız yürümesi.", traits: { logic: 9, practical: 5 } },
+      { text: "Ekibin yüksek motivasyonu, uyumu ve enerjik iletişimi.", traits: { social: 10, creative: 4 } },
+      { text: "Fark yaratan inovatif fikirler üretmek ve konsepti geliştirmek.", traits: { creative: 10, logic: 3 } },
+      { text: "Hedeflenen çıktıların süresi içerisinde eksiksiz ve eksiksiz teslim edilmesi.", traits: { practical: 10, social: 2 } }
+    ]
+  },
+  {
+    id: 5,
+    category: "Karar Alma Mekanizması",
+    question: " Geleceğe yönelik kritik kararlar alırken neye daha çok güvenirsiniz?",
+    options: [
+      { text: "Sayısal verilere, performans metriklerine ve somut raporlara.", traits: { logic: 10, practical: 3 } },
+      { text: "Sezgilerime, vizyoner bakış açıma ve geleceği öngörme hissiyatıma.", traits: { creative: 10, social: 2 } },
+      { text: "Çevremdeki tecrübeli insanların görüşlerine ve ortak karara.", traits: { social: 10, logic: 3 } },
+      { text: "Geçmiş saha tecrübelerime ve pratik uygulanabilirliğe.", traits: { practical: 10, logic: 4 } }
+    ]
+  },
+  {
+    id: 6,
+    category: "Stres & Kriz Yönetimi",
+    question: " Beklenmedik bir kriz durumu oluştuğunda ilk tepkiniz ne olur?",
+    options: [
+      { text: "Sakin kalır, krizin kök nedenini mantıksal olarak analiz ederim.", traits: { logic: 9, practical: 4 } },
+      { text: "Farklı bir açıdan bakarak kriz durumunu bir fırsata dönüştürürüm.", traits: { creative: 9, social: 3 } },
+      { text: "Ekibi teskin eder, iletişimi ve görev dağılımını hızlıca sağlarım.", traits: { social: 9, logic: 4 } },
+      { text: "Derhal müdahale eder, geçici çözümü anında sahada uygularım.", traits: { practical: 10, logic: 2 } }
     ]
   }
 ];
 
 export default function CareerTest({ setView, currentUser, userRole, setSelectedUserId }) {
-  const [currentStep, setCurrentStep] = useState(0); // 0: intro, 1-3: questions, 4: result
-  const [scores, setScores] = useState({ logic: 0, creative: 0, social: 0, practical: 0 });
+  const [answers, setAnswers] = useState({});
+  const [targetSector, setTargetSector] = useState('yazilim');
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const handleAnswer = (traits) => {
-    const newScores = {
-      logic: scores.logic + (traits.logic || 0),
-      creative: scores.creative + (traits.creative || 0),
-      social: scores.social + (traits.social || 0),
-      practical: scores.practical + (traits.practical || 0),
-    };
-    
-    if (currentStep < QUESTIONS.length) {
-      setScores(newScores);
-      setCurrentStep(prev => prev + 1);
-    } else {
-      setScores(newScores);
-      setIsAnalyzing(true);
-      setTimeout(() => {
-        setIsAnalyzing(false);
-        setCurrentStep(prev => prev + 1);
-      }, 2500);
-    }
+  const handleSelectOption = (questionId, traits, optionIndex) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: { traits, optionIndex }
+    }));
   };
+
+  const calculateScores = () => {
+    const scores = { logic: 0, creative: 0, social: 0, practical: 0 };
+    Object.values(answers).forEach(ans => {
+      if (ans.traits) {
+        scores.logic += ans.traits.logic || 0;
+        scores.creative += ans.traits.creative || 0;
+        scores.social += ans.traits.social || 0;
+        scores.practical += ans.traits.practical || 0;
+      }
+    });
+    return scores;
+  };
+
+  const handleSubmitForm = (e) => {
+    e.preventDefault();
+    if (Object.keys(answers).length < FORM_QUESTIONS.length) {
+      if (window.toast && window.toast.error) {
+        window.toast.error("Lütfen formdaki tüm soruları yanıtlayınız.");
+      }
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 2000);
+  };
+
+  const scores = calculateScores();
 
   const getPersona = () => {
-    const maxTrait = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-    if (maxTrait === 'logic') return { title: 'Sistem Mimarı', icon: <Brain className="text-red-500" size={48} />, desc: 'Analitik zekasıyla karmaşık sorunları çözen stratejist.', color: 'from-red-500 to-red-600', paths: ['Yazılım Geliştirme', 'Veri Bilimi', 'Finansal Analiz'] };
-    if (maxTrait === 'creative') return { title: 'Vizyoner Tasarımcı', icon: <Sparkles className="text-purple-500" size={48} />, desc: 'Sınırları zorlayan, inovatif ve sanatsal düşünen yaratıcı güç.', color: 'from-purple-500 to-pink-600', paths: ['UI/UX Tasarım', 'Pazarlama İletişimi', 'Oyun Tasarımı'] };
-    if (maxTrait === 'social') return { title: 'Lider & Takım Oyuncusu', icon: <Target className="text-emerald-500" size={48} />, desc: 'İnsanları bir araya getiren, iletişimi güçlü organizatör.', color: 'from-emerald-400 to-teal-600', paths: ['İnsan Kaynakları', 'Proje Yöneticisi', 'Satış & İş Geliştirme'] };
-    return { title: 'Uygulama Uzmanı', icon: <Rocket className="text-orange-500" size={48} />, desc: 'Düşünceleri anında eyleme döken, sonuç odaklı hız makinesi.', color: 'from-orange-400 to-red-500', paths: ['Operasyon Yönetimi', 'Girişimcilik', 'Saha Mühendisliği'] };
+    const maxTrait = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b, 'logic');
+    if (maxTrait === 'logic') return { title: 'Sistem Mimarı & Analist', icon: <Brain className="text-[#990000]" size={48} />, desc: 'Analitik zekasıyla karmaşık sorunları çözen, veri odaklı stratejist.', color: 'from-red-600 to-red-800', paths: ['Yazılım & Sistem Mühendisliği', 'Veri Bilimi & Yapay Zeka', 'Finansal Analiz & Danışmanlık'] };
+    if (maxTrait === 'creative') return { title: 'Vizyoner Tasarımcı & İnovatör', icon: <Sparkles className="text-purple-600" size={48} />, desc: 'Sınırları zorlayan, yenilikçi ve sanatsal düşünen yaratıcı güç.', color: 'from-purple-600 to-indigo-800', paths: ['UI/UX & Dijital Ürün Tasarımı', 'Pazarlama & İletişim Stratejisi', 'Oyun & Medya Tasarımı'] };
+    if (maxTrait === 'social') return { title: 'Lider & İletişim Yöneticisi', icon: <Target className="text-emerald-600" size={48} />, desc: 'İnsanları bir araya getiren, güçlü iletişime sahip organizatör.', color: 'from-emerald-600 to-teal-800', paths: ['İnsan Kaynakları & Yetenek Yönetimi', 'Proje & Ürün Yöneticiliği', 'Satış & Kurumsal İş Geliştirme'] };
+    return { title: 'Uygulama & Operasyon Uzmanı', icon: <Rocket className="text-amber-600" size={48} />, desc: 'Fikirleri anında sahaya döken, sonuç odaklı dinamik uygulayıcı.', color: 'from-amber-600 to-orange-800', paths: ['Operasyon & Tedarik Zinciri', 'Girişimcilik & Startup Yönetimi', 'Saha & Üretim Mühendisliği'] };
   };
 
-  const DrawRadarChart = () => {
-    // Normalize scores to max 30
-    const maxScore = 30;
-    const l = (scores.logic / maxScore) * 100;
-    const c = (scores.creative / maxScore) * 100;
-    const s = (scores.social / maxScore) * 100;
-    const p = (scores.practical / maxScore) * 100;
-    
-    // Calculate coordinates for polygon (100x100 box, center 50,50)
-    // Points: Logic(top), Creative(right), Practical(bottom), Social(left)
-    const points = `
-      50,${50 - (l/2)} 
-      ${50 + (c/2)},50 
-      50,${50 + (p/2)} 
-      ${50 - (s/2)},50
-    `;
-
-    return (
-      <div className="relative w-48 h-48 mx-auto my-8">
-        <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-45">
-          {/* Base Grid */}
-          <polygon points="50,0 100,50 50,100 0,50" fill="none" stroke="#e5e7eb" strokeWidth="1"/>
-          <polygon points="50,25 75,50 50,75 25,50" fill="none" stroke="#e5e7eb" strokeWidth="1"/>
-          
-          {/* Axis lines */}
-          <line x1="50" y1="0" x2="50" y2="100" stroke="#e5e7eb" strokeWidth="1"/>
-          <line x1="0" y1="50" x2="100" y2="50" stroke="#e5e7eb" strokeWidth="1"/>
-          
-          {/* Data Polygon */}
-          <polygon 
-            points={points} 
-            fill="rgba(99, 102, 241, 0.4)" 
-            stroke="#4f46e5" 
-            strokeWidth="2"
-            className="drop-shadow-[0_0_10px_rgba(79,70,229,0.5)] transition-all duration-1000"
-          />
-        </svg>
-        
-        {/* Labels outside SVG so they don't rotate */}
-        <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-gray-500">Mantık</span>
-        <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-gray-500">Pratik</span>
-        <span className="absolute top-1/2 -right-12 -translate-y-1/2 text-xs font-bold text-gray-500">Yaratıcı</span>
-        <span className="absolute top-1/2 -left-12 -translate-y-1/2 text-xs font-bold text-gray-500">Sosyal</span>
-      </div>
-    );
-  };
+  const isFormComplete = Object.keys(answers).length === FORM_QUESTIONS.length;
+  const completedCount = Object.keys(answers).length;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans">
-      <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      {/* Header */}
+      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 transition"
+            className="p-2 rounded-xl bg-slate-100 text-gray-600 hover:bg-slate-200 transition"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <Brain className="text-red-600" size={24} />
-            <h1 className="font-black text-gray-900">Anka Kariyer Analizi</h1>
+            <FileText className="text-[#990000]" size={22} />
+            <h1 className="font-extrabold text-gray-900 text-base sm:text-lg">Kariyer & Yetkinlik Değerlendirme Formu</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <AnimatePresence mode="wait">
-          
-          {/* STEP 0: INTRO */}
-          {currentStep === 0 && (
-            <motion.div 
-              key="intro"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="max-w-xl w-full text-center"
-            >
-              <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600 shadow-inner">
-                <Brain size={48} />
+      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 md:p-8">
+        
+        {/* LOADING SCREEN */}
+        {isAnalyzing && (
+          <div className="bg-white rounded-3xl p-12 shadow-xl text-center border border-slate-200 my-12 animate-fade-in">
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-60" />
+              <div className="relative bg-[#990000] text-white rounded-full p-5 shadow-lg flex items-center justify-center h-full">
+                <Zap size={36} className="animate-pulse" />
               </div>
-              <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Potansiyelini Keşfet!</h2>
-              <p className="text-lg text-gray-600 mb-10 leading-relaxed">
-                Yapay zeka motorumuz Anka, bilişsel seçimlerini analiz ederek kariyer arketipini belirliyor. Sadece 3 soruda gerçek yetenek alanını keşfet.
-              </p>
-              <button 
-                onClick={() => setCurrentStep(1)}
-                className="bg-[#990000] text-white px-8 py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-900/20 transition-all flex items-center justify-center gap-2 mx-auto group"
-              >
-                Analize Başla <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-            </motion.div>
-          )}
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 mb-2">Formunuz Analiz Ediliyor...</h3>
+            <p className="text-sm text-gray-500 font-medium">Bilişsel tercihleriniz ve yetkinlik profiliniz haritalandırılıyor.</p>
+          </div>
+        )}
 
-          {/* STEPS 1-3: QUESTIONS */}
-          {currentStep > 0 && currentStep <= QUESTIONS.length && (
-            <motion.div 
-              key={`q-${currentStep}`}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              className="max-w-2xl w-full"
-            >
-              <div className="mb-8 flex justify-between items-center">
-                <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Soru {currentStep} / {QUESTIONS.length}</span>
-                <div className="flex gap-1">
-                  {[1,2,3].map(i => (
-                    <div key={i} className={`h-1.5 w-8 rounded-full ${i <= currentStep ? 'bg-red-600' : 'bg-gray-200'}`} />
-                  ))}
+        {/* RESULTS VIEW */}
+        {isSubmitted && !isAnalyzing && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-3xl shadow-xl p-6 sm:p-10 border border-slate-200/80 relative overflow-hidden"
+          >
+            <div className="text-center mb-8 border-b border-slate-100 pb-6">
+              <span className="inline-block px-4 py-1.5 bg-red-50 text-[#990000] border border-red-100 rounded-full text-xs font-black uppercase tracking-wider mb-4">
+                ✅ Kariyer Analiz Raporunuz Hazır
+              </span>
+              <div className="flex justify-center mb-4">
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center bg-gradient-to-br ${getPersona().color} text-white shadow-xl`}>
+                  {React.cloneElement(getPersona().icon, { className: 'text-white' })}
                 </div>
               </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">
+                Profiliniz: <span className="text-[#990000]">{getPersona().title}</span>
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto font-medium">
+                {getPersona().desc}
+              </p>
+            </div>
 
-              <h3 className="text-2xl font-black text-gray-900 mb-8 leading-tight">
-                {QUESTIONS[currentStep - 1].text}
+            <div className="mb-8">
+              <h3 className="font-extrabold text-gray-900 mb-4 text-base flex items-center gap-2">
+                <Compass className="text-[#990000]" size={18} /> Önerilen Kariyer & Uzmanlık Yolları
               </h3>
-
-              <div className="space-y-4">
-                {QUESTIONS[currentStep - 1].options.map((opt, idx) => (
-                  <button 
-                    key={idx}
-                    onClick={() => handleAnswer(opt.traits)}
-                    className="w-full text-left p-5 bg-white border border-gray-200 rounded-2xl hover:border-red-500 hover:shadow-md hover:bg-indigo-50/30 transition-all group"
-                  >
-                    <span className="flex items-center gap-4">
-                      <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold group-hover:bg-indigo-100 group-hover:text-red-600 transition-colors">
-                        {String.fromCharCode(65 + idx)}
-                      </span>
-                      <span className="text-gray-700 font-medium text-lg">{opt.text}</span>
-                    </span>
-                  </button>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {getPersona().paths.map((path, idx) => (
+                  <div key={idx} className="bg-slate-50 border border-slate-200 p-4 rounded-2xl flex items-center gap-3 shadow-sm">
+                    <Star className="text-amber-500 fill-amber-400 shrink-0" size={18} />
+                    <span className="font-bold text-gray-800 text-xs sm:text-sm">{path}</span>
+                  </div>
                 ))}
               </div>
-            </motion.div>
-          )}
+            </div>
 
-          {/* STEP 4: ANALYZING LOADING */}
-          {isAnalyzing && (
-             <motion.div 
-              key="analyzing"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center"
-             >
-               <div className="relative w-24 h-24 mx-auto mb-6">
-                 <div className="absolute inset-0 bg-indigo-100 rounded-full animate-ping opacity-50" />
-                 <div className="relative bg-white rounded-full p-6 border-4 border-indigo-50 shadow-sm flex items-center justify-center h-full">
-                   <Zap size={40} className="text-red-600 animate-pulse" />
-                 </div>
-               </div>
-               <h3 className="text-2xl font-black text-gray-900 mb-2">Anka Analiz Ediyor...</h3>
-               <p className="text-gray-500">Nöral ağlar cevaplarını işliyor.</p>
-             </motion.div>
-          )}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+              <button 
+                onClick={() => { setIsSubmitted(false); setAnswers({}); }}
+                className="w-full bg-slate-100 hover:bg-slate-200 text-gray-700 py-3.5 rounded-xl font-bold text-sm transition"
+              >
+                Formu Yeniden Doldur
+              </button>
+              <button 
+                onClick={() => setView('jobs')}
+                className="w-full bg-[#990000] text-white py-3.5 rounded-xl font-bold text-sm hover:bg-red-800 transition shadow-md"
+              >
+                Uygun Staj & İş İlanlarını İncele
+              </button>
+            </div>
+          </motion.div>
+        )}
 
-          {/* STEP 5: RESULT */}
-          {currentStep > QUESTIONS.length && !isAnalyzing && (
-            <motion.div 
-              key="result"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="max-w-3xl w-full bg-white rounded-2xl shadow-2xl p-8 lg:p-12 border border-gray-100 relative overflow-hidden text-center"
-            >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -z-10 -translate-y-1/2 translate-x-1/2" />
+        {/* MAIN SINGLE-PAGE FORM */}
+        {!isSubmitted && !isAnalyzing && (
+          <form onSubmit={handleSubmitForm} className="space-y-6">
+            
+            {/* Form Banner Header */}
+            <div className="bg-gradient-to-r from-[#8F0808] to-[#990000] rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                  <Brain size={22} className="text-white" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-red-200">İnteraktif Form</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
+                Kariyer & Beceriler Bilgi Formu
+              </h2>
+              <p className="text-xs sm:text-sm text-red-100 font-normal leading-relaxed max-w-2xl">
+                Aşağıdaki formda yer alan yetkinlik ve çalışma tarzı sorularını doldurarak kişiselleştirilmiş kariyer haritanızı ve sektör uyum raporunuzu anında oluşturabilirsiniz.
+              </p>
+
+              {/* Progress Indicator */}
+              <div className="mt-6 pt-4 border-t border-white/20 flex items-center justify-between text-xs font-bold text-red-100">
+                <span>Tamamlanan: {completedCount} / {FORM_QUESTIONS.length} Soru</span>
+                <div className="w-36 h-2 bg-white/20 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-white transition-all duration-300 rounded-full" 
+                    style={{ width: `${(completedCount / FORM_QUESTIONS.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 1: PERSONAL & PREFERENCE INFO */}
+            <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80">
+              <h3 className="font-extrabold text-gray-900 text-base mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
+                <User className="text-[#990000]" size={18} /> Bölüm 1: Genel Bilgiler & Hedef Sektör
+              </h3>
               
-              <div className="mb-2">
-                <span className="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-full text-sm font-black uppercase tracking-wider mb-6">
-                  Analiz Sonucu
-                </span>
-              </div>
-
-              <div className="flex justify-center mb-4">
-                <div className={`w-24 h-24 rounded-xl flex items-center justify-center bg-gradient-to-br ${getPersona().color} text-white shadow-xl`}>
-                   {React.cloneElement(getPersona().icon, { className: 'text-white' })}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Ad Soyad</label>
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={currentUser?.name || 'Öğrenci Kullanıcı'}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-gray-700" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Bölüm / Program</label>
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={currentUser?.department || 'Yazılım Mühendisliği'}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-gray-700" 
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Hedeflediğiniz Ana Sektör</label>
+                  <select 
+                    value={targetSector} 
+                    onChange={(e) => setTargetSector(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                  >
+                    <option value="yazilim">Yazılım, Bilişim & Yapay Zeka</option>
+                    <option value="tasarim">Tasarım, UI/UX & Dijital Medya</option>
+                    <option value="muhendislik">Mühendislik & Mimarlık</option>
+                    <option value="isletme">İşletme, Finans & Pazarlama</option>
+                    <option value="saglik">Sağlık & Sosyal Hizmetler</option>
+                  </select>
                 </div>
               </div>
+            </div>
 
-              <h2 className="text-2xl font-black text-gray-900 mb-2">Sen Bir <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600">"{getPersona().title}"</span>sin!</h2>
-              <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto">{getPersona().desc}</p>
-
-              <div className="bg-gray-50 rounded-xl p-8 mb-8">
-                <h3 className="font-black text-gray-900 mb-2">Yetenek Haritası</h3>
-                <DrawRadarChart />
+            {/* SECTION 2: SPREAD QUESTIONS FORM CARDS */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-extrabold text-gray-900 text-base flex items-center gap-2">
+                  <Brain className="text-[#990000]" size={18} /> Bölüm 2: Yetkinlik & Yaklaşım Değerlendirmesi
+                </h3>
+                <span className="text-xs text-gray-500 font-medium">Tüm seçenekler zorunludur</span>
               </div>
 
-              <div className="mb-8">
-                <h3 className="font-black text-gray-900 mb-4 text-left">Sana En Uygun Kariyer Yolları:</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {getPersona().paths.map((path, idx) => (
-                    <div key={idx} className="bg-white border-2 border-indigo-50 p-4 rounded-xl flex items-center gap-3">
-                      <Star className="text-amber-400" size={20} />
-                      <span className="font-bold text-gray-800 text-sm">{path}</span>
+              {FORM_QUESTIONS.map((q, qIdx) => {
+                const selected = answers[q.id];
+
+                return (
+                  <div 
+                    key={q.id} 
+                    className={`bg-white rounded-2xl p-5 sm:p-6 border transition-all ${
+                      selected ? 'border-red-200 shadow-sm' : 'border-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[11px] font-bold text-[#990000] bg-red-50 px-2.5 py-1 rounded-md uppercase tracking-wider">
+                        {q.category}
+                      </span>
+                      {selected && (
+                        <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                          <CheckCircle2 size={14} /> Yanıtlandı
+                        </span>
+                      )}
                     </div>
-                  ))}
-                </div>
+
+                    <h4 className="font-bold text-sm sm:text-base text-gray-900 mb-4 leading-snug">
+                      {q.id}. {q.question}
+                    </h4>
+
+                    <div className="space-y-2.5">
+                      {q.options.map((opt, optIdx) => {
+                        const isSelectedOption = selected?.optionIndex === optIdx;
+
+                        return (
+                          <div 
+                            key={optIdx}
+                            onClick={() => handleSelectOption(q.id, opt.traits, optIdx)}
+                            className={`p-3.5 rounded-xl cursor-pointer transition-all border flex items-start gap-3 ${
+                              isSelectedOption 
+                                ? 'bg-red-50/60 border-[#990000] text-gray-900 shadow-sm' 
+                                : 'bg-slate-50/60 border-slate-200 hover:border-red-200 hover:bg-white text-gray-700'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition ${
+                              isSelectedOption ? 'border-[#990000] bg-[#990000] text-white' : 'border-slate-300 bg-white'
+                            }`}>
+                              {isSelectedOption && <div className="w-2 h-2 rounded-full bg-white" />}
+                            </div>
+                            <span className="text-xs sm:text-sm font-medium leading-relaxed">
+                              {opt.text}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* SUBMIT BUTTON FOOTER */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+              <div>
+                <p className="text-xs font-bold text-gray-900">Form Tamamlama Durumu:</p>
+                <p className="text-xs text-gray-500 font-medium">
+                  {isFormComplete ? '✅ Tüm sorular yanıtlandı. Raporunuzu oluşturabilirsiniz.' : `Eksik kalan ${FORM_QUESTIONS.length - completedCount} soruyu yanıtlayınız.`}
+                </p>
               </div>
 
-              <div className="flex flex-col gap-3">
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.toast && window.toast.info(`Anka AI: ${getPersona().title} profiline sahip en başarılı mentorlar taranıyor...`);
-                    setTimeout(() => {
-                      window.toast && window.toast.success("✅ AI Eşleşmesi: Sizinle aynı profilde %94 uyumlu 2 mentora otomatik tanışma isteği gönderildi.");
-                    }, 2500);
-                  }}
-                  className="w-full bg-indigo-50 hover:bg-indigo-100 border-2 border-indigo-100 text-indigo-700 py-4 rounded-2xl font-black text-lg transition flex items-center justify-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                  Bu Profile Uygun AI Mentor Bul
-                </button>
-                <button 
-                  onClick={() => setView('jobs')}
-                  className="w-full bg-[#990000] text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 transition shadow-lg shadow-indigo-900/20"
-                >
-                  Bu Yollara Uygun İlanları Gör
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={!isFormComplete}
+                className={`px-8 py-3.5 rounded-xl font-bold text-sm transition flex items-center gap-2 shrink-0 ${
+                  isFormComplete 
+                    ? 'bg-[#990000] hover:bg-red-800 text-white shadow-md cursor-pointer' 
+                    : 'bg-slate-200 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                <span>Analizi Tamamla & Rapor Al</span>
+                <ArrowRight size={16} />
+              </button>
+            </div>
 
-            </motion.div>
-          )}
+          </form>
+        )}
 
-        </AnimatePresence>
       </main>
     </div>
   );

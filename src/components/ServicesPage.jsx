@@ -1,260 +1,193 @@
 import React, { useState } from 'react';
 import { 
-  ChevronLeft, Server, Utensils, Briefcase, GraduationCap, ArrowRight, ShieldCheck, 
-  HeartPulse, BookOpen, Globe2, Sparkles, Building2, Zap, Activity, Award, Eye, 
-  CheckCircle2, Search, Target, Users, X, FileText, Compass, Star, Lock
+  Briefcase, GraduationCap, ArrowRight, ShieldCheck, 
+  BookOpen, Globe2, Sparkles, Building2, Zap, Award, Eye, 
+  CheckCircle2, Search, Target, Users, X, FileText, ChevronRight, Phone, Mail, MapPin, ExternalLink, Calendar, HelpCircle
 } from 'lucide-react';
-import TopProfileMenu from './TopProfileMenu';
 import MainHeader from './MainHeader';
-
-const CATEGORIES = ['Tümü', 'Kariyer & Gelecek', 'Akademik & Ar-Ge', 'Bilişim & Altyapı', 'Sağlık & Yaşam'];
-
-const SERVICES_CATALOG = [
-  {
-    id: 'career_counseling',
-    title: "Kariyer & Özgeçmiş Danışmanlığı",
-    category: "Kariyer & Gelecek",
-    tagline: "Bireysel Kariyer Haritası & Yapay Zeka Uyum Analizi",
-    desc: "1-on-1 Profesyonel kariyer koçluğu, yetkinlik envanter testi, ATS uyumlu CV tasarımı ve mülakat simülasyonları.",
-    view: "mentor_booking",
-    badge: "🔥 4 Uzman Çevrimiçi",
-    gradient: "from-red-600 to-red-700",
-    glowColor: "rgba(99,102,241,0.15)",
-    icon: <Briefcase className="text-red-600" size={26} />,
-    previewData: {
-      title: "Kariyer & Danışmanlık Modülü İç Görünümü",
-      subtitle: "Öğrencilerimiz İçin Hazırlanan Özel Araçlar",
-      stats: [
-        { label: "1-on-1 Mentor Randevusu", val: "Ücretsiz" },
-        { label: "AI CV Puanlama Hızı", val: "3 Saniye" },
-        { label: "Mezun İstihdam Oranı", val: "%94.8" }
-      ],
-      features: [
-        "ATS (Aday Takip Sistemi) Filtre Geçecek CV Formatları",
-        "Uzman Kariyer Danışmanlarıyla Birebir Görüntülü Randevu",
-        "Sektörel Yetkinlik ve Kişilik Envanter Testleri",
-        "Mülakat Provası ve Canlı Beden Dili Geri Bildirimi"
-      ]
-    }
-  },
-  {
-    id: 'research_os',
-    title: "Research OS & Akademik Ar-Ge Merkezi",
-    category: "Akademik & Ar-Ge",
-    tagline: "110+ Laboratuvar & Scopus/YÖK Makale Havuzu",
-    desc: "Üniversitemizin 110+ gelişmiş Ar-Ge laboratuvarından ekipman rezerve edin, uluslararası yayınları ve TÜBİTAK proje çağrılarını inceleyin.",
-    view: "research_hub",
-    badge: "🔬 110+ Lab Hazır",
-    gradient: "from-purple-600 to-indigo-800",
-    glowColor: "rgba(168,85,247,0.15)",
-    icon: <Search className="text-purple-600" size={26} />,
-    previewData: {
-      title: "Research OS & Lab Rezervasyon Ekosistemi",
-      subtitle: "Geleceğin Bilim İnsanları ve Araştırmacıları İçin",
-      stats: [
-        { label: "Aktif Laboratuvar", val: "110+" },
-        { label: "Yıllık Scopus Yayın", val: "1.450+" },
-        { label: "BAP/TÜBİTAK Bütçesi", val: "25M ₺" }
-      ],
-      features: [
-        "Laboratuvar Cihaz ve Ekipman Canlı Takvimi",
-        "YÖK ve Scopus İndeksli Üniversite Yayın Otomasyonu",
-        "Öğrenci Proje Çağrıları ve Burs Başvuru Portalı",
-        "Disiplinlerarası Akademik Takım Eşleştirme"
-      ]
-    }
-  },
-  {
-    id: 'bidb_tech',
-    title: "BİDB 10Gbps Bilişim & Altyapı",
-    category: "Bilişim & Altyapı",
-    tagline: "Yüksek Hızlı Fiber Ağ & 7/24 Teknik Bilet",
-    desc: "Kampüs içi Wi-Fi 6 kablosuz internet, OBİS Öğrenci Bilgi Sistemi, LMS Uzaktan Eğitim sunucu izleme ve canlı arıza destek sistemi.",
-    view: "bidb_status",
-    badge: "⚡ 10Gbps Aktif",
-    gradient: "from-amber-500 to-orange-700",
-    glowColor: "rgba(245,158,11,0.15)",
-    icon: <Server className="text-amber-600" size={26} />,
-    previewData: {
-      title: "BİDB Bilişim Altyapısı & Canlı Sistem HUD",
-      subtitle: "Kesintisiz Yüksek Hızlı İnternet ve Dijital Sunucular",
-      stats: [
-        { label: "Hat Kapasitesi", val: "10 Gbps" },
-        { label: "Sunucu Erişilebilirliği", val: "%99.98" },
-        { label: "Destek Yanıt Süresi", val: "12 Dk" }
-      ],
-      features: [
-        "Kampüs Geneli Wi-Fi 6 Anlık Sinyal Haritası",
-        "OBİS, LMS ve Kütüphane Sunucu Durumu Ticker'ı",
-        "Öğrenci E-posta ve Microsoft 365 Ücretsiz Lisansı",
-        "1-Tıkla BİDB Bilişim Destek Bileti Oluşturma"
-      ]
-    }
-  },
-  {
-    id: 'sksdb_health',
-    title: "SKSDB Öğrenci Sağlık & BMI Diyetisyen",
-    category: "Sağlık & Yaşam",
-    tagline: "İdeal Kilo Hesabı & Mediko-Sosyal Randevu",
-    desc: "Öğrencilerimize özel Vücut Kitle İndeksi (BMI) analizi, bazal metabolizma hızı takibi ve Mediko-Sosyal diyetisyeninden ücretsiz randevu.",
-    view: "sksdb_lunch",
-    badge: "🩺 Ücretsiz Randevu",
-    gradient: "from-emerald-600 to-teal-800",
-    glowColor: "rgba(16,185,129,0.15)",
-    icon: <Utensils className="text-emerald-600" size={26} />,
-    previewData: {
-      title: "SKSDB Sağlıklı Yaşam & Diyetisyen Portalı",
-      subtitle: "Öğrenci Sağlığı ve Beslenme Rehberi",
-      stats: [
-        { label: "Diyetisyen Randevusu", val: "Ücretsiz" },
-        { label: "BMI Analiz Süresi", val: "Anında" },
-        { label: "Günlük Kalori Hesabı", val: "Kişiye Özel" }
-      ],
-      features: [
-        "BMR (Bazal Metabolizma) & Hedef Kalori Hesaplama",
-        "Üniversite Mediko-Sosyal Diyetisyen Randevu Formu",
-        "Günlük Diyetisyen Tarafından Onaylanan Menü Analizi",
-        "Sağlıklı Yaşam ve Spor Kompleksi Üyelik Takibi"
-      ]
-    }
-  },
-  {
-    id: 'corporate_agreements',
-    title: "Sektörel Protokoller & Birlik Ağı",
-    category: "Kariyer & Gelecek",
-    tagline: "1.200+ Kurumsal Ortaklık & 77.000+ Mezun Ağı",
-    desc: "Sektörün lider holding ve teknoloji firmalarıyla staj anlaşmaları, mezun takip sistemi ve Birlik Ağı iş birliği görevleri.",
-    view: "about_us",
-    badge: "🤝 1.200 Anlaşma",
-    gradient: "from-[#990000] to-red-950",
-    glowColor: "rgba(10,35,66,0.2)",
-    icon: <Building2 className="text-[#990000]" size={26} />,
-    previewData: {
-      title: "Kurumsal İşbirlikleri & Mezun İletişim Portalı",
-      subtitle: "77.000+ Mezun ve Dev Şirketlerle Doğrudan Ağ",
-      stats: [
-        { label: "Anlaşmalı Kurum", val: "1.200+" },
-        { label: "Mezun Sayısı", val: "77.000+" },
-        { label: "Uluslararası Akreditasyon", val: "65+" }
-      ],
-      features: [
-        "Global ve Ulusal Şirketlerle Özel Staj Protokolleri",
-        "İESÜ Mezun Kartı ve Dijital Portfolyo Paylaşımı",
-        "Öğrenci Kulüpleri Birlik Ağı Görev Sistemi",
-        "AQAS / AHPGS Uluslararası Eğitim Kalitesi"
-      ]
-    }
-  },
-  {
-    id: 'events_cert',
-    title: "Kariyer Günleri & Dijital Etkinlikler",
-    category: "Kariyer & Gelecek",
-    tagline: "Geleneksel Kariyer Zirvesi & Anında Dijital Bilet",
-    desc: "CEO buluşmaları, teknik atölyeler, sertifikalı webinarlar ve kampüs içi kültür-sanat etkinliklerine katılım bileti oluşturun.",
-    view: "events_list",
-    badge: "🎟️ Canlı Etkinlikler",
-    gradient: "from-cyan-600 to-red-800",
-    glowColor: "rgba(6,182,212,0.15)",
-    icon: <Award className="text-cyan-600" size={26} />,
-    previewData: {
-      title: "Etkinlik & Dijital Bilet Otomasyonu",
-      subtitle: "Sektör Liderleriyle Buluşma ve Akıllı Sertifika",
-      stats: [
-        { label: "Yıllık Etkinlik", val: "350+" },
-        { label: "Dijital Bilet", val: "Anında QR" },
-        { label: "Akıllı Sertifika", val: "Blokzincir" }
-      ],
-      features: [
-        "1-Tıkla Etkinlik Bilet Kaydı ve Takvime Ekleme",
-        "Katılım Sonrası Otomatik Akıllı Sertifika Hesabı",
-        "Soru-Cevap Oturumlarına Canlı Katılım",
-        "Öğrenci Kulüpleri Festival ve Zirve Duyuruları"
-      ]
-    }
-  }
-];
-
-const LIVE_PULSE_LOGS = [
-  "⚡ Ahmet Y. (Yazılım Müh.) Yapay Zeka Mülakat Simülasyonunu tamamladı.",
-  "🩺 Zeynep K. Mediko-Sosyal Diyetisyen randevusunu onayladı.",
-  "🔬 Dr. Öğr. Üyesi S. Kaya Scopus indeksli yeni makalesini Research OS'e ekledi.",
-  "🎓 Caner D. Ulusal Staj Programı başvuru dosyasını güncelledi.",
-  "🎟️ Elif T. 2026 Kariyer Zirvesi için dijital biletini oluşturdu."
-];
+import SubPanelFooter from './SubPanelFooter';
+import useAppStore from '../store/useAppStore';
 
 export default function ServicesPage({ setView, currentUser, userRole, setSelectedUserId }) {
   const [activeCategory, setActiveCategory] = useState('Tümü');
   const [selectedServicePreview, setSelectedServicePreview] = useState(null);
 
-  const filteredServices = SERVICES_CATALOG.filter(s => 
+  // Resmî esenyurt.edu.tr Hizmet Kataloğu
+  const OFFICIAL_SERVICES = [
+    {
+      id: 'bireysel_danismanlik',
+      title: "Bireysel Kariyer Danışmanlığı",
+      category: "Rehberlik & Koçluk",
+      badge: "🎯 Birebir Görüşme",
+      desc: "Öğrencilerimizin üniversiteye başladıkları ilk günden itibaren güçlü yönlerini ve kariyer hedeflerini belirlemelerine yardımcı olan 1-on-1 uzman rehberliği.",
+      gradient: "from-[#990000] to-red-950",
+      icon: <Briefcase className="text-[#990000]" size={26} />,
+      view: "mentor_booking",
+      previewData: {
+        subtitle: "Öğrenciye Özel Kariyer Yol Haritası",
+        stats: [
+          { label: "Danışmanlık Ücreti", val: "Ücretsiz" },
+          { label: "Görüşme Süresi", val: "45 Dakika" },
+          { label: "Memnuniyet Oranı", val: "%98.5" }
+        ],
+        features: [
+          "Yetkinlik ve Kişilik Envanteri İncelemesi",
+          "Kişiye Özel Sektörel Yetkinlik Analizi",
+          "Bireysel Kariyer Planı & Lisansüstü Hedef Belirleme",
+          "Özgeçmiş (CV) ve Ön Yazı İnceleme Desteği"
+        ]
+      }
+    },
+    {
+      id: 'online_mulakat',
+      title: "Çevrimiçi Mülakat Simülasyonu",
+      category: "İş Dünyasına Hazırlık",
+      badge: "🎥 Canlı Simülasyon",
+      desc: "Gerçek iş hayatı mülakat süreçlerine yönelik dijital prova imkanı. İnsan kaynakları soru kalıpları ile beden dili ve stres yönetimi geribildirimi.",
+      gradient: "from-blue-700 to-indigo-900",
+      icon: <Users className="text-blue-600" size={26} />,
+      view: "interview_sim",
+      previewData: {
+        subtitle: "Gerçek Mülakat Deneyimi ve Beden Dili Analizi",
+        stats: [
+          { label: "Simülasyon Modu", val: "Online" },
+          { label: "Soru Bankası", val: "500+ Soru" },
+          { label: "Geri Bildirim", val: "Anında" }
+        ],
+        features: [
+          "Sektöre Özel İnsan Kaynakları Soru Setleri",
+          "Kamera ve Ses Kaydı Üzerinden Performans Değerlendirmesi",
+          "Yetkinlik Bazlı Mülakat Teknikleri (STAR Metodu)",
+          "Beden Dili, Diksiyon ve Özgüven Geliştirme İpuçları"
+        ]
+      }
+    },
+    {
+      id: 'cv_hazirlama',
+      title: "Etkili Özgeçmiş (CV) & Ön Yazı Eğitimi",
+      category: "İş Dünyasına Hazırlık",
+      badge: "📄 ATS Formatı",
+      desc: "Uluslararası standartlarda, Aday Takip Sistemleri (ATS) uyumlu profesyonel CV hazırlama ve etkili niyet mektubu kaleme alma rehberliği.",
+      gradient: "from-purple-700 to-violet-950",
+      icon: <FileText className="text-purple-600" size={26} />,
+      view: "cvbuilder",
+      previewData: {
+        subtitle: "Profesyonel ve Uluslararası Standartta CV",
+        stats: [
+          { label: "ATS Uyum Formatı", val: "%100 Uyum" },
+          { label: "Desteği Veren", val: "Uzman Kadro" },
+          { label: "Şablon Sayısı", val: "Çoklu Şablon" }
+        ],
+        features: [
+          "Europass ve Kurumsal Şirket Uyumlu Şablonlar",
+          "Anahtar Kelime (Keywords) ve Yetkinlik Vurgulama",
+          "Portfolyo ve Sertifika Ekleme Standartları",
+          "İngilizce Özgeçmiş ve Cover Letter Hazırlama Desteği"
+        ]
+      }
+    },
+    {
+      id: 'staj_destegi',
+      title: "İş ve Staj Olanağı Desteği",
+      category: "İstihdam & Protokoller",
+      badge: "💼 Yetenek Kapısı",
+      desc: "Cumhurbaşkanlığı İnsan Kaynakları Ofisi (Yetenek Kapısı) ve İŞKUR/Eleman.net protokolleri ile öğrencilerimize liyakatli staj ve iş imkanları.",
+      gradient: "from-emerald-700 to-teal-950",
+      icon: <ShieldCheck className="text-emerald-600" size={26} />,
+      view: "jobs",
+      previewData: {
+        subtitle: "Resmî Staj ve İş İlanı Portalı",
+        stats: [
+          { label: "Protokollü Kurum", val: "1.200+" },
+          { label: "CBİKO Entegrasyonu", val: "Aktif" },
+          { label: "Staj Türü", val: "Zorunlu / Gönüllü" }
+        ],
+        features: [
+          "Cumhurbaşkanlığı Ulusal Staj Programı Koordinasyonu",
+          "Kurumsal Şirket Staj Protokolleri ve Kontenjanları",
+          "Zorunlu ve Gönüllü Staj Evrak Prosedür Takibi",
+          "Part-Time ve Tam Zamanlı İş İlanları Erişimi"
+        ]
+      }
+    },
+    {
+      id: 'kariyer_gunleri',
+      title: "Kariyer Fuarları ve Zirveleri",
+      category: "Etkinlik & Ağ Kurma",
+      badge: "🎟️ Şirket Buluşmaları",
+      desc: "Sektör liderleri, insan kaynakları direktörleri ve mezunlarımızı öğrencilerimizle buluşturan geleneksel kariyer fuarları ve networking zirveleri.",
+      gradient: "from-[#990000] to-red-900",
+      icon: <Award className="text-red-600" size={26} />,
+      view: "events_list",
+      previewData: {
+        subtitle: "Sektör Liderleriyle Doğrudan Temas",
+        stats: [
+          { label: "Yıllık Zirve", val: "Geleneksel" },
+          { label: "Katılımcı Firma", val: "100+ Holding" },
+          { label: "Katılım Sertifikası", val: "Dijital" }
+        ],
+        features: [
+          "Geleneksel İstanbul Esenyurt Üniversitesi Kariyer Günleri",
+          "Sektör Temsilcileriyle Yüz Yüze Görüşme ve CV Bırakma",
+          "CEO ve İK Direktörleri Deneyim Paylaşım Panelleri",
+          "İş Dünyası Networking ve İrtibat Kurma Fırsatı"
+        ]
+      }
+    },
+    {
+      id: 'mesleki_seminerler',
+      title: "Sertifikalı Gelişim Seminerleri",
+      category: "Rehberlik & Koçluk",
+      badge: "🎓 Akredite Eğitim",
+      desc: "Sürekli Eğitim Merkezi (SEM) ve uzman eğitmenler iş birliğiyle öğrencilerimizin mesleki ve kişisel becerilerini artıran sertifikalı seminerler.",
+      gradient: "from-amber-600 to-orange-900",
+      icon: <BookOpen className="text-amber-600" size={26} />,
+      view: "sem",
+      previewData: {
+        subtitle: "Becerilerinizi Belgeleyen Sertifika Programları",
+        stats: [
+          { label: "Sertifika Türü", val: "Resmî Onaylı" },
+          { label: "Eğitim Modu", val: "Online / Yüz Yüze" },
+          { label: "Kapsam", val: "Soft & Hard Skills" }
+        ],
+        features: [
+          "Liderlik, İletişim ve Takım Çalışması Atölyeleri",
+          "Dijital Dönüşüm ve Yazılım/Bilişim Seminerleri",
+          "Resmî Sertifika ile Özgeçmiş Güçlendirme",
+          "Sektörel Trendler ve Geleceğin Meslekleri Sunumları"
+        ]
+      }
+    }
+  ];
+
+  const CATEGORIES = ['Tümü', 'Rehberlik & Koçluk', 'İş Dünyasına Hazırlık', 'İstihdam & Protokoller', 'Etkinlik & Ağ Kurma'];
+
+  const filteredServices = OFFICIAL_SERVICES.filter(s => 
     activeCategory === 'Tümü' || s.category === activeCategory
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans relative overflow-x-hidden">
-      {/* Background Aurora Lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-gradient-to-b from-indigo-900/20 via-red-900/10 to-transparent blur-3xl pointer-events-none"></div>
-
-      {/* Top Header Navbar */}
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans">
       <MainHeader setView={setView} />
 
-      {/* Main Container */}
-      <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-10 relative z-10">
+      <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
-        {/* MAGNETIC HERO BANNER (HIGH CURIOSITY) */}
-        <div className="relative bg-gradient-to-r from-slate-950 via-[#0B1A30] to-indigo-950 rounded-3xl p-8 md:p-12 border border-indigo-900/40 shadow-2xl overflow-hidden group">
-          {/* Subtle Grid Background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px]"></div>
-
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-indigo-300 bg-indigo-950/90 px-4 py-1.5 rounded-full border border-indigo-700/50 shadow-inner mb-4">
-                <Zap size={14} className="text-amber-400" />
-                İESÜ Dijital Kampüs Ekosistemi
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
-                Üniversitenizin Tüm Gücü <br/>
-                <span className="bg-gradient-to-r from-indigo-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
-                  Tek Bir Dijital Kapıda.
-                </span>
-              </h2>
-              <p className="text-slate-300 text-xs md:text-sm font-medium mt-3 leading-relaxed">
-                Kariyer danışmanlığından Ar-Ge laboratuvarlarına, BİDB yüksek hızlı bilişimden SKSDB diyetisyen randevusuna kadar üniversitemizin idari ve akademik imkanlarını keşfetmeye başlayın.
-              </p>
-
-              {/* Live Ticker inside Hero */}
-              <div className="mt-6 p-3 bg-red-950/80 backdrop-blur-md rounded-2xl border border-red-900 flex items-center gap-3 text-xs font-semibold text-indigo-200">
-                <span className="flex h-2.5 w-2.5 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                <span className="truncate">{LIVE_PULSE_LOGS[0]}</span>
-              </div>
-            </div>
-
-            {/* Quick Hero Counters */}
-            <div className="grid grid-cols-2 gap-4 lg:w-[320px] shrink-0">
-              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
-                <span className="text-2xl font-black text-indigo-400">77.000+</span>
-                <span className="text-[11px] font-bold text-slate-400 mt-1">Mezun Ağ Lideri</span>
-              </div>
-              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
-                <span className="text-2xl font-black text-purple-400">110+</span>
-                <span className="text-[11px] font-bold text-slate-400 mt-1">Ar-Ge Laboratuvarı</span>
-              </div>
-              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
-                <span className="text-2xl font-black text-emerald-400">1.200+</span>
-                <span className="text-[11px] font-bold text-slate-400 mt-1">Sektör Protokolü</span>
-              </div>
-              <div className="bg-red-950/90 p-5 rounded-2xl border border-red-900 flex flex-col justify-center">
-                <span className="text-2xl font-black text-amber-400">10 Gbps</span>
-                <span className="text-[11px] font-bold text-slate-400 mt-1">BİDB Fiber Ağ</span>
-              </div>
-            </div>
+        {/* Resmî Kurumsal Hero Banner */}
+        <div className="bg-gradient-to-r from-slate-950 via-[#800000] to-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-2xl border border-red-900 relative overflow-hidden">
+          <div className="max-w-3xl relative z-10">
+            <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-950/70 px-4 py-1.5 rounded-full border border-amber-500/40 inline-block mb-3">
+              İSTANBUL ESENYURT ÜNİVERSİTESİ
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black mb-3 tracking-tight leading-tight">
+              Kariyer Geliştirme Ofisi Koordinatörlüğü Hizmetleri
+            </h2>
+            <p className="text-slate-200 text-sm leading-relaxed font-medium">
+              Öğrencilerimizin ve mezunlarımızın kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde resmî destek sunuyoruz.
+            </p>
           </div>
         </div>
 
-        {/* CATEGORY TABS FILTER */}
+        {/* Kategori Filtresi */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {CATEGORIES.map((cat, idx) => (
             <button
@@ -262,8 +195,8 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
               onClick={() => setActiveCategory(cat)}
               className={`px-5 py-2.5 rounded-2xl text-xs font-black tracking-wide transition-all whitespace-nowrap cursor-pointer ${
                 activeCategory === cat 
-                  ? 'bg-gradient-to-r from-red-600 to-red-600 text-white shadow-lg shadow-red-600/30 scale-105' 
-                  : 'bg-red-950/80 text-slate-400 hover:bg-red-900 hover:text-white border border-red-900'
+                  ? 'bg-gradient-to-r from-[#990000] to-[#800000] text-white shadow-lg shadow-red-900/30 scale-105' 
+                  : 'bg-white text-slate-600 hover:bg-red-50 hover:text-[#990000] border border-slate-200 shadow-sm'
               }`}
             >
               {cat}
@@ -271,49 +204,44 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
           ))}
         </div>
 
-        {/* CURIOSITY-INDUCING BENTO MAGNET GRID */}
+        {/* Resmî Hizmet Kartları Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map((srv) => (
             <div 
               key={srv.id}
-              className="bg-[#0B1528] rounded-3xl p-6 border border-red-900/80 shadow-xl hover:shadow-2xl hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
-              style={{ boxShadow: `0 10px 30px -10px ${srv.glowColor}` }}
+              className="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 flex flex-col justify-between group"
             >
-              {/* Top Card Bar */}
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="p-3.5 bg-red-950/90 rounded-2xl border border-red-900 group-hover:scale-110 transition-transform">
+                  <div className="p-3.5 bg-red-50 rounded-2xl border border-red-100 group-hover:scale-110 transition-transform">
                     {srv.icon}
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/60">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#990000] bg-red-50 px-3 py-1 rounded-full border border-red-100">
                     {srv.badge}
                   </span>
                 </div>
 
-                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">
                   {srv.category}
                 </span>
-                <h3 className="text-lg font-black text-white mt-1 mb-2 group-hover:text-indigo-300 transition-colors">
+                <h3 className="text-lg font-black text-slate-900 mb-2 group-hover:text-[#990000] transition-colors">
                   {srv.title}
                 </h3>
-                <p className="text-xs font-bold text-slate-300 leading-snug mb-3">
-                  {srv.tagline}
-                </p>
-                <p className="text-xs font-medium text-slate-400 leading-relaxed mb-6">
+                <p className="text-xs font-medium text-slate-600 leading-relaxed mb-6">
                   {srv.desc}
                 </p>
               </div>
 
-              {/* Action Buttons: Preview Drawer & Direct SPA Navigation */}
-              <div className="flex flex-col gap-2 pt-4 border-t border-red-900/80">
+              {/* Aksiyon Butonları */}
+              <div className="flex flex-col gap-2 pt-4 border-t border-slate-100">
                 <button
                   onClick={() => setSelectedServicePreview(srv)}
-                  className="w-full py-2.5 bg-red-950 hover:bg-red-900 text-indigo-300 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-red-900 cursor-pointer"
+                  className="w-full py-2.5 bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-[#990000] font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-slate-200 cursor-pointer"
                 >
-                  <Eye size={15} /> İç Mimari Önizleme
+                  <Eye size={15} /> Detaylı İncele
                 </button>
                 <button
-                  onClick={() => setView(srv.view)}
+                  onClick={() => setView && setView(srv.view)}
                   className={`w-full py-3 bg-gradient-to-r ${srv.gradient} hover:opacity-95 text-white font-black rounded-xl text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-md cursor-pointer`}
                 >
                   Hizmete Git <ArrowRight size={16} />
@@ -322,72 +250,97 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
             </div>
           ))}
         </div>
+
+        {/* SSS & İletişim Bilgileri */}
+        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-6">
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#990000] bg-red-50 px-3 py-1 rounded-full border border-red-100 inline-block mb-2">
+              Kariyer Danışmanlığı Randevusu
+            </span>
+            <h3 className="text-xl font-black text-slate-900 mb-1">
+              Birebir Danışmanlık ve Destek Almak İster misiniz?
+            </h3>
+            <p className="text-xs font-medium text-slate-500">
+              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak hafta içi her gün hizmetinizdeyiz.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setView && setView('contact_us')}
+            className="bg-[#990000] hover:bg-red-800 text-white font-black px-7 py-3.5 rounded-2xl text-xs uppercase tracking-wider transition shadow-lg shrink-0 flex items-center gap-2 cursor-pointer"
+          >
+            İletişime Geç <ArrowRight size={16} />
+          </button>
+        </div>
+
       </main>
 
-      {/* SERVICE INSPECTION DRAWER MODAL (CURIOSITY & HIGH ENGAGEMENT) */}
+      {/* Detay Popup Modal */}
       {selectedServicePreview && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0B1528] border border-indigo-900/60 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl text-slate-100 relative animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl text-slate-800 relative animate-in fade-in zoom-in-95 duration-200">
             <button 
               onClick={() => setSelectedServicePreview(null)}
-              className="absolute top-6 right-6 p-2 rounded-full bg-red-950 hover:bg-red-900 text-slate-400 hover:text-white transition"
+              className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
             >
               <X size={20} />
             </button>
 
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 bg-indigo-950/80 text-indigo-400 rounded-2xl border border-indigo-900/60">
+              <div className="p-3 bg-red-50 text-[#990000] rounded-2xl border border-red-100">
                 {selectedServicePreview.icon}
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#990000]">
                   {selectedServicePreview.category}
                 </span>
-                <h3 className="text-xl font-black text-white leading-tight">
+                <h3 className="text-xl font-black text-slate-900 leading-tight">
                   {selectedServicePreview.title}
                 </h3>
               </div>
             </div>
 
-            <p className="text-xs font-semibold text-slate-400 mt-2 mb-6">
+            <p className="text-xs font-semibold text-slate-500 mt-2 mb-6">
               {selectedServicePreview.previewData.subtitle}
             </p>
 
-            {/* Metrics */}
+            {/* İstatistik Özetleri */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               {selectedServicePreview.previewData.stats.map((st, i) => (
-                <div key={i} className="bg-red-950 p-3 rounded-2xl border border-red-900 text-center">
-                  <span className="block text-base font-black text-indigo-400">{st.val}</span>
-                  <span className="text-[10px] font-bold text-slate-400">{st.label}</span>
+                <div key={i} className="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
+                  <span className="block text-sm font-black text-[#990000]">{st.val}</span>
+                  <span className="text-[10px] font-bold text-slate-500">{st.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* Feature Checklist */}
+            {/* Hizmet Maddeleri */}
             <div className="space-y-2.5 mb-8">
-              <h4 className="text-xs font-black text-slate-300 uppercase tracking-wider mb-2">Bu Hizmet İçerisinde Neler Var?</h4>
+              <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Hizmet Kapsamı & Özellikleri</h4>
               {selectedServicePreview.previewData.features.map((feat, i) => (
-                <div key={i} className="flex items-center gap-3 text-xs font-medium text-slate-300 bg-red-950/60 p-2.5 rounded-xl border border-red-900/80">
-                  <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                <div key={i} className="flex items-center gap-3 text-xs font-medium text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
                   <span>{feat}</span>
                 </div>
               ))}
             </div>
 
-            {/* Direct Entry Button */}
+            {/* Aksiyon Butonu */}
             <button
               onClick={() => {
                 const targetView = selectedServicePreview.view;
                 setSelectedServicePreview(null);
-                setView(targetView);
+                setView && setView(targetView);
               }}
-              className="w-full py-3.5 bg-gradient-to-r from-red-600 via-red-600 to-indigo-700 hover:opacity-95 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-xl shadow-red-600/20 cursor-pointer"
+              className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-xl cursor-pointer"
             >
-              Hemen Portala Geç & Kullan <ArrowRight size={18} />
+              Hemen Kullan & Başvur <ArrowRight size={18} />
             </button>
           </div>
         </div>
       )}
+
+      <SubPanelFooter setView={setView} />
     </div>
   );
 }

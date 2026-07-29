@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe , ChevronDown , MapPin } from 'lucide-react'
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2 } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -23,8 +23,10 @@ import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
 import DailyQuestsPanel from './DailyQuestsPanel';
 import TeamUpMentorHub from './TeamUpMentorHub';
+import FooterModals from './FooterModals';
 
 export default function StudentFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
+  const [footerModal, setFooterModal] = useState(null);
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
   const stories = useAppStore(state => state.stories);
@@ -46,6 +48,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const academicStaff = useAppStore(state => state.academicStaff);
   const announcements = useAppStore(state => state.announcements);
   const groups = useAppStore(state => state.groups);
+  const featureAlumniAssocToggle = useAppStore(state => state.featureAlumniAssocToggle);
   const setGroups = useAppStore(state => state.setGroups);
   const featureClubsShowcase = useAppStore(state => state.featureClubsShowcase);
   const featureClubApplications = useAppStore(state => state.featureClubApplications);
@@ -69,8 +72,11 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [mentorshipForm, setMentorshipForm] = useState({ title: '', hours: '', mode: 'Online', motivation: '' });
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
-  const [showEventsModal, setShowEventsModal] = useState(false);
+  const [selectedNewsItem, setSelectedNewsItem] = useState(null);
+  const [showAllNewsModal, setShowAllNewsModal] = useState(false);
+
   const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
+  const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
 
   const handleCardSubmit = (e) => {
     e.preventDefault();
@@ -140,7 +146,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 )}
               </div>
             </button>
-            <TopProfileMenu currentUser={currentUser || { name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=EA580C&color=fff' }} userRole={userRole || 'alumni'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="alumni" />
+            <TopProfileMenu currentUser={currentUser || { name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=EA580C&color=fff' }} userRole={userRole || 'alumni'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="student" />
           </div>
         </div>
       </nav>
@@ -151,11 +157,11 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         {/* LEFT PANEL: Profile (Fast Access) */}
         <div className="hidden lg:block w-[300px] shrink-0">
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
-            {userRole === 'admin' ? (
+            {userRole === 'admin' || currentUser?.role === 'admin' ? (
               <div className="p-6 text-center">
                 <div className="relative inline-block mb-2">
                   <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-gray-200 shadow-sm mx-auto p-2">
-                    <img src="/logo.png" alt="Admin" className="w-full h-full object-contain" />
+                    <Logo size="lg" className="w-full h-full justify-center" />
                   </div>
                   <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white p-1.5 rounded-xl shadow-md border-2 border-white">
                     <Crown size={14} />
@@ -183,31 +189,36 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               </div>
             ) : (
               <>
-                <div className="h-24 bg-gradient-to-r from-teal-600 to-emerald-700 relative">
+                <div className="h-24 bg-gradient-to-r from-[#8F0808] to-[#990000] relative">
                   <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-                    <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white">
-                      <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Mezun')}&background=0F766E&color=fff`} alt="User" className="w-full h-full object-cover" />
+                    <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white shadow-md">
+                      <img 
+                        src={(currentUser?.role === 'admin' || currentUser?.avatar === '/logo.png') ? '/iesu-logo.svg' : (currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Mezun')}&background=990000&color=fff`)} 
+                        alt="User" 
+                        className="w-full h-full object-contain p-1" 
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }}
+                      />
                     </div>
                   </div>
                 </div>
                 <div className="pt-14 pb-6 px-6 text-center">
-                  <h2 className="text-[18px] font-black text-gray-900 leading-none mb-1 cursor-pointer hover:text-teal-700 transition">{currentUser?.name || 'Mezun'}</h2>
+                  <h2 className="text-[18px] font-black text-gray-900 leading-none mb-1 cursor-pointer hover:text-[#990000] transition">{currentUser?.name || 'Mezun'}</h2>
                   <p className="text-[13px] font-medium text-gray-500 mb-4">
                     {`${currentUser?.department || 'Mezun'}${currentUser?.graduationYear ? `, ${currentUser.graduationYear}` : ''}`}
                   </p>
                   
-                                    <div className="flex justify-center gap-6 border-y border-gray-50 py-4 mb-4">
+                  <div className="flex justify-center gap-6 border-y border-gray-50 py-4 mb-4">
                     <div className="text-center cursor-pointer group">
                       <p className="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-0.5">Ağım</p>
-                      <p className="text-[16px] font-black text-gray-900 group-hover:text-teal-700 transition">120</p>
+                      <p className="text-[16px] font-black text-gray-900 group-hover:text-[#990000] transition">120</p>
                     </div>
                     <div className="w-px bg-gray-100"></div>
                     <div className="text-center cursor-pointer group">
                       <p className="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-0.5">Gönderi</p>
-                      <p className="text-[16px] font-black text-gray-900 group-hover:text-teal-700 transition">15</p>
+                      <p className="text-[16px] font-black text-gray-900 group-hover:text-[#990000] transition">15</p>
                     </div>
                   </div>
-                  <button onClick={() => setView('user_profile')} className="w-full py-2.5 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors">
+                  <button onClick={() => setView('user_profile')} className="w-full py-2.5 bg-red-50 text-[#990000] hover:bg-red-100 rounded-xl text-[13px] font-bold transition-colors">
                     Kariyer Durumunu Güncelle
                   </button>
                 </div>
@@ -231,61 +242,40 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
         {/* Explore Native View */}
         {activeTab === 'search' && (
-          <ExploreFeed posts={posts} />
+          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} />
         )}
 
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
           
-          {/* STORIES */}
-          <StoriesBar currentUser={currentUser} stories={stories} setStories={setStories} />
-          
-          
-          {/* OGRENCI HIZLI AKSIYONLAR */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
-            <button onClick={() => setActiveTab('cvbuilder')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-red-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-100 transition">
-                <FileText size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-red-600 transition">CV Olustur</span>
-            </button>
-            <button onClick={() => setView?.('jobs')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-emerald-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-100 transition">
-                <Briefcase size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-emerald-600 transition">Staj & Is Bul</span>
-            </button>
-            <button onClick={() => setActiveTab('team_mentor')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-blue-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100 transition">
-                <Users size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-blue-600 transition">Mentor Bul</span>
-            </button>
-            <button onClick={() => setShowEventsModal(true)} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-amber-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-100 transition">
-                <Calendar size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-amber-600 transition">Etkinlikler</span>
-            </button>
-          </div>
 
-                    {/* FEED TABS (LINKEDIN STYLE) */}
-          <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">
+          
+          
+          {/* FEED TABS (LINKEDIN STYLE) */}
+          <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2 overflow-x-auto">
             <button 
               onClick={() => setFeedFilter('for_you')} 
-              className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'for_you' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 ${feedFilter === 'for_you' ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Senin İçin
               {feedFilter === 'for_you' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-red-600 rounded-t-full"></div>}
             </button>
             <button 
               onClick={() => setFeedFilter('following')} 
-              className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'following' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 ${feedFilter === 'following' ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Ağım
               {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-red-600 rounded-t-full"></div>}
             </button>
+            {featureAlumniAssocToggle && (
+              <button 
+                onClick={() => setView('mezun_dernek')} 
+                className={`pb-3 font-bold text-[15px] transition-colors relative shrink-0 text-[#990000] hover:text-red-700 flex items-center gap-1.5`}
+              >
+                <Crown size={16} className="text-amber-500 fill-current" /> Mezunlar Derneği
+              </button>
+            )}
           </div>
 
           {/* FEED POSTS */}
@@ -335,38 +325,54 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
         {/* RIGHT PANEL: Dynamic Data */}
         <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
-          {/* KGM Haberleri (LinkedIn News Style) */}
-          <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-black text-gray-900 text-[15px]">KGM Haberleri</h3>
-              <div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div>
-            </div>
+          {/* KGM Haberleri (Stitch Protocol Redesign) */}
+          <div className="relative bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group mb-6">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/5 rounded-full blur-3xl -mr-10 -mt-10 transition-transform duration-700 group-hover:scale-150 pointer-events-none"></div>
             
-            <div className="flex flex-col gap-3">
-              {[
-                { id: 1, title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu' },
-                { id: 2, title: 'Yapay Zeka ve İstihdam Raporu', time: '1 gün önce', readers: '3.1B okuyucu' },
-                { id: 3, title: 'Mezunlar Zirvesi Başlıyor', time: '2 gün önce', readers: '8.4B okuyucu' },
-                { id: 4, title: 'Yurtdışı Staj Programları', time: '3 gün önce', readers: '5.2B okuyucu' }
-              ].map((news) => (
-                <div key={news.id} className="group cursor-pointer">
-                  <div className="flex items-start gap-2">
-                    <span className="text-gray-400 mt-1">•</span>
+            <div className="p-5 sm:p-6 relative z-10">
+              <div className="flex justify-between items-center mb-5">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-red-50 text-[#990000] rounded-xl">
+                    <Newspaper size={16} strokeWidth={2.5} />
+                  </div>
+                  <h3 className="font-black text-slate-900 text-[15px] tracking-tight">KGM Haberleri</h3>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-100 rounded-full">
+                  <div className="w-1.5 h-1.5 bg-[#990000] rounded-full animate-pulse"></div>
+                  <span className="text-[9px] font-black text-[#990000] uppercase tracking-wider">Canlı</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-col gap-4">
+                {[
+                  { id: 'h1', title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu', category: 'Fuar', summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.', location: 'Ana Kampüs Konferans Salonu', date: '15 Nisan 2026' },
+                  { id: 'h2', title: 'Yapay Zeka ve İstihdam Raporu', time: '1 gün önce', readers: '3.1B okuyucu', category: 'Rapor', summary: 'İESÜ Araştırma OS Merkezi tarafından hazırlanan 2026 Yapay Zeka ve Geleceğin Meslekleri raporu yayımlandı. Rapor, veri analitiği, istem mühendisliği ve yapay zeka entegrasyonunun mezun istihdamındaki %45 artışını belgeliyor.', location: 'İESÜ Ar-Ge OS Merkezi', date: '10 Nisan 2026' },
+                  { id: 'h3', title: 'Mezunlar Zirvesi Başlıyor', time: '2 gün önce', readers: '8.4B okuyucu', category: 'Zirve', summary: 'Geleneksel İESÜ Mezunlar ve Sektör Zirvesi bu yıl hibrit katılım modeliyle kapılarını açıyor. Türkiye ve dünyadaki mezunlarımız deneyimlerini aktif öğrencilerimizle paylaşacak.', location: 'İESÜ Kültür Merkezi & Online Stream', date: '22 Nisan 2026' }
+                ].map((newsItem) => (
+                  <div key={newsItem.id} onClick={() => setSelectedNewsItem(newsItem)} className="group/item cursor-pointer flex gap-3 items-start">
+                    <div className="w-1.5 h-1.5 rounded-full bg-slate-200 mt-2 group-hover/item:bg-[#990000] group-hover/item:scale-150 transition-all duration-300"></div>
                     <div className="flex flex-col">
-                      <span className="text-[13px] font-bold text-gray-800 group-hover:text-red-600 transition-colors leading-tight">
-                        {news.title}
+                      <span className="text-[13px] font-bold text-slate-800 group-hover/item:text-[#990000] transition-colors leading-snug">
+                        {newsItem.title}
                       </span>
-                      <span className="text-[11px] text-gray-500 mt-0.5">
-                        {news.time} • {news.readers}
-                      </span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] font-semibold text-slate-500">{newsItem.time}</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <span className="text-[10px] font-semibold text-slate-500">{newsItem.readers}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              
+              <button 
+                onClick={() => setShowAllNewsModal(true)}
+                className="mt-5 w-full bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-[#990000] text-xs font-bold py-2.5 rounded-xl border border-slate-100 hover:border-red-100 transition-all duration-300 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+              >
+                Tüm Haberleri Keşfet <ArrowRight size={14} />
+              </button>
             </div>
-            <button className="mt-4 text-[13px] font-bold text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 w-full bg-gray-50 hover:bg-gray-100 py-1.5 justify-center rounded-lg">
-              Daha fazla göster <ChevronDown size={14} />
-            </button>
           </div>
 
           <DailyQuestsPanel />
@@ -375,18 +381,23 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
           <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-gray-500 text-[13px]">Senin için önerilenler</h3>
-              <button className="text-gray-900 text-[12px] font-bold hover:text-gray-500 transition-colors">Tümünü gör</button>
+              <button onClick={() => setView('network')} className="text-gray-900 text-[12px] font-bold hover:text-red-600 transition-colors cursor-pointer">Tümünü gör</button>
             </div>
             
             <div className="flex flex-col gap-4">
-              {/* Mock Suggestions */}
               {[
-                { id: 1, name: 'Ayşe Yılmaz', subtitle: 'Senin için öneriliyor', role: 'İşletme Öğrencisi', verified: false },
-                { id: 2, name: 'Caner Demir', subtitle: 'Ahmet ve 2 diğer kişi takip ediyor', role: 'Yazılım Mezunu', verified: true },
-                { id: 3, name: 'Zeynep Kaya', subtitle: 'Senin için öneriliyor', role: 'Tasarım', verified: false }
+                { id: 1, name: 'Ayşe Yılmaz', subtitle: 'Senin için öneriliyor', role: 'İşletme Öğrencisi', verified: false, userId: 'st_1' },
+                { id: 2, name: 'Caner Demir', subtitle: 'Ahmet ve 2 diğer kişi takip ediyor', role: 'Yazılım Mezunu', verified: true, userId: 'al_1' },
+                { id: 3, name: 'Zeynep Kaya', subtitle: 'Senin için öneriliyor', role: 'Tasarım', verified: false, userId: 'st_2' }
               ].map((user) => (
                 <div key={user.id} className="flex items-center justify-between group">
-                  <div className="flex items-center gap-3 cursor-pointer">
+                  <div 
+                    className="flex items-center gap-3 cursor-pointer"
+                    onClick={() => {
+                      if (setSelectedUserId) setSelectedUserId(user.userId);
+                      setView('user_profile');
+                    }}
+                  >
                     <img 
                       src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} 
                       className="w-10 h-10 rounded-full object-cover group-hover:scale-105 transition-transform" 
@@ -400,44 +411,31 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                       <span className="text-[11px] text-gray-500 truncate w-32">{user.subtitle}</span>
                     </div>
                   </div>
-                  <button className="text-[12px] font-bold text-red-500 hover:text-gray-900 transition-colors">Takip Et</button>
+                  <button 
+                    onClick={(e) => {
+                      e.currentTarget.innerText = e.currentTarget.innerText === 'Takip Et' ? 'Takip Ediliyor' : 'Takip Et';
+                      e.currentTarget.className = e.currentTarget.innerText === 'Takip Ediliyor' ? 'text-[12px] font-bold text-gray-400' : 'text-[12px] font-bold text-red-500 hover:text-gray-900 transition-colors';
+                    }}
+                    className="text-[12px] font-bold text-red-500 hover:text-gray-900 transition-colors cursor-pointer"
+                  >
+                    Takip Et
+                  </button>
                 </div>
               ))}
             </div>
             <div className="mt-6 pt-4 border-t border-gray-50 text-[11px] text-gray-400 flex flex-wrap gap-x-2 gap-y-1">
-              <span>Hakkında</span> · <span>Yardım</span> · <span>İş Fırsatları</span> · <span>Gizlilik</span> · <span>Koşullar</span>
-              <p className="w-full mt-2 uppercase tracking-wider text-[10px]">© 2026 GELISIM KARIYER</p>
+              <button onClick={() => setFooterModal('about')} className="hover:text-red-600 transition-colors cursor-pointer">Hakkında</button> · 
+              <button onClick={() => setFooterModal('help')} className="hover:text-red-600 transition-colors cursor-pointer">Yardım</button> · 
+              <button onClick={() => setView('jobs')} className="hover:text-red-600 transition-colors cursor-pointer">İş Fırsatları</button> · 
+              <button onClick={() => setFooterModal('privacy')} className="hover:text-red-600 transition-colors cursor-pointer">Gizlilik</button> · 
+              <button onClick={() => setFooterModal('privacy')} className="hover:text-red-600 transition-colors cursor-pointer">Koşullar</button>
+              <p className="w-full mt-2 uppercase tracking-wider text-[10px] text-gray-500 font-bold">© 2026 İSTANBUL ESENYURT ÜNİVERSİTESİ KGM</p>
             </div>
           </div>
 
-          {/* Kulüpler Vitrini */}
-          {/* Kulüpler Vitrini */}
-          {featureClubsShowcase && (
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-              <h3 className="font-black text-emerald-900 mb-4 flex items-center gap-2">
-                <Target className="text-emerald-500" size={20} /> Öğrenci Kulüpleri
-              </h3>
-              <p className="text-sm text-emerald-700 font-medium mb-4">Sosyalleşin, yeteneklerinizi geliştirin ve üniversite hayatını dolu dolu yaşayın.</p>
-              
-              <div className="flex -space-x-2 mb-5">
-                {(clubs || []).slice(0, 4).map((club, idx) => (
-                  <img key={idx} src={club.logo} alt={club.name} title={club.name} className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
-                ))}
-                {(clubs || []).length > 4 && (
-                  <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold z-10">
-                    +{clubs.length - 4}
-                  </div>
-                )}
-              </div>
 
-              <button 
-                onClick={() => setView('birlik_agi')}
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[13px] font-bold transition-all shadow-md flex justify-center"
-              >
-                Birlik Ağı'na Git
-              </button>
-            </div>
-          )}
+
+
 
           {/* Mentor Ol widget */}
           <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
@@ -455,11 +453,23 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
           </div>
 
           {/* Mezun Bilgi Sistemi shortcut */}
-          <div className="bg-gradient-to-br from-iesu-navy to-iesu-navy rounded-xl p-5 shadow-lg text-white">
-            <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mb-1">Hızlı Erişim</p>
-            <h3 className="font-black text-base leading-tight mb-2">Mezun Bilgi Sistemi</h3>
-            <p className="text-xs text-red-100 mb-4">Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.</p>
-            <button onClick={() => setView('mbs')} className="w-full py-2.5 bg-white text-[#990000] hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Mezun Bilgi Sistemi'ne Git</button>
+          <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-2xl text-white border border-red-900 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            <p className="text-[11px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <Sparkles size={13} className="text-amber-300" /> Hızlı Erişim
+            </p>
+            <h3 className="font-black text-xl leading-tight mb-2 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              Mezun Bilgi Sistemi
+            </h3>
+            <p className="text-xs text-white font-bold mb-5 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.
+            </p>
+            <button 
+              onClick={() => setView('mbs')} 
+              className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
+            >
+              Mezun Bilgi Sistemi'ne Git <ArrowRight size={16} />
+            </button>
           </div>
 
           {/* Featured Opportunities */}
@@ -509,12 +519,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
           {/* PROFESSIONAL RIGHT SIDEBAR FOOTER */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-6 text-[12px] text-gray-500 font-medium px-4 text-center">
-            <a href="#" className="hover:text-red-600 transition-colors">Hakkımızda</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Erişilebilirlik</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Yardım Merkezi</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Gizlilik ve Şartlar</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Reklam Seçenekleri</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Kariyer</a>
+            <button onClick={() => setFooterModal('about')} className="hover:text-[#990000] transition-colors cursor-pointer">Hakkımızda</button>
+            <button onClick={() => setFooterModal('accessibility')} className="hover:text-[#990000] transition-colors cursor-pointer">Erişilebilirlik</button>
+            <button onClick={() => setFooterModal('help')} className="hover:text-[#990000] transition-colors cursor-pointer">Yardım Merkezi</button>
+            <button onClick={() => setFooterModal('privacy')} className="hover:text-[#990000] transition-colors cursor-pointer">Gizlilik ve Şartlar</button>
+            <button onClick={() => setFooterModal('ads')} className="hover:text-[#990000] transition-colors cursor-pointer">Reklam Seçenekleri</button>
+            <button onClick={() => setFooterModal('careers')} className="hover:text-[#990000] transition-colors cursor-pointer">Kariyer</button>
             <div className="w-full flex items-center justify-center gap-1 mt-2">
               <span className="font-bold text-[#990000]">İESÜ Kariyer Portalı</span>
               <span>© 2026</span>
@@ -559,19 +569,149 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               </div>
               <div className="w-full flex-1 overflow-hidden flex flex-col relative">
               <MessagingInterface 
-                 
-                 
                 currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
                 userRole={userRole} 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]} 
-                groups={groups}
+groups={groups}
                 setGroups={setGroups}
                 stories={stories}
                 setStories={setStories}
                 setView={setView}
                 setSelectedUserId={setSelectedUserId}
                 isOverlay={true}
+                onClose={() => setActiveTab('feed')}
               />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* All News Modal (Stitch Protocol) */}
+        {showAllNewsModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+            {/* Premium Blurred Backdrop */}
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setShowAllNewsModal(false)}></div>
+            
+            <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[32px] shadow-2xl relative z-10 flex flex-col overflow-hidden border border-slate-100/50 transform transition-all">
+              {/* Header */}
+              <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 flex items-center justify-between bg-white/80 backdrop-blur-xl sticky top-0 z-20">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center shadow-inner">
+                    <Newspaper size={20} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-900 tracking-tight">KGM Haber Merkezi</h2>
+                    <p className="text-xs font-semibold text-slate-500 mt-0.5 flex items-center gap-1"><Sparkles size={12} className="text-amber-500" /> Kariyer, etkinlik ve kampüs haberleri</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowAllNewsModal(false)} className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-[#990000] transition-colors cursor-pointer">
+                  <X size={18} strokeWidth={2.5} />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-slate-50/50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {[
+                    { id: 'h1', title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu', category: 'Fuar', summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.', location: 'Ana Kampüs Konferans Salonu', date: '15 Nisan 2026' },
+                    { id: 'h2', title: 'Yapay Zeka ve İstihdam Raporu', time: '1 gün önce', readers: '3.1B okuyucu', category: 'Rapor', summary: 'İESÜ Araştırma OS Merkezi tarafından hazırlanan 2026 Yapay Zeka ve Geleceğin Meslekleri raporu yayımlandı. Rapor, veri analitiği, istem mühendisliği ve yapay zeka entegrasyonunun mezun istihdamındaki %45 artışını belgeliyor.', location: 'İESÜ Ar-Ge OS Merkezi', date: '10 Nisan 2026' },
+                    { id: 'h3', title: 'Mezunlar Zirvesi Başlıyor', time: '2 gün önce', readers: '8.4B okuyucu', category: 'Zirve', summary: 'Geleneksel İESÜ Mezunlar ve Sektör Zirvesi bu yıl hibrit katılım modeliyle kapılarını açıyor. Türkiye ve dünyadaki mezunlarımız deneyimlerini aktif öğrencilerimizle paylaşacak.', location: 'İESÜ Kültür Merkezi & Online Stream', date: '22 Nisan 2026' },
+                    { id: 'h4', title: 'Yurtdışı Staj Programları', time: '3 gün önce', readers: '5.2B okuyucu', category: 'Staj', summary: 'Erasmus+ ve uluslararası konsorsiyum ortaklıkları çerçevesinde 2026-2027 dönemi yurt dışı zorunlu/gönüllü staj başvuruları ve hibe kontenjanları açıklandı.', location: 'Dış İlişkiler & Erasmus Ofisi', date: '01 Mayıs 2026' }
+                  ].map((item, idx) => (
+                    <div 
+                      key={item.id} 
+                      onClick={() => {
+                        setShowAllNewsModal(false);
+                        setTimeout(() => setSelectedNewsItem(item), 100);
+                      }}
+                      className="bg-white rounded-2xl p-5 border border-slate-200 hover:border-red-300 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex justify-between items-start mb-3">
+                          <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-wider group-hover:bg-red-50 group-hover:text-[#990000] transition-colors">{item.category}</span>
+                          <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1"><Clock size={12} /> {item.time}</span>
+                        </div>
+                        <h3 className="text-[15px] font-black text-slate-900 leading-snug mb-2 group-hover:text-[#990000] transition-colors">{item.title}</h3>
+                        <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">{item.summary}</p>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5"><Users size={12} /> {item.readers}</span>
+                        <div className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#990000] group-hover:text-white transition-colors">
+                          <ArrowRight size={12} strokeWidth={3} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Stitch News Detail Modal Overlay */}
+        {selectedNewsItem && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+            <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-xl" onClick={() => setSelectedNewsItem(null)}></div>
+            <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl relative z-10 flex flex-col max-h-[90vh] border border-slate-100">
+              
+              <div className="relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#400000] z-0"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 z-0"></div>
+                
+                <div className="relative z-10 p-8 sm:p-10 text-white">
+                  <button 
+                    onClick={() => setSelectedNewsItem(null)} 
+                    className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition cursor-pointer"
+                  >
+                    <X size={18} strokeWidth={2.5} />
+                  </button>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/20 border border-white/20 text-[10px] font-black uppercase tracking-widest text-amber-300 mb-4 shadow-sm">
+                    <Sparkles size={12} className="text-amber-300" /> KGM Resmi Duyurusu
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight drop-shadow-md">{selectedNewsItem.title}</h2>
+                  <div className="flex items-center gap-4 text-xs font-semibold text-red-100 mt-4 opacity-90">
+                    <span className="flex items-center gap-1.5"><Clock size={14} /> {selectedNewsItem.time}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-white/30"></span>
+                    <span className="flex items-center gap-1.5"><Users size={14} /> {selectedNewsItem.readers}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8 overflow-y-auto space-y-6 text-slate-700 bg-white custom-scrollbar">
+                {(selectedNewsItem.location || selectedNewsItem.date) && (
+                  <div className="flex items-center gap-4 flex-wrap">
+                    {selectedNewsItem.location && (
+                      <div className="flex items-center gap-2 text-slate-800">
+                        <MapPin size={16} className="text-[#990000]" /> {selectedNewsItem.location}
+                      </div>
+                    )}
+                    {selectedNewsItem.date && (
+                      <div className="flex items-center gap-2 text-slate-800">
+                        <Calendar size={16} className="text-[#990000]" /> {selectedNewsItem.date}
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                <p className="text-sm font-medium leading-relaxed whitespace-pre-line text-slate-600">
+                  {selectedNewsItem.summary || 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından yapılan resmi duyuru ve haber içeriği.'}
+                </p>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                <button 
+                  onClick={() => { setSelectedNewsItem(null); setView('haberler'); }}
+                  className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                >
+                  Tüm Haberler Paneline Git <ArrowRight size={14} />
+                </button>
+                <button 
+                  onClick={() => setSelectedNewsItem(null)}
+                  className="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                >
+                  Kapat
+                </button>
               </div>
             </div>
           </div>
@@ -753,60 +893,36 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
           )}
           
           {/* MESSAGES */}
-          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
+          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
             <MessageCircle size={24} strokeWidth={2} />
           </button>
           
           
           
           {/* PROFILE AVATAR */}
-          <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=Mezun&background=EA580C&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+          <button 
+            onClick={() => setView('user_profile')} 
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-red-100 shadow-sm hover:scale-105 transition-all shrink-0 p-1 overflow-hidden" 
+            title="Profilim"
+          >
+            {currentUser?.role === 'admin' ? (
+              <Logo size="sm" className="w-full h-full justify-center" />
+            ) : (
+              <img 
+                src={currentUser?.avatar || '/iesu-logo.svg'} 
+                className="w-full h-full object-cover rounded-full" 
+                alt="Profile" 
+              />
+            )}
           </button>
         </div>
       </div>
       
-
-      {/* EVENTS MODAL */}
-      {showEventsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto mx-4 shadow-2xl animate-scale-in">
-            <div className="flex items-center justify-between p-5 border-b border-gray-100">
-              <h3 className="font-bold text-lg text-gray-900">Etkinlikler</h3>
-              <button onClick={() => setShowEventsModal(false)} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition"><X size={18} className="text-gray-500"/></button>
-            </div>
-            <div className="p-5 space-y-4">
-              {(events || []).length === 0 ? (
-                <div className="text-center py-10 text-gray-400">
-                  <Calendar size={40} className="mx-auto mb-3 opacity-30" />
-                  <p className="font-semibold">Henuz etkinlik bulunmuyor</p>
-                  <p className="text-sm">Yeni etkinlikler eklendiginde burada gorunecek</p>
-                </div>
-              ) : (
-                (events || []).map(e => (
-                  <div key={e?.id} className="flex gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition group cursor-pointer">
-                    <div className="w-14 h-14 rounded-xl bg-red-50 flex flex-col items-center justify-center shrink-0">
-                      <span className="text-lg font-black text-red-600 leading-none">{(e?.date || '').split(' ')[0] || '--'}</span>
-                      <span className="text-[10px] font-bold text-red-500 uppercase">{(e?.date || '').split(' ')[1] || ''}</span>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-bold text-gray-900 text-sm group-hover:text-red-600 transition">{e?.title}</p>
-                      <p className="text-xs text-gray-500 mt-1">{e?.description || e?.location || ''}</p>
-                      <div className="flex items-center gap-3 mt-2 text-[11px] text-gray-400">
-                        <span className="flex items-center gap-1"><Calendar size={11}/> {e?.date || 'TBD'}</span>
-                        {e?.location && <span className="flex items-center gap-1"><MapPin size={11}/> {e?.location}</span>}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-            {/* CAREER SHORTS FULLSCREEN MODAL */}
+      {/* CAREER SHORTS FULLSCREEN MODAL */}
       {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
+      
+      {/* INTERACTIVE FOOTER MODALS */}
+      <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} setView={setView} />
     </div>
   );
 }

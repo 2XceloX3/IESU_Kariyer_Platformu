@@ -36,7 +36,7 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
           <button 
             onClick={(e) => {
               e.preventDefault();
-              window.toast && window.toast.info("Anka AI: Radar taraması başlatıldı...");
+              window.toast && window.toast.info("Radar taraması başlatıldı...");
               setTimeout(() => {
                 window.toast && window.toast.success("✅ AI Sinyali: Hedefiniz olan 'Yazılım' alanında radarınıza 3 yeni staj ilanı ve 1 kulüp etkinliği takıldı.");
               }, 2500);
@@ -44,7 +44,7 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
             className="flex items-center gap-1 bg-gradient-to-r from-red-600 to-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full hover:opacity-90 transition shadow-md shadow-red-500/20"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"></path><path d="m17 5-5-3-5 3v14l5 3 5-3V5z"></path></svg>
-            AI ile Tara
+            Tara
           </button>
           <span className="text-[10px] font-black uppercase tracking-widest text-[var(--brand-navy)] bg-[var(--brand-soft-blue)] px-2 py-1 rounded-full">Öne Çıkanlar</span>
         </div>

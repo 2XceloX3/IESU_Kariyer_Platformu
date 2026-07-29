@@ -27,10 +27,7 @@ describe('CareerNetwork Component', () => {
 
   it('renders companies by default', () => {
     render(<CareerNetwork {...mockProps} />);
-    // Note: companies with Onaylı status might still fail if the exact string matching is different,
-    // so we'll ensure they are rendered by querying their names.
-    // However, looking at the previous output, the exact character might be 'Onayl'.
-    // We can pass both just in case.
+    expect(screen.getByText('Tech Corp')).toBeInTheDocument();
   });
 
   it('handles empty lists gracefully', () => {

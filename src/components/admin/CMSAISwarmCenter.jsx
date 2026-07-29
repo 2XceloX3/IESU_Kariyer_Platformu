@@ -11,7 +11,7 @@ export default function CMSAISwarmCenter() {
   const { auditLogs = [], logAction } = useAppStore();
   const [agents, setAgents] = useState([
     { id: 'agt_career', name: 'Kariyer Danışmanı Ajanı (CareerWingman)', type: 'RAG & Chat', status: 'Çalışıyor', version: 'v2.1', memory: '124MB', requests: 1242, latency: '420ms' },
-    { id: 'agt_cv', name: 'Yapay Zeka CV Denetçisi (AICVBuilder)', type: 'Parser & Advisor', status: 'Çalışıyor', version: 'v1.8', memory: '98MB', requests: 843, latency: '890ms' },
+    { id: 'agt_cv', name: 'CV Denetçisi (AICVBuilder)', type: 'Parser & Advisor', status: 'Çalışıyor', version: 'v1.8', memory: '98MB', requests: 843, latency: '890ms' },
     { id: 'agt_inter', name: 'Mülakat Simülatörü Ajanı (InterviewSimulator)', type: 'STT & Persona GPT', status: 'Beklemede', version: 'v3.0', memory: '256MB', requests: 432, latency: '1240ms' },
     { id: 'agt_rec', name: 'Akıllı Eşleştirme & Tavsiye Ajanı (Recommender)', type: 'Embedding Search', status: 'Çalışıyor', version: 'v2.0', memory: '110MB', requests: 4312, latency: '120ms' },
     { id: 'agt_guard', name: 'İçerik Denetim & Güvenlik Ajanı (Guardrail)', type: 'Moderation Filter', status: 'Çalışıyor', version: 'v1.2', memory: '45MB', requests: 9482, latency: '45ms' }

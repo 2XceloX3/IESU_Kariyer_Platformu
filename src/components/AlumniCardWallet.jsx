@@ -135,7 +135,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-600"><path d="M12 2v20"></path><path d="m17 5-5-3-5 3v14l5 3 5-3V5z"></path></svg>
             </div>
             <div className="flex-1 text-center sm:text-left">
-              <h4 className="text-lg font-black text-indigo-950 mb-1">Anka AI Cüzdan Asistanı</h4>
+              <h4 className="text-lg font-black text-indigo-950 mb-1">Dijital Cüzdan Asistanı</h4>
               <p className="text-sm text-indigo-800 font-medium leading-relaxed">
                 Harcama ve kampüs kullanım alışkanlıklarınıza göre size özel tanımlanabilecek yeni indirim anlaşmalarını analiz edebilirim.
               </p>
@@ -143,9 +143,9 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                window.toast && window.toast.info("Anka AI: İlgi alanlarınız ve profil verileriniz analiz ediliyor...");
+                window.toast && window.toast.info("Profil verileriniz analiz ediliyor...");
                 setTimeout(() => {
-                  window.toast && window.toast.success("💡 AI Önerisi: 'Teknoloji Marketleri' kampanyaları profilinize çok uygun! Size özel %15 indirim kodu tanımlandı.");
+                  window.toast && window.toast.success("💡 Öneri: 'Teknoloji Marketleri' kampanyaları profilinize çok uygun! Size özel %15 indirim kodu tanımlandı.");
                 }, 2500);
               }}
               className="bg-red-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-red-600/30 whitespace-nowrap"

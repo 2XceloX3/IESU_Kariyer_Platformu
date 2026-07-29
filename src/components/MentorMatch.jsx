@@ -117,12 +117,12 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                 e.preventDefault();
                 window.toast && window.toast.info("Anka AI: Öğrenme stiliniz ve kariyer hedefleriniz analiz ediliyor...");
                 setTimeout(() => {
-                  window.toast && window.toast.success("✅ AI Eşleşmesi: Kariyer hedeflerinize %95 uyumlu 2 mentör bulundu.");
+                  window.toast && window.toast.success("✅ Eşleşme: Kariyer hedeflerinize %95 uyumlu 2 mentör bulundu.");
                 }, 2500);
               }}
               className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white px-4 py-2 rounded-md font-bold text-sm shadow-md transition-all shrink-0"
             >
-              <Star size={16} className="fill-white/50" /> AI ile Eşleş
+              <Star size={16} className="fill-white/50" /> Eşleş
             </button>
           </div>
           

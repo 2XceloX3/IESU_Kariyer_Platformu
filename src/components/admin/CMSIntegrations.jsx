@@ -94,7 +94,7 @@ export default function CMSIntegrations() {
         </div>
 
         <div className="space-y-1">
-          <span className="text-[10px] font-black uppercase text-cyan-400">Yapay Zeka Servis Sağlayıcı</span>
+          <span className="text-[10px] font-black uppercase text-cyan-400">Servis Sağlayıcı</span>
           <div className="flex items-center gap-2 mt-1">
             <button 
               onClick={() => { setActiveLLM('gemini'); addLog('AI Router: Gemini 2.5 Flash aktif edildi.', 'success'); }}
@@ -115,7 +115,7 @@ export default function CMSIntegrations() {
       {/* 25 AI Agent Swarm Grid Preview */}
       <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
         <h3 className="text-sm font-black text-red-950 flex items-center gap-2">
-          <Bot className="text-red-600" size={18} /> 25 Otonom Ajanlı Yapay Zeka Ekosistemi (Multi-Agent Framework)
+          <Bot className="text-red-600" size={18} /> 25 Ajanlı Çoklu Ajan Ekosistemi
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {AGENT_SWARM.map(agent => (

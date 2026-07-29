@@ -76,7 +76,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
               onClick={handleRunAnalysis}
               className="bg-red-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition shadow-lg w-full min-w-[220px]"
             >
-              <Zap size={16} /> AI İstihdam Analizi
+              <Zap size={16} /> İstihdam Analizi
             </button>
             <button 
               onClick={() => setShowExportModal(true)}

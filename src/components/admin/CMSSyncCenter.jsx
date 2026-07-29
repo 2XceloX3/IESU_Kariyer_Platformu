@@ -336,7 +336,7 @@ export default function CMSSyncCenter() {
 
                         <div className="flex items-center gap-2 text-[10px]">
                           <Shield size={12} className="text-emerald-500" />
-                          <span className="font-black text-emerald-600">DOĞRULANDI</span>
+                          <span className="font-black text-emerald-600">VERIFIED</span>
                           <span className="text-slate-400">Content Hash: {result.contentHash}</span>
                         </div>
                       </div>

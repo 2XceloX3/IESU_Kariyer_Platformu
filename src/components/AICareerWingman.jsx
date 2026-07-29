@@ -41,7 +41,7 @@ export default function AICareerWingman() {
     setInput('');
     setIsTyping(true);
     
-    const systemPrompt = `Sen Esenyurt Kariyer Platformu'nun ultra gelişmiş Yapay Zeka Kariyer Asistanı "Wingman"sin.
+    const systemPrompt = `Sen Esenyurt Kariyer Platformu'nun Kariyer Asistanısın.
 
 CORE RULES (Kesinlikle Uyulacaklar):
 1. **Duygusal Zeka ve Empati (A-A-A Framework)**: Öğrenci yorgun, reddedilmiş veya stresli hissediyorsa önce durumu kabul et (Acknowledge), onunla aynı tarafta olduğunu göster (Align) ve sonra çözüme geç (Action). "Reddedilmek sürecin bir parçası, bu senin değerini belirlemez" gibi motive edici cümleler kur.
@@ -76,7 +76,7 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
                 <Bot size={22} className="text-red-100" />
               </div>
               <div>
-                <h3 className="font-black text-base flex items-center gap-1">AI Wingman <Sparkles size={14} className="text-yellow-400"/></h3>
+                <h3 className="font-black text-base flex items-center gap-1">Kariyer Asistanı <Sparkles size={14} className="text-yellow-400"/></h3>
                 <p className="text-[11px] text-red-200 font-medium">Sohbetsel Kariyer Koçu</p>
               </div>
             </div>
@@ -177,7 +177,7 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
           <div className="absolute right-[110%] top-1/2 -translate-y-1/2 bg-white text-gray-800 px-4 py-2.5 rounded-2xl shadow-xl border border-gray-100 text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none flex items-center gap-2">
             <div>
               <span className="block text-gray-400 text-[10px] font-medium leading-none mb-1">Yeni Modül</span>
-              AI Mentor ile Tanış!
+              Mentör ile Tanış!
             </div>
             <Sparkles size={16} className="text-yellow-500" />
           </div>

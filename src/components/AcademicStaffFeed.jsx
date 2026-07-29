@@ -61,7 +61,10 @@ export default function AcademicStaffFeed({
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="w-10"></div> {/* Spacer */}
           
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
+            const currentRole = currentUser?.role || userRole;
+            setView(currentRole === 'admin' ? 'admin' : (currentRole === 'employer' || currentRole === 'company') ? 'company' : currentRole === 'alumni' ? 'alumni' : currentRole === 'academic' ? 'academic' : 'student');
+          }}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
@@ -93,10 +96,15 @@ export default function AcademicStaffFeed({
               <div className="relative inline-block">
                 {userRole === 'admin' ? (
                   <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg mx-auto p-2">
-                    <img src="/logo.png" alt="Admin Logo" className="w-full h-full object-contain" />
+                    <img src="/iesu-logo.svg" alt="Admin Logo" className="w-full h-full object-contain" />
                   </div>
                 ) : (
-                  <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Akademik Personel')}&background=0A2342&color=fff`} className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto object-cover bg-white" alt="Profile" />
+                  <img 
+                    src={currentUser?.avatar || '/iesu-logo.svg'} 
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }}
+                    className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto object-cover bg-white" 
+                    alt="Profile" 
+                  />
                 )}
                 <button aria-label="İşlem Butonu" className="absolute bottom-0 right-0 bg-red-600 text-white p-1.5 rounded-full shadow-md hover:bg-red-700 transition">
                   <Crown size={14} />
@@ -351,6 +359,7 @@ export default function AcademicStaffFeed({
                 groups={groups}
                 setSelectedGroupId={setSelectedGroupId}
                 isOverlay={true}
+                onClose={() => setActiveTab('dashboard')}
               />
               </div>
             </div>
@@ -383,7 +392,7 @@ export default function AcademicStaffFeed({
           </button>
           
           {/* MESSAGES */}
-          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
+          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
             <MessageCircle size={24} strokeWidth={2} />
           </button>
           

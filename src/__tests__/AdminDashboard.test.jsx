@@ -37,34 +37,34 @@ describe('AdminDashboard Component', () => {
     featureAlumniCard: true,
     featureClubsShowcase: true,
     featureClubApplications: true,
-    featureCareerCheckup: true
+    featureCareerCheckup: true,
+    academicRole: 'super_admin'
   };
 
   it('renders without crashing', () => {
     render(<AdminDashboard {...mockProps} />);
-    // There are some standard admin texts in Overview panel or sidebar
-    expect(screen.getAllByText(/Kariyer/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Yönetici Paneli/i)).toBeInTheDocument();
   });
 
   it('can navigate to students tab', () => {
     render(<AdminDashboard {...mockProps} />);
     
-    const studentsTab = screen.getAllByText(/Aktif.*renci/i)[0] || screen.getAllByText(/renci/i)[0];
-    if (studentsTab) {
-      fireEvent.click(studentsTab);
-      expect(screen.getAllByText(/renci/i).length).toBeGreaterThan(0);
-    }
+    const userCategoryBtn = screen.getByRole('button', { name: /Kullanıcı Yönetimi/i });
+    fireEvent.click(userCategoryBtn);
+
+    const studentsTab = screen.getAllByRole('button', { name: /Öğrenci/i })[0];
+    fireEvent.click(studentsTab);
+    expect(screen.getAllByText(/Aktif Öğrenciler|Öğrenci Listesi/i).length).toBeGreaterThan(0);
   });
 
   it('can navigate to settings tab', () => {
     render(<AdminDashboard {...mockProps} />);
     
-    // Find the settings tab: 'Platform'
-    const settingsTabText = screen.getAllByText(/Platform/i)[0];
-    if (settingsTabText) {
-      fireEvent.click(settingsTabText);
-      // Validate it changed
-      expect(screen.getAllByText(/Platform/i).length).toBeGreaterThan(0);
-    }
+    const systemCatBtn = screen.getByRole('button', { name: /Sistem & Analiz/i });
+    fireEvent.click(systemCatBtn);
+
+    const settingsTab = screen.getByRole('button', { name: /Platform Ayarları/i });
+    fireEvent.click(settingsTab);
+    expect(screen.getAllByText(/Platform Ayarları/i).length).toBeGreaterThan(0);
   });
 });

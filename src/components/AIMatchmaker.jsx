@@ -36,7 +36,7 @@ export default function AIMatchmaker({ alumniList = [] }) {
           disabled={isMatching}
           className="w-full bg-red-600 text-white text-[13px] font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-md relative overflow-hidden"
         >
-          {isMatching ? 'Profiller Analiz Ediliyor...' : 'Yapay Zeka ile Eşleş'}
+          {isMatching ? 'Profiller Analiz Ediliyor...' : 'Eşleş'}
           {isMatching && (
              <motion.div className="absolute inset-0 bg-white/20" 
                initial={{ x: '-100%' }} animate={{ x: '100%' }} 

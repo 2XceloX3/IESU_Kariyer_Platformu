@@ -22,7 +22,7 @@ export default function OverviewPanel({ setView }) {
         </div>
         <div className="relative z-10">
           <span className="bg-white/20 px-2.5 py-1 rounded-md text-[10px] font-black tracking-widest uppercase mb-3 inline-block">YENİ MODÜL YAYINDA</span>
-          <h2 className="text-2xl font-black mb-1.5 tracking-tight">Yapay Zeka Mülakat ve CV Merkezi</h2>
+          <h2 className="text-2xl font-black mb-1.5 tracking-tight">Mülakat ve CV Merkezi</h2>
           <p className="text-red-100 text-sm max-w-lg mb-5 font-medium leading-relaxed">Öğrencilerinizi gerçekçi mülakat simülasyonlarıyla geliştirin, otomatik CV oluşturucu ile kariyer yolculuklarını destekleyin.</p>
           <div className="flex flex-wrap gap-3">
             <button onClick={() => setView('interview_sim')} className="px-5 py-2.5 bg-white text-red-600 font-bold rounded-xl text-[13px] hover:bg-gray-50 hover:shadow-lg transition-all duration-300 active:scale-95 shadow-sm flex items-center gap-2">

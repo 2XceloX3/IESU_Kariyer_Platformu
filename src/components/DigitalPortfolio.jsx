@@ -91,7 +91,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                 e.preventDefault();
                 window.toast && window.toast.info("AI: Projeleriniz Github üzerinden analiz ediliyor...");
                 setTimeout(() => {
-                  window.toast && window.toast.success("✅ AI Analizi Tamamlandı: Projeleriniz %92 oranında sektör trendleriyle eşleşiyor.");
+                  window.toast && window.toast.success("✅ Analiz Tamamlandı: Projeleriniz %92 oranında sektör trendleriyle eşleşiyor.");
                 }, 2000);
               }}
               className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-6 py-3 rounded-2xl font-black transition flex items-center justify-center gap-2 border border-indigo-200"
@@ -165,14 +165,14 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info("Anka AI: Proje kodları analiz ediliyor...");
+                        window.toast && window.toast.info("Proje kodları analiz ediliyor...");
                         setTimeout(() => {
                           window.toast && window.toast.success("✅ AI Kod İncelemesi: Clean code standartlarına %89 uyumlu.");
                         }, 2500);
                       }}
                       className="text-red-600 hover:text-indigo-800 flex items-center gap-1.5"
                     >
-                       <Sparkles size={14} /> AI Analiz Et
+                       <Sparkles size={14} /> Analiz Et
                     </button>
                   </div>
                 </div>

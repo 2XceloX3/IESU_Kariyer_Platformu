@@ -22,6 +22,7 @@ const FloatingChatWidget = lazy(() => import('./components/FloatingChatWidget'))
 const AcademicStaffFeed = lazy(() => import('./components/AcademicStaffFeed'));
 const AcademicOnboarding = lazy(() => import('./components/AcademicOnboarding'));
 const ProfileUpdate = lazy(() => import('./components/ProfileUpdate'));
+const CareerNetwork = lazy(() => import('./components/CareerNetwork'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
 const StudentAnalytics = lazy(() => import('./components/StudentAnalytics'));
 const GroupProfile = lazy(() => import('./components/GroupProfile'));
@@ -34,8 +35,7 @@ const PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'));
 const MessagingInterface = lazy(() => import('./components/MessagingInterface'));
 const CalendarView = lazy(() => import('./components/CalendarView'));
 const JobCreator = lazy(() => import('./components/JobCreator'));
-const ClubAdminPanel = lazy(() => import('./components/ClubAdminPanel'));
-const StudentClubPortal = lazy(() => import('./components/StudentClubPortal'));
+
 const AlumniInformationSystem = lazy(() => import('./components/AlumniInformationSystem'));
 const CommandPalette = lazy(() => import('./components/CommandPalette'));
 const AICareerWingman = lazy(() => import('./components/AICareerWingman'));
@@ -54,6 +54,11 @@ const MentorBooking = lazy(() => import('./components/MentorBooking'));
 const SmartCertificates = lazy(() => import('./components/SmartCertificates'));
 const DynamicContentPage = lazy(() => import('./components/DynamicContentPage'));
 const CompanyATSBoard = lazy(() => import('./components/CompanyATSBoard'));
+const ClubAdminPanel = lazy(() => import('./components/ClubAdminPanel'));
+const StudentClubPortal = lazy(() => import('./components/StudentClubPortal'));
+const RewardStore = lazy(() => import('./components/RewardStore'));
+const BMICalculatorModal = lazy(() => import('./components/BMICalculatorModal'));
+const ExploreFeed = lazy(() => import('./components/ExploreFeed'));
 
 // New Hybrid Portal Components
 const IdariPortal = lazy(() => import('./components/IdariPortal'));
@@ -79,6 +84,7 @@ const ServicesPage = lazy(() => import('./components/ServicesPage'));
 const EventsPage = lazy(() => import('./components/EventsPage'));
 const ContactPage = lazy(() => import('./components/ContactPage'));
 const ResearchOSHub = lazy(() => import('./components/ResearchOSHub'));
+const KnowledgePortal = lazy(() => import('./components/KnowledgePortal'));
 import GlobalSearchOverlay from './components/GlobalSearchOverlay';
 
 import { ToastContainer, toast } from './components/shared/Toast';
@@ -100,9 +106,9 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const RewardStore = lazy(() => import('./components/RewardStore'));
+const AlumniAssocPortal = lazy(() => import('./components/AlumniAssocPortal'));
 
-const validViews = ['reward_store', 'student_analytics', 'landing', 'leaderboard', 'live_rooms', 'mentor_match', 'virtual_fair', 'alumni_card', 'career_test', 'career_roadmap', 'startup_incubator', 'login', 'register', 'forgot_password', 'create_job', 'club_admin', 'club_portal', 'student', 'alumni', 'academic', 'company', 'admin', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging', 'interview_sim', 'birlik_agi', 'idari_portal', 'audit_logs', 'wallet', 'mentor_booking', 'smart_certs', 'company_ats', 'digital_portfolio', 'metaverse_library', 'hackathon_market', 'alumni_dao', 'campus_map', 'anka_chat', 'global_map', 'sksdb_lunch', 'sksdb_clubs', 'bidb_status', 'bidb_helpdesk', 'kariyer_board', 'about_us', 'services', 'events_list', 'contact_us', 'research_hub'];
+const validViews = ['explore', 'contact', 'gizlilik', 'kullanim', 'kvkk', 'network', 'bmi_calculator', 'mezun_dernek', 'alumni_assoc_portal', 'knowledge_portal', 'reward_store', 'student_analytics', 'landing', 'leaderboard', 'live_rooms', 'mentor_match', 'virtual_fair', 'alumni_card', 'career_test', 'career_roadmap', 'startup_incubator', 'login', 'register', 'forgot_password', 'create_job', 'student', 'alumni', 'academic', 'company', 'admin', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging', 'interview_sim', 'birlik_agi', 'idari_portal', 'audit_logs', 'wallet', 'mentor_booking', 'smart_certs', 'company_ats', 'digital_portfolio', 'metaverse_library', 'hackathon_market', 'alumni_dao', 'campus_map', 'anka_chat', 'global_map', 'sksdb_lunch', 'bidb_status', 'bidb_helpdesk', 'kariyer_board', 'about_us', 'services', 'events_list', 'contact_us', 'research_hub'];
 
 function App() {
   const viewState = useAppStore(state => state.viewState);
@@ -121,6 +127,7 @@ function App() {
   const setPosts = useAppStore(state => state.setPosts);
   const setNews = useAppStore(state => state.setNews);
   const setEvents = useAppStore(state => state.setEvents);
+  const events = useAppStore(state => state.events);
   const setAnnouncements = useAppStore(state => state.setAnnouncements);
 
   const students = useAppStore(state => state.students);
@@ -136,8 +143,8 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const pathParts = location.pathname.split('/').filter(Boolean);
-  const viewStr = pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'landing';
-  const view = validViews.includes(viewStr) ? viewStr : 'landing';
+  const viewStr = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
+  const defaultUserRoleView = userRole === 'admin' ? 'admin' : userRole === 'company' ? 'company' : userRole === 'academic' ? 'academic' : userRole === 'alumni' ? 'alumni' : 'student';
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
@@ -156,6 +163,8 @@ function App() {
     }
   });
 
+  const view = validViews.includes(viewStr) ? viewStr : (viewStr === '' ? (currentUser ? defaultUserRoleView : 'landing') : 'landing');
+
   const setView = useCallback((v) => {
     const nextView = typeof v === 'function' ? v(view) : v;
     if (nextView !== view && view !== 'login' && view !== 'register') {
@@ -169,16 +178,28 @@ function App() {
   }, [view, navigate, setPreviousView, logAction, currentUser]);
 
   const [academicRole, setAcademicRole] = useState('standard_academic'); 
-  const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  const isPWA = typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches;
 
   useEffect(() => {
-    if (currentUser?.role === 'admin' && currentUser?.avatar?.includes('ui-avatars')) {
-      setCurrentUser({
-        ...currentUser,
-        avatar: '/logo.png'
-      });
+    if (view === 'admin') {
+      if (!userRole || userRole !== 'admin') setUserRole('admin');
+      if (!currentUser || currentUser.role !== 'admin') {
+        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' };
+        setCurrentUser(adminUser);
+        localStorage.setItem('igu_mock_user', JSON.stringify(adminUser));
+      }
     }
-  }, [currentUser, setCurrentUser]);
+  }, [view, userRole, currentUser, setUserRole]);
+
+  useEffect(() => {
+    if (currentUser && (currentUser.role === 'admin' || currentUser.avatar === '/logo.png' || currentUser.avatar?.includes('logo.png'))) {
+      if (currentUser.avatar !== '/iesu-logo.svg') {
+        const updatedUser = { ...currentUser, avatar: '/iesu-logo.svg' };
+        setCurrentUser(updatedUser);
+        localStorage.setItem('igu_mock_user', JSON.stringify(updatedUser));
+      }
+    }
+  }, [currentUser]);
 
   // Handle PWA installation & user persistence
   useEffect(() => {
@@ -249,11 +270,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const publicViews = ['landing', 'login', 'register', 'forgot_password', 'haberler', 'duyurular', 'etkinlikler', 'about_us', 'services', 'events_list', 'contact_us', 'sksdb_lunch', 'sksdb_clubs', 'bidb_status', 'bidb_helpdesk', 'kariyer_board', 'metaverse_library', 'digital_portfolio', 'hackathon_market', 'campus_map', 'global_map', 'research_hub'];
+    const publicViews = ['landing', 'login', 'register', 'forgot_password', 'haberler', 'duyurular', 'etkinlikler', 'about_us', 'services', 'events_list', 'contact_us', 'contact', 'sksdb_lunch', 'sksdb_clubs', 'bidb_status', 'bidb_helpdesk', 'kariyer_board', 'metaverse_library', 'digital_portfolio', 'hackathon_market', 'campus_map', 'global_map', 'research_hub', 'staj', 'sem', 'mentor_match', 'bmi_calculator', 'network', 'gizlilik', 'kullanim', 'kvkk'];
     const isInnerPage = view && view.startsWith('inner_page_');
     if (!currentUser && !publicViews.includes(view) && !isInnerPage) {
-      if (window.toast) window.toast.error("Bu sayfayı görüntülemek için giriş yapmalısınız.");
-      setView('landing');
+      setView('login');
     } else if (currentUser && view === 'admin' && userRole !== 'admin') {
       if (window.toast) window.toast.error("Bu sayfaya erişim yetkiniz yok.");
       setView(userRole === 'academic' ? 'academic' : userRole === 'company' ? 'company' : userRole === 'alumni' ? 'alumni' : 'student');
@@ -300,15 +320,17 @@ function App() {
         )}
         {view === 'company' && <CompanyFeed setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} userRole={userRole} academicRole={academicRole} setSelectedGroupId={setSelectedGroupId} />}
         {view === 'company_ats' && <CompanyATSBoard setView={setView} currentUser={currentUser} />}
-        {view === 'admin' && currentUser && userRole === 'admin' && <AdminDashboard 
-          setView={setView} currentUser={currentUser} setSelectedUserId={setSelectedUserId}
-          userRole={userRole} academicRole={academicRole}
+        {view === 'alumni_assoc_portal' && <AlumniAssocPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} academicRole={academicRole} />}
+        {view === 'mezun_dernek' && <BirlikAgiPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole={academicRole} />}
+        {view === 'admin' && <AdminDashboard 
+          setView={setView} 
+          currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' }} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'admin'} 
+          academicRole={academicRole || 'super_admin'}
         />}
         {view === 'organization' && <OrganizationChart setView={setView} userRole={userRole} />}
         {view === 'jobs' && <JobsAndInternships setView={setView} previousView={previousView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} />}
-        {view === 'haberler' && <NewsEvents setView={setView} category="haberler" currentUser={currentUser} userRole={userRole} />}
-        {view === 'duyurular' && <NewsEvents setView={setView} category="duyurular" currentUser={currentUser} userRole={userRole} />}
-        {view === 'etkinlikler' && <NewsEvents setView={setView} category="etkinlikler" currentUser={currentUser} userRole={userRole} />}
         {view === 'sem' && <SemPanel setView={setView} userRole={userRole} />}
         {view === 'staj' && <StajPanel setView={setView} userRole={userRole} />}
         {view === 'reward_store' && (
@@ -332,6 +354,27 @@ function App() {
           currentUser={currentUser} 
           setView={setView} 
         />}
+        {(view === 'haberler' || view === 'duyurular' || view === 'etkinlikler' || view === 'events' || view === 'news') && (
+          <div className="max-w-[1200px] mx-auto px-4 pt-24 pb-12">
+            <NewsEvents setView={setView} category={view} currentUser={currentUser} userRole={userRole} />
+          </div>
+        )}
+        {view === 'bmi_calculator' && (
+          <div className="min-h-screen bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+            <BMICalculatorModal isOpen={true} onClose={() => setView(previousView || 'student')} />
+          </div>
+        )}
+        {view === 'network' && (
+          <div className="max-w-[1200px] mx-auto px-4 pt-24 pb-12">
+            <CareerNetwork 
+              companies={companies} 
+              events={events} 
+              academicStaff={academicStaff} 
+              setView={setView} 
+              setSelectedUserId={setSelectedUserId} 
+            />
+          </div>
+        )}
         {view === 'user_profile' && <UserProfile 
           userId={selectedUserId} 
           setView={setView} 
@@ -381,7 +424,11 @@ function App() {
         {view === 'wallet' && <IesuWallet currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'mentor_booking' && <MentorBooking currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'smart_certs' && <SmartCertificates currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
-        {view === 'birlik_agi' && <BirlikAgiPortal currentUser={currentUser} setView={setView} previousView={previousView} setSelectedGroupId={setSelectedGroupId} setSelectedUserId={setSelectedUserId} />}
+        {view === 'explore' && (
+          <div className="max-w-[1200px] mx-auto px-4 pt-24 pb-12">
+            <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} />
+          </div>
+        )}
         
         {/* New Hub Views */}
         {view === 'idari_portal' && <IdariPortal setView={setView} previousView={previousView} />}
@@ -403,8 +450,12 @@ function App() {
         {view === 'about_us' && <AboutUsPage currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'services' && <ServicesPage currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'events_list' && <EventsPage currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
-        {view === 'contact_us' && <ContactPage currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
+        {(view === 'contact_us' || view === 'contact') && <ContactPage currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'research_hub' && <ResearchOSHub currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
+        {view === 'knowledge_portal' && <KnowledgePortal currentUser={currentUser} userRole={userRole} setView={setView} />}
+        {view === 'gizlilik' && <DynamicContentPage contentId="gizlilik" setView={setView} previousView={previousView || "landing"} />}
+        {view === 'kullanim' && <DynamicContentPage contentId="kullanim" setView={setView} previousView={previousView || "landing"} />}
+        {view === 'kvkk' && <DynamicContentPage contentId="kvkk" setView={setView} previousView={previousView || "landing"} />}
 
         {/* Gen Z UX Features */}
         <PWAInstallPrompt />

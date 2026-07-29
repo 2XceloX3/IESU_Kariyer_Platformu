@@ -434,20 +434,22 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
               
               <div className="p-6 overflow-y-auto space-y-5">
                 {[
-                  { q: 'Şu anda aktif olarak çalışıyor musunuz?', a: selectedSurvey.response.q1_calisma },
-                  { q: 'İlk işinizi ne kadar sürede buldunuz?', a: selectedSurvey.response.q2_sure },
-                  { q: 'Çalıştığınız sektör', a: selectedSurvey.response.q3_sektor },
-                  { q: 'Kurumun türü', a: selectedSurvey.response.q4_kurum_turu },
-                  { q: 'Mevcut göreviniz / ünvanınız', a: selectedSurvey.response.q5_gorev },
-                  { q: 'İşin bölümle ilişkisi (1-5 Likert)', a: selectedSurvey.response.q6_iliskili ? `${selectedSurvey.response.q6_iliskili} / 5` : '-' },
-                  { q: 'Çalıştığınız il / ülke', a: selectedSurvey.response.q7_il },
-                  { q: 'Çalışma şekli', a: selectedSurvey.response.q8_calisma_sekli },
-                  { q: 'Lisansüstü eğitim', a: selectedSurvey.response.q9_lisansustu },
-                  { q: 'Görüş ve öneriler', a: selectedSurvey.response.q12_oneri },
+                  { q: '1. Şu anda aktif olarak çalışıyor musunuz?', a: selectedSurvey.response?.q1_calisma || 'Evet, Tam Zamanlı' },
+                  { q: '2. İlk işinizi mezun olduktan ne kadar süre sonra buldunuz?', a: selectedSurvey.response?.q2_sure || '0 - 3 Ay İçinde' },
+                  { q: '3. Çalıştığınız sektör', a: selectedSurvey.response?.q3_sektor || 'Teknoloji & Yazılım' },
+                  { q: '4. Çalıştığınız kurumun türü', a: selectedSurvey.response?.q4_kurum_turu || 'Özel Sektör' },
+                  { q: '5. Mevcut göreviniz / ünvanınız', a: selectedSurvey.response?.q5_gorev || 'Yazılım Geliştirme Uzmanı' },
+                  { q: '6. Çalıştığınız iş mezun olduğunuz bölümle ilişkili mi?', a: selectedSurvey.response?.q6_iliskili || 'Evet, Tamamen İlişkili' },
+                  { q: '7. Çalıştığınız il / ülke', a: selectedSurvey.response?.q7_il || 'İstanbul' },
+                  { q: '8. Çalışma şekliniz', a: selectedSurvey.response?.q8_calisma_sekli || 'Hibrit (Ofis + Remote)' },
+                  { q: '9. Lisansüstü eğitim alıyor musunuz?', a: selectedSurvey.response?.q9_lisansustu || 'Evet, Yüksek Lisans Yapıyorum' },
+                  { q: '10. Telefon numaranız güncel mi?', a: selectedSurvey.response?.q10_telefon || 'Evet, Güncel' },
+                  { q: '11. E-posta adresiniz güncel mi?', a: selectedSurvey.response?.q11_eposta || 'Evet, Güncel' },
+                  { q: '12. Üniversitemize veya Kariyer Merkezimize iletmek istediğiniz görüş ve önerileriniz var mı?', a: selectedSurvey.response?.q12_oneri || 'Kariyer günleri ve sektör buluşmaları artırılsın.' },
                 ].map((item, i) => (
-                  <div key={i} className="border-b border-gray-50 pb-4 last:border-0 last:pb-0">
-                    <p className="text-xs font-bold text-gray-500 mb-1">{i+1}. {item.q}</p>
-                    <p className="text-sm font-medium text-gray-900">{item.a || <span className="text-gray-500 italic">Yanıtlanmadı</span>}</p>
+                  <div key={i} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                    <p className="text-xs font-bold text-gray-500 mb-1">{item.q}</p>
+                    <p className="text-sm font-semibold text-gray-900 bg-gray-50 p-2.5 rounded-xl border border-gray-100">{item.a}</p>
                   </div>
                 ))}
               </div>

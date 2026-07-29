@@ -4,7 +4,7 @@ import TopProfileMenu from './TopProfileMenu';
 
 const JOBS_DATA = [
   { id: 1, title: "Junior Frontend Developer", company: "Trendyol", location: "İstanbul (Hibrit)", type: "Tam Zamanlı", category: "Yazılım", applied: false },
-  { id: 2, title: "Yapay Zeka & Veri Analisti Stajyeri", company: "Getir", location: "İstanbul (Uzaktan)", type: "Staj", category: "Yapay Zeka", applied: false },
+  { id: 2, title: "Veri Analisti Stajyeri", company: "Getir", location: "İstanbul (Uzaktan)", type: "Staj", category: "Teknoloji", applied: false },
   { id: 3, title: "Siber Güvenlik Uzman Yardımcısı", company: "Aselsan", location: "Ankara (Yerinde)", type: "Tam Zamanlı", category: "Güvenlik", applied: false },
   { id: 4, title: "UI/UX Tasarım Stajyeri", company: "Ford Otosan", location: "Kocaeli (Hibrit)", type: "Staj", category: "Tasarım", applied: false }
 ];

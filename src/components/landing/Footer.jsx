@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, Mail, ArrowRight, CheckCircle } from 'lucide-react';
+import Logo from '../Logo';
 
 export default function Footer({ setSelectedItem, legalData, setView }) {
   const [email, setEmail] = useState('');
@@ -32,9 +33,7 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
           {/* Column 1: Brand & About */}
           <div className="flex flex-col">
             <div className="flex items-center gap-3.5 mb-6">
-              <div className="bg-white p-2 rounded-xl flex items-center justify-center shadow-sm shrink-0">
-                <img src="/iesu-logo.svg" alt="İESÜ" className="h-10 w-auto" />
-              </div>
+              <Logo size="lg" variant="white" />
               <div>
                 <h3 className="text-sm font-black text-white leading-tight tracking-tight uppercase">İstanbul Esenyurt Üniversitesi</h3>
                 <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mt-0.5">Kariyer Geliştirme Koordinatörlüğü</p>
@@ -134,9 +133,9 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
         <div className="pt-6 border-t border-white/20 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[13px] text-red-200 font-medium tracking-wide">2026 © İstanbul Esenyurt Üniversitesi Bilgi İşlem Daire Başkanlığı tarafından hazırlanmıştır.</p>
           <div className="flex gap-6 text-[13px] text-red-200 font-medium">
-            <button onClick={() => setSelectedItem(legalData.gizlilik)} className="hover:text-white transition cursor-pointer">Gizlilik Politikası</button>
-            <button onClick={() => setSelectedItem(legalData.kullanim)} className="hover:text-white transition cursor-pointer">Kullanım Koşulları</button>
-            <button onClick={() => setSelectedItem(legalData.kvkk)} className="hover:text-white transition cursor-pointer">KVKK</button>
+            <button onClick={() => setView && setView('gizlilik')} className="hover:text-white transition cursor-pointer">Gizlilik Politikası</button>
+            <button onClick={() => setView && setView('kullanim')} className="hover:text-white transition cursor-pointer">Kullanım Koşulları</button>
+            <button onClick={() => setView && setView('kvkk')} className="hover:text-white transition cursor-pointer">KVKK</button>
           </div>
         </div>
       </div>

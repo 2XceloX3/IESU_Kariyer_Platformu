@@ -29,7 +29,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
     setLearningPathStatus(false);
 
     const prompt = `
-      Sen Esenyurt Üniversitesi "Metaverse Kütüphanesi"nin Baş Kütüphanecisi olan bir Yapay Zeka'sın.
+       "Dijital Kütüphane"nin Baş Kütüphanecisisin.
       Öğrenci şu konuyu araştırmak istiyor: "${searchQuery}".
       Ona bu konuyla ilgili 3 adet akademik makale/kitap önerisi ve kısa bir 1 paragraflık "Konu Özeti" ver.
       Sadece aşağıdaki JSON formatında bir cevap dön, markdown veya başka metin kullanma:
@@ -79,7 +79,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
           </button>
           <div className="flex items-center gap-2">
             <Library className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">Metaverse Kütüphanesi</h1>
+            <h1 className="font-black text-red-950 tracking-tight">Dijital Kütüphane</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -101,7 +101,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               Dijital Bilgi Ağacı
             </h2>
             <p className="text-slate-500 text-base mb-8 max-w-xl leading-relaxed font-semibold">
-              Yapay Zeka kütüphanecimiz binlerce akademik yayını ve kitabı sizin için saniyeler içinde tarayıp özetler.
+              Kütüphanemiz binlerce akademik yayını ve kitabı sizin için saniyeler içinde tarar.
             </p>
 
             <div className="w-full bg-white p-3 rounded-3xl shadow-xl flex items-center gap-4 border border-slate-200/80 focus-within:ring-4 focus-within:ring-indigo-100 focus-within:border-indigo-400 transition-all mb-6">
@@ -141,7 +141,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
         {isSearching && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mb-6"></div>
-            <h3 className="text-2xl font-black text-red-950 mb-2">Yapay Zeka Taraması Yapılıyor...</h3>
+            <h3 className="text-2xl font-black text-red-950 mb-2">Tarama Yapılıyor...</h3>
             <p className="text-slate-500 max-w-sm font-semibold">Binlerce akademik kaynak, tez ve makale taranarak sizin için özetleniyor.</p>
           </div>
         )}
@@ -182,7 +182,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                   <Library size={150} />
                 </div>
                 <h3 className="text-xs font-black text-red-600 mb-3 uppercase tracking-widest flex items-center gap-1.5">
-                  <Sparkles size={14}/> Yapay Zeka Konu Analizi
+                  <Sparkles size={14}/> Konu Analizi
                 </h3>
                 <h2 className="text-2xl font-black text-red-950 mb-4">"{query}"</h2>
                 <p className="text-slate-600 text-sm md:text-base leading-relaxed font-semibold">

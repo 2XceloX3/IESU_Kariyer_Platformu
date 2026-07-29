@@ -64,13 +64,13 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                     e.preventDefault();
                     window.toast && window.toast.info("AI: Özgeçmişiniz ve hedefleriniz analiz ediliyor...");
                     setTimeout(() => {
-                      window.toast && window.toast.success("✅ AI Eşleşmesi: Zeynep Kaya (Google) ile %94 oranında kariyer hedefi uyumu tespit edildi.");
+                      window.toast && window.toast.success("✅ Eşleşme: Zeynep Kaya (Google) ile %94 oranında kariyer hedefi uyumu tespit edildi.");
                       setSearchQuery("Zeynep");
                     }, 2500);
                   }}
                   className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 border border-indigo-200 transition-colors shrink-0"
                 >
-                  <Star size={16} /> AI ile Eşleş
+                  <Star size={16} /> Eşleş
                 </button>
                 <div className="relative w-full md:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 import MainHeader from './MainHeader';
+import SubPanelFooter from './SubPanelFooter';
+import NelerOluyorPanel from './NelerOluyorPanel';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 
 export default function ContactPage({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -122,6 +124,8 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
           </div>
         </div>
       </main>
+
+      <SubPanelFooter setView={setView} />
     </div>
   );
 }

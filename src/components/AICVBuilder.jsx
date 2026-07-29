@@ -13,6 +13,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   const setMessages = useAppStore(state => state.setMessages);
 
   const [activeSection, setActiveSection] = useState('personal'); // personal, experience, education, skills, certificates, summary
+  const [photoError, setPhotoError] = useState(false);
   
   // Initialize from localStorage OR currentUser if available
   const [cvData, setCvData] = useState(() => {
@@ -27,7 +28,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     }
     return {
       name: currentUser?.name || '',
-      photo: currentUser?.avatar || '',
+      photo: (currentUser?.avatar && currentUser.avatar !== '/iesu-logo.svg') ? currentUser.avatar : 'https://www.esenyurt.edu.tr/uploads/2024/06/emyjxq7cgdfy4-esenyurt-universitesi-logo.png',
       title: currentUser?.department ? `${currentUser.department} Öğrencisi` : '',
       email: currentUser?.email || '',
       phone: '',
@@ -54,6 +55,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
 
   useEffect(() => {
     localStorage.setItem(`igu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
+    setPhotoError(false);
   }, [cvData, currentUser?.id]);
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -296,8 +298,13 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                 <label htmlFor="photo-upload" className="text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wider">Fotoğraf</label>
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center shrink-0 hover:shadow-sm transition">
-                    {(cvData || {})?.photo ? (
-                      <img src={(cvData || {})?.photo} alt="CV Fotoğrafı" className="w-full h-full object-cover" />
+                    {(cvData || {})?.photo && !photoError ? (
+                      <img 
+                        src={(cvData || {})?.photo} 
+                        alt="CV Fotoğrafı" 
+                        className="w-full h-full object-cover"
+                        onError={() => setPhotoError(true)} 
+                      />
                     ) : (
                       <User size={24} className="text-gray-400" />
                     )}
@@ -308,7 +315,10 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                       <input id="photo-upload" type="file" className="hidden" accept="image/*" onChange={(e) => {
                         if (e.target.files && e.target.files[0]) {
                           const reader = new FileReader();
-                          reader.onload = (e) => setCvData({...cvData, photo: e.target.result});
+                          reader.onload = (ev) => {
+                            setPhotoError(false);
+                            setCvData(prev => ({...prev, photo: ev.target.result}));
+                          };
                           reader.readAsDataURL(e.target.files[0]);
                         }
                       }} />
@@ -353,8 +363,8 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                 ></textarea>
               </div>
               <p className="text-[11px] text-gray-500 font-medium bg-indigo-50 p-3 rounded-lg border border-indigo-100 mt-2">
-                <span className="font-bold text-indigo-700 block mb-1">Anka AI İpucu:</span>
-                Yapay Zeka asistanımız bu verileri kullanarak hakkınızda yazacağı özeti, yeni mezun başvurusuna uygun akademik bir dile çevirir.
+                <span className="font-bold text-indigo-700 block mb-1">İpucu:</span>
+                Bu veriler kullanılarak hakkınızda yazılacak özet, yeni mezun başvurusuna uygun akademik bir dile çevrilir.
               </p>
             </div>
           )}
@@ -379,7 +389,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
                     className="bg-indigo-50 text-red-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
                   >
                     <Wand2 size={12} className={isGenerating ? "animate-pulse" : ""} /> 
-                    {isGenerating ? 'Yazılıyor...' : 'AI ile Oluştur'}
+                    {isGenerating ? 'Yazılıyor...' : 'Oluştur'}
                   </button>
                 </div>
               </div>
@@ -639,39 +649,14 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
 
       {/* RIGHT PANE: Live PDF Preview */}
       <div className="w-full lg:w-7/12 bg-gray-200/50 flex flex-col relative overflow-hidden">
-        {/* Preview Actions & ATS Check */}
+        {/* Preview Actions */}
         <div className="absolute top-4 right-6 flex gap-2 z-20">
-          <button onClick={async () => {
-             window.toast && window.toast.info("ATS Analizi Yapılıyor...");
-             setTimeout(() => {
-               window.toast && window.toast.success("✅ ATS Uyum Skoru: 85/100. Anahtar kelime yoğunluğu %12 (İdeal).");
-             }, 2000);
-          }} className="bg-emerald-500/90 backdrop-blur-md text-white hover:bg-emerald-600 p-2.5 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-2" title="ATS Analizi">
-            <ShieldCheck size={16} /> <span className="text-xs font-bold hidden sm:inline">ATS Check</span>
-          </button>
           <button onClick={() => window.print()} className="bg-white/80 backdrop-blur-md text-gray-700 hover:text-red-600 p-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-100 transition flex items-center gap-2" title="Yazdır">
             <Printer size={16} /> <span className="text-xs font-bold hidden sm:inline">Yazdır</span>
           </button>
           <button onClick={() => exportPDF('cv-print-area', 'Ozgecmisim.pdf')} className="bg-red-600 text-white hover:bg-indigo-700 p-2.5 rounded-xl shadow-sm hover:shadow-md transition flex items-center gap-2" title="PDF İndir">
             <Download size={16} /> <span className="text-xs font-bold hidden sm:inline">PDF İndir</span>
           </button>
-        </div>
-
-        {/* ATS Score Meter */}
-        <div className="absolute top-20 right-6 z-20 w-64 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border border-gray-100">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-black text-[#990000] uppercase tracking-wider">ATS Uyumluluk Skoru</span>
-            <span className="text-sm font-black text-emerald-600">
-              %{Math.min(100, Math.round(((cvData?.experience?.length || 0) * 15) + ((cvData?.education?.length || 0) * 10) + ((cvData?.skills?.length || 0) * 5) + ((cvData?.summary?.length > 10 ? 1 : 0) * 15) + 30))}
-            </span>
-          </div>
-          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-            <div 
-              className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-1000 ease-out" 
-              style={{ width: `${Math.min(100, Math.round(((cvData?.experience?.length || 0) * 15) + ((cvData?.education?.length || 0) * 10) + ((cvData?.skills?.length || 0) * 5) + ((cvData?.summary?.length > 10 ? 1 : 0) * 15) + 30))}%` }}
-            ></div>
-          </div>
-          <p className="text-[10px] text-gray-500 mt-2 font-medium">Bu skor, global İK sistemleri (Applicant Tracking Systems) algoritmaları baz alınarak hesaplanmaktadır.</p>
         </div>
 
         {/* The CV Document (A4 Ratio Simulation) */}
@@ -692,11 +677,14 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
               </div>
               
               {/* Photo Area */}
-              {(cvData || {})?.photo && (
-                <div className="w-24 h-32 bg-gray-100 border-2 border-gray-200 rounded overflow-hidden flex items-center justify-center shrink-0">
-                  <img src={(cvData || {})?.photo} className="w-full h-full object-cover" alt="CV" />
-                </div>
-              )}
+              <div className="w-24 h-32 bg-white border-2 border-gray-200 rounded overflow-hidden flex items-center justify-center shrink-0 shadow-sm p-1">
+                <img 
+                  src={((cvData || {})?.photo && !photoError) ? (cvData || {})?.photo : 'https://www.esenyurt.edu.tr/uploads/2024/06/emyjxq7cgdfy4-esenyurt-universitesi-logo.png'} 
+                  className="w-full h-full object-contain" 
+                  alt="Kurumsal Fotoğraf" 
+                  onError={() => setPhotoError(true)}
+                />
+              </div>
             </header>
 
             {/* CV Summary */}

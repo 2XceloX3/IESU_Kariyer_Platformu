@@ -79,5 +79,44 @@ export const innerPagesData = {
         a: "Kesinlikle! İstanbul Esenyurt Üniversitesi mezunları tüm kariyer etkinliklerine, danışmanlık hizmetlerine ve iş ilanlarına ömür boyu erişim hakkına sahiptir."
       }
     ]
+  },
+  gizlilik: {
+    title: "Gizlilik Politikası",
+    subtitle: "Kişisel Verilerin Korunması ve Gizlilik Prensipleri",
+    heroImage: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
+    sections: [
+      {
+        id: "veri-guvenligi",
+        title: "Kişisel Verilerin Korunması",
+        content: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.\\n\\nKişisel verileriniz hiçbir üçüncü taraf reklam veya pazarlama şirketine satılmaz. Özgeçmişiniz ve başvuru bilgileriniz yalnızca başvurduğunuz onaylı anlaşmalı kurumsal firmalara ve üniversite idari birimlerine gösterilir.",
+        icon: "Shield"
+      }
+    ]
+  },
+  kullanim: {
+    title: "Kullanım Koşulları",
+    subtitle: "İESÜ Kariyer Portalı Kullanım ve Hizmet Şartları",
+    heroImage: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
+    sections: [
+      {
+        id: "genel-sartlar",
+        title: "Kullanım Şartları ve Yasal Esaslar",
+        content: "Bu web sitesi, İstanbul Esenyurt Üniversitesi öğrencileri, mezunları, akademisyenleri ve anlaşmalı firmaları için kariyer planlama süreçlerini desteklemek amacıyla hazırlanmıştır. Sitede yer alan iş/staj ilanları, haberler ve duyurular bilgilendirme amaçlıdır.\\n\\nKullanıcılar platform üzerinde beyan ettikleri bilgilerin doğruluğundan bizzat sorumludur. Üniversitemiz, yürürlükteki mevzuata aykırı veya yanıltıcı bilgi içeren hesapları ve başvuruları askıya alma hakkını saklı tutar.",
+        icon: "FileText"
+      }
+    ]
+  },
+  kvkk: {
+    title: "KVKK Aydınlatma Metni",
+    subtitle: "6698 Sayılı Kişisel Verilerin Korunması Kanunu Kapsamında Bilgilendirme",
+    heroImage: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
+    sections: [
+      {
+        id: "kvkk-isleme",
+        title: "Kişisel Verilerin İşlenme Amacı ve Haklarınız",
+        content: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca; kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından işlenmektedir.\\n\\nVerileriniz staj başvurularının alınması, kariyer danışmanlığı, yetenek kapısı eşleşmeleri ve mezun istihdam takibi amacıyla kullanılmaktadır. KVKK Madde 11 uyarınca verilerinizin silinmesini, düzeltilmesini veya işlenme amacını öğrenmeyi kvkk@esenyurt.edu.tr adresi üzerinden talep edebilirsiniz.",
+        icon: "ShieldCheck"
+      }
+    ]
   }
 };

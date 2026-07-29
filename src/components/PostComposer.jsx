@@ -59,7 +59,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     }, 500);
   };
 
-  const authorAvatar = asClub ? asClub.logo : (userRole === 'admin' || currentUser?.role === 'admin') ? "/logo.png" : (currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=0A2342&color=fff`);
+  const authorAvatar = asClub ? (asClub.logo || '/iesu-logo.svg') : (userRole === 'admin' || currentUser?.role === 'admin') ? "/iesu-logo.svg" : (currentUser?.avatar || '/iesu-logo.svg');
 
   return (
     <div className={`transition-all duration-300 bg-white sm:rounded-[12px] ${isFocused ? 'shadow-md border border-gray-300 scale-[1.01]' : 'shadow-sm border border-gray-200'} mb-4 overflow-hidden`}>
@@ -69,6 +69,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         <div className="flex gap-3 items-start">
           <img 
             src={authorAvatar} 
+            onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }}
             alt="Profile" 
             className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200" 
           />
@@ -133,13 +134,13 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                 window.toast && window.toast.info("Anka AI: Metniniz daha profesyonel bir dil ile yeniden yazılıyor...");
                 setTimeout(() => {
                   setContent((prev) => prev + "\n\n#EsenyurtKariyer #ProfesyonelAğ #Inovasyon");
-                  window.toast && window.toast.success("✅ AI Düzeltmesi: Metniniz profesyonelleştirildi ve uygun etiketler eklendi.");
+                  window.toast && window.toast.success("✅ Düzeltme: Metniniz profesyonelleştirildi ve uygun etiketler eklendi.");
                 }, 2000);
               }} 
               className="flex items-center gap-2 px-3 py-3 text-purple-600 hover:bg-purple-50 rounded-md transition-colors font-bold text-[14px]"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg> 
-              <span className="hidden sm:inline">AI Profesyonelleştir</span>
+              <span className="hidden sm:inline">Profesyonelleştir</span>
             </button>
           </div>
           

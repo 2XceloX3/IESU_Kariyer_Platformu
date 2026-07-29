@@ -131,7 +131,7 @@ export default function CareerShorts({ setView, onClose }) {
             className="flex flex-col items-center gap-1 cursor-pointer group" 
             onClick={(e) => { 
               e.stopPropagation(); 
-              window.toast && window.toast.info("Anka AI: Video analiz ediliyor...");
+              window.toast && window.toast.info("Video analiz ediliyor...");
               setTimeout(() => {
                 window.toast && window.toast.success(`✅ AI Özeti: Bu video ${currentShort.author.name} şirket kültürünü anlatıyor. Size uygunluğu %88.`);
               }, 2500);
@@ -140,7 +140,7 @@ export default function CareerShorts({ setView, onClose }) {
             <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-purple-600 rounded-full flex items-center justify-center group-hover:scale-110 shadow-lg shadow-red-500/50 transition-all">
               <Sparkles size={22} className="text-white fill-white/50" />
             </div>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 text-[10px] font-black uppercase tracking-wider">AI Analiz</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 text-[10px] font-black uppercase tracking-wider">Analiz</span>
           </div>
 
           {/* Share */}

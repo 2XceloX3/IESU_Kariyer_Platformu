@@ -137,7 +137,7 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
                     }}
                     className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition flex items-center gap-1"
                   >
-                    <CheckCircle2 size={12} /> AI ile Oluştur
+                    <CheckCircle2 size={12} /> Oluştur
                   </button>
                 </div>
                 <textarea name="description" value={formData.description} maxLength={5000} onChange={handleInputChange} placeholder="Adaylarda aradığınız özellikleri detaylıca yazın..." rows={5} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition resize-none"></textarea>

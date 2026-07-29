@@ -120,9 +120,9 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
           <button 
             onClick={(e) => {
               e.preventDefault();
-              window.toast && window.toast.info("Anka AI: Önceki anket verileri NLP (Doğal Dil İşleme) ile analiz ediliyor...");
+              window.toast && window.toast.info("Önceki anket verileri analiz ediliyor...");
               setTimeout(() => {
-                window.toast && window.toast.success("✅ AI Analizi: Mezunlar en çok 'Kariyer Danışmanlığı' süreçlerinden memnun (%92).");
+                window.toast && window.toast.success("✅ Analiz: Mezunlar en çok 'Kariyer Danışmanlığı' süreçlerinden memnun (%92).");
               }, 2500);
             }}
             className="shrink-0 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm border border-white/30"

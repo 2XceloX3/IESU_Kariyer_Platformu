@@ -75,7 +75,6 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
             <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
-            <NavIcon icon={<Globe />} label="Birlik Ağı" onClick={() => setView('birlik_agi')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={true} onClick={() => setView('jobs')} />
             <div className="ml-2">
               <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />

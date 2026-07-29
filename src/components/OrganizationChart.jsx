@@ -72,7 +72,7 @@ export default function OrganizationChart({ setView, userRole }) {
                 className="bg-indigo-50 text-red-600 px-6 py-3 rounded-xl font-bold text-[15px] hover:bg-indigo-100 transition shadow-sm flex items-center justify-center gap-2"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg> 
-                AI ile Doğru Kişiye Ulaş
+                Doğru Kişiye Ulaş
               </button>
               <button className="bg-[#990000] text-white px-8 py-3 rounded-xl font-bold text-[15px] hover:bg-[#990000] transition shadow-lg flex items-center justify-center gap-2 group">
                 Ofisimizle İletişime Geçin <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />

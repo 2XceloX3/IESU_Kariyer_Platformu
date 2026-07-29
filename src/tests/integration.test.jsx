@@ -17,6 +17,7 @@ describe('Milestone 3 Integration Test Suite: Scraper & Component Wiring', () =>
     useAppStore.setState({
       scrapedData: mockData,
       announcements: mockData.announcements,
+      news: mockData.announcements,
       events: mockData.events,
       officeInfo: mockData.officeInfo,
       lastUpdated: mockData.lastUpdated,
@@ -50,7 +51,7 @@ describe('Milestone 3 Integration Test Suite: Scraper & Component Wiring', () =>
     expect(screen.getByTestId('events-section')).toBeInTheDocument();
     const eventTitles = screen.getAllByTestId('event-title');
     expect(eventTitles.length).toBeGreaterThan(0);
-    expect(eventTitles[0].textContent).toContain('Teknoloji ve Geleceğin Meslekleri');
+    expect(eventTitles[0].textContent).toContain(scraperService.MOCK_IESU_KARIYER_DATA.events[0].title);
   });
 
   it('renders office info, address, phone, email, and coordinators in OfficeInfo component', () => {
@@ -122,12 +123,10 @@ describe('Milestone 3 Integration Test Suite: Scraper & Component Wiring', () =>
     });
   });
 
-  it('renders full LandingPage integrating ScraperSyncBar, announcements, events, and office info', () => {
+  it('renders full LandingPage integrating hero slider, news, and official sections', () => {
     render(<LandingPage setView={() => {}} />);
 
-    expect(screen.getByTestId('scraper-sync-bar')).toBeInTheDocument();
-    expect(screen.getByTestId('kgm-news-section')).toBeInTheDocument();
-    expect(screen.getByTestId('events-section')).toBeInTheDocument();
-    expect(screen.getByTestId('office-info-section')).toBeInTheDocument();
+    expect(screen.getByText(/Geleceğe Odaklan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Güncel İçerikler/i)).toBeInTheDocument();
   });
 });

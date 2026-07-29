@@ -171,10 +171,10 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
         <div className="flex items-center gap-3 cursor-pointer group">
           {post?.author?.role === 'admin' ? (
             <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-200 shrink-0 p-1">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+              <img src="/iesu-logo.svg" alt="Logo" className="w-full h-full object-contain" />
             </div>
           ) : (
-            <img src={post?.author?.avatar || `https://ui-avatars.com/api/?name=U&background=0A2342&color=fff`} alt="Author" className="w-11 h-11 rounded-full object-cover shadow-sm border border-gray-100 shrink-0" />
+            <img src={(post?.author?.avatar === '/logo.png' ? '/iesu-logo.svg' : post?.author?.avatar) || `https://ui-avatars.com/api/?name=U&background=0A2342&color=fff`} alt="Author" className="w-11 h-11 rounded-full object-cover shadow-sm border border-gray-100 shrink-0" />
           )}
           <div className="flex flex-col">
             <h4 className="font-bold text-[14px] text-gray-900 leading-tight group-hover:text-[#990000] transition-colors flex items-center flex-wrap">
@@ -237,7 +237,16 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       {/* Media Attachments */}
       {post.image && (
         <div className="w-full aspect-video bg-gray-100 relative group cursor-pointer overflow-hidden border-y border-gray-50 select-none" onDoubleClick={handleDoubleTap}>
-          <img src={post.image} alt="Post Cover" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img 
+            src={post.image} 
+            alt="Post Cover" 
+            loading="lazy" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80';
+            }}
+          />
           {showHeart && (
             <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
               <Heart size={80} className="text-white fill-current animate-[ping_1s_ease-out_forwards] opacity-0" />
@@ -378,12 +387,12 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       {/* Share Modal */}
       {isShareModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100">
-            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100 max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100 shrink-0">
               <h3 className="font-black text-gray-900 flex items-center gap-2"><Send size={18} className="text-[#990000]" /> Gönderiyi Paylaş</h3>
               <button aria-label="Kapat" onClick={() => setIsShareModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition active:scale-95"><X size={20} /></button>
             </div>
-            <div className="p-5 space-y-4">
+            <div className="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
               {/* Social Buttons */}
               <div className="grid grid-cols-3 gap-3 mb-2">
                 <button aria-label="WhatsApp" onClick={handleWhatsappShare} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-green-50 text-green-600 hover:bg-green-100 transition-colors active:scale-95">
@@ -435,7 +444,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                 </div>
               </div>
 
-              <button aria-label="Paylaş" onClick={handleShare} disabled={!shareTarget} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50 active:scale-95">
+              <button aria-label="Paylaş" onClick={handleShare} disabled={!shareTarget} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50 active:scale-95 cursor-pointer">
                 Mesaj Olarak Gönder
               </button>
             </div>

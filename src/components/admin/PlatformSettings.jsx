@@ -25,11 +25,10 @@ const PlatformSettings = ({
   featureSurveys, setFeatureSurveys, 
   featureCareerCheckup, setFeatureCareerCheckup, 
   featureAlumniCard, setFeatureAlumniCard, 
-  featureClubsShowcase, setFeatureClubsShowcase, 
-  featureClubApplications, setFeatureClubApplications,
   featureCareerFair, setFeatureCareerFair,
-  featureSSPLeaderboard, setFeatureSSPLeaderboard,
-  sspEnabled, setSspEnabled
+  showInstitutionalStats, setShowInstitutionalStats,
+  institutionalStatsData, setInstitutionalStatsData,
+  featureAlumniAssocToggle, setFeatureAlumniAssocToggle
 }) => {
   return (
     <div className="space-y-8 animate-fade-in">
@@ -76,40 +75,67 @@ const PlatformSettings = ({
               onChange={() => setFeatureAlumniCard(!featureAlumniCard)}
             />
             <Toggle 
-              label="Öğrenci Kulüpleri Vitrini"
-              description="Kulüplerin kampüs sayfasında herkese açık şekilde listelenmesini sağlar."
+              label="Kurumsal İstatistikler Bandı (Ana Sayfa)"
+              description="Ana sayfadaki Mezun Sayısı, Laboratuvar Sayısı, Akredite Program vb. istatistik bandının görünürlüğünü açıp kapatır."
+              icon={Globe}
+              enabled={showInstitutionalStats}
+              onChange={() => setShowInstitutionalStats(!showInstitutionalStats)}
+            />
+
+            <Toggle 
+              label="Mezun Derneği Üyelik & Ekip Başvuru Dönemi"
+              description="Mezun Derneği üyelik ve yönetim ekibi başvurularını aktif/pasif eder. Kapalı olduğunda başvuru formu erişime kapanır."
               icon={Users}
-              enabled={featureClubsShowcase}
-              onChange={() => setFeatureClubsShowcase(!featureClubsShowcase)}
+              enabled={featureAlumniAssocToggle !== false}
+              onChange={() => setFeatureAlumniAssocToggle && setFeatureAlumniAssocToggle(!featureAlumniAssocToggle)}
             />
+
             <Toggle 
-              label="Kulüp Başvuru Sistemi"
-              description="Öğrencilerin kulüplere online olarak katılım isteği (başvuru) gönderebilmesini açar."
-              icon={Bell}
-              enabled={featureClubApplications}
-              onChange={() => setFeatureClubApplications(!featureClubApplications)}
-            />
-            <Toggle 
-              label="Geleneksel Kariyer Günleri"
-              description="Firmalar için başvuru formunu ve etkinlik duyurularını aktif eder."
-              icon={CalendarHeart}
-              enabled={featureCareerFair}
-              onChange={() => setFeatureCareerFair(!featureCareerFair)}
-            />
-            <Toggle 
-              label="SSP Öğrenci Liderlik Tablosu"
-              description="Öğrencilerin Birlik Ağı'nda (SSP Liderlik) sırasını ve panellerini görmesini sağlar."
-              icon={Trophy}
-              enabled={featureSSPLeaderboard}
-              onChange={() => setFeatureSSPLeaderboard(!featureSSPLeaderboard)}
-            />
-            <Toggle 
-              label="Sosyal Sorumluluk Puan Sistemi (SSP)"
-              description="Öğrenciler için sosyal sorumluluk görevlerini, duyurularını ve puanlama altyapısını sistem genelinde aktif eder."
+              label="Mezun Derneği Akış & Portal Görünürlüğü"
+              description="Öğrenci ve mezun ana yayın akışında Mezunlar Derneği duyuru, üyelik ve yönetim paneli sekmesinin görünmesini sağlar."
               icon={Award}
-              enabled={sspEnabled}
-              onChange={() => setSspEnabled(!sspEnabled)}
+              enabled={featureAlumniAssocToggle !== false}
+              onChange={() => setFeatureAlumniAssocToggle && setFeatureAlumniAssocToggle(!featureAlumniAssocToggle)}
             />
+
+            {/* Live Stats Editor Panel */}
+            {showInstitutionalStats && (
+              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4 mt-3">
+                <h5 className="text-xs font-black text-slate-800 uppercase tracking-wider">İstatistik Kartlarını Düzenle (Canlı Güncelleme)</h5>
+                <div className="space-y-3">
+                  {(institutionalStatsData || []).map((stat, idx) => (
+                    <div key={stat.id} className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Metin Başlığı</label>
+                        <input
+                          type="text"
+                          value={stat.title}
+                          onChange={(e) => {
+                            const updated = [...institutionalStatsData];
+                            updated[idx].title = e.target.value;
+                            setInstitutionalStatsData(updated);
+                          }}
+                          className="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-800"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Sayısal / İstatistik Değeri</label>
+                        <input
+                          type="text"
+                          value={stat.val}
+                          onChange={(e) => {
+                            const updated = [...institutionalStatsData];
+                            updated[idx].val = e.target.value;
+                            setInstitutionalStatsData(updated);
+                          }}
+                          className="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-[#990000]"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

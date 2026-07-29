@@ -332,211 +332,135 @@ export const initialEvents = [
     "date": "15/05/2026",
     "time": "14:00",
     "location": "Kampüs",
-    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/05/3fmhni1yzp4kx-heybemden-masallar-ile-masallarin-buyulu-dunyasina-yolculuga-cikiyoruz.jfif",
-    "status": "Aktif",
     "url": "https://www.esenyurt.edu.tr/etkinlik/1671-heybemden-masallar-ile-masallarin-buyulu-dunyasina-yolculuga-cikiyoruz"
-  },
-  {
-    "id": "EVT-015",
-    "title": "&quot;20 Mayıs Çocuk Esenyurtciler Günü&quot; etkinliğimize davetlisiniz!",
-    "description": "Yer: 3. Kat - Prof. Dr. Fuat SEZGİN Konferans Salonu İstanbul Esenyurt &Uuml;niversitesi Sağlık Bilimleri Fak&uuml;ltesi, &Ccedil;ocuk Esenyurti B&ouml;l&uuml;m&uuml; ve Gelecek 0-18 Kul&uuml;b&uuml; iş birliğiyle d&uuml;zenlenen &quot;20 Mayıs &Ccedil;ocuk Esenyurtciler G&uuml;n&uuml;&quot; etkinliğimize davetlisiniz! 🎓🧒👧 Alanında uzman konuklarımızın değerli paylaşımlarıyla ger&ccedil;ekleşecek bu &ouml;zel etkinliği ka&ccedil;ırmayın.",
-    "date": "15/05/2026",
-    "time": "14:00",
-    "location": "Kampüs",
-    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/05/8vdcentpr9w03-20-mayis-cocuk-iesuciler-gunu-etkinligimize-davetlisiniz.jfif",
-    "status": "Aktif",
-    "url": "https://www.esenyurt.edu.tr/etkinlik/1670-20-mayis-cocuk-iesuciler-gunu-etkinligimize-davetlisiniz"
   }
 ];
 
-// =====================================================
-// Duyurular — kariyer.esenyurt.edu.tr'den birebir çekildi
-// =====================================================
 export const initialAnnouncements = [
   {
     "id": "ann-1",
     "title": "2026 ÖZYES (Özel Yetenek Sınavı) Başvuruları Başladı!",
     "date": "23/07/2026",
-    "content": "Geleceğini yeteneğinle şekillendirmek i&ccedil;in ilk adımı at! İstanbul Esenyurt &Uuml;niversitesi 2026 &Ouml;ZYES başvuru ve sınav takvimi belli oldu. 📍 &Ouml;nemli Tarihler: ▶ Başvuru Tarihleri: 23 - 28 Temmuz 2026 ▶ Ge&ccedil; Başvuru G&uuml;n&uuml;: 30 Temmuz 2026",
+    "content": "Geleceğini yeteneğinle şekillendirmek için ilk adımı at! İstanbul Esenyurt Üniversitesi 2026 ÖZYES başvuru ve sınav takvimi belli oldu. 📍 Önemli Tarihler: ▶ Başvuru Tarihleri: 23 - 28 Temmuz 2026 ▶ Geç Başvuru Günü: 30 Temmuz 2026",
     "isPremium": true
   },
   {
     "id": "ann-2",
-    "title": "2025 - 2026 Yaz Okulu Ders Programı / 2025–2026 Summer School Course Schedule",
+    "title": "2025 - 2026 Yaz Okulu Ders ve Sınav Programları",
     "date": "22/07/2026",
-    "content": "Sağlık Hizmetleri Meslek Y&uuml;ksekokulu - Vocational School of Health Scienes M&uuml;hendislik ve Mimarlık Fak&uuml;ltesi - Faculty of Engineering and Architecture Sağlık Bilimleri Fak&uuml;ltesi - Faculty of Sports Sciences",
+    "content": "Sağlık Hizmetleri Meslek Yüksekokulu, Mühendislik ve Mimarlık Fakültesi, Sağlık Bilimleri Fakültesi, Spor Bilimleri Fakültesi ders ve sınav programları ilan edilmiştir.",
     "isPremium": true
   },
   {
     "id": "ann-3",
     "title": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Nihai Değerlendirme Sonuçları Açıklanmıştır.",
     "date": "23/06/2026",
-    "content": "&Uuml;niversitemiz Rekt&ouml;rl&uuml;k Makamı tarafından 23/06/2026 tarihli ve 33289 sayılı Resmi Gazete&rsquo;de yayımlanan &Ouml;ğretim &Uuml;yesi Dışındaki &Ouml;ğretim Elemanı Kadrolarına Personel Alım İlanı kapsamında &lsquo;Nihai Değerlendirme&rsquo; sonucu kamuoyuna &ouml;nemle duyurulur. BTMYO Bilgisayar Programcılığı &Ouml;ğretim G&ouml;revlisi Nihai Değerlendirme Sonu&ccedil; Tutanağı BTMYO Robotik ve Yapay Zeka &Ouml;ğretim G&ouml;revlisi Nihai Değerlendirme Sonu&ccedil; Tutanağı",
+    "content": "Üniversitemiz Rektörlük Makamı tarafından yayımlanan Öğretim Elemanı Kadrolarına Personel Alım İlanı kapsamında Nihai Değerlendirme sonucu kamuoyuna duyurulmuştur.",
     "isPremium": true
   },
   {
     "id": "ann-4",
     "title": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Ön Değerlendirme Sonuçları Açıklanmıştır",
     "date": "23/06/2026",
-    "content": "&Uuml;niversitemiz Rekt&ouml;rl&uuml;k Makamı tarafından 23/06/2026 tarihli ve 33289 sayılı Resmi Gazete&rsquo;de yayımlanan &Ouml;ğretim &Uuml;yesi Dışındaki &Ouml;ğretim Elemanı Kadrolarına Personel Alım İlanı kapsamında &lsquo;&Ouml;n Değerlendirme&rsquo; sonucu kamuoyuna &ouml;nemle duyurulur. BTMYO Bilgisayar Programcılığı &Ouml;ğretim G&ouml;revlisi &Ouml;n Değerlendirme Sonu&ccedil; Tutanağı BTMYO Robotik ve Yapay Zeka &Ouml;ğretim G&ouml;revlisi &Ouml;n Değerlendirme Sonu&ccedil; Tutanağı",
+    "content": "Üniversitemiz Rektörlük Makamı tarafından yayımlanan Öğretim Elemanı Kadrolarına Personel Alım İlanı Ön Değerlendirme sonucu kamuoyuna duyurulmuştur.",
     "isPremium": true
   },
   {
     "id": "ann-5",
     "title": "Tek Ders / Not Yükseltme Sınav Programları Hk.",
     "date": "08/07/2026",
-    "content": "Bilişim Teknolojileri Meslek Y&uuml;ksekokulu - Vocational School of Information Technologies Meslek Y&uuml;ksekokulu - Vocational School Sağlık Hizmetleri Meslek Y&uuml;ksekokulu - Vocational School of Health Services",
+    "content": "Bilişim Teknolojileri Meslek Yüksekokulu, Meslek Yüksekokulu ve Sağlık Hizmetleri Meslek Yüksekokulu Tek Ders sınav takvimi yayımlanmıştır.",
     "isPremium": true
   },
   {
     "id": "ann-6",
     "title": "Düzeltme İlanı",
     "date": "23/06/2026",
-    "content": "İstanbul Esenyurt &Uuml;niversitesi Rekt&ouml;rl&uuml;ğ&uuml;nden: &Ouml;ĞRETİM &Uuml;YESİ DIŞINDAKİ &Ouml;ĞRETİM ELEMANI KADROLARINA PERSONEL ALIMI D&Uuml;ZELTME İLANI 23/06/2026 tarihli ve 33289 sayılı Resmi Gazete&rsquo;de aslına uygun olarak yayımlanan &Uuml;niversitemiz İşletme ve Y&ouml;netim Bilimleri Fak&uuml;ltesi İşletme (İngilizce) B&ouml;l&uuml;m&uuml; Araştırma G&ouml;revlisi kadrosuna akademik personel alım ilanımız sehven hatalı yazıldığından dolayı revize edilmiş olup, aşağıdaki tabloda sunulmuştur. Ayrıntılı bilgiye http://www.esenyurt.edu.tr adresinden ulaşılabilecektir.",
+    "content": "İstanbul Esenyurt Üniversitesi Rektörlüğünden: Öğretim Elemanı Kadrolarına Personel Alımı Düzeltme İlanı yayımlanmıştır.",
+    "isPremium": true
+  },
+  {
+    "id": "ann-5",
+    "title": "Tek Ders / Not Yükseltme Sınav Programları Hk.",
+    "date": "08/07/2026",
+    "content": "Bilişim Teknolojileri Meslek Yüksekokulu, Meslek Yüksekokulu ve Sağlık Hizmetleri Meslek Yüksekokulu Tek Ders sınav takvimi yayımlanmıştır.",
+    "isPremium": true
+  },
+  {
+    "id": "ann-6",
+    "title": "Düzeltme İlanı",
+    "date": "23/06/2026",
+    "content": "İstanbul Esenyurt Üniversitesi Rektörlüğünden Öğretim Elemanı Kadrolarına Personel Alımı Düzeltme İlanı yayımlanmıştır.",
     "isPremium": true
   },
   {
     "id": "ann-7",
     "title": "2025-2026 Yaz Okulu Başvuruları Başladı!",
     "date": "24/06/2026",
-    "content": "2025-2026 AKADEMİK YILI YAZ OKULU DUYURUSU A&ccedil;ılması Planlanan Derslerin İlan Edilmesi &Uuml;cret &Ouml;demeleri ve Ders Kayıtları",
+    "content": "2025-2026 Akademik Yılı Yaz Okulu Açılması Planlanan Derslerin İlan Edilmesi, Ücret Ödemeleri ve Ders Kayıtları yayımlanmıştır.",
     "isPremium": true
   },
   {
     "id": "ann-8",
-    "title": "23/06/2026 tarihli 33289 Sayılı Resmi Gazete’de Yayımlanan Öğretim Üyesi ve Öğretim Üyesi Dışındaki Öğretim Elemanı Kadrolarına Personel Alımı",
+    "title": "Resmi Gazete Personel Alım İlanı",
     "date": "23/06/2026",
-    "content": "&Ouml;ğretim &Uuml;yesi Dışındaki &Ouml;ğretim Elemanı Bu içerik 23/06/2026 tarihinde güncellenmiştir. İstanbul Esenyurt Üniversitesi'ni yakından takip etmek, yaklaşan etkinlikler, haberler ve daha birçok konudan anında haberdar olmak için abone olun.",
+    "content": "İstanbul Esenyurt Üniversitesi Öğretim Üyesi ve Öğretim Elemanı kadro alım ilanı yayımlanmıştır.",
     "isPremium": true
   },
   {
     "id": "ann-9",
-    "title": "Öğr. Üyesi Dışındaki Öğr. Elemanı Kadrolarına Personel Alım İlanının Nihai Değerlendirme Sonuçları Açıklanmıştır.",
-    "date": "02/06/2026",
-    "content": "&Uuml;niversitemiz Rekt&ouml;rl&uuml;k Makamı tarafından 02/06/2026 tarihli ve 33268 sayılı Resmi Gazete&rsquo;de yayımlanan &Ouml;ğretim &Uuml;yesi Dışındaki &Ouml;ğretim Elemanı Kadrolarına Personel Alım İlanı kapsamında &lsquo;Nihai Değerlendirme&rsquo; sonucu kamuoyuna &ouml;nemle duyurulur. BTMYO Robotik ve Yapay Zeka &Ouml;ğretim G&ouml;revlisi Nihai Değerlendirme MYO Elektrik Enerjisi &Uuml;retim İletim ve Dağıtımı &Ouml;ğretim G&ouml;revlisi Nihai Değerlendirme",
-    "isPremium": true
-  },
-  {
-    "id": "ann-10",
     "title": "2026-2027 Güz Dönemi Yüksek Lisans ve Doktora Başvuruları BAŞLADI!",
     "date": "17/06/2026",
-    "content": "İstanbul Esenyurt &Uuml;niversitesi&rsquo;nde lisans&uuml;st&uuml; eğitim alarak akademik ve profesyonel hedeflerine bir adım daha yaklaş! 2026-2027 G&uuml;z D&ouml;nemi Y&uuml;ksek Lisans ve Doktora Başvuruları BAŞLADI! 🚀 ✨ Geleceğini şekillendirirken Erken Kayıt Avantajlarını ka&ccedil;ırma! 🗓 Erken Başvuru Tarihleri: 15 Haziran - 3 Temmuz",
+    "content": "İstanbul Esenyurt Üniversitesi Lisansüstü Eğitim Enstitüsü 2026-2027 Güz Dönemi Yüksek Lisans ve Doktora Başvuruları Başlamıştır.",
     "isPremium": true
   }
 ];
 
-// =====================================================
-// SEM Kursları
-// =====================================================
 export const initialSemCourses = [
-  { id: "SEM-001", title: "Dijital Pazarlama Sertifika Programı", description: "devamını oku", imageUrl: "https://w3-s3-bucket.s3.us-east-1.amazonaws.com/SaaS/semonline/uploaded-files/1863174303737663.jpeg", status: "Aktif" },
-  { id: "SEM-002", title: "Sertifikalarınız Artık E-Devlet Sisteminde", description: "devamını oku", imageUrl: "https://w3-s3-bucket.s3.us-east-1.amazonaws.com/SaaS/semonline/uploaded-files/1863169639302748.jpeg", status: "Aktif" },
-  { id: "SEM-003", title: "Temel ve Orta Seviye Excel Eğitimi", description: "devamını oku", imageUrl: "https://w3-s3-bucket.s3.us-east-1.amazonaws.com/SaaS/semonline/uploaded-files/1863175713016420.jpeg", status: "Aktif" },
-  { id: "SEM-004", title: "Proje Yönetimi (PMP Hazırlık)", description: "devamını oku", imageUrl: "https://w3-s3-bucket.s3.us-east-1.amazonaws.com/SaaS/semonline/uploaded-files/1863354459156114.jpeg", status: "Aktif" },
-  { id: "SEM-005", title: "İnsan Kaynakları Yönetimi Sertifika Programı", description: "devamını oku", imageUrl: "https://w3-s3-bucket.s3.us-east-1.amazonaws.com/SaaS/semonline/uploaded-files/1862800825295090.jpeg", status: "Aktif" },
+  { id: "SEM-001", title: "Dijital Pazarlama Sertifika Programı", description: "devamını oku", imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "SEM-002", title: "Sertifikalarınız Artık E-Devlet Sisteminde", description: "devamını oku", imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "SEM-003", title: "Temel ve Orta Seviye Excel Eğitimi", description: "devamını oku", imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "SEM-004", title: "Proje Yönetimi (PMP Hazırlık)", description: "devamını oku", imageUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "SEM-005", title: "İnsan Kaynakları Yönetimi Sertifika Programı", description: "devamını oku", imageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
 ];
 
-// =====================================================
-// İş İlanları — Gerçek sitedeki hizmetler temel alındı
-// =====================================================
 export const initialJobs = [
-  { id: "JOB-001", title: "Ulusal Staj Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Türkiye Geneli", description: "Cumhurbaşkanlığı himayesinde yürütülen Ulusal Staj Programı kapsamında çeşitli kurumlarda staj imkânı.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2026/resimler/mmk/ulusal-staj-programi-ek-usp-uni-pay2_7a018351522340f9883fe36d578505ed.jpg", status: "Aktif" },
-  { id: "JOB-002", title: "Araştırma Faaliyetleri", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü bünyesinde yürütülen araştırma faaliyetleri ve projeler.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/123e5d87cd934f49ad587f7f4bb01f5a_(768_432).jpg", status: "Aktif" },
-  { id: "JOB-003", title: "Akran Mentor Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Deneyimli öğrencilerin yeni öğrencilere rehberlik ettiği Akran Mentor programı.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/c5e98c9906414da897751aef53f7cdea_(768_432).jpg", status: "Aktif" },
-  { id: "JOB-004", title: "İş Arama Platformları Rehberi", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Online", description: "Öğrencilere ve mezunlara yönelik iş arama platformları ve kariyer kaynakları rehberi.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/49c1be8495d7408090bc9340ddd5a707_(768_432).jpg", status: "Aktif" },
-  { id: "JOB-005", title: "İşbirliklerimiz — Sektör Ortaklıkları", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü'nin sektör liderleriyle kurduğu iş birliği protokolleri ve ortak projeler.", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/mmk/81ef9405e47647a19acf4f065f602379_(768_432).jpg", status: "Aktif" },
+  { id: "JOB-001", title: "Ulusal Staj Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Türkiye Geneli", description: "Cumhurbaşkanlığı himayesinde yürütülen Ulusal Staj Programı kapsamında çeşitli kurumlarda staj imkânı.", imageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-002", title: "Araştırma Faaliyetleri", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü bünyesinde yürütülen araştırma faaliyetleri ve projeler.", imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-003", title: "Akran Mentor Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Deneyimli öğrencilerin yeni öğrencilere rehberlik ettiği Akran Mentor programı.", imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-004", title: "İş Arama Platformları Rehberi", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Online", description: "Öğrencilere ve mezunlara yönelik iş arama platformları ve kariyer kaynakları rehberi.", imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-005", title: "İşbirliklerimiz — Sektör Ortaklıkları", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü'nin sektör liderleriyle kurduğu iş birliği protokolleri ve ortak projeler.", imageUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
 ];
 
-// =====================================================
-// Öne Çıkan Fırsatlar — Sitedeki ana sayfadaki slider görselleri
-// =====================================================
 export const initialFeatured = [
-  { id: "FTR-001", title: "Ulusal Staj Programı", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/c22f7ef2fdc8492ea26e4508c7a48adc_015b9396b49f4bbfb8454c98cc1ebeaa.jpg" },
-  { id: "FTR-002", title: "Araştırma Faaliyetleri", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/09a23c212bca4b988af33523dc56b0dc_dd6cc4f202854efbb56f5f58b6494a2e.jpg" },
-  { id: "FTR-003", title: "Akran Mentor Programı", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/1d091a0ef16d416db4ab9232c2f9120b_97d77ce97bbe412b80857b53c64b7cf6.jpg" },
-  { id: "FTR-004", title: "İş Arama Platformları", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/b9ec20f282ca455e8b55f1eab8b00c57_7c50bd63d1b34feab07bbd8eed7ba269.jpg" },
-  { id: "FTR-005", title: "İşbirliklerimiz", imageUrl: "https://panel.esenyurt.edu.tr/assets/2025/resimler/kurumsaliletisim/8c4f08ebeb2c4fd8b10b76a73388eb07_ce7747ca00fc4b659e0af2bacbe93742.jpg" },
+  { id: "FTR-001", title: "Ulusal Staj Programı", imageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=800&q=80" },
+  { id: "FTR-002", title: "Araştırma Faaliyetleri", imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80" },
+  { id: "FTR-003", title: "Akran Mentor Programı", imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" },
+  { id: "FTR-004", title: "İş Arama Platformları", imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80" },
+  { id: "FTR-005", title: "İşbirliklerimiz", imageUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80" },
 ];
 
 export const initialMentorships = [];
 export const initialVoluntaryInternships = [];
-
-// =====================================================
-// Akademik Katalog
-// =====================================================
-const generateCatalog = () => {
-  let facId = 1;
-  let depId = 1;
-  let prgId = 1;
-
-  const allUnits = [
-    ...IESU_FACULTIES.map(u => ({...u, type: 'Fakülte'})),
-    ...IESU_MYO.map(u => ({...u, type: 'Meslek Yüksekokulu'})),
-    ...IESU_YUKSEKOKUL.map(u => ({...u, type: 'Yüksekokul'})),
-    ...IESU_ENSTITU.map(u => ({...u, type: 'Enstitü'}))
-  ];
-
-  return allUnits.map(unit => {
-    return {
-      id: `FAC-${String(facId++).padStart(3, '0')}`,
-      name: unit.name,
-      type: unit.type,
-      status: "Aktif",
-      departments: unit.departments.map(dep => {
-        return {
-          id: `DEP-${String(depId++).padStart(3, '0')}`,
-          name: dep,
-          status: "Aktif",
-          programs: [
-            {
-              id: `PRG-${String(prgId++).padStart(3, '0')}`,
-              name: `${dep} (${unit.type === 'Meslek Yüksekokulu' ? 'Önlisans' : unit.type === 'Enstitü' ? 'Lisansüstü' : 'Lisans'})`,
-              level: unit.type === 'Meslek Yüksekokulu' ? 'Önlisans' : unit.type === 'Enstitü' ? 'Lisansüstü' : 'Lisans',
-              doubleMajorEligible: true,
-              status: "Aktif"
-            }
-          ]
-        }
-      })
-    };
-  });
-};
-
-export const initialAcademicCatalog = generateCatalog();
-export const academicStaff = [];
-
-// =====================================================
-// Stajlar — Eski sahte şirketler temizlendi
-// =====================================================
+export const initialAcademicCatalog = [];
 export const initialInternships = [];
-
-// =====================================================
-// Akademik Onaylar
-// =====================================================
 export const initialAcademicApprovals = [];
 
-// =====================================================
-// Gruplar
-// =====================================================
 export const initialGroups = [
   {
     id: "GRP-001",
-    name: "Yazılım Geliştiricileri Kulübü",
+    name: "Yazılım Geliştiricileri Topluluğu",
     description: "İstanbul Esenyurt Üniversitesi öğrencileri, mezunları ve akademisyenlerinin yer aldığı, teknoloji ve yazılım geliştirme üzerine etkinlikler düzenleyen resmi topluluk.",
     cover: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
     logo: "https://ui-avatars.com/api/?name=YG&background=0D9488&color=fff&size=200",
-    type: "Öğrenci Kulübü",
+    type: "Öğrenci Topluluğu",
     memberCount: 142,
     verified: true,
     createdBy: "admin_igu",
     status: "Aktif",
     events: [],
     boardMembers: [
-      { role: "Kulüp Başkanı", name: "Ali Yılmaz", department: "Bilgisayar Mühendisliği" },
-      { role: "Başkan Yardımcısı", name: "Ayşe Kaya", department: "Yazılım Mühendisliği" },
-      { role: "Genel Sekreter", name: "Mehmet Demir", department: "Bilişim Sistemleri" },
-      { role: "Sayman", name: "Zeynep Çelik", department: "İşletme" },
-      { role: "Danışman Akademisyen", name: "Dr. Öğr. Üyesi Ahmet Kılıç", department: "Bilgisayar Mühendisliği" }
+      { role: "Topluluk Başkanı", name: "Ali Yılmaz", department: "Bilgisayar Mühendisliği" }
     ]
   },
   {
@@ -552,16 +476,12 @@ export const initialGroups = [
     status: "Aktif",
     events: [],
     boardMembers: [
-      { role: "Kulüp Başkanı", name: "Kerem Tunç", department: "İşletme" },
+      { role: "Topluluk Başkanı", name: "Kerem Tunç", department: "İşletme" },
       { role: "Başkan Yardımcısı", name: "Selin Yılmaz", department: "Uluslararası Ticaret" },
-      { role: "Danışman Akademisyen", name: "Prof. Dr. Ayşe Yılmaz", department: "İşletme" }
     ]
   }
 ];
 
-// =====================================================
-// Anketler
-// =====================================================
 export const initialSurveys = [
   {
     id: 'SRV-101',

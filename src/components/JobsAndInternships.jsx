@@ -9,10 +9,11 @@ import AnkaCoverLetterModal from './AnkaCoverLetterModal';
 
 import JobCreator from './JobCreator';
 
-export default function JobsAndInternships({ userRole, setView, currentUser }) {
+export default function JobsAndInternships({ userRole, setView, currentUser, jobs: propsJobs }) {
   const previousView = useAppStore(state => state.previousView);
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
-  const jobs = useAppStore(state => state.jobs);
+  const storeJobs = useAppStore(state => state.jobs);
+  const jobs = (propsJobs && propsJobs.length) ? propsJobs : storeJobs;
   const setJobs = useAppStore(state => state.setJobs);
   const applications = useAppStore(state => state.applications) || [];
   const setApplications = useAppStore(state => state.setApplications);
@@ -167,7 +168,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser }) {
                     }}
                     className="hidden md:flex bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white px-3 py-1.5 rounded-md text-xs font-bold items-center gap-1.5 transition-all shadow-md"
                   >
-                    <Compass size={14} /> AI ile Filtrele
+                    <Compass size={14} /> Filtrele
                   </button>
                 </div>
                 <div className="flex bg-gray-100 rounded-lg p-1">

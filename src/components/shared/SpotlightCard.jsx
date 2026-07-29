@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 
-export default function SpotlightCard({ children, className = '', spotlightColor = 'rgba(255,255,255,0.05)', style }) {
+export default function SpotlightCard({ children, className = '', spotlightColor = 'rgba(255,255,255,0.05)', style, onClick }) {
   const divRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -33,6 +33,7 @@ export default function SpotlightCard({ children, className = '', spotlightColor
   return (
     <div
       ref={divRef}
+      onClick={onClick}
       onMouseMove={handleMouseMove}
       onFocus={handleFocus}
       onBlur={handleBlur}

@@ -201,13 +201,13 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                         e.preventDefault();
                         window.toast && window.toast.info(`Anka AI: ${activeHub.name} bölgesi için çalışma vizesi ve relocation prosedürleri analiz ediliyor...`);
                         setTimeout(() => {
-                          window.toast && window.toast.success("🌍 AI Analizi: Hedef bölge için Start-up Vizesi ve Ankara Antlaşması alternatifleri raporlandı.");
+                          window.toast && window.toast.success("🌍 Analiz: Hedef bölge için Start-up Vizesi ve Ankara Antlaşması alternatifleri raporlandı.");
                         }, 2500);
                       }}
                       className="w-full bg-red-900 hover:bg-slate-700 text-red-300 border border-red-500/30 font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-                      AI Vize & Relocation Raporu
+                      Vize & Relocation Raporu
                     </button>
                     <button 
                       onClick={(e) => {

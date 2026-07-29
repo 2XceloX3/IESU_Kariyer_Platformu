@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
-import { Building2, Edit, Trash2, Plus, Search, Filter, Mail, Phone, MapPin, CheckCircle2, Clock, Download } from 'lucide-react';
+import { Building2, Edit, Trash2, Plus, Search, Filter, Mail, Phone, MapPin, CheckCircle2, Clock, Download, ShieldCheck } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
 export default function CMSCompanies({ companies = [], setCompanies }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -236,6 +236,45 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                   <option>Reddedildi</option>
                   <option>Pasif</option>
                 </select>
+              </div>
+            </div>
+
+            {/* GOOGLE STITCH PROTOCOL FIELDS */}
+            <div className="p-4 bg-red-50/60 border border-red-100 rounded-2xl space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-[#990000] uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck size={14} /> Resmî Üniversite Protokolü
+                </span>
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
+                  <input 
+                    type="checkbox" 
+                    checked={form.isProtocol !== false} 
+                    onChange={e => setForm({...form, isProtocol: e.target.checked})}
+                    className="accent-[#990000] rounded"
+                  /> Protokol Aktif
+                </label>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-gray-600 block mb-1">Protokol Geçerlilik Tarihi</label>
+                  <input 
+                    type="text" 
+                    value={form.protocolDate || '2025-2028'} 
+                    onChange={e => setForm({...form, protocolDate: e.target.value})}
+                    placeholder="Örn: 2025-2028" 
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-gray-600 block mb-1">Tahsis Edilen Staj Kontenjanı</label>
+                  <input 
+                    type="text" 
+                    value={form.protocolQuota || '25 Öğrenci'} 
+                    onChange={e => setForm({...form, protocolQuota: e.target.value})}
+                    placeholder="Örn: 30 Öğrenci" 
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold"
+                  />
+                </div>
               </div>
             </div>
           </div>

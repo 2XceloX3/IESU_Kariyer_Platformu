@@ -110,7 +110,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                     className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-md"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
-                    AI Yetkinlik Çevirmeni
+                    Yetkinlik Çevirmeni
                   </button>
                   <button className="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center justify-center gap-2">
                     <Share2 size={18} /> LinkedIn'de Paylaş

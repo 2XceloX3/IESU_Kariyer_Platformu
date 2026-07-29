@@ -111,7 +111,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                       e.preventDefault();
                       window.toast && window.toast.info(`Anka AI: ${user.name} adlı kullanıcının kariyer geçmişi tersine mühendislikle analiz ediliyor...`);
                       setTimeout(() => {
-                        window.toast && window.toast.success("✅ AI Analizi: Hedefinize ulaşmak için öğrenmeniz gereken 3 yeni yetkinlik haritanıza eklendi.");
+                        window.toast && window.toast.success("✅ Analiz: Hedefinize ulaşmak için öğrenmeniz gereken 3 yeni yetkinlik haritanıza eklendi.");
                       }, 2500);
                     }}
                     className="flex-1 sm:flex-none text-[11px] font-bold bg-[#f0f7ff] text-[#0A66C2] hover:bg-[#dbeafe] px-3 py-2 rounded-xl transition-colors flex items-center justify-center gap-1"

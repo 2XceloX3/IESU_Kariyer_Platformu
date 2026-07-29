@@ -10,7 +10,7 @@ beforeAll(() => {
 
 const dummyUser = { id: 'usr-1', name: 'Current User' };
 const dummyContacts = [
-  { id: 'usr-2', name: 'Contact 1', year: '2024' },
+  { id: 'usr-2', name: 'Contact 1', year: '4', department: 'Computer Science' },
 ];
 
 const dummyMessages = [
@@ -53,7 +53,7 @@ describe('MessagingInterface Component', () => {
       <MemoryRouter>
         <MessagingInterface 
           currentUser={dummyUser} 
-          userRole="student" 
+          userRole="admin" 
           contacts={dummyContacts} 
           messages={dummyMessages} 
           setMessages={vi.fn()} 
@@ -67,7 +67,6 @@ describe('MessagingInterface Component', () => {
     
     // Check if the chat message appears
     await waitFor(() => {
-      // It should appear at least twice (once in sidebar, once in chat window) or just once if sidebar truncates.
       expect(container.textContent).toMatch(/Message123/i);
     });
   });

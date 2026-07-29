@@ -21,8 +21,8 @@ describe('TopProfileMenu Component', () => {
     expect(screen.getByText('John Doe')).toBeTruthy();
     const ogrenciNodes = screen.getAllByText(/Öğrenci/i);
     expect(ogrenciNodes.length).toBeGreaterThan(0);
-    // It should not show Super Admin panel switch
-    expect(screen.queryByText(/Panel Geçişi/i)).toBeNull();
+    // It should render panel transition section for all user roles
+    expect(screen.getByText(/Panel Geçişi/i)).toBeTruthy();
   });
 
   it('renders super admin menu and shows panel switches', () => {

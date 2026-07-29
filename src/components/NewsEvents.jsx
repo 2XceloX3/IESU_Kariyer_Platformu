@@ -1,122 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Calendar, FileText, ExternalLink, Bell, Newspaper, Image as ImageIcon, MapPin, Clock, ChevronRight, ArrowRight, Download } from 'lucide-react';
-
-
-
+import { ArrowLeft, Calendar, FileText, ExternalLink, Bell, Newspaper, Image as ImageIcon, MapPin, Clock, ChevronRight, ArrowRight, Download, Sparkles, Megaphone, Tag, ShieldCheck } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import MainHeader from './MainHeader';
+import SubPanelFooter from './SubPanelFooter';
 
 export default function NewsEvents({ setView, currentUser, userRole }) {
-  const news = useAppStore(state => state.news);
-  const announcements = useAppStore(state => state.announcements);
-  const events = useAppStore(state => state.events);
+  const news = useAppStore(state => state.news) || [];
+  const announcements = useAppStore(state => state.announcements) || [];
+  const events = useAppStore(state => state.events) || [];
   
   const path = window.location.pathname;
   const initialCategory = path.includes('duyurular') ? 'duyurular' : path.includes('etkinlikler') ? 'etkinlikler' : 'haberler';
-  const category = initialCategory;
   
-  const [activeTab, setActiveTab] = useState(category);
+  const [activeTab, setActiveTab] = useState(initialCategory);
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const getParsedDate = (dateStr) => {
-    if (!dateStr || dateStr.toLowerCase().includes('belirtilmemiş')) return { day: '', month: '' };
-    
-    let day = '', month = '';
-    
-    if (dateStr.includes('.') && !isNaN(parseInt(dateStr.split('.')[0]))) {
-      const datePart = dateStr.split(' ')[0];
-      const parts = datePart.split('.');
-      if (parts.length >= 2) {
-        day = parts[0];
-        const months = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
-        month = months[parseInt(parts[1]) - 1] || '';
-        return { day, month };
-      }
-    }
-    
-    if (dateStr.includes('/') && !isNaN(parseInt(dateStr.split('/')[0]))) {
-      const datePart = dateStr.split(' ')[0];
-      const parts = datePart.split('/');
-      if (parts.length >= 2) {
-        day = parts[0];
-        const months = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
-        month = months[parseInt(parts[1]) - 1] || '';
-        return { day, month };
-      }
-    }
-
-    if (dateStr.includes(' ')) {
-      const parts = dateStr.split(' ');
-      if (parts.length >= 2 && !isNaN(parseInt(parts[0]))) {
-        day = parts[0];
-        month = parts[1].substring(0,3);
-        return { day, month };
-      }
-    }
-    
-    return { day: '', month: '' };
-  };
-
   useEffect(() => {
     setIsAnimating(true);
-    const timer = setTimeout(() => {
-      setActiveTab(category);
-      setIsAnimating(false);
-    }, 300);
+    const timer = setTimeout(() => setIsAnimating(false), 200);
     return () => clearTimeout(timer);
-  }, [category]);
+  }, [activeTab]);
 
   const handleTabChange = (tab) => {
-    if (tab === category) return;
-    setView(tab);
+    if (tab === activeTab) return;
+    setActiveTab(tab);
+    if (setView) setView(tab);
   };
 
+  const getCleanText = (str) => {
+    if (!str) return '';
+    return str
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<\/p>/gi, ' ')
+      .replace(/<\/span>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&quot;/gi, '"')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
+  // 📰 HABERLER SEKMESİ (Stitch Corporate Redesign)
   const renderHaberler = () => (
-    <div className={`grid grid-cols-1 md:grid-cols-12 gap-6 transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}`}>
+    <div className={`grid grid-cols-1 md:grid-cols-12 gap-8 transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
       {(news || []).map((item, index) => {
-        // First item is massive (Bento Grid Style)
+        const cleanTitle = getCleanText(item?.title);
+        const cleanDesc = getCleanText(item?.description || item?.content);
+
+        // Öne Çıkan Büyük Haber (Bento Featured Card)
         if (index === 0) {
           return (
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  onClick={() => setSelectedItem(item)} key={index} className="md:col-span-8 group relative rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 min-h-[450px] cursor-pointer">
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent z-10 transition-opacity duration-500"></div>
-              <img src={item?.imageUrl} alt={item?.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out" />
-              <div className="absolute top-6 left-6 z-20 flex gap-2">
-                <span className="bg-[#990000] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider">{item.category}</span>
-              </div>
-              <div className="absolute bottom-0 left-0 p-8 md:p-12 z-20 w-full transform group-hover:-translate-y-2 transition-transform duration-500">
-                <div className="flex items-center gap-3 text-red-200 mb-4 font-bold text-[13px] tracking-wide">
-                  <Calendar size={16} /> {item.date}
+            <div 
+              key={index}
+              onClick={() => setSelectedItem(item)}
+              className="md:col-span-8 group bg-[#800000] rounded-3xl overflow-hidden shadow-2xl hover:shadow-red-950/40 transition-all duration-500 min-h-[460px] flex flex-col justify-end relative cursor-pointer border border-red-900"
+            >
+              <img 
+                src={item?.imageUrl || 'https://www.esenyurt.edu.tr/uploads/2025/12/pjhehwxvm6o1u-yok-universite-izleme-ve-degerlendirme-genel-raporu-2025’te-onemli-basari.jpg'} 
+                alt={cleanTitle} 
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-60" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+              
+              <div className="relative z-10 p-8 md:p-12">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="bg-[#990000] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow border border-red-500/30 flex items-center gap-1.5">
+                    <Sparkles size={12} className="text-amber-300" /> {item.category || 'Öne Çıkan Haber'}
+                  </span>
+                  <span className="text-slate-300 text-xs font-bold flex items-center gap-1">
+                    <Calendar size={14} className="text-amber-400" /> {item.date || '02 Ocak 2026'}
+                  </span>
                 </div>
-                <h3 className="text-2xl md:text-2xl font-black text-white leading-tight mb-4 group-hover:text-red-50 transition drop-shadow-md">{item?.title}</h3>
-                <p className="text-gray-400 text-[15px] max-w-2xl mb-6 line-clamp-2">{item.description}</p>
-                <div className="flex items-center gap-2 text-white font-bold text-[14px]">
-                  Detayları Gör <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md group-hover:bg-[#990000] transition-colors ml-1"><ArrowRight size={16} /></div>
+
+                <h3 className="text-2xl md:text-3xl font-black text-white leading-snug mb-3 group-hover:text-amber-300 transition-colors drop-shadow-md">
+                  {cleanTitle}
+                </h3>
+
+                <p className="text-slate-300 text-xs md:text-sm font-medium leading-relaxed max-w-3xl line-clamp-3 mb-6">
+                  {cleanDesc}
+                </p>
+
+                <div className="inline-flex items-center gap-2 bg-white text-[#990000] hover:bg-amber-300 hover:text-slate-950 px-6 py-3 rounded-2xl font-black text-xs transition-colors shadow-lg">
+                  Resmî Haberi İncele <ArrowRight size={15} />
                 </div>
               </div>
             </div>
           );
         }
-        
-        // Other items are standard elegant cards
+
+        // Standart Haber Kartları
         return (
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  onClick={() => setSelectedItem(item)} key={index} className="md:col-span-4 group bg-white rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-500 flex flex-col h-full">
-            <div className="h-48 overflow-hidden relative bg-gray-100">
-              <img src={item?.imageUrl} alt={item?.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm text-[#990000] font-black text-[11px] uppercase tracking-wider">
-                {item.category}
+          <div 
+            key={index}
+            onClick={() => setSelectedItem(item)}
+            className="md:col-span-4 group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
+          >
+            <div>
+              <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
+                <img 
+                  src={item?.imageUrl || 'https://www.esenyurt.edu.tr/uploads/2026/06/qd2nc7jccjlfr-universitemizin-14-yil-donumu-kutlu-olsun.jfif'} 
+                  alt={cleanTitle} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div className="absolute top-3 left-3 bg-[#990000] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  {item.category || 'Haber'}
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400 mb-2">
+                  <Calendar size={13} className="text-[#990000]" /> {item.date || 'Tarih'}
+                </div>
+                <h4 className="text-base font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug line-clamp-2 mb-2">
+                  {cleanTitle}
+                </h4>
+                <p className="text-xs font-medium text-slate-600 leading-relaxed line-clamp-3 mb-4">
+                  {cleanDesc}
+                </p>
               </div>
             </div>
-            <div className="p-6 flex flex-col flex-grow bg-white">
-              <div className="flex items-center gap-2 text-[12px] font-bold text-gray-500 mb-3">
-                <Calendar size={14} className="text-iesu-primary" /> {item.date}
-              </div>
-              <h4 className="font-extrabold text-[16px] text-gray-900 group-hover:text-[#990000] transition line-clamp-2 leading-snug mb-3">{item?.title}</h4>
-              <p className="text-gray-500 text-[13px] line-clamp-2 mb-6 flex-grow">{item.description}</p>
-              <div className="mt-auto flex items-center justify-between border-t border-gray-50 pt-4">
-                <span className="text-[13px] font-bold text-gray-500 group-hover:text-iesu-primary transition">Devamını Oku</span>
-                <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-[#990000] group-hover:bg-[#990000] group-hover:text-white transition-all transform group-hover:translate-x-1">
-                  <ChevronRight size={16} strokeWidth={3} />
-                </div>
+
+            <div className="p-6 pt-0 flex items-center justify-between border-t border-slate-100 pt-4 text-xs font-black text-[#990000]">
+              <span>Detaylı İncele</span>
+              <div className="w-7 h-7 rounded-xl bg-red-50 group-hover:bg-[#990000] group-hover:text-white transition-colors flex items-center justify-center shadow-sm">
+                <ChevronRight size={15} />
               </div>
             </div>
           </div>
@@ -125,98 +134,123 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
     </div>
   );
 
+  // 🔔 DUYURULAR SEKMESİ (Stitch Corporate Redesign)
   const renderDuyurular = () => (
-    <div className={`grid grid-cols-1 md:grid-cols-12 gap-8 transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}`}>
+    <div className={`grid grid-cols-1 md:grid-cols-12 gap-8 transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
       <div className="md:col-span-4">
-        <div className="bg-gradient-to-br from-iesu-navy to-iesu-navy rounded-xl p-8 text-white shadow-xl sticky top-24 overflow-hidden">
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-2xl"></div>
-          <Bell size={48} className="text-red-200 mb-6 relative z-10" />
-          <h2 className="text-3xl font-black mb-4 relative z-10">Önemli Duyurular</h2>
-          <p className="text-red-100 text-[15px] font-medium relative z-10 leading-relaxed">Üniversitemizdeki akademik takvim, sınavlar ve idari süreçlerle ilgili en güncel bildirimler.</p>
+        <div className="bg-gradient-to-br from-slate-950 via-[#800000] to-slate-900 rounded-3xl p-8 text-white shadow-xl sticky top-28 border border-red-900">
+          <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 text-amber-300 border border-white/10">
+            <Bell size={28} />
+          </div>
+          <h2 className="text-2xl font-black mb-3 tracking-tight">Resmî Duyurular Hub</h2>
+          <p className="text-slate-300 text-xs font-medium leading-relaxed mb-6">
+            İstanbul Esenyurt Üniversitesi Rektörlüğü, Öğrenci İşleri ve Fakülte Dekanlıkları tarafından yayımlanan resmî bildirim ve duyuru akışı.
+          </p>
+          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-[11px] font-bold text-amber-200">
+            📌 Tüm duyurular senkronizasyon otomasyonu ile anlık güncellenmektedir.
+          </div>
         </div>
       </div>
-      
+
       <div className="md:col-span-8 flex flex-col gap-4">
-        {(announcements || []).map((item, index) => (
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  onClick={() => setSelectedItem(item)} key={index} className="group relative bg-white p-6 md:p-8 rounded-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl hover:border-red-100 transition-all duration-500 flex flex-col sm:flex-row gap-6 items-start sm:items-center overflow-hidden cursor-pointer">
-            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gray-200 group-hover:bg-iesu-primary transition-colors duration-500"></div>
-            
-            <div className="flex-shrink-0 w-20 h-20 bg-gray-50 rounded-2xl flex flex-col items-center justify-center text-gray-900 border border-gray-100 group-hover:bg-red-50 group-hover:text-[#990000] group-hover:border-red-100 transition-all duration-500 transform group-hover:-rotate-3">
-              {(() => {
-                const { day, month } = getParsedDate(item.date);
-                if (day && month) {
-                  return (
-                    <>
-                      <span className="font-black text-2xl leading-none">{day}</span>
-                      <span className="text-[11px] font-bold mt-1 tracking-widest uppercase">{month}</span>
-                    </>
-                  );
-                }
-                return <Calendar size={28} className="text-gray-400" />;
-              })()}
-            </div>
-            
-            <div className="flex-grow">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-[10px] uppercase tracking-widest font-black text-iesu-primary bg-red-50 px-2 py-1 rounded-md">{item.tag}</span>
-                {item.attachments && item.attachments.length > 0 && (
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md"><FileText size={12}/> Ekli Dosya</span>
-                )}
+        {(announcements || []).map((item, index) => {
+          const cleanTitle = getCleanText(item?.title);
+          const cleanDesc = getCleanText(item?.description || item?.content);
+
+          return (
+            <div 
+              key={index}
+              onClick={() => setSelectedItem(item)}
+              className="group bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden"
+            >
+              <div className="absolute left-0 top-0 bottom-0 w-2 bg-[#990000] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="flex items-start gap-4">
+                <div className="p-3.5 bg-red-50 text-[#990000] rounded-2xl shrink-0 group-hover:bg-[#990000] group-hover:text-white transition-colors shadow-sm">
+                  <Megaphone size={22} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-3 mb-1.5">
+                    <span className="text-[10px] font-black uppercase text-[#990000] bg-red-100/80 px-2.5 py-0.5 rounded-full border border-red-200">
+                      {item.tag || 'Resmî Duyuru'}
+                    </span>
+                    <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                      <Calendar size={12} /> {item.date || 'Yayın Tarihi'}
+                    </span>
+                  </div>
+
+                  <h3 className="text-base font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug mb-1">
+                    {cleanTitle}
+                  </h3>
+
+                  <p className="text-xs font-medium text-slate-600 line-clamp-2 leading-relaxed">
+                    {cleanDesc}
+                  </p>
+                </div>
               </div>
-              <h3 className="font-extrabold text-[17px] text-gray-900 group-hover:text-[#990000] transition-colors leading-snug mb-2 pr-8">
-                {item?.title}
-              </h3>
-              <p className="text-gray-500 text-[14px] leading-relaxed line-clamp-2">{item.description}</p>
+
+              <div className="self-end sm:self-center shrink-0 w-9 h-9 rounded-xl bg-slate-100 group-hover:bg-[#990000] group-hover:text-white transition-colors flex items-center justify-center text-slate-600 shadow-sm">
+                <ChevronRight size={18} />
+              </div>
             </div>
-            
-            <div className="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-gray-50 items-center justify-center text-gray-500 group-hover:bg-[#990000] group-hover:text-white transition-all duration-500 transform group-hover:translate-x-2">
-              <ChevronRight size={20} />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 
+  // 🎪 ETKİNLİKLER SEKMESİ (Stitch Corporate Redesign)
   const renderEtkinlikler = () => (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 transition-all duration-500 ${isAnimating ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}`}>
+    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
       {(events || []).map((item, index) => {
-        const spanClass = index % 3 === 0 && index !== 0 ? 'md:col-span-8' : (index % 3 === 1 && index !== 1 ? 'md:col-span-4' : 'md:col-span-6');
-        
+        const cleanTitle = getCleanText(item?.title);
+        const cleanDesc = getCleanText(item?.description || item?.content);
+
         return (
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  onClick={() => setSelectedItem(item)} key={index} className={`${spanClass} group relative rounded-xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-2xl transition-all duration-500 min-h-[350px] flex flex-col cursor-pointer`}>
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/95 via-gray-900/40 to-transparent z-10 transition-opacity duration-500"></div>
-            <img src={item?.imageUrl} alt={item?.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out" />
-            
-            <div className="absolute top-6 left-6 z-20 flex gap-2">
-              <div className="bg-white/95 backdrop-blur-md rounded-2xl text-center px-4 py-3 shadow-lg border border-white/20 min-w-[70px]">
-                {(() => {
-                  const { day, month } = getParsedDate(item.date);
-                  if (day && month) {
-                    return (
-                      <>
-                        <div className="text-2xl font-black text-[#990000] leading-none">{day}</div>
-                        <div className="text-[11px] font-bold text-gray-500 uppercase mt-1 tracking-wider">{month}</div>
-                      </>
-                    );
-                  }
-                  return <Calendar size={28} className="text-[#990000] opacity-70 mx-auto" />;
-                })()}
+          <div 
+            key={index}
+            onClick={() => setSelectedItem(item)}
+            className="group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
+          >
+            <div>
+              <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
+                <img 
+                  src={item?.imageUrl || 'https://www.esenyurt.edu.tr/uploads/2026/07/tjb9hhos5ydrt-gelecegin-dunyasini-sekillendiren-teknolojiler-ve-dijital-donusum-bilim-kafe’de-konusuluyor.jfif'} 
+                  alt={cleanTitle} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div className="absolute top-3 left-3 bg-[#990000] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  {item.category || 'Etkinlik'}
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="flex items-center gap-3 text-[11px] font-bold text-[#990000] mb-2">
+                  <span className="flex items-center gap-1"><Calendar size={13} /> {item.date}</span>
+                  {item.time && <span className="flex items-center gap-1"><Clock size={13} /> {item.time}</span>}
+                </div>
+
+                <h3 className="text-base font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug line-clamp-2 mb-2">
+                  {cleanTitle}
+                </h3>
+
+                <p className="text-xs font-medium text-slate-600 leading-relaxed line-clamp-3 mb-4">
+                  {cleanDesc}
+                </p>
+
+                {item.location && (
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 pt-3 border-t border-slate-100">
+                    <MapPin size={14} className="text-[#990000] shrink-0" />
+                    <span className="truncate">{item.location}</span>
+                  </div>
+                )}
               </div>
             </div>
-            
-            <div className="absolute bottom-0 left-0 p-8 z-20 w-full transform group-hover:-translate-y-2 transition-transform duration-500">
-              <div className="flex flex-wrap items-center gap-4 mb-4">
-                <span className="bg-white/20 backdrop-blur-md text-white text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest border border-white/10">Etkinlik</span>
-                <div className="flex items-center gap-1.5 text-[12px] font-bold text-red-100">
-                  <Clock size={14} className="text-white" /> {item.date && item.date.includes(' ') ? item.date.split(' ').slice(2).join(' ') : (item.time || '')}
-                </div>
-                <div className="flex items-center gap-1.5 text-[12px] font-bold text-red-100">
-                  <MapPin size={14} className="text-white" /> {item.location}
-                </div>
-              </div>
-              <h3 className="text-2xl md:text-3xl font-black text-white leading-tight mb-3 group-hover:text-red-50 transition drop-shadow-md">{item?.title}</h3>
-              <p className="text-gray-400 text-[14px] line-clamp-2 mb-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">{item.description}</p>
+
+            <div className="p-6 pt-0">
+              <button className="w-full py-3 bg-[#990000] group-hover:bg-red-800 text-white font-black rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
+                Etkinlik Detaylarını Gör <ChevronRight size={15} />
+              </button>
             </div>
           </div>
         );
@@ -225,166 +259,190 @@ export default function NewsEvents({ setView, currentUser, userRole }) {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans pb-24 relative overflow-x-hidden">
-      
-      {/* Spectacular Header Background */}
-      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-0"></div>
-      <div className="absolute top-0 left-0 w-full h-96 bg-[url('https://panel.esenyurt.edu.tr/assets/2026/resimler/kurumsaliletisim/38300c615d084e76ad1c599d7348ed91_b7be633ea1964047a18f2d9c5249839c.jpg')] opacity-10 bg-cover bg-center pointer-events-none mix-blend-overlay"></div>
-      
-      {/* Header Bar */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => {
-                if (!userRole) { setView('landing'); return; }
-                if (userRole === 'employer') { setView('company'); return; }
-                setView(userRole === 'admin' ? 'admin' : userRole);
-              }} 
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-gray-600 hover:bg-[#990000] hover:text-white hover:shadow-lg transition-all duration-300 group"
-            >
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            </button>
-            <h1 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight capitalize">{category || 'Kariyer ve Esenyurt Merkezi'}</h1>
-          </div>
-          <div className="hidden sm:flex items-center gap-3">
-             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-             <span className="text-[12px] font-bold text-gray-500">Sistem Aktif</span>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans">
+      <MainHeader setView={setView} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10 mt-8">
+      <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
-        {/* Premium Tab Menu */}
-        <div className="flex flex-col items-center justify-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-black text-white mb-8 text-center tracking-tight drop-shadow-md">Neler Oluyor?</h2>
-          
-          <div className="inline-flex bg-white/10 backdrop-blur-xl p-1.5 rounded-2xl shadow-2xl border border-white/20">
-            <button 
-              onClick={() => handleTabChange('haberler')}
-              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'haberler' ? 'text-[#990000] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
-            >
-              <Newspaper size={18} /> Haberler
-            </button>
-            
-            <button 
-              onClick={() => handleTabChange('duyurular')}
-              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'duyurular' ? 'text-[#990000] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
-            >
-              <Bell size={18} /> Duyurular
-            </button>
-            
-            <button 
-              onClick={() => handleTabChange('etkinlikler')}
-              className={`relative flex items-center gap-2.5 px-6 sm:px-8 py-3.5 rounded-xl font-bold text-[14px] transition-all duration-300 ${activeTab === 'etkinlikler' ? 'text-[#990000] bg-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
-            >
-              <Calendar size={18} /> Etkinlikler
-            </button>
+        {/* Banner Header */}
+        <div className="bg-gradient-to-r from-slate-950 via-[#800000] to-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-2xl border border-red-900 relative overflow-hidden">
+          <div className="max-w-3xl relative z-10">
+            <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-500/40 inline-block mb-3">
+              RESMİ CANLI YAYIN MERKEZİ
+            </span>
+            <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
+              Neler Oluyor?
+            </h1>
+            <p className="text-slate-200 text-sm md:text-base leading-relaxed font-medium">
+              İstanbul Esenyurt Üniversitesi'nin en son duyuruları, bilimsel sempozyumları, akademisyen haberleri ve kampüs içi tüm gelişmeler burada!
+            </p>
           </div>
         </div>
 
-        {/* Dynamic Content Rendering */}
-        <div className="min-h-[500px]">
+        {/* Dynamic Nav Tabs */}
+        <div className="flex justify-center bg-white p-2 rounded-2xl border border-slate-200 shadow-sm max-w-xl mx-auto w-full">
+          <button
+            onClick={() => handleTabChange('haberler')}
+            className={`flex-1 py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              activeTab === 'haberler'
+                ? 'bg-[#990000] text-white shadow-md'
+                : 'text-slate-600 hover:text-[#990000] hover:bg-red-50'
+            }`}
+          >
+            <Newspaper size={16} /> Haberler
+          </button>
+          
+          <button
+            onClick={() => handleTabChange('duyurular')}
+            className={`flex-1 py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              activeTab === 'duyurular'
+                ? 'bg-[#990000] text-white shadow-md'
+                : 'text-slate-600 hover:text-[#990000] hover:bg-red-50'
+            }`}
+          >
+            <Bell size={16} /> Duyurular
+          </button>
+          
+          <button
+            onClick={() => handleTabChange('etkinlikler')}
+            className={`flex-1 py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              activeTab === 'etkinlikler'
+                ? 'bg-[#990000] text-white shadow-md'
+                : 'text-slate-600 hover:text-[#990000] hover:bg-red-50'
+            }`}
+          >
+            <Calendar size={16} /> Etkinlikler
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="min-h-[400px]">
           {activeTab === 'haberler' && renderHaberler()}
           {activeTab === 'duyurular' && renderDuyurular()}
           {activeTab === 'etkinlikler' && renderEtkinlikler()}
         </div>
 
-      </div>
+      </main>
 
-      {/* Detail Modal Overlay (Baloncuk) */}
+      {/* ULTRA-PREMIUM 5XL SPLIT-VIEW EXHIBITION MODAL */}
       {selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setSelectedItem(null)}></div>
-          <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-fade-in flex flex-col">
-            {selectedItem.imageUrl && (
-              <div className="w-full h-64 md:h-[400px] relative flex-shrink-0 bg-gray-900 overflow-hidden">
-                {/* Blurred background image */}
-                <img src={selectedItem.imageUrl} alt="Bg" className="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl scale-110" />
-                {/* Actual poster image */}
-                <img src={selectedItem.imageUrl} alt={selectedItem.title} className="absolute inset-0 w-full h-full object-contain drop-shadow-2xl z-10 p-4" />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent z-10 pointer-events-none"></div>
-              </div>
-            )}
+        <div className="fixed inset-0 z-[100] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-2 sm:p-6 overflow-y-auto animate-fade-in font-sans">
+          <div className="bg-white border border-slate-200/80 w-full max-w-5xl rounded-[32px] shadow-[0_35px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row relative my-auto max-h-[92vh]">
             
+            {/* Top-Right Absolute Close (X) Button */}
             <button 
               onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white text-white hover:text-gray-900 backdrop-blur-md rounded-full flex items-center justify-center transition-colors z-20"
+              className="absolute top-4 right-4 z-50 w-11 h-11 rounded-full bg-slate-900/80 hover:bg-[#990000] text-white flex items-center justify-center transition-all shadow-xl backdrop-blur-md cursor-pointer border border-white/20 hover:scale-110 active:scale-95"
+              title="Pencereyi Kapat"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              ✕
             </button>
 
-            <div className="p-8 md:p-10 flex-grow flex flex-col">
-              <div className="flex flex-wrap items-center gap-4 mb-5">
-                {(selectedItem.category || selectedItem.tag) && (
-                  <span className="bg-red-50 text-[#990000] text-[11px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider">
-                    {selectedItem.category || selectedItem.tag}
-                  </span>
-                )}
-                <div className="flex items-center gap-1.5 text-[13px] font-bold text-gray-500">
-                  <Calendar size={16} /> {selectedItem.date}
+            {/* LEFT SIDE: Full-Size High Resolution Poster Canvas */}
+            <div className="md:w-1/2 bg-slate-950 relative flex items-center justify-center p-4 min-h-[320px] md:min-h-[580px] border-b md:border-b-0 md:border-r border-slate-800 shrink-0">
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 z-10 pointer-events-none"></div>
+              {selectedItem.imageUrl ? (
+                <img 
+                  src={selectedItem.imageUrl} 
+                  alt={getCleanText(selectedItem.title)} 
+                  className="w-full h-full max-h-[520px] object-contain relative z-0 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]" 
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-slate-500 gap-3 p-8 text-center">
+                  <ImageIcon size={64} className="opacity-40" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Afiş Görseli Bulunmuyor</span>
                 </div>
-                {selectedItem.location && (
-                  <div className="flex items-center gap-1.5 text-[13px] font-bold text-gray-500">
-                    <MapPin size={16} /> {selectedItem.location}
+              )}
+              
+              {/* Category Badge on Poster */}
+              <div className="absolute top-5 left-5 z-20">
+                <span className="bg-[#990000] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-xl border border-red-400/30 flex items-center gap-1.5">
+                  <Sparkles size={13} className="text-amber-300" /> {selectedItem.category || 'Resmî Etkinlik'}
+                </span>
+              </div>
+            </div>
+
+            {/* RIGHT SIDE: Rich Multi-Paragraph Content & Event Metadata */}
+            <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-between overflow-y-auto custom-scrollbar bg-white">
+              
+              {/* Header Info */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-xs font-black text-[#990000]">
+                  {selectedItem.date && (
+                    <span className="flex items-center gap-1.5 bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                      <Calendar size={14} /> {selectedItem.date}
+                    </span>
+                  )}
+                  {selectedItem.time && (
+                    <span className="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
+                      <Clock size={14} /> {selectedItem.time}
+                    </span>
+                  )}
+                </div>
+
+                <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight tracking-tight">
+                  {getCleanText(selectedItem.title)}
+                </h2>
+
+                {/* Metadata Details Grid */}
+                {(selectedItem.location || selectedItem.speaker || selectedItem.organizer) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200/80 my-4">
+                    {selectedItem.location && (
+                      <div className="flex items-start gap-2.5">
+                        <MapPin size={18} className="text-[#990000] shrink-0 mt-0.5" />
+                        <div>
+                          <div className="text-[10px] font-black uppercase text-slate-400">Konum / Salon</div>
+                          <div className="text-xs font-bold text-slate-900 leading-snug">{selectedItem.location}</div>
+                        </div>
+                      </div>
+                    )}
+                    {selectedItem.speaker && (
+                      <div className="flex items-start gap-2.5">
+                        <Tag size={18} className="text-[#990000] shrink-0 mt-0.5" />
+                        <div>
+                          <div className="text-[10px] font-black uppercase text-slate-400">Konuşmacı / Düzenleyen</div>
+                          <div className="text-xs font-bold text-slate-900 leading-snug">{selectedItem.speaker}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
+
+                {/* Multi-paragraph Full Description Body */}
+                <div className="space-y-3 pt-2 border-t border-slate-100">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-[#990000]">Etkinlik Açıklaması & Program Detayı:</h4>
+                  <div className="text-xs md:text-sm font-medium text-slate-700 leading-relaxed space-y-3 whitespace-pre-line pr-1">
+                    {selectedItem.content || selectedItem.description || getCleanText(selectedItem.title)}
+                  </div>
+                </div>
               </div>
-              
-              <div className="flex justify-between items-start gap-4 mb-5">
-                <h2 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight">{selectedItem.title}</h2>
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.toast && window.toast.info("Anka AI: İçerik özetleniyor ve sese dönüştürülüyor...");
-                    setTimeout(() => {
-                      window.toast && window.toast.success("🔊 AI: 'Bu içerikte bahsedilen ana konu...' (Sesli Okuma Simülasyonu)");
-                    }, 2500);
-                  }}
-                  className="shrink-0 w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-red-600 hover:bg-red-600 hover:text-white transition-colors shadow-sm"
-                  title="AI ile Özetle ve Dinle"
+
+              {/* Action Buttons Footer */}
+              <div className="pt-6 mt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
+                {selectedItem.url && (
+                  <a
+                    href={selectedItem.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 py-4 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 text-center hover:scale-[1.02] active:scale-95"
+                  >
+                    Resmî Duyuruyu İncele <ExternalLink size={15} />
+                  </a>
+                )}
+                <button
+                  onClick={() => setSelectedItem(null)}
+                  className="py-4 px-8 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs uppercase tracking-widest transition-all shadow-md cursor-pointer hover:scale-[1.02] active:scale-95 text-center"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                  Kapat
                 </button>
               </div>
-              
-              <div className="prose prose-sm md:prose-base text-gray-600 max-w-none mb-2">
-                <p className="leading-relaxed font-medium">{selectedItem.description}</p>
-              </div>
-
-              {/* Registration Link for Events */}
-              {selectedItem.registrationLink && (
-                <div className="mt-6 mb-2">
-                  <a href={selectedItem.registrationLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[#990000] hover:bg-[#990000] text-white px-6 py-3 rounded-xl font-bold transition-colors shadow-lg shadow-red-500/30">
-                    Etkinliğe Kayıt Ol <ExternalLink size={16} />
-                  </a>
-                </div>
-              )}
-
-              {/* Attachments */}
-              {selectedItem.attachments && selectedItem.attachments.length > 0 && (
-                <div className="mt-8 pt-8 border-t border-gray-100">
-                  <h4 className="text-[15px] font-black text-gray-900 mb-4 flex items-center gap-2">
-                    <FileText size={18} className="text-[#990000]" /> Ekler ve İlgili Belgeler
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {selectedItem.attachments.map((attachment, idx) => (
-                      <a key={idx} href={attachment.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3.5 rounded-xl border border-gray-200 hover:border-iesu-navy hover:shadow-md transition-all group bg-gray-50 hover:bg-white cursor-pointer">
-                        <span className="font-bold text-gray-700 group-hover:text-[#990000] transition-colors text-[13px] pr-2">{attachment.title}</span>
-                        <div className="w-8 h-8 rounded-full bg-white flex-shrink-0 flex items-center justify-center text-gray-500 group-hover:bg-[#990000] group-hover:text-white transition-colors shadow-sm">
-                          <Download size={14} />
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
+
           </div>
         </div>
       )}
 
+      <SubPanelFooter setView={setView} />
     </div>
   );
 }

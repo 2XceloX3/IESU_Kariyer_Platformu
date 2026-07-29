@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import useAppStore from '../../store/useAppStore';
 import { Heart, Plus, Trash2, CheckCircle, Search, Users, Calendar, Activity, Eye, EyeOff, ImagePlus, X } from 'lucide-react';
 import PanelHeader from './PanelHeader';
 import PostCard from '../PostCard';
 
-export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser }) {
+export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setView }) {
+  const alumniAssocApplications = useAppStore(state => state.alumniAssocApplications) || [];
   const [showForm, setShowForm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [form, setForm] = useState({
@@ -66,9 +68,14 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser }) {
         title="Mezun Derneği (CMS)" 
         sub="Mezun derneği duyuru, etkinlik ve buluşma içeriklerini yönetin"
         action={
-          <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition">
-            <Plus size={16} /> Yeni İçerik Ekle
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setView?.('alumni_assoc_portal')} className="flex items-center gap-2 bg-[#990000] hover:bg-red-800 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-md">
+              <Users size={16} /> Mezun Derneği Özel Portalı Aç →
+            </button>
+            <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold transition">
+              <Plus size={16} /> Yeni İçerik Ekle
+            </button>
+          </div>
         }
       />
 
@@ -218,6 +225,75 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser }) {
           </div>
         </div>
       )}
+
+      {/* GELEN ÜYELİK VE EKİP BAŞVURULARI HAVUZU */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div>
+            <h3 className="font-black text-slate-900 text-lg flex items-center gap-2">
+              <Users className="text-[#990000]" size={20} />
+              Gelen Mezun Derneği Üyelik & Ekip Başvuruları Havuzu
+            </h3>
+            <p className="text-xs font-semibold text-slate-500">
+              Başvuru dönemi açıldığında kayıt olan tüm mezun ve adayların kayıtlı liste havuzu.
+            </p>
+          </div>
+          <button 
+            onClick={() => setView?.('alumni_assoc_portal')}
+            className="px-4 py-2 bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-red-800 transition"
+          >
+            Özel Portalda Detaylı İncele →
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs whitespace-nowrap">
+            <thead className="bg-slate-50 text-slate-700 font-black uppercase tracking-wider text-[10px]">
+              <tr>
+                <th className="p-3">Ad Soyad</th>
+                <th className="p-3">Başvuru Tipi</th>
+                <th className="p-3">Bölüm</th>
+                <th className="p-3">Mezuniyet Yılı</th>
+                <th className="p-3">İletişim</th>
+                <th className="p-3">Tarih</th>
+                <th className="p-3">Durum</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
+              {alumniAssocApplications.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="p-6 text-center text-slate-500">Henüz kayıtlı başvuru bulunmamaktadır.</td>
+                </tr>
+              ) : (
+                alumniAssocApplications.map(app => (
+                  <tr key={app.id} className="hover:bg-slate-50">
+                    <td className="p-3 font-black text-slate-900">{app.name}</td>
+                    <td className="p-3">
+                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${
+                        app.type === 'Yönetim Ekibi Adaylığı' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {app.type}
+                      </span>
+                    </td>
+                    <td className="p-3">{app.department}</td>
+                    <td className="p-3">{app.graduationYear}</td>
+                    <td className="p-3">{app.email} / {app.phone}</td>
+                    <td className="p-3">{app.appliedAt}</td>
+                    <td className="p-3">
+                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${
+                        app.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-800' :
+                        app.status === 'Reddedildi' ? 'bg-red-100 text-red-800' : 'bg-slate-200 text-slate-700'
+                      }`}>
+                        {app.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">

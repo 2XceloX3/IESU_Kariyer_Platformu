@@ -63,7 +63,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
           </button>
           <div className="flex items-center gap-2">
             <Bot className="text-red-400" size={24} />
-            <h1 className="font-black tracking-tight text-white">Anka AI Mentor</h1>
+            <h1 className="font-black tracking-tight text-white">Kariyer Mentörü</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -121,7 +121,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
         </div>
         
         <p className="text-center text-xs text-slate-600 mt-4 flex items-center justify-center gap-1">
-          <Sparkles size={12}/> Anka AI, Esenyurt Üniversitesi'nin LLM mimarisi ile desteklenmektedir.
+          <Sparkles size={12}/> IESÜ Kariyer Platformu'nun akıllı asistanıdır.
         </p>
       </main>
 

@@ -87,8 +87,8 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
           <Award size={32} />
         </div>
         <div>
-          <h2 className="text-2xl font-black text-gray-900">Yapay Zeka Analizi Hazır</h2>
-          <p className="text-gray-500">Mülakat performansınız Esenyurt Kariyer Yapay Zekası tarafından analiz edildi.</p>
+          <h2 className="text-2xl font-black text-gray-900">Analiz Hazır</h2>
+          <p className="text-gray-500">Mülakat performansınız Sistem tarafından analiz edildi.</p>
         </div>
       </div>
 
@@ -129,34 +129,34 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
       {/* Corporate SaaS Metrics */}
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-8">
         <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-6">
-          <Zap size={20} className="text-[#0A66C2]" /> Performans Metrikleri
+          <Zap size={20} className="text-[#990000]" /> Yapay Zekâ Mülakat Performans Metrikleri
         </h3>
         <div className="space-y-5">
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-gray-700">İletişim Becerisi</span>
-              <span className="text-sm font-black text-[#0A66C2]">%85</span>
+              <span className="text-sm font-bold text-gray-700">İletişim & Telaffuz Açıklığı</span>
+              <span className="text-sm font-black text-[#990000]">%88</span>
             </div>
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-[#0A66C2] rounded-full" style={{ width: '85%' }}></div>
+              <div className="h-full bg-[#990000] rounded-full" style={{ width: '88%' }}></div>
             </div>
           </div>
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-gray-700">Teknik Yeterlilik</span>
-              <span className="text-sm font-black text-[#0A66C2]">%70</span>
+              <span className="text-sm font-bold text-gray-700">Teknik Yeterlilik & Kavramsal Derinlik</span>
+              <span className="text-sm font-black text-[#990000]">%92</span>
             </div>
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full" style={{ width: '70%' }}></div>
+              <div className="h-full bg-emerald-600 rounded-full" style={{ width: '92%' }}></div>
             </div>
           </div>
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-gray-700">Problem Çözme Analizi</span>
-              <span className="text-sm font-black text-[#0A66C2]">%92</span>
+              <span className="text-sm font-bold text-gray-700">Problem Çözme & STAR(L) Analizi</span>
+              <span className="text-sm font-black text-[#990000]">%95</span>
             </div>
             <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-purple-500 rounded-full" style={{ width: '92%' }}></div>
+              <div className="h-full bg-purple-600 rounded-full" style={{ width: '95%' }}></div>
             </div>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
 
       <div className="bg-red-50 rounded-2xl p-6 border border-red-100 mb-8">
         <h3 className="font-bold text-red-800 flex items-center gap-2 mb-3">
-          <Lightbulb size={20} /> Yapay Zeka Önerisi (STAR-L Metodu)
+          <Lightbulb size={20} /> Öneri (STAR-L Metodu)
         </h3>
         <p className="text-red-700 text-[15px] leading-relaxed">
           Bir dahaki sefere deneyimlerinizi anlatırken doğrudan "Ben bu projeyi yaptım" yerine, <strong>STAR(L)</strong> metodunu kullanın: Durum (Situation), Görev (Task), Eylem (Action), Sonuç (Result) ve en önemlisi <strong>Öğrenilenler (Learnings)</strong> formatını eklemek ikna ediciliğinizi %40 artıracaktır.
@@ -214,7 +214,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
           <div className="flex items-center gap-3">
             <Logo className="h-10 w-auto text-[#990000]" />
             <div className="hidden sm:block">
-              <h1 className="font-black text-gray-900 text-lg leading-tight">Yapay Zeka Mülakat</h1>
+              <h1 className="font-black text-gray-900 text-lg leading-tight">Simülasyon</h1>
               <p className="text-[12px] font-bold text-gray-500">Simülasyon Merkezi</p>
             </div>
           </div>
@@ -238,7 +238,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                 </div>
                 <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Gerçekçi Bir Mülakata Hazır mısın?</h2>
                 <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-                  İESÜ Yapay Zeka Mülakat Koçu ile pratik yap, heyecanını yen ve mülakatlardaki eksiklerini keşfet.
+                  İESÜ Simülasyon Koçu ile pratik yap, heyecanını yen ve mülakatlardaki eksiklerini keşfet.
                 </p>
               </div>
 
@@ -361,7 +361,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                   className="flex flex-col items-center justify-center text-center"
                 >
                   <div className="w-24 h-24 border-4 border-gray-200 border-t-iesu-navy rounded-full animate-spin mb-8" />
-                  <h3 className="text-2xl font-black text-gray-900 mb-2">Yapay Zeka Cevabınızı Analiz Ediyor...</h3>
+                  <h3 className="text-2xl font-black text-gray-900 mb-2">Cevabınız Analiz Ediliyor...</h3>
                   <p className="text-gray-500">Ses tonunuz, kullandığınız kelimeler ve içerik kalitesi değerlendiriliyor.</p>
                 </motion.div>
               ) : (
