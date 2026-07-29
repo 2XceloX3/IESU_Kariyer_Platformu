@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "source": "esenyurt.edu.tr",
+    "verificationStatus": "VERIFIED",
+    "lastSyncAt": "2026-07-24T22:52:00Z",
+    "version": 1
+  },
+  "kariyer_ofisi": {
+    "title": "Kariyer Geliştirme Ofisi Koordinatörlüğü",
+    "sourceUrl": "https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu",
+    "about": "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü, üniversitemize adım atan her öğrencimizin mezuniyetine kadar geçen süreçte ve mezuniyet sonrasında kariyer yolculuklarını planlamalarına destek olmak üzere kurulmuş idari koordinatörlüktür. Birimimiz; öğrencilerimizin kişisel, mesleki ve akademik gelişimlerini iş dünyasının beklentileri doğrultusunda şekillendirmeyi, staj ve istihdam olanaklarına erişimlerini kolaylaştırmayı amaçlamaktadır.",
+    "services": [
+      {
+        "id": "SVC-001",
+        "title": "Bireysel Kariyer Danışmanlığı",
+        "description": "Öğrencilerimizin ilgi, yetenek ve hedeflerine uygun kariyer haritası çizmelerine yardımcı olunması, özgeçmiş (CV) hazırlama ve ön yazı yazma teknikleri desteği."
+      },
+      {
+        "id": "SVC-002",
+        "title": "Staj ve İş Arama Süreçleri",
+        "description": "Cumhurbaşkanlığı İnsan Kaynakları Ofisi 'Yetenek Kapısı' sistemi entegrasyonu, kurumsal firma iş birliği protokolleri ile staj ve iş fırsatlarının duyurulması."
+      },
+      {
+        "id": "SVC-003",
+        "title": "Mülakat Simülasyonları",
+        "description": "Yüz yüze ve online ortamlarda gerçekleştirilen mülakat simülasyonları ile mülakat kaygısının azaltılması ve yetkinlik odaklı cevap verme becerilerinin geliştirilmesi."
+      },
+      {
+        "id": "SVC-004",
+        "title": "Kariyer Etkinlikleri ve Fuarlar",
+        "description": "Sektör temsilcilerini kampüste öğrencilerle buluşturan paneller, kariyer günleri, teknik geziler ve networking buluşmaları."
+      },
+      {
+        "id": "SVC-005",
+        "title": "Mezun İzleme Sistemi",
+        "description": "Mezunlarımızın iş gücü piyasasındaki durumlarının takibi, mezun-öğrenci mentörlük ağının oluşturulması ve sürdürülebilir iletişim."
+      }
+    ],
+    "contact": {
+      "address": "Zafer Mahallesi, Adile Naşit Bulvarı No: 1 / Doğan Araslı Bulvarı No: 120, Esenyurt / İstanbul",
+      "phone": "+90 (212) 699 09 90",
+      "switchboard": "444 9 123",
+      "email": "kariyer@esenyurt.edu.tr",
+      "workingHours": "Hafta içi 08:30 - 17:30"
+    },
+    "documents": [
+      {
+        "title": "Kariyer Danışmanlığı Randevu Formu",
+        "url": "https://www.esenyurt.edu.tr/files/kariyer/Kariyer_Danismanligi_Randevu_Formu.pdf",
+        "type": "pdf"
+      },
+      {
+        "title": "CV Hazırlama Rehberi",
+        "url": "https://www.esenyurt.edu.tr/files/kariyer/Ozgorus_ve_CV_Hazirlama_Rehberi.pdf",
+        "type": "pdf"
+      },
+      {
+        "title": "Kariyer Ofisi Organizasyon Şeması",
+        "url": "https://www.esenyurt.edu.tr/files/kadro/Kariyer_Ofisi_Organizasyon_Semasi.pdf",
+        "type": "pdf"
+      }
+    ]
+  },
+  "internships": [
+    {
+      "id": "INT-2026-001",
+      "title": "Ulusal Staj Programı — Yetenek Kapısı",
+      "organization": "Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO)",
+      "type": "Gönüllü",
+      "description": "Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO) tarafından yürütülen Ulusal Staj Programı kapsamında kamu kurumlarında staj imkânı.",
+      "applicationUrl": "https://www.yetenekkapisi.gov.tr",
+      "deadline": "İlan Bazlı (Dönemsel)",
+      "requirements": ["Öğrenci Belgesi", "Staj Başvuru Formu", "SGK İşe Giriş Bildirgesi (Üniversite Onaylı)"],
+      "sourceUrl": "https://www.esenyurt.edu.tr/duyuru/1405-2026-ulusal-staj-programi",
+      "documents": [
+        {
+          "title": "Ulusal Staj Programı Kılavuzu",
+          "url": "https://www.esenyurt.edu.tr/files/duyurular/Ulusal_Staj_Programi_Kilavuzu.pdf"
+        }
+      ],
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "INT-2026-002",
+      "title": "Erasmus+ Staj Hareketliliği",
+      "organization": "AB Erasmus+ Programı — İESÜ Dış İlişkiler Birimi",
+      "type": "Uluslararası",
+      "description": "Erasmus+ staj hareketliliği kapsamında Avrupa'daki işletmelerde, kurum veya kuruluşlarda zorunlu/gönüllü staj yapma olanağı. AB Ofisi koordinasyonunda yürütülmektedir.",
+      "requirements": ["Min GPA 2.20/4.00 (Lisans)", "Yabancı Dil Yeterlilik Belgesi", "Motivasyon Mektubu"],
+      "sourceUrl": "https://www.esenyurt.edu.tr/erasmus",
+      "verificationStatus": "VERIFIED"
+    }
+  ],
+  "academic_calendar": {
+    "sourceUrl": "https://www.esenyurt.edu.tr/akademik-takvim",
+    "periods": [
+      {
+        "name": "Güz Dönemi",
+        "events": [
+          "Kayıt Yenileme ve Ders Seçimleri / Kayıt Onayları",
+          "Oryantasyon ve Derslerin Başlaması",
+          "Ekle-Bırak (Add-Drop) Dönemi",
+          "Ara Sınavlar (Vize)",
+          "Yarıyıl Sonu Sınavları (Final)",
+          "Bütünleme Sınavları ve Harf Notlarının İlanı"
+        ]
+      },
+      {
+        "name": "Bahar Dönemi",
+        "events": [
+          "Bahar Dönemi Ders Kayıtları ve Kayıt Yenileme",
+          "Derslerin Başlaması ve Ekle-Bırak Haftası",
+          "Bahar Dönemi Ara Sınavları (Vize)",
+          "Bahar Dönemi Yarıyıl Sonu Sınavları (Final)",
+          "Bahar Dönemi Bütünleme Sınavları ve Harf Notlarının İlanı",
+          "Mezuniyet Törenleri"
+        ]
+      },
+      {
+        "name": "Yaz Dönemi / Okulu",
+        "events": [
+          "Yaz Okulu Ders Kayıtları ve Ücret İlanı",
+          "Yaz Okulu Ders Süresi",
+          "Yaz Okulu Sınavları ve Harf Notlarının Girişi"
+        ]
+      }
+    ]
+  },
+  "sem": {
+    "title": "Sürekli Eğitim Merkezi (SEM)",
+    "sourceUrl": "https://sem.esenyurt.edu.tr",
+    "address": "Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt, İstanbul",
+    "phone": "444 9 123 (Dahili: 1328)",
+    "email": "sem@esenyurt.edu.tr",
+    "certificate_info": "E-Devlet (turkiye.gov.tr) ve sertifika.org.tr entegrasyonlu E-Sertifika. Katılımcılara ayrıca Europass Sertifika Eki imkânı sunulmaktadır.",
+    "attendance_rule": "Program derslerinin en az %80'ine katılım ve dönem sonu değerlendirme sınavında başarı sağlama.",
+    "programs": [
+      {
+        "type": "Mesleki Sertifika Programları",
+        "format": "Dönemsel (Hafta içi / Hafta sonu)",
+        "registration": "Online Ön Kayıt + Şahsen / E-Devlet Onaylı Kayıt"
+      },
+      {
+        "type": "Kişisel Gelişim ve Sertifika Eğitimleri",
+        "format": "Esnek Modüler Süreler",
+        "registration": "esenyurt.edu.tr/sem portalı üzerinden"
+      }
+    ]
+  }
+}

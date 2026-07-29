@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "source": "esenyurt.edu.tr/fakulteler + esenyurt.edu.tr/akademik-birimler",
+    "verificationStatus": "VERIFIED",
+    "lastSyncAt": "2026-07-24T22:52:00Z",
+    "version": 1
+  },
+  "faculties": [
+    {
+      "id": "FAK-001",
+      "name": "İşletme ve Yönetim Bilimleri Fakültesi",
+      "type": "Fakülte",
+      "programs": [
+        { "name": "İşletme", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "İşletme", "language": "İngilizce", "duration": "4 Yıl" },
+        { "name": "Ekonomi ve Finans", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Uluslararası Ticaret ve Finans", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Siyaset Bilimi ve Uluslararası İlişkiler", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Havacılık Yönetimi", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Yönetim Bilişim Sistemleri (YBS)", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Elektronik Ticaret ve Yönetimi", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Lojistik Yönetimi", "language": "Türkçe", "duration": "4 Yıl" }
+      ]
+    },
+    {
+      "id": "FAK-002",
+      "name": "Mühendislik ve Mimarlık Fakültesi",
+      "type": "Fakülte",
+      "programs": [
+        { "name": "Bilgisayar Mühendisliği", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Yazılım Mühendisliği", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Elektrik-Elektronik Mühendisliği", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "İç Mimarlık", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "İç Mimarlık ve Çevre Tasarımı", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Endüstriyel Tasarım", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Mimarlık", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "İnşaat Mühendisliği", "language": "Türkçe", "duration": "4 Yıl" }
+      ]
+    },
+    {
+      "id": "FAK-003",
+      "name": "Sağlık Bilimleri Fakültesi",
+      "type": "Fakülte",
+      "programs": [
+        { "name": "Beslenme ve Diyetetik", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Çocuk Gelişimi", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Ebelik", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Fizyoterapi ve Rehabilitasyon", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Hemşirelik", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Sosyal Hizmet", "language": "Türkçe", "duration": "4 Yıl" }
+      ]
+    },
+    {
+      "id": "FAK-004",
+      "name": "Sanat ve Sosyal Bilimler Fakültesi",
+      "type": "Fakülte",
+      "programs": [
+        { "name": "Dijital Oyun Tasarımı", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Gastronomi ve Mutfak Sanatları", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Halkla İlişkiler ve Reklamcılık", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Radyo, Televizyon ve Sinema", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Psikoloji", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Sosyoloji", "language": "Türkçe", "duration": "4 Yıl" }
+      ]
+    },
+    {
+      "id": "FAK-005",
+      "name": "Spor Bilimleri Fakültesi",
+      "type": "Fakülte",
+      "programs": [
+        { "name": "Antrenörlük Eğitimi", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Spor Yöneticiliği", "language": "Türkçe", "duration": "4 Yıl" },
+        { "name": "Rekreasyon", "language": "Türkçe", "duration": "4 Yıl" }
+      ]
+    }
+  ],
+  "vocational_schools": [
+    {
+      "id": "MYO-001",
+      "name": "Bilişim Teknolojileri Meslek Yüksekokulu",
+      "type": "Meslek Yüksekokulu",
+      "programs": [
+        { "name": "Bilgisayar Destekli Tasarım ve Animasyon", "duration": "2 Yıl" },
+        { "name": "Bilgisayar Programcılığı", "duration": "2 Yıl" },
+        { "name": "Bilgisayar Teknolojisi", "duration": "2 Yıl" },
+        { "name": "Bilişim Güvenliği Teknolojisi", "duration": "2 Yıl" },
+        { "name": "İnsansız Hava Aracı Teknolojisi ve Operatörlüğü", "duration": "2 Yıl" },
+        { "name": "İnternet ve Ağ Teknolojileri", "duration": "2 Yıl" },
+        { "name": "Oyun Geliştirme ve Programlama", "duration": "2 Yıl" }
+      ]
+    },
+    {
+      "id": "MYO-002",
+      "name": "Meslek Yüksekokulu",
+      "type": "Meslek Yüksekokulu",
+      "programs": [
+        { "name": "Akıllı Altyapılar Teknikerliği", "duration": "2 Yıl" },
+        { "name": "Aşçılık", "duration": "2 Yıl" },
+        { "name": "Bankacılık ve Sigortacılık", "duration": "2 Yıl" },
+        { "name": "Ceza İnfaz ve Güvenlik Hizmetleri", "duration": "2 Yıl" },
+        { "name": "Dış Ticaret", "duration": "2 Yıl" },
+        { "name": "E-Ticaret ve Pazarlama", "duration": "2 Yıl" },
+        { "name": "Gıda Teknolojisi", "duration": "2 Yıl" },
+        { "name": "Grafik Tasarımı", "duration": "2 Yıl" },
+        { "name": "Halkla İlişkiler ve Tanıtım", "duration": "2 Yıl" },
+        { "name": "İnşaat Teknolojisi", "duration": "2 Yıl" },
+        { "name": "İşletme Yönetimi", "duration": "2 Yıl" },
+        { "name": "İş Sağlığı ve Güvenliği", "duration": "2 Yıl" },
+        { "name": "Lojistik", "duration": "2 Yıl" },
+        { "name": "Sivil Havacılık Kabin Hizmetleri", "duration": "2 Yıl" },
+        { "name": "Sivil Hava Ulaştırma İşletmeciliği", "duration": "2 Yıl" },
+        { "name": "Turist Rehberliği", "duration": "2 Yıl" },
+        { "name": "Uçuş Harekat Yöneticiliği", "duration": "2 Yıl" }
+      ]
+    },
+    {
+      "id": "MYO-003",
+      "name": "Sağlık Hizmetleri Meslek Yüksekokulu",
+      "type": "Meslek Yüksekokulu",
+      "programs": [
+        { "name": "Ağız ve Diş Sağlığı", "duration": "2 Yıl" },
+        { "name": "Ameliyathane Hizmetleri", "duration": "2 Yıl" },
+        { "name": "Anestezi", "duration": "2 Yıl" },
+        { "name": "Çocuk Gelişimi", "duration": "2 Yıl" },
+        { "name": "Diş Protez Teknolojisi", "duration": "2 Yıl" },
+        { "name": "Evde Hasta Bakımı", "duration": "2 Yıl" },
+        { "name": "Fizyoterapi", "duration": "2 Yıl" },
+        { "name": "İlk ve Acil Yardım", "duration": "2 Yıl" },
+        { "name": "Tıbbi Dokümantasyon ve Sekreterlik", "duration": "2 Yıl" },
+        { "name": "Tıbbi Görüntüleme Teknikleri", "duration": "2 Yıl" },
+        { "name": "Tıbbi Laboratuvar Teknikleri", "duration": "2 Yıl" }
+      ]
+    }
+  ],
+  "student_services": {
+    "sourceUrl": "https://www.esenyurt.edu.tr/ogrenci-isleri",
+    "contact": {
+      "address": "Zafer Mahallesi, Adile Naşit Bulvarı No:1 Esenyurt / İstanbul",
+      "phone": "444 91 23",
+      "email": "ogrinf@esenyurt.edu.tr",
+      "workingHours": "Hafta içi 09:00 - 18:00"
+    },
+    "services": [
+      "Ders Kayıt ve Katkı Payı/Öğrenim Ücreti İşlemleri (OBS üzerinden)",
+      "Yatay / Dikey Geçiş İşlemleri",
+      "Öğrenci Belgesi ve Transkript (E-Devlet veya OBS)",
+      "Mazeret ve Muafiyet Başvuruları",
+      "Mezuniyet ve Diploma İşlemleri"
+    ]
+  },
+  "library": {
+    "sourceUrl": "https://kutuphane.esenyurt.edu.tr",
+    "services": [
+      "Danışma ve Ödünç Verme",
+      "Elektronik Veritabanları ve Uzaktan Erişim (VETİS Portalı)",
+      "Katalog Tarama (OPAC)",
+      "ILL — Kütüphanelerarası Ödünç",
+      "Bireysel ve Grup Çalışma Salonları"
+    ]
+  },
+  "erasmus": {
+    "sourceUrl": "https://www.esenyurt.edu.tr/erasmus",
+    "types": [
+      {
+        "name": "Öğrenim Hareketliliği",
+        "description": "Anlaşmalı Avrupa üniversitelerinde 1 veya 2 yarıyıl öğrenim görme olanağı."
+      },
+      {
+        "name": "Staj Hareketliliği",
+        "description": "Avrupa'daki işletmelerde, kurum veya kuruluşlarda zorunlu/gönüllü staj yapma olanağı."
+      },
+      {
+        "name": "Personel Ders Verme Hareketliliği",
+        "description": "Akademik personelin yurt dışındaki ortak üniversitelerde ders vermesi."
+      },
+      {
+        "name": "Personel Eğitim Alma Hareketliliği",
+        "description": "İdari personelin yurt dışında eğitim alması."
+      }
+    ],
+    "requirements": {
+      "undergraduate": "Min GPA 2.20/4.00",
+      "graduate": "Min GPA 2.50/4.00",
+      "language": "Yabancı Dil Yeterlilik Sınavı puanı zorunludur."
+    }
+  }
+}

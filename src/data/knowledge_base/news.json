@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "source": "esenyurt.edu.tr",
+    "verificationStatus": "VERIFIED",
+    "lastSyncAt": "2026-07-24T22:52:00Z",
+    "version": 1
+  },
+  "items": [
+    {
+      "id": "NEWS-2026-001",
+      "title": "İstanbul Esenyurt Üniversitesi 2025–2026 Akademik Yılı Mezuniyet Töreni Büyük Bir Coşkuyla Gerçekleşti!",
+      "date": "01/07/2026",
+      "category": "Genel / Etkinlik",
+      "summary": "İstanbul Esenyurt Üniversitesi 2025-2026 Akademik Yılı Mezuniyet Töreni, müteşebbis ve akademisyenlerin, öğrencilerin ve kıymetli ailelerinin yoğun katılımıyla coşku içerisinde gerçekleştirildi.",
+      "content": "İstanbul Esenyurt Üniversitesi 2025-2026 Akademik Yılı Mezuniyet Töreni, müteşebbis ve akademisyenlerin, öğrencilerin ve kıymetli ailelerinin yoğun katılımıyla coşku içerisinde gerçekleştirildi. Tören kapsamında fakülte ve yüksekokul derecesine giren öğrencilere ödülleri takdim edilirken, kep atma töreni ile öğrenciler yeni yaşamlarına uğurlandı.",
+      "imageUrl": "https://www.esenyurt.edu.tr/assets/images/news/mezuniyet_2026_main.jpg",
+      "sourceUrl": "https://www.esenyurt.edu.tr/haberler/1420-2025-2026-akademik-yili-mezuniyet-toreni",
+      "tags": ["mezuniyet", "tören", "2025-2026", "akademik yıl"],
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "NEWS-2026-002",
+      "title": "Babalar Gününüz Kutlu Olsun!",
+      "date": "21/06/2026",
+      "category": "Kutlama",
+      "summary": "Sevgi, fedakarlık ve özveriyle ailelerine rehberlik eden tüm babalarımızın ve baba adaylarının Babalar Günü'nü en içten dileklerimizle kutlarız.",
+      "content": "Sevgi, fedakarlık ve özveriyle ailelerine rehberlik eden tüm babalarımızın ve baba adaylarının Babalar Günü'nü en içten dileklerimizle kutlarız.",
+      "imageUrl": "https://www.esenyurt.edu.tr/assets/images/news/babalar_gunu_2026.jpg",
+      "sourceUrl": "https://www.esenyurt.edu.tr/haberler/1418-babalar-gununuz-kutlu-olsun",
+      "tags": ["babalar günü", "kutlama"],
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "NEWS-2026-003",
+      "title": "İESÜ Bahar Şenliği 26' Başlıyor",
+      "date": "11/05/2026",
+      "category": "Etkinlik",
+      "summary": "İstanbul Esenyurt Üniversitesi bünyesinde geleneksel olarak düzenlenen Bahar Şenlikleri kampüs alanında öğrenci kulüpleri standları, spor müsabakaları ve canlı müzik performansları ile başladı.",
+      "content": "İstanbul Esenyurt Üniversitesi bünyesinde geleneksel olarak düzenlenen Bahar Şenlikleri kampüs alanında öğrenci kulüpleri standları, spor müsabakaları ve canlı müzik performansları ile başladı. Etkinlikler sabah 10:00 itibarıyla başlayıp akşam 20:00'a kadar sürecektir.",
+      "imageUrl": "https://www.esenyurt.edu.tr/assets/images/news/bahar_senligi_2026.jpg",
+      "sourceUrl": "https://www.esenyurt.edu.tr/haberler/1410-iesu-bahar-senligi-26-basliyor",
+      "tags": ["bahar şenliği", "etkinlik", "öğrenci", "kulüp"],
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "NEWS-2026-004",
+      "title": "Mezunlarımızla Söyleşi Serisi Başlıyor!",
+      "date": "18/05/2026",
+      "category": "Kariyer",
+      "summary": "Kariyer Geliştirme Ofisi Koordinatörlüğü tarafından düzenlenen 'Mezunlarımızla Söyleşi Serisi', farklı sektörlerde başarı yakalamış mezunlarımızı mevcut öğrencilerimizle bir araya getiriyor.",
+      "content": "Kariyer Geliştirme Ofisi Koordinatörlüğü tarafından düzenlenen 'Mezunlarımızla Söyleşi Serisi', farklı sektörlerde başarı yakalamış mezunlarımızı mevcut öğrencilerimizle bir araya getiriyor. Etkinlikler her ay düzenli olarak gerçekleştirilecek olup katılım ücretsizdir.",
+      "imageUrl": "https://www.esenyurt.edu.tr/assets/images/news/mezunlar_soylesi.jpg",
+      "sourceUrl": "https://www.esenyurt.edu.tr/haberler/1412-mezunlarimizla-soylesi-serisi",
+      "tags": ["kariyer", "mezun", "söyleşi", "networking"],
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}

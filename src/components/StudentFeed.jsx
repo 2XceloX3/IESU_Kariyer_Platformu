@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe , ChevronDown } from 'lucide-react', MapPin }
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe , ChevronDown , MapPin } from 'lucide-react'
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -70,9 +70,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
   const [showEventsModal, setShowEventsModal] = useState(false);
-  const [feedFilter, setFeedFilter] = useState('for_you'); // for_you, following
   const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
-  const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
 
   const handleCardSubmit = (e) => {
     e.preventDefault();

@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "source": "esenyurt.edu.tr/duyurular",
+    "verificationStatus": "VERIFIED",
+    "lastSyncAt": "2026-07-24T22:52:00Z",
+    "version": 1
+  },
+  "items": [
+    {
+      "id": "ANN-2026-001",
+      "title": "2025-2026 Yaz Okulu Başvuruları Başladı!",
+      "date": "24/06/2026",
+      "category": "Akademik Takvim",
+      "summary": "2025-2026 Eğitim-Öğretim yılı Yaz Okulu başvuru, kayıt takvimi ve açılması planlanan ders listeleri ilan edilmiştir.",
+      "content": "2025-2026 Eğitim-Öğretim yılı Yaz Okulu başvuru, kayıt takvimi ve açılması planlanan ders listeleri ilan edilmiştir. Öğrencilerimiz Öğrenci Bilgi Sistemi (OBS) üzerinden başvurularını gerçekleştirebilirler.",
+      "sourceUrl": "https://www.esenyurt.edu.tr/duyuru/1425-2025-2026-yaz-okulu-basvurulari-basladi",
+      "attachments": [
+        {
+          "title": "Yaz Okulu Başvuru ve Ders Listesi",
+          "url": "https://www.esenyurt.edu.tr/files/duyurular/2025_2026_Yaz_Okulu_Basvuru_ve_Ders_Listesi.pdf",
+          "type": "pdf"
+        }
+      ],
+      "tags": ["yaz okulu", "kayıt", "OBS", "2025-2026"],
+      "isPinned": true,
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "ANN-2026-002",
+      "title": "2026-2027 Güz Dönemi Yüksek Lisans ve Doktora Başvuruları BAŞLADI!",
+      "date": "19/06/2026",
+      "category": "Lisansüstü Eğitim Enstitüsü",
+      "summary": "İstanbul Esenyurt Üniversitesi Lisansüstü Eğitim Enstitüsü, 2026-2027 Eğitim-Öğretim Yılı Güz Yarıyılı Tezli Yüksek Lisans, Tezsiz Yüksek Lisans ve Doktora programları için öğrenci alım başvuruları başlamıştır.",
+      "content": "İstanbul Esenyurt Üniversitesi Lisansüstü Eğitim Enstitüsü, 2026-2027 Eğitim-Öğretim Yılı Güz Yarıyılı Tezli Yüksek Lisans, Tezsiz Yüksek Lisans ve Doktora programları için öğrenci alım başvuruları başlamıştır. Başvuru şartları, kontenjanlar ve kesin kayıt takvimi ekte yer almaktadır.",
+      "sourceUrl": "https://www.esenyurt.edu.tr/duyuru/1419-2026-2027-guz-donemi-yuksek-lisans-ve-doktora-basvurulari-basladi",
+      "attachments": [
+        {
+          "title": "2026-2027 Güz Lisansüstü Kontenjan ve Kriterler",
+          "url": "https://www.esenyurt.edu.tr/files/duyurular/2026_2027_Guz_Lisansustu_Kontenjan_ve_Kriterler.pdf",
+          "type": "pdf"
+        }
+      ],
+      "tags": ["yüksek lisans", "doktora", "başvuru", "lisansüstü", "2026-2027"],
+      "isPinned": true,
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "ANN-2026-003",
+      "title": "2025-2026 Eğitim Öğretim Yılı Bahar Dönemi Final Sınav Programları",
+      "date": "15/06/2026",
+      "category": "Sınav Takvimi",
+      "summary": "2025-2026 Eğitim-Öğretim Yılı Bahar Yarıyılı sonu Final sınavı ders takvimleri, derslik dağılımları ve sınav kuralları yayımlanmıştır.",
+      "content": "2025-2026 Eğitim-Öğretim Yılı Bahar Yarıyılı sonu Final sınavı ders takvimleri, derslik dağılımları ve sınav kuralları yayımlanmıştır. Öğrencilerimizin sınav programlarını dikkatlice incelemelerini ve sınav salonlarını önceden kontrol etmelerini öneririz.",
+      "sourceUrl": "https://www.esenyurt.edu.tr/duyuru/1415-2025-2026-bahar-donemi-final-sinav-programlari",
+      "attachments": [
+        {
+          "title": "2025-2026 Bahar Final Takvimi",
+          "url": "https://www.esenyurt.edu.tr/files/duyurular/2025_2026_Bahar_Final_Takvimi.pdf",
+          "type": "pdf"
+        }
+      ],
+      "tags": ["final", "sınav", "takvim", "bahar", "2025-2026"],
+      "isPinned": false,
+      "verificationStatus": "VERIFIED"
+    },
+    {
+      "id": "ANN-2026-004",
+      "title": "2026 Ulusal Staj Programı Başvuruları Hakkında",
+      "date": "01/06/2026",
+      "category": "Kariyer & Staj",
+      "summary": "Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO) tarafından yürütülen Ulusal Staj Programı başvuruları Yetenek Kapısı platformu üzerinden alınmaktadır.",
+      "content": "Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO) tarafından yürütülen Ulusal Staj Programı başvuruları Yetenek Kapısı platformu üzerinden alınmaktadır. Başvurmak isteyen öğrencilerimiz yetenekkapisi.gov.tr adresini ziyaret edebilir.",
+      "sourceUrl": "https://www.esenyurt.edu.tr/duyuru/1405-2026-ulusal-staj-programi",
+      "attachments": [
+        {
+          "title": "Ulusal Staj Programı Kılavuzu",
+          "url": "https://www.esenyurt.edu.tr/files/duyurular/Ulusal_Staj_Programi_Kilavuzu.pdf",
+          "type": "pdf"
+        }
+      ],
+      "applicationUrl": "https://www.yetenekkapisi.gov.tr",
+      "tags": ["staj", "ulusal staj programı", "CBİKO", "yetenek kapısı"],
+      "isPinned": true,
+      "verificationStatus": "VERIFIED"
+    }
+  ]
+}
