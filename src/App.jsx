@@ -287,6 +287,18 @@ function App() {
     document.body.classList.remove('overflow-hidden');
   }, [view]);
 
+  // Auto-refresh scraped data on mount (only if stale > 1 hour)
+  useEffect(() => {
+    const lastUpdate = useAppStore.getState().lastUpdated;
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+    if (!lastUpdate || new Date(lastUpdate).getTime() < oneHourAgo) {
+      const { refreshScrapedData } = useAppStore.getState();
+      if (typeof refreshScrapedData === 'function') {
+        refreshScrapedData(false).catch(() => {});
+      }
+    }
+  }, []);
+
   const liveStudents = useMemo(() => (students || []).filter(item => item.source !== 'demo_seed'), [students]);
   const liveAlumni = useMemo(() => (alumni || []).filter(item => item.source !== 'demo_seed'), [alumni]);
   const liveCompanies = useMemo(() => (companies || []).filter(item => item.source !== 'demo_seed'), [companies]);
