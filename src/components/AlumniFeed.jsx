@@ -20,6 +20,7 @@ import NavIcon from './shared/NavIcon';
 import AlumniSurveys from './AlumniSurveys';
 import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
+import TrendingHashtags from './TrendingHashtags';
 
 export default function AlumniFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
   const posts = useAppStore(state => state.posts);
@@ -333,6 +334,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             </button>
           </div>
 
+          <TrendingHashtags posts={posts} limit={6} />
           
           {/* Senin İçin Önerilenler (Instagram Style) */}
           <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">

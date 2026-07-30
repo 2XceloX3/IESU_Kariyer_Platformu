@@ -24,6 +24,7 @@ import ExploreFeed from './ExploreFeed';
 import DailyQuestsPanel from './DailyQuestsPanel';
 import TeamUpMentorHub from './TeamUpMentorHub';
 import FooterModals from './FooterModals';
+import TrendingHashtags from './TrendingHashtags';
 
 export default function StudentFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
   const [footerModal, setFooterModal] = useState(null);
@@ -374,6 +375,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             </div>
           </div>
 
+          <TrendingHashtags posts={posts} limit={6} />
           <DailyQuestsPanel />
           
           {/* Senin İçin Önerilenler (Instagram Style) */}

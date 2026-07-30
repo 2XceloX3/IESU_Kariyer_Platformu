@@ -17,6 +17,7 @@ import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import ApplicationsPanel from './ApplicationsPanel';
 import NavIcon from './shared/NavIcon';
+import TrendingHashtags from './TrendingHashtags';
 import AlumniSurveys from './AlumniSurveys';
 import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
@@ -334,6 +335,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
         {/* RIGHT PANEL: Kurumsal İletişim & Onay Süreci */}
         <div className="hidden lg:block w-[320px] shrink-0 space-y-5">
+          <TrendingHashtags posts={posts} limit={5} />
           {/* YÖNETİCİ İLE MUHATAP OLMA BİLGİLENDİRME KARTI */}
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">

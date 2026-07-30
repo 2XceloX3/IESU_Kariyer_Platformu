@@ -7,6 +7,7 @@ import PostCard from './PostCard';
 import { combineFeedItems } from '../utils/feedCombiner';
 import CareerNetwork from './CareerNetwork';
 import NavIcon from './shared/NavIcon';
+import TrendingHashtags from './TrendingHashtags';
 import MessagingInterface from './MessagingInterface';
 
 import useAppStore from '../store/useAppStore';
