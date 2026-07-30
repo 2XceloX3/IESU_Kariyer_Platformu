@@ -60,7 +60,6 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   const messages = useAppStore(state => state.messages);
   const setMessages = useAppStore(state => state.setMessages);
   const featureSurveys = useAppStore(state => state.featureSurveys);
-  const featureCareerCheckup = useAppStore(state => state.featureCareerCheckup);
   const featureAlumniCard = useAppStore(state => state.featureAlumniCard);
   const alumniCardApplications = useAppStore(state => state.alumniCardApplications);
   const setAlumniCardApplications = useAppStore(state => state.setAlumniCardApplications);
