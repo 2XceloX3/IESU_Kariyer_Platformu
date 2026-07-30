@@ -35,6 +35,7 @@ import CMSLiveRooms from './admin/CMSLiveRooms';
 import CMSDataPoolExport from './admin/CMSDataPoolExport';
 import CMSStaff from './admin/CMSStaff';
 import CMSSyncCenter from './admin/CMSSyncCenter';
+import CMSFirestoreBackup from './admin/CMSFirestoreBackup';
 
 
 import PanelHeader from './admin/PanelHeader';
@@ -46,7 +47,7 @@ import {
   ChevronDown, ChevronUp, Search, Bell, BellIcon,
   CheckCircle, XCircle, Plus, Trash2, Send,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
-  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles
+  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles, Cloud
 } from 'lucide-react';
 
 import { STUDENTS, ALUMNI, COMPANIES, ALUMNI_CARDS, JOBS_INIT, MENTORSHIPS_INIT, VOLUNTEER_INIT, MESSAGES_INIT, SURVEYS_INIT, SEM_INIT, NEWS_INIT, EVENTS_INIT, ORG } from '../data/mockAdminData';
@@ -297,7 +298,7 @@ const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'cms_datapool', 'operasyon', 'akademik'] },
   { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'sem'] },
   { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'cms_jobs', 'cms_feat', 'cms_ment', 'kariyer_gunleri'] },
-  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['institutional_stats', 'platform_ayarlari', 'cms_sync', 'cms_datapool', 'content_import', 'analytics', 'anket', 'kart'] }
+  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['institutional_stats', 'platform_ayarlari', 'cms_firestore_backup', 'cms_sync', 'cms_datapool', 'content_import', 'analytics', 'anket', 'kart'] }
 ];
 
 const MAIN_TABS = [
