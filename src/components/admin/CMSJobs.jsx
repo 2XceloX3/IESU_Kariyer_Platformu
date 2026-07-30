@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
 import { Briefcase, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, MapPin, Calendar, Building2, Download, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
 
-export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
+export default function CMSJobs({ jobs = [], setJobs, applications = [], setApplications, setSelectedUserId, setView }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,6 +89,23 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
   const activeCount = (jobs || []).filter(j => j.status === 'Aktif' || !j.status).length;
   const pendingCount = (jobs || []).filter(j => j.status === 'Beklemede').length;
   const draftCount = (jobs || []).filter(j => j.status === 'Taslak').length;
+  const totalApplications = (applications || []).length;
+
+  const handleApproveJob = (jobId) => {
+    setJobs((jobs || []).map(j => j.id === jobId ? { ...j, status: 'Aktif' } : j));
+    window.toast && window.toast.success('İlan yayına alındı!');
+  };
+
+  const handleRejectJob = (jobId) => {
+    setJobs((jobs || []).map(j => j.id === jobId ? { ...j, status: 'Reddedildi' } : j));
+    window.toast && window.toast.info('İlan reddedildi.');
+  };
+
+  const handleUpdateAppStatus = (appId, newStatus) => {
+    if (setApplications) {
+      setApplications((applications || []).map(a => a.id === appId ? { ...a, status: newStatus } : a));
+    }
+  };
 
   const listView = (
     <div className="space-y-6">
@@ -104,18 +121,22 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
           </button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><Briefcase size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam İlan</p><p className="text-2xl font-black text-gray-900">{(jobs || []).length}</p></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center shrink-0"><Briefcase size={20}/></div>
+            <div><p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Toplam İlan</p><p className="text-xl font-black text-gray-900">{(jobs || []).length}</p></div>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Aktif İlanlar</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0"><CheckCircle2 size={20}/></div>
+            <div><p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Aktif İlanlar</p><p className="text-xl font-black text-gray-900">{activeCount}</p></div>
           </div>
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center"><Edit size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Onay Bekleyen (Havuz)</p><p className="text-2xl font-black text-gray-900">{pendingCount}</p></div>
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center shrink-0 animate-pulse"><Edit size={20}/></div>
+            <div><p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Onay Bekleyen</p><p className="text-xl font-black text-orange-600">{pendingCount}</p></div>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0"><Users size={20}/></div>
+            <div><p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Toplam Başvuru</p><p className="text-xl font-black text-gray-900">{totalApplications}</p></div>
           </div>
         </div>
       </div>
@@ -189,13 +210,23 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                         <p className="text-xs font-bold text-gray-700 flex items-center gap-1"><MapPin size={12}/> {j.location || 'Belirtilmedi'}</p>
                       </td>
                       <td className="py-3 px-5">
-                        <div className="flex items-center gap-2">
-                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider ${(j.status === 'Aktif' || !j.status) ? 'bg-emerald-100 text-emerald-700' : j.status === 'Beklemede' ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-gray-100 text-gray-700'}`}>
+                        <div className="flex flex-col gap-1.5">
+                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider w-fit ${(j.status === 'Aktif' || !j.status) ? 'bg-emerald-100 text-emerald-700' : j.status === 'Beklemede' ? 'bg-orange-100 text-orange-700 border border-orange-200' : j.status === 'Reddedildi' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
                             {j.status || 'Aktif'}
                           </span>
-                          <span className="flex items-center gap-1 text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
-                            <Users size={12} /> {jobApplications.length}
+                          <span className="flex items-center gap-1 text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md w-fit">
+                            <Users size={12} /> {jobApplications.length} başvuru
                           </span>
+                          {j.status === 'Beklemede' && (
+                            <div className="flex gap-1 mt-1">
+                              <button onClick={(e) => { e.stopPropagation(); handleApproveJob(j.id); }} className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-md transition flex items-center gap-1">
+                                <CheckCircle2 size={11}/> Yayınla
+                              </button>
+                              <button onClick={(e) => { e.stopPropagation(); handleRejectJob(j.id); }} className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-[10px] font-black rounded-md transition">
+                                Reddet
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="py-3 px-5 text-right">
@@ -203,8 +234,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                           <button onClick={(e) => { e.stopPropagation(); setExpandedJobId(isExpanded ? null : j.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Başvuruları Gör">
                             {isExpanded ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
                           </button>
-                          <button onClick={(e) => { e.stopPropagation(); handleEdit(j); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition tooltip" title="Düzenle"><Edit size={16}/></button>
-                          <button onClick={(e) => { e.stopPropagation(); handleDelete(j.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition tooltip" title="Sil"><Trash2 size={16}/></button>
+                          <button onClick={(e) => { e.stopPropagation(); handleEdit(j); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Düzenle"><Edit size={16}/></button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(j.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Sil"><Trash2 size={16}/></button>
                         </div>
                       </td>
                     </tr>
@@ -228,26 +259,52 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
                             ) : (
                               <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                                 <table className="w-full text-left text-sm">
-                                  <thead className="bg-gray-50 text-gray-500 font-bold text-xs uppercase tracking-wider">
-                                    <tr>
-                                      <th className="px-4 py-3">Aday Adı</th>
-                                      <th className="px-4 py-3">Öğrenci No / ID</th>
-                                      <th className="px-4 py-3">Başvuru Tarihi</th>
-                                      <th className="px-4 py-3">Durum</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className="divide-y divide-gray-100">
-                                    {jobApplications.map(app => (
-                                      <tr key={app.id} className="hover:bg-gray-50 transition">
-                                        <td className="px-4 py-3 font-bold text-gray-900">{app.applicantName}</td>
-                                        <td className="px-4 py-3 text-gray-500 text-xs font-mono">{app.applicantId}</td>
-                                        <td className="px-4 py-3 text-gray-500">{app.date}</td>
-                                        <td className="px-4 py-3">
-                                          <span className="px-2.5 py-1 bg-amber-50 text-amber-600 text-[10px] font-bold rounded uppercase">{app.status}</span>
-                                        </td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
+                                   <thead className="bg-gray-50 text-gray-500 font-bold text-xs uppercase tracking-wider">
+                                     <tr>
+                                       <th className="px-4 py-3">Aday Adı</th>
+                                       <th className="px-4 py-3">Öğrenci No / ID</th>
+                                       <th className="px-4 py-3">Başvuru Tarihi</th>
+                                       <th className="px-4 py-3">Durum</th>
+                                       <th className="px-4 py-3 text-right">İşlem</th>
+                                     </tr>
+                                   </thead>
+                                   <tbody className="divide-y divide-gray-100">
+                                     {jobApplications.map(app => (
+                                       <tr key={app.id} className="hover:bg-gray-50 transition">
+                                         <td className="px-4 py-3 font-bold text-gray-900">{app.applicantName}</td>
+                                         <td className="px-4 py-3 text-gray-500 text-xs font-mono">{app.applicantId}</td>
+                                         <td className="px-4 py-3 text-gray-500">{app.date}</td>
+                                         <td className="px-4 py-3">
+                                           <select
+                                             value={app.status || 'Beklemede'}
+                                             onChange={(e) => handleUpdateAppStatus(app.id, e.target.value)}
+                                             onClick={(e) => e.stopPropagation()}
+                                             className={`text-[11px] font-black rounded-lg px-2 py-1.5 border-none outline-none cursor-pointer focus:ring-2 focus:ring-red-500/20 ${
+                                               app.status === 'Kabul Edildi' ? 'bg-emerald-100 text-emerald-700' :
+                                               app.status === 'Reddedildi' ? 'bg-red-100 text-red-700' :
+                                               app.status === 'Mülakat' ? 'bg-blue-100 text-blue-700' :
+                                               'bg-amber-100 text-amber-700'
+                                             }`}
+                                           >
+                                             <option value="Beklemede">Beklemede</option>
+                                             <option value="Mülakat">Mülakat Aşaması</option>
+                                             <option value="Kabul Edildi">Kabul Edildi</option>
+                                             <option value="Reddedildi">Reddedildi</option>
+                                           </select>
+                                         </td>
+                                         <td className="px-4 py-3 text-right">
+                                           {setSelectedUserId && setView && (
+                                             <button
+                                               onClick={(e) => { e.stopPropagation(); if(setSelectedUserId) setSelectedUserId(app.applicantId); if(setView) setView('user_profile'); }}
+                                               className="text-[11px] font-bold text-blue-600 hover:text-blue-800 hover:underline transition flex items-center gap-1 ml-auto"
+                                             >
+                                               Profil
+                                             </button>
+                                           )}
+                                         </td>
+                                       </tr>
+                                     ))}
+                                   </tbody>
                                 </table>
                               </div>
                             )}
@@ -422,7 +479,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
             )}
           </div>
           <div>
-            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Koordinatörlüğü <CheckCircle2 size={12} className="text-emerald-500" /></p>
+            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>
             <p className="text-[10px] text-gray-500">Az önce • İlan Paylaşımı</p>
           </div>
         </div>
@@ -448,3 +505,4 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [] }) {
     />
   );
 }
+

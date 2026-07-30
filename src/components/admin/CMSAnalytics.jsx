@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
 import { BarChart3, TrendingUp, Users, Eye, MousePointerClick, Briefcase, GraduationCap, Building2, Calendar, Target, PhoneCall, MailCheck, CheckCircle2, FileText, Download, Award, ShieldCheck, Sparkles } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
@@ -61,7 +61,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <div class="header">
           <div>
             <div class="title">İSTANBUL ESENYURT ÜNİVERSİTESİ</div>
-            <div class="subtitle">Kariyer Geliştirme Koordinatörlüğü — YÖK Mezun Takip & Akreditasyon Raporu</div>
+            <div class="subtitle">Kariyer Geliştirme Merkezi — YÖK Mezun Takip & Akreditasyon Raporu</div>
           </div>
           <div><strong>Tarih:</strong> ${new Date().toLocaleDateString('tr-TR')}</div>
         </div>
@@ -469,3 +469,4 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
     </div>
   );
 }
+

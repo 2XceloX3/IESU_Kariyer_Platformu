@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { FileText, CheckCircle, Clock, Download, Briefcase, FileSignature, ArrowRight, ShieldCheck, HelpCircle, LogIn, Search } from 'lucide-react';
 import Logo from './Logo';
 import SubPanelFooter from './SubPanelFooter';
@@ -16,7 +16,7 @@ export default function StajPanel({ setView, userRole }) {
     {
       icon: <FileSignature className="text-[#990000]" size={26} />,
       title: "2. Koordinatörlük Onayı",
-      desc: "İmzalı kabul formu, Kariyer Geliştirme Koordinatörlüğü'ne (veya ilgili fakülte sekreterliğine) teslim edilmeli ve staj komisyonundan onay alınmalıdır."
+      desc: "İmzalı kabul formu, Kariyer Geliştirme Merkezi'ne (veya ilgili fakülte sekreterliğine) teslim edilmeli ve staj komisyonundan onay alınmalıdır."
     },
     {
       icon: <Clock className="text-[#990000]" size={26} />,
@@ -54,7 +54,7 @@ export default function StajPanel({ setView, userRole }) {
             </div>
             <div className="hidden sm:block">
               <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
 
@@ -241,7 +241,7 @@ export default function StajPanel({ setView, userRole }) {
                       <button 
                         onClick={(e) => {
                           e.preventDefault();
-                          window.toast && window.toast.info("Anka AI: Yüklediğiniz belge ön kontrolden geçiriliyor...");
+                          window.toast && window.toast.info("Yüklediğiniz belge ön kontrolden geçiriliyor...");
                           setTimeout(() => {
                             window.toast && window.toast.success("✅ AI Onayı: İmza ve tarih alanları eksiksiz. Belgeyi komisyona iletebilirsiniz.");
                           }, 2500);
@@ -268,4 +268,6 @@ export default function StajPanel({ setView, userRole }) {
     </div>
   );
 }
+
+
 

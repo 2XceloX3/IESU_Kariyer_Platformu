@@ -1,24 +1,30 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ArrowLeft, BookOpen, Calendar, ChevronRight, Award, Megaphone, ArrowRight, ShieldCheck, MonitorPlay, X } from 'lucide-react';
 import { toast } from './shared/Toast';
 import useAppStore from '../store/useAppStore';
+import CertificateVerifyModal from './CertificateVerifyModal';
+import ParticipantStudentPortalModal from './ParticipantStudentPortalModal';
 
-export default function SemPanel({ setView, userRole }) {
+export default function SemPanel({ setView, userRole, currentUser }) {
   const { semCourses } = useAppStore();
   const [activeTab, setActiveTab] = useState('egitimler');
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // Yerel Modal Stateleri (Dış Linkler Yerine)
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [showStudentPortalModal, setShowStudentPortalModal] = useState(false);
 
   const combinedEgitimler = semCourses || [];
 
   const haberler = [
     { title: "Dijital Pazarlama Eğitimleri", date: "28/07/2025", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/2bc4c0e60e3b47caa79942047cfbfa2c_(375_300).jpg", desc: "Yeni dönem dijital pazarlama eğitimlerimizin kontenjanları dolmak üzeredir. Öğrencilerimize özel sağlanan indirimlerden yararlanmak için kariyer merkezini ziyaret edebilirsiniz." },
-    { title: "Sertifikalarınız Artık E-Devlet Sisteminde", date: "28/07/2025", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/e7a58ae4556c4fc7b8e8ece79e7dab4e_c55aa2c1fdb748f88ed58923c177ad35.jpg", desc: "Üniversitemiz Sürekli Eğitim Merkezi bünyesinde aldığınız tüm onaylı sertifikalar, E-Devlet kapısı üzerinden doğrulanabilir belge olarak sunulmaya başlanmıştır." },
+    { title: "Sertifikalarınız Artık E-Devlet Sisteminde", date: "28/07/2025", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/e7a58ae4556c4fc7b8e8ece79e7dab4e_c55aa2c1fdb748f88ed58923c177ad35.jpg", desc: "Kariyer ve Yetenek Akademimiz bünyesinde aldığınız tüm onaylı sertifikalar, E-Devlet kapısı üzerinden doğrulanabilir belge olarak sunulmaya başlanmıştır." },
     { title: "Temel ve Orta Seviye Excel Eğitimi", date: "28/07/2025", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/kurumsaliletisim/8722de546e4b4b5094898382e568ac94_e5a6d2495aab41beacc7391bf5d903ae.jpg", desc: "İş dünyasının vazgeçilmez aracı Excel'i temel seviyeden orta seviyeye kadar uygulamalı olarak öğreneceğiniz yeni eğitim programımız başlıyor." }
   ];
 
   const duyurular = [
-    { title: "Sürekli Eğitim, Uygulama ve Araştırma Merkezi Sertifikalandırma Süreçleri Hakkında", date: "20/11/2025" },
-    { title: "Sürekli Eğitim Uygulama ve Araştırma Merkezi ve İş Birlikleri Hususunda", date: "31/07/2025" }
+    { title: "Kariyer ve Yetenek Akademisi Sertifikalandırma Süreçleri Hakkında", date: "20/11/2025" },
+    { title: "Kariyer Geliştirme Merkezi ve Sektörel İş Birlikleri Hususunda", date: "31/07/2025" }
   ];
 
   return (
@@ -43,21 +49,27 @@ export default function SemPanel({ setView, userRole }) {
           <div className="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#990000]/20 rounded-full text-sm font-black text-red-200 mb-6 border border-red-500/30 backdrop-blur-sm shadow-[0_0_15px_rgba(211,47,47,0.3)]">
-                <Award size={16} /> Sertifikalı Açık Eğitimler
+                <Award size={16} /> Kariyer & Yetenek Geliştirme Akademisi
               </div>
               <h1 className="text-2xl md:text-6xl font-black mb-6 tracking-tight drop-shadow-lg text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-                Sürekli Eğitim Merkezi
+                Kariyer ve Yetenek Akademisi
               </h1>
               <p className="text-gray-500 text-lg md:text-xl max-w-2xl font-medium leading-relaxed">
-                İstanbul Esenyurt Üniversitesi Sürekli Eğitim Merkezi ile kariyerinize değer katın. Uzman kadromuzla hazırlanan sertifikalı eğitim programları.
+                İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi bünyesinde hazırlanan, iş dünyasının gerektirdiği yetkinlikleri ve sertifikalı atölyeleri kapsayan eğitim portalı.
               </p>
               <div className="flex flex-wrap gap-4 mt-8">
-                <a href="https://sertifikaonline.esenyurt.edu.tr/verify" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white rounded-xl font-bold transition border border-emerald-500/30 shadow-lg shadow-emerald-500/20">
-                  <ShieldCheck size={18} /> Sertifika Doğrulama
-                </a>
-                <a href="https://sertifikaonline.esenyurt.edu.tr/login-student" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-xl font-bold transition border border-red-500/30 shadow-lg shadow-red-500/20">
-                  <MonitorPlay size={18} /> Sertifika Paneli
-                </a>
+                <button 
+                  onClick={() => setView && setView('smart_certs')}
+                  className="flex items-center gap-2 px-6 py-3 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white rounded-xl font-bold transition border border-emerald-500/30 shadow-lg shadow-emerald-500/20 cursor-pointer"
+                >
+                  <ShieldCheck size={18} /> Belge Doğrulama (e-Devlet)
+                </button>
+                <button 
+                  onClick={() => setView && setView('smart_certs')}
+                  className="flex items-center gap-2 px-6 py-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-xl font-bold transition border border-red-500/30 shadow-lg shadow-red-500/20 cursor-pointer"
+                >
+                  <MonitorPlay size={18} /> Katılımcı Öğrenci Paneli
+                </button>
               </div>
             </div>
             
@@ -65,7 +77,7 @@ export default function SemPanel({ setView, userRole }) {
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  window.toast && window.toast.info("Anka AI: Bölümünüz ve yeteneklerinize göre en uygun SEM eğitimleri taranıyor...");
+                  window.toast && window.toast.info("Bölümünüz ve yeteneklerinize göre en uygun SEM eğitimleri taranıyor...");
                   setTimeout(() => {
                     window.toast && window.toast.success("✅ Eşleşme: Sizin için en uygun 3 sertifika programı öne çıkarıldı.");
                   }, 2500);
@@ -148,7 +160,7 @@ export default function SemPanel({ setView, userRole }) {
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-red-500/5 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
               
               <h2 className="text-3xl font-black text-gray-900 mb-10 relative z-10 flex items-center gap-3">
-                <Megaphone className="text-[#990000]" size={28} /> SEM Duyuruları
+                <Megaphone className="text-[#990000]" size={28} /> Akademi Duyuruları
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 {duyurular.map((duyuru, i) => (
@@ -242,7 +254,7 @@ export default function SemPanel({ setView, userRole }) {
               <h2 className="text-2xl font-black text-gray-900 mb-6 leading-tight">{selectedItem.title}</h2>
               
               <div className="text-gray-600 font-medium leading-relaxed bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                {selectedItem.desc || selectedItem.content || "Detaylı içerik bulunamadı. Lütfen daha fazla bilgi için Kariyer Geliştirme Koordinatörlüğümizle veya Sürekli Eğitim Merkezi ile iletişime geçiniz."}
+                {selectedItem.desc || selectedItem.content || "Detaylı içerik bulunamadı. Lütfen daha fazla bilgi için Kariyer Geliştirme Merkezimizle veya Sürekli Eğitim Merkezi ile iletişime geçiniz."}
               </div>
 
               {selectedItem.type === 'egitim' && (
@@ -256,6 +268,19 @@ export default function SemPanel({ setView, userRole }) {
           </div>
         </div>
       )}
+      {/* Yerel Sertifika & Belge Doğrulama Modalı */}
+      <CertificateVerifyModal 
+        isOpen={showVerifyModal} 
+        onClose={() => setShowVerifyModal(false)} 
+      />
+
+      {/* Yerel Katılımcı Öğrenci Paneli Modalı */}
+      <ParticipantStudentPortalModal 
+        isOpen={showStudentPortalModal} 
+        onClose={() => setShowStudentPortalModal(false)} 
+        currentUser={currentUser} 
+      />
     </div>
   );
 }
+

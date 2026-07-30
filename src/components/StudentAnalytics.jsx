@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, TrendingUp, Search, Eye, BarChart2, Star, 
@@ -234,7 +234,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-white">Kariyer Analitiği Merkezi Nedir ve Nasıl Kullanılır?</h3>
-                      <p className="text-xs text-red-200 font-medium">İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü Bilgilendirme Rehberi</p>
+                      <p className="text-xs text-red-200 font-medium">İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi Bilgilendirme Rehberi</p>
                     </div>
                   </div>
                   <button onClick={() => setShowGuideDrawer(false)} className="text-red-200 hover:text-white p-1 rounded-full hover:bg-white/10 transition">
@@ -378,7 +378,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                     İESÜ Birebir Kariyer Danışmanlığı Randevusu
                   </h3>
                   <p className="text-xs text-gray-500 font-medium mt-0.5">
-                    Kariyer Geliştirme Koordinatörlüğü uzmanlarımızla yüz yüze veya çevrim içi 15 dakikalık birebir görüşme yapın.
+                    Kariyer Geliştirme Merkezi uzmanlarımızla yüz yüze veya çevrim içi 15 dakikalık birebir görüşme yapın.
                   </p>
                 </div>
               </div>
@@ -678,3 +678,4 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
     </div>
   );
 }
+

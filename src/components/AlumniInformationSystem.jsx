@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAppStore from '../store/useAppStore';
 import Logo from './Logo';
 import ProfileUpdate from './ProfileUpdate';
 import TopProfileMenu from './TopProfileMenu';
+import AICVBuilder from './AICVBuilder';
 import { exportPDF } from '../lib/pdfExporter';
 import {
   UserCircle2, Briefcase, FileText, LogOut, BookOpen, GraduationCap,
@@ -23,7 +24,7 @@ const TABS = [
   { id: 'sertifika',       label: '🏆 Sertifika & Hedefler' },
   { id: 'dil',             label: '🌍 Yabancı Dil' },
   { id: 'cv',              label: '📄 Akıllı CV' },
-  { id: 'kariyer_checkup', label: '🧭 Kariyer Check-up' },
+  { id: 'kariyer_checkup', label: '🧭 Mezun Kariyer Anketi' },
   { id: 'mezun_kart',      label: '💳 Mezun Kart' },
   { id: 'mezun_dernek_basvuru', label: '🏛️ Mezun Derneği Başvurusu' },
 ];
@@ -746,126 +747,14 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                 </div>
               )}
 
-              {/* TAB 6: Akıllı CV Şablonları */}
+              {/* TAB 6: Akıllı CV Şablonları & Sihirbazı */}
               {activeTab === 'cv' && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-red-950">Akıllı CV Çıktı Yönetimi</h3>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => setCvTemplate('modern')}
-                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'modern' ? 'bg-red-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
-                      >
-                        Modern
-                      </button>
-                      <button 
-                        onClick={() => setCvTemplate('academic')}
-                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'academic' ? 'bg-red-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
-                      >
-                        Akademik
-                      </button>
-                      <button 
-                        onClick={() => setCvTemplate('creative')}
-                        className={`text-xs font-black px-3.5 py-2 rounded-xl transition ${cvTemplate === 'creative' ? 'bg-red-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
-                      >
-                        Kreatif
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Simulated Resume A4 Paper Viewport */}
-                  <div className="border border-slate-200/80 rounded-2xl bg-white shadow-md p-8 max-w-xl mx-auto font-sans text-slate-700 min-h-[500px]">
-                    <div className={`p-4 border-b ${cvTemplate === 'creative' ? 'border-amber-400 bg-amber-50/30' : cvTemplate === 'academic' ? 'border-red-900 bg-slate-50/50' : 'border-red-600 bg-indigo-50/20'} rounded-xl mb-6`}>
-                      <h4 className={`text-xl font-black ${cvTemplate === 'creative' ? 'text-amber-800' : cvTemplate === 'academic' ? 'text-red-950' : 'text-indigo-900'}`}>{currentUser?.name || 'Ad Soyad'}</h4>
-                      <p className="text-xs text-slate-500 font-semibold mt-1">{currentUser?.department || profileData.education[0]?.major || 'İstanbul Esenyurt Üniversitesi Mezunu'}</p>
-                      <div className="flex gap-4 mt-2 text-[10px] text-slate-400 font-bold">
-                        <span>{profileData.phone}</span>
-                        <span>{currentUser?.email}</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4 text-xs">
-                      <div>
-                        <h5 className="font-black text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Özet</h5>
-                        <p className="leading-relaxed font-medium text-slate-600">{profileData.summary}</p>
-                      </div>
-                      <div>
-                        <h5 className="font-black text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Eğitim</h5>
-                        {profileData.education.map(edu => (
-                          <div key={edu.id} className="flex justify-between">
-                            <span className="font-bold">{edu.school} - {edu.major}</span>
-                            <span className="font-mono text-slate-400">{edu.startYear}-{edu.endYear}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div>
-                        <h5 className="font-black text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Deneyim</h5>
-                        {profileData.experience.map(exp => (
-                          <div key={exp.id}>
-                            <div className="flex justify-between font-bold">
-                              <span>{exp.role} @ {exp.company}</span>
-                              <span className="font-mono text-slate-400">{exp.startYear}-{exp.endYear}</span>
-                            </div>
-                            <p className="text-slate-500 mt-1">{exp.desc}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-center mt-6">
-                    <button 
-                      onClick={() => {
-                        window.toast && window.toast.info("Resmî İESÜ Akıllı CV hazırlanıyor...");
-                        exportPDF({
-                          title: `İESÜ Akıllı CV - ${profileData.name || currentUser?.name || 'Mezun'}`,
-                          filename: `IESU_CV_${(profileData.name || currentUser?.name || 'Mezun').replace(/\s+/g, '_')}.pdf`,
-                          sections: [
-                            {
-                              title: "KİŞİSEL BİLGİLER & İLETİŞİM",
-                              content: [
-                                `Ad Soyad: ${profileData.name || currentUser?.name || 'Belirtilmedi'}`,
-                                `E-Posta: ${profileData.email || currentUser?.email || 'Belirtilmedi'}`,
-                                `Telefon: ${profileData.phone || 'Belirtilmedi'}`,
-                                `LinkedIn: ${profileData.linkedin || 'Belirtilmedi'}`,
-                                `GitHub / Portfolyo: ${profileData.github || 'Belirtilmedi'}`
-                              ]
-                            },
-                            {
-                              title: "PROFESYONEL ÖZET",
-                              content: [profileData.summary || 'Özet bilgi eklenmedi.']
-                            },
-                            {
-                              title: "AKADEMİK EĞİTİM GEÇMİŞİ",
-                              content: profileData.education.map(e => `${e.school} - ${e.degree} ${e.major} (${e.startYear}-${e.endYear}) [GPA: ${e.gpa || 'N/A'}]`)
-                            },
-                            {
-                              title: "İŞ VE STAJ DENEYİMLERİ",
-                              content: profileData.experience.map(exp => `${exp.role} @ ${exp.company} (${exp.type}) [${exp.startYear}-${exp.endYear}]\n- ${exp.desc}`)
-                            },
-                            {
-                              title: "YETENEKLER & YABANCI DİLLER",
-                              content: [
-                                `Yetenekler: ${profileData.skills.join(', ')}`,
-                                `Yabancı Diller: ${profileData.languages.map(l => `${l.language} (${l.level})`).join(', ')}`
-                              ]
-                            },
-                            {
-                              title: "SERTİFİKALAR",
-                              content: profileData.certs.map(c => `${c.title} - ${c.issuer} (${c.date})`)
-                            }
-                          ]
-                        });
-                      }}
-                      className="bg-[#990000] hover:bg-red-800 text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest transition shadow-lg flex items-center gap-2"
-                    >
-                      <Download size={16} /> Resmî İESÜ PDF CV İndir
-                    </button>
-                  </div>
+                <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+                  <AICVBuilder currentUser={currentUser} userRole={userRole} setView={setView} />
                 </div>
               )}
 
-              {/* TAB 7: Kariyer Check-up */}
+              {/* TAB 7: Mezun Kariyer Anketi */}
               {activeTab === 'kariyer_checkup' && (
                 <div className="space-y-6">
                   <div className="bg-gradient-to-br from-[#0A2342] via-[#0d2d54] to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-blue-900/50">
@@ -876,10 +765,10 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           <Compass size={14} /> Mezunlara Özel Paneli
                         </span>
                         <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
-                          Kariyer Check-up & Envanter Formu
+                          Mezun Kariyer Anketi Formu
                         </h3>
                         <p className="text-xs sm:text-sm text-blue-100/90 mt-2 max-w-2xl leading-relaxed font-medium">
-                          12 soruluk tek tık Kariyer Check-up formunu doldurarak istihdam durumunuzu, sektör konumunuzu ve kariyer hedeflerinizi Kariyer Geliştirme Koordinatörlüğü'ne iletin.
+                          12 soruluk tek tık Mezun Kariyer Anketi formunu doldurarak istihdam durumunuzu, sektör konumunuzu ve kariyer hedeflerinizi Kariyer Geliştirme Merkezi'ne iletin.
                         </p>
                       </div>
                       <div className="bg-white/10 backdrop-blur-md px-5 py-4 rounded-2xl border border-white/10 text-center shrink-0">
@@ -920,7 +809,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           addCheckupRecord(record);
                         }
                         setCheckupCompleted(true);
-                        if (window.toast) window.toast.success("🧭 Kariyer Check-up yanıtlarınız kaydedildi ve yönetici paneline iletildi!");
+                        if (window.toast) window.toast.success("🧭 Mezun Kariyer Anketi yanıtlarınız kaydedildi ve yönetici paneline iletildi!");
                       }} 
                       className="bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-sm space-y-8"
                     >
@@ -1182,7 +1071,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         type="submit"
                         className="w-full py-4 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-sm uppercase tracking-widest transition shadow-xl cursor-pointer active:scale-98 flex items-center justify-center gap-2"
                       >
-                        <CheckCircle size={18} /> Kariyer Check-up Formunu Gönder
+                        <CheckCircle size={18} /> Mezun Kariyer Anketi Formunu Gönder
                       </button>
                     </form>
                   ) : (
@@ -1192,9 +1081,9 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           ✓
                         </div>
                         <div>
-                          <h4 className="font-black text-emerald-950 text-base mb-1">Check-up Analiziniz Tamamlandı & Kaydedildi!</h4>
+                          <h4 className="font-black text-emerald-950 text-base mb-1">Anketiniz Tamamlandı & Kaydedildi!</h4>
                           <p className="text-xs text-emerald-800 font-semibold leading-relaxed">
-                            Formdaki yanıtlarınız Kariyer Geliştirme Koordinatörlüğü mezun veri tabanına işlendi. İhtiyaç duyduğunuz anda koordinatörlük uzmanlarımız sizinle iletişime geçecektir.
+                            Formdaki yanıtlarınız Kariyer Geliştirme Merkezi mezun veri tabanına işlendi. İhtiyaç duyduğunuz anda koordinatörlük uzmanlarımız sizinle iletişime geçecektir.
                           </p>
                         </div>
                       </div>
@@ -1806,3 +1695,5 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
     </div>
   );
 }
+
+

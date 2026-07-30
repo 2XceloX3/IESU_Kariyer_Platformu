@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { 
   Briefcase, GraduationCap, ArrowRight, ShieldCheck, 
   BookOpen, Globe2, Sparkles, Building2, Zap, Award, Eye, 
@@ -179,7 +179,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
               İSTANBUL ESENYURT ÜNİVERSİTESİ
             </span>
             <h2 className="text-3xl md:text-4xl font-black mb-3 tracking-tight leading-tight">
-              Kariyer Geliştirme Ofisi Koordinatörlüğü Hizmetleri
+              Kariyer Geliştirme Merkezi Hizmetleri
             </h2>
             <p className="text-slate-200 text-sm leading-relaxed font-medium">
               Öğrencilerimizin ve mezunlarımızın kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde resmî destek sunuyoruz.
@@ -261,7 +261,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
               Birebir Danışmanlık ve Destek Almak İster misiniz?
             </h3>
             <p className="text-xs font-medium text-slate-500">
-              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak hafta içi her gün hizmetinizdeyiz.
+              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak hafta içi her gün hizmetinizdeyiz.
             </p>
           </div>
 
@@ -344,3 +344,5 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
     </div>
   );
 }
+
+

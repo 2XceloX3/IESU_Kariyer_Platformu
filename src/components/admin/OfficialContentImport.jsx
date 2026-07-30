@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { DownloadCloud, CheckCircle2, AlertCircle, Plus, Search, ExternalLink, Image as ImageIcon } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 
@@ -8,7 +8,7 @@ const FETCHED_CONTENT = [
     type: 'Haber',
     title: 'Kariyer Fuarı 2026 Büyük Bir Coşkuyla Gerçekleşti',
     date: '2026-06-20',
-    description: 'Esenyurt Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen Kariyer Fuarı, 50\'den fazla firmanın katılımıyla başarıyla tamamlandı.',
+    description: 'Esenyurt Kariyer Geliştirme Merkezi tarafından düzenlenen Kariyer Fuarı, 50\'den fazla firmanın katılımıyla başarıyla tamamlandı.',
     originalImageUrl: 'https://www.esenyurt.edu.tr/uploads/images/kariyer-fuari.jpg',
     source: 'esenyurt.edu.tr',
     imported: false
@@ -187,3 +187,4 @@ export default function OfficialContentImport({ news, setNews, announcements, se
     </AdminCMSLayout>
   );
 }
+

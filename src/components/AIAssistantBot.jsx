@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, X, MessageSquare, Send, ArrowRight, BookOpen, BrainCircuit, ShieldCheck, Activity, ThumbsUp, ThumbsDown, Brain, BarChart3, ExternalLink, Mic, Volume2, VolumeX } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
@@ -248,7 +248,7 @@ export default function AIAssistantBot({ currentUser }) {
       });
 
       // Call LLM
-      const sysInst = `Sen İESÜ Kariyer Geliştirme Koordinatörlüğü'nin dijital asistanı Anka'sın. Kullanıcı: ${currentUser?.name || 'Öğrenci'}, Bölümü: ${currentUser?.department || 'Bilinmiyor'}. Kullanıcıya samimi, motive edici ve profesyonel cevap ver. Esenyurt Üniversitesi kariyer merkezi odaklı ol.`;
+      const sysInst = `Sen İESÜ Kariyer Geliştirme Merkezi'nin dijital asistanı Anka'sın. Kullanıcı: ${currentUser?.name || 'Öğrenci'}, Bölümü: ${currentUser?.department || 'Bilinmiyor'}. Kullanıcıya samimi, motive edici ve profesyonel cevap ver. Esenyurt Üniversitesi kariyer merkezi odaklı ol.`;
       
       const aiResponse = await generateAIResponse(userMsg, sysInst);
 
@@ -544,3 +544,4 @@ export default function AIAssistantBot({ currentUser }) {
     </>
   );
 }
+

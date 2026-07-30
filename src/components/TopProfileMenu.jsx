@@ -59,7 +59,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
         if (academicRole === 'super_admin') return 'Süper Yönetici';
         if (academicRole === 'content_admin') return 'İçerik Yöneticisi';
         if (academicRole === 'mentor_admin') return 'Mentor Yönetici';
-        return 'Kariyer Geliştirme Koordinatörlüğü';
+        return 'Kariyer Geliştirme Merkezi';
       default: return 'Kullanıcı';
     }
   };
@@ -113,7 +113,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               <div className="px-4 py-3 border-b border-gray-50 bg-orange-50/20">
                 <div className="flex items-center gap-2 mb-1.5">
                   <p className="text-[14px] font-black text-gray-900 truncate flex-1 transition-all duration-200">
-                    Kariyer Geliştirme...
+                    Kariyer Geliştirme Merkezi
                   </p>
                   <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-black uppercase tracking-wider shrink-0 transition-all duration-200">
                     <Crown size={12} /> SÜPER ADMIN
@@ -124,40 +124,86 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 </p>
               </div>
 
-              {/* ADMIN PANEL GRID */}
-              <div className="px-4 py-3 border-b border-gray-50">
+              {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
+              <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Panel Geçişi</p>
-                <div className="grid grid-cols-3 gap-1.5">
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('admin'); setView?.('admin'); }} className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-gray-50 hover:bg-red-50 transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-red-200 shadow-sm">
-                    <div className="bg-red-100 text-red-600 p-1.5 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-all duration-200">
+                <div className="flex flex-col gap-1.5">
+                  <button 
+                    role="menuitem" 
+                    onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('admin'); setView?.('admin'); }} 
+                    className={`flex items-center justify-center gap-2 p-2 rounded-xl text-center transition-all duration-200 group border shadow-sm ${
+                      userRole === 'admin' 
+                        ? 'bg-[#990000] text-white font-black border-[#990000]' 
+                        : 'bg-white hover:bg-red-50 text-[#990000] font-black border-red-200 hover:-translate-y-0.5 active:scale-95'
+                    }`}
+                  >
+                    <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'admin' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white'}`}>
                       <LayoutDashboard size={16} />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700">Yönetim</span>
+                    <span className="text-[11px] font-black">Yönetim Paneli</span>
                   </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('academic'); setView?.('academic'); }} className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-gray-50 hover:bg-blue-50 transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200 shadow-sm">
-                    <div className="bg-blue-100 text-blue-600 p-1.5 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
-                      <BookOpen size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-gray-700">Akademik</span>
-                  </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('student'); setView?.('student'); }} className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-gray-50 hover:bg-red-50 transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-red-200 shadow-sm">
-                    <div className="bg-red-100 text-red-600 p-1.5 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-all duration-200">
-                      <GraduationCap size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-gray-700">Öğrenci</span>
-                  </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('alumni'); setView?.('alumni'); }} className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-gray-50 hover:bg-emerald-50 transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-emerald-200 shadow-sm">
-                    <div className="bg-emerald-100 text-emerald-600 p-1.5 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-all duration-200">
-                      <UsersIcon size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-gray-700">Mezun</span>
-                  </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('company'); setView?.('company'); }} className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-gray-50 hover:bg-purple-50 transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-purple-200 shadow-sm">
-                    <div className="bg-purple-100 text-purple-600 p-1.5 rounded-lg group-hover:bg-purple-600 group-hover:text-white transition-all duration-200">
-                      <Building2 size={16} />
-                    </div>
-                    <span className="text-[10px] font-bold text-gray-700">Firma</span>
-                  </button>
+
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('alumni'); setView?.('alumni'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        userRole === 'alumni' 
+                          ? 'bg-emerald-600 text-white font-black border-emerald-700 shadow-emerald-900/20' 
+                          : 'bg-white hover:bg-emerald-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-emerald-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
+                        <UsersIcon size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${userRole === 'alumni' ? 'text-white' : 'text-gray-700'}`}>Mezun</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('student'); setView?.('student'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        userRole === 'student' 
+                          ? 'bg-[#990000] text-white font-black border-red-900 shadow-red-950/20' 
+                          : 'bg-white hover:bg-red-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-red-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'student' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white'}`}>
+                        <GraduationCap size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${userRole === 'student' ? 'text-white' : 'text-gray-700'}`}>Öğrenci</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('academic'); setView?.('academic'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        userRole === 'academic' 
+                          ? 'bg-blue-600 text-white font-black border-blue-700 shadow-blue-900/20' 
+                          : 'bg-white hover:bg-blue-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'academic' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'}`}>
+                        <BookOpen size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${userRole === 'academic' ? 'text-white' : 'text-gray-700'}`}>Akademik</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('company'); setView?.('company'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        (userRole === 'company' || userRole === 'employer') 
+                          ? 'bg-purple-600 text-white font-black border-purple-700 shadow-purple-900/20' 
+                          : 'bg-white hover:bg-purple-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-purple-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${(userRole === 'company' || userRole === 'employer') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white'}`}>
+                        <Building2 size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${(userRole === 'company' || userRole === 'employer') ? 'text-white' : 'text-gray-700'}`}>Firma</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -182,8 +228,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group">
                   <Calendar size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Takvim
                 </button>
-                <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('mbs'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group">
-                  <Settings size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Bilgileri Düzenle (MBS)
+                <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('profile_update'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group">
+                  <Settings size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Bilgileri Düzenle
                 </button>
                 <button role="menuitem" onClick={() => { setIsOpen(false); setShowBmiModal(true); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 hover:bg-emerald-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
                   <Activity size={16} className="text-emerald-600 group-hover:scale-110 transition-all duration-200" /> Kilo & Sağlık VKİ Ölçümü
@@ -212,30 +258,86 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 </p>
               </div>
               
-              {/* PANEL SWITCHER FOR ALL ROLES */}
+              {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
               <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Panel Geçişi</p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('student'); setView?.('student'); }} className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${userRole === 'student' ? 'bg-[#990000] text-white shadow-sm font-black' : 'bg-white hover:bg-red-50 text-gray-700 font-bold border border-gray-100'}`}>
-                    <GraduationCap size={15} />
-                    <span className="text-[11px]">Öğrenci</span>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Panel Geçişi</p>
+                <div className="flex flex-col gap-1.5">
+                  <button 
+                    role="menuitem" 
+                    onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('admin'); setView?.('admin'); }} 
+                    className={`flex items-center justify-center gap-2 p-2 rounded-xl text-center transition-all duration-200 group border shadow-sm ${
+                      userRole === 'admin' 
+                        ? 'bg-[#990000] text-white font-black border-[#990000]' 
+                        : 'bg-white hover:bg-red-50 text-[#990000] font-black border-red-200 hover:-translate-y-0.5 active:scale-95'
+                    }`}
+                  >
+                    <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'admin' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white'}`}>
+                      <LayoutDashboard size={16} />
+                    </div>
+                    <span className="text-[11px] font-black">Yönetim Paneli</span>
                   </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('alumni'); setView?.('alumni'); }} className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${userRole === 'alumni' ? 'bg-[#990000] text-white shadow-sm font-black' : 'bg-white hover:bg-red-50 text-gray-700 font-bold border border-gray-100'}`}>
-                    <UsersIcon size={15} />
-                    <span className="text-[11px]">Mezun</span>
-                  </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('company'); setView?.('company'); }} className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${(userRole === 'company' || userRole === 'employer') ? 'bg-[#990000] text-white shadow-sm font-black' : 'bg-white hover:bg-red-50 text-gray-700 font-bold border border-gray-100'}`}>
-                    <Building2 size={15} />
-                    <span className="text-[11px]">Firma</span>
-                  </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('academic'); setView?.('academic'); }} className={`flex items-center gap-2 p-2 rounded-xl text-left transition-all ${userRole === 'academic' ? 'bg-[#990000] text-white shadow-sm font-black' : 'bg-white hover:bg-red-50 text-gray-700 font-bold border border-gray-100'}`}>
-                    <BookOpen size={15} />
-                    <span className="text-[11px]">Akademik</span>
-                  </button>
-                  <button role="menuitem" onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('admin'); setView?.('admin'); }} className={`col-span-2 flex items-center justify-center gap-2 p-2 rounded-xl text-center transition-all ${userRole === 'admin' ? 'bg-[#990000] text-white shadow-sm font-black' : 'bg-white hover:bg-red-50 text-[#990000] font-black border border-red-200'}`}>
-                    <LayoutDashboard size={15} />
-                    <span className="text-[11px]">Yönetim Paneli</span>
-                  </button>
+
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('alumni'); setView?.('alumni'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        userRole === 'alumni' 
+                          ? 'bg-emerald-600 text-white font-black border-emerald-700 shadow-emerald-900/20' 
+                          : 'bg-white hover:bg-emerald-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-emerald-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
+                        <UsersIcon size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${userRole === 'alumni' ? 'text-white' : 'text-gray-700'}`}>Mezun</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('student'); setView?.('student'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        userRole === 'student' 
+                          ? 'bg-orange-600 text-white font-black border-orange-700 shadow-orange-900/20' 
+                          : 'bg-white hover:bg-orange-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-orange-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'student' ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white'}`}>
+                        <GraduationCap size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${userRole === 'student' ? 'text-white' : 'text-gray-700'}`}>Öğrenci</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('academic'); setView?.('academic'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        userRole === 'academic' 
+                          ? 'bg-blue-600 text-white font-black border-blue-700 shadow-blue-900/20' 
+                          : 'bg-white hover:bg-blue-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'academic' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'}`}>
+                        <BookOpen size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${userRole === 'academic' ? 'text-white' : 'text-gray-700'}`}>Akademik</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('company'); setView?.('company'); }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
+                        (userRole === 'company' || userRole === 'employer') 
+                          ? 'bg-purple-600 text-white font-black border-purple-700 shadow-purple-900/20' 
+                          : 'bg-white hover:bg-purple-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-purple-200'
+                      }`}
+                    >
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${(userRole === 'company' || userRole === 'employer') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white'}`}>
+                        <Building2 size={16} />
+                      </div>
+                      <span className={`text-[10px] font-bold ${(userRole === 'company' || userRole === 'employer') ? 'text-white' : 'text-gray-700'}`}>Firma</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               
@@ -252,32 +354,23 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 
                 <button 
                   role="menuitem"
-                  onClick={() => { setIsOpen(false); setView?.('mbs'); }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 flex items-center gap-3 group"
+                  onClick={() => { 
+                    setIsOpen(false); 
+                    if (setSelectedUserId) setSelectedUserId?.(currentUser?.id);
+                    setView?.('user_profile'); 
+                  }}
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-red-50 hover:text-[#990000] transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <Settings size={16} className="text-gray-500 group-hover:text-red-600 transition-all duration-200" /> Bilgilerimi Düzenle (MBS)
+                  <Building2 size={16} className="text-gray-500 group-hover:text-[#990000] transition-all duration-200" /> Kurumsal Profilim
                 </button>
 
                 <button 
                   role="menuitem"
-                  onClick={() => { 
-                    setIsOpen(false); 
-                    setShowBmiModal(true); 
-                  }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 bg-emerald-50/60 hover:bg-emerald-100 transition-all duration-200 flex items-center gap-3 group border-l-4 border-emerald-500 cursor-pointer"
+                  onClick={() => { setIsOpen(false); setView?.('profile_update'); }}
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <Activity size={16} className="text-emerald-600 group-hover:scale-110 transition-transform" /> Kilo & Sağlık VKİ Ölçümü
+                  <Settings size={16} className="text-gray-500 group-hover:text-red-600 transition-all duration-200" /> Bilgilerimi Düzenle
                 </button>
-
-                {(userRole === 'student' || userRole === 'alumni') && (
-                  <button 
-                    role="menuitem"
-                    onClick={() => { setIsOpen(false); setView?.('applications'); }}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000] transition-all duration-200 flex items-center gap-3 group"
-                  >
-                    <FileText size={16} className="text-gray-500 group-hover:text-[#990000] transition-all duration-200" /> Başvurularım
-                  </button>
-                )}
 
                 <button 
                   role="menuitem"
@@ -306,3 +399,4 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     </div>
   );
 }
+

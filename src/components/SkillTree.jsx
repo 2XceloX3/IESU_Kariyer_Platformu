@@ -131,7 +131,7 @@ export default function SkillTree() {
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info(`Anka AI: ${node.title} yetkinliğini kazanmanız için size özel bir çalışma planı oluşturuluyor...`);
+                        window.toast && window.toast.info(`"${node.title}" yetkinliğini kazanmanız için size özel çalışma planı oluşturuluyor...`);
                         setTimeout(() => {
                           window.toast && window.toast.success("✅ AI Çalışma Planı: '3 haftalık yoğunlaştırılmış eğitim programı' oluşturuldu.");
                         }, 2500);

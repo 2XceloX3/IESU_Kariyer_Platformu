@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Users, Info, ShieldCheck, MessageCircle, Calendar, Home, Compass, Briefcase } from 'lucide-react';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
@@ -52,7 +52,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
             <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
@@ -127,7 +127,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  window.toast && window.toast.info("Anka AI: Grup etkinlik verileri ile profiliniz karşılaştırılıyor...");
+                  window.toast && window.toast.info("Grup etkinlik verileri ile profiliniz karşılaştırılıyor...");
                   setTimeout(() => {
                     window.toast && window.toast.success(`✅ AI Kararı: Bu kulübün düzenlediği etkinlikler "Yazılım Mühendisliği" hedefinize %92 oranında katkı sağlayabilir.`);
                   }, 3000);
@@ -186,6 +186,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
     </div>
   );
 }
+
 
 
 

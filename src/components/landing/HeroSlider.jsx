@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { liveSliderData } from '../../utils/liveData';
 
@@ -31,8 +31,8 @@ export default function HeroSlider({ onSelectSlide }) {
         title: cleanTitle,
         date: "Güncel Duyuru",
         category: slide.badge || "Duyuru",
-        description: `${cleanTitle} - İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü Resmi Duyurusu.`,
-        content: slide.content || `İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü portalında yayınlanan bu duyuru ve afiş ile ilgili tüm detaylar, başvuru bilgileri ve akademik takvim güncellemeleri için öğrenci panellerimizi kullanabilirsiniz.\n\nİlgili Başvuru Bağlantısı: ${cleanUrl}`,
+        description: `${cleanTitle} - İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi Resmi Duyurusu.`,
+        content: slide.content || `İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi portalında yayınlanan bu duyuru ve afiş ile ilgili tüm detaylar, başvuru bilgileri ve akademik takvim güncellemeleri için öğrenci panellerimizi kullanabilirsiniz.\n\nİlgili Başvuru Bağlantısı: ${cleanUrl}`,
         imageUrl: slide.image,
         url: cleanUrl
       });
@@ -98,3 +98,4 @@ export default function HeroSlider({ onSelectSlide }) {
     </section>
   );
 }
+

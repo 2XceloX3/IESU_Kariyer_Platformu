@@ -1,4 +1,4 @@
-import useAppStore from '../store/useAppStore';
+﻿import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2 } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
@@ -167,7 +167,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                     <Crown size={14} />
                   </div>
                 </div>
-                <h2 className="text-[16px] font-black text-gray-900 mt-4 leading-tight">Kariyer Geliştirme Koordinatörlüğü</h2>
+                <h2 className="text-[16px] font-black text-gray-900 mt-4 leading-tight">Kariyer Geliştirme Merkezi</h2>
                 <p className="text-[12px] font-bold text-orange-600 mt-1 uppercase tracking-wider">SÜPER YÖNETİCİ</p>
                 
                 <div className="mt-6 flex flex-col gap-2 text-left bg-gray-50 p-3 rounded-2xl">
@@ -346,7 +346,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               
               <div className="flex flex-col gap-4">
                 {[
-                  { id: 'h1', title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu', category: 'Fuar', summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.', location: 'Ana Kampüs Konferans Salonu', date: '15 Nisan 2026' },
+                  { id: 'h1', title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu', category: 'Fuar', summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.', location: 'Ana Kampüs Konferans Salonu', date: '15 Nisan 2026' },
                   { id: 'h2', title: 'Yapay Zeka ve İstihdam Raporu', time: '1 gün önce', readers: '3.1B okuyucu', category: 'Rapor', summary: 'İESÜ Araştırma OS Merkezi tarafından hazırlanan 2026 Yapay Zeka ve Geleceğin Meslekleri raporu yayımlandı. Rapor, veri analitiği, istem mühendisliği ve yapay zeka entegrasyonunun mezun istihdamındaki %45 artışını belgeliyor.', location: 'İESÜ Ar-Ge OS Merkezi', date: '10 Nisan 2026' },
                   { id: 'h3', title: 'Mezunlar Zirvesi Başlıyor', time: '2 gün önce', readers: '8.4B okuyucu', category: 'Zirve', summary: 'Geleneksel İESÜ Mezunlar ve Sektör Zirvesi bu yıl hibrit katılım modeliyle kapılarını açıyor. Türkiye ve dünyadaki mezunlarımız deneyimlerini aktif öğrencilerimizle paylaşacak.', location: 'İESÜ Kültür Merkezi & Online Stream', date: '22 Nisan 2026' }
                 ].map((newsItem) => (
@@ -437,38 +437,49 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
 
 
-          {/* Mentor Ol widget */}
+          {/* Mentorluk Widget (Öğrenci için Mentor Bul, Mezun için Mentor Ol) */}
           <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
-            <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
+            <h3 className="font-black text-gray-900 mb-2">
+              {userRole === 'student' ? 'Mentor Bulun' : 'Mentor Olun'}
+            </h3>
             <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
               <div className="bg-teal-600 h-2 rounded-full" style={{ width: '80%' }}></div>
             </div>
-            <p className="text-xs text-gray-500 font-medium mb-4">Mezun olarak tecrübelerinizi öğrencilerle paylaşın ve onlara yol gösterin.</p>
+            <p className="text-xs text-gray-500 font-medium mb-4">
+              {userRole === 'student' 
+                ? 'Mezun ve akademisyen mentorlarımızdan birebir kariyer rehberliği ve destek alın.' 
+                : 'Mezun veya akademisyen olarak tecrübelerinizi öğrencilerle paylaşın.'}
+            </p>
             <button
-              onClick={() => setShowMentorshipModal(true)}
-              className="w-full py-2 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors"
+              onClick={() => {
+                if (userRole === 'student') setView('career_network');
+                else setShowMentorshipModal(true);
+              }}
+              className="w-full py-2 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors cursor-pointer"
             >
-              Mentorluk Başvurusu Yap
+              {userRole === 'student' ? 'Mentorları İncele' : 'Mentorluk Başvurusu Yap'}
             </button>
           </div>
 
-          {/* Mezun Bilgi Sistemi shortcut */}
+          {/* Öğrenci Bilgi Düzenleme shortcut */}
           <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-2xl text-white border border-red-900 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
             <p className="text-[11px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               <Sparkles size={13} className="text-amber-300" /> Hızlı Erişim
             </p>
             <h3 className="font-black text-xl leading-tight mb-2 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-              Mezun Bilgi Sistemi
+              {userRole === 'alumni' ? 'Mezun Bilgi Sistemi' : 'Bilgilerimi Düzenle'}
             </h3>
             <p className="text-xs text-white font-bold mb-5 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-              Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.
+              {userRole === 'alumni' 
+                ? "Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin." 
+                : "Akademik geçmişinizi, yeteneklerinizi ve CV tercihlerinizi profil alanından güncelleyin."}
             </p>
             <button 
               onClick={() => setView('mbs')} 
               className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
             >
-              Mezun Bilgi Sistemi'ne Git <ArrowRight size={16} />
+              {userRole === 'alumni' ? "Mezun Bilgi Sistemi'ne Git" : "Bilgilerimi Düzenle"} <ArrowRight size={16} />
             </button>
           </div>
 
@@ -613,7 +624,7 @@ groups={groups}
               <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-slate-50/50">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {[
-                    { id: 'h1', title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu', category: 'Fuar', summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.', location: 'Ana Kampüs Konferans Salonu', date: '15 Nisan 2026' },
+                    { id: 'h1', title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu', category: 'Fuar', summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.', location: 'Ana Kampüs Konferans Salonu', date: '15 Nisan 2026' },
                     { id: 'h2', title: 'Yapay Zeka ve İstihdam Raporu', time: '1 gün önce', readers: '3.1B okuyucu', category: 'Rapor', summary: 'İESÜ Araştırma OS Merkezi tarafından hazırlanan 2026 Yapay Zeka ve Geleceğin Meslekleri raporu yayımlandı. Rapor, veri analitiği, istem mühendisliği ve yapay zeka entegrasyonunun mezun istihdamındaki %45 artışını belgeliyor.', location: 'İESÜ Ar-Ge OS Merkezi', date: '10 Nisan 2026' },
                     { id: 'h3', title: 'Mezunlar Zirvesi Başlıyor', time: '2 gün önce', readers: '8.4B okuyucu', category: 'Zirve', summary: 'Geleneksel İESÜ Mezunlar ve Sektör Zirvesi bu yıl hibrit katılım modeliyle kapılarını açıyor. Türkiye ve dünyadaki mezunlarımız deneyimlerini aktif öğrencilerimizle paylaşacak.', location: 'İESÜ Kültür Merkezi & Online Stream', date: '22 Nisan 2026' },
                     { id: 'h4', title: 'Yurtdışı Staj Programları', time: '3 gün önce', readers: '5.2B okuyucu', category: 'Staj', summary: 'Erasmus+ ve uluslararası konsorsiyum ortaklıkları çerçevesinde 2026-2027 dönemi yurt dışı zorunlu/gönüllü staj başvuruları ve hibe kontenjanları açıklandı.', location: 'Dış İlişkiler & Erasmus Ofisi', date: '01 Mayıs 2026' }
@@ -694,7 +705,7 @@ groups={groups}
                 )}
                 
                 <p className="text-sm font-medium leading-relaxed whitespace-pre-line text-slate-600">
-                  {selectedNewsItem.summary || 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından yapılan resmi duyuru ve haber içeriği.'}
+                  {selectedNewsItem.summary || 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından yapılan resmi duyuru ve haber içeriği.'}
                 </p>
               </div>
 
@@ -832,7 +843,7 @@ groups={groups}
                   } catch (err) {}
                 }
 
-                window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Koordinatörlüğü yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
+                window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
                 setShowMentorshipModal(false);
                 setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
               }} className="p-5 space-y-4">
@@ -867,52 +878,47 @@ groups={groups}
         )}
 
       </div>
-      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
-        <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Akış">
-            <Home size={26} strokeWidth={2} />
+      {/* FLOATING DOCK (VIBRANT MULTI-COLOR MODERN GLASS THEME) */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
+        <div className="bg-white/95 backdrop-blur-2xl border-2 border-indigo-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(30,41,59,0.18)] flex items-center justify-between px-4 text-gray-800">
+          
+          {/* HOME - BLUE */}
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'}`} title="Akış">
+            <Home size={24} strokeWidth={2.2} />
           </button>
           
-          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-gray-500 hover:text-gray-900" title="İlanlar">
-            <Briefcase size={24} strokeWidth={2} />
+          {/* JOBS - PURPLE */}
+          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-purple-600 hover:bg-purple-50" title="İlanlar">
+            <Briefcase size={22} strokeWidth={2} />
           </button>
           
-          {/* CENTER: SEARCH ICON */}
-          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
-            <Search size={24} strokeWidth={2.5} />
+          {/* CENTER: SEARCH ICON (VIBRANT GRADIENT ORANGE/CORAL) */}
+          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50" title="Ara">
+            <Search size={22} strokeWidth={2.8} />
           </button>
           
-          
-          
-          {/* SURVEYS */}
+          {/* SURVEYS - EMERALD GREEN */}
           {featureSurveys && (
-            <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'text-fuchsia-600' : 'text-gray-500 hover:text-gray-900'}`} title="Anketler">
-              <ClipboardList size={24} strokeWidth={2} />
+            <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'}`} title="Anketler">
+              <ClipboardList size={22} strokeWidth={2} />
             </button>
           )}
           
-          {/* MESSAGES */}
-          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
-            <MessageCircle size={24} strokeWidth={2} />
+          {/* MESSAGES - PINK/INDIGO */}
+          <button onClick={() => setView('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' : 'text-slate-600 hover:text-indigo-600 hover:bg-indigo-50'}`} title="Mesajlar">
+            <MessageCircle size={22} strokeWidth={2} />
           </button>
-          
-          
           
           {/* PROFILE AVATAR */}
           <button 
             onClick={() => setView('user_profile')} 
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-red-100 shadow-sm hover:scale-105 transition-all shrink-0 p-1 overflow-hidden" 
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-indigo-400/60 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden" 
             title="Profilim"
           >
             {currentUser?.role === 'admin' ? (
               <Logo size="sm" className="w-full h-full justify-center" />
             ) : (
-              <img 
-                src={currentUser?.avatar || '/iesu-logo.svg'} 
-                className="w-full h-full object-cover rounded-full" 
-                alt="Profile" 
-              />
+              <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=4F46E5&color=fff`} className="w-full h-full rounded-full object-cover" alt="Profile" />
             )}
           </button>
         </div>
@@ -926,6 +932,7 @@ groups={groups}
     </div>
   );
 }
+
 
 
 

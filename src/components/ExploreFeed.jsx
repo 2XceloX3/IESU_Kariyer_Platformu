@@ -32,11 +32,17 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
     }
   };
 
-  // Filter posts dynamically based on search and category
+  // Filter posts dynamically based on search and category (Firmalar Kesinlikle Kaldırıldı)
   const filteredPosts = useMemo(() => {
     return (posts || []).filter(post => {
-      const authorNameStr = typeof post.authorName === 'string' ? post.authorName : (typeof post.author === 'object' ? post.author?.name : (typeof post.author === 'string' ? post.author : ''));
       const authorRoleStr = typeof post.authorRole === 'string' ? post.authorRole : (typeof post.author === 'object' ? post.author?.role : '');
+      
+      // Firmaları akıştan tamamen engelle
+      if (authorRoleStr === 'company' || authorRoleStr === 'employer' || authorRoleStr === 'İşveren' || authorRoleStr === 'Kurumsal') {
+        return false;
+      }
+
+      const authorNameStr = typeof post.authorName === 'string' ? post.authorName : (typeof post.author === 'object' ? post.author?.name : (typeof post.author === 'string' ? post.author : ''));
       const contentStr = typeof post.content === 'string' ? post.content : '';
       const titleStr = typeof post.title === 'string' ? post.title : '';
 
@@ -50,7 +56,6 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
 
       if (activeCategory === 'students') return authorRoleStr === 'student' || authorRoleStr === 'Öğrenci';
       if (activeCategory === 'alumni') return authorRoleStr === 'alumni' || authorRoleStr === 'Mezun';
-      if (activeCategory === 'companies') return authorRoleStr === 'company' || authorRoleStr === 'İşveren' || authorRoleStr === 'Kurumsal';
       if (activeCategory === 'academic') return authorRoleStr === 'academic' || authorRoleStr === 'Akademisyen';
       return true;
     });
@@ -66,12 +71,12 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
           </div>
           <div>
             <h2 className="text-xl font-black text-gray-900 tracking-tight">Keşfet & Sosyal Ağ</h2>
-            <p className="text-xs text-gray-500 font-medium">Öğrencilerin ve firmaların güncel paylaşımları</p>
+            <p className="text-xs text-gray-500 font-medium">Öğrenci, mezun ve akademisyenlerin paylaşımları</p>
           </div>
         </div>
       </div>
 
-      {/* Search Input (Clean, without AI button) */}
+      {/* Search Input */}
       <div className="w-full mb-6">
         <div className="relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#990000] transition-colors" size={18} />
@@ -79,19 +84,18 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Öğrenci, firma, staj ilanı veya konu ara..." 
+            placeholder="Öğrenci, mezun, akademisyen veya konu ara..." 
             className="bg-slate-50 pl-11 pr-4 py-3 rounded-xl text-sm font-medium w-full focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white border border-gray-200 transition-all shadow-inner placeholder:text-gray-400" 
           />
         </div>
       </div>
 
-      {/* Category Pills */}
+      {/* Category Pills (Firmalar Kaldırıldı) */}
       <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-6 pb-1">
         {[
           { id: 'all', label: 'Tümü', icon: <Sparkles size={14}/> },
           { id: 'students', label: 'Öğrenciler', icon: <GraduationCap size={14}/> },
           { id: 'alumni', label: 'Mezunlar', icon: <Award size={14}/> },
-          { id: 'companies', label: 'Firmalar & Şirketler', icon: <Building2 size={14}/> },
           { id: 'academic', label: 'Akademisyenler', icon: <BookOpen size={14}/> },
         ].map(cat => (
           <button

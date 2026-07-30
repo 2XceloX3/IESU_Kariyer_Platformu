@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import useAppStore from '../../store/useAppStore';
 import { 
   Settings, Edit3, Eye, Calendar, Plus, Trash2, Check, X, Megaphone, 
@@ -312,7 +312,7 @@ const CMSCareerFair = () => {
     const newPost = {
       id: 'PF-' + Date.now(),
       author: {
-        name: 'Kariyer Geliştirme Koordinatörlüğü',
+        name: 'Kariyer Geliştirme Merkezi',
         role: 'admin',
         avatar: '/logo.png'
       },
@@ -1715,3 +1715,4 @@ const CMSCareerFair = () => {
 };
 
 export default CMSCareerFair;
+

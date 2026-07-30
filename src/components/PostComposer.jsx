@@ -122,26 +122,6 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
             <button type="button" onClick={() => { setIsFocused(true); window.toast?.info('Yakında!'); }} className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md transition-colors font-semibold text-[14px]">
               <Calendar size={20} className="text-orange-500" /> <span className="hidden sm:inline">Etkinlik</span>
             </button>
-            <button 
-              type="button" 
-              onClick={(e) => { 
-                e.preventDefault();
-                setIsFocused(true);
-                if(content.length < 5) {
-                  window.toast && window.toast.error("Anka AI: Geliştirmek için lütfen biraz metin yazın.");
-                  return;
-                }
-                window.toast && window.toast.info("Anka AI: Metniniz daha profesyonel bir dil ile yeniden yazılıyor...");
-                setTimeout(() => {
-                  setContent((prev) => prev + "\n\n#EsenyurtKariyer #ProfesyonelAğ #Inovasyon");
-                  window.toast && window.toast.success("✅ Düzeltme: Metniniz profesyonelleştirildi ve uygun etiketler eklendi.");
-                }, 2000);
-              }} 
-              className="flex items-center gap-2 px-3 py-3 text-purple-600 hover:bg-purple-50 rounded-md transition-colors font-bold text-[14px]"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg> 
-              <span className="hidden sm:inline">Profesyonelleştir</span>
-            </button>
           </div>
           
           <div className={`flex gap-2 shrink-0 transition-opacity duration-200 ${isFocused ? 'opacity-100 mt-3 sm:mt-0 w-full sm:w-auto justify-end' : 'opacity-0 hidden'}`}>

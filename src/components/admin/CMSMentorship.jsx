@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import { Users, Edit, Trash2, Plus, Calendar, Search, Filter, BookOpen, Clock, Target, CheckCircle2, ArrowRight } from 'lucide-react';
 import MediaUploader from './MediaUploader';
@@ -228,7 +228,7 @@ export default function CMSMentorship({ mentorships = [], setMentorships }) {
                 <option>Akademik Personel</option>
                 <option>Sektör Uzmanı (Firma)</option>
                 <option>Mezun</option>
-                <option>Kariyer Geliştirme Koordinatörlüğü</option>
+                <option>Kariyer Geliştirme Merkezi</option>
               </select>
             </div>
             <div>
@@ -381,3 +381,4 @@ function ImagePlaceholder() {
     </svg>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Mic, Headphones, Users, ChevronLeft, Plus, Play, MoreHorizontal, MessageSquare, Hand } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
@@ -8,7 +8,7 @@ const MOCK_ROOMS = [
   {
     id: 'room_1',
     title: 'Mülakat Stratejileri',
-    host: 'Kariyer Geliştirme Koordinatörlüğü',
+    host: 'Kariyer Geliştirme Merkezi',
     type: 'official', // official, club, student
     speakers: [
       { name: 'Dr. Ahmet Yılmaz', avatar: 'https://i.pravatar.cc/150?u=12', role: 'Host' },
@@ -193,7 +193,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info("Anka AI: Odanın şu ana kadarki ses kaydı analiz ediliyor...");
+                        window.toast && window.toast.info("Odanın şu ana kadarki kaydı analiz ediliyor...");
                         setTimeout(() => {
                           window.toast && window.toast.success("✅ AI Özeti: 'Kariyer mülakatlarında stres yönetimi üzerine konuşuluyor...' (Özet Anka Chat'e gönderildi)");
                         }, 3000);
@@ -221,3 +221,4 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
     </div>
   );
 }
+

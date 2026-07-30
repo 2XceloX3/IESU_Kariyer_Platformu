@@ -29,7 +29,7 @@ export default function MainHeader({ setView, currentUser, userRole }) {
             <Logo size="lg" variant="white" />
             <div className="hidden sm:block">
               <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight drop-shadow-md">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
 

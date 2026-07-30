@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, Plus, GraduationCap, Briefcase, Trash2, Send, Search, Home, Compass, MessageCircle, Bell } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -84,7 +84,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
             <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
@@ -264,13 +264,13 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
                                       read: false 
                                     }]);
                                   }
-                                  window.toast.success("Mesaj Kariyer Geliştirme Koordinatörlüğüne iletildi.");
+                                  window.toast.success("Mesaj Kariyer Geliştirme Merkezine iletildi.");
                                 }
                               }}
                               className="w-full flex items-center justify-center gap-2 bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 px-3 py-2 rounded-xl text-xs font-bold transition shadow-sm"
                             >
                               <Send size={14} className="text-[#990000]" />
-                              Kariyer Geliştirme Koordinatörlüğüne Mesaj/Evrak Gönder
+                              Kariyer Geliştirme Merkezine Mesaj/Evrak Gönder
                             </button>
                           </div>
                         )}
@@ -326,4 +326,5 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
     </div>
   );
 }
+
 

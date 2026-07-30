@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import {  Briefcase, CheckCircle2, Clock, XCircle, ChevronRight, UserCircle2 , ChevronLeft, Home, Compass, Users, MessageCircle, Bell, Search, Globe } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
@@ -68,7 +68,7 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
             <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
@@ -175,5 +175,6 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
     </div>
   );
 }
+
 
 

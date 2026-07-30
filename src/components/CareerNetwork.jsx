@@ -20,7 +20,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
 
   const defaultParticipants = [
     { id: 'part_1', name: 'Prof. Dr. Süleyman Özdemir', title: 'Rektör / Kurul Başkanı', unit: 'İESÜ Rektörlük', status: 'Katılımcı' },
-    { id: 'part_2', name: 'Kariyer Geliştirme Koordinatörlüğü', title: 'Resmî Koordinatörlük', unit: 'İESÜ KGM', status: 'Düzenleyen' },
+    { id: 'part_2', name: 'Kariyer Geliştirme Merkezi', title: 'Resmî Merkez', unit: 'İESÜ KGM', status: 'Düzenleyen' },
     { id: 'part_3', name: 'Mühendislik & Mimarlık Fakültesi Dekanlığı', title: 'Fakülte Temsilcisi', unit: 'İESÜ MMF', status: 'Katılımcı' },
     { id: 'part_4', name: 'Esenyurt Sanayici ve İş İnsanları Derneği', title: 'Sektör Temsilcisi', unit: 'ESİDER', status: 'Protokol Ortağı' }
   ];
@@ -45,25 +45,18 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
           </div>
           
           <h2 className="text-2xl sm:text-[28px] font-black text-white mb-2 leading-tight tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-            Firma ve Etkinlik Ağı
+            Akademik & Katılımcı Ağı
           </h2>
           
           <p className="text-white font-semibold text-[13px] leading-relaxed mb-5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-            Üniversitemizle protokolü olan, etkinliklerimize katılan veya staj imkânı sağlayan kurumlara buradan ulaşabilirsiniz.
+            Üniversitemiz kurul üyeleri, akademisyenler ve resmi staj kontenjanı süreçlerine buradan ulaşabilirsiniz.
           </p>
 
           {/* INTERNAL ACTION BUTTONS */}
           <div className="grid grid-cols-1 gap-2.5 mb-1">
             <button 
-              onClick={() => { setModalSearch(''); setActiveModal('companies'); }}
-              className="flex items-center justify-between bg-white text-[#990000] hover:bg-slate-100 p-3 rounded-xl transition-all text-xs font-black uppercase tracking-wider w-full shadow-md border border-white cursor-pointer group"
-            >
-              <span className="flex items-center gap-2.5"><Building2 size={16} /> Firmaları Gör</span>
-              <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button 
               onClick={() => { setModalSearch(''); setActiveModal('participants'); }}
-              className="flex items-center justify-between bg-white/15 hover:bg-white/25 border border-white/30 p-3 rounded-xl transition-all text-white text-xs font-bold w-full shadow-sm backdrop-blur-md cursor-pointer group"
+              className="flex items-center justify-between bg-white text-[#990000] hover:bg-slate-100 p-3 rounded-xl transition-all text-xs font-black uppercase tracking-wider w-full shadow-md border border-white cursor-pointer group"
             >
               <span className="flex items-center gap-2.5"><Calendar size={16} /> Katılımcılar & Kurullar</span>
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -79,54 +72,35 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
         </div>
       </div>
 
-      {/* COMPACT COMPANY LIST */}
+      {/* COMPACT PARTICIPANTS LIST */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between px-1">
-          <h3 className="font-black text-gray-900 text-sm">Resmi Firmalar ({allCompanies.length})</h3>
-          <button onClick={() => { setModalSearch(''); setActiveModal('companies'); }} className="text-xs font-bold text-[#990000] hover:underline cursor-pointer">Tümünü Gör</button>
+          <h3 className="font-black text-gray-900 text-sm">Resmi Kurul & Katılımcılar ({defaultParticipants.length})</h3>
+          <button onClick={() => { setModalSearch(''); setActiveModal('participants'); }} className="text-xs font-bold text-[#990000] hover:underline cursor-pointer">Tümünü Gör</button>
         </div>
 
         <div className="space-y-3">
-          {allCompanies.slice(0, 4).map(company => (
-            <div key={company.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:border-red-100 transition-all group">
+          {defaultParticipants.map(participant => (
+            <div key={participant.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:border-red-100 transition-all group">
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden p-1.5">
-                  {company.logo ? (
-                    <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
-                  ) : (
-                    <span className="text-lg font-black text-gray-400">
-                      {(company.name || '?').substring(0, 2).toUpperCase()}
-                    </span>
-                  )}
+                <div className="w-10 h-10 bg-red-50 text-[#990000] rounded-xl flex items-center justify-center shrink-0 font-black text-sm">
+                  <ShieldCheck size={20} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-[#990000] transition-colors">{company.name}</h4>
-                  <p className="text-xs text-gray-500 truncate mb-1">{company.sector || 'Sektör bilgisi yok'}</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-100">
-                      Resmi Protokol
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="font-bold text-gray-900 text-sm truncate">{participant.name}</h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                      {participant.status}
                     </span>
                   </div>
+                  <p className="text-xs text-gray-500 font-medium mt-0.5">{participant.title} • {participant.unit}</p>
                 </div>
               </div>
-              
-              <button 
-                onClick={() => {
-                  if (setSelectedUserId && setView) {
-                    setSelectedUserId(company.id);
-                    setView('user_profile');
-                  } else {
-                    setActiveModal('companies');
-                  }
-                }}
-                className="w-full mt-3 bg-gray-50 group-hover:bg-red-50 text-gray-700 group-hover:text-[#990000] text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-gray-100 group-hover:border-red-100 cursor-pointer"
-              >
-                Firma Profiline Git <ChevronRight size={14} />
-              </button>
             </div>
           ))}
         </div>
       </div>
+
 
       {/* COMPACT ACADEMIC LIST */}
       <div className="flex flex-col gap-4 mt-2">
@@ -201,7 +175,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                     {activeModal === 'participants' && 'Resmî Katılımcılar, Kurullar ve Temsilciler'}
                     {activeModal === 'internships' && 'Resmî Protokollü Staj İmkânları & Kontenjanlar'}
                   </h3>
-                  <p className="text-xs font-semibold text-slate-500">İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü</p>
+                  <p className="text-xs font-semibold text-slate-500">İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi</p>
                 </div>
               </div>
 
@@ -224,40 +198,6 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                 className="w-full bg-slate-50 pl-10 pr-4 py-3 rounded-2xl text-xs font-semibold border border-slate-200 focus:ring-2 focus:ring-[#990000] outline-none"
               />
             </div>
-
-            {/* PANEL 1: FIRMALARI GÖR */}
-            {activeModal === 'companies' && (
-              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-                {allCompanies
-                  .filter(c => c.name.toLowerCase().includes(modalSearch.toLowerCase()) || (c.sector && c.sector.toLowerCase().includes(modalSearch.toLowerCase())))
-                  .map(c => (
-                    <div key={c.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-red-300 transition">
-                      <div className="flex items-center gap-3">
-                        <img src={c.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=990000&color=fff`} className="w-12 h-12 rounded-xl object-cover border border-slate-200" alt="" />
-                        <div>
-                          <h4 className="font-black text-sm text-slate-900">{c.name}</h4>
-                          <p className="text-xs text-slate-500 font-medium">{c.sector || 'Sektör Bilgisi'} · {c.location || 'Esenyurt / İstanbul'}</p>
-                          <span className="inline-block mt-1 text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                            Protokol Süresi: {c.protocolDate || '2026-2028'}
-                          </span>
-                        </div>
-                      </div>
-                      <button 
-                        onClick={() => {
-                          setActiveModal(null);
-                          if (setSelectedUserId && setView) {
-                            setSelectedUserId(c.id);
-                            setView('user_profile');
-                          }
-                        }}
-                        className="px-4 py-2 bg-[#990000] text-white text-xs font-bold rounded-xl hover:bg-red-800 transition cursor-pointer"
-                      >
-                        Resmî İncele
-                      </button>
-                    </div>
-                  ))}
-              </div>
-            )}
 
             {/* PANEL 2: KATILIMCILAR */}
             {activeModal === 'participants' && (
@@ -332,3 +272,5 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
     </div>
   );
 }
+
+

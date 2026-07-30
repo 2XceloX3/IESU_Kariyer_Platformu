@@ -199,7 +199,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info(`Anka AI: ${activeHub.name} bölgesi için çalışma vizesi ve relocation prosedürleri analiz ediliyor...`);
+                        window.toast && window.toast.info(`"${activeHub.name}" bölgesi için çalışma vizesi ve relocation prosedürleri analiz ediliyor...`);
                         setTimeout(() => {
                           window.toast && window.toast.success("🌍 Analiz: Hedef bölge için Start-up Vizesi ve Ankara Antlaşması alternatifleri raporlandı.");
                         }, 2500);
@@ -212,7 +212,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info(`Anka AI: ${activeHub.name} bölgesindeki mezunlar için kişiselleştirilmiş tanışma mesajı hazırlanıyor...`);
+                        window.toast && window.toast.info(`"${activeHub.name}" bölgesindeki mezunlar için kişiselleştirilmiş tanışma mesajı hazırlanıyor...`);
                         setTimeout(() => {
                           window.toast && window.toast.success("✅ AI Taslağı Hazır: 'Merhaba, ben de İESÜ mezunuyum...' taslağı Anka Chat'e aktarıldı.");
                         }, 2500);
@@ -222,7 +222,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                       Bu Bölgedeki Mezunlarla İletişime Geç
                       <ExternalLink size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
-                    <p className="text-center text-slate-500 text-xs mt-1">Anka AI üzerinden otomatik mesaj taslağı oluşturulur.</p>
+                    <p className="text-center text-slate-500 text-xs mt-1">Otomatik mesaj taslağı oluşturulur.</p>
                   </div>
                 </div>
 

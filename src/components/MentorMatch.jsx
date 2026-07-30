@@ -115,7 +115,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                window.toast && window.toast.info("Anka AI: Öğrenme stiliniz ve kariyer hedefleriniz analiz ediliyor...");
+                window.toast && window.toast.info("Öğrenme stiliniz ve kariyer hedefleriniz analiz ediliyor...");
                 setTimeout(() => {
                   window.toast && window.toast.success("✅ Eşleşme: Kariyer hedeflerinize %95 uyumlu 2 mentör bulundu.");
                 }, 2500);

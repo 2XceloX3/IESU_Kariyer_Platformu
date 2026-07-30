@@ -165,7 +165,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
-                    window.toast && window.toast.info(`Anka AI: Profiliniz ve "${hack.title}" teması analiz ediliyor...`);
+                    window.toast && window.toast.info(`Profiliniz ve "${hack.title}" teması analiz ediliyor...`);
                     setTimeout(() => {
                       window.toast && window.toast.success("💡 AI Fikri: 'IoT tabanlı akıllı atık yönetimi sistemi'. Şansınız: Yüksek.");
                     }, 2500);

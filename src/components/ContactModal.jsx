@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X, Send, CheckCircle2 } from 'lucide-react';
 import OfficeInfo from './OfficeInfo';
 
@@ -39,7 +39,7 @@ export default function ContactModal({ isOpen, onClose }) {
         <div className="mb-6">
           <h2 className="text-2xl font-black text-red-950">İletişim & Bize Ulaşın</h2>
           <p className="text-xs text-slate-500 font-semibold mt-1">
-            İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü
+            İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi
           </p>
         </div>
 
@@ -120,3 +120,4 @@ export default function ContactModal({ isOpen, onClose }) {
     </div>
   );
 }
+

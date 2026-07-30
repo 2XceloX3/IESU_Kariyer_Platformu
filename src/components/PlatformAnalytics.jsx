@@ -16,7 +16,7 @@ export default function PlatformAnalytics() {
   const [isPredicted, setIsPredicted] = useState(false);
 
   const handlePredict = () => {
-    window.toast && window.toast.info("Anka AI: Geçmiş veriler analiz edilerek gelecek çeyrek tahminleri oluşturuluyor...");
+    window.toast && window.toast.info("Geçmiş veriler analiz edilerek gelecek tahminleri oluşturuluyor...");
     setTimeout(() => {
       setData([
         ...initialData,

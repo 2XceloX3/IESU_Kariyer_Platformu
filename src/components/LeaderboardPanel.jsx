@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Trophy, Medal, Star, ChevronLeft, Award, Crown, TrendingUp, ShieldCheck, Briefcase, Users, Link as LinkIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Logo from './Logo';
@@ -48,7 +48,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
           <div className="relative z-10 max-w-xl">
             <h2 className="text-3xl font-black mb-3">Kariyerinde Fark Yaratanlar</h2>
             <p className="text-red-100 text-lg leading-relaxed">
-              Kariyer Geliştirme Koordinatörlüğü verilerine göre yetenek onayları (endorsements) ve sektörel etkileşimleriyle bu ay en çok öne çıkan Esenyurtliler.
+              Kariyer Geliştirme Merkezi verilerine göre yetenek onayları (endorsements) ve sektörel etkileşimleriyle bu ay en çok öne çıkan Esenyurtliler.
             </p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
-                      window.toast && window.toast.info(`Anka AI: ${user.name} adlı kullanıcının kariyer geçmişi tersine mühendislikle analiz ediliyor...`);
+                      window.toast && window.toast.info(`"${user.name}" kullanıcısının kariyer geçmişi analiz ediliyor...`);
                       setTimeout(() => {
                         window.toast && window.toast.success("✅ Analiz: Hedefinize ulaşmak için öğrenmeniz gereken 3 yeni yetkinlik haritanıza eklendi.");
                       }, 2500);
@@ -172,3 +172,4 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
     </div>
   );
 }
+

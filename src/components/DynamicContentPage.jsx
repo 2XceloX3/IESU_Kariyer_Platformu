@@ -122,7 +122,7 @@ export default function DynamicContentPage({ contentId, setView, previousView = 
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  window.toast && window.toast.info("Anka AI: Sayfa içeriği taranıyor ve özetleniyor...");
+                  window.toast && window.toast.info("Sayfa içeriği taranıyor ve özetleniyor...");
                   setTimeout(() => {
                     window.toast && window.toast.success(`✅ AI Özeti: "${data.title}" sayfası genel hatlarıyla kariyer planlama süreçlerindeki resmi prosedürleri ve ofis destek birimlerini açıklamaktadır.`);
                   }, 2500);

@@ -69,7 +69,7 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50 px-4 h-16 flex items-center justify-between shadow-sm">
-        <button onClick={() => setView('jobs')} className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition flex items-center gap-2">
+        <button onClick={() => setView('company')} className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition flex items-center gap-2">
           <ArrowLeft size={20} /> <span className="font-bold text-sm">Geri</span>
         </button>
         <div className="font-black text-gray-900 text-lg">Yeni İlan Oluştur</div>
@@ -103,19 +103,14 @@ export default function JobCreator({ setView, currentUser, addNotification }) {
                 <input type="text" name="title" value={formData.title} onChange={handleInputChange} placeholder="Örn: Frontend Developer Stajyeri" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition" />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">İlan Tipi *</label>
-                  <select name="type" value={formData.type} onChange={handleInputChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition font-bold text-gray-700">
-                    <option value="STAJ">Staj (Öğrenci)</option>
-                    <option value="İŞ">İş (Mezun/Genel)</option>
-                    <option value="YARI ZAMANLI">Yarı Zamanlı</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Son Başvuru Tarihi *</label>
-                  <input type="text" name="date" value={formData.date} onChange={handleInputChange} placeholder="Örn: 20 Ağustos 2026" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition" />
-                </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1">İlan Tipi *</label>
+                <select name="type" value={formData.type} onChange={handleInputChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition font-bold text-gray-700">
+                  <option value="STAJ">Staj (Öğrenci)</option>
+                  <option value="İŞ">İş (Mezun/Genel)</option>
+                  <option value="YARI ZAMANLI">Yarı Zamanlı</option>
+                  <option value="ATÖLYE">Kariyer Atölyesi / Eğitim</option>
+                </select>
               </div>
 
               <div>

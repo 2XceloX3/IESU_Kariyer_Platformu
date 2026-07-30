@@ -194,10 +194,10 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
             onClick={(e) => {
               e.preventDefault();
               if(!newImage && !newContent.trim()) {
-                window.toast && window.toast.error("Anka AI: Lütfen önce bir fotoğraf çekin veya bir şeyler yazın.");
+                window.toast && window.toast.error("Lütfen önce bir fotoğraf çekin veya bir şeyler yazın.");
                 return;
               }
-              window.toast && window.toast.info("Anka AI: İçeriğiniz analiz ediliyor ve profesyonel bir açıklama yazılıyor...");
+              window.toast && window.toast.info("İçeriğiniz analiz ediliyor ve profesyonel bir açıklama yazılıyor...");
               setTimeout(() => {
                 setNewContent("Bugün kampüsteki inovasyon merkezinde harika bir proje üzerinde çalışıyoruz! 🚀💻 #EsenyurtÜniversitesi #Yazılım #Inovasyon");
                 window.toast && window.toast.success("✅ AI Metin Üretimi: Görüntüye/içeriğe uygun hashtagli açıklama oluşturuldu.");

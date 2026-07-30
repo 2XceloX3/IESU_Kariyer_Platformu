@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Mail, Phone, MapPin, ArrowRight, ChevronRight, CheckCircle2, X, FileText, User, GraduationCap, Calendar, BookOpen, Send } from 'lucide-react';
 import Logo from './Logo';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
@@ -120,7 +120,7 @@ export default function SubPanelFooter({ setView }) {
 
             <div className="text-xs leading-relaxed text-slate-600 space-y-3 max-h-[60vh] overflow-y-auto pr-1">
               <p className="font-medium">
-                <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK')</strong> uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla <strong>İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü</strong> tarafından işlenmektedir.
+                <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK')</strong> uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla <strong>İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi</strong> tarafından işlenmektedir.
               </p>
 
               <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
@@ -344,12 +344,12 @@ export default function SubPanelFooter({ setView }) {
               <Logo size="lg" variant="white" />
               <div>
                 <h3 className="font-black text-sm text-white tracking-wide">{corporateData.university}</h3>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-wider">Kariyer Geliştirme Merkezi</p>
               </div>
             </div>
 
             <p className="text-xs text-white/95 leading-relaxed font-medium">
-              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
+              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
             </p>
 
             {/* Social Circle Icons */}
@@ -400,7 +400,7 @@ export default function SubPanelFooter({ setView }) {
               </li>
               <li>
                 <button onClick={() => setView && setView('sem')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
-                  <ChevronRight size={14} className="text-white/80 shrink-0" /> SEM (Sürekli Eğitim Merkezi)
+                  <ChevronRight size={14} className="text-white/80 shrink-0" /> Kariyer ve Yetenek Akademisi
                 </button>
               </li>
             </ul>
@@ -513,3 +513,5 @@ export default function SubPanelFooter({ setView }) {
     </div>
   );
 }
+
+

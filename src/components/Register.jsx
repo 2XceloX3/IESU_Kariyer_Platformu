@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2, GraduationCap, KeyRound, Lock } from 'lucide-react';
 import Logo from './Logo';
 
@@ -11,7 +11,7 @@ import useAppStore from '../store/useAppStore';
 export default function Register({ setView, setCurrentUser, setUserRole }) {
   const { setStudents, setAlumni, setAcademicStaff, setCompanies } = useAppStore();
   const [step, setStep] = useState(1); // 1: Info, 2: Success
-  const [accountType, setAccountType] = useState('student'); // 'student' or 'employer'
+  const [accountType, setAccountType] = useState('alumni'); // 'alumni', 'student', 'employer', 'academic'
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -262,17 +262,17 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                 <div className="inline-flex bg-gray-100 p-1 rounded-xl">
                   <button 
                     type="button"
-                    onClick={() => setAccountType('student')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'student' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setAccountType('alumni')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'alumni' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
-                    <GraduationCap size={18} /> Öğrenci Numarası ile Kayıt
+                    <GraduationCap size={18} /> Mezun Kaydı
                   </button>
                   <button 
                     type="button"
-                    onClick={() => setAccountType('employer')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'employer' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setAccountType('student')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'student' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
-                    <Building2 size={18} /> Firma Kaydı
+                    <GraduationCap size={18} /> Öğrenci Kaydı
                   </button>
                   <button 
                     type="button"
@@ -283,10 +283,10 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                   </button>
                   <button 
                     type="button"
-                    onClick={() => setAccountType('alumni')}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'alumni' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => setAccountType('employer')}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${accountType === 'employer' ? 'bg-white text-[#990000] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                   >
-                    <GraduationCap size={18} /> Mezun
+                    <Building2 size={18} /> Firma Kaydı
                   </button>
                 </div>
               </div>
@@ -521,7 +521,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
               <h2 className="text-2xl font-black text-gray-900 mb-2">İşlem Başarılı!</h2>
               <p className="text-gray-500 font-medium mb-8">
                 {accountType === 'employer' 
-                  ? "Firma kayıt talebiniz Kariyer Geliştirme Koordinatörlüğüne başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
+                  ? "Firma kayıt talebiniz Kariyer Geliştirme Merkezine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
                   : accountType === 'academic'
                   ? "Akademik hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık kurumsal e-postanız ve şifrenizle giriş yapabilirsiniz."
                   : accountType === 'alumni'
@@ -541,3 +541,4 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
     </div>
   );
 }
+

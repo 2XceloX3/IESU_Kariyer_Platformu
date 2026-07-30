@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
@@ -10,7 +10,7 @@ import useAppStore from '../store/useAppStore';
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
   const { students, alumni, companies, academicStaff } = useAppStore();
-  const [loginRole, setLoginRole] = useState('student');
+  const [loginRole, setLoginRole] = useState('alumni');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,7 +30,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       if (setCurrentUser) {
         setCurrentUser({
           id: 'admin_1513',
-          name: 'Kariyer Geliştirme Koordinatörlüğü',
+          name: 'Kariyer Geliştirme Merkezi',
           role: 'admin',
           grade: 'Süper Yönetici',
           avatar: '/logo.png',
@@ -159,7 +159,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             İSTANBUL ESENYURT ÜNİVERSİTESİ
           </h1>
           <p className="text-[11px] text-red-200 font-extrabold uppercase tracking-widest mt-1 text-center">
-            Kariyer Geliştirme Ofisi Koordinatörlüğü
+            Kariyer Geliştirme Merkezi
           </p>
         </div>
 
@@ -181,31 +181,31 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           <div className="flex items-center justify-center gap-1.5 p-1 bg-slate-200/60 rounded-2xl mb-8">
             <button 
               type="button"
-              onClick={() => setLoginRole('student')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'student' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
-            >
-              <GraduationCap size={15} /> <span>Öğrenci</span>
-            </button>
-            <button 
-              type="button"
               onClick={() => setLoginRole('alumni')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'alumni' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'alumni' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
               <Users size={15} /> <span>Mezun</span>
             </button>
             <button 
               type="button"
-              onClick={() => setLoginRole('employer')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'employer' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+              onClick={() => setLoginRole('student')}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'student' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              <Building2 size={15} /> <span>Firma</span>
+              <GraduationCap size={15} /> <span>Öğrenci</span>
             </button>
             <button 
               type="button"
               onClick={() => setLoginRole('admin')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'admin' ? 'bg-white text-red-600 shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'admin' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
               <ShieldCheck size={15} /> <span>Akademik</span>
+            </button>
+            <button 
+              type="button"
+              onClick={() => setLoginRole('employer')}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'employer' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+            >
+              <Building2 size={15} /> <span>Firma</span>
             </button>
           </div>
 
@@ -299,11 +299,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         
         {/* Footer Text */}
         <p className="text-center text-red-200/60 text-[11px] font-medium mt-6">
-          © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü.
+          © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi.
         </p>
       </div>
     </div>
   );
 }
+
 
 

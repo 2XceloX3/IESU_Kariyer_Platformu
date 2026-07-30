@@ -1,12 +1,12 @@
-import React from 'react';
+﻿import React from 'react';
 import { MapPin, Phone, Mail, Clock, UserCheck, Building } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 
 export default function OfficeInfo() {
   const storeOfficeInfo = useAppStore((state) => state.officeInfo) || {};
 
-  const title = storeOfficeInfo.title || "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü";
-  const description = storeOfficeInfo.description || "Kariyer Geliştirme Ofisi Koordinatörlüğü, öğrencilerimizin ve mezunlarımızın mesleki esenyurtlerini desteklemek, kariyer planlamalarına rehberlik etmek ve onları iş dünyası ile buluşturmak amacıyla hizmet vermektedir.";
+  const title = storeOfficeInfo.title || "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi";
+  const description = storeOfficeInfo.description || "Kariyer Geliştirme Merkezi, öğrencilerimizin ve mezunlarımızın mesleki esenyurtlerini desteklemek, kariyer planlamalarına rehberlik etmek ve onları iş dünyası ile buluşturmak amacıyla hizmet vermektedir.";
   const address = storeOfficeInfo.address || "Zafer Mah. Adile Naşit Bulvarı No:1 Esenyurt / İstanbul";
   const phone = storeOfficeInfo.phone || "+90 (212) 444 37 98 - Dahili: 1140";
   const email = storeOfficeInfo.email || "kariyer@esenyurt.edu.tr";
@@ -104,3 +104,4 @@ export default function OfficeInfo() {
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Users, MapPin, Search, ChevronLeft, ArrowRight, Video, Briefcase, CalendarClock, MessageSquare, Target, Star, ExternalLink, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import Logo from './Logo';
@@ -83,7 +83,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
               </div>
               <div className="hidden sm:block">
                 <h1 className="font-black text-gray-900 leading-tight">Dijital Kariyer Zirvesi 2026</h1>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Kariyer Geliştirme Koordinatörlüğü</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Kariyer Geliştirme Merkezi</p>
               </div>
             </div>
           </div>
@@ -218,7 +218,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info(`Anka AI: ${company.name} şirketinin geçmiş mülakat soruları derleniyor...`);
+                        window.toast && window.toast.info(`"${company.name}" şirketinin geçmiş mülakat soruları derleniyor...`);
                         setTimeout(() => {
                           window.toast && window.toast.success("✅ AI Mülakat Simülasyonu başlatıldı. İlk soru: 'Bize biraz kendinizden bahseder misiniz?'");
                         }, 2500);
@@ -340,3 +340,4 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
     </div>
   );
 }
+

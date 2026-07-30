@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowLeft, User, BookOpen, Layers, Briefcase, FileText, Shield, Building2, Save, Settings, Award, Star, Plus, Trash2, Target, UploadCloud, ChevronRight, UserCircle2, X, Camera, MapPin, Mail, Phone, Globe, Link } from 'lucide-react';
 import { IESU_FACULTIES, IESU_MYO, IESU_YUKSEKOKUL, IESU_ENSTITU } from '../utils/universityData';
 import useAppStore from '../store/useAppStore';
+import AICVBuilder from './AICVBuilder';
+import Logo from './Logo';
 
 export default function ProfileUpdate({ 
   setView, 
@@ -69,14 +71,14 @@ export default function ProfileUpdate({
 
   const tabs = useMemo(() => {
     if (userRole === 'company' || userRole === 'employer') return [
-      { id: 'personal', label: '🏢 Firma Bilgileri', icon: <Building2 size={18} /> },
-      { id: 'privacy', label: '🛡️ Doğrulama Durumu', icon: <Shield size={18} /> }
+      { id: 'personal', label: '🏢 Firma Bilgileri' }
     ];
     return [
-      { id: 'personal', label: '👤 Kişisel & Gizlilik', icon: <User size={18} /> },
-      { id: 'academic', label: '🎓 Akademik Eğitim', icon: <BookOpen size={18} /> },
-      { id: 'experience', label: '💼 Kariyer & Yetenekler', icon: <Briefcase size={18} /> },
-      { id: 'certificates', label: '🏆 Sertifika & Hedefler', icon: <Award size={18} /> }
+      { id: 'personal', label: '👤 Kişisel & Gizlilik' },
+      { id: 'academic', label: '🎓 Akademik Eğitim' },
+      { id: 'experience', label: '💼 Kariyer & Yetenekler' },
+      { id: 'certificates', label: '🏆 Sertifika & Hedefler' },
+      { id: 'cvbuilder', label: '📄 Akıllı CV' }
     ];
   }, [userRole]);
 
@@ -170,71 +172,84 @@ export default function ProfileUpdate({
   }, [selectedFaculty, selectedCapFaculty]);
 
   return (
-    <div className="w-full flex flex-col relative overflow-x-hidden selection:bg-red-500/30">
+    <div className="w-full flex flex-col relative overflow-x-hidden selection:bg-red-500/30 min-h-screen bg-gray-50/50">
 
-      <div className="w-full mx-auto flex flex-col lg:flex-row gap-6 lg:gap-10 z-10 relative">
-        
-        {/* Floating Sidebar */}
-        <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-6">
-          {/* Profile Card */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-xl p-6 border border-gray-200/50 shadow-xl shadow-gray-200/20 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-red-500 to-red-600"></div>
-            
-            <div className="relative z-10 flex flex-col items-center mt-12">
-              <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden relative mb-4">
-                <img src={formData.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name || 'User')}&background=e0e7ff&color=4f46e5`} alt="Avatar" className="w-full h-full object-cover" />
-                <button aria-label="İşlem Butonu" className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="text-white" size={24} />
-                </button>
-              </div>
-              <h2 className="text-xl font-black text-gray-900 text-center leading-tight">{formData.name}</h2>
-              <p className="text-sm text-gray-500 font-medium mt-1 text-center">{selectedDept || formData.sector || 'Öğrenci'}</p>
-              
-              <div className="w-full mt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Profil Gücü</span>
-                  <span className={`text-xs font-black ${completeness === 100 ? 'text-emerald-500' : 'text-red-600'}`}>%{completeness}</span>
-                </div>
-                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <div className={`h-full transition-all duration-1000 ease-out ${completeness === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-red-500 to-red-500'}`} style={{ width: `${completeness}%` }}></div>
-                </div>
-              </div>
+      {/* FIXED TOP NAVIGATION BAR (RESMİ HEADER NAVBAR) */}
+      <nav className="sticky top-0 w-full bg-white/95 backdrop-blur-xl border-b border-gray-200 z-50 shadow-sm">
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
+          <div 
+            className="flex items-center gap-3 cursor-pointer group" 
+            onClick={(e) => {
+              e.preventDefault();
+              const target = userRole === 'academic' ? 'academic' : (userRole === 'company' || userRole === 'employer') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student';
+              setView(target);
+            }}
+            title="Ana Akışa Dönmek İçin Tıklayın"
+          >
+            <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
+            <div className="text-left">
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
 
-          {/* Sleek Navigation */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-xl p-2 border border-gray-200/50 shadow-xl shadow-gray-200/20 sticky top-24">
-            <nav className="flex flex-col gap-1">
-              {tabs.map(tab => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 relative overflow-hidden ${
-                      isActive 
-                        ? 'text-indigo-700 bg-indigo-50/50' 
-                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
-                  >
-                    {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600 rounded-r-full"></div>}
-                    <div className="flex items-center gap-3 relative z-10">
-                      {tab.label}
-                    </div>
-                    {isActive && <ChevronRight size={16} className="text-red-600" />}
-                  </button>
-                );
-              })}
-            </nav>
+          <div className="flex items-center gap-3">
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                const target = userRole === 'academic' ? 'academic' : (userRole === 'company' || userRole === 'employer') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student';
+                setView(target);
+              }}
+              className="px-4 py-2 bg-[#990000] text-white rounded-xl text-xs font-black hover:bg-red-800 transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+            >
+              🏠 Portala Dön
+            </button>
           </div>
-        </aside>
+        </div>
+      </nav>
 
-        {/* Main Content Area - Glass Cards */}
-        <main className="flex-1 max-w-4xl min-h-[600px] bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-[2.5rem] shadow-xl shadow-gray-200/20 p-6 md:p-10 relative overflow-hidden">
+      <div className="w-full max-w-6xl mx-auto flex flex-col gap-6 z-10 relative px-4 pt-6 pb-20">
+        
+        {/* ÜST YATAY SEKME ŞERİDİ (TOP TAB BAR) */}
+        <div className="bg-white rounded-2xl p-3 border border-gray-200/80 shadow-md shadow-gray-200/40 w-full">
+          <nav className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
+            {tabs.map(tab => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black whitespace-nowrap transition-all duration-200 shrink-0 ${
+                    isActive 
+                      ? 'bg-[#990000] text-white shadow-md shadow-red-950/20' 
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* MAIN CONTENT AREA */}
+        <main className="w-full min-h-[600px] bg-white border border-gray-200/80 rounded-3xl shadow-xl p-6 md:p-10 relative overflow-hidden">
           
-          <div className="mb-8 pb-6 border-b border-gray-100/80">
-            <h2 className="text-2xl md:text-3xl font-black text-gray-900">{tabs.find(t => t.id === activeTab)?.label}</h2>
-            <p className="text-sm text-gray-500 mt-2">Bu alandaki bilgileri güncelleyerek profilinizi güçlendirin.</p>
+          <div className="mb-8 pb-6 border-b border-gray-100/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-3 py-1 bg-red-50 text-[#990000] text-xs font-black rounded-full uppercase tracking-wider">
+                  {userRole === 'alumni' ? '🎓 Mezun Bilgi Sistemi (MBS)' : userRole === 'student' ? '🎓 Öğrenci Bilgi Düzenleme Paneli' : '🏢 Kurumsal Bilgi Yönetimi'}
+                </span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-black text-gray-900">{tabs.find(t => t.id === activeTab)?.label}</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {userRole === 'alumni' 
+                  ? "Kariyer Check-up, Mezun Kartı ve profil güncellemelerinizi MBS üzerinden kolayca yönetin." 
+                  : "Öğrenci bilgilerinizi, yeteneklerinizi ve akademik geçmişinizi güncelleyerek özgeçmişinizi güçlendirin."}
+              </p>
+            </div>
           </div>
 
           <div className="animate-fade-in space-y-8">
@@ -242,6 +257,147 @@ export default function ProfileUpdate({
             {/* PERSONAL & PRIVACY TAB */}
             {activeTab === 'personal' && (
               <div className="space-y-12">
+
+                {/* (FİRMA ÖZEL) KURUMSAL GÖRSEL & ARKA TASARIM YÖNETİMİ */}
+                {(userRole === 'company' || userRole === 'employer') && (
+                  <div className="p-6 bg-gradient-to-br from-red-50/50 via-white to-gray-50 rounded-3xl border border-red-100/80 shadow-sm space-y-6">
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                      <div>
+                        <h3 className="text-base font-black text-gray-900 flex items-center gap-2">
+                          <Camera className="text-[#990000]" size={20} />
+                          Kurumsal Görsel & Arka Kapak Tasarımı
+                        </h3>
+                        <p className="text-xs text-gray-500 font-medium mt-0.5">Firma logosu ve profilinizin arka plan kapak fotoğrafını güncelleyin.</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      
+                      {/* Logo Yükleme */}
+                      <div className="space-y-3 bg-white p-4 rounded-2xl border border-gray-200/80">
+                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">Firma Logosu</label>
+                        <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden flex items-center justify-center shrink-0">
+                            <img src={formData.logo || formData.avatar || '/iesu-logo.svg'} alt="Logo" className="w-full h-full object-contain p-1" />
+                          </div>
+                          <div className="flex-1 space-y-2">
+                            <label className="px-4 py-2 bg-red-50 hover:bg-red-100 text-[#990000] rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition">
+                              <Camera size={14} /> Logo Yükle (PNG/JPG)
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (evt) => {
+                                      if (evt.target?.result) {
+                                        handleInputChange('logo', evt.target.result);
+                                        handleInputChange('avatar', evt.target.result);
+                                        window.toast?.success('Logo seçildi! Sayfayı kaydetmeyi unutmayın.');
+                                      }
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                }}
+                              />
+                            </label>
+                            <input
+                              type="url"
+                              placeholder="Logo URL: https://..."
+                              value={formData.logo || formData.avatar || ''}
+                              onChange={(e) => {
+                                handleInputChange('logo', e.target.value);
+                                handleInputChange('avatar', e.target.value);
+                              }}
+                              className="w-full text-xs p-2 bg-gray-50 border border-gray-200 rounded-lg outline-none font-medium"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Arka Kapak Yükleme */}
+                      <div className="space-y-3 bg-white p-4 rounded-2xl border border-gray-200/80">
+                        <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">Arka Kapak Fotoğrafı</label>
+                        <div className="flex items-center gap-4">
+                          <div className="w-20 h-16 rounded-xl border border-gray-200 bg-gray-900 overflow-hidden shrink-0">
+                            {formData.coverImage || formData.cover ? (
+                              <img src={formData.coverImage || formData.cover} alt="Cover" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-red-900 to-red-950 flex items-center justify-center text-[10px] text-red-200 font-bold">Default</div>
+                            )}
+                          </div>
+                          <div className="flex-1 space-y-2">
+                            <label className="px-4 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition">
+                              <Camera size={14} /> Kapak Yükle
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (evt) => {
+                                      if (evt.target?.result) {
+                                        handleInputChange('coverImage', evt.target.result);
+                                        handleInputChange('cover', evt.target.result);
+                                        window.toast?.success('Kapak fotoğrafı seçildi!');
+                                      }
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                }}
+                              />
+                            </label>
+                            <input
+                              type="url"
+                              placeholder="Kapak URL: https://..."
+                              value={formData.coverImage || formData.cover || ''}
+                              onChange={(e) => {
+                                handleInputChange('coverImage', e.target.value);
+                                handleInputChange('cover', e.target.value);
+                              }}
+                              className="w-full text-xs p-2 bg-gray-50 border border-gray-200 rounded-lg outline-none font-medium"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Hazır Kapak Şablonları */}
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Hazır Arka Kapak Şablonları (Tek Tıkla Uygula)</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {[
+                          { name: 'Kurumsal Plaza', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80' },
+                          { name: 'Teknoloji Ofisi', url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80' },
+                          { name: 'İESÜ Kampüs', url: 'https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=1200&q=80' },
+                          { name: 'Kırmızı Tema', url: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=80' }
+                        ].map((preset, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              handleInputChange('coverImage', preset.url);
+                              handleInputChange('cover', preset.url);
+                              window.toast?.success(`${preset.name} kapak olarak seçildi!`);
+                            }}
+                            className={`group relative h-16 rounded-xl overflow-hidden border-2 text-left transition-all ${formData.coverImage === preset.url ? 'border-[#990000] ring-2 ring-red-200' : 'border-gray-200 hover:border-gray-400'}`}
+                          >
+                            <img src={preset.url} alt={preset.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <div className="absolute inset-0 bg-black/40 p-1.5 flex items-end">
+                              <span className="text-[10px] font-bold text-white leading-tight drop-shadow">{preset.name}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">{userRole === 'company' ? 'Firma Adı' : 'Ad Soyad'}</label>
@@ -262,6 +418,20 @@ export default function ProfileUpdate({
                     <div className="relative">
                       <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                       <input type="tel" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all outline-none" placeholder="+90 555 555 5555" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kişisel Web Sitesi / Portfolyo</label>
+                    <div className="relative">
+                      <Globe className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                      <input type="url" value={formData.website || ''} onChange={(e) => handleInputChange('website', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-12 pr-5 py-3.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" placeholder="https://www.example.com" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">GitHub / Behance / Proje Bağlantısı</label>
+                    <div className="relative">
+                      <Link className="absolute left-4 top-3.5 text-gray-400" size={18} />
+                      <input type="url" value={formData.github || ''} onChange={(e) => handleInputChange('github', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-12 pr-5 py-3.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" placeholder="https://github.com/username" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
@@ -373,6 +543,10 @@ export default function ProfileUpdate({
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Genel Not Ortalaması (GNO)</label>
                     <input type="text" value={formData.gpa || ''} onChange={(e) => handleInputChange('gpa', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" placeholder="Örn: 3.45 / 4.00" />
                   </div>
+                  <div className="space-y-1.5 md:col-span-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Bitirme Tezi / Akademik Proje Başlığı</label>
+                    <input type="text" value={formData.thesis || ''} onChange={(e) => handleInputChange('thesis', e.target.value)} className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500" placeholder="Örn: Yapay Zeka Destekli Otonom Kariyer Eşleştirme Sistemi" />
+                  </div>
                 </div>
 
                 <div className="border-t border-gray-100/80 pt-8 space-y-6">
@@ -382,36 +556,76 @@ export default function ProfileUpdate({
                   </div>
                   
                   {formData.isDoubleMajor && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in pt-2">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Fakültesi</label>
-                        <select 
-                          value={selectedCapFaculty} 
-                          onChange={(e) => {
-                            setSelectedCapFaculty(e.target.value);
-                            setSelectedCapDept('');
-                            setHasChanges(true);
-                          }} 
-                          className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
-                        >
-                          <option value="">Fakülte Seçiniz</option>
-                          {activeFaculties.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
-                        </select>
+                    <div className="bg-slate-50/80 p-6 rounded-3xl border border-gray-200/80 space-y-6 animate-fade-in">
+                      <div className="flex items-center gap-2 border-b border-gray-200 pb-3">
+                        <span className="w-3 h-3 rounded-full bg-[#990000]"></span>
+                        <h4 className="font-black text-gray-900 text-sm">Çift Anadal / Yandal Detaylı Akademik Bilgileri</h4>
                       </div>
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Bölümü</label>
-                        <select 
-                          value={selectedCapDept} 
-                          onChange={(e) => {
-                            setSelectedCapDept(e.target.value);
-                            setHasChanges(true);
-                          }}
-                          disabled={!selectedCapFaculty} 
-                          className="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-600 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 disabled:opacity-50"
-                        >
-                          <option value="">Bölüm Seçiniz</option>
-                          {availableCapDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
-                        </select>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Fakültesi</label>
+                          <select 
+                            value={selectedCapFaculty} 
+                            onChange={(e) => {
+                              setSelectedCapFaculty(e.target.value);
+                              setSelectedCapDept('');
+                              setHasChanges(true);
+                            }} 
+                            className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 shadow-sm"
+                          >
+                            <option value="">Fakülte Seçiniz</option>
+                            {activeFaculties.map(f => <option key={f.name} value={f.name}>{f.name}</option>)}
+                          </select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP/Yandal Bölümü</label>
+                          <select 
+                            value={selectedCapDept} 
+                            onChange={(e) => {
+                              setSelectedCapDept(e.target.value);
+                              setHasChanges(true);
+                            }}
+                            disabled={!selectedCapFaculty} 
+                            className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 disabled:opacity-50 shadow-sm"
+                          >
+                            <option value="">Bölüm Seçiniz</option>
+                            {availableCapDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
+                          </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP / Yandal Sınıfı</label>
+                          <input 
+                            type="text" 
+                            value={formData.capGrade || ''} 
+                            onChange={(e) => handleInputChange('capGrade', e.target.value)} 
+                            className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 shadow-sm" 
+                            placeholder="Örn: 2. Sınıf" 
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP / Yandal Not Ortalaması (GNO)</label>
+                          <input 
+                            type="text" 
+                            value={formData.capGpa || ''} 
+                            onChange={(e) => handleInputChange('capGpa', e.target.value)} 
+                            className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 shadow-sm" 
+                            placeholder="Örn: 3.65 / 4.00" 
+                          />
+                        </div>
+
+                        <div className="space-y-1.5 md:col-span-2">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ÇAP / Yandal Bitirme Projesi & Çalışmaları</label>
+                          <input 
+                            type="text" 
+                            value={formData.capThesis || ''} 
+                            onChange={(e) => handleInputChange('capThesis', e.target.value)} 
+                            className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 shadow-sm" 
+                            placeholder="Örn: İkinci Anadal Veri Tabanı ve Siber Güvenlik Projesi" 
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -587,6 +801,13 @@ export default function ProfileUpdate({
                      ))}
                    </div>
                 </div>
+              </div>
+            )}
+
+            {/* TAB 5: AI CV Builder / CV Oluşturucu */}
+            {activeTab === 'cvbuilder' && (
+              <div className="bg-white rounded-3xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+                <AICVBuilder currentUser={{ ...currentUser, ...formData }} userRole={userRole} setView={setView} />
               </div>
             )}
 

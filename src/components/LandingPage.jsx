@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Calendar, ArrowRight, ArrowLeft, Printer, Mail, MapPin, Download, FileText, ExternalLink, X, LogIn, Briefcase, Search, Users, Handshake, TrendingUp, Target, Sparkles, Zap, GraduationCap, Building, ChevronRight, ShieldCheck, Heart, MessageSquare, Send, Bookmark } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import useAppStore from '../store/useAppStore';
@@ -74,7 +74,7 @@ export default function LandingPage({ setView }) {
   const legalData = React.useMemo(() => ({
     gizlilik: {
       title: "Gizlilik Politikası",
-      description: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.",
+      description: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.",
       date: "01/01/2026",
       category: "Yasal Bilgilendirme"
     },
@@ -86,7 +86,7 @@ export default function LandingPage({ setView }) {
     },
     kvkk: {
       title: "KVKK Aydınlatma Metni",
-      description: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından işlenmektedir.",
+      description: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından işlenmektedir.",
       date: "01/01/2026",
       category: "Yasal Bilgilendirme"
     }
@@ -94,28 +94,28 @@ export default function LandingPage({ setView }) {
 
   const menuPagesData = React.useMemo(() => ({
     about_us: {
-      title: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü",
+      title: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi",
       category: "Kurumsal",
       date: "2026 - Güncel",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
-      content: `### Hakkımızda\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü, öğrencilerimizin ve mezunlarımızın mesleki gelişimlerini desteklemek, onları iş dünyasına hazırlamak ve kariyer yolculuklarında rehberlik etmek amacıyla kurulmuştur.\n\n---\n\n#### 🎯 Misyonumuz\nÖğrenci ve mezunlarımızın, küresel ölçekte rekabet edebilir, yenilikçi ve etik değerlere sahip profesyoneller olarak iş dünyasına hazırlanmalarını sağlamak; onların potansiyellerini en üst düzeye çıkaracak kariyer planlama ve geliştirme hizmetleri sunmaktır.\n\n---\n\n#### 🚀 Vizyonumuz\nUlusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, öncü bir kariyer koordinatörlüğü olmak.\n\n---\n\n#### 👥 Ekip Üyeleri & Resmî Ofis Kadrosu\nKariyer merkezimiz, öğrencilerimize en iyi hizmeti sunmak için alanında uzman profesyonellerden oluşmaktadır:\n- **Kariyer Geliştirme Koordinatörü:** Genel yönetim, stratejik planlama ve kurumsal işbirlikleri.\n- **Kariyer Danışmanları:** Birebir danışmanlık, özgeçmiş (CV) kontrolü, mülakat simülasyonları.\n- **Staj ve İstihdam Uzmanları:** Yetenek Kapısı yönetimi, firma protokolleri ve iş ilanları takibi.\n- **Etkinlik & İletişim Sorumluları:** Kariyer fuarları, seminer organizasyonları ve mezun ilişkileri.\n\n---\n\n#### 📞 İletişim ve Yerleşke Bilgileri\n- **E-Posta:** kariyer@esenyurt.edu.tr\n- **Telefon:** 444 9 123 / 0 (212) 422 70 00\n- **Ofis:** Kariyer Geliştirme Koordinatörlüğü / Rektörlük Binası Esenyurt Kampüsü`
+      content: `### Hakkımızda\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi, öğrencilerimizin ve mezunlarımızın mesleki gelişimlerini desteklemek, onları iş dünyasına hazırlamak ve kariyer yolculuklarında rehberlik etmek amacıyla kurulmuştur.\n\n---\n\n#### 🎯 Misyonumuz\nÖğrenci ve mezunlarımızın, küresel ölçekte rekabet edebilir, yenilikçi ve etik değerlere sahip profesyoneller olarak iş dünyasına hazırlanmalarını sağlamak; onların potansiyellerini en üst düzeye çıkaracak kariyer planlama ve geliştirme hizmetleri sunmaktır.\n\n---\n\n#### 🚀 Vizyonumuz\nUlusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, öncü bir Kariyer Geliştirme Merkezi olmak.\n\n---\n\n#### 👥 Ekip Üyeleri & Resmî Ofis Kadrosu\nKariyer merkezimiz, öğrencilerimize en iyi hizmeti sunmak için alanında uzman profesyonellerden oluşmaktadır:\n- **Kariyer Geliştirme Koordinatörü:** Genel yönetim, stratejik planlama ve kurumsal işbirlikleri.\n- **Kariyer Danışmanları:** Birebir danışmanlık, özgeçmiş (CV) kontrolü, mülakat simülasyonları.\n- **Staj ve İstihdam Uzmanları:** Yetenek Kapısı yönetimi, firma protokolleri ve iş ilanları takibi.\n- **Etkinlik & İletişim Sorumluları:** Kariyer fuarları, seminer organizasyonları ve mezun ilişkileri.\n\n---\n\n#### 📞 İletişim ve Yerleşke Bilgileri\n- **E-Posta:** kariyer@esenyurt.edu.tr\n- **Telefon:** 444 9 123 / 0 (212) 422 70 00\n- **Ofis:** Kariyer Geliştirme Merkezi / Rektörlük Binası Esenyurt Kampüsü`
     },
     services: {
       title: "Kariyer Geliştirme Hizmetlerimiz",
       category: "Hizmet Portföyü",
       date: "2026 - Güncel",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-ogrenci.png",
-      content: `### Sizin İçin Neler Yapıyoruz?\n\nKariyer Geliştirme Koordinatörlüğü olarak öğrencilerimize ve mezunlarımıza sunduğumuz ana hizmetlerimiz aşağıda detaylandırılmıştır:\n\n---\n\n#### 1. 🎯 Birebir Kariyer Danışmanlığı\nÖğrenci ve mezunlarımızın kariyer hedeflerine ulaşmalarına yardımcı olmak amacıyla profesyonel kariyer danışmanlığı hizmetleri sunulmaktadır.\n\n---\n\n#### 2. 📄 Özgeçmiş (CV) ve Niyet Mektubu Rehberliği\nKişisel, eğitim ve mesleki bilgileri içeren kritik bir belge olan özgeçmişin oluşturulması ve profesyonel format düzenlemeleri konusunda birebir rehberlik sağlanır.\n\n---\n\n#### 3. 💼 Staj ve İstihdam Fırsatları (Yetenek Kapısı)\nSektör lideri firmalarla yapılan kurumsal iş birlikleri ve Yetenek Kapısı entegrasyonu ile zorunlu ve gönüllü staj başvuruları yönetilmektedir.\n\n---\n\n#### 4. 🏆 Kariyer Günleri ve Sektör Buluşmaları\nHer akademik yılda düzenlenen Kariyer Günleri, mülakat simülasyonları ve teknik geziler ile öğrenciler iş dünyasının lider temsilcileriyle doğrudan bir araya getirilmektedir.`
+      content: `### Sizin İçin Neler Yapıyoruz?\n\nKariyer Geliştirme Merkezi olarak öğrencilerimize ve mezunlarımıza sunduğumuz ana hizmetlerimiz aşağıda detaylandırılmıştır:\n\n---\n\n#### 1. 🎯 Birebir Kariyer Danışmanlığı\nÖğrenci ve mezunlarımızın kariyer hedeflerine ulaşmalarına yardımcı olmak amacıyla profesyonel kariyer danışmanlığı hizmetleri sunulmaktadır.\n\n---\n\n#### 2. 📄 Özgeçmiş (CV) ve Niyet Mektubu Rehberliği\nKişisel, eğitim ve mesleki bilgileri içeren kritik bir belge olan özgeçmişin oluşturulması ve profesyonel format düzenlemeleri konusunda birebir rehberlik sağlanır.\n\n---\n\n#### 3. 💼 Staj ve İstihdam Fırsatları (Yetenek Kapısı)\nSektör lideri firmalarla yapılan kurumsal iş birlikleri ve Yetenek Kapısı entegrasyonu ile zorunlu ve gönüllü staj başvuruları yönetilmektedir.\n\n---\n\n#### 4. 🏆 Kariyer Günleri ve Sektör Buluşmaları\nHer akademik yılda düzenlenen Kariyer Günleri, mülakat simülasyonları ve teknik geziler ile öğrenciler iş dünyasının lider temsilcileriyle doğrudan bir araya getirilmektedir.`
     },
     events_list: {
       title: "Akademik ve Sektörel Etkinliklerimiz",
       category: "Etkinlik Takvimi",
       date: "2026 Güz & Bahar Dönemi",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg",
-      content: `### Yaklaşan ve Güncel Etkinliklerimiz\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen atölyeler, seminerler ve zirveler:\n\n---\n\n#### 🎪 1. İESÜ Bahar Şenliği & Kariyer Festivali 2026\n- **Tarih:** 15-18 Mayıs 2026\n- **Yer:** Esenyurt Kampüsü Ana Bahçe\n- **Detay:** Sektör lideri şirket stantları, kariyer sohbetleri ve müzik performansları eşliğinde yıllık büyük buluşma.\n\n---\n\n#### 🏆 2. Bilim Rüzgarı & Akademik Başarı Ödül Töreni\n- **Tarih:** 20 Nisan 2026\n- **Yer:** Konferans Salonu\n- **Detay:** Başarılı projelerin, TEKNOFEST ekiplerinin ve akademik yayın ödüllerinin takdim edildiği resmi tören.\n\n---\n\n#### 🚀 3. TEKNOFEST & Ar-Ge Girişimcilik Zirvesi\n- **Tarih:** 10 Mart 2026\n- **Yer:** İESÜMER Kuluçka Merkezi\n- **Detay:** TEKNOFEST yarışmalarına katılacak öğrenci takımlarına teknik mentorluk ve fon sunumları.`
+      content: `### Yaklaşan ve Güncel Etkinliklerimiz\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından düzenlenen atölyeler, seminerler ve zirveler:\n\n---\n\n#### 🎪 1. İESÜ Bahar Şenliği & Kariyer Festivali 2026\n- **Tarih:** 15-18 Mayıs 2026\n- **Yer:** Esenyurt Kampüsü Ana Bahçe\n- **Detay:** Sektör lideri şirket stantları, kariyer sohbetleri ve müzik performansları eşliğinde yıllık büyük buluşma.\n\n---\n\n#### 🏆 2. Bilim Rüzgarı & Akademik Başarı Ödül Töreni\n- **Tarih:** 20 Nisan 2026\n- **Yer:** Konferans Salonu\n- **Detay:** Başarılı projelerin, TEKNOFEST ekiplerinin ve akademik yayın ödüllerinin takdim edildiği resmi tören.\n\n---\n\n#### 🚀 3. TEKNOFEST & Ar-Ge Girişimcilik Zirvesi\n- **Tarih:** 10 Mart 2026\n- **Yer:** İESÜMER Kuluçka Merkezi\n- **Detay:** TEKNOFEST yarışmalarına katılacak öğrenci takımlarına teknik mentorluk ve fon sunumları.`
     },
     contact_us: {
-      title: "Kariyer Geliştirme Koordinatörlüğü İletişim Bilgileri",
+      title: "Kariyer Geliştirme Merkezi İletişim Bilgileri",
       category: "İletişim & Ulaşım",
       date: "7/24 Kesintisiz Destek",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-ogrenci.png",
@@ -176,7 +176,7 @@ export default function LandingPage({ setView }) {
 
       <SEO 
         title="Ana Sayfa" 
-        description="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü"
+        description="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi"
         url="https://kariyer.esenyurt.edu.tr/"
       />
 
@@ -286,7 +286,7 @@ export default function LandingPage({ setView }) {
               Geleceğe Odaklan.
             </h2>
             <p className="text-slate-500 font-medium text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-              Kariyer Geliştirme Koordinatörlüğü servisleriyle yeteneklerini keşfet, iş dünyasına rakiplerinden bir adım önde başla.
+              Kariyer Geliştirme Merkezi servisleriyle yeteneklerini keşfet, iş dünyasına rakiplerinden bir adım önde başla.
             </p>
           </div>
 
@@ -414,7 +414,7 @@ export default function LandingPage({ setView }) {
                 title: 'Geleceğin Meslekleri & Araştırma Hub',
                 badge: '📊 Sektörel Analiz & Ar-Ge',
                 imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60',
-                desc: 'Kariyer Geliştirme Koordinatörlüğü Araştırma Birimi; yapay zeka, dijitalleşme ve iş dünyasının geleceğine yönelik düzenli istihdam analizleri ve sektör raporları yayımlar.',
+                desc: 'Kariyer Geliştirme Merkezi Araştırma Birimi; yapay zeka, dijitalleşme ve iş dünyasının geleceğine yönelik düzenli istihdam analizleri ve sektör raporları yayımlar.',
                 features: [
                   'Yıllık Mezun İstihdam Endeksi ve Sektör Raporları',
                   'Mesleklere Etki Analizleri',
@@ -561,7 +561,7 @@ export default function LandingPage({ setView }) {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
               </div>
             </div>
 
@@ -818,3 +818,5 @@ export default function LandingPage({ setView }) {
     </div>
   );
 }
+
+

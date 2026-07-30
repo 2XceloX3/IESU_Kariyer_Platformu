@@ -49,6 +49,11 @@ const useAppStore = create(
         ],
         setMessages: setter('messages'),
         
+        adminMessages: [
+          { id: 'ADM-MSG-1', companyName: 'Aselsan A.Ş.', email: 'kurumsal@aselsan.com.tr', phone: '0216 555 0000', subject: '2026 Mühendislik Staj Kontenjanı Protokolü', message: 'Üniversiteniz bilgisayar ve elektrik-elektronik mühendisliği öğrencileri için 15 adet staj kontenjanı tanımlamak istiyoruz.', date: '30.07.2026 10:30', status: 'Beklemede' }
+        ],
+        setAdminMessages: setter('adminMessages'),
+
         notifications: [],
         setNotifications: setter('notifications'),
         addNotification: (notif) => set((state) => ({
@@ -552,7 +557,17 @@ const useAppStore = create(
         careerFairEvent: state.careerFairEvent,
         careerFairFormTemplate: state.careerFairFormTemplate,
         careerFairApplications: state.careerFairApplications,
-        careerFairStands: state.careerFairStands
+        careerFairStands: state.careerFairStands,
+        checkupRecords: state.checkupRecords,
+        newsletterSubscribers: state.newsletterSubscribers,
+        staffList: state.staffList,
+        adminMessages: state.adminMessages,
+        alumniAssocApplications: state.alumniAssocApplications,
+        alumniAssocBoard: state.alumniAssocBoard,
+        institutionalStatsData: state.institutionalStatsData,
+        showInstitutionalStats: state.showInstitutionalStats,
+        sspUsers: state.sspUsers,
+        liveRooms: state.liveRooms
       })
     }
   )

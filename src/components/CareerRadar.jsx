@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Megaphone, Calendar, Briefcase, GraduationCap, ChevronRight, Compass } from 'lucide-react';
 
 export default function CareerRadar({ announcements = [], events = [], jobs = [], setView }) {
@@ -11,7 +11,7 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
   const highlights = [];
   
   activeAnnouncements.forEach(a => {
-    highlights.push({ type: 'announcement', icon: <Megaphone size={18} />, title: a.title, desc: 'Kariyer Geliştirme Koordinatörlüğü Duyurusu', color: 'bg-red-50 text-red-600', link: 'duyurular' });
+    highlights.push({ type: 'announcement', icon: <Megaphone size={18} />, title: a.title, desc: 'Kariyer Geliştirme Merkezi Duyurusu', color: 'bg-red-50 text-red-600', link: 'duyurular' });
   });
 
   activeEvents.forEach(e => {
@@ -93,3 +93,4 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
     </div>
   );
 }
+

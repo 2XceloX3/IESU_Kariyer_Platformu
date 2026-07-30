@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
@@ -79,7 +79,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
           id: 'POST-' + Date.now(),
           sourceId: newId,
           author: {
-            name: currentUser?.name || 'Kariyer Geliştirme Koordinatörlüğü',
+            name: currentUser?.name || 'Kariyer Geliştirme Merkezi',
             avatar: currentUser?.avatar || 'https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg',
             role: 'admin',
             title: 'Süper Yönetici'
@@ -341,7 +341,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
             <FileText size={16} className="text-red-600" />
           </div>
           <div>
-            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Koordinatörlüğü <CheckCircle2 size={12} className="text-emerald-500" /></p>
+            <p className="text-[13px] font-bold text-gray-900 flex items-center gap-1">Kariyer Geliştirme Merkezi <CheckCircle2 size={12} className="text-emerald-500" /></p>
             <p className="text-[10px] text-gray-500">Az önce • Haber Paylaşımı</p>
           </div>
         </div>
@@ -371,3 +371,4 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
     />
   );
 }
+

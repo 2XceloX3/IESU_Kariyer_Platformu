@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { X, Info, Accessibility, HelpCircle, ShieldCheck, Megaphone, Briefcase, CheckCircle2 } from 'lucide-react';
 
 export default function FooterModals({ activeModal, onClose, setView }) {
@@ -19,12 +19,12 @@ export default function FooterModals({ activeModal, onClose, setView }) {
   const modalData = {
     about: {
       title: "Hakkımızda",
-      subtitle: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü",
+      subtitle: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi",
       icon: <Info className="text-red-600" size={24} />,
       content: (
         <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
           <p>
-            İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü; öğrencilerimizin ve mezunlarımızın kariyer yolculuklarında potansiyellerini en üst seviyeye çıkarmalarını, iş dünyasına nitelikli ve özgüvenli bireyler olarak adım atmalarını hedefleyen resmî üniversite birimidir.
+            İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi; öğrencilerimizin ve mezunlarımızın kariyer yolculuklarında potansiyellerini en üst seviyeye çıkarmalarını, iş dünyasına nitelikli ve özgüvenli bireyler olarak adım atmalarını hedefleyen resmî üniversite birimidir.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <div className="p-3 bg-red-50/60 rounded-xl border border-red-100">
@@ -182,3 +182,4 @@ export default function FooterModals({ activeModal, onClose, setView }) {
     </div>
   );
 }
+

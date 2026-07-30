@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ChevronRight, Mail, ArrowRight, CheckCircle } from 'lucide-react';
 import Logo from '../Logo';
 
@@ -36,11 +36,11 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
               <Logo size="lg" variant="white" />
               <div>
                 <h3 className="text-sm font-black text-white leading-tight tracking-tight uppercase">İstanbul Esenyurt Üniversitesi</h3>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mt-0.5">Kariyer Geliştirme Koordinatörlüğü</p>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mt-0.5">Kariyer Geliştirme Merkezi</p>
               </div>
             </div>
             <p className="text-[14px] text-red-50 leading-relaxed mb-6 font-medium">
-              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
+              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
             </p>
             <div className="flex gap-3">
               <a href="https://tr-tr.facebook.com/iesuedu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
@@ -142,3 +142,4 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
     </footer>
   );
 }
+

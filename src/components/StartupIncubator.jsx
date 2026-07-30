@@ -155,7 +155,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
-                      window.toast && window.toast.info("Anka AI: Kanvas verilerinizden 10 sayfalık yatırımcı sunumu (Pitch Deck) derleniyor...");
+                      window.toast && window.toast.info("Kanvas verilerinizden yatırımcı sunumu (Pitch Deck) derleniyor...");
                       setTimeout(() => {
                         window.toast && window.toast.success("✅ AI Sunumu Hazır: Taslak sunum e-posta adresinize PDF olarak gönderildi.");
                       }, 2500);

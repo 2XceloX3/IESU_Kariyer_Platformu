@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import PanelHeader from './PanelHeader';
 import { MessageSquare, Bell, CheckCircle2, Send, Trash2, Search, Filter, Users, User, Building2, BookOpen } from 'lucide-react';
 
+import useAppStore from '../../store/useAppStore';
+
 export default function CMSMessages({ messages, setMessages }) {
+  const adminMessages = useAppStore(state => state.adminMessages);
+  const setAdminMessages = useAppStore(state => state.setAdminMessages);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
+  const [selectedAdminMsgId, setSelectedAdminMsgId] = useState(null);
   const [reply, setReply] = useState('');
-  const [activeTab, setActiveTab] = useState('inbox'); // inbox, bulk
+  const [activeTab, setActiveTab] = useState('inbox'); // inbox, admin_pool, bulk, pool
   
   // Bulk messaging state
   const [bulkForm, setBulkForm] = useState({
@@ -72,6 +77,12 @@ export default function CMSMessages({ messages, setMessages }) {
         <div className="flex justify-end mb-4">
             <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
               <button 
+                onClick={() => setActiveTab('admin_pool')}
+                className={`px-4 py-2 text-sm font-bold rounded-lg transition ${activeTab === 'admin_pool' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+              >
+                Firma Mesaj Havuzu {((adminMessages || []).filter(m => m.status === 'Beklemede').length > 0) && <span className="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full ml-1.5 font-black">{(adminMessages || []).filter(m => m.status === 'Beklemede').length}</span>}
+              </button>
+              <button 
                 onClick={() => setActiveTab('inbox')}
                 className={`px-4 py-2 text-sm font-bold rounded-lg transition ${activeTab === 'inbox' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
               >
@@ -93,7 +104,121 @@ export default function CMSMessages({ messages, setMessages }) {
           </div>
         </div>
 
-        {activeTab === 'bulk' ? (
+        {activeTab === 'admin_pool' ? (
+          <div className="flex-1 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden flex">
+            {/* ADMIN MESSAGES LIST */}
+            <div className="w-1/3 border-r border-gray-100 flex flex-col bg-gray-50/50">
+              <div className="p-4 border-b border-gray-100 bg-white flex justify-between items-center">
+                <h4 className="font-black text-gray-900 text-sm">Firma Talepleri ({adminMessages?.length || 0})</h4>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-red-50 text-red-600 px-2 py-0.5 rounded border border-red-100">Resmî Havuz</span>
+              </div>
+              <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
+                {(adminMessages || []).length === 0 ? (
+                  <div className="p-8 text-center text-gray-400 text-sm">Havuzda mesaj bulunmuyor.</div>
+                ) : (
+                  (adminMessages || []).map(msg => (
+                    <button 
+                      key={msg.id} 
+                      onClick={() => {
+                        setSelectedAdminMsgId(msg.id);
+                        if (setAdminMessages) {
+                          setAdminMessages(prev => (prev || []).map(m => m.id === msg.id ? { ...m, status: 'İncelendi' } : m));
+                        }
+                      }}
+                      className={`w-full text-left p-4 hover:bg-red-50/50 transition border-l-4 
+                        ${selectedAdminMsgId === msg.id ? 'border-red-600 bg-red-50' : msg.status === 'Beklemede' ? 'border-amber-500 bg-amber-50/30' : 'border-transparent bg-white'}`}
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className="text-sm font-black text-gray-900 truncate pr-2">
+                          {msg.companyName}
+                        </h4>
+                        <span className="text-[10px] text-gray-400 shrink-0 font-bold">
+                          {msg.date}
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-red-700 truncate mb-1">
+                        {msg.subject}
+                      </p>
+                      <p className="text-xs text-gray-500 line-clamp-2">
+                        {msg.message}
+                      </p>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* ADMIN MESSAGE DETAIL */}
+            <div className="flex-1 flex flex-col bg-white p-6 overflow-y-auto">
+              {(() => {
+                const currentMsg = (adminMessages || []).find(m => m.id === selectedAdminMsgId);
+                if (!currentMsg) {
+                  return (
+                    <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
+                      <Building2 size={48} className="mb-3 opacity-40 text-red-600" />
+                      <p className="font-bold text-base text-gray-700">Detaylarını görmek için soldan bir firma mesajı seçin.</p>
+                      <p className="text-xs text-gray-400 mt-1">Firmaların özel protokol ve staj talepleri burada listelenir.</p>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="space-y-6 max-w-2xl">
+                    <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-wider bg-red-50 text-red-600 px-2 py-0.5 rounded border border-red-100">Kurumsal Mesaj</span>
+                        <h2 className="text-xl font-black text-gray-900 mt-1">{currentMsg.companyName}</h2>
+                        <p className="text-xs text-gray-500 font-medium">{currentMsg.date}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-black ${currentMsg.status === 'Beklemede' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                        {currentMsg.status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-100">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase block mb-0.5">İletişim E-Posta</span>
+                        <a href={`mailto:${currentMsg.email}`} className="text-xs font-bold text-red-600 hover:underline">{currentMsg.email}</a>
+                      </div>
+                      <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-100">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase block mb-0.5">İletişim Telefonu</span>
+                        <a href={`tel:${currentMsg.phone}`} className="text-xs font-bold text-gray-900">{currentMsg.phone}</a>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-red-50/50 rounded-xl border border-red-100">
+                      <span className="text-[11px] font-black text-red-700 uppercase tracking-wider block mb-1">Konu Başlığı</span>
+                      <h3 className="text-base font-black text-gray-900">{currentMsg.subject}</h3>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block mb-2">Mesaj & Talep İçeriği</span>
+                      <div className="p-5 bg-white rounded-2xl border border-gray-200 text-sm text-gray-800 leading-relaxed whitespace-pre-wrap shadow-sm">
+                        {currentMsg.message}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex gap-3">
+                      <a href={`mailto:${currentMsg.email}?subject=RE: ${encodeURIComponent(currentMsg.subject)}`} className="px-6 py-3 bg-[#990000] hover:bg-red-800 text-white rounded-xl font-bold text-xs transition shadow-md flex items-center gap-2">
+                        <Send size={15}/> Firmaya E-Posta İle Yanıt Ver
+                      </a>
+                      <button 
+                        onClick={() => {
+                          if (window.confirm("Bu mesajı havuzdan silmek istediğinize emin misiniz?")) {
+                            if (setAdminMessages) setAdminMessages(prev => prev.filter(m => m.id !== currentMsg.id));
+                            setSelectedAdminMsgId(null);
+                          }
+                        }} 
+                        className="px-4 py-3 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-600 rounded-xl font-bold text-xs transition"
+                      >
+                        Talebi Sil
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        ) : activeTab === 'bulk' ? (
           <div className="flex-1 bg-white border border-gray-100 rounded-2xl shadow-sm p-6 overflow-y-auto">
             <div className="max-w-3xl mx-auto">
               <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-50">

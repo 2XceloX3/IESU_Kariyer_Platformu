@@ -59,6 +59,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const setAlumniCardApplications = useAppStore(state => state.setAlumniCardApplications);
   const alumniCardForms = useAppStore(state => state.alumniCardForms);
   const [activeTab, setActiveTab] = useState('feed'); 
+  const [footerModal, setFooterModal] = useState(null);
   const [feedFilter, setFeedFilter] = useState('for_you'); // for_you, following // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -160,7 +161,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                     <Crown size={14} />
                   </div>
                 </div>
-                <h2 className="text-[16px] font-black text-gray-900 mt-4 leading-tight">Kariyer Geliştirme Koordinatörlüğü</h2>
+                <h2 className="text-[16px] font-black text-gray-900 mt-4 leading-tight">Kariyer Geliştirme Merkezi</h2>
                 <p className="text-[12px] font-bold text-orange-600 mt-1 uppercase tracking-wider">SÜPER YÖNETİCİ</p>
                 
                 <div className="mt-6 flex flex-col gap-2 text-left bg-gray-50 p-3 rounded-2xl">
@@ -237,36 +238,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
           
-          {/* STORIES */}
-          <StoriesBar currentUser={currentUser} stories={stories} setStories={setStories} />
-          
-          {/* MEZUNA OZEL HIZLI AKSIYONLAR */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
-            <button onClick={() => setView?.('jobs')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-emerald-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-100 transition">
-                <Briefcase size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-emerald-600 transition">Is Ilanlari</span>
-            </button>
-            <button onClick={() => setActiveTab('cvbuilder')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-red-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-100 transition">
-                <FileText size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-red-600 transition">CV Olustur</span>
-            </button>
-            <button onClick={() => setShowEventsModal(true)} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-amber-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-100 transition">
-                <Calendar size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-amber-600 transition">Etkinlikler</span>
-            </button>
-            <button onClick={() => setView?.('network')} className="flex flex-col items-center gap-1.5 p-3 bg-white border border-gray-100 rounded-xl hover:border-blue-200 hover:shadow-sm transition-all group">
-              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100 transition">
-                <Users size={20} />
-              </div>
-              <span className="text-[11px] font-bold text-gray-600 group-hover:text-blue-600 transition">Mezun Agi</span>
-            </button>
-          </div>
+
 
                     {/* FEED TABS (LINKEDIN STYLE) */}
           <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">
@@ -402,35 +374,6 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             </div>
           </div>
 
-          {/* Kulüpler Vitrini */}
-          {/* Kulüpler Vitrini */}
-          {featureClubsShowcase && (
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-              <h3 className="font-black text-emerald-900 mb-4 flex items-center gap-2">
-                <Target className="text-emerald-500" size={20} /> Öğrenci Kulüpleri
-              </h3>
-              <p className="text-sm text-emerald-700 font-medium mb-4">Sosyalleşin, yeteneklerinizi geliştirin ve üniversite hayatını dolu dolu yaşayın.</p>
-              
-              <div className="flex -space-x-2 mb-5">
-                {(clubs || []).slice(0, 4).map((club, idx) => (
-                  <img key={idx} src={club.logo} alt={club.name} title={club.name} className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" />
-                ))}
-                {(clubs || []).length > 4 && (
-                  <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold z-10">
-                    +{clubs.length - 4}
-                  </div>
-                )}
-              </div>
-
-              <button 
-                onClick={() => setView('birlik_agi')}
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[13px] font-bold transition-all shadow-md flex justify-center"
-              >
-                Birlik Ağı'na Git
-              </button>
-            </div>
-          )}
-
           {/* Mentor Ol widget */}
           <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
             <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
@@ -440,18 +383,30 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             <p className="text-xs text-gray-500 font-medium mb-4">Mezun olarak tecrübelerinizi öğrencilerle paylaşın ve onlara yol gösterin.</p>
             <button
               onClick={() => setShowMentorshipModal(true)}
-              className="w-full py-2 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors"
+              className="w-full py-2 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors cursor-pointer"
             >
               Mentorluk Başvurusu Yap
             </button>
           </div>
 
           {/* Mezun Bilgi Sistemi shortcut */}
-          <div className="bg-gradient-to-br from-iesu-navy to-iesu-navy rounded-xl p-5 shadow-lg text-white">
-            <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mb-1">Hızlı Erişim</p>
-            <h3 className="font-black text-base leading-tight mb-2">Mezun Bilgi Sistemi</h3>
-            <p className="text-xs text-red-100 mb-4">Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.</p>
-            <button onClick={() => setView('mbs')} className="w-full py-2.5 bg-white text-[#990000] hover:bg-red-50 rounded-xl text-[13px] font-bold transition-colors shadow-sm">Mezun Bilgi Sistemi'ne Git</button>
+          <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-2xl text-white border border-red-900 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            <p className="text-[11px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              <Star size={13} className="text-amber-300 fill-current" /> Hızlı Erişim
+            </p>
+            <h3 className="font-black text-xl leading-tight mb-2 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              Mezun Bilgi Sistemi
+            </h3>
+            <p className="text-xs text-white font-bold mb-5 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+              Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin.
+            </p>
+            <button 
+              onClick={() => setView('mbs')} 
+              className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
+            >
+              Mezun Bilgi Sistemi'ne Git <ArrowRight size={16} />
+            </button>
           </div>
 
           {/* Featured Opportunities */}
@@ -501,12 +456,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
           {/* PROFESSIONAL RIGHT SIDEBAR FOOTER */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-6 text-[12px] text-gray-500 font-medium px-4 text-center">
-            <a href="#" className="hover:text-red-600 transition-colors">Hakkımızda</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Erişilebilirlik</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Yardım Merkezi</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Gizlilik ve Şartlar</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Reklam Seçenekleri</a>
-            <a href="#" className="hover:text-red-600 transition-colors">Kariyer</a>
+            <button onClick={() => setFooterModal('about')} className="hover:text-[#990000] transition-colors cursor-pointer">Hakkımızda</button>
+            <button onClick={() => setFooterModal('accessibility')} className="hover:text-[#990000] transition-colors cursor-pointer">Erişilebilirlik</button>
+            <button onClick={() => setFooterModal('help')} className="hover:text-[#990000] transition-colors cursor-pointer">Yardım Merkezi</button>
+            <button onClick={() => setFooterModal('privacy')} className="hover:text-[#990000] transition-colors cursor-pointer">Gizlilik ve Şartlar</button>
+            <button onClick={() => setFooterModal('ads')} className="hover:text-[#990000] transition-colors cursor-pointer">Reklam Seçenekleri</button>
+            <button onClick={() => setFooterModal('careers')} className="hover:text-[#990000] transition-colors cursor-pointer">Kariyer</button>
             <div className="w-full flex items-center justify-center gap-1 mt-2">
               <span className="font-bold text-[#990000]">İESÜ Kariyer Portalı</span>
               <span>© 2026</span>
@@ -684,7 +639,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   } catch (err) {}
                 }
 
-                window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Koordinatörlüğü yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
+                window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
                 setShowMentorshipModal(false);
                 setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
               }} className="p-5 space-y-4">
@@ -719,39 +674,40 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         )}
 
       </div>
-      {/* FLOATING DOCK (INSTAGRAM STYLE - LIGHT/BRAND THEME) */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
-        <div className="bg-white/90 backdrop-blur-2xl border border-gray-200/50 p-2 sm:p-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)] flex items-center justify-between px-3">
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Akış">
-            <Home size={26} strokeWidth={2} />
+      {/* FLOATING DOCK (VIBRANT MULTI-COLOR MODERN GLASS THEME) */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
+        <div className="bg-white/95 backdrop-blur-2xl border-2 border-indigo-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(30,41,59,0.18)] flex items-center justify-between px-4 text-gray-800">
+          
+          {/* HOME - BLUE */}
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'}`} title="Akış">
+            <Home size={24} strokeWidth={2.2} />
           </button>
           
-          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-gray-500 hover:text-gray-900" title="İlanlar">
-            <Briefcase size={24} strokeWidth={2} />
+          {/* JOBS - PURPLE */}
+          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-purple-600 hover:bg-purple-50" title="İlanlar">
+            <Briefcase size={22} strokeWidth={2} />
           </button>
           
-          {/* CENTER: SEARCH ICON */}
-          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-gray-200 to-gray-300 text-gray-600 shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Ara">
-            <Search size={24} strokeWidth={2.5} />
+          {/* CENTER: SEARCH ICON (VIBRANT GRADIENT ORANGE/CORAL) */}
+          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50" title="Ara">
+            <Search size={22} strokeWidth={2.8} />
           </button>
           
-          {/* SURVEYS */}
+          {/* SURVEYS - EMERALD GREEN */}
           {featureSurveys && (
-            <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'text-fuchsia-600' : 'text-gray-500 hover:text-gray-900'}`} title="Anketler">
-              <ClipboardList size={24} strokeWidth={2} />
+            <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'}`} title="Anketler">
+              <ClipboardList size={22} strokeWidth={2} />
             </button>
           )}
           
-          {/* MESSAGES */}
-          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000]' : 'text-gray-500 hover:text-gray-900'}`} title="Mesajlar">
-            <MessageCircle size={24} strokeWidth={2} />
+          {/* MESSAGES - INDIGO */}
+          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' : 'text-slate-600 hover:text-indigo-600 hover:bg-indigo-50'}`} title="Mesajlar">
+            <MessageCircle size={22} strokeWidth={2} />
           </button>
           
-          
-          
           {/* PROFILE AVATAR */}
-          <button onClick={() => setView('user_profile')} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-gray-200" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=Mezun&background=EA580C&color=fff`} className="w-8 h-8 rounded-full object-cover" alt="Profile" />
+          <button onClick={() => setView('user_profile')} className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-indigo-400/60 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden" title="Profilim">
+            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=Mezun&background=4F46E5&color=fff`} className="w-full h-full rounded-full object-cover" alt="Profile" />
           </button>
         </div>
       </div>
@@ -800,6 +756,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     </div>
   );
 }
+
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ClipboardList, Edit, Trash2, Plus, Search, Filter, CheckCircle2, Download, Table, BarChart3, Target, Share2, Eye, X, ChevronDown, ChevronUp, Users } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard, Badge } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
@@ -19,7 +19,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     targetAudience: 'Tümü', // 'Öğrenciler', 'Mezunlar', 'Tümü'
     description: '',
     questions: [
-      { id: 'q1', text: 'Kariyer Geliştirme Koordinatörlüğü hizmetlerinden genel olarak memnun musunuz?', type: 'likert' }
+      { id: 'q1', text: 'Kariyer Geliştirme Merkezi hizmetlerinden genel olarak memnun musunuz?', type: 'likert' }
     ]
   });
 
@@ -142,7 +142,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     if(!setPosts) { window.toast.info('Feed entegrasyonu bulunamadı!'); return; }
     const newPost = {
       id: Date.now(),
-      author: currentUser || { name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: `https://ui-avatars.com/api/?name=Kariyer&background=0D8ABC&color=fff` },
+      author: currentUser || { name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: `https://ui-avatars.com/api/?name=Kariyer&background=0D8ABC&color=fff` },
       content: `📢 **Yeni Anket:** ${survey.title}\n\nLütfen değerlendirme anketimize katılarak bize geri bildirimde bulunun. Desteğiniz için teşekkürler!\n\n[Ankete Katıl]`,
       timestamp: 'Az önce',
       likes: 0,
@@ -249,6 +249,22 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
                     <td className="px-6 py-4"><Badge status={s.status} /></td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            const newStatus = s.status === 'Aktif' ? 'Kapandı' : 'Aktif';
+                            setSurveys(surveys.map(item => item.id === s.id ? { ...item, status: newStatus } : item));
+                            window.toast && window.toast.info(`Anket durumu: ${newStatus}`);
+                          }} 
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition ${
+                            s.status === 'Aktif' 
+                              ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200' 
+                              : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                          }`}
+                          title={s.status === 'Aktif' ? 'Yayını Durdur' : 'Yayına Al'}
+                        >
+                          {s.status === 'Aktif' ? 'Durdur' : 'Yayına Al'}
+                        </button>
                         <button onClick={(e) => { e.stopPropagation(); setExpandedSurveyId(isExpanded ? null : s.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Yanıtları Gör">
                           {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                         </button>
@@ -353,29 +369,71 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
             <input type="text" value={form.title} onChange={e=>setForm({...form, title: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" placeholder="Örn: Mezun İstihdam Anketi" required />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-bold text-gray-600 block mb-1.5">Anket Tipi</label>
-              <select value={form.type || 'Genel Anket'} onChange={e=>setForm({...form, type: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
+              <select value={form.type || 'Genel Anket'} onChange={e=>setForm({...form, type: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20">
                 <option value="Genel Anket">Genel Anket</option>
                 <option value="Etkinlik Değerlendirme">Etkinlik Değerlendirme</option>
               </select>
             </div>
-            <div>
-              <label className="text-xs font-bold text-gray-600 block mb-1.5">Hedef Kitle</label>
-              <select value={form.targetAudience} onChange={e=>setForm({...form, targetAudience: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
-                <option>Tümü</option>
-                <option>Öğrenciler</option>
-                <option>Mezunlar</option>
-                <option>Firmalar</option>
-              </select>
+            <div className="sm:col-span-2">
+              <label className="text-xs font-bold text-gray-600 block mb-1.5">Hedef Kitle Panelleri (Çoklu Seçim)</label>
+              <div className="flex flex-wrap gap-2 p-2 bg-gray-50 border border-gray-200 rounded-xl">
+                {[
+                  { id: 'Öğrenciler', label: 'Öğrenciler' },
+                  { id: 'Mezunlar', label: 'Mezunlar' },
+                  { id: 'Akademik', label: 'Akademik Personel' },
+                  { id: 'Firmalar', label: 'Firmalar' }
+                ].map(target => {
+                  const currentAudiences = Array.isArray(form.targetAudiences) 
+                    ? form.targetAudiences 
+                    : (form.targetAudience === 'Tümü' || !form.targetAudience ? ['Öğrenciler', 'Mezunlar', 'Akademik', 'Firmalar'] : [form.targetAudience]);
+                  const isChecked = currentAudiences.includes(target.id);
+
+                  return (
+                    <label 
+                      key={target.id} 
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition select-none ${
+                        isChecked 
+                          ? 'bg-[#990000] text-white shadow-sm' 
+                          : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                      }`}
+                    >
+                      <input 
+                        type="checkbox" 
+                        checked={isChecked}
+                        onChange={(e) => {
+                          let updated;
+                          if (e.target.checked) {
+                            updated = [...currentAudiences, target.id];
+                          } else {
+                            updated = currentAudiences.filter(item => item !== target.id);
+                          }
+                          setForm({ 
+                            ...form, 
+                            targetAudiences: updated,
+                            targetAudience: updated.length === 4 ? 'Tümü' : updated.join(', ')
+                          });
+                        }}
+                        className="sr-only"
+                      />
+                      {isChecked ? '✓ ' : ''}{target.label}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-600 block mb-1.5">Durum</label>
-              <select value={form.status} onChange={e=>setForm({...form, status: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
-                <option>Aktif</option>
-                <option>Kapandı</option>
-                <option>Taslak</option>
+              <label className="text-xs font-bold text-gray-600 block mb-1.5">Yayın Süresi (Gün)</label>
+              <input type="number" min="1" max="365" value={form.durationDays || 7} onChange={e=>setForm({...form, durationDays: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20" placeholder="Örn: 7 gün" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-600 block mb-1.5">Durum (Yayın)</label>
+              <select value={form.status} onChange={e=>setForm({...form, status: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20">
+                <option value="Aktif">Aktif (Yayında)</option>
+                <option value="Kapandı">Yayını Durdur (Kapalı)</option>
+                <option value="Taslak">Taslak</option>
               </select>
             </div>
           </div>
@@ -492,3 +550,4 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     </div>
   );
 }
+

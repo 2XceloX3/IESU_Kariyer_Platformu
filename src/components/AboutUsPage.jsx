@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Award, Globe, Users, ShieldCheck, HeartHandshake, CheckCircle2, Building, BookOpen, Sparkles, TrendingUp, Compass, Clock, GraduationCap, Target, FileText, ChevronRight, UserCheck, Phone, Mail, MapPin, ExternalLink } from 'lucide-react';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import MainHeader from './MainHeader';
@@ -60,7 +60,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
         <div className="bg-gradient-to-r from-slate-950 via-[#800000] to-indigo-950 text-white rounded-3xl p-8 md:p-12 shadow-2xl border border-red-900 relative overflow-hidden">
           <div className="max-w-4xl relative z-10">
             <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-950/70 px-4 py-1.5 rounded-full border border-amber-500/40">
-              İESÜ KARİYER GELİŞTİRME OFİSİ KOORDİNATÖRLÜĞÜ
+              İESÜ Kariyer Geliştirme Merkezi
             </span>
             <h2 className="text-3xl md:text-5xl font-black mt-4 mb-4 tracking-tight leading-tight">
               {corporateData.university}
@@ -111,14 +111,14 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
               <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
                 <div className="p-3 bg-red-100 text-[#990000] rounded-2xl"><Building size={24} /></div>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-red-950">Kariyer Geliştirme Ofisi Koordinatörlüğü - Biz Kimiz?</h3>
+                  <h3 className="text-xl sm:text-2xl font-black text-red-950">Kariyer Geliştirme Merkezi - Biz Kimiz?</h3>
                   <p className="text-xs font-semibold text-slate-500">esenyurt.edu.tr Resmi Kurumsal Tanıtımı</p>
                 </div>
               </div>
 
               <div className="text-slate-700 text-sm leading-relaxed space-y-4 font-medium">
                 <p className="bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
-                  <strong>Kariyer Geliştirme Ofisi Koordinatörlüğü</strong>, İstanbul Esenyurt Üniversitesi’nin öğrenci ve mezunlarına profesyonel gelişim desteği sağlayan birimidir. Öğrencilerin üniversiteye girişlerinden itibaren seminer ve sertifika programları ile danışmanlık faaliyetleri yürüterek kişisel ve profesyonel gelişimlerine katkıda bulunmayı amaçlar.
+                  <strong>Kariyer Geliştirme Merkezi</strong>, İstanbul Esenyurt Üniversitesi’nin öğrenci ve mezunlarına profesyonel gelişim desteği sağlayan birimidir. Öğrencilerin üniversiteye girişlerinden itibaren seminer ve sertifika programları ile danışmanlık faaliyetleri yürüterek kişisel ve profesyonel gelişimlerine katkıda bulunmayı amaçlar.
                 </p>
                 <p>
                   Ayrıca öğrencileri iş hayatına hazırlamak ve mezunlarına en uygun iş imkânlarını sağlayabilmek adına özel sektör ve kamu ile pek çok alanda işbirliği faaliyetleri yürütür.
@@ -163,7 +163,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
                   <div>
                     <h4 className="text-xl font-black text-amber-300 mb-3 flex items-center gap-2">🎯 Vizyonumuz</h4>
                     <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
-                      Ulusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, yenilikçi ve öncü bir kariyer koordinatörlüğü olmaktır.
+                      Ulusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, yenilikçi ve öncü bir Kariyer Geliştirme Merkezi olmaktır.
                     </p>
                   </div>
                 </div>
@@ -193,13 +193,13 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
 
               <div className="bg-slate-50 p-7 rounded-3xl border border-slate-200 text-slate-700 text-sm leading-relaxed space-y-4 font-medium italic">
                 <p>
-                  "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak, eğitim hayatınızın ilk gününden itibaren mesleki hedeflerinizi çizmenizde yanınızdayız. Yetenek Kapısı platformumuz, birebir mülakat simülasyonlarımız ve kurumsal iş birliklerimizle geleceğinize yön veriyoruz."
+                  "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak, eğitim hayatınızın ilk gününden itibaren mesleki hedeflerinizi çizmenizde yanınızdayız. Yetenek Kapısı platformumuz, birebir mülakat simülasyonlarımız ve kurumsal iş birliklerimizle geleceğinize yön veriyoruz."
                 </p>
                 <p>
                   "Amacımız yalnızca bir diplomaya değil, küresel standartlarda bir mesleki kimliğe ve güçlü bir vizyona sahip mezunlar yetiştirmektir."
                 </p>
                 <div className="not-italic pt-4 border-t border-slate-200 font-bold text-red-950">
-                  — Kariyer Geliştirme Koordinatörlüğü Yönetimi
+                  — Kariyer Geliştirme Merkezi Yönetimi
                 </div>
               </div>
             </div>
@@ -295,3 +295,5 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
     </div>
   );
 }
+
+

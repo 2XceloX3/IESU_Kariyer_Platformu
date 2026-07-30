@@ -1,4 +1,4 @@
-import useAppStore from '../store/useAppStore';
+﻿import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, MicOff, VideoOff, Monitor, MonitorOff, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2, Bell, BellOff, Shield, ShieldOff, UserX, UserPlus, Building2, GraduationCap, School, Activity, Wifi } from 'lucide-react';
 import Logo from './Logo';
@@ -957,7 +957,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
               <Logo variant="white" size="sm" className="h-8 w-auto hover:opacity-90 transition shrink-0" />
               <div className="flex flex-col min-w-0">
                 <span className="font-black text-[12px] sm:text-[13px] leading-tight text-white truncate">İstanbul Esenyurt Üniversitesi</span>
-                <span className="text-[9px] sm:text-[10px] text-red-200 font-bold uppercase tracking-wider truncate">Kariyer Geliştirme Koordinatörlüğü</span>
+                <span className="text-[9px] sm:text-[10px] text-red-200 font-bold uppercase tracking-wider truncate">Kariyer Geliştirme Merkezi</span>
               </div>
             </div>
             <button 
@@ -1729,3 +1729,4 @@ export default function MessagingInterface({ previousView, currentUser, userRole
     </div>
   );
 }
+

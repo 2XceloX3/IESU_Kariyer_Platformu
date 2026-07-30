@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Users, Search, Plus, ShieldCheck, MapPin, Calendar, Home, Compass, Briefcase } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
@@ -81,7 +81,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
             <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
           
@@ -227,4 +227,5 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
     </div>
   );
 }
+
 

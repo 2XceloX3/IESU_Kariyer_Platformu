@@ -112,7 +112,7 @@ export default function TeamUpMentorHub({ currentUser }) {
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
-                      window.toast && window.toast.info("Anka AI: Profiliniz ve takımın teknik gereksinimleri analiz ediliyor...");
+                      window.toast && window.toast.info("Profiliniz ve takımın teknik gereksinimleri analiz ediliyor...");
                       setTimeout(() => {
                         window.toast && window.toast.success("✅ Analiz: Bu takıma katılım için %88 uyumlusunuz. Eksik görülen: D3.js deneyimi.");
                       }, 2500);

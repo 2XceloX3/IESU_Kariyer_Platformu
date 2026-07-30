@@ -85,6 +85,8 @@ const EventsPage = lazy(() => import('./components/EventsPage'));
 const ContactPage = lazy(() => import('./components/ContactPage'));
 const ResearchOSHub = lazy(() => import('./components/ResearchOSHub'));
 const KnowledgePortal = lazy(() => import('./components/KnowledgePortal'));
+const SurveyPopupModal = lazy(() => import('./components/SurveyPopupModal'));
+const MainHeader = lazy(() => import('./components/MainHeader'));
 import GlobalSearchOverlay from './components/GlobalSearchOverlay';
 
 import { ToastContainer, toast } from './components/shared/Toast';
@@ -184,7 +186,7 @@ function App() {
     if (view === 'admin') {
       if (!userRole || userRole !== 'admin') setUserRole('admin');
       if (!currentUser || currentUser.role !== 'admin') {
-        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' };
+        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' };
         setCurrentUser(adminUser);
         localStorage.setItem('igu_mock_user', JSON.stringify(adminUser));
       }
@@ -324,7 +326,7 @@ function App() {
         {view === 'mezun_dernek' && <BirlikAgiPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole={academicRole} />}
         {view === 'admin' && <AdminDashboard 
           setView={setView} 
-          currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' }} 
+          currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' }} 
           setSelectedUserId={setSelectedUserId}
           userRole={userRole || 'admin'} 
           academicRole={academicRole || 'super_admin'}
@@ -350,14 +352,13 @@ function App() {
           currentUser={currentUser} setCurrentUser={setCurrentUser}
           userRole={userRole} 
         />}
-        {view === 'mbs' && <AlumniInformationSystem 
-          currentUser={currentUser} 
+        {view === 'mbs' && <ProfileUpdate 
           setView={setView} 
+          currentUser={currentUser} setCurrentUser={setCurrentUser}
+          userRole={userRole} 
         />}
         {(view === 'haberler' || view === 'duyurular' || view === 'etkinlikler' || view === 'events' || view === 'news') && (
-          <div className="max-w-[1200px] mx-auto px-4 pt-24 pb-12">
-            <NewsEvents setView={setView} category={view} currentUser={currentUser} userRole={userRole} />
-          </div>
+          <NewsEvents setView={setView} category={view} currentUser={currentUser} userRole={userRole} />
         )}
         {view === 'bmi_calculator' && (
           <div className="min-h-screen bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
@@ -457,7 +458,8 @@ function App() {
         {view === 'kullanim' && <DynamicContentPage contentId="kullanim" setView={setView} previousView={previousView || "landing"} />}
         {view === 'kvkk' && <DynamicContentPage contentId="kvkk" setView={setView} previousView={previousView || "landing"} />}
 
-        {/* Gen Z UX Features */}
+        {/* Gen Z UX Features & Auto Popup Survey - Sadece giriş yapan kullanıcılara */}
+        {currentUser && <SurveyPopupModal currentUser={currentUser} userRole={userRole} />}
         <PWAInstallPrompt />
         <CommandPalette setView={setView} />
         <GlobalSearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} setView={setView} />
@@ -467,3 +469,4 @@ function App() {
 }
 
 export default App;
+

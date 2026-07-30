@@ -100,7 +100,7 @@ export default function CMSDataPoolExport() {
             onClick={() => { setSubTab('checkup'); setSearch(''); }}
             className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 ${subTab === 'checkup' ? 'bg-[#990000] text-white shadow-lg scale-105 border border-red-500' : 'bg-white/15 text-white hover:bg-white/25 border border-white/20'}`}
           >
-            <Sparkles size={15} /> 🧭 Kariyer Check-up Havuzu
+            <Sparkles size={15} /> 🧭 Mezun Kariyer Anketi
           </button>
           <button 
             onClick={() => { setSubTab('newsletter'); setSearch(''); }}
@@ -113,18 +113,6 @@ export default function CMSDataPoolExport() {
             className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 ${subTab === 'bmi' ? 'bg-white text-teal-900 shadow-lg scale-105' : 'bg-white/15 text-white hover:bg-white/25 border border-white/20'}`}
           >
             <Activity size={15} /> BMI & Sağlık ({bmiRecords.length})
-          </button>
-          <button 
-            onClick={() => { setSubTab('labs'); setSearch(''); }}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 ${subTab === 'labs' ? 'bg-white text-teal-900 shadow-lg scale-105' : 'bg-white/15 text-white hover:bg-white/25 border border-white/20'}`}
-          >
-            <FlaskConical size={15} /> Ar-Ge Lab Rezervasyonları ({labReservations.length})
-          </button>
-          <button 
-            onClick={() => { setSubTab('events'); setSearch(''); }}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 ${subTab === 'events' ? 'bg-white text-teal-900 shadow-lg scale-105' : 'bg-white/15 text-white hover:bg-white/25 border border-white/20'}`}
-          >
-            <Ticket size={15} /> Etkinlik Bilet Kayıtları ({eventRegistrations.length})
           </button>
           <button 
             onClick={() => { setSubTab('surveys'); setSearch(''); }}
@@ -158,7 +146,7 @@ export default function CMSDataPoolExport() {
                   onClick={() => exportToExcel(checkupRecords, 'IESU_Mezun_Kariyer_Checkup_Havuzu')}
                   className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#990000] to-red-800 hover:from-red-700 hover:to-red-900 text-white font-black text-xs rounded-2xl transition shadow-lg shadow-red-900/20 flex items-center justify-center gap-2 shrink-0 cursor-pointer"
                 >
-                  <Download size={16} /> Kariyer Check-up Excel İndir
+                  <Download size={16} /> Mezun Kariyer Anketi Excel İndir
                 </button>
               </div>
             </div>
@@ -225,7 +213,7 @@ export default function CMSDataPoolExport() {
               <div className="flex justify-between items-start border-b border-slate-100 pb-4">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-[#990000] bg-red-50 px-3 py-1 rounded-full border border-red-100 inline-block mb-1">
-                    🧭 Kariyer Check-up Tam Yanıt Kartı ({selectedCheckup.id})
+                    🧭 Mezun Kariyer Anketi Tam Yanıt Kartı ({selectedCheckup.id})
                   </span>
                   <h3 className="text-xl font-black text-slate-900">{selectedCheckup.name}</h3>
                   <p className="text-xs font-bold text-slate-500">{selectedCheckup.department} — Mezuniyet Yılı: {selectedCheckup.graduationYear}</p>
@@ -446,106 +434,6 @@ export default function CMSDataPoolExport() {
                       <td className="p-3.5"><span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md font-black text-[10px] uppercase border border-emerald-200">{r.category}</span></td>
                       <td className="p-3.5">{r.dietitianRequested ? <span className="text-emerald-600 font-bold flex items-center gap-1"><CheckCircle2 size={14} /> Randevu İstendi</span> : <span className="text-slate-400">Hayır</span>}</td>
                       <td className="p-3.5 text-slate-500 font-medium">{r.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* SUB-PANEL 4: LAB RESERVATIONS */}
-        {subTab === 'labs' && (
-          <div className="space-y-5">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-              <div className="w-full sm:w-96 bg-white border border-slate-300/80 rounded-2xl flex items-center px-4 py-2.5 shadow-sm">
-                <Search size={16} className="text-slate-400 mr-2.5" />
-                <input 
-                  type="text" 
-                  placeholder="Lab veya araştırmacı ara..." 
-                  value={search} 
-                  onChange={e => setSearch(e.target.value)} 
-                  className="w-full bg-transparent text-xs font-bold text-red-900 focus:outline-none" 
-                />
-              </div>
-              <button 
-                onClick={() => exportToExcel(labReservations, 'IESU_ArGe_Lab_Rezervasyon_Havuzu')}
-                className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-orange-500 text-white font-black text-xs rounded-2xl transition shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 shrink-0"
-              >
-                <Download size={16} /> Excel / CSV Olarak İndir
-              </button>
-            </div>
-
-            <div className="overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950 text-white uppercase text-[10px] font-black tracking-widest">
-                  <tr>
-                    <th className="p-3.5">Rezervasyon No</th>
-                    <th className="p-3.5">Araştırmacı</th>
-                    <th className="p-3.5">Laboratuvar Adı</th>
-                    <th className="p-3.5">Zaman Dilimi</th>
-                    <th className="p-3.5">Tarih</th>
-                    <th className="p-3.5">Durum</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-red-900">
-                  {labReservations.filter(l => l.name.toLowerCase().includes(search.toLowerCase()) || l.labName.toLowerCase().includes(search.toLowerCase())).map(l => (
-                    <tr key={l.id} className="hover:bg-slate-50 transition">
-                      <td className="p-3.5 font-mono text-red-600 font-black">{l.id}</td>
-                      <td className="p-3.5 font-bold text-red-950">{l.name}</td>
-                      <td className="p-3.5 font-bold text-red-600">{l.labName}</td>
-                      <td className="p-3.5">{l.timeSlot}</td>
-                      <td className="p-3.5 text-slate-500 font-medium">{l.date}</td>
-                      <td className="p-3.5"><span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md font-black text-[10px] uppercase border border-emerald-200">{l.status}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* SUB-PANEL 5: EVENT REGISTRATIONS */}
-        {subTab === 'events' && (
-          <div className="space-y-5">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-              <div className="w-full sm:w-96 bg-white border border-slate-300/80 rounded-2xl flex items-center px-4 py-2.5 shadow-sm">
-                <Search size={16} className="text-slate-400 mr-2.5" />
-                <input 
-                  type="text" 
-                  placeholder="Etkinlik veya bilet sahibi ara..." 
-                  value={search} 
-                  onChange={e => setSearch(e.target.value)} 
-                  className="w-full bg-transparent text-xs font-bold text-red-900 focus:outline-none" 
-                />
-              </div>
-              <button 
-                onClick={() => exportToExcel(eventRegistrations, 'IESU_Etkinlik_Bilet_Kayitlari')}
-                className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-orange-500 text-white font-black text-xs rounded-2xl transition shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 shrink-0"
-              >
-                <Download size={16} /> Excel / CSV Olarak İndir
-              </button>
-            </div>
-
-            <div className="overflow-x-auto rounded-2xl border border-slate-200">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950 text-white uppercase text-[10px] font-black tracking-widest">
-                  <tr>
-                    <th className="p-3.5">Bilet Kodu</th>
-                    <th className="p-3.5">Katılımcı Adı</th>
-                    <th className="p-3.5">Etkinlik Başlığı</th>
-                    <th className="p-3.5">Tarih</th>
-                    <th className="p-3.5">Durum</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-red-900">
-                  {eventRegistrations.filter(e => e.name.toLowerCase().includes(search.toLowerCase()) || e.eventTitle.toLowerCase().includes(search.toLowerCase())).map(e => (
-                    <tr key={e.id} className="hover:bg-slate-50 transition">
-                      <td className="p-3.5 font-mono text-red-600 font-black">{e.ticketCode || e.id}</td>
-                      <td className="p-3.5 font-bold text-red-950">{e.name}</td>
-                      <td className="p-3.5 font-bold text-red-950">{e.eventTitle}</td>
-                      <td className="p-3.5 text-slate-500 font-medium">{e.date}</td>
-                      <td className="p-3.5"><span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md font-black text-[10px] uppercase border border-emerald-200">{e.status}</span></td>
                     </tr>
                   ))}
                 </tbody>

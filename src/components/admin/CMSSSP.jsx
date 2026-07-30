@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Card, Badge, Tbl } from './AdminShared';
 import { Award, Search, CheckCircle2, AlertCircle, Plus, Trash2, ChevronDown, ChevronUp, FileSpreadsheet, ShieldCheck, Smartphone, Eye, LayoutGrid, CalendarRange, ListTodo, UploadCloud, Edit3, Megaphone, Target, MessageSquare, Image as ImageIcon } from 'lucide-react';
 import { toast } from '../shared/Toast';
@@ -30,7 +30,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
   // -- MISSION POOL (Haftalık Görevler) --
   const [missions, setMissions] = useState([
     { id: 'M1', title: 'LinkedIn Profilini Güncelle', participants: 840, points: 15, status: 'Aktif' },
-    { id: 'M2', title: 'Kariyer Geliştirme Koordinatörlüğüni Ziyaret Et', participants: 320, points: 25, status: 'Aktif' },
+    { id: 'M2', title: 'Kariyer Geliştirme Merkezini Ziyaret Et', participants: 320, points: 25, status: 'Aktif' },
   ]);
   const [missionTitle, setMissionTitle] = useState('');
   const [missionPoints, setMissionPoints] = useState(15);
@@ -173,7 +173,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   <div className="p-3 flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center font-bold text-xs shrink-0">İESÜ</div>
                     <div>
-                      <p className="text-[11px] font-bold leading-tight">Esenyurt Kariyer Geliştirme Koordinatörlüğü</p>
+                      <p className="text-[11px] font-bold leading-tight">Esenyurt Kariyer Geliştirme Merkezi</p>
                       <p className="text-[9px] text-gray-500">Şimdi paylaştı</p>
                     </div>
                   </div>
@@ -550,3 +550,4 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
     </div>
   );
 }
+

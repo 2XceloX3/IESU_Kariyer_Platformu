@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { BookOpen, Users, BarChart3, Download, Plus, CheckCircle, Search, Eye, Trash2, ImagePlus, ChevronDown, ChevronUp, FileText, AlertCircle, Award, Star } from 'lucide-react';
 import PostCard from '../PostCard';
 
@@ -124,6 +124,8 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
       content: form.content,
       imageUrl: form.imageUrl,
       status: 'Yayında',
+      feeType: form.feeType || 'Ücretsiz',
+      isFree: form.feeType === 'Ücretsiz' || form.isFree === true,
       enrolled: 0,
       applicants: 0
     };
@@ -136,7 +138,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
         id: 'sem',
         name: 'Sürekli Eğitim Merkezi',
         avatar: 'https://ui-avatars.com/api/?name=SEM&background=1e3a8a&color=fff',
-        title: 'Kariyer Geliştirme Koordinatörlüğü'
+        title: 'Kariyer Geliştirme Merkezi'
       },
       title: form.title,
       content: form.content,
@@ -152,7 +154,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
     
     setForm({ title: '', content: '', contentType: 'Sertifika Programı', visibility: 'public', imageUrl: '' });
     setShowForm(false);
-    window.toast.success('SEM Programı başarıyla oluşturuldu ve sosyal akışta paylaşıldı!');
+    window.toast.success('Kariyer & Yetenek Akademisi Programı başarıyla oluşturuldu ve akışta paylaşıldı!');
   };
 
   const exportToExcel = (tableId) => {
@@ -198,8 +200,8 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
               <BookOpen size={28} className="text-red-300" />
             </div>
             <div>
-              <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-md">SEM Kontrol Merkezi <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-purple-400 font-black">Pro</span></h2>
-              <p className="text-red-200 text-sm font-medium opacity-90">Sürekli Eğitim Merkezi gelişmiş operasyon ve analitik yönetim portalı.</p>
+              <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-md">Kariyer & Yetenek Akademisi <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-400 font-black">Yönetim Portalı</span></h2>
+              <p className="text-red-200 text-sm font-medium opacity-90">Kariyer Geliştirme Merkezi açık eğitim ve atölye yönetim merkezi.</p>
             </div>
           </div>
           
@@ -216,7 +218,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
             <div className="bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-md hover:bg-white/20 transition-all cursor-default shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div className="flex items-center gap-4 mb-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30"><Users size={22} className="text-white"/></div>
-                <div><p className="text-xs font-bold text-purple-200 uppercase tracking-wider">Toplam Başvuru</p><p className="text-2xl font-black drop-shadow-sm">{activeCourses.reduce((a,b)=>a+b.applicants,0)}</p></div>
+                <div><p className="text-xs font-bold text-purple-200 uppercase tracking-wider">Toplam Başvuru</p><p className="text-2xl font-black drop-shadow-sm">{activeCourses.reduce((a,b)=>a+(b.applicants||0),0)}</p></div>
               </div>
               <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden"><div className="bg-purple-400 h-full w-full rounded-full"></div></div>
             </div>
@@ -224,7 +226,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
             <div className="bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-md hover:bg-white/20 transition-all cursor-default shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <div className="flex items-center gap-4 mb-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30"><CheckCircle size={22} className="text-white"/></div>
-                <div><p className="text-xs font-bold text-emerald-200 uppercase tracking-wider">Kesin Kayıt</p><p className="text-2xl font-black drop-shadow-sm">{activeCourses.reduce((a,b)=>a+b.enrolled,0)}</p></div>
+                <div><p className="text-xs font-bold text-emerald-200 uppercase tracking-wider">Kesin Kayıt</p><p className="text-2xl font-black drop-shadow-sm">{activeCourses.reduce((a,b)=>a+(b.enrolled||0),0)}</p></div>
               </div>
               <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden"><div className="bg-emerald-400 h-full w-2/3 rounded-full"></div></div>
             </div>
@@ -263,7 +265,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
         <div className="space-y-6 animate-fade-in">
           
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-black text-gray-900">SEM Eğitim Havuzu</h3>
+            <h3 className="text-lg font-black text-gray-900">Kariyer & Yetenek Akademisi Program Havuzu</h3>
             <div className="flex gap-2">
               <button onClick={() => exportToExcel('havuz')} className="flex items-center gap-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-4 py-2 rounded-xl text-sm font-bold transition">
                 <Download size={16} /> Excel'e Aktar
@@ -285,13 +287,22 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                       <input type="text" required value={form.title} onChange={e => setForm({...form, title: e.target.value})} placeholder="Örn: İleri Düzey Excel Eğitimi" className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all font-medium text-gray-900" />
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <div>
                         <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">İçerik Türü</label>
                         <select value={form.contentType} onChange={e => setForm({...form, contentType: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none font-medium text-gray-900">
                           <option value="Sertifika Programı">Sertifika Programı</option>
                           <option value="Eğitim">Eğitim</option>
                           <option value="Seminer">Seminer</option>
+                          <option value="Atölye Çalışması">Atölye Çalışması</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Ücret Durumu *</label>
+                        <select value={form.feeType || 'Ücretsiz'} onChange={e => setForm({...form, feeType: e.target.value, isFree: e.target.value === 'Ücretsiz'})} className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none font-bold text-emerald-700">
+                          <option value="Ücretsiz">Ücretsiz</option>
+                          <option value="Ücretli">Ücretli</option>
+                          <option value="Burslu / İndirimli">Burslu / İndirimli</option>
                         </select>
                       </div>
                       <div>
@@ -351,7 +362,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                             author: {
                               name: 'Sürekli Eğitim Merkezi',
                               avatar: 'https://ui-avatars.com/api/?name=SEM&background=1e3a8a&color=fff',
-                              title: 'Kariyer Geliştirme Koordinatörlüğü',
+                              title: 'Kariyer Geliştirme Merkezi',
                             },
                             title: form.title,
                             content: form.content,
@@ -883,3 +894,4 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
     </div>
   );
 }
+

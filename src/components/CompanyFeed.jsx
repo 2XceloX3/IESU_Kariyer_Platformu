@@ -22,6 +22,8 @@ import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
 import FooterModals from './FooterModals';
 
+import JobCreator from './JobCreator';
+
 export default function CompanyFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
   const [footerModal, setFooterModal] = useState(null);
   const posts = useAppStore(state => state.posts);
@@ -43,6 +45,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   const applications = useAppStore(state => state.applications);
   const setApplications = useAppStore(state => state.setApplications);
   const jobs = useAppStore(state => state.jobs);
+  const adminMessages = useAppStore(state => state.adminMessages);
+  const setAdminMessages = useAppStore(state => state.setAdminMessages);
   const academicStaff = useAppStore(state => state.academicStaff);
   const announcements = useAppStore(state => state.announcements);
   const groups = useAppStore(state => state.groups);
@@ -70,6 +74,9 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
   const [showFairModal, setShowFairModal] = useState(false);
   const [fairForm, setFairForm] = useState({});
+  const [isCreatingJob, setIsCreatingJob] = useState(false);
+  const [showAdminMsgModal, setShowAdminMsgModal] = useState(false);
+  const [adminMsgForm, setAdminMsgForm] = useState({ subject: '', email: '', phone: '', message: '' });
 
   const hasApplied = React.useMemo(() => {
     return careerFairApplications?.some(app => app.companyId === currentUser?.id);
@@ -130,15 +137,28 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   };
   const isClubAdmin = getManagedClubs().length > 0;
 
+  if (isCreatingJob) {
+    return (
+      <JobCreator 
+        setView={(view) => {
+          if (view === 'company') setIsCreatingJob(false);
+          else if (setView) setView(view);
+          else setIsCreatingJob(false);
+        }} 
+        currentUser={currentUser} 
+        addNotification={(notif) => {
+          if (setNotifications) setNotifications(prev => [notif, ...(prev || [])]);
+        }} 
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-transparent font-sans">
       {/* Hyper-Modern Navbar (Glassmorphism) */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          {/* LEFT: Star Icon for Post Creation */}
-          <button onClick={() => setActiveTab('create_post')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 ${activeTab === 'create_post' ? 'text-orange-500 bg-orange-50' : 'text-gray-600'}`} title="Gönderi Düzenle/Paylaş">
-            <Star size={24} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
-          </button>
+          <div className="w-10"></div> {/* Left Spacer */}
           
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
             const currentRole = currentUser?.role || userRole;
@@ -197,7 +217,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     <Crown size={14} />
                   </div>
                 </div>
-                <h2 className="text-[16px] font-black text-gray-900 mt-3 leading-tight">Kariyer Geliştirme Koordinatörlüğü</h2>
+                <h2 className="text-[16px] font-black text-gray-900 mt-3 leading-tight">Kariyer Geliştirme Merkezi</h2>
                 <p className="text-[12px] font-bold text-orange-600 mt-1 uppercase tracking-wider">SÜPER YÖNETİCİ</p>
                 
                 <div className="mt-4 flex flex-col gap-2 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
@@ -219,11 +239,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               </div>
             ) : (
               <>
-                <div className="h-20 bg-gradient-to-r from-[#990000] to-purple-900 rounded-xl relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/10"></div>
-                </div>
-                <div className="-mt-10 text-center relative z-10">
-                  <div className="w-20 h-20 rounded-2xl border-4 border-white overflow-hidden bg-white mx-auto shadow-md">
+                <div className="text-center relative z-10 pt-2">
+                  <div className="w-20 h-20 rounded-2xl border-2 border-red-100 overflow-hidden bg-white mx-auto shadow-md">
                     <img src={currentUser?.avatar || currentUser?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Firma')}&background=990000&color=fff`} alt="Company" className="w-full h-full object-contain p-1" />
                   </div>
                   <h2 className="text-[17px] font-black text-gray-900 leading-tight mt-3 mb-1">{currentUser?.name || 'Kurumsal Firma'}</h2>
@@ -231,20 +248,10 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     {currentUser?.sector || 'Sektör Lideri / Resmî Anlaşmalı Firma'}
                   </p>
                   
-                  <div className="grid grid-cols-2 gap-2 border-y border-gray-100 py-3 mb-3">
-                    <div className="text-center">
-                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-wider mb-0.5">Aktif İlanlar</p>
-                      <p className="text-[15px] font-black text-gray-900">4</p>
-                    </div>
-                    <div className="text-center border-l border-gray-100">
-                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-wider mb-0.5">Aday Başvurusu</p>
-                      <p className="text-[15px] font-black text-[#990000]">28</p>
-                    </div>
+                  <div className="mt-2 text-center p-3 bg-red-50/50 rounded-xl border border-red-100">
+                    <p className="text-[11px] font-bold text-[#990000]">Kariyer Geliştirme Merkezi</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">Resmî Kurumsal İletişim Portalı</p>
                   </div>
-
-                  <button onClick={() => setView('jobs')} className="w-full py-2.5 bg-[#990000] text-white hover:bg-red-800 rounded-xl text-[12px] font-black transition-all shadow-sm flex items-center justify-center gap-2">
-                    <Plus size={16} /> Yeni İlan / Staj Yayınla
-                  </button>
                 </div>
               </>
             )}
@@ -273,65 +280,31 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
           
-          {/* STORIES */}
-          
-            {featureCareerFair && careerFairEvent?.isActive && (
-              <div className="bg-gradient-to-r from-red-900 to-[#990000] rounded-xl p-6 sm:p-8 mb-6 text-white shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-6 group">
-                <div className="absolute right-0 top-0 opacity-10 pointer-events-none transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-700">
-                  <Calendar size={180} />
-                </div>
-                <div className="relative z-10">
-                  <span className="bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md mb-3 inline-block animate-pulse">Yaklaşan Etkinlik</span>
-                  <h2 className="text-2xl sm:text-3xl font-black mb-2">{careerFairEvent.title}</h2>
-                  <p className="text-red-100 text-sm mb-2 opacity-90 max-w-lg">{careerFairEvent.description}</p>
-                  <div className="flex items-center gap-4 text-xs font-bold text-red-200">
-                    <span className="flex items-center gap-1.5"><Calendar size={14}/> {careerFairEvent.date}</span>
-                    <span className="flex items-center gap-1.5"><MapPin size={14}/> İESÜ Kampüsü</span>
-                  </div>
-                </div>
-                <div className="relative z-10 shrink-0">
-                  {hasApplied ? (
-                    <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl flex items-center gap-2 border border-white/20">
-                      <CheckCircle2 size={20} className="text-emerald-400" />
-                      <div className="text-left">
-                        <div className="text-sm font-bold text-white leading-none">Başvurunuz Alındı</div>
-                        <div className="text-[10px] text-red-200 mt-1">Yönetici onayı bekleniyor</div>
-                      </div>
-                    </div>
-                  ) : (
-                    <button onClick={() => setShowFairModal(true)} className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 px-8 rounded-2xl transition-all shadow-[0_8px_20px_rgb(249,115,22,0.3)] hover:-translate-y-1 hover:shadow-[0_10px_25px_rgb(249,115,22,0.4)] flex items-center gap-2">
-                      Hemen Başvur <ChevronRight size={18} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <StoriesBar currentUser={currentUser} stories={stories} setStories={setStories} />
-          
-          {/* FEED TABS (LINKEDIN STYLE) */}
+          {/* FEED TABS (Sadece Senin İçin) */}
           <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">
-            <button 
-              onClick={() => setFeedFilter('for_you')} 
-              className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'for_you' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
-            >
+            <div className="pb-3 font-black text-[15px] text-gray-900 relative">
               Senin İçin
-              {feedFilter === 'for_you' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
-            </button>
-            <button 
-              onClick={() => setFeedFilter('following')} 
-              className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'following' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
-            >
-              Ağım
-              {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
-            </button>
+              <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>
+            </div>
           </div>
 
           {/* FEED POSTS */}
           <div className="space-y-6">
             {(() => {
               const allItems = combineFeedItems(posts, events, news, announcements, jobs);
-              const filtered = allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+              // Firma akışında sadece yönetici / Kariyer Geliştirme Merkezi resmi içerikleri gösterilir
+              const adminOnlyItems = allItems.filter(item => {
+                const authorName = typeof item.author === 'string' ? item.author : item.author?.name || item.authorName;
+                const authorRole = item.author?.role;
+                const isOfficial = item.isOfficial || item.type === 'announcement' || item.type === 'news' || item.type === 'event';
+                const isAdmin = authorRole === 'admin' || authorName === 'Kariyer Geliştirme Merkezi' || authorName === 'Kariyer Geliştirme Koordinatörlüğü';
+                return isOfficial || isAdmin;
+              });
+
+              const filtered = adminOnlyItems.filter(post => 
+                (post.content || post.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+                (post.author?.name || post.authorName || '').toLowerCase().includes(searchQuery.toLowerCase())
+              );
               
               if (filtered.length === 0) {
                 return (
@@ -360,58 +333,76 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
         </div>
 
-        {/* RIGHT PANEL: Corporate ATS & Candidate Sourcing Widgets */}
+        {/* RIGHT PANEL: Kurumsal İletişim & Onay Süreci */}
         <div className="hidden lg:block w-[320px] shrink-0 space-y-5">
-          {/* CORPORATE ATS SUMMARY WIDGET */}
+          {/* YÖNETİCİ İLE MUHATAP OLMA BİLGİLENDİRME KARTI */}
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
-                <Briefcase size={16} className="text-[#990000]" /> Kurumsal İlan Havuzu
+                <ShieldCheck size={18} className="text-[#990000]" /> Kurumsal İş Birliği Süreci
               </h3>
-              <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded border border-emerald-100">
-                Aktif
+              <span className="text-[10px] font-black uppercase tracking-wider bg-red-50 text-[#990000] px-2 py-0.5 rounded border border-red-100">
+                Resmî
               </span>
             </div>
             
-            <p className="text-xs text-gray-500 font-medium">
-              Sisteme kayıtlı öğrenciler ve mezunlar için yayınladığınız aktif ilan ve staj pozisyonları.
+            <p className="text-xs text-gray-600 font-medium leading-relaxed">
+              Firmamız tarafından oluşturulan tüm ilan ve staj talepleri <strong>Kariyer Geliştirme Merkezi</strong> yönetici onayına sunulur.
             </p>
 
-            <div className="space-y-2.5 pt-1">
-              {(jobs || []).filter(j => j.companyId === currentUser?.id || j.company === currentUser?.name).slice(0, 3).map((job, idx) => (
-                <div key={job.id || idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between hover:border-red-200 transition">
-                  <div className="min-w-0 pr-2">
-                    <p className="text-xs font-bold text-slate-900 truncate">{job.title || 'İlan Başlığı'}</p>
-                    <p className="text-[10px] font-medium text-slate-500">{job.location || 'İstanbul'} · {job.type || 'Tam Zamanlı'}</p>
-                  </div>
-                  <span className="text-[10px] font-black text-[#990000] bg-red-50 px-2 py-0.5 rounded shrink-0">
-                    {job.applicationsCount || 0} Başvuru
-                  </span>
+            <div className="space-y-3 pt-2">
+              <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-red-100 text-[#990000] flex items-center justify-center text-xs font-black shrink-0 mt-0.5">1</div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Formu Doldurun</p>
+                  <p className="text-[11px] text-slate-500">Pozisyon ve staj detaylarını form ile iletin.</p>
                 </div>
-              ))}
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">2</div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Yönetici Onayı</p>
+                  <p className="text-[11px] text-slate-500">Talebiniz Kariyer Merkezi tarafından incelenir.</p>
+                </div>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black shrink-0 mt-0.5">3</div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">Yayına Alınma</p>
+                  <p className="text-[11px] text-slate-500">Onaylanan ilanlar öğrenci ve mezunlara sunulur.</p>
+                </div>
+              </div>
             </div>
 
             <button 
-              onClick={() => setView('jobs')}
-              className="w-full py-2.5 bg-gray-50 hover:bg-red-50 text-gray-700 hover:text-[#990000] rounded-xl text-xs font-bold transition-colors border border-gray-100 flex items-center justify-center gap-1.5"
+              onClick={() => setIsCreatingJob(true)}
+              className="w-full py-3 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-black transition-all shadow-md flex items-center justify-center gap-2"
             >
-              Tüm İlanları & Adayları Yönet <ChevronRight size={14} />
+              <Plus size={16} /> Yeni İlan Talebi Gönder
             </button>
           </div>
 
-          {/* CANDIDATE SOURCING SHORTCUT */}
+          {/* KURUMSAL DESTEK & İLETİŞİM KARTI */}
           <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-5 shadow-xl text-white space-y-3 relative overflow-hidden border border-red-900">
             <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
             <p className="text-[10px] font-black text-amber-300 uppercase tracking-widest flex items-center gap-1">
-              <ShieldCheck size={12} className="text-emerald-400" /> Resmî Protokol Ağınız
+              <Crown size={12} className="text-amber-300" /> Kariyer Geliştirme Merkezi
             </p>
-            <h3 className="font-black text-base text-white leading-tight">Yetenekli Öğrenci & Mezun CV Arama</h3>
-            <p className="text-xs text-red-100 font-medium">İstanbul Esenyurt Üniversitesi öğrencilerinin ve mezunlarının güncel CV'lerini inceleyin.</p>
+            <h3 className="font-black text-base text-white leading-tight">Yönetici İletişim Hattı</h3>
+            <p className="text-xs text-red-100 font-medium leading-relaxed">Özel protokoller, kurumsal iş birlikleri ve staj kontenjanı süreçleri için Kariyer Merkezi uzmanlarımızla iletişime geçin.</p>
             <button 
-              onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); }} 
+              onClick={() => {
+                setAdminMsgForm({
+                  subject: '',
+                  email: currentUser?.email || '',
+                  phone: currentUser?.phone || '',
+                  message: ''
+                });
+                setShowAdminMsgModal(true);
+              }} 
               className="w-full py-2.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black transition-all shadow-md uppercase tracking-wider flex items-center justify-center gap-2"
             >
-              <Search size={14} /> CV & Yetenek Veritabanında Ara
+              <MessageCircle size={14} /> Yöneticiye Mesaj Gönder
             </button>
           </div>
 
@@ -598,7 +589,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                   } catch (err) {}
                 }
 
-                window.toast?.success?.("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Koordinatörlüğü yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
+                window.toast?.success?.("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
                 setShowMentorshipModal(false);
                 setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
               }} className="p-5 space-y-4">
@@ -631,6 +622,95 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             </div>
           </div>
         )}
+        {/* YÖNETİCİYE MESAJ GÖNDER POPUP FORM MODAL */}
+        {showAdminMsgModal && (
+          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-100 animate-slide-up relative">
+              <div className="bg-gradient-to-r from-[#990000] to-[#7A0000] p-6 text-white relative">
+                <button onClick={() => setShowAdminMsgModal(false)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition text-white"><X size={16}/></button>
+                <Crown size={32} className="mb-2 text-amber-300"/>
+                <h2 className="text-xl font-black">Kariyer Merkezi Yönetici İletişim Formu</h2>
+                <p className="text-red-100 text-xs mt-1">Özel protokoller, iş birliği ve staj talepleriniz doğrudan yönetici havuzuna iletilir.</p>
+              </div>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const newMsg = {
+                  id: 'ADM-MSG-' + Date.now(),
+                  companyName: currentUser?.name || 'Kurumsal Firma',
+                  email: adminMsgForm.email || currentUser?.email || 'Belirtilmedi',
+                  phone: adminMsgForm.phone || 'Belirtilmedi',
+                  subject: adminMsgForm.subject,
+                  message: adminMsgForm.message,
+                  date: new Date().toLocaleString('tr-TR'),
+                  status: 'Beklemede'
+                };
+                if (setAdminMessages) {
+                  setAdminMessages(prev => [newMsg, ...(prev || [])]);
+                }
+                setShowAdminMsgModal(false);
+                window.toast?.success?.("Mesajınız Kariyer Geliştirme Merkezi yöneticilerine iletilmiştir. Sizinle iletişime geçilecektir.");
+              }} className="p-6 space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Kurum / Firma Adı</label>
+                  <input type="text" disabled value={currentUser?.name || 'Kurumsal Firma'} className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50 text-slate-500 font-bold" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Konu Başlığı *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={adminMsgForm.subject} 
+                    onChange={e => setAdminMsgForm({...adminMsgForm, subject: e.target.value})} 
+                    placeholder="Örn: 2026 Mühendislik Staj Kontenjanı Talebi" 
+                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-200 focus:border-[#990000] outline-none" 
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">E-Posta Adresi *</label>
+                    <input 
+                      type="email" 
+                      required 
+                      value={adminMsgForm.email} 
+                      onChange={e => setAdminMsgForm({...adminMsgForm, email: e.target.value})} 
+                      placeholder="kurumsal@sirket.com" 
+                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-200 focus:border-[#990000] outline-none" 
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">İletişim Telefonu *</label>
+                    <input 
+                      type="tel" 
+                      required 
+                      value={adminMsgForm.phone} 
+                      onChange={e => setAdminMsgForm({...adminMsgForm, phone: e.target.value})} 
+                      placeholder="0212 XXX XX XX" 
+                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-200 focus:border-[#990000] outline-none" 
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Mesajınız & İş Birliği Detayı *</label>
+                  <textarea 
+                    required 
+                    rows={4} 
+                    value={adminMsgForm.message} 
+                    onChange={e => setAdminMsgForm({...adminMsgForm, message: e.target.value})} 
+                    placeholder="Talebinizi ve detaylarını açıklayın..." 
+                    className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-200 focus:border-[#990000] outline-none" 
+                  />
+                </div>
+                <div className="pt-2 flex gap-3">
+                  <button type="button" onClick={() => setShowAdminMsgModal(false)} className="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-200 transition">İptal</button>
+                  <button type="submit" className="flex-[2] bg-[#990000] text-white py-2.5 rounded-xl font-black text-sm hover:bg-red-800 transition shadow-md flex items-center justify-center gap-2">
+                    <Send size={16} /> Yöneticiye İlet
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Career Fair Modal Overlay */}
         {showFairModal && (
           <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
@@ -667,34 +747,23 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         )}
       </div>
 
-      {/* FLOATING DOCK (GOOGLE STITCH CORPORATE ATS PROTOCOL) */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[380px]">
-        <div className="bg-white/95 backdrop-blur-2xl border border-slate-200 p-2 rounded-full shadow-2xl flex items-center justify-around px-4">
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'text-[#990000] bg-red-50' : 'text-slate-500 hover:text-slate-900'}`} title="Kurumsal Akış">
-            <Home size={22} strokeWidth={2.5} />
+      {/* FLOATING DOCK (VIBRANT MULTI-COLOR MODERN GLASS THEME) */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[320px]">
+        <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(30,41,59,0.18)] flex items-center justify-around px-4 text-gray-800">
+          
+          {/* HOME - BLUE */}
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'}`} title="Kurumsal Akış">
+            <Home size={22} strokeWidth={2.2} />
           </button>
           
-          <button onClick={() => setView?.('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-500 hover:text-[#990000] hover:bg-red-50" title="İlan & Staj Yönetimi">
-            <Briefcase size={22} strokeWidth={2.5} />
-          </button>
-          
-          {/* CENTER: ATS CANDIDATE SEARCH */}
-          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 rounded-2xl bg-gradient-to-tr from-[#990000] to-purple-900 text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0" title="Yetenek & CV Ara">
-            <Search size={20} strokeWidth={2.5} />
+          {/* CREATE JOB FORM - RED CENTER BUTTON */}
+          <button onClick={() => setIsCreatingJob(true)} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#7A0000] via-[#990000] to-red-600 text-white shadow-lg shadow-red-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50" title="İlan / Staj Talebi Oluştur">
+            <Plus size={24} strokeWidth={2.8} />
           </button>
 
-          <button onClick={() => { setActiveTab('applications'); setView?.('applications'); }} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'applications' ? 'text-purple-600 bg-purple-50' : 'text-slate-500 hover:text-purple-600'}`} title="Gelen Başvurular">
-            <FileText size={22} strokeWidth={2.5} />
-          </button>
-
-          {/* MESSAGES */}
-          <button onClick={() => { setActiveTab('messaging'); setView?.('messaging'); }} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'text-[#990000] bg-red-50' : 'text-slate-500 hover:text-slate-900'}`} title="Mülakat & Mesajlar">
-            <MessageCircle size={22} strokeWidth={2.5} />
-          </button>
-          
           {/* PROFILE AVATAR */}
-          <button onClick={() => { if (setSelectedUserId) setSelectedUserId?.(currentUser?.id || 'CMP-001'); setView?.('user_profile'); }} className="p-1 rounded-full transition-all flex items-center justify-center border-2 border-transparent hover:border-red-200" title="Firma Profilim">
-            <img src={currentUser?.avatar || currentUser?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Firma')}&background=990000&color=fff`} className="w-7 h-7 rounded-full object-cover" alt="User" />
+          <button onClick={() => { if (setSelectedUserId) setSelectedUserId?.(currentUser?.id || 'CMP-001'); setView?.('user_profile'); }} className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-red-400/60 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden" title="Firma Profilim">
+            <img src={currentUser?.avatar || currentUser?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Firma')}&background=990000&color=fff`} className="w-full h-full rounded-full object-cover" alt="User" />
           </button>
         </div>
       </div>
@@ -707,6 +776,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
     </div>
   );
 }
+
 
 
 
