@@ -15,6 +15,7 @@ const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
 const OrganizationChart = lazy(() => import('./components/OrganizationChart'));
 const JobsAndInternships = lazy(() => import('./components/JobsAndInternships'));
 const NewsEvents = lazy(() => import('./components/NewsEvents'));
+const PublicNewsView = lazy(() => import('./components/PublicNewsView'));
 const SemPanel = lazy(() => import('./components/SemPanel'));
 const StajPanel = lazy(() => import('./components/StajPanel'));
 const AlumniFeed = lazy(() => import('./components/AlumniFeed'));
@@ -32,6 +33,7 @@ const ApplicationsPanel = lazy(() => import('./components/ApplicationsPanel'));
 const AICVBuilder = lazy(() => import('./components/AICVBuilder'));
 const InterviewSimulator = lazy(() => import('./components/InterviewSimulator'));
 const PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'));
+const AIAgentCommandCenterWidget = lazy(() => import('./components/AIAgentCommandCenterWidget'));
 const MessagingInterface = lazy(() => import('./components/MessagingInterface'));
 const CalendarView = lazy(() => import('./components/CalendarView'));
 const JobCreator = lazy(() => import('./components/JobCreator'));
@@ -76,15 +78,15 @@ const GlobalAlumniMap = lazy(() => import('./components/GlobalAlumniMap'));
 // Stitch UI Components
 const SKSDBLunchWidget = lazy(() => import('./components/SKSDBLunchWidget'));
 const SKSDBClubsDirectory = lazy(() => import('./components/SKSDBClubsDirectory'));
+import AboutUsPage from './components/AboutUsPage';
+import ServicesPage from './components/ServicesPage';
+import EventsPage from './components/EventsPage';
+import ContactPage from './components/ContactPage';
+import ResearchOSHub from './components/ResearchOSHub';
+import KnowledgePortal from './components/KnowledgePortal';
 const BIDBSystemStatusCard = lazy(() => import('./components/BIDBSystemStatusCard'));
 const BIDBHelpdeskModal = lazy(() => import('./components/BIDBHelpdeskModal'));
 const KariyerJobBoard = lazy(() => import('./components/KariyerJobBoard'));
-const AboutUsPage = lazy(() => import('./components/AboutUsPage'));
-const ServicesPage = lazy(() => import('./components/ServicesPage'));
-const EventsPage = lazy(() => import('./components/EventsPage'));
-const ContactPage = lazy(() => import('./components/ContactPage'));
-const ResearchOSHub = lazy(() => import('./components/ResearchOSHub'));
-const KnowledgePortal = lazy(() => import('./components/KnowledgePortal'));
 const SurveyPopupModal = lazy(() => import('./components/SurveyPopupModal'));
 const MainHeader = lazy(() => import('./components/MainHeader'));
 import GlobalSearchOverlay from './components/GlobalSearchOverlay';
@@ -165,7 +167,7 @@ function App() {
     }
   });
 
-  const view = validViews.includes(viewStr) ? viewStr : (viewStr === '' ? (currentUser ? defaultUserRoleView : 'landing') : 'landing');
+  const view = validViews.includes(viewStr) ? viewStr : (currentUser ? defaultUserRoleView : 'landing');
 
   const setView = useCallback((v) => {
     const nextView = typeof v === 'function' ? v(view) : v;
@@ -175,7 +177,8 @@ function App() {
     if (logAction) {
       logAction(currentUser?.name || 'Ziyaretçi', `Sayfa Değiştirildi -> ${nextView.toUpperCase()}`, "Navigasyon");
     }
-    navigate(nextView === 'landing' ? '/' : '/' + nextView);
+    const targetPath = nextView === 'landing' ? '/' : '/' + nextView;
+    navigate(targetPath, { replace: false });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [view, navigate, setPreviousView, logAction, currentUser]);
 
@@ -183,25 +186,31 @@ function App() {
   const isPWA = typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches;
 
   useEffect(() => {
-    if (view === 'admin') {
-      if (!userRole || userRole !== 'admin') setUserRole('admin');
-      if (!currentUser || currentUser.role !== 'admin') {
-        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' };
-        setCurrentUser(adminUser);
-        localStorage.setItem('igu_mock_user', JSON.stringify(adminUser));
+      // ADMIN GÜVENLİK — Kullanıcıyı otomatik olarak admin'e YÜKSELTME.
+      // /admin görünümü yalnızca gerçek admin rolüne sahip kullanıcılara açıktır.
+      // Rolü pathname/avatar'dan değil, yalnızca currentUser.role'dan alır.
+      // Burada role EZİLMEZ; yetkisiz kullanıcıyı aşağıdaki koruma bloğu (view guard)
+      // kendi portaline yönlendirir.
+      if (view === 'admin' && currentUser && (currentUser.role === 'admin' || userRole === 'admin')) {
+        const currentPath = window.location.pathname.replace(/^\//, '');
+        if (currentPath === 'admin' && currentUser.avatar !== '/iesu-logo.svg') {
+          // Yalnızca gerçek admin için avatar'ı kurumsal logoya normalize et.
+          const normalized = { ...currentUser, avatar: '/iesu-logo.svg' };
+          setCurrentUser(normalized);
+          localStorage.setItem('igu_mock_user', JSON.stringify(normalized));
+        }
       }
-    }
-  }, [view, userRole, currentUser, setUserRole]);
+    }, [view, userRole, currentUser, setCurrentUser]);
 
-  useEffect(() => {
-    if (currentUser && (currentUser.role === 'admin' || currentUser.avatar === '/logo.png' || currentUser.avatar?.includes('logo.png'))) {
-      if (currentUser.avatar !== '/iesu-logo.svg') {
+    useEffect(() => {
+      // Rol için avatar heuristic kullanma (logo.png içeren herkes admin sanılıyordu).
+      // Sadece gerçek admin rolüne sahip kullanıcıların avatarı normalize edilir.
+      if (currentUser && currentUser.role === 'admin' && currentUser.avatar !== '/iesu-logo.svg') {
         const updatedUser = { ...currentUser, avatar: '/iesu-logo.svg' };
         setCurrentUser(updatedUser);
         localStorage.setItem('igu_mock_user', JSON.stringify(updatedUser));
       }
-    }
-  }, [currentUser]);
+    }, [currentUser]);
 
   // Handle PWA installation & user persistence
   useEffect(() => {
@@ -336,13 +345,13 @@ function App() {
         {view === 'company_ats' && <CompanyATSBoard setView={setView} currentUser={currentUser} />}
         {view === 'alumni_assoc_portal' && <AlumniAssocPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} academicRole={academicRole} />}
         {view === 'mezun_dernek' && <BirlikAgiPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole={academicRole} />}
-        {view === 'admin' && <AdminDashboard 
-          setView={setView} 
-          currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' }} 
-          setSelectedUserId={setSelectedUserId}
-          userRole={userRole || 'admin'} 
-          academicRole={academicRole || 'super_admin'}
-        />}
+        {(view === 'admin' && (currentUser?.role === 'admin' || userRole === 'admin')) && <AdminDashboard 
+                  setView={setView} 
+                  currentUser={currentUser} 
+                  setSelectedUserId={setSelectedUserId}
+                  userRole="admin" 
+                  academicRole={academicRole === 'super_admin' ? 'super_admin' : 'standard_academic'}
+                />}
         {view === 'organization' && <OrganizationChart setView={setView} userRole={userRole} />}
         {view === 'jobs' && <JobsAndInternships setView={setView} previousView={previousView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} />}
         {view === 'sem' && <SemPanel setView={setView} userRole={userRole} />}
@@ -370,7 +379,7 @@ function App() {
           userRole={userRole} 
         />}
         {(view === 'haberler' || view === 'duyurular' || view === 'etkinlikler' || view === 'events' || view === 'news') && (
-          <NewsEvents setView={setView} category={view} currentUser={currentUser} userRole={userRole} />
+          <PublicNewsView setView={setView} currentUser={currentUser} userRole={userRole} />
         )}
         {view === 'bmi_calculator' && (
           <div className="min-h-screen bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
@@ -389,7 +398,7 @@ function App() {
           </div>
         )}
         {view === 'user_profile' && <UserProfile 
-          userId={selectedUserId} 
+          userId={selectedUserId || currentUser?.id} 
           setView={setView} 
           setSelectedUserId={setSelectedUserId}
           previousView={previousView}
