@@ -7,6 +7,43 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
   const [mediaType, setMediaType] = useState(null); // 'image', 'video', 'pdf'
   const [isFocused, setIsFocused] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Etkinlik oluşturma (PostComposer içi inline form)
+  const [eventMode, setEventMode] = useState(false);
+  const [evTitle, setEvTitle] = useState('');
+  const [evDate, setEvDate] = useState('');
+  const [evLocation, setEvLocation] = useState('');
+  const [evDesc, setEvDesc] = useState('');
+
+  const publishEvent = () => {
+    const title = evTitle.trim();
+    if (!title) { window.toast?.info('Etkinlik başlığı gerekli'); return; }
+    const newPost = {
+      id: 'EVNT-' + Date.now(),
+      author: asClub ? {
+        id: asClub.id, name: asClub.name, avatar: asClub.logo, title: 'Öğrenci Kulübü', role: 'club'
+      } : {
+        name: currentUser?.name || 'Kullanıcı',
+        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=0A2342&color=fff`,
+        title: currentUser?.title || currentUser?.department || 'Öğrenci',
+        role: userRole || currentUser?.role || undefined
+      },
+      content: content.trim() || `📅 ${title}`,
+            eventPost: true,
+      eventTitle: title,
+      eventDate: evDate.trim(),
+      eventLocation: evLocation.trim(),
+      eventDesc: evDesc.trim(),
+      image: mediaType === 'image' ? media : null,
+      time: 'Az önce',
+      likes: 0,
+      comments: 0,
+      status: 'Beklemede'
+    };
+    setPosts([newPost, ...(posts || [])]);
+    setEventMode(false); setEvTitle(''); setEvDate(''); setEvLocation(''); setEvDesc('');
+    setMedia(null); setMediaType(null);
+    window.toast.success("Etkinlik paylaşıldı!");
+  };
 
   const handleFileUpload = (e, type) => {
     const file = e.target.files[0];
@@ -113,15 +150,30 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         </div>
 
         {/* BOTTOM TOOLBAR (LINKEDIN STYLE) */}
+        {eventMode && (
+          <div className="mt-3 rounded-xl border border-orange-200 bg-orange-50/60 p-3 space-y-2">
+            <p className="text-[12px] font-extrabold text-orange-700 tracking-wide">📅 Etkinlik Oluştur</p>
+            <input value={evTitle} onChange={(e) => setEvTitle(e.target.value)} placeholder="Etkinlik başlığı *" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input value={evDate} onChange={(e) => setEvDate(e.target.value)} placeholder="Tarih (örn. 15 Mayıs 2026)" className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
+              <input value={evLocation} onChange={(e) => setEvLocation(e.target.value)} placeholder="Yer" className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
+            </div>
+            <textarea value={evDesc} onChange={(e) => setEvDesc(e.target.value)} placeholder="Açıklama (opsiyonel)" rows={2} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400 resize-none" />
+            <div className="flex justify-end gap-2 pt-1">
+              <button type="button" onClick={() => setEventMode(false)} className="px-4 py-1.5 rounded-full text-[13px] font-semibold text-gray-500 hover:bg-gray-100 transition">İptal</button>
+              <button type="button" onClick={publishEvent} className="px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-[13px] font-semibold transition">Yayınla</button>
+            </div>
+          </div>
+        )}
         <div className={`flex flex-col sm:flex-row items-center justify-between mt-3 transition-all duration-300`}>
           <div className="flex items-center justify-between w-full sm:w-auto px-1">
             <label className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md cursor-pointer transition-colors font-semibold text-[14px]">
               <ImageIcon size={20} className="text-red-500" /> <span className="hidden sm:inline">Medya</span>
               <input type="file" accept="image/*,video/*" className="sr-only" onChange={(e) => handleFileUpload(e, e.target.files[0]?.type?.includes('video') ? 'video' : 'image')} disabled={isSubmitting} />
             </label>
-            <button type="button" onClick={() => { setIsFocused(true); window.toast?.info('Yakında!'); }} className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md transition-colors font-semibold text-[14px]">
-              <Calendar size={20} className="text-orange-500" /> <span className="hidden sm:inline">Etkinlik</span>
-            </button>
+            <button type="button" onClick={() => setEventMode((v) => !v)} className="flex items-center gap-2 px-3 py-3 text-gray-500 hover:bg-gray-100 rounded-md transition-colors font-semibold text-[14px]">
+                          <Calendar size={20} className={eventMode ? 'text-red-600' : 'text-orange-500'} /> <span className="hidden sm:inline">Etkinlik</span>
+                        </button>
           </div>
           
           <div className={`flex gap-2 shrink-0 transition-opacity duration-200 ${isFocused ? 'opacity-100 mt-3 sm:mt-0 w-full sm:w-auto justify-end' : 'opacity-0 hidden'}`}>

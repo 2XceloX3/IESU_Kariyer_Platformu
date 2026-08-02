@@ -3,6 +3,7 @@ import { Building2, Calendar, Users, Briefcase, ExternalLink, ShieldCheck, Chevr
 
 export default function CareerNetwork({ companies = [], academicStaff = [], setView, setSelectedUserId, currentUser }) {
   const [activeModal, setActiveModal] = useState(null); // 'companies', 'participants', 'internships'
+  const [showAllAcademics, setShowAllAcademics] = useState(false);
   const [modalSearch, setModalSearch] = useState('');
 
   // Sadece onaylı gerçek firmalar (demolar hariç)
@@ -106,7 +107,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
       <div className="flex flex-col gap-4 mt-2">
         <div className="flex items-center justify-between px-1">
           <h3 className="font-black text-gray-900 text-sm">Akademik Kadro ({networkAcademics.length})</h3>
-          {networkAcademics.length > 0 && <button className="text-xs font-bold text-[#990000] hover:underline">Tümünü Gör</button>}
+          {networkAcademics.length > 0 && <button onClick={() => setShowAllAcademics((v) => !v)} className="text-xs font-bold text-[#990000] hover:underline cursor-pointer">{showAllAcademics ? 'Daralt' : 'Tümünü Gör'}</button>}
         </div>
 
         {networkAcademics.length === 0 ? (
@@ -118,7 +119,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
           </div>
         ) : (
           <div className="space-y-3">
-            {networkAcademics.slice(0, 5).map(academic => (
+            {networkAcademics.slice(0, showAllAcademics ? networkAcademics.length : 5).map(academic => (
               <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={academic.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:border-red-100 transition-all group cursor-pointer" onClick={() => {
                 if (setSelectedUserId) setSelectedUserId(academic.id);
                 if (setView) setView('user_profile');

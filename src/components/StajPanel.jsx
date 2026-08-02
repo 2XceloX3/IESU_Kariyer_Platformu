@@ -1,4 +1,5 @@
 ﻿import React, { useState } from 'react';
+import { downloadReportPdf } from '../utils/downloadPdf';
 import { FileText, CheckCircle, Clock, Download, Briefcase, FileSignature, ArrowRight, ShieldCheck, HelpCircle, LogIn, Search } from 'lucide-react';
 import Logo from './Logo';
 import SubPanelFooter from './SubPanelFooter';
@@ -250,9 +251,9 @@ export default function StajPanel({ setView, userRole }) {
                       >
                         <ShieldCheck size={15} /> AI Ön Kontrol
                       </button>
-                      <button className="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:border-[#990000] hover:text-[#990000] transition cursor-pointer shadow-sm">
-                        Boş İndir
-                      </button>
+                      <button onClick={(e) => { e.preventDefault(); downloadReportPdf('staj-basvuru-formu', 'Staj Başvuru Formu', ['İESÜ Kariyer Platformu', '', 'STAJ BAŞVURU FORMU', '', 'Ad Soyad: .................................................', 'Öğrenci No: ...................................', 'Bölüm: ..............................................', 'Sınıf: .................................................', '', 'Staj Türü: (  ) Zorunlu   (  ) Gönüllü', 'Kurum Adı: .........................................', 'Kurum Yetkilisi: .................................', 'Staj Süresi: .........................................', 'Başlangıç Tarihi: ..................................', 'Bitiş Tarihi: .......................................', 'Arama/Fakülte Onayı: ..............................', 'İmza ve Tarih: .......................................', '', 'Bu formu doldurup kuruma ilettikten sonra', 'AI Ön Kontrol ile belgenizi doğrulayabilirsiniz.']); }} className="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:border-[#990000] hover:text-[#990000] transition cursor-pointer shadow-sm">
+                                              Boş İndir
+                                            </button>
                     </div>
                   </div>
                 ))}

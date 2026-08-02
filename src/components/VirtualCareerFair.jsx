@@ -57,6 +57,7 @@ const MOCK_COMPANIES = [
 
 export default function VirtualCareerFair({ setView, currentUser, userRole, setSelectedUserId }) {
   const [activeTab, setActiveTab] = useState('booths'); // booths, sessions, appointments
+  const [myAppointments, setMyAppointments] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompany, setSelectedCompany] = useState(null);
 
@@ -253,18 +254,46 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
         )}
 
         {/* Randevularım Mock */}
-        {activeTab === 'appointments' && (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
-            <CalendarIcon size={48} className="text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Henüz Randevunuz Yok</h3>
-            <p className="text-gray-500 max-w-md mx-auto mb-6">
-              Firma stantlarını ziyaret ederek İK temsilcileriyle birebir ön görüşme veya mülakat randevusu oluşturabilirsiniz.
-            </p>
-            <button onClick={() => setActiveTab('booths')} className="px-6 py-2.5 bg-[#0A66C2] text-white rounded-xl font-bold text-sm">
-              Firma Stantlarına Git
-            </button>
-          </div>
-        )}
+                {activeTab === 'appointments' && (
+                  myAppointments.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+                    <CalendarIcon size={48} className="text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Henüz Randevunuz Yok</h3>
+                    <p className="text-gray-500 max-w-md mx-auto mb-6">
+                      Firma stantlarını ziyaret ederek İK temsilcileriyle birebir ön görüşme veya mülakat randevusu oluşturabilirsiniz.
+                    </p>
+                    <button onClick={() => setActiveTab('booths')} className="px-6 py-2.5 bg-[#0A66C2] text-white rounded-xl font-bold text-sm cursor-pointer">
+                      Firma Stantlarına Git
+                    </button>
+                  </div>
+                  ) : (
+                  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+                    <div className="flex items-center gap-3 mb-5">
+                      <CalendarIcon size={22} className="text-[#0A66C2]" />
+                      <div>
+                        <h3 className="text-lg font-black text-gray-900">Randevularım</h3>
+                        <p className="text-xs text-gray-500 font-medium">Onaylanan birebir görüşme ve mülakat randevularınız.</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      {myAppointments.map((a) => (
+                        <div key={a.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-[#0A66C2] text-white flex items-center justify-center font-black text-sm">VC</div>
+                            <div>
+                              <p className="font-bold text-gray-900 text-sm">{a.company}</p>
+                              <p className="text-xs text-gray-500 font-medium">Birebir Görüşme · {a.date} · {a.time}</p>
+                            </div>
+                          </div>
+                          <span className="text-[11px] font-black px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            ✓ {a.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  )
+                )}
 
       </main>
 
@@ -302,14 +331,25 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
 
                 {/* Actions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button className="flex items-center justify-center gap-2 p-4 border-2 border-[#0A66C2] bg-[#0A66C2] text-white rounded-xl font-bold hover:bg-red-700 transition">
-                    <CalendarClock size={20} /> 
-                    Birebir Görüşme Randevusu Al
-                  </button>
-                  <button className="flex items-center justify-center gap-2 p-4 border-2 border-gray-200 bg-white text-gray-700 rounded-xl font-bold hover:border-gray-300 hover:bg-gray-50 transition">
-                    <MessageSquare size={20} />
-                    İK Temsilcisine Mesaj Gönder
-                  </button>
+                  <button 
+                                      onClick={() => {
+                                        const slot = { id: Date.now(), company: selectedCompany?.name, date: 'Yaklaşan Fuvar Günü', time: '14:30', status: 'Onaylandı' };
+                                        setMyAppointments(prev => [...prev, slot]);
+                                        setSelectedCompany(null);
+                                        setActiveTab('appointments');
+                                        window.toast && window.toast.success(`"${selectedCompany?.name}" İK temsilcisiyle randevunuz oluşturuldu.`);
+                                      }}
+                                      className="flex items-center justify-center gap-2 p-4 border-2 border-[#0A66C2] bg-[#0A66C2] text-white rounded-xl font-bold hover:bg-red-700 transition cursor-pointer"
+                                    >
+                                      <CalendarClock size={20} /> 
+                                      Birebir Görüşme Randevusu Al
+                                    </button>
+                                    <button onClick={() => {
+                                      if (selectedCompany) window.toast && window.toast.success(`Mesajınız "${selectedCompany.name}" İK temsilcisine iletildi.`);
+                                    }} className="flex items-center justify-center gap-2 p-4 border-2 border-gray-200 bg-white text-gray-700 rounded-xl font-bold hover:border-gray-300 hover:bg-gray-50 transition cursor-pointer">
+                                      <MessageSquare size={20} />
+                                      İK Temsilcisine Mesaj Gönder
+                                    </button>
                 </div>
 
                 {/* Openings */}

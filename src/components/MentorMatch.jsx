@@ -71,11 +71,15 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
   });
 
   const handleRequest = (mentorId) => {
-    setRequestedMentors([...requestedMentors, mentorId]);
-    window.toast && window.toast.success("Mentorluk talebiniz başarıyla iletildi.");
-  };
+      setRequestedMentors([...requestedMentors, mentorId]);
+      window.toast && window.toast.success("Mentorluk talebi iletildi.");
+    };
+    const cancelRequest = (mentorId) => {
+      setRequestedMentors(requestedMentors.filter(id => id !== mentorId));
+      window.toast && window.toast.info("Talep iptal edildi. Dilerseniz yeniden gönderebilirsiniz.");
+          };
 
-  return (
+        return (
     <div className="min-h-screen bg-[#f3f2ef] flex flex-col font-sans">
       {/* Header */}
       <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
@@ -192,10 +196,13 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                 {/* Actions */}
                 <div className="mt-auto border-t border-gray-100 pt-4 flex gap-3">
                   {requestedMentors.includes(mentor.id) ? (
-                    <button disabled className="w-full py-2 bg-gray-100 text-gray-500 font-bold rounded-md text-sm flex items-center justify-center gap-2 cursor-not-allowed">
-                      <CheckCircle2 size={16} /> Talep İletildi
-                    </button>
-                  ) : (
+                                      <div className="w-full flex items-center gap-2">
+                                        <span className="flex-1 py-2 bg-gray-100 text-gray-500 font-bold rounded-md text-sm flex items-center justify-center gap-2">
+                                          <CheckCircle2 size={16} /> Talep İletildi
+                                        </span>
+                                        <button onClick={() => cancelRequest(mentor.id)} className="py-2 px-3 bg-white border border-red-200 text-red-700 hover:bg-red-50 font-bold rounded-md text-sm transition-colors">İptal</button>
+                                      </div>
+                                    ) : (
                     <button 
                       onClick={() => handleRequest(mentor.id)}
                       className="w-full py-2 bg-[#0A66C2] hover:bg-red-800 text-white font-bold rounded-md text-sm transition-colors flex items-center justify-center gap-2"

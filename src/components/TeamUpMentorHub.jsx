@@ -45,6 +45,41 @@ const mockMentors = [
 
 export default function TeamUpMentorHub({ currentUser }) {
   const [activeTab, setActiveTab] = useState('teams'); // 'teams' or 'mentors'
+  const [teams, setTeams] = useState(mockTeams);
+  const [mentors, setMentors] = useState(mockMentors);
+  const [likedTeams, setLikedTeams] = useState(new Set());
+  const [joinReq, setJoinReq] = useState(new Set());
+  const [mentorReq, setMentorReq] = useState(new Set());
+  const [questMark, setQuestMark] = useState(new Set());
+  const [qText, setQText] = useState({});
+  const [qInput, setQInput] = useState(null);
+  const [showPost, setShowPost] = useState(false);
+  const [postTitle, setPostTitle] = useState('');
+  const [postRole, setPostRole] = useState('');
+  const [postDesc, setPostDesc] = useState('');
+
+  const toggleLike = (id) => setLikedTeams((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const sendQuestion = (id) => {
+    const txt = (qText[id] || '').trim();
+    if (!txt) { window.toast?.info('Soru yaz'); return; }
+    setQText((s) => ({ ...s, [id]: '' })); setQInput(null);
+    window.toast.success('Soru gönderildi — kullanıcı en kısa sürede yanıtlar.');
+  };
+  const publishTeam = () => {
+    if (!postTitle.trim()) { window.toast?.info('İlan başlığı gerekli'); return; }
+    const t = {
+      id: Date.now(),
+      title: postTitle.trim(),
+      role: postRole.trim() || 'Takım Arkadaşı Aranıyor',
+      author: { name: currentUser?.name || 'Kullanıcı', avatar: currentUser?.avatar || '/iesu-logo.svg', department: currentUser?.department || '' },
+      description: postDesc.trim() || 'Açıklama eklenmedi.',
+      tags: [],
+      time: 'Az önce'
+    };
+    setTeams([t, ...teams]);
+    setShowPost(false); setPostTitle(''); setPostRole(''); setPostDesc('');
+    window.toast.success('İlanınız yayınlandı!');
+  };
 
   return (
     <div className="w-full shrink-0 animate-fade-in mb-6">
@@ -78,11 +113,23 @@ export default function TeamUpMentorHub({ currentUser }) {
         <div className="space-y-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-bold text-gray-800">Aktif Takım Arayışları</h3>
-            <button className="text-sm font-bold text-white bg-red-600 hover:bg-indigo-700 px-4 py-2 rounded-xl transition-all shadow-sm">
-              İlan Ver
-            </button>
-          </div>
-          {mockTeams.map(team => (
+                        <button onClick={() => setShowPost((v) => !v)} className="text-sm font-bold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl transition-all shadow-sm">
+                          {showPost ? 'Kapat' : 'İlan Ver'}
+                        </button>
+                      </div>
+                      {showPost && (
+                        <div className="bg-white border border-red-100 rounded-2xl p-4 mb-4 space-y-2 shadow-sm">
+                          <p className="text-[12px] font-extrabold text-red-700">Yeni Takım İlanı</p>
+                          <input value={postTitle} onChange={(e) => setPostTitle(e.target.value)} placeholder="Proje / takım başlığı *" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-red-400" />
+                          <input value={postRole} onChange={(e) => setPostRole(e.target.value)} placeholder="Aranan rol (örn. Frontend Dev)" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-red-400" />
+                          <textarea value={postDesc} onChange={(e) => setPostDesc(e.target.value)} placeholder="Proje hakkında kısa açıklama" rows={2} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-red-400 resize-none" />
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => setShowPost(false)} className="px-4 py-1.5 rounded-full text-[13px] font-semibold text-gray-500 hover:bg-gray-100">İptal</button>
+                            <button onClick={publishTeam} className="px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-[13px] font-semibold">Yayınla</button>
+                          </div>
+                        </div>
+                      )}
+                      {teams.map(team => (
             <div key={team.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow group">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
@@ -105,9 +152,9 @@ export default function TeamUpMentorHub({ currentUser }) {
               </div>
               <div className="flex items-center justify-between border-t border-gray-50 pt-4 mt-2 flex-wrap gap-2">
                 <div className="flex gap-4">
-                  <button className="text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"><Heart size={16} /> Beğen</button>
-                  <button className="text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"><MessageCircle size={16} /> Sor</button>
-                </div>
+                                  <button onClick={() => toggleLike(team.id)} className={`${likedTeams.has(team.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500'} transition-colors flex items-center gap-1 text-sm font-medium`}><Heart size={16} className={likedTeams.has(team.id) ? 'fill-red-500' : ''} /> {likedTeams.has(team.id) ? 'Beğenildi' : 'Beğen'}</button>
+                                  <button onClick={() => setQInput(qInput === team.id ? null : team.id)} className="text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"><MessageCircle size={16} /> Sor</button>
+                                </div>
                 <div className="flex items-center gap-2">
                   <button 
                     onClick={(e) => {
@@ -121,15 +168,24 @@ export default function TeamUpMentorHub({ currentUser }) {
                   >
                     <Star size={14} /> AI Uyumluluk
                   </button>
-                  <button className="text-red-600 hover:text-indigo-700 font-bold text-sm flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition-colors">
-                    Takıma Katıl <ArrowRight size={16} />
-                  </button>
+                  <button 
+                                    onClick={(e) => { e.preventDefault(); setJoinReq((s) => new Set(s).add(team.id)); window.toast.success(`"${team.title}" için katılım talebiniz iletildi.`); }}
+                                    className={`${joinReq.has(team.id) ? 'bg-emerald-600 text-white' : 'text-red-600 hover:bg-red-100 bg-indigo-50'} font-bold text-sm flex items-center gap-1 px-4 py-2 rounded-xl transition-colors`}
+                                  >
+                                    {joinReq.has(team.id) ? '✓ Talebiniz Alındı' : 'Takıma Katıl'} <ArrowRight size={16} />
+                                  </button>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                              </div>
+                              {qInput === team.id && (
+                                <div className="mt-3 flex gap-2 border-t border-gray-50 pt-3">
+                                  <input value={qText[team.id] || ''} onChange={(e) => setQText((s) => ({ ...s, [team.id]: e.target.value }))} onKeyDown={(e) => { if (e.key === 'Enter') sendQuestion(team.id); }} placeholder="Takım üyesine sorunuz..." className="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-[13px] outline-none focus:border-red-400" />
+                                  <button onClick={() => sendQuestion(team.id)} className="px-4 py-2 rounded-xl bg-red-600 text-white text-[13px] font-bold hover:bg-red-700">Gönder</button>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
       {activeTab === 'mentors' && (
         <div className="space-y-4">
@@ -141,7 +197,7 @@ export default function TeamUpMentorHub({ currentUser }) {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {mockMentors.map(mentor => (
+            {mentors.map(mentor => (
               <div key={mentor.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:border-emerald-200 hover:shadow-md transition-all">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="relative shrink-0">
@@ -159,9 +215,9 @@ export default function TeamUpMentorHub({ currentUser }) {
                     <span key={i} className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">{exp}</span>
                   ))}
                 </div>
-                <button className="w-full text-center py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold text-sm rounded-xl transition-colors">
-                  Mentorluk Talep Et
-                </button>
+                <button onClick={() => { setMentorReq((s) => new Set(s).add(mentor.id)); window.toast.success(`"${mentor.name}" için mentorluk talebi iletildi.`); }} className={`w-full text-center py-2.5 ${mentorReq.has(mentor.id) ? 'bg-emerald-600' : 'bg-gray-900 hover:bg-gray-800'} text-white font-bold text-sm rounded-xl transition-colors`}>
+                                  {mentorReq.has(mentor.id) ? '✓ Talep İletildi' : 'Mentorluk Talep Et'}
+                                </button>
               </div>
             ))}
           </div>

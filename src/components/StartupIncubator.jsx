@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { downloadReportPdf } from '../utils/downloadPdf';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Rocket, Target, Zap, ChevronLeft, Building2, Brain, CheckCircle, Flame, PieChart, Users, ArrowRight, Lightbulb, LineChart } from 'lucide-react';
 import Logo from './Logo';
@@ -207,7 +208,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                   <h4 className="font-black text-gray-900 flex items-center gap-2"><PieChart size={18} className="text-[#0A66C2]"/> Yalın Kanvas (Lean Canvas) İş Modeli</h4>
-                  <button className="text-sm font-bold text-[#0A66C2] hover:underline">PDF İndir</button>
+                  <button onClick={() => downloadReportPdf('lean-canvas', 'Lean Canvas Iş Modeli', [`Proje: ${canvas.name}`, '', 'Yatırımcı Geri Bildirimi:', canvas.feedback, '', 'İESÜ Kariyer Platformu - Startup Incubator'])} className="text-sm font-bold text-[#0A66C2] hover:underline cursor-pointer">PDF İndir</button>
                 </div>
                 
                 <div className="p-1">

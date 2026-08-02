@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { downloadReportPdf } from '../utils/downloadPdf';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FolderGit2, FileCheck2, ChevronLeft, ExternalLink, Award, Sparkles, 
@@ -213,9 +214,9 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     Tüm sertifikaların Esenyurt Ağı üzerinde kriptografik olarak imzalanmış ve doğrulanmıştır. İşverenler QR kod ile anında teyit edebilir.
                   </p>
                 </div>
-                <button className="bg-white text-red-950 px-6 py-3 rounded-xl font-black shrink-0 hover:bg-slate-100 transition shadow-lg text-xs uppercase tracking-widest">
-                  Sertifika Ağını Gör
-                </button>
+                <button onClick={() => downloadReportPdf('sertifika-agi-raporu', 'Blockchain Sertifika Ağı Raporu', ['Esenyurt Üniversitesi - Dijital Sertifika Ağı', '', 'Doğrulama: Kriptografik olarak imzalanmış', 'İşverenler QR kod ile anında teyit edebilir.', 'Durum: Aktif ve doğrulanabilir', '', 'Portföydeki Projeler:', ...(projectsList || []).map((p) => '- ' + (p.name || p.title || 'Proje'))])} className="bg-white text-red-950 px-6 py-3 rounded-xl font-black shrink-0 hover:bg-slate-100 transition shadow-lg text-xs uppercase tracking-widest cursor-pointer">
+                                  Sertifika Ağını Gör
+                                </button>
               </div>
             </motion.div>
           )}

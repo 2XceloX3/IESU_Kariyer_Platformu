@@ -44,9 +44,22 @@ export default function ClubsDirectory({
       time: '5 saat önce',
       content: 'Bahar dönemi Hackathon kayıtları açıldı! Ekibini kur, projeni geliştir ve büyük ödülü kazan. Kayıt linki profilde. 💻✨',
       likes: 128,
-      comments: 34
-    }
-  ];
+            comments: 34
+          }
+        ];
+
+        // Canlı etkileşim (feed beğeni/yorum/paylaş)
+        const [postLikes, setPostLikes] = useState(() => { const o = {}; feedPosts.forEach(p => o[p.id] = p.likes || 0); return o; });
+        const [postComments, setPostComments] = useState(() => { const o = {}; feedPosts.forEach(p => o[p.id] = p.comments || 0); return o; });
+        const [likedPosts, setLikedPosts] = useState(new Set());
+        const togglePostLike = (id) => {
+          setLikedPosts((s) => {
+            const ns = new Set(s);
+            if (ns.has(id)) { ns.delete(id); setPostLikes((o) => ({ ...o, [id]: (o[id] || 0) - 1 })); }
+            else { ns.add(id); setPostLikes((o) => ({ ...o, [id]: (o[id] || 0) + 1 })); }
+            return ns;
+          });
+        };
 
   // Mock Missions (Görev Havuzu)
   const missions = [
@@ -259,15 +272,15 @@ export default function ClubsDirectory({
               )}
 
               <div className="p-3 border-t border-slate-100 flex items-center justify-between px-6">
-                <button className="flex items-center gap-1.5 text-slate-500 hover:text-rose-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-rose-50">
-                  <Heart size={18} /> {post.likes}
-                </button>
-                <button className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
-                  <MessageCircle size={18} /> {post.comments}
-                </button>
-                <button className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-emerald-50">
-                  <Share2 size={18} /> Paylaş
-                </button>
+                <button onClick={() => togglePostLike(post.id)} className={`flex items-center gap-1.5 ${likedPosts.has(post.id) ? 'text-rose-500' : 'text-slate-500 hover:text-rose-500'} transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-rose-50`}>
+                                  <Heart size={18} className={likedPosts.has(post.id) ? 'fill-rose-500' : ''} /> {postLikes[post.id] || 0}
+                                </button>
+                                <button onClick={() => { setPostComments((o) => ({ ...o, [post.id]: (o[post.id] || 0) + 1 })); toast.success('Yorum paylaşıldı.'); }} className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
+                                  <MessageCircle size={18} /> {postComments[post.id] || 0}
+                                </button>
+                                <button onClick={() => toast.success('Gönderi paylaşım bağlantısı kopyalandı.')} className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-emerald-50">
+                                  <Share2 size={18} /> Paylaş
+                                </button>
               </div>
             </div>
           ))}
