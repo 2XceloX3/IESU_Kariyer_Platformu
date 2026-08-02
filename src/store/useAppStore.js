@@ -241,6 +241,25 @@ const useAppStore = create(
         voluntaryInternships: initialVoluntaryInternships,
         setVoluntaryInternships: setter('voluntaryInternships'),
 
+        // --- Eksik slice'lar (UI crash koruması) ---
+        // Aşağıdakiler birçok bileşen/store'da okunuyor ya da set ediliyordu ama store'da yoktu
+        // → options undefined => iken değerler undefined kalıyor, setter çağrıları TypeError atıyordu.
+        applications: [],
+        setApplications: setter('applications'),
+
+        // UI featuredOpportunities adını kullanıyor (featuredItems değil)
+        featuredOpportunities: initialFeatured,
+        setFeaturedOpportunities: setter('featuredOpportunities'),
+
+        alumniCardApplications: [],
+        setAlumniCardApplications: setter('alumniCardApplications'),
+
+        alumniCardForms: [],
+        setAlumniCardForms: setter('alumniCardForms'),
+
+        featureSSPLeaderboard: false,
+        setFeatureSSPLeaderboard: setter('featureSSPLeaderboard'),
+
         mentorships: initialMentorships,
         setMentorships: setter('mentorships'),
 
@@ -366,7 +385,8 @@ const useAppStore = create(
         setFeatureCareerCheckup: setter('featureCareerCheckup'),
         featureAlumniCard: false,
         setFeatureAlumniCard: setter('featureAlumniCard'),
-        featureAlumniAssocToggle: false,
+        // duplicate key: 265'te true tanımlıydı, 369'da false aşıyordu → tutarlı hale: true
+        featureAlumniAssocToggle: true,
         setFeatureAlumniAssocToggle: setter('featureAlumniAssocToggle'),
         featureClubsShowcase: true,
         setFeatureClubsShowcase: setter('featureClubsShowcase'),
@@ -562,6 +582,9 @@ const useAppStore = create(
         newsletterSubscribers: state.newsletterSubscribers,
         staffList: state.staffList,
         adminMessages: state.adminMessages,
+        applications: state.applications,
+        alumniCardApplications: state.alumniCardApplications,
+        alumniCardForms: state.alumniCardForms,
         alumniAssocApplications: state.alumniAssocApplications,
         alumniAssocBoard: state.alumniAssocBoard,
         institutionalStatsData: state.institutionalStatsData,
