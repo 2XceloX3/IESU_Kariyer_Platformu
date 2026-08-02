@@ -345,6 +345,7 @@ function App() {
         {view === 'company_ats' && <CompanyATSBoard setView={setView} currentUser={currentUser} />}
         {view === 'alumni_assoc_portal' && <AlumniAssocPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} academicRole={academicRole} />}
         {view === 'mezun_dernek' && <BirlikAgiPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole={academicRole} />}
+        {view === 'birlik_agi' && <BirlikAgiPortal setView={setView} currentUser={currentUser} userRole={userRole} setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole={academicRole} />}
         {(view === 'admin' && (currentUser?.role === 'admin' || userRole === 'admin')) && <AdminDashboard 
                   setView={setView} 
                   currentUser={currentUser} 
@@ -463,6 +464,7 @@ function App() {
         {view === 'hackathon_market' && <HackathonMarket currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'alumni_dao' && <AlumniDAO currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'campus_map' && <CampusMap currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
+        {view === 'global_map' && <GlobalAlumniMap currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {view === 'anka_chat' && <AnkaChat currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
         {/* Stitch UI View Pages */}
         {view === 'sksdb_lunch' && <SKSDBLunchWidget currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />}
