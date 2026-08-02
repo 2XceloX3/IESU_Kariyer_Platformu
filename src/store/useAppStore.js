@@ -260,6 +260,10 @@ const useAppStore = create(
         featureSSPLeaderboard: false,
         setFeatureSSPLeaderboard: setter('featureSSPLeaderboard'),
 
+        // CMSDataPoolExport tarafından okunuyordu (guard'lı ama tanımsızdı)
+        eventRegistrations: [],
+        setEventRegistrations: setter('eventRegistrations'),
+
         mentorships: initialMentorships,
         setMentorships: setter('mentorships'),
 
