@@ -425,73 +425,15 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       {/* ── ANA İÇERİK ALANI ─────────────────────────────────────── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
 
-        {/* ── YÖNETİCİ / KOORDİNATÖR KGB İNCELEME KONSOLU & ÖĞRENCİ SEÇİCİ ── */}
-        {isAdmin && (
-          <section className="bg-gradient-to-r from-amber-950 via-slate-900 to-amber-900 text-white rounded-3xl p-5 sm:p-6 border border-amber-500/30 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
-                <ShieldCheck size={26} />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="px-2 py-0.5 rounded-md bg-amber-400/20 border border-amber-400/30 text-amber-300 text-[10px] font-black uppercase tracking-wider">
-                    Süper Yönetici & Koordinatör Denetimi
-                  </span>
-                  <span className="text-slate-400 text-xs">• Öğrenci Karnesi İnceleme</span>
-                </div>
-                <h2 className="text-base sm:text-lg font-black text-white">
-                  Resmî KGB Karnesi & Portföy Doğrulama Masası
-                </h2>
-              </div>
-            </div>
-
-            {/* Öğrenci Seçici Dropdown */}
-            <div className="flex items-center gap-3 w-full sm:w-auto self-stretch sm:self-auto bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/15">
-              <Users size={18} className="text-amber-300 shrink-0" />
-              <div className="flex-1 min-w-[220px]">
-                <label htmlFor="admin-kgb-student-select" className="block text-[10px] font-bold text-amber-200 uppercase tracking-wider mb-0.5">
-                  İncelenen Öğrenci Portföyü
-                </label>
-                <select
-                  id="admin-kgb-student-select"
-                  value={selectedStudentId}
-                  onChange={(e) => setSelectedStudentId(e.target.value)}
-                  className="w-full bg-transparent text-white font-black text-xs sm:text-sm focus:outline-none cursor-pointer [&>option]:bg-slate-900 [&>option]:text-white"
-                >
-                  {activeStudentList.map((stu) => (
-                    <option key={stu.id} value={stu.id}>
-                      {stu.name} — {stu.department}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </section>
-        )}
-        
         {/* ── 1. KARNE PASAPORT KARTI (HERO STUDENT PASSPORT) ─────── */}
         <section className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_35px_rgb(0,0,0,0.03)] overflow-hidden">
-          <div className="h-28 bg-gradient-to-r from-[#7A0606] via-[#990000] to-[#B31B1B] relative p-6 flex items-start justify-between">
-            <div className="flex items-center gap-2 text-red-100 text-xs font-bold bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-              <ShieldCheck size={14} className="text-emerald-400" />
-              <span>YÖK 2026 Kariyer ve İstihdam Akreditasyon Standartlarına Uygun</span>
-            </div>
-
-            <div className="hidden sm:flex items-center gap-2 text-white/90 text-xs font-mono bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20">
-              <QrCode size={14} />
-              <span>Doğrulama No: {studentData.verificationCode}</span>
-              <button onClick={handleCopyCode} className="hover:text-white p-0.5" title="Kodu Kopyala">
-                <Copy size={12} />
-              </button>
-            </div>
-          </div>
-
-          <div className="px-6 sm:px-8 pb-8 pt-0 relative">
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 -mt-12 mb-6">
+          {/* Üst Kırmızı Kimlik Bandı */}
+          <div className="bg-gradient-to-r from-[#7A0606] via-[#990000] to-[#8F0808] px-6 sm:px-8 py-6 relative">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
               
-              {/* Profil & Bilgi */}
-              <div className="flex items-end gap-5">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border-4 border-white bg-white shadow-xl overflow-hidden shrink-0">
+              {/* Sol: Avatar, İsim (BEYAZ) & Bölüm Bilgileri */}
+              <div className="flex items-center gap-4 sm:gap-5">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl border-3 border-white/40 bg-white shadow-xl overflow-hidden shrink-0">
                   <SafeAvatar
                     src={studentData.avatar || currentUser?.avatar}
                     name={studentData.name}
@@ -500,59 +442,60 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                     alt={studentData.name}
                   />
                 </div>
-                <div className="pb-1">
-                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 leading-tight">
+
+                <div>
+                  {/* Öğrenci İsmi: Bembeyaz, Kontrastlı ve Okunaklı */}
+                  <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
+                    <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-xs">
                       {studentData.name}
                     </h2>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black">
-                      KGB Onaylı
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-xs font-black shadow-xs flex items-center gap-1">
+                      <CheckCircle2 size={13} className="text-emerald-300" /> KGB Onaylı
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap text-xs sm:text-sm font-semibold text-slate-700 mb-2">
-                    <span className="flex items-center gap-1.5 text-slate-800">
-                      <GraduationCap size={15} className="text-[#990000]" />
-                      {studentData.faculty}
-                    </span>
-                    <span className="text-slate-300">•</span>
-                    <span className="px-2.5 py-0.5 rounded-lg bg-red-50 text-[#990000] font-black border border-red-200/60">
-                      {studentData.department}
-                    </span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-slate-600 font-bold">{studentData.grade}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap text-xs">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 font-medium">
-                      <span className="text-slate-500 font-bold">Öğrenci No:</span>
-                      <span className="font-black text-slate-900">{studentData.studentNo}</span>
-                    </div>
-
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-50/70 text-slate-800 border border-red-100 font-medium">
-                      <span className="text-slate-500 font-bold">Hedef Kariyer Alanı:</span>
-                      <strong className="font-black text-[#990000]">{studentData.targetSector}</strong>
-                    </div>
+                  <div className="flex items-center gap-2 flex-wrap text-xs sm:text-sm font-bold text-red-100/90">
+                    <span>{studentData.faculty}</span>
+                    <span className="text-red-300/60">•</span>
+                    <span className="text-white font-black">{studentData.department}</span>
+                    <span className="text-red-300/60">•</span>
+                    <span>{studentData.grade}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Sağ: KGB Genel Puanı & Durum */}
-              <div className="flex items-center gap-4 bg-red-50/70 border border-red-100 rounded-2xl p-4 self-stretch md:self-auto justify-between md:justify-start">
-                <div className="text-center sm:text-right">
-                  <p className="text-[10px] font-bold text-red-950 uppercase tracking-wider">KGB Genel Skoru</p>
-                  <div className="flex items-baseline gap-1 justify-center sm:justify-end">
-                    <span className="text-3xl font-black text-[#990000]">{studentData.accreditationScore}</span>
-                    <span className="text-xs font-bold text-slate-500">/ 100</span>
+              {/* Sağ: KGB Genel Puanı & Durum (Kırmızı Bandın İçinde Şık Cam Kart) */}
+              <div className="flex items-center gap-3.5 bg-black/20 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 text-white self-start md:self-auto">
+                <div className="text-left md:text-right">
+                  <p className="text-[10px] font-bold text-red-200 uppercase tracking-wider">KGB Genel Skoru</p>
+                  <div className="flex items-baseline gap-1 justify-start md:justify-end">
+                    <span className="text-3xl font-black text-white">{studentData.accreditationScore}</span>
+                    <span className="text-xs font-bold text-red-200">/ 100</span>
                   </div>
-                  <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full bg-[#990000] text-white text-[10px] font-black">
+                  <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full bg-emerald-500/90 text-white text-[10px] font-black shadow-xs">
                     {studentData.accreditationScore >= 85 ? 'A+ Düzeyi (Pekiyi)' : studentData.accreditationScore >= 75 ? 'A Düzeyi (Pekiyi)' : 'B+ Düzeyi (İyi)'}
                   </span>
                 </div>
 
-                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-xs border border-red-200 text-[#990000] shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center text-white shrink-0 shadow-inner">
                   <Award size={26} />
                 </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Alt Beyaz Bölüm: Öğrenci No, Hedef Alan & İlerleme Çubuğu */}
+          <div className="px-6 sm:px-8 py-5 space-y-4">
+            <div className="flex items-center gap-3 flex-wrap text-xs">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 font-medium">
+                <span className="text-slate-500 font-bold">Öğrenci No:</span>
+                <span className="font-black text-slate-900">{studentData.studentNo}</span>
+              </div>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 text-slate-800 border border-red-100 font-medium">
+                <span className="text-slate-500 font-bold">Hedef Kariyer Alanı:</span>
+                <strong className="font-black text-[#990000]">{studentData.targetSector}</strong>
               </div>
             </div>
 
@@ -752,39 +695,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               {/* Sağ Kolon: Mühür & Danışman Bilgileri */}
               <div className="space-y-6">
                 
-                {/* Resmi Onay ve E-Devlet Entegrasyonu */}
-                <div className="bg-gradient-to-br from-red-900 via-[#990000] to-black rounded-3xl p-6 text-white shadow-md relative overflow-hidden">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white border border-white/20">
-                      <ShieldCheck size={22} />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-black text-white">Resmi Üniversite Onayı</h4>
-                      <p className="text-[10px] text-red-200">Kariyer Geliştirme Koordinatörlüğü</p>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-red-100 leading-relaxed mb-4">
-                    Bu belge, İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi ve Rektörlük yönergeleri gereği öğrencinin mezuniyet transkriptine ek olarak resmi kariyer karnesi niteliği taşımaktadır.
-                  </p>
-
-                  <div className="bg-white/10 rounded-2xl p-3.5 border border-white/10 text-center mb-4">
-                    <p className="text-[10px] text-red-200 uppercase font-bold tracking-wider">E-İmza & Doğrulama Barkodu</p>
-                    <div className="flex items-center justify-center my-2">
-                      <div className="bg-white p-2 rounded-xl">
-                        <QrCode size={64} className="text-gray-900" />
-                      </div>
-                    </div>
-                    <span className="text-[11px] font-mono font-bold text-white tracking-widest">{studentData.verificationCode}</span>
-                  </div>
-
-                  <button
-                    onClick={handleCopyCode}
-                    className="w-full py-2 bg-white/15 hover:bg-white/25 rounded-xl text-xs font-bold text-white transition flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <Copy size={13} /> Doğrulama Kodunu Kopyala
-                  </button>
-                </div>
+                {/* Danışman Notu & Akademik Onay */}
 
                 {/* Danışman Notu */}
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs">
