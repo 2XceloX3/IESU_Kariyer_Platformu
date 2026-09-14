@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
-import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin } from 'lucide-react';
+import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
 import SafeAvatar from './shared/SafeAvatar';
@@ -418,7 +418,19 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
             </div>
           </div>
         ) : (
-          <p className="text-[15px] text-gray-800 font-medium leading-snug whitespace-pre-wrap break-words">{post.content}</p>
+          <div>
+            <p className="text-[15px] text-gray-800 font-medium leading-snug whitespace-pre-wrap break-words">{post.content}</p>
+            {!post.image && post.isGeneralEvent && (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-50 border border-purple-200/80 text-purple-900 text-xs font-bold shadow-xs">
+                <Calendar size={13} className="text-purple-600" /> 🏛️ Kampüs & Rektörlük Genel Etkinliği
+              </div>
+            )}
+            {!post.image && post.isCareerOpportunity && (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-50 border border-amber-200/80 text-amber-900 text-xs font-bold shadow-xs">
+                <Sparkles size={13} className="text-amber-600" /> 🌟 Özel Kariyer Fırsatı & Staj Programı
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -444,6 +456,16 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           {post.isJob && (
             <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5">
               <Briefcase size={14} /> İLAN
+            </div>
+          )}
+          {post.isGeneralEvent && (
+            <div className="absolute top-4 left-4 bg-purple-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-purple-400/40 shadow-md">
+              <Calendar size={14} className="text-purple-300" /> 🏛️ GENEL ETKİNLİK
+            </div>
+          )}
+          {post.isCareerOpportunity && (
+            <div className="absolute top-4 left-4 bg-amber-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-amber-400/40 shadow-md">
+              <Sparkles size={14} className="text-amber-300" /> 🌟 KARİYER FIRSATI
             </div>
           )}
         </div>
@@ -661,6 +683,48 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                 <Briefcase size={18} /> Hemen Başvur
               </>
             )}
+          </button>
+        </div>
+      )}
+
+      {/* Fast Action for General Events */}
+      {post.isGeneralEvent && (
+        <div className="px-4 pb-4">
+          <button 
+            type="button"
+            aria-label="Etkinliğe Katıl & Detaylar" 
+            onClick={() => {
+              if (post.eventData?.registrationLink) {
+                window.open(post.eventData.registrationLink, '_blank');
+              } else {
+                if (window.toast?.success) {
+                  window.toast.success(`"${post.eventData?.title || 'Etkinlik'}" için katılım kaydınız başarıyla oluşturuldu!`);
+                }
+              }
+            }} 
+            className="w-full py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 cursor-pointer bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 hover:shadow-lg text-white font-bold active:scale-95 shadow-md shadow-purple-900/10"
+          >
+            <Calendar size={18} /> Etkinliğe Katıl & Detaylar
+          </button>
+        </div>
+      )}
+
+      {/* Fast Action for Career Opportunities */}
+      {post.isCareerOpportunity && (
+        <div className="px-4 pb-4">
+          <button 
+            type="button"
+            aria-label="Fırsatı İncele & Başvur" 
+            onClick={() => {
+              if (post.opportunityData?.applicationUrl) {
+                window.open(post.opportunityData.applicationUrl, '_blank');
+              } else {
+                handleOpenApplyModal();
+              }
+            }} 
+            className="w-full py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 cursor-pointer bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:shadow-lg text-white font-bold active:scale-95 shadow-md shadow-amber-900/10"
+          >
+            <Sparkles size={18} /> Fırsatı İncele & Başvur
           </button>
         </div>
       )}

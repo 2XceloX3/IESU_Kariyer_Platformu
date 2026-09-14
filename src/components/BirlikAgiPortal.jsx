@@ -21,6 +21,8 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
   const news = useAppStore(state => state.news) || [];
   const announcements = useAppStore(state => state.announcements) || [];
   const jobs = useAppStore(state => state.jobs) || [];
+  const generalEvents = useAppStore(state => state.generalEvents) || [];
+  const careerOpportunities = useAppStore(state => state.careerOpportunities) || [];
   const students = useAppStore(state => state.students) || [];
   const alumni = useAppStore(state => state.alumni) || [];
   const alumniAssocBoard = useAppStore(state => state.alumniAssocBoard) || [];
@@ -54,7 +56,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
 
   // Live platform feed stream connected seamlessly with Mezun Derneği official items
   const displayPosts = useMemo(() => {
-    const combined = combineFeedItems(posts, events, news, announcements, jobs);
+    const combined = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
     if (combined.length > 0) return combined;
     return [
       {
@@ -69,7 +71,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
         category: 'Mezun Derneği'
       }
     ];
-  }, [posts, events, news, announcements, jobs]);
+  }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities]);
 
   const handleApplySubmit = (e) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-export function combineFeedItems(posts, events, news, announcements, jobs) {
+export function combineFeedItems(posts, events, news, announcements, jobs, generalEvents = [], careerOpportunities = []) {
   const combined = [...(Array.isArray(posts) ? posts : []).filter(p => typeof p === 'object' && p !== null && p.status !== 'Beklemede' && p.status !== 'Reddedildi')];
 
   const adminAuthor = {
@@ -26,6 +26,28 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         createdAt: e.createdAt || getDeterministicDate(e.id),
         likes: e.likes || 0,
         comments: e.comments || 0,
+      });
+    });
+  }
+
+  if (Array.isArray(generalEvents)) {
+    generalEvents.filter(e => typeof e === 'object' && e !== null && e.status !== 'Taslak' && e.status !== 'Pasif').forEach(e => {
+      combined.push({
+        id: e.id,
+        author: {
+          name: e.organizer || 'İstanbul Esenyurt Üniversitesi',
+          role: 'admin',
+          avatar: '/iesu-logo.svg',
+          title: `🏛️ Kampüs Etkinliği • ${e.category || 'Genel'}`
+        },
+        content: `🎉 ${e.title || ''}\n\n${e.description || ''}\n\n📅 Tarih: ${e.date || ''} ${e.time ? `• ${e.time}` : ''}\n📍 Mekan: ${e.location || 'Merkez Kampüs'}${e.quota ? `\n👥 Kontenjan: ${e.quota} Kişi` : ''}${e.registrationLink ? `\n🔗 Kayıt / Bilgi: ${e.registrationLink}` : ''}`,
+        image: e.imageUrl || null,
+        time: e.date || 'Yakın Zamanda',
+        createdAt: e.createdAt || getDeterministicDate(e.id),
+        likes: e.likes || 18,
+        comments: e.comments || 3,
+        isGeneralEvent: true,
+        eventData: e
       });
     });
   }
@@ -73,6 +95,28 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
         createdAt: j.createdAt || getDeterministicDate(j.id),
         likes: j.likes || 0,
         comments: j.comments || 0,
+      });
+    });
+  }
+
+  if (Array.isArray(careerOpportunities)) {
+    careerOpportunities.filter(o => typeof o === 'object' && o !== null && o.status !== 'Taslak' && o.status !== 'Pasif').forEach(o => {
+      combined.push({
+        id: o.id,
+        author: {
+          name: o.organization || 'Kariyer Geliştirme Koordinatörlüğü',
+          role: 'admin',
+          avatar: o.logo || '/iesu-logo.svg',
+          title: `🌟 Kariyer Fırsatı • ${o.category || 'Özel Program'}`
+        },
+        content: `🌟 ${o.title || ''}\n\n${o.description || ''}\n\n🎯 Hedef Kitle: ${o.targetAudience || 'Tüm Öğrenci ve Mezunlar'}\n📍 Lokasyon: ${o.location || 'İstanbul'}\n⏳ Son Başvuru: ${o.deadline || 'Yakında'}${o.benefits && o.benefits.length ? `\n✨ Avantajlar: ${Array.isArray(o.benefits) ? o.benefits.join(', ') : o.benefits}` : ''}${o.applicationUrl ? `\n🔗 Başvuru: ${o.applicationUrl}` : ''}`,
+        image: o.logo || null,
+        time: o.deadline || 'Yakın Zamanda',
+        createdAt: o.createdAt || getDeterministicDate(o.id),
+        likes: o.likes || 24,
+        comments: o.comments || 5,
+        isCareerOpportunity: true,
+        opportunityData: o
       });
     });
   }

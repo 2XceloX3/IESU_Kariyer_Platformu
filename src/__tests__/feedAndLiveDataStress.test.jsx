@@ -53,6 +53,45 @@ describe('Empirical Stress & Edge-Case Suite: Feed, Export, LiveData & Store', (
       expect(combined.length).toBeGreaterThan(0);
       expect(duration).toBeLessThan(2000); // Should execute within 2 seconds
     });
+
+    it('correctly integrates generalEvents and careerOpportunities with appropriate flags and metadata', () => {
+      const generalEvents = [
+        {
+          id: 'GEVT-001',
+          title: 'Bahar Şenliği 2026',
+          organizer: 'Rektörlük',
+          category: 'Kulüp & Bahar Şenliği',
+          date: '2026-05-20',
+          time: '14:00',
+          location: 'Merkez Kampüs',
+          status: 'Yayında'
+        }
+      ];
+
+      const careerOpportunities = [
+        {
+          id: 'OPP-001',
+          title: 'Google Cloud Gelecek Programı',
+          organization: 'Google',
+          category: 'Staj & Gelişim',
+          deadline: '2026-06-01',
+          status: 'Yayında'
+        }
+      ];
+
+      const combined = combineFeedItems([], [], [], [], [], generalEvents, careerOpportunities);
+      expect(combined).toHaveLength(2);
+
+      const generalEvItem = combined.find(i => i.id === 'GEVT-001');
+      expect(generalEvItem).toBeDefined();
+      expect(generalEvItem.isGeneralEvent).toBe(true);
+      expect(generalEvItem.author.title).toContain('Kampüs Etkinliği');
+
+      const oppItem = combined.find(i => i.id === 'OPP-001');
+      expect(oppItem).toBeDefined();
+      expect(oppItem.isCareerOpportunity).toBe(true);
+      expect(oppItem.author.name).toBe('Google');
+    });
   });
 
   describe('2. export.js CSV exporter resilience & edge cases', () => {

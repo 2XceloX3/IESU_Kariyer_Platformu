@@ -39,6 +39,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
   const surveys = useAppStore(state => state.surveys);
   const news = useAppStore(state => state.news);
   const events = useAppStore(state => state.events);
+  const generalEvents = useAppStore(state => state.generalEvents);
+  const careerOpportunities = useAppStore(state => state.careerOpportunities);
   const students = useAppStore(state => state.students);
   const alumni = useAppStore(state => state.alumni);
   const companies = useAppStore(state => state.companies);
@@ -563,7 +565,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
               {/* POST STREAM WITH BRANCH FILTER */}
               <div className="space-y-5">
                 {(() => {
-                  const allItems = combineFeedItems(posts, events, news, announcements, jobs);
+                  const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
 
                   // Filter by branch
                   const branchFilteredItems = allItems.filter(item => {

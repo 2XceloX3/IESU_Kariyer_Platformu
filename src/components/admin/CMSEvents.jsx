@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { Calendar, CheckCircle2, MapPin, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, AlertCircle, Eye, Download, CheckCircle, FileText } from 'lucide-react';
+import { Calendar, CheckCircle2, MapPin, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, AlertCircle, Eye, Download, CheckCircle, FileText, Share2 } from 'lucide-react';
+import useAppStore from '../../store/useAppStore';
 
 const DEFAULT_SURVEY_QUESTIONS = [
   { id: 'q1', text: 'Etkinlikten genel olarak memnun kaldınız mı?', type: 'likert' }
@@ -75,6 +76,35 @@ export default function CMSEvents({ events = [], setEvents }) {
   const handleDelete = (id) => {
     if (window.confirm("Bu etkinliği silmek istediğinize emin misiniz?")) {
       setEvents(prev => (prev || []).filter(e => e.id !== id));
+    }
+  };
+
+  const handleShareToFeed = (ev) => {
+    const feedPost = {
+      id: 'POST-EVT-' + ev.id,
+      author: {
+        name: 'İESÜ Kariyer Geliştirme Koordinatörlüğü',
+        role: 'admin',
+        avatar: '/iesu-logo.svg',
+        title: `🎯 Kariyer Etkinliği • ${ev.category || 'Atölye & Zirve'}`
+      },
+      content: `🎯 ${ev.title}\n\n${ev.summary || ev.description || ''}\n\n📅 Tarih: ${ev.date} ${ev.time ? `• ${ev.time}` : ''}\n📍 Konum: ${ev.location || 'Kampüs'}${ev.speakers ? `\n🎤 Konuşmacılar: ${ev.speakers}` : ''}${ev.capacity ? `\n👥 Kontenjan: ${ev.capacity} Kişi` : ''}${ev.registrationLink ? `\n🔗 Kayıt: ${ev.registrationLink}` : ''}`,
+      image: ev.imageUrl || null,
+      time: 'Az önce',
+      createdAt: new Date().toISOString(),
+      likes: 15,
+      comments: 2,
+      isGeneralEvent: true,
+      eventData: ev
+    };
+
+    const store = useAppStore.getState();
+    if (store.setPosts) {
+      store.setPosts(prev => {
+        const withoutOld = (prev || []).filter(p => p.id !== feedPost.id);
+        return [feedPost, ...withoutOld];
+      });
+      window.toast?.success?.(`"${ev.title}" kampüs ve kariyer akışında başarıyla yayınlandı!`);
     }
   };
 
@@ -234,8 +264,9 @@ export default function CMSEvents({ events = [], setEvents }) {
                   </td>
                   <td className="py-3 px-5 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(e)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
-                      <button onClick={() => handleDelete(e.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
+                      <button type="button" onClick={() => handleShareToFeed(e)} className="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition" title="Kampüs ve Öğrenci Akışında Canlı Paylaş"><Share2 size={16}/></button>
+                      <button onClick={() => handleEdit(e)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Düzenle"><Edit size={16}/></button>
+                      <button onClick={() => handleDelete(e.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Sil"><Trash2 size={16}/></button>
                     </div>
                   </td>
                 </tr>

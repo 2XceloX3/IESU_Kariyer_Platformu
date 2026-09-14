@@ -21,6 +21,8 @@ export default function AcademicStaffFeed({
   const setPosts = useAppStore(state => state.setPosts);
   const news = useAppStore(state => state.news);
   const events = useAppStore(state => state.events);
+  const generalEvents = useAppStore(state => state.generalEvents);
+  const careerOpportunities = useAppStore(state => state.careerOpportunities);
   const announcements = useAppStore(state => state.announcements);
   const jobs = useAppStore(state => state.jobs);
   const students = useAppStore(state => state.students);
@@ -823,7 +825,7 @@ export default function AcademicStaffFeed({
           <div className="space-y-6">
             <div className="space-y-6">
               {(() => {
-                const allItems = combineFeedItems(posts, events, news, announcements, jobs);
+                const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
                 const filteredItems = allItems.filter(item => 
                   (item.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                   (item.authorName || '').toLowerCase().includes(searchQuery.toLowerCase())

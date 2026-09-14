@@ -27,6 +27,8 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
   const events = useAppStore(state => state.events);
   const announcements = useAppStore(state => state.announcements);
   const jobs = useAppStore(state => state.jobs);
+  const generalEvents = useAppStore(state => state.generalEvents) || [];
+  const careerOpportunities = useAppStore(state => state.careerOpportunities) || [];
   const careerFairApplications = useAppStore(state => state.careerFairApplications) || [];
   const adminMessages = useAppStore(state => state.adminMessages) || [];
 
@@ -2101,7 +2103,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
     );
   };
 
-  const allItems = combineFeedItems(posts, events, news, announcements, jobs);
+  const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
   
   const userPosts = allItems.filter(p => {
     const authorName = typeof p.author === 'string' ? p.author : p.author?.name;

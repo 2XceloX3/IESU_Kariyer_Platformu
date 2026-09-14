@@ -3,7 +3,7 @@ import {
   Calendar, MapPin, Clock, Users, Plus, Search, Filter, Trash2,
   Edit3, ExternalLink, Download, Sparkles, Building2, Eye, EyeOff,
   X, CheckCircle2, Award, Music, Landmark, Trophy, Theater, Layers,
-  Compass, Star
+  Compass, Star, Share2
 } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
 import { toast } from '../shared/Toast';
@@ -12,6 +12,8 @@ import useAppStore from '../../store/useAppStore';
 export default function CMSGeneralEvents({ generalEvents: propsEvents, setGeneralEvents: propsSetEvents }) {
   const storeEvents = useAppStore(state => state.generalEvents) || [];
   const storeSetEvents = useAppStore(state => state.setGeneralEvents);
+  const posts = useAppStore(state => state.posts) || [];
+  const setPosts = useAppStore(state => state.setPosts);
   const logAction = useAppStore(state => state.logAction);
 
   const events = propsEvents && propsEvents.length > 0 ? propsEvents : storeEvents;
@@ -38,7 +40,8 @@ export default function CMSGeneralEvents({ generalEvents: propsEvents, setGenera
     imageUrl: '',
     registrationLink: '',
     status: 'Yayında',
-    featured: false
+    featured: false,
+    publishToFeed: true
   });
 
   // Calculate statistics
@@ -96,7 +99,8 @@ export default function CMSGeneralEvents({ generalEvents: propsEvents, setGenera
       imageUrl: '',
       registrationLink: '',
       status: 'Yayında',
-      featured: false
+      featured: false,
+      publishToFeed: true
     });
     setIsModalOpen(true);
   };
@@ -117,9 +121,42 @@ export default function CMSGeneralEvents({ generalEvents: propsEvents, setGenera
       imageUrl: ev.imageUrl || '',
       registrationLink: ev.registrationLink || '',
       status: ev.status || 'Yayında',
-      featured: ev.featured || false
+      featured: ev.featured || false,
+      publishToFeed: true
     });
     setIsModalOpen(true);
+  };
+
+  // Akışta Doğrudan Paylaşma Fonksiyonu
+  const handleShareToFeed = (ev) => {
+    const targetId = ev.id || ('GEVT-' + Date.now().toString().slice(-6));
+    const feedPost = {
+      id: 'POST-GEVT-' + targetId,
+      author: {
+        name: ev.organizer || 'T.C. İstanbul Esenyurt Üniversitesi Rektörlüğü',
+        role: 'admin',
+        avatar: '/iesu-logo.svg',
+        title: `🏛️ Kampüs Etkinliği • ${ev.category || 'Genel'}`
+      },
+      content: `🎉 ${ev.title || ''}\n\n${ev.description || ''}\n\n📅 Tarih: ${ev.date || ''} ${ev.time ? `• ${ev.time}` : ''}\n📍 Yer: ${ev.location || 'Merkez Kampüs'}${ev.quota ? `\n👥 Kontenjan: ${ev.quota} Kişi` : ''}${ev.registrationLink ? `\n🔗 Kayıt / Bilgi: ${ev.registrationLink}` : ''}`,
+      image: ev.imageUrl || null,
+      time: 'Az önce',
+      createdAt: new Date().toISOString(),
+      likes: 12,
+      comments: 2,
+      isGeneralEvent: true,
+      eventData: { ...ev, id: targetId }
+    };
+
+    if (setPosts) {
+      setPosts(prev => {
+        const withoutOld = (prev || []).filter(p => p.id !== feedPost.id);
+        return [feedPost, ...withoutOld];
+      });
+    }
+
+    toast.success(`"${ev.title}" kampüs ve öğrenci akışında canlı olarak yayınlandı!`);
+    if (logAction) logAction('Yönetici', `"${ev.title}" genel etkinliği akışta paylaşıldı.`, 'AKISTA_PAYLAS');
   };
 
   // Handle Save
@@ -130,20 +167,23 @@ export default function CMSGeneralEvents({ generalEvents: propsEvents, setGenera
       return;
     }
 
+    let savedEvent = null;
+
     if (editingEvent) {
-      const updated = events.map(ev => ev.id === editingEvent.id ? {
-        ...ev,
+      savedEvent = {
+        ...editingEvent,
         ...formData,
         quota: Number(formData.quota) || 0,
         registeredCount: Number(formData.registeredCount) || 0,
         updatedAt: new Date().toISOString()
-      } : ev);
+      };
 
+      const updated = events.map(ev => ev.id === editingEvent.id ? savedEvent : ev);
       setEvents(updated);
       toast.success('Genel etkinlik başarıyla güncellendi!');
       if (logAction) logAction('Yönetici', `"${formData.title}" genel etkinliği güncellendi.`, 'ETKINLIK_GUNCELLEME');
     } else {
-      const newEv = {
+      savedEvent = {
         id: 'GEVT-' + Date.now().toString().slice(-6),
         ...formData,
         quota: Number(formData.quota) || 0,
@@ -151,9 +191,14 @@ export default function CMSGeneralEvents({ generalEvents: propsEvents, setGenera
         createdAt: new Date().toISOString()
       };
 
-      setEvents([newEv, ...events]);
+      setEvents([savedEvent, ...events]);
       toast.success('Yeni genel etkinlik başarıyla eklendi!');
       if (logAction) logAction('Yönetici', `"${formData.title}" başlıklı yeni genel etkinlik eklendi.`, 'YENI_ETKINLIK');
+    }
+
+    // Akışta Yayınla seçildiyse ve etkinlik Yayında ise otomatik akışa da besle
+    if (formData.publishToFeed && formData.status === 'Yayında' && savedEvent) {
+      handleShareToFeed(savedEvent);
     }
 
     setIsModalOpen(false);
@@ -549,6 +594,14 @@ export default function CMSGeneralEvents({ generalEvents: propsEvents, setGenera
                     </button>
 
                     <button
+                      onClick={() => handleShareToFeed(ev)}
+                      className="p-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-900 border border-purple-200 transition shadow-xs cursor-pointer"
+                      title="Kampüs ve Öğrenci Akışında Canlı Paylaş"
+                    >
+                      <Share2 size={14} />
+                    </button>
+
+                    <button
                       onClick={() => handleOpenEditModal(ev)}
                       className="p-2 rounded-xl bg-white hover:bg-amber-50 text-gray-600 hover:text-amber-700 border border-gray-200 transition shadow-xs cursor-pointer"
                       title="Düzenle"
@@ -748,6 +801,24 @@ export default function CMSGeneralEvents({ generalEvents: propsEvents, setGenera
                   <span>Öne Çıkarılan Etkinlik Olarak İşaretle</span>
                 </label>
               </div>
+
+              {/* Akışta Paylaşım Onay Kutusu */}
+              <label className="flex items-center gap-3 p-3.5 bg-gradient-to-r from-purple-50 to-indigo-50/50 border border-purple-200/80 rounded-2xl cursor-pointer hover:bg-purple-100/50 transition">
+                <input 
+                  type="checkbox" 
+                  checked={formData.publishToFeed}
+                  onChange={e => setFormData({ ...formData, publishToFeed: e.target.checked })}
+                  className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 cursor-pointer"
+                />
+                <div className="flex-1">
+                  <span className="text-xs font-black text-purple-900 flex items-center gap-1.5">
+                    <Share2 size={13} className="text-purple-600" /> Kampüs ve Öğrenci Akışında Canlı Yayınla / Paylaş
+                  </span>
+                  <span className="text-[11px] text-purple-700 font-medium block mt-0.5">
+                    Etkinlik kaydedildiğinde tüm öğrencilerin, mezunların ve akademisyenlerin ana sayfa akışına canlı gönderi olarak düşer.
+                  </span>
+                </div>
+              </label>
 
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
