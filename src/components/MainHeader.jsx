@@ -64,7 +64,6 @@ export default function MainHeader({ setView, currentUser, userRole }) {
               <button onClick={() => setView && setView('events_list')} className="hover:text-white hover:scale-105 transition-all">Etkinliklerimiz</button>
               <button onClick={() => setView && setView('contact_us')} className="hover:text-white hover:scale-105 transition-all">İletişim</button>
               <button onClick={() => setView && setView('haberler')} className="hover:text-white hover:scale-105 transition-all">Neler Oluyor?</button>
-              <button onClick={() => setView && setView('knowledge_portal')} className="hover:text-white hover:scale-105 transition-all">Bilgi Bankası</button>
             </div>
 
             {/* FAR RIGHT: User Avatar or Portala Giriş Button */}
@@ -130,12 +129,6 @@ export default function MainHeader({ setView, currentUser, userRole }) {
                 className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
               >
                 Neler Oluyor?
-              </button>
-              <button 
-                onClick={() => { if (setView) setView('knowledge_portal'); setIsMobileMenuOpen(false); }} 
-                className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
-              >
-                Bilgi Bankası
               </button>
             </div>
           </div>
