@@ -233,10 +233,10 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
       </nav>
 
       {/* ─── MAIN PORTAL CONTAINER ─── */}
-      <div className="pt-24 max-w-[1320px] mx-auto px-4 flex justify-center gap-6 pb-20">
+      <div className="pt-24 max-w-[1320px] mx-auto px-4 flex items-start justify-center gap-6 pb-20">
         
         {/* ─── LEFT PANEL: SUPER ADMIN EXECUTIVE PROFILE (270px) ─── */}
-        <div className="hidden lg:flex w-[270px] shrink-0 flex-col gap-4.5 sticky top-24 pb-6">
+        <div className="hidden lg:flex w-[270px] shrink-0 flex-col gap-4.5 sticky top-24 self-start h-fit max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar z-20 pb-6">
           <div className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs shrink-0">
             <div className="h-24 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 relative">
               <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">

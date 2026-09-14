@@ -527,7 +527,7 @@ function App() {
           setDirectMessageUser={setSelectedUserId}
         />}
         {view === 'student_analytics' && <StudentAnalytics setView={setView} currentUser={currentUser} userRole={userRole} previousView={previousView} />}
-        {view === 'student_kgb' && <StudentKGBPanel setView={setView} currentUser={currentUser} userRole={userRole} previousView={previousView} />}
+        {view === 'student_kgb' && <StudentKGBPanel setView={setView} currentUser={currentUser} userRole={userRole} previousView={previousView} setSelectedUserId={setSelectedUserId} />}
         {view === 'group_profile' && <GroupProfile
                   groupId={selectedGroupId}
                   groupData={groups.find(g => g.id === selectedGroupId) || null}

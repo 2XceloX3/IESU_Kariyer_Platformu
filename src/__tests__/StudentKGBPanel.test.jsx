@@ -134,5 +134,41 @@ describe('StudentKGBPanel Component Integrity', () => {
     expect(screen.queryByText(/Kariyer Geliştirme Merkezi \(Süper Yönetici\) - Öğrenci No/i)).toBeNull();
     expect(screen.getAllByText('Ahmet Yılmaz').length).toBeGreaterThan(0);
   });
+
+  it('reactively updates student details when admin selects another student from dropdown', () => {
+    const mockAdmin = {
+      id: 'ADM-01',
+      name: 'Kariyer Geliştirme Merkezi (Süper Yönetici)',
+      role: 'admin'
+    };
+
+    render(
+      <MemoryRouter>
+        <StudentKGBPanel setView={mockSetView} currentUser={mockAdmin} userRole="admin" previousView="admin" />
+      </MemoryRouter>
+    );
+
+    const select = screen.getByLabelText(/İncelenen Öğrenci Portföyü/i);
+    fireEvent.change(select, { target: { value: 'STU-02' } });
+
+    // Should switch to Zeynep Kaya (İşletme)
+    expect(screen.getAllByText('Zeynep Kaya').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('İşletme').length).toBeGreaterThan(0);
+    expect(screen.getByText('2023010485')).toBeDefined();
+    expect(screen.getByText('Kurumsal Finans & Denetim')).toBeDefined();
+  });
+
+  it('renders official print area with id kgb-print-area for PDF export', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <StudentKGBPanel setView={mockSetView} currentUser={mockStudent} userRole="student" previousView="student" />
+      </MemoryRouter>
+    );
+
+    // Switch to transcript tab
+    fireEvent.click(screen.getByText('Resmi Transkript Önizlemesi'));
+    const printArea = container.querySelector('#kgb-print-area');
+    expect(printArea).not.toBeNull();
+  });
 });
 

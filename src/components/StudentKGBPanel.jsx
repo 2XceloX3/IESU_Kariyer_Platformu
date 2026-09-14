@@ -18,89 +18,297 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   const addNotification = useAppStore(state => state.addNotification);
   const logAction = useAppStore(state => state.logAction);
 
-  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin';
+  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513';
+
+  // Fallback student profiles with tailored department data
+  const DEFAULT_STUDENT_PROFILES = useMemo(() => ({
+    'STU-01': {
+      id: 'STU-01',
+      name: 'Ahmet Yılmaz',
+      department: 'Bilgisayar Mühendisliği',
+      faculty: 'Mühendislik ve Mimarlık Fakültesi',
+      grade: '3. Sınıf',
+      studentNo: '2023010482',
+      targetSector: 'Yazılım & Bilişim Mimarisi',
+      accreditationScore: 88,
+      internshipsCount: 2,
+      certificationsCount: 3,
+      workshopsCount: 7,
+      mentorMeetingsCount: 4,
+      cvCompleteness: 88,
+      portfolioItems: 5,
+      verificationCode: 'İESÜ-KGB-2026-9941',
+      advisorName: 'Doç. Dr. Selin Kaya',
+      internships: [
+        {
+          id: 'INT-01',
+          company: 'Baykar Teknoloji',
+          position: 'Yapay Zekâ & Gömülü Yazılım Stajyeri',
+          duration: '20 İş Günü (Zorunlu Staj)',
+          date: 'Temmuz 2025 - Ağustos 2025',
+          mentor: 'Mehmet Yılmaz (Kıdemli Ar-Ge Mühendisi)',
+          status: 'Onaylandı',
+          ects: '5 AKTS',
+          score: '100 / 100 (Pekiyi)',
+          skills: ['C++', 'ROS2', 'Gömülü Linux', 'Python'],
+          summary: 'İHA telemetri ve yapay zeka nesne tespit algoritmaları optimizasyonunda aktif görev alındı.'
+        },
+        {
+          id: 'INT-02',
+          company: 'Aselsan A.Ş.',
+          position: 'Yazılım Geliştirme Stajyeri',
+          duration: '30 İş Günü (İsteğe Bağlı Ar-Ge Stajı)',
+          date: 'Şubat 2026 - Mart 2026',
+          mentor: 'Dr. Selin Kaya (Yazılım Proje Yöneticisi)',
+          status: 'Onaylandı',
+          ects: '6 AKTS',
+          score: '95 / 100 (Pekiyi)',
+          skills: ['React', 'TypeScript', 'Mikroservis', 'Docker'],
+          summary: 'Savunma sanayii gerçek zamanlı izleme kokpiti web arayüz bileşenleri geliştirildi.'
+        }
+      ],
+      certifications: [
+        {
+          id: 'CRT-01',
+          title: 'İleri Seviye Full-Stack Web ve Bulut Mimarisi',
+          issuer: 'İESÜ Kariyer & Yetenek Akademisi',
+          issueDate: '12 Ocak 2026',
+          validUntil: 'Süresiz',
+          code: 'IESU-CRT-2026-9941',
+          hours: '48 Saat',
+          accreditedBy: 'YÖK & Pearson BTEC Uyumlu',
+          skills: ['React', 'Node.js', 'PostgreSQL', 'Cloud Deployment']
+        },
+        {
+          id: 'CRT-02',
+          title: 'AWS Certified Cloud Practitioner Hazırlık Sertifikası',
+          issuer: 'Amazon Web Services (AWS) Academy',
+          issueDate: '04 Mart 2026',
+          validUntil: 'Mart 2029',
+          code: 'AWS-ACA-88412',
+          hours: '36 Saat',
+          accreditedBy: 'Global Sanayi Standartları',
+          skills: ['AWS EC2', 'S3', 'IAM', 'Cloud Architecture']
+        },
+        {
+          id: 'CRT-03',
+          title: 'Çevik Proje Yönetimi ve Scrum Master Eğitimi',
+          issuer: 'İESÜ Sürekli Eğitim Merkezi & PMI Uyumlu',
+          issueDate: '18 Kasım 2025',
+          validUntil: 'Süresiz',
+          code: 'IESU-SCRUM-4412',
+          hours: '24 Saat',
+          accreditedBy: 'Uluslararası Proje Standartları',
+          skills: ['Scrum', 'Kanban', 'Sprint Planning', 'Jira']
+        }
+      ]
+    },
+    'STU-02': {
+      id: 'STU-02',
+      name: 'Zeynep Kaya',
+      department: 'İşletme',
+      faculty: 'İktisadi, İdari ve Sosyal Bilimler Fakültesi',
+      grade: '4. Sınıf',
+      studentNo: '2023010485',
+      targetSector: 'Kurumsal Finans & Denetim',
+      accreditationScore: 92,
+      internshipsCount: 1,
+      certificationsCount: 2,
+      workshopsCount: 12,
+      mentorMeetingsCount: 6,
+      cvCompleteness: 92,
+      portfolioItems: 3,
+      verificationCode: 'İESÜ-KGB-2026-9942',
+      advisorName: 'Prof. Dr. Murat Doğan',
+      internships: [
+        {
+          id: 'INT-21',
+          company: 'Türkiye İş Bankası A.Ş.',
+          position: 'Kurumsal Finans & Risk Analitiği Stajyeri',
+          duration: '30 İş Günü (Zorunlu Staj)',
+          date: 'Haziran 2025 - Temmuz 2025',
+          mentor: 'Kemal Akın (Kıdemli Portföy Yöneticisi)',
+          status: 'Onaylandı',
+          ects: '6 AKTS',
+          score: '98 / 100 (Pekiyi)',
+          skills: ['Finansal Modelleme', 'Risk Yönetimi', 'Excel VBA', 'Power BI'],
+          summary: 'Kredi risk derecelendirmesi ve kurumsal portföy analiz modellerinin oluşturulmasında aktif görev alındı.'
+        }
+      ],
+      certifications: [
+        {
+          id: 'CRT-21',
+          title: 'SPK Düzey 1 Sermaye Piyasası Faaliyetleri Lisansı',
+          issuer: 'Sermaye Piyasası Lisanslama Sicil ve Eğitim Kuruluşu',
+          issueDate: '15 Kasım 2025',
+          validUntil: 'Kasım 2028',
+          code: 'SPK-LIS-2025-4102',
+          hours: '40 Saat',
+          accreditedBy: 'Sermaye Piyasası Kurulu (SPK)',
+          skills: ['Sermaye Piyasaları', 'Hisse Senetleri', 'Mevzuat', 'Finansal Tablolar']
+        },
+        {
+          id: 'CRT-22',
+          title: 'Bloomberg Market Concepts (BMC) Sertifikası',
+          issuer: 'Bloomberg LP Financial Markets',
+          issueDate: '08 Şubat 2026',
+          validUntil: 'Süresiz',
+          code: 'BLM-BMC-99021',
+          hours: '24 Saat',
+          accreditedBy: 'Bloomberg Institute Global',
+          skills: ['Makroekonomi', 'Emtia & Döviz Piyasaları', 'Sabit Getirili Menkul Kıymetler']
+        }
+      ]
+    },
+    'STU-03': {
+      id: 'STU-03',
+      name: 'Caner Demir',
+      department: 'Grafik Tasarım',
+      faculty: 'Sanat ve Tasarım Fakültesi',
+      grade: '2. Sınıf',
+      studentNo: '2023010490',
+      targetSector: 'Dijital Tasarım & Yaratıcı Endüstriler',
+      accreditationScore: 78,
+      internshipsCount: 3,
+      certificationsCount: 1,
+      workshopsCount: 5,
+      mentorMeetingsCount: 2,
+      cvCompleteness: 78,
+      portfolioItems: 8,
+      verificationCode: 'İESÜ-KGB-2026-9943',
+      advisorName: 'Doç. Dr. Emre Çelik',
+      internships: [
+        {
+          id: 'INT-31',
+          company: 'TBWA\\Istanbul',
+          position: 'UI/UX & Dijital Tasarım Stajyeri',
+          duration: '25 İş Günü (Zorunlu Staj)',
+          date: 'Ağustos 2025 - Eylül 2025',
+          mentor: 'Ayşe Yıldız (Kreatif Tasarım Direktörü)',
+          status: 'Onaylandı',
+          ects: '5 AKTS',
+          score: '96 / 100 (Pekiyi)',
+          skills: ['Figma', 'UI/UX', 'Design Systems', 'Prototyping'],
+          summary: 'Kullanıcı deneyimi araştırmaları ve mobil arayüz prototiplerinin tasarım süreçlerinde çalışıldı.'
+        },
+        {
+          id: 'INT-32',
+          company: 'Rafineri Reklam Ajansı',
+          position: 'Kreatif Sanat & Konsept Tasarım Stajyeri',
+          duration: '20 İş Günü (Gönüllü Staj)',
+          date: 'Ocak 2026 - Şubat 2026',
+          mentor: 'Kerem Öztürk (Art Direktör)',
+          status: 'Onaylandı',
+          ects: '4 AKTS',
+          score: '92 / 100 (Pekiyi)',
+          skills: ['Adobe Photoshop', 'Illustrator', 'Motion Graphics'],
+          summary: 'Büyük ölçekli kurumsal marka lansman kampanyaları için görsel kimlik varlıkları üretildi.'
+        },
+        {
+          id: 'INT-33',
+          company: 'Tribal Worldwide Istanbul',
+          position: 'Görsel İletişim Tasarımı Stajyeri',
+          duration: '20 İş Günü (Proje Stajı)',
+          date: 'Haziran 2024 - Temmuz 2024',
+          mentor: 'Selin Erdem (Kıdemli İllüstratör)',
+          status: 'Onaylandı',
+          ects: '4 AKTS',
+          score: '90 / 100 (Pekiyi)',
+          skills: ['Tipografi', 'Vektör Sanatı', 'Sosyal Medya Tasarımı'],
+          summary: 'Dijital reklam kampanyaları için dinamik banner ve görsel materyal üretimi gerçekleştirildi.'
+        }
+      ],
+      certifications: [
+        {
+          id: 'CRT-31',
+          title: 'Adobe Certified Professional in Visual Design',
+          issuer: 'Adobe Inc. & Certiport',
+          issueDate: '20 Aralık 2025',
+          validUntil: 'Aralık 2028',
+          code: 'ADOBE-ACP-77218',
+          hours: '36 Saat',
+          accreditedBy: 'Adobe Worldwide Accreditation',
+          skills: ['Photoshop', 'Illustrator', 'Typography', 'Visual Composition']
+        }
+      ]
+    }
+  }), []);
+
+  const fallbackRecordsList = useMemo(() => Object.values(DEFAULT_STUDENT_PROFILES), [DEFAULT_STUDENT_PROFILES]);
+  const activeStudentList = kgbStudentRecords.length > 0 ? kgbStudentRecords : fallbackRecordsList;
+
   const defaultStudentId = useMemo(() => {
     if (isAdmin) {
-      return kgbStudentRecords[0]?.id || 'STU-01';
+      return activeStudentList[0]?.id || 'STU-01';
     }
-    const match = kgbStudentRecords.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
+    const match = activeStudentList.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
     return match?.id || currentUser?.id || 'STU-01';
-  }, [isAdmin, currentUser, kgbStudentRecords]);
+  }, [isAdmin, currentUser, activeStudentList]);
 
   const [selectedStudentId, setSelectedStudentId] = useState(defaultStudentId);
 
   const currentStudentRecord = useMemo(() => {
     if (isAdmin) {
-      return kgbStudentRecords.find(r => r.id === selectedStudentId) || kgbStudentRecords[0];
+      return activeStudentList.find(r => r.id === selectedStudentId) || activeStudentList[0];
     }
-    return kgbStudentRecords.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
-  }, [isAdmin, selectedStudentId, currentUser, kgbStudentRecords]);
+    return activeStudentList.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
+  }, [isAdmin, selectedStudentId, currentUser, activeStudentList]);
 
   // Match student record from store or fallback to currentUser
   const studentData = useMemo(() => {
     if (isAdmin) {
-      const rec = currentStudentRecord || {
-        id: 'STU-01',
-        name: 'Ahmet Yılmaz',
-        department: 'Bilgisayar Mühendisliği',
-        internships: 2,
-        certifications: 3,
-        workshopsAttended: 7,
-        mentorMeetings: 4,
-        cvCompleteness: 88,
-        portfolioItems: 5,
-        targetSector: 'Yazılım'
-      };
-      const facultyMap = {
-        'Bilgisayar Mühendisliği': 'Mühendislik ve Mimarlık Fakültesi',
-        'İşletme': 'İktisadi, İdari ve Sosyal Bilimler Fakültesi',
-        'Grafik Tasarım': 'Sanat ve Tasarım Fakültesi',
-      };
-      const noMap = {
-        'STU-01': '2023010482',
-        'STU-02': '2023010485',
-        'STU-03': '2023010490',
-      };
+      const rec = currentStudentRecord || DEFAULT_STUDENT_PROFILES['STU-01'];
+      const profileData = DEFAULT_STUDENT_PROFILES[rec.id] || DEFAULT_STUDENT_PROFILES['STU-01'];
+      const score = rec.cvCompleteness ?? profileData.accreditationScore;
+
       return {
         id: rec.id,
-        name: rec.name,
-        department: rec.department || 'Bilgisayar Mühendisliği',
-        faculty: facultyMap[rec.department] || 'Mühendislik ve Mimarlık Fakültesi',
-        grade: '3. Sınıf',
-        studentNo: noMap[rec.id] || '2023010482',
-        targetSector: rec.targetSector || 'Yazılım & Bilişim Mimarisi',
-        internshipsCount: rec.internships ?? 2,
-        certificationsCount: rec.certifications ?? 3,
-        workshopsCount: rec.workshopsAttended ?? 7,
-        mentorMeetingsCount: rec.mentorMeetings ?? 4,
-        cvCompleteness: rec.cvCompleteness ?? 88,
-        portfolioItems: rec.portfolioItems ?? 5,
-        accreditationScore: 88,
-        verificationCode: `İESÜ-KGB-2026-${(rec.id || 'STU-01').replace('STU-', '994')}`,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.name)}&background=990000&color=fff&size=120`
+        name: rec.name || profileData.name,
+        department: rec.department || profileData.department,
+        faculty: profileData.faculty || 'Mühendislik ve Mimarlık Fakültesi',
+        grade: profileData.grade || '3. Sınıf',
+        studentNo: profileData.studentNo || '2023010482',
+        targetSector: profileData.targetSector || rec.targetSector || 'Kurumsal Finans & Denetim',
+        internshipsCount: rec.internships ?? profileData.internshipsCount,
+        certificationsCount: rec.certifications ?? profileData.certificationsCount,
+        workshopsCount: rec.workshopsAttended ?? profileData.workshopsCount,
+        mentorMeetingsCount: rec.mentorMeetings ?? profileData.mentorMeetingsCount,
+        cvCompleteness: score,
+        portfolioItems: rec.portfolioItems ?? profileData.portfolioItems,
+        accreditationScore: score,
+        verificationCode: profileData.verificationCode || `İESÜ-KGB-2026-${(rec.id || 'STU-01').replace('STU-', '994')}`,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.name || profileData.name)}&background=990000&color=fff&size=120`,
+        advisorName: profileData.advisorName,
+        internships: profileData.internships,
+        certifications: profileData.certifications
       };
     }
 
     const match = currentStudentRecord;
+    const profileData = DEFAULT_STUDENT_PROFILES[currentUser?.id || match?.id] || DEFAULT_STUDENT_PROFILES['STU-01'];
+    const score = currentUser?.cvCompleteness || match?.cvCompleteness || profileData.accreditationScore || 88;
     return {
-      id: currentUser?.id || match?.id || 'STU-2026-001',
-      name: currentUser?.name || match?.name || 'Öğrenci Adı',
-      department: currentUser?.department || match?.department || 'Yazılım Mühendisliği',
-      faculty: currentUser?.faculty || 'Mühendislik ve Mimarlık Fakültesi',
-      grade: currentUser?.grade || '3. Sınıf',
-      studentNo: currentUser?.studentNo || '2023010482',
-      targetSector: match?.targetSector || currentUser?.targetSector || 'Yazılım & Bilişim Mimarisi',
-      internshipsCount: match?.internships ?? (currentUser?.internships ?? 2),
-      certificationsCount: match?.certifications ?? (currentUser?.certifications ?? 3),
-      workshopsCount: match?.workshopsAttended ?? (currentUser?.workshopsAttended ?? 7),
-      mentorMeetingsCount: match?.mentorMeetings ?? (currentUser?.mentorMeetings ?? 4),
-      cvCompleteness: match?.cvCompleteness ?? (currentUser?.cvCompleteness ?? 88),
-      portfolioItems: match?.portfolioItems ?? 5,
-      accreditationScore: 88, // A Seviyesi
-      verificationCode: 'İESÜ-KGB-2026-9941',
-      avatar: currentUser?.avatar
+      id: currentUser?.id || match?.id || profileData.id || 'STU-2026-001',
+      name: currentUser?.name || match?.name || profileData.name,
+      department: currentUser?.department || match?.department || profileData.department,
+      faculty: currentUser?.faculty || profileData.faculty,
+      grade: currentUser?.grade || (currentUser?.graduationYear ? `${currentUser.graduationYear} Mezun Adayı` : profileData.grade),
+      studentNo: currentUser?.studentNo || profileData.studentNo,
+      targetSector: profileData.targetSector || match?.targetSector || currentUser?.targetSector || 'Yazılım & Bilişim Mimarisi',
+      internshipsCount: match?.internships ?? (currentUser?.internships ?? profileData.internshipsCount),
+      certificationsCount: match?.certifications ?? (currentUser?.certifications ?? profileData.certificationsCount),
+      workshopsCount: match?.workshopsAttended ?? (currentUser?.workshopsAttended ?? profileData.workshopsCount),
+      mentorMeetingsCount: match?.mentorMeetings ?? (currentUser?.mentorMeetings ?? profileData.mentorMeetingsCount),
+      cvCompleteness: score,
+      portfolioItems: match?.portfolioItems ?? (currentUser?.portfolioItems ?? profileData.portfolioItems),
+      accreditationScore: score,
+      verificationCode: currentUser?.verificationCode || profileData.verificationCode || `İESÜ-KGB-2026-${String(currentUser?.id || match?.id || '9941').replace(/[^0-9]/g, '').slice(-4).padStart(4, '0') || '9941'}`,
+      avatar: currentUser?.avatar || profileData.avatar,
+      advisorName: currentUser?.advisorName || profileData.advisorName || 'Doç. Dr. Selin Kaya',
+      internships: profileData.internships,
+      certifications: profileData.certifications
     };
-  }, [isAdmin, currentStudentRecord, currentUser]);
+  }, [isAdmin, currentStudentRecord, currentUser, DEFAULT_STUDENT_PROFILES]);
 
   const [activeTab, setActiveTab] = useState('ozet'); // 'ozet' | 'stajlar' | 'sertifikalar' | 'etkinlikler' | 'transkript'
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -109,71 +317,8 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   const [newRequestOrg, setNewRequestOrg] = useState('');
   const [newRequestHours, setNewRequestHours] = useState('');
 
-  // Static rich records for the student's portfolio
-  const [internships] = useState([
-    {
-      id: 'INT-01',
-      company: 'Baykar Teknoloji',
-      position: 'Yapay Zekâ & Gömülü Yazılım Stajyeri',
-      duration: '20 İş Günü (Zorunlu Staj)',
-      date: 'Temmuz 2025 - Ağustos 2025',
-      mentor: 'Mehmet Yılmaz (Kıdemli Ar-Ge Mühendisi)',
-      status: 'Onaylandı',
-      ects: '5 AKTS',
-      score: '100 / 100 (Pekiyi)',
-      skills: ['C++', 'ROS2', 'Gömülü Linux', 'Python'],
-      summary: 'İHA telemetri ve yapay zeka nesne tespit algoritmaları optimizasyonunda aktif görev alındı.'
-    },
-    {
-      id: 'INT-02',
-      company: 'Aselsan A.Ş.',
-      position: 'Yazılım Geliştirme Stajyeri',
-      duration: '30 İş Günü (İsteğe Bağlı Ar-Ge Stajı)',
-      date: 'Şubat 2026 - Mart 2026',
-      mentor: 'Dr. Selin Kaya (Yazılım Proje Yöneticisi)',
-      status: 'Onaylandı',
-      ects: '6 AKTS',
-      score: '95 / 100 (Pekiyi)',
-      skills: ['React', 'TypeScript', 'Mikroservis', 'Docker'],
-      summary: 'Savunma sanayii gerçek zamanlı izleme kokpiti web arayüz bileşenleri geliştirildi.'
-    }
-  ]);
-
-  const [certifications] = useState([
-    {
-      id: 'CRT-01',
-      title: 'İleri Seviye Full-Stack Web ve Bulut Mimarisi',
-      issuer: 'İESÜ Kariyer & Yetenek Akademisi',
-      issueDate: '12 Ocak 2026',
-      validUntil: 'Süresiz',
-      code: 'IESU-CRT-2026-9941',
-      hours: '48 Saat',
-      accreditedBy: 'YÖK & Pearson BTEC Uyumlu',
-      skills: ['React', 'Node.js', 'PostgreSQL', 'Cloud Deployment']
-    },
-    {
-      id: 'CRT-02',
-      title: 'AWS Certified Cloud Practitioner Hazırlık Sertifikası',
-      issuer: 'Amazon Web Services (AWS) Academy',
-      issueDate: '04 Mart 2026',
-      validUntil: 'Mart 2029',
-      code: 'AWS-ACA-88412',
-      hours: '36 Saat',
-      accreditedBy: 'Global Sanayi Standartları',
-      skills: ['AWS EC2', 'S3', 'IAM', 'Cloud Architecture']
-    },
-    {
-      id: 'CRT-03',
-      title: 'Çevik Proje Yönetimi ve Scrum Master Eğitimi',
-      issuer: 'İESÜ Sürekli Eğitim Merkezi & PMI Uyumlu',
-      issueDate: '18 Kasım 2025',
-      validUntil: 'Süresiz',
-      code: 'IESU-SCRUM-4412',
-      hours: '24 Saat',
-      accreditedBy: 'Uluslararası Proje Standartları',
-      skills: ['Scrum', 'Kanban', 'Sprint Planning', 'Jira']
-    }
-  ]);
+  const internships = studentData.internships || DEFAULT_STUDENT_PROFILES['STU-01'].internships;
+  const certifications = studentData.certifications || DEFAULT_STUDENT_PROFILES['STU-01'].certifications;
 
   const [workshops] = useState([
     { id: 'W1', title: 'Sektör Liderleriyle Yapay Zekâ Zirvesi 2026', category: 'Konferans', hours: 8, date: '15 Şubat 2026', speaker: 'Prof. Dr. Hakan Demir' },
@@ -191,13 +336,14 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   };
 
   const handleExportPDF = () => {
+    setActiveTab('transkript');
     toast.info('YÖK Uyumlu Resmi KGB Belgesi (PDF) Hazırlanıyor...');
     setTimeout(() => {
       window.print();
       if (logAction) {
         logAction(studentData.name, 'Resmi KGB Kariyer Karnesi PDF olarak yazdırıldı/indirildi.', 'KGB');
       }
-    }, 500);
+    }, 400);
   };
 
   const handleSubmitRequest = (e) => {
@@ -235,7 +381,8 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             <button
               onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
               className="w-10 h-10 rounded-full bg-white border border-gray-200 hover:bg-red-50 text-gray-700 hover:text-[#990000] flex items-center justify-center shadow-xs transition cursor-pointer shrink-0 group"
-              title="Öğrenci Portalına Dön"
+              title={isAdmin ? "Yönetim Paneline Dön" : "Öğrenci Portalına Dön"}
+              aria-label={isAdmin ? "Yönetim Paneline Dön" : "Öğrenci Portalına Dön"}
             >
               <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             </button>
@@ -311,7 +458,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   onChange={(e) => setSelectedStudentId(e.target.value)}
                   className="w-full bg-transparent text-white font-black text-xs sm:text-sm focus:outline-none cursor-pointer [&>option]:bg-slate-900 [&>option]:text-white"
                 >
-                  {kgbStudentRecords.map((stu) => (
+                  {activeStudentList.map((stu) => (
                     <option key={stu.id} value={stu.id}>
                       {stu.name} — {stu.department}
                     </option>
@@ -396,10 +543,10 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   <p className="text-[10px] font-bold text-red-950 uppercase tracking-wider">KGB Genel Skoru</p>
                   <div className="flex items-baseline gap-1 justify-center sm:justify-end">
                     <span className="text-3xl font-black text-[#990000]">{studentData.accreditationScore}</span>
-                    <span className="text-xs font-bold text-gray-400">/ 100</span>
+                    <span className="text-xs font-bold text-slate-500">/ 100</span>
                   </div>
                   <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full bg-[#990000] text-white text-[10px] font-black">
-                    A+ Düzeyi (Pekiyi)
+                    {studentData.accreditationScore >= 85 ? 'A+ Düzeyi (Pekiyi)' : studentData.accreditationScore >= 75 ? 'A Düzeyi (Pekiyi)' : 'B+ Düzeyi (İyi)'}
                   </span>
                 </div>
 
@@ -415,15 +562,15 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <span className="text-gray-700 flex items-center gap-1.5">
                   <Compass size={14} className="text-[#990000]" /> Mezuniyet Kariyer Yeterliliği ve Yetenek Karnesi İlerlemesi
                 </span>
-                <span className="text-[#990000] font-black">%88 Tamamlandı</span>
+                <span className="text-[#990000] font-black">%{studentData.accreditationScore} Tamamlandı</span>
               </div>
               <div className="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-red-800 via-[#990000] to-emerald-500 rounded-full transition-all duration-500" 
-                  style={{ width: '88%' }}
+                  style={{ width: `${studentData.accreditationScore}%` }}
                 />
               </div>
-              <div className="flex items-center justify-between mt-2 text-[10px] text-gray-500 font-medium">
+              <div className="flex items-center justify-between mt-2 text-[10px] text-slate-600 font-semibold">
                 <span>Başlangıç Yılı (2023)</span>
                 <span>Zorunlu Stajlar Tamamlandı</span>
                 <span>Mesleki Sertifikalar Eklendi</span>
@@ -442,7 +589,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             <div>
               <p className="text-2xl font-black text-gray-900">{studentData.internshipsCount}</p>
               <p className="text-xs font-bold text-gray-500">Onaylı Staj</p>
-              <span className="text-[10px] text-emerald-600 font-bold">50 İş Günü Tamam</span>
+              <span className="text-[10px] text-emerald-600 font-bold">{studentData.internshipsCount * 25} İş Günü Tamam</span>
             </div>
           </div>
 
@@ -453,7 +600,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             <div>
               <p className="text-2xl font-black text-gray-900">{studentData.certificationsCount}</p>
               <p className="text-xs font-bold text-gray-500">Akredite Sertifika</p>
-              <span className="text-[10px] text-amber-600 font-bold">108 Saat Eğitim</span>
+              <span className="text-[10px] text-amber-600 font-bold">{studentData.certificationsCount * 36} Saat Eğitim</span>
             </div>
           </div>
 
@@ -464,7 +611,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             <div>
               <p className="text-2xl font-black text-gray-900">{studentData.workshopsCount}</p>
               <p className="text-xs font-bold text-gray-500">Workshop & Atölye</p>
-              <span className="text-[10px] text-blue-600 font-bold">34 Saat Katılım</span>
+              <span className="text-[10px] text-blue-600 font-bold">{studentData.workshopsCount * 4} Saat Katılım</span>
             </div>
           </div>
 
@@ -475,7 +622,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             <div>
               <p className="text-2xl font-black text-gray-900">{studentData.mentorMeetingsCount}</p>
               <p className="text-xs font-bold text-gray-500">Mentor Seansı</p>
-              <span className="text-[10px] text-purple-600 font-bold">Bire Bir Sektör Rehberi</span>
+              <span className="text-[10px] text-purple-600 font-bold">{studentData.mentorMeetingsCount * 2} Saat Bire Bir Danışmanlık</span>
             </div>
           </div>
         </section>
@@ -643,16 +790,16 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-red-50 text-[#990000] flex items-center justify-center font-black text-sm border border-red-100">
-                      AY
+                      {studentData.advisorName.split(' ').map(n => n[0]).filter(Boolean).slice(-2).join('')}
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-gray-900">Dr. Öğr. Üyesi Ahmet Yılmaz</h4>
+                      <h4 className="text-xs font-black text-gray-900">{studentData.advisorName}</h4>
                       <p className="text-[10px] text-gray-500">Akademik & Kariyer Danışmanı</p>
                     </div>
                   </div>
 
-                  <blockquote className="text-xs text-gray-600 italic bg-gray-50 p-3.5 rounded-2xl border border-gray-100 mb-3">
-                    "Öğrencimiz Ahmet Yılmaz, Ar-Ge stajlarında gösterdiği üstün performans ve uluslararası bulut sertifikasyonu ile bölüm standartlarının üzerinde bir kariyer hazırlığına ulaşmıştır."
+                  <blockquote className="text-xs text-gray-600 italic bg-gray-50 p-3.5 rounded-2xl border border-gray-100 mb-3 leading-relaxed">
+                    "Öğrencimiz {studentData.name}, {studentData.department} alanındaki akademik ve uygulamalı çalışmalarında gösterdiği üstün performans ile bölüm standartlarının üzerinde bir kariyer hazırlığına ulaşmıştır."
                   </blockquote>
 
                   <div className="flex items-center justify-between text-[11px] text-gray-500 font-semibold">
@@ -674,7 +821,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <p className="text-xs text-gray-500">Kariyer Koordinatörlüğü ve Bölüm Başkanlığı tarafından tescil edilen stajlar.</p>
               </div>
               <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black">
-                Toplam: 50 İş Günü
+                Toplam: {studentData.internshipsCount * 25} İş Günü
               </span>
             </div>
 
@@ -854,7 +1001,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             </div>
 
             {/* Resmi Belge Tasarımı */}
-            <div className="bg-white rounded-3xl border-2 border-red-900/20 p-8 sm:p-12 shadow-md max-w-4xl mx-auto space-y-8 print:border-none print:shadow-none print:p-0">
+            <div id="kgb-print-area" className="bg-white rounded-3xl border-2 border-red-900/20 p-8 sm:p-12 shadow-md max-w-4xl mx-auto space-y-8 print:border-none print:shadow-none print:p-0">
               
               {/* Belge Üst Başlığı */}
               <div className="text-center border-b-2 border-red-900/30 pb-6 space-y-2">
@@ -872,7 +1019,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight pt-2">
                   RESMİ KARİYER GELİŞİM BELGESİ (KGB) VE YETENEK KARNESİ
                 </h3>
-                <p className="text-[11px] text-gray-500 font-mono">
+                <p className="text-[11px] text-slate-600 font-mono font-semibold">
                   Belge Kayıt No: İESÜ-KGB-2026/0941 • YÖKSİS Entegrasyon Kodu: TR-34-IESU-KGB
                 </p>
               </div>
@@ -880,20 +1027,20 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               {/* Öğrenci Resmi Bilgileri */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs bg-gray-50 p-4 rounded-2xl border border-gray-200">
                 <div>
-                  <span className="block text-[10px] text-gray-400 font-bold uppercase">Adı Soyadı</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Adı Soyadı</span>
                   <span className="font-black text-gray-900">{studentData.name}</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] text-gray-400 font-bold uppercase">Öğrenci Numarası</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Öğrenci Numarası</span>
                   <span className="font-black text-gray-900">{studentData.studentNo}</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] text-gray-400 font-bold uppercase">Fakülte / Bölüm</span>
-                  <span className="font-black text-gray-900">{studentData.department}</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Fakülte / Bölüm</span>
+                  <span className="font-black text-gray-900">{studentData.faculty} / {studentData.department}</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] text-gray-400 font-bold uppercase">Genel Başarı Seviyesi</span>
-                  <span className="font-black text-emerald-700">A+ (%88 Pekiyi)</span>
+                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Genel Başarı Seviyesi</span>
+                  <span className="font-black text-emerald-700">{studentData.accreditationScore >= 88 ? 'A+' : 'A'} (%{studentData.accreditationScore} Pekiyi)</span>
                 </div>
               </div>
 
@@ -918,7 +1065,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   {certifications.map((crt, idx) => (
                     <div key={idx} className="flex justify-between items-center py-1 border-b border-gray-100">
                       <span>• <strong>{crt.title}</strong> ({crt.issuer})</span>
-                      <span className="font-mono text-gray-500">{crt.hours} • Onaylı</span>
+                      <span className="font-mono text-slate-600 font-semibold">{crt.hours} • Onaylı</span>
                     </div>
                   ))}
                 </div>
@@ -927,14 +1074,14 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   3. Mesleki Atölye, Seminer ve Vaka Çalışmaları
                 </h4>
                 <p className="text-gray-600">
-                  Öğrenci eğitim süresince toplam <strong>7 adet</strong> resmi atölye ve seminer programına katılmış, <strong>34 saatlik</strong> mesleki yetkinlik kazanımını tamamlamıştır.
+                  Öğrenci eğitim süresince toplam <strong>{studentData.workshopsCount} adet</strong> resmi atölye ve seminer programına katılmış, <strong>{studentData.workshopsCount * 4} saatlik</strong> mesleki yetkinlik kazanımını tamamlamıştır.
                 </p>
               </div>
 
               {/* İmza ve Mühür Alanı */}
               <div className="pt-8 border-t-2 border-red-900/30 flex flex-col sm:flex-row items-center justify-between gap-6 text-center">
                 <div>
-                  <p className="text-xs font-black text-gray-900">Dr. Öğr. Üyesi Ahmet Yılmaz</p>
+                  <p className="text-xs font-black text-gray-900">{studentData.advisorName}</p>
                   <p className="text-[10px] text-gray-500">Kariyer Danışmanı & Bölüm Temsilcisi</p>
                   <p className="text-[9px] text-emerald-600 font-bold mt-1">✓ E-İmzalanmıştır</p>
                 </div>

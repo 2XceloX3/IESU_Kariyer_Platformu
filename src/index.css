@@ -159,10 +159,12 @@
   body * {
     visibility: hidden;
   }
-  #cv-print-area, #cv-print-area * {
+  #cv-print-area, #cv-print-area *,
+  #kgb-print-area, #kgb-print-area * {
     visibility: visible;
   }
-  #cv-print-area {
+  #cv-print-area,
+  #kgb-print-area {
     position: fixed !important;
     left: 0 !important;
     top: 0 !important;
