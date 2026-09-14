@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import DOMPurify from 'dompurify';
 import { 
   initialNews, initialEvents, initialAnnouncements, 
   initialSemCourses, initialJobs, initialFeatured, 
@@ -14,6 +15,57 @@ const initialRealCompanies = [];
 
 const initialClubs = [];
 const initialClubApplications = [];
+
+const initialApplications = [
+  {
+    id: 'APP-101',
+    jobId: 'JOB-001',
+    jobTitle: 'Ulusal Staj Programı',
+    company: 'İESÜ Kariyer Geliştirme Koordinatörlüğü',
+    applicantId: 'STU-002',
+    applicantName: 'Zeynep Yılmaz',
+    applicantEmail: 'zeynep.y@esenyurt.edu.tr',
+    applicantPhone: '0532 111 2233',
+    applicantDept: 'Yazılım Mühendisliği',
+    coverLetter: 'Cumhurbaşkanlığı Ulusal Staj Programı kapsamında kamu ve savunma sanayii kurumlarında staj yapmak istiyorum.',
+    cvType: 'KGM Akredite İESÜ Dijital CV',
+    status: 'Beklemede',
+    companyContacted: false,
+    date: '11.09.2026'
+  },
+  {
+    id: 'APP-102',
+    jobId: 'JOB-002',
+    jobTitle: 'Frontend Developer Stajyeri',
+    company: 'Logo Yazılım',
+    applicantId: 'STU-003',
+    applicantName: 'Ahmet Kaya',
+    applicantEmail: 'ahmet.k@esenyurt.edu.tr',
+    applicantPhone: '0533 222 3344',
+    applicantDept: 'Bilgisayar Mühendisliği',
+    coverLetter: 'React ve modern web teknolojileri alanında geliştirdiğim projelerle değer üretmek istiyorum.',
+    cvType: 'İESÜ Kariyer Havuzundaki Yüklenmiş PDF CV',
+    status: 'Mülakat',
+    companyContacted: true,
+    date: '08.09.2026'
+  },
+  {
+    id: 'APP-103',
+    jobId: 'JOB-003',
+    jobTitle: 'Yapay Zeka & Veri Analitiği Stajyeri',
+    company: 'Trendyol',
+    applicantId: 'STU-004',
+    applicantName: 'Selin Öztürk',
+    applicantEmail: 'selin.o@esenyurt.edu.tr',
+    applicantPhone: '0536 555 6677',
+    applicantDept: 'Veri Bilimi ve Analitiği',
+    coverLetter: 'Python ve makine öğrenmesi algoritmaları üzerine staj deneyimi kazanmak istiyorum.',
+    cvType: 'KGM Akredite İESÜ Dijital CV',
+    status: 'Kabul Edildi',
+    companyContacted: true,
+    date: '05.09.2026'
+  }
+];
 
 const initialStaffList = [
   {
@@ -56,6 +108,22 @@ const useAppStore = create(
 
         notifications: [],
         setNotifications: setter('notifications'),
+        unreadNotificationsCount: 0,
+        setUnreadNotificationsCount: setter('unreadNotificationsCount'),
+        markAllNotificationsRead: () => set({ unreadNotificationsCount: 0 }),
+        userRole: null,
+        setUserRole: setter('userRole'),
+        activePortalBranch: 'student',
+        setActivePortalBranch: (branch) => set(() => {
+          try {
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('iesu_active_portal_branch', branch);
+            }
+          } catch(e) {}
+          return { activePortalBranch: branch };
+        }),
+        adminActiveTab: 'feed',
+        setAdminActiveTab: setter('adminActiveTab'),
         addNotification: (notif) => set((state) => ({
           ...(notif ? { notifications: [notif, ...(state.notifications || [])].slice(0, 50) } : {}),
           unreadNotificationsCount: (state.unreadNotificationsCount || 0) + 1
@@ -101,9 +169,6 @@ const useAppStore = create(
         ],
         setInstitutionalStatsData: setter('institutionalStatsData'),
 
-        chaosMode: false,
-        setChaosMode: setter('chaosMode'),
-
         auditLogs: [
           {
             id: 'log_initial',
@@ -114,18 +179,24 @@ const useAppStore = create(
             ip: "192.168.1.101"
           }
         ],
-        logAction: (user, action, module) => set((state) => {
+        logAction: (user, action, module = 'Genel', severity = 'info', metadata = null) => set((state) => {
           const now = new Date();
-          const timeString = now.toLocaleTimeString("tr-TR");
+          const cleanUser = typeof user === 'string' ? DOMPurify.sanitize(user.slice(0, 100)) : String(user || 'Misafir');
+          const cleanAction = typeof action === 'string' ? DOMPurify.sanitize(action.slice(0, 500)) : String(action || '');
+          const cleanModule = typeof module === 'string' ? DOMPurify.sanitize(module.slice(0, 50)) : 'Genel';
           const newEntry = {
-            id: 'log_' + Math.random().toString(36).substr(2, 9),
-            timestamp: timeString,
-            user: user || "Misafir",
-            action: action,
-            module: module || "Genel",
-            ip: "192.168.1.101"
+            id: 'log_' + now.getTime() + '_' + Math.random().toString(36).substr(2, 6),
+            timestamp: now.toLocaleTimeString("tr-TR"),
+            isoTimestamp: now.toISOString(),
+            user: cleanUser,
+            action: cleanAction,
+            module: cleanModule,
+            severity: (severity === 'warning' || severity === 'critical') ? severity : 'info',
+            ip: typeof window !== 'undefined' ? (window.location?.hostname || 'localhost') : 'server',
+            metadata: metadata && typeof metadata === 'object' ? { ...metadata } : null
           };
-          return { auditLogs: [newEntry, ...(state.auditLogs || [])].slice(0, 100) };
+          const logs = state.auditLogs || [];
+          return { auditLogs: [newEntry, ...logs.slice(0, 199)] };
         }),
         
         sendMessage: (msg) => set((state) => ({
@@ -148,8 +219,8 @@ const useAppStore = create(
         previousView: 'landing',
         setPreviousView: setter('previousView'),
 
-        userRole: null,
-        setUserRole: setter('userRole'),
+        currentUser: null,
+        setCurrentUser: setter('currentUser'),
 
         focusMode: false,
         setFocusMode: setter('focusMode'),
@@ -177,8 +248,6 @@ const useAppStore = create(
         clubs: initialClubs,
         setClubs: setter('clubs'),
 
-        groups: initialGroups,
-        setGroups: setter('groups'),
         students: generateStudents(),
         setStudents: setter('students'),
         alumni: generateAlumni(),
@@ -211,9 +280,6 @@ const useAppStore = create(
         ],
         setMarketplaceItems: setter('marketplaceItems'),
 
-        clubApplications: initialClubApplications,
-        setClubApplications: setter('clubApplications'),
-
         news: liveNewsData,
         setNews: setter('news'),
 
@@ -232,9 +298,6 @@ const useAppStore = create(
         swipedJobs: [],
         setSwipedJobs: setter('swipedJobs'),
 
-        featuredItems: initialFeatured,
-        setFeaturedItems: setter('featuredItems'),
-
         internships: initialInternships,
         setInternships: setter('internships'),
 
@@ -244,8 +307,9 @@ const useAppStore = create(
         // --- Eksik slice'lar (UI crash koruması) ---
         // Aşağıdakiler birçok bileşen/store'da okunuyor ya da set ediliyordu ama store'da yoktu
         // → options undefined => iken değerler undefined kalıyor, setter çağrıları TypeError atıyordu.
-        applications: [],
+        applications: initialApplications,
         setApplications: setter('applications'),
+        addApplication: (app) => set(state => ({ applications: [app, ...(state.applications || [])] })),
 
         // UI featuredOpportunities adını kullanıyor (featuredItems değil)
         featuredOpportunities: initialFeatured,
@@ -285,9 +349,6 @@ const useAppStore = create(
         ],
         setAlumniAssocApplications: setter('alumniAssocApplications'),
 
-        featureAlumniAssocToggle: true,
-        setFeatureAlumniAssocToggle: setter('featureAlumniAssocToggle'),
-
         academicCatalog: initialAcademicCatalog,
         setAcademicCatalog: setter('academicCatalog'),
 
@@ -322,10 +383,169 @@ const useAppStore = create(
         addClubApplication: (app) => set(state => ({ clubApplications: [app, ...(state.clubApplications || [])] })),
 
         labReservations: [
-          { id: 'RES-LAB-01', name: 'Dr. Ahmet Yılmaz', labName: 'Yapay Zeka & Derin Öğrenme Ar-Ge Lab', timeSlot: '14:00 - 16:00', date: '2026-07-21', status: 'Onaylandı' }
+          { 
+            id: 'RES-LAB-01', 
+            name: 'Dr. Ahmet Yılmaz', 
+            academicTitle: 'Dr. Öğr. Üyesi', 
+            department: 'Bilgisayar Mühendisliği', 
+            email: 'ahmet.yilmaz@esenyurt.edu.tr', 
+            phone: '+90 532 111 2233', 
+            labId: 'LAB-01', 
+            labName: 'Yapay Zeka & Derin Öğrenme Ar-Ge Lab', 
+            timeSlot: '14:00 - 16:00', 
+            date: '2026-07-21', 
+            projectSubject: 'TÜBİTAK 1001 Derin Öğrenme Model Eğitimi', 
+            attendeeCount: 4, 
+            specialRequests: '8x H100 GPU kümesi erişim yetkisi', 
+            status: 'Onaylandı', 
+            adminNote: 'Rezervasyon onaylandı. Laboratuvar sorumlusundan erişim kartınızı teslim alabilirsiniz.',
+            createdAt: '2026-07-20T10:00:00Z' 
+          }
         ],
         setLabReservations: setter('labReservations'),
         addLabReservation: (res) => set(state => ({ labReservations: [res, ...(state.labReservations || [])] })),
+        updateLabReservationStatus: (id, status, adminNote = null) => set(state => ({
+          labReservations: (state.labReservations || []).map(r => r.id === id ? { 
+            ...r, 
+            status, 
+            ...(adminNote !== null ? { adminNote } : {}),
+            updatedAt: new Date().toISOString()
+          } : r)
+        })),
+
+        researchCallApplications: [
+          {
+            id: 'APP-CALL-01',
+            callId: 'CALL-101',
+            callTitle: 'TÜBİTAK 2209-A: Otonom İHA Kontrol Algoritmaları Bursiyer Çağrısı',
+            lead: 'Dr. Öğr. Üyesi Mehmet Can',
+            applicantName: 'Mert Demir',
+            applicantStatus: 'Yüksek Lisans Öğrencisi',
+            department: 'Bilgisayar Mühendisliği',
+            email: 'mert.demir@ogr.esenyurt.edu.tr',
+            phone: '+90 532 555 0192',
+            appliedRole: 'Yüksek Lisans Bursiyeri',
+            weeklyHours: '15 - 20 Saat / Hafta',
+            skillsExperience: 'ROS2, C++, Python, Gazebo simülasyon deneyimi.',
+            statementOfPurpose: 'İHA rota optimizasyonu üzerine tez çalışmamı bu TÜBİTAK projesinde sürdürmek istiyorum.',
+            cvLink: 'https://iesu.edu.tr/cv/mert-demir',
+            status: 'Onay Bekliyor',
+            adminNote: '',
+            submittedAt: '2026-07-21T14:30:00Z'
+          }
+        ],
+        setResearchCallApplications: setter('researchCallApplications'),
+        addResearchCallApplication: (app) => set(state => ({ researchCallApplications: [app, ...(state.researchCallApplications || [])] })),
+        updateResearchCallApplicationStatus: (id, status, adminNote = null) => set(state => ({
+          researchCallApplications: (state.researchCallApplications || []).map(a => a.id === id ? { 
+            ...a, 
+            status, 
+            ...(adminNote !== null ? { adminNote } : {}),
+            updatedAt: new Date().toISOString()
+          } : a)
+        })),
+
+        // Ar-Ge Laboratuvarları Kataloğu (Yönetici Paneli Yönetilebilir)
+        researchLabs: [
+          {
+            id: 'LAB-01',
+            name: 'Yapay Zeka & Derin Öğrenme Ar-Ge Lab',
+            location: 'J Blok 4. Kat / Lab 402',
+            equipment: '8x NVIDIA H100 Tensor Core GPU Sunucu',
+            capacity: '25 Araştırmacı',
+            status: 'Aktif / Rezervasyona Açık'
+          },
+          {
+            id: 'LAB-02',
+            name: 'Otonom Sistemler & İHA Geliştirme Lab',
+            location: 'Kuluçka Merkezi A Blok',
+            equipment: 'Rüzgar Tüneli & 3D Metal Yazıcılar',
+            capacity: '15 Araştırmacı',
+            status: 'Aktif / Rezervasyona Açık'
+          },
+          {
+            id: 'LAB-03',
+            name: 'Biyomedikal Cihaz & Doku Mühendisliği Lab',
+            location: 'C Blok Zemin Kat / Lab 104',
+            equipment: 'Hücre Kültür İnkübatörleri & Mikroskoplar',
+            capacity: '20 Araştırmacı',
+            status: 'Bakımda (Yarın Açık)'
+          }
+        ],
+        setResearchLabs: setter('researchLabs'),
+        addResearchLab: (lab) => set(state => ({ researchLabs: [lab, ...(state.researchLabs || [])] })),
+        updateResearchLab: (updated) => set(state => ({ researchLabs: (state.researchLabs || []).map(l => l.id === updated.id ? updated : l) })),
+        deleteResearchLab: (id) => set(state => ({ researchLabs: (state.researchLabs || []).filter(l => l.id !== id) })),
+
+        // Proje & Bursiyer Çağrıları Kataloğu (Yönetici Paneli Yönetilebilir)
+        researchCalls: [
+          {
+            id: 'CALL-101',
+            title: 'TÜBİTAK 2209-A: Otonom İHA Kontrol Algoritmaları Bursiyer Çağrısı',
+            lead: 'Dr. Öğr. Üyesi Mehmet Can',
+            positions: '2 Lisans / 1 Yüksek Lisans Öğrencisi',
+            deadline: '15 Mart 2026',
+            budget: '75.000 ₺ Destekli',
+            status: 'Aktif'
+          },
+          {
+            id: 'CALL-102',
+            title: 'BAP Projesi: Sağlıkta LLM Destekli Tanı Asistanı Araştırmacı Alımı',
+            lead: 'Prof. Dr. Bahri Şahin',
+            positions: '3 Yazılım Araştırmacısı',
+            deadline: '01 Nisan 2026',
+            budget: '120.000 ₺ Destekli',
+            status: 'Aktif'
+          }
+        ],
+        setResearchCalls: setter('researchCalls'),
+        addResearchCall: (call) => set(state => ({ researchCalls: [call, ...(state.researchCalls || [])] })),
+        updateResearchCall: (updated) => set(state => ({ researchCalls: (state.researchCalls || []).map(c => c.id === updated.id ? updated : c) })),
+        deleteResearchCall: (id) => set(state => ({ researchCalls: (state.researchCalls || []).filter(c => c.id !== id) })),
+
+        // Ar-Ge & Çağrı Formu Soruları & Revize Ayarları (Yönetici Paneli Yapılandırması)
+        researchConfig: {
+          timeSlots: [
+            "09:00 - 11:00 (Sabah Seansı)",
+            "11:30 - 13:30 (Öğle Seansı)",
+            "14:00 - 16:00 (Öğleden Sonra Seansı)",
+            "16:30 - 18:30 (Akşam Seansı)"
+          ],
+          labCustomQuestions: [
+            { 
+              id: 'q_safety', 
+              label: 'Laboratuvar İş Sağlığı & Güvenliği (İSG) Eğitimi Tamamlandı mı?', 
+              type: 'select', 
+              options: ['Evet (Sertifikalı)', 'Muaf (Öğretim Üyesi)', 'Henüz Tamamlanmadı'], 
+              required: true 
+            },
+            { 
+              id: 'q_ethics', 
+              label: 'Etik Kurul Onayı Gerektiriyor mu?', 
+              type: 'select', 
+              options: ['Gerektirmiyor', 'Alındı (Karar No Mevcut)', 'Başvuru Aşamasında'], 
+              required: false 
+            }
+          ],
+          callCustomQuestions: [
+            { 
+              id: 'cq_availability', 
+              label: 'Hafta Sonu / Saha Çalışmasına Katılım Durumu', 
+              type: 'select', 
+              options: ['Tamamen Uygun', 'Sadece Cumartesi', 'Yalnızca Hafta İçi'], 
+              required: false 
+            },
+            { 
+              id: 'cq_scholarship', 
+              label: 'Daha Önce TÜBİTAK/BAP Bursiyeri Oldunuz mu?', 
+              type: 'select', 
+              options: ['Hayır (İlk Kez)', 'Evet (TÜBİTAK 2209)', 'Evet (BAP)', 'Evet (Diğer)'], 
+              required: false 
+            }
+          ]
+        },
+        setResearchConfig: setter('researchConfig'),
+        updateResearchConfig: (partial) => set(state => ({ researchConfig: { ...(state.researchConfig || {}), ...partial } })),
 
         newsletterSubscribers: [
           {
@@ -548,30 +768,56 @@ const useAppStore = create(
         setIsScraperLoading: setter('isScraperLoading'),
         refreshScrapedData: async (forceRefresh = false) => {
           set({ isScraperLoading: true });
-          try {
-            const { scrapeLiveOrFallback } = await import('../services/scraper');
-            const data = await scrapeLiveOrFallback({ forceRefresh });
-            set((state) => ({
-              ...(data.announcements && data.announcements.length > 0 ? { announcements: data.announcements } : {}),
-              ...(data.events && data.events.length > 0 ? { events: data.events } : {}),
-              lastUpdated: data.lastUpdated || new Date().toISOString(),
-              source: data.source || 'live',
-              status: data.status || 'aktif',
-              isScraperLoading: false
-            }));
-            return data;
-          } catch (err) {
-            console.error("Failed to refresh scraped data:", err);
-            set({ isScraperLoading: false, status: 'error' });
-            throw err;
+          let lastErr = null;
+          for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+              const { scrapeLiveOrFallback } = await import('../services/scraper');
+              const data = await scrapeLiveOrFallback({ forceRefresh });
+              set((state) => ({
+                ...(data.announcements && data.announcements.length > 0 ? { announcements: data.announcements } : {}),
+                ...(data.events && data.events.length > 0 ? { events: data.events } : {}),
+                lastUpdated: data.lastUpdated || new Date().toISOString(),
+                source: data.source || 'live',
+                status: data.status || 'aktif',
+                isScraperLoading: false
+              }));
+              return data;
+            } catch (err) {
+              lastErr = err;
+              if (attempt === 0) {
+                await new Promise((r) => setTimeout(r, 600));
+              }
+            }
           }
-        }
+          console.error("Failed to refresh scraped data after retries:", lastErr);
+          set({ isScraperLoading: false, status: 'error' });
+          throw lastErr;
+        },
+        siteConfig: {
+          heroBannerTitle: 'Kariyerini Şekillendir',
+          heroBannerSub: 'İESÜ Kariyer Platformu ile fırsatları keşfet, ağını genişlet ve geleceğini inşa et.',
+          ctaButtonText: 'Hemen Başla',
+          maintenanceMode: false,
+          announcementBanner: { visible: false, text: '', color: 'red' },
+          primaryColor: '#990000',
+          logoSubText: 'IESU KARİYER',
+          footerMotto: 'Geleceğe açılan kapı.',
+        },
+        setSiteConfig: setter('siteConfig'),
       };
     },
     {
       name: 'iesu-career-store-v22',
       partialize: (state) => ({
         userRole: state.userRole,
+        activePortalBranch: state.activePortalBranch,
+        adminActiveTab: state.adminActiveTab,
+        students: state.students,
+        alumni: state.alumni,
+        companies: state.companies,
+        featureClubsShowcase: state.featureClubsShowcase,
+        featureClubApplications: state.featureClubApplications,
+        featureSSPLeaderboard: state.featureSSPLeaderboard,
         auditLogs: state.auditLogs,
         featureSurveys: state.featureSurveys,
         featureCareerCheckup: state.featureCareerCheckup,
@@ -594,7 +840,13 @@ const useAppStore = create(
         institutionalStatsData: state.institutionalStatsData,
         showInstitutionalStats: state.showInstitutionalStats,
         sspUsers: state.sspUsers,
-        liveRooms: state.liveRooms
+        liveRooms: state.liveRooms,
+        labReservations: state.labReservations,
+        researchCallApplications: state.researchCallApplications,
+        researchLabs: state.researchLabs,
+        researchCalls: state.researchCalls,
+        researchConfig: state.researchConfig,
+        siteConfig: state.siteConfig
       })
     }
   )

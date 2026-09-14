@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import { Users, Edit, Trash2, Plus, Calendar, Search, Filter, BookOpen, Clock, Target, CheckCircle2, ArrowRight } from 'lucide-react';
 import MediaUploader from './MediaUploader';

@@ -476,7 +476,7 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans">
-      <MainHeader setView={setView} />
+      <MainHeader setView={setView} currentUser={currentUser} userRole={userRole} />
 
       <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         

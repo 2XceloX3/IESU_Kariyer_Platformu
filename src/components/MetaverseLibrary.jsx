@@ -46,7 +46,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
     setTimeout(async () => {
       try {
         const response = await generateAIResponse(prompt, "Sadece JSON dön");
-        let cleanJson = response.replace(/json/gi, '').replace(/[\`]/g, '').trim();
+        let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
         const data = JSON.parse(cleanJson);
         setResults(data);
         setIsSearching(false);
@@ -72,7 +72,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
             className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
           >
             <ChevronLeft size={20} />

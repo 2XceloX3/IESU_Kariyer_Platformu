@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Image as ImageIcon, FileText, Video, Send, X, Plus, Calendar, Smile, BarChart2 } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
+import DOMPurify from 'dompurify';
 
 export default function PostComposer({ currentUser, userRole, posts, setPosts, asClub }) {
+  const logAction = useAppStore(state => state.logAction);
   const [content, setContent] = useState('');
   const [media, setMedia] = useState(null);
   const [mediaType, setMediaType] = useState(null); // 'image', 'video', 'pdf'
@@ -15,7 +18,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
   const [evDesc, setEvDesc] = useState('');
 
   const publishEvent = () => {
-    const title = evTitle.trim();
+    const title = DOMPurify.sanitize(evTitle.trim());
     if (!title) { window.toast?.info('Etkinlik başlığı gerekli'); return; }
     const newPost = {
       id: 'EVNT-' + Date.now(),
@@ -42,7 +45,12 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     setPosts([newPost, ...(posts || [])]);
     setEventMode(false); setEvTitle(''); setEvDate(''); setEvLocation(''); setEvDesc('');
     setMedia(null); setMediaType(null);
-    window.toast.success("Etkinlik paylaşıldı!");
+    if (logAction) {
+      logAction(currentUser?.name || 'Kullanıcı', `Yeni etkinlik paylaşıldı: ${title}`, 'Etkinlik', 'info');
+    }
+    if (window.toast && typeof window.toast.success === 'function') {
+      window.toast.success("Etkinlik paylaşıldı!");
+    }
   };
 
   const handleFileUpload = (e, type) => {
@@ -56,7 +64,8 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim() && !media) return;
+    const cleanContent = DOMPurify.sanitize(content.trim()).slice(0, 3000);
+    if (!cleanContent && !media) return;
     setIsSubmitting(true);
 
     const newPost = {
@@ -73,14 +82,14 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         title: currentUser?.title || currentUser?.department || 'Öğrenci',
         role: userRole || currentUser?.role || undefined
       },
-      content: content.trim(),
+      content: cleanContent,
       image: mediaType === 'image' ? media : null,
       video: mediaType === 'video' ? media : null,
       pdf: mediaType === 'pdf' ? media : null,
       time: 'Az önce',
       likes: 0,
       comments: 0,
-      status: 'Beklemede'
+      status: (userRole === 'admin' || currentUser?.role === 'admin') ? 'Yayında' : 'Beklemede'
     };
 
     setPosts([newPost, ...(posts || [])]);
@@ -89,11 +98,17 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     setMediaType(null);
     setIsFocused(false);
     
-    window.toast.success("Gönderiniz paylaşıldı!");
+    if (logAction) {
+      logAction(currentUser?.name || 'Kullanıcı', 'Yeni gönderi paylaşıldı', 'Akış', 'info');
+    }
+
+    if (window.toast && typeof window.toast.success === 'function') {
+      window.toast.success("Gönderiniz paylaşıldı!");
+    }
     
     setTimeout(() => {
       setIsSubmitting(false);
-    }, 500);
+    }, 400);
   };
 
   const authorAvatar = asClub ? (asClub.logo || '/iesu-logo.svg') : (userRole === 'admin' || currentUser?.role === 'admin') ? "/iesu-logo.svg" : (currentUser?.avatar || '/iesu-logo.svg');

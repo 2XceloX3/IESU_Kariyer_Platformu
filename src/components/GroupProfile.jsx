@@ -1,9 +1,10 @@
-﻿import React from 'react';
+import React from 'react';
 import { Users, Info, ShieldCheck, MessageCircle, Calendar, Home, Compass, Briefcase } from 'lucide-react';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
+import AdminOmniDock from './AdminOmniDock';
 import useAppStore from '../store/useAppStore';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
@@ -30,6 +31,8 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
 };
 
 export default function GroupProfile({ userRole, groupId, groupData, currentUser, setView, setSelectedUserId }) {
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const effectiveRole = (activePortalBranch === 'student') ? 'student' : (activePortalBranch === 'alumni' ? 'alumni' : (userRole || 'student'));
   const posts = useAppStore((state) => state.posts);
   const setPosts = useAppStore((state) => state.setPosts);
 
@@ -39,7 +42,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
         <Users size={48} className="text-gray-400 mb-4" />
         <h2 className="text-xl font-black text-gray-900 mb-2">Grup Bulunamadı</h2>
         <p className="text-gray-500 max-w-md">Aradığınız kulüp veya topluluk sistemde kayıtlı değil veya yönetici onayı bekliyor.</p>
-        <button onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="mt-6 px-6 py-2 bg-[#990000] text-white font-bold rounded-xl">Akışa Dön</button>
+        <button onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="mt-6 px-6 py-2 bg-[#990000] text-white font-bold rounded-xl">Akışa Dön</button>
       </div>
     );
   }
@@ -48,17 +51,17 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
     <div className="min-h-screen bg-gray-50 pb-20 pt-16">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView('network')} />
             <NavIcon icon={<Users />} label="Topluluklar" active={true} onClick={() => setView('groups')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" onClick={() => setView('jobs')} />
             <div className="ml-2">
@@ -96,8 +99,8 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
           </div>
           
           <div className="flex gap-2 w-full sm:w-auto">
-            <button className="flex-1 sm:flex-none px-6 py-2.5 bg-[#990000] text-white font-bold rounded-xl hover:bg-[#990000] transition flex items-center justify-center gap-2">
-              Katıl
+            <button className={`flex-1 sm:flex-none px-6 py-2.5 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 ${userRole === 'admin' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-[#990000] hover:bg-red-800'}`}>
+              {userRole === 'admin' ? 'Topluluk Denetimi' : 'Katıl'}
             </button>
             <button aria-label="İşlem Butonu" className="flex-1 sm:flex-none px-4 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">
               <MessageCircle size={20} />
@@ -110,7 +113,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
           <div className="space-y-6">
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
-                <Info className="text-[#990000]" size={20} /> Hakkında
+                <Info className={userRole === 'admin' ? 'text-amber-600' : 'text-[#990000]'} size={20} /> Hakkında
               </h3>
               <p className="text-sm text-gray-600 font-medium leading-relaxed">
                 {groupData.description || 'Bu topluluk henüz bir açıklama eklemedi.'}
@@ -140,7 +143,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
 
             <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <h3 className="font-black text-gray-900 mb-4 flex items-center gap-2">
-                <Users className="text-[#990000]" size={20} /> Yönetim Kurulu
+                <Users className={userRole === 'admin' ? 'text-amber-600' : 'text-[#990000]'} size={20} /> Yönetim Kurulu
               </h3>
               <div className="space-y-3">
                 {[
@@ -183,6 +186,10 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
           </div>
         </div>
       </div>
+
+      {effectiveRole === 'admin' && (
+        <AdminOmniDock currentUser={currentUser} setView={setView} theme="amber" />
+      )}
     </div>
   );
 }

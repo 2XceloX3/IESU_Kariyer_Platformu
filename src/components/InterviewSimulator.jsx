@@ -111,7 +111,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
 
         <div className="bg-orange-50 rounded-2xl p-6 border border-orange-100">
           <h3 className="font-bold text-orange-800 flex items-center gap-2 mb-4">
-            <AlertCircle size={20} /> Esenyurt Alanları
+            <AlertCircle size={20} /> Gelişim Alanları
           </h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-2 text-orange-700 text-[15px]">
@@ -206,7 +206,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
       <header className="h-20 bg-white border-b border-gray-200/50 flex items-center justify-between px-6 lg:px-12 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-6">
           <button 
-            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
             className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-900 transition-colors"
           >
             <ChevronLeft size={24} />

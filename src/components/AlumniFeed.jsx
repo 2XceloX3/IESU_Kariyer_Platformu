@@ -1,14 +1,14 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe , ChevronDown , MapPin } from 'lucide-react'
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap } from 'lucide-react';
+import ConnectionSuggestions from './ConnectionSuggestions';
+import BranchNewsWidget from './BranchNewsWidget';
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
 import CareerShorts from './CareerShorts';
-import StoriesBar from './StoriesBar';
 import { combineFeedItems } from '../utils/feedCombiner';
 import PostCard from './PostCard';
-import CareerRadar from './CareerRadar';
 import CareerNetwork from './CareerNetwork';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -20,13 +20,11 @@ import NavIcon from './shared/NavIcon';
 import AlumniSurveys from './AlumniSurveys';
 import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
-import TrendingHashtags from './TrendingHashtags';
+import SafeAvatar from './shared/SafeAvatar';
 
 export default function AlumniFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
-  const stories = useAppStore(state => state.stories);
-  const setStories = useAppStore(state => state.setStories);
   const notifications = useAppStore(state => state.notifications);
   const setNotifications = useAppStore(state => state.setNotifications);
   const surveys = useAppStore(state => state.surveys);
@@ -68,6 +66,26 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
   const [showEventsModal, setShowEventsModal] = useState(false);
+  const [selectedNewsItem, setSelectedNewsItem] = useState(null);
+
+  // Guarantee Alumni branch isolation & auto-open evaluation questions
+  useEffect(() => {
+    const store = useAppStore.getState();
+    if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+
+    // Automatically trigger evaluation questions popup when entering the alumni panel
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('open-survey-popup'));
+    }, 700);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin';
+  const alumniName = currentUser?.name || 'Mezun';
+  const alumniDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (currentUser?.department || 'Yazılım Mühendisliği');
+  const alumniGradYear = (currentUser?.role === 'alumni' && (currentUser?.gradYear || currentUser?.graduationYear)) ? (currentUser.gradYear || currentUser.graduationYear) : '2023';
+  const alumniAvatar = currentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330');
+  const alumniId = (currentUser?.role === 'alumni' && currentUser?.id && currentUser.id !== 'admin_1513') ? currentUser.id : 'ALU-001';
 
   const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
   const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
@@ -104,31 +122,30 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     <div className="min-h-screen bg-transparent font-sans">
       {/* Hyper-Modern Navbar (Glassmorphism) */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          {/* LEFT: Star Icon for Post Creation */}
-          <button onClick={() => setActiveTab('create_post')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 ${activeTab === 'create_post' ? 'text-orange-500 bg-orange-50' : 'text-gray-600'}`} title="Gönderi Düzenle/Paylaş">
-            <Star size={24} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
-          </button>
-          
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" /><div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Portalı</p>
-            </div>
-          </div>
-          {/* GLOBAL SEARCH BAR (LinkedIn Style) */}
-          <div className="hidden md:flex flex-1 max-w-md mx-6">
-            <div className="relative w-full group">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search size={16} className="text-gray-400 group-focus-within:text-red-500 transition-colors" />
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between relative">
+          {/* LEFT: Logo & University Title */}
+          <div className="flex items-center gap-3">
+            <button onClick={() => setActiveTab('create_post')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 ${activeTab === 'create_post' ? 'text-orange-500 bg-orange-50' : 'text-gray-600'}`} title="Gönderi Düzenle/Paylaş">
+              <Star size={22} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
+            </button>
+            
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+              <Logo color="emerald" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
+              <div className="hidden sm:block text-left">
+                <h1 className="text-[13px] font-black text-emerald-800 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">İESÜ Mezunlar Portalı</p>
               </div>
-              <input 
-                type="text" 
-                placeholder="Öğrenci, firma, mezun veya içerik ara..." 
-                className="w-full bg-[#EEF3F8] text-gray-900 text-sm rounded-md focus:ring-2 focus:ring-red-500 focus:bg-white focus:outline-none block pl-10 p-2 transition-all"
-              />
             </div>
           </div>
+
+          {/* CENTER: Portal Badge */}
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-none z-20">
+            <span className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 shadow-md shadow-emerald-600/30 border border-emerald-300/60 flex items-center gap-2 whitespace-nowrap shrink-0">
+              <span className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0"></span>
+              🎓 MEZUN AĞI & KARİYER PORTALI
+            </span>
+          </div>
+
 
           
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
@@ -145,120 +162,139 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         </div>
       </nav>
 
-      {/* Main Container - Padded for Navbar */}
       <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-20">
-        
-        {/* LEFT PANEL: Profile (Fast Access) */}
         <div className="hidden lg:block w-[300px] shrink-0">
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
-            {userRole === 'admin' ? (
-              <div className="p-6 text-center">
-                <div className="relative inline-block mb-2">
-                  <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-gray-200 shadow-sm mx-auto p-2">
-                    <img src="/logo.png" alt="Admin" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white p-1.5 rounded-xl shadow-md border-2 border-white">
-                    <Crown size={14} />
-                  </div>
+          <div className="bg-white rounded-2xl border border-gray-100 p-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden text-center">
+            <div className="h-24 bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 relative">
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
+                <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white shadow-md flex items-center justify-center">
+                  <SafeAvatar 
+                    src={alumniAvatar} 
+                    name={alumniName} 
+                    size="2xl" 
+                    className="w-full h-full" 
+                    alt="Mezun Avatar" 
+                  />
                 </div>
-                <h2 className="text-[16px] font-black text-gray-900 mt-4 leading-tight">Kariyer Geliştirme Merkezi</h2>
-                <p className="text-[12px] font-bold text-orange-600 mt-1 uppercase tracking-wider">SÜPER YÖNETİCİ</p>
-                
-                <div className="mt-6 flex flex-col gap-2 text-left bg-gray-50 p-3 rounded-2xl">
-                  <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Sistem Yetkileri</p>
-                  <div className="flex items-center gap-2 text-[12px] font-semibold text-gray-700">
-                    <CheckCircle2 size={14} className="text-emerald-500" /> Tüm panellere tam erişim
-                  </div>
-                  <div className="flex items-center gap-2 text-[12px] font-semibold text-gray-700">
-                    <CheckCircle2 size={14} className="text-emerald-500" /> İçerik yönetimi
-                  </div>
-                  <div className="flex items-center gap-2 text-[12px] font-semibold text-gray-700">
-                    <CheckCircle2 size={14} className="text-emerald-500" /> Kullanıcı onayları
-                  </div>
-                </div>
-
-                <button onClick={() => setView('admin')} className="mt-6 w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white text-[13px] font-bold py-3 rounded-xl transition-all shadow-md">
-                  <LayoutDashboard size={16} /> Yönetim Panelini Aç
-                </button>
               </div>
-            ) : (
-              <>
-                <div className="h-24 bg-gradient-to-r from-teal-600 to-emerald-700 relative">
-                  <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-                    <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white">
-                      <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Mezun')}&background=0F766E&color=fff`} alt="User" className="w-full h-full object-cover" />
-                    </div>
-                  </div>
-                </div>
-                <div className="pt-14 pb-6 px-6 text-center">
-                  <h2 className="text-[18px] font-black text-gray-900 leading-none mb-1 cursor-pointer hover:text-teal-700 transition">{currentUser?.name || 'Mezun'}</h2>
-                  <p className="text-[13px] font-medium text-gray-500 mb-4">
-                    {`${currentUser?.department || 'Mezun'}${currentUser?.graduationYear ? `, ${currentUser.graduationYear}` : ''}`}
+            </div>
+            <div className="pt-12 pb-6 px-6 text-center">
+                  <h2 
+                    onClick={() => {
+                      if (setSelectedUserId) setSelectedUserId(alumniId);
+                      setView('user_profile');
+                    }}
+                    className="text-[17px] font-black text-gray-900 leading-tight mb-1 cursor-pointer hover:text-emerald-700 transition flex items-center justify-center gap-1.5"
+                    title="Mezun Profilini Aç"
+                  >
+                    {alumniName}
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Mezun Durumu Aktif"></span>
+                  </h2>
+                  <p className="text-[12px] font-bold text-gray-500 mb-4">
+                    {isAdmin ? 'Süper Yönetici & Koordinatör' : `${alumniDept} • Mezuniyet: ${alumniGradYear}`}
                   </p>
                   
-                                    <div className="flex justify-center gap-6 border-y border-gray-50 py-4 mb-4">
+                  <div className="flex justify-center gap-6 border-y border-gray-100 py-3 mb-4">
                     <div className="text-center cursor-pointer group">
-                      <p className="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-0.5">Ağım</p>
-                      <p className="text-[16px] font-black text-gray-900 group-hover:text-teal-700 transition">120</p>
+                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-wider mb-0.5">Mezun Ağı</p>
+                      <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">120 Bağlantı</p>
                     </div>
                     <div className="w-px bg-gray-100"></div>
                     <div className="text-center cursor-pointer group">
-                      <p className="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-0.5">Gönderi</p>
-                      <p className="text-[16px] font-black text-gray-900 group-hover:text-teal-700 transition">15</p>
+                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-wider mb-0.5">Paylaşım</p>
+                      <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">15 Gönderi</p>
                     </div>
                   </div>
-                  <button onClick={() => setView('user_profile')} className="w-full py-2.5 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors">
-                    Kariyer Durumunu Güncelle
-                  </button>
+
+                  <div className="flex flex-col gap-2">
+                    <button 
+                      onClick={() => {
+                        if (setSelectedUserId) setSelectedUserId(alumniId);
+                        setView('user_profile');
+                      }} 
+                      className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[12px] font-black transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                    >
+                      <User size={14} /> Mezun Profilimi Görüntüle
+                    </button>
+                    <button 
+                      onClick={() => setView('mbs')} 
+                      className="w-full py-2 bg-gradient-to-r from-teal-700 to-emerald-700 hover:from-teal-800 hover:to-emerald-800 text-white rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                    >
+                      <GraduationCap size={14} /> Mezun Bilgi Sistemi (MBS)
+                    </button>
+                  </div>
                 </div>
-              </>
-            )}
           </div>
         </div>
 
-        {/* CENTER PANEL: Stories & Feed */}
         <div className="w-full max-w-[600px] shrink-0 space-y-6">
-          
-        {/* Create Post Native View */}
         {activeTab === 'create_post' && (
           <div className="bg-white rounded-xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-              <Star className="text-orange-500 fill-current" size={24} /> Gönderi Paylaş & Düzenle
+              <Star className="text-emerald-600 fill-current" size={24} /> Gönderi Paylaş & Düzenle
              </h2>
              <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           </div>
         )}
 
-        {/* Explore Native View */}
         {activeTab === 'search' && (
-          <ExploreFeed posts={posts} />
+          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} />
         )}
 
-        {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
-          
-
-
-                    {/* FEED TABS (LINKEDIN STYLE) */}
-          <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">
+            <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">
             <button 
               onClick={() => setFeedFilter('for_you')} 
               className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'for_you' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Senin İçin
-              {feedFilter === 'for_you' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
+              {feedFilter === 'for_you' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-emerald-600 rounded-t-full"></div>}
             </button>
             <button 
               onClick={() => setFeedFilter('following')} 
               className={`pb-3 font-semibold text-[15px] transition-colors relative ${feedFilter === 'following' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Ağım
-              {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
+              {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-emerald-600 rounded-t-full"></div>}
+            </button>
+            <button 
+              onClick={() => {
+                const store = useAppStore.getState();
+                if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+                setView('mezun_dernek');
+              }} 
+              className="pb-3 font-semibold text-[15px] text-gray-500 hover:text-emerald-700 transition-colors relative cursor-pointer"
+            >
+              Mezunlar Derneği
             </button>
           </div>
 
-          {/* FEED POSTS */}
+          {/* Mezun Kariyer & Memnuniyet Değerlendirme Davet Kartı */}
+          <div className="bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 text-white rounded-3xl p-5 shadow-sm border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center shrink-0">
+                <ClipboardList size={22} />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-black text-white truncate">Resmî Mezun Değerlendirme Anketi</h4>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold shrink-0">10 Değerlendirme Sorusu</span>
+                </div>
+                <p className="text-[12px] text-emerald-200/80 font-medium line-clamp-1 mt-0.5">
+                  Üniversitemizin akreditasyon ve kariyer kalitesini artırmak için deneyimlerinizi paylaşın.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('open-survey-popup'))}
+              className="w-full sm:w-auto px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition shadow-md shadow-emerald-600/30 flex items-center justify-center gap-1.5 shrink-0 cursor-pointer border border-emerald-400/30"
+            >
+              <span>Soruları Yanıtla</span>
+              <ArrowRight size={13} className="text-white" />
+            </button>
+          </div>
+
           <div className="space-y-6">
             {(() => {
               const allItems = combineFeedItems(posts, events, news, announcements, jobs);
@@ -267,7 +303,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               if (filtered.length === 0) {
                 return (
                   <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-16 h-16 bg-red-50 text-[#990000] rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
+                    <div className="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
                     <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
                     <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
                   </div>
@@ -282,14 +318,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           </div>
         )}
 
-        {/* SURVEYS TAB */}
         {featureSurveys && activeTab === 'surveys' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
             <AlumniSurveys surveys={surveys} currentUser={currentUser} />
           </div>
         )}
 
-        {/* CLUBS TAB */}
         {featureClubsShowcase && activeTab === 'clubs' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
             <ClubsDirectory clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={currentUser} featureClubApplications={featureClubApplications} />
@@ -298,100 +332,38 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
         </div>
 
-        {/* RIGHT PANEL: Dynamic Data */}
         <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
-          {/* KGM Haberleri (LinkedIn News Style) */}
-          <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-black text-gray-900 text-[15px]">KGM Haberleri</h3>
-              <div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div>
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              {[
-                { id: 1, title: 'Yeni Kariyer Fuarı Duyuruldu', time: '12 saat önce', readers: '4.2B okuyucu' },
-                { id: 2, title: 'Yapay Zeka ve İstihdam Raporu', time: '1 gün önce', readers: '3.1B okuyucu' },
-                { id: 3, title: 'Mezunlar Zirvesi Başlıyor', time: '2 gün önce', readers: '8.4B okuyucu' },
-                { id: 4, title: 'Yurtdışı Staj Programları', time: '3 gün önce', readers: '5.2B okuyucu' }
-              ].map((news) => (
-                <div key={news.id} className="group cursor-pointer">
-                  <div className="flex items-start gap-2">
-                    <span className="text-gray-400 mt-1">•</span>
-                    <div className="flex flex-col">
-                      <span className="text-[13px] font-bold text-gray-800 group-hover:text-red-600 transition-colors leading-tight">
-                        {news.title}
-                      </span>
-                      <span className="text-[11px] text-gray-500 mt-0.5">
-                        {news.time} • {news.readers}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button className="mt-4 text-[13px] font-bold text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1 w-full bg-gray-50 hover:bg-gray-100 py-1.5 justify-center rounded-lg">
-              Daha fazla göster <ChevronDown size={14} />
-            </button>
-          </div>
+          {/* 1. MEZUN DALI ÖZEL GÜNDEM & HABERLER WIDGET'I */}
+          <BranchNewsWidget branch="alumni" currentUser={currentUser} setView={setView} />
 
-          <TrendingHashtags posts={posts} limit={6} />
-          
-          {/* Senin İçin Önerilenler (Instagram Style) */}
-          <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-gray-500 text-[13px]">Senin için önerilenler</h3>
-              <button className="text-gray-900 text-[12px] font-bold hover:text-gray-500 transition-colors">Tümünü gör</button>
-            </div>
-            
-            <div className="flex flex-col gap-4">
-              {/* Mock Suggestions */}
-              {[
-                { id: 1, name: 'Ayşe Yılmaz', subtitle: 'Senin için öneriliyor', role: 'İşletme Öğrencisi', verified: false },
-                { id: 2, name: 'Caner Demir', subtitle: 'Ahmet ve 2 diğer kişi takip ediyor', role: 'Yazılım Mezunu', verified: true },
-                { id: 3, name: 'Zeynep Kaya', subtitle: 'Senin için öneriliyor', role: 'Tasarım', verified: false }
-              ].map((user) => (
-                <div key={user.id} className="flex items-center justify-between group">
-                  <div className="flex items-center gap-3 cursor-pointer">
-                    <img 
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`} 
-                      className="w-10 h-10 rounded-full object-cover group-hover:scale-105 transition-transform" 
-                      alt={user.name} 
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-[13px] font-bold text-gray-900 flex items-center gap-1 group-hover:text-red-500 transition-colors">
-                        {user.name.toLowerCase().replace(' ', '_')}
-                        {user.verified && <span className="text-red-500"><CheckCircle2 size={12} className="fill-current text-white" /></span>}
-                      </span>
-                      <span className="text-[11px] text-gray-500 truncate w-32">{user.subtitle}</span>
-                    </div>
-                  </div>
-                  <button className="text-[12px] font-bold text-red-500 hover:text-gray-900 transition-colors">Takip Et</button>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 pt-4 border-t border-gray-50 text-[11px] text-gray-400 flex flex-wrap gap-x-2 gap-y-1">
-              <span>Hakkında</span> · <span>Yardım</span> · <span>İş Fırsatları</span> · <span>Gizlilik</span> · <span>Koşullar</span>
-              <p className="w-full mt-2 uppercase tracking-wider text-[10px]">© 2026 GELISIM KARIYER</p>
-            </div>
-          </div>
+          {/* 2. MEZUN DALI ÖZEL BAĞLANTI & AĞ ÖNERİLERİ */}
+          <ConnectionSuggestions 
+            branch="alumni"
+            currentUser={currentUser}
+            students={students}
+            alumni={alumni}
+            companies={companies}
+            academicStaff={academicStaff}
+            setView={setView}
+            setSelectedUserId={setSelectedUserId}
+            maxSuggestions={4}
+          />
 
-          {/* Mentor Ol widget */}
           <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
             <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
             <div className="w-full bg-gray-100 rounded-full h-2 mb-3">
-              <div className="bg-teal-600 h-2 rounded-full" style={{ width: '80%' }}></div>
+              <div className="bg-emerald-600 h-2 rounded-full" style={{ width: '80%' }}></div>
             </div>
             <p className="text-xs text-gray-500 font-medium mb-4">Mezun olarak tecrübelerinizi öğrencilerle paylaşın ve onlara yol gösterin.</p>
             <button
               onClick={() => setShowMentorshipModal(true)}
-              className="w-full py-2 bg-teal-50 text-teal-700 hover:bg-teal-100 rounded-xl text-[13px] font-bold transition-colors cursor-pointer"
+              className="w-full py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-[13px] font-bold transition-colors cursor-pointer"
             >
               Mentorluk Başvurusu Yap
             </button>
           </div>
 
-          {/* Mezun Bilgi Sistemi shortcut */}
-          <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-2xl text-white border border-red-900 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-emerald-950 via-teal-800 to-emerald-900 rounded-2xl p-6 shadow-2xl text-white border border-emerald-700/50 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
             <p className="text-[11px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               <Star size={13} className="text-amber-300 fill-current" /> Hızlı Erişim
@@ -404,7 +376,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             </p>
             <button 
               onClick={() => setView('mbs')} 
-              className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
+              className="w-full py-3.5 bg-white text-emerald-900 hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
             >
               Mezun Bilgi Sistemi'ne Git <ArrowRight size={16} />
             </button>
@@ -625,7 +597,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   department: currentUser?.department || 'Mezun',
                   programTitle: mentorshipForm.title,
                   status: 'Beklemede', // PENDING ADMIN APPROVAL
-                  avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${currentUser?.name || 'M'}&background=0A2342&color=fff`,
+                  avatar: currentUser?.avatar || null,
                   hours: mentorshipForm.hours,
                   mode: mentorshipForm.mode,
                   motivation: mentorshipForm.motivation
@@ -634,10 +606,9 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 if (setMentorships) {
                   setMentorships([newMentorship, ...(mentorships || [])]);
                 } else {
-                  try {
-                    const storedMentorships = JSON.parse(localStorage.getItem('igu_mentorships_v2')) || [];
+                    const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2') || localStorage.getItem('igu_mentorships_v2') || '[]');
+                    localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
                     localStorage.setItem('igu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
-                  } catch (err) {}
                 }
 
                 window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
@@ -675,40 +646,35 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         )}
 
       </div>
-      {/* FLOATING DOCK (VIBRANT MULTI-COLOR MODERN GLASS THEME) */}
+      {/* FLOATING DOCK (DEDICATED ALUMNI EMERALD DOCK - 100% INDEPENDENT BRANCH) */}
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-indigo-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(30,41,59,0.18)] flex items-center justify-between px-4 text-gray-800">
+        <div className="bg-white/95 backdrop-blur-2xl border-2 border-emerald-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(5,150,105,0.18)] flex items-center justify-between px-4 text-gray-800">
           
-          {/* HOME - BLUE */}
-          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'feed' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'}`} title="Akış">
+          {/* HOME - EMERALD GREEN */}
+          <button onClick={() => setActiveTab('feed')} className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${activeTab === 'feed' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'}`} title="Akış">
             <Home size={24} strokeWidth={2.2} />
           </button>
           
-          {/* JOBS - PURPLE */}
-          <button onClick={() => setView('jobs')} className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-purple-600 hover:bg-purple-50" title="İlanlar">
-            <Briefcase size={22} strokeWidth={2} />
+          {/* JOBS - VIBRANT GRADIENT EMERALD */}
+          <button onClick={() => setView('jobs')} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-800 text-white shadow-lg shadow-emerald-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-emerald-300/40 cursor-pointer" title="İş & Staj Olanakları">
+            <Briefcase size={22} strokeWidth={2.5} />
           </button>
           
-          {/* CENTER: SEARCH ICON (VIBRANT GRADIENT ORANGE/CORAL) */}
-          <button onClick={() => { setActiveTab('search'); setTimeout(() => document.getElementById('main-search')?.focus(), 100); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50" title="Ara">
+          {/* CENTER: SEARCH ICON (VIBRANT GRADIENT TEAL/EMERALD - KEŞFET & SOSYAL AĞ PORTALI) */}
+          <button onClick={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-emerald-700 text-white shadow-lg shadow-teal-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer" title="Keşfet & Sosyal Ağ Portalı">
             <Search size={22} strokeWidth={2.8} />
           </button>
           
-          {/* SURVEYS - EMERALD GREEN */}
-          {featureSurveys && (
-            <button onClick={() => setActiveTab('surveys')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'surveys' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30' : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'}`} title="Anketler">
-              <ClipboardList size={22} strokeWidth={2} />
-            </button>
-          )}
-          
-          {/* MESSAGES - INDIGO */}
-          <button onClick={() => setActiveTab('messaging')} className={`p-2.5 rounded-full transition-all flex items-center justify-center ${activeTab === 'messaging' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' : 'text-slate-600 hover:text-indigo-600 hover:bg-indigo-50'}`} title="Mesajlar">
-            <MessageCircle size={22} strokeWidth={2} />
-          </button>
-          
           {/* PROFILE AVATAR */}
-          <button onClick={() => setView('user_profile')} className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-indigo-400/60 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden" title="Profilim">
-            <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=Mezun&background=4F46E5&color=fff`} className="w-full h-full rounded-full object-cover" alt="Profile" />
+          <button 
+            onClick={() => {
+              if (setSelectedUserId) setSelectedUserId(alumniId);
+              setView('user_profile');
+            }} 
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-500 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
+            title="Profilim"
+          >
+            <SafeAvatar src={alumniAvatar} name={alumniName} size="xs" alt="Profile" />
           </button>
         </div>
       </div>
@@ -752,7 +718,70 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         </div>
       )}
 
-            {/* CAREER SHORTS FULLSCREEN MODAL */}
+            {/* SELECTED NEWS DETAIL MODAL */}
+      {selectedNewsItem && (
+        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] relative">
+            
+            {/* Modal Header */}
+            <div className="p-6 bg-gradient-to-r from-red-950 via-[#7A0000] to-slate-900 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/10 text-amber-300 flex items-center justify-center font-black">
+                  <Newspaper size={22} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase text-amber-300 tracking-wider bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-400/30">
+                    {selectedNewsItem.category || 'Resmî Haber'}
+                  </span>
+                  <h3 className="font-black text-base text-white mt-1 leading-snug">{selectedNewsItem.title}</h3>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setSelectedNewsItem(null)} 
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer shrink-0"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-4 flex-1 text-slate-700 bg-slate-50/50">
+              <div className="flex items-center gap-3 text-xs font-bold text-slate-500 bg-white p-3 rounded-2xl border border-slate-100">
+                <span>📅 {selectedNewsItem.date || selectedNewsItem.time}</span>
+                <span>•</span>
+                <span>📍 {selectedNewsItem.location || 'İESÜ Kampüsü'}</span>
+                <span>•</span>
+                <span>👁️ {selectedNewsItem.readers || 'Resmî Yayın'}</span>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="text-xs font-black uppercase text-[#990000] tracking-wider">Haber & İçerik Detayı</h4>
+                <p className="text-sm font-medium leading-relaxed text-slate-800 bg-white p-4 rounded-2xl border border-slate-100">
+                  {selectedNewsItem.summary}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between p-3.5 bg-emerald-50 rounded-2xl border border-emerald-100 text-emerald-800 text-xs font-bold">
+                <span>İlgili Birim: Kariyer Geliştirme Merkezi</span>
+                <span className="bg-emerald-600 text-white px-2.5 py-1 rounded-full text-[10px] uppercase font-black">Resmî Haber</span>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end shrink-0">
+              <button 
+                onClick={() => setSelectedNewsItem(null)} 
+                className="px-6 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CAREER SHORTS FULLSCREEN MODAL */}
       {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
     </div>
   );

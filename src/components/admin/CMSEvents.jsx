@@ -1,8 +1,37 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
 import { Calendar, CheckCircle2, MapPin, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, AlertCircle, Eye, Download, CheckCircle, FileText } from 'lucide-react';
+
+const DEFAULT_SURVEY_QUESTIONS = [
+  { id: 'q1', text: 'Etkinlikten genel olarak memnun kaldınız mı?', type: 'likert' }
+];
+
+const createEmptyEvent = () => ({
+  title: '',
+  summary: '',
+  date: '',
+  time: '',
+  location: '',
+  category: '',
+  targetAudience: '',
+  speakers: '',
+  capacity: '',
+  registrationStart: '',
+  registrationEnd: '',
+  slug: '',
+  seoTitle: '',
+  seoDescription: '',
+  hasSurvey: false,
+  surveyQuestions: DEFAULT_SURVEY_QUESTIONS.map(question => ({ ...question })),
+  description: '',
+  imageUrl: '',
+  attachmentData: null,
+  attachmentName: '',
+  registrationLink: '',
+  status: 'Yayında'
+});
 
 export default function CMSEvents({ events = [], setEvents }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -10,20 +39,7 @@ export default function CMSEvents({ events = [], setEvents }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const [form, setForm] = useState({
-    title: '',
-    date: '',
-    time: '',
-    location: '',
-    hasSurvey: false,
-    surveyQuestions: [{ id: 'q1', text: 'Etkinlikten genel olarak memnun kaldınız mı?', type: 'likert' }],
-    description: '',
-    imageUrl: '',
-    attachmentData: null,
-    attachmentName: '',
-    registrationLink: '',
-    status: 'Yayında'
-  });
+  const [form, setForm] = useState(createEmptyEvent);
 
   const [activeTab, setActiveTab] = useState('havuz');
   const [expandedSurvey, setExpandedSurvey] = useState(false);
@@ -41,24 +57,14 @@ export default function CMSEvents({ events = [], setEvents }) {
   });
 
   const handleAddNew = () => {
-    setForm({
-      title: '',
-      date: '',
-      time: '',
-      location: '',
-      description: '',
-      imageUrl: '',
-      attachmentData: null,
-      attachmentName: '',
-      registrationLink: '',
-      status: 'Yayında'
-    });
+    setForm(createEmptyEvent());
     setCurrentId(null);
     setIsEditing(true);
   };
 
   const handleEdit = (ev) => {
     setForm({ 
+      ...createEmptyEvent(),
       ...ev,
       time: ev.time || ''
     });
@@ -95,13 +101,40 @@ export default function CMSEvents({ events = [], setEvents }) {
   const handleSave = (e) => {
     e.preventDefault();
     if (!form.title || !form.date) return window.toast.info("Başlık ve tarih zorunludur.");
+    if (form.registrationStart && form.registrationEnd && form.registrationStart > form.registrationEnd) {
+      return window.toast.error("Kayıt başlangıcı, kayıt bitişinden sonra olamaz.");
+    }
 
     const newId = currentId || ('NE-E' + Date.now());
+    const baseSlug = (form.slug || form.title)
+      .toLocaleLowerCase('tr-TR')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/ı/g, 'i')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    const usedSlugs = new Set((events || [])
+      .filter(event => event.id !== currentId)
+      .map(event => event.slug)
+      .filter(Boolean));
+    let slug = baseSlug || `etkinlik-${newId.toLowerCase()}`;
+    let suffix = 2;
+    while (usedSlugs.has(slug)) slug = `${baseSlug}-${suffix++}`;
+    const normalizedForm = {
+      ...form,
+      summary: form.summary.trim(),
+      category: form.category.trim(),
+      targetAudience: form.targetAudience.trim(),
+      speakers: form.speakers.trim(),
+      slug,
+      seoTitle: (form.seoTitle || form.title).trim(),
+      seoDescription: (form.seoDescription || form.summary || form.description).trim()
+    };
     
     if (currentId) {
-      setEvents((events || []).map(ev => ev.id === currentId ? { ...ev, ...form, updatedAt: new Date().toISOString() } : ev));
+      setEvents((events || []).map(ev => ev.id === currentId ? { ...ev, ...normalizedForm, updatedAt: new Date().toISOString() } : ev));
     } else {
-      setEvents([{ ...form, id: newId, type: 'Etkinlik', createdAt: new Date().toISOString() }, ...events]);
+      setEvents(current => [{ ...normalizedForm, id: newId, type: 'Etkinlik', createdAt: new Date().toISOString() }, ...(current || [])]);
     }
     setIsEditing(false);
   };
@@ -228,10 +261,22 @@ export default function CMSEvents({ events = [], setEvents }) {
             <input type="text" value={form.title} onChange={e=>setForm({...form, title: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" placeholder="Etkinlik adını girin..." required />
           </div>
 
+          <div>
+            <label className="text-xs font-bold text-gray-600 block mb-1.5">Kısa Özet</label>
+            <input type="text" value={form.summary} onChange={e=>setForm({...form, summary: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" placeholder="Etkinliği tek cümleyle özetleyin..." />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
               <label className="text-xs font-bold text-gray-600 block mb-1.5">Tarih <span className="text-red-500">*</span></label>
               <input type="text" value={form.date} onChange={e=>setForm({...form, date: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" placeholder="Örn: 20 Eylül 2026" required />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <input type="text" value={form.category} onChange={e=>setForm({...form, category: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" placeholder="Kategori (örn. Kariyer)" aria-label="Etkinlik kategorisi" />
+              <input type="text" value={form.targetAudience} onChange={e=>setForm({...form, targetAudience: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" placeholder="Hedef kitle" aria-label="Etkinlik hedef kitlesi" />
+              <input type="text" value={form.speakers} onChange={e=>setForm({...form, speakers: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" placeholder="Konuşmacılar (varsa)" aria-label="Etkinlik konuşmacıları" />
+              <input type="number" min="0" value={form.capacity} onChange={e=>setForm({...form, capacity: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" placeholder="Kontenjan" aria-label="Etkinlik kontenjanı" />
             </div>
             <div>
               <label className="text-xs font-bold text-gray-600 block mb-1.5">Saat</label>
@@ -261,6 +306,14 @@ export default function CMSEvents({ events = [], setEvents }) {
           <div>
             <label className="text-xs font-bold text-gray-600 block mb-1.5">Açıklama</label>
             <textarea value={form.description} onChange={e=>setForm({...form, description: e.target.value})} rows={5} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none" placeholder="Etkinlik detayları..."></textarea>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <input type="datetime-local" value={form.registrationStart} onChange={e=>setForm({...form, registrationStart: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" aria-label="Kayıt başlangıç tarihi" />
+            <input type="datetime-local" value={form.registrationEnd} onChange={e=>setForm({...form, registrationEnd: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" aria-label="Kayıt bitiş tarihi" />
+            <input type="text" value={form.slug} onChange={e=>setForm({...form, slug: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" placeholder="URL slug (boş bırakılırsa otomatik)" aria-label="Etkinlik URL slug" />
+            <input type="text" value={form.seoTitle} onChange={e=>setForm({...form, seoTitle: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" placeholder="SEO başlığı (opsiyonel)" aria-label="SEO başlığı" />
+            <textarea value={form.seoDescription} onChange={e=>setForm({...form, seoDescription: e.target.value})} rows={2} className="sm:col-span-2 w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium" placeholder="SEO açıklaması (opsiyonel)" aria-label="SEO açıklaması" />
           </div>
 
           
@@ -636,4 +689,3 @@ export default function CMSEvents({ events = [], setEvents }) {
     </AdminCMSLayout>
   );
 }
-

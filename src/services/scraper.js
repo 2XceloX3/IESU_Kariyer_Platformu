@@ -9,10 +9,10 @@ export const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 export const MOCK_IESU_KARIYER_DATA = {
   officeInfo: {
     title: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi Koordinatörlüğü",
-    description: "Kariyer Geliştirme Ofisi Koordinatörlüğü, öğrencilerimizin ve mezunlarımızın mesleki esenyurtlerini desteklemek, kariyer planlamalarına rehberlik etmek ve onları iş dünyası ile bulusetzen firmalarla buluşturmak amacıyla hizmet vermektedir.",
-    address: "Zafer Mahallesi, Adile Naşit Bulvarı No:1, 34513 Esenyurt / İstanbul",
+    description: "Kariyer Geli\u015F\u0074irme Ofisi Koordinat\u00F6rl\u00FC\u011F\u00FC, \u00F6\u011Frencilerimizin ve mezunlar\u0131m\u0131z\u0131n mesleki geli\u015Fimlerini desteklemek, kariyer planlamalar\u0131na rehberlik etmek ve onlar\u0131 i\u015F d\u00FCnyas\u0131 ile bulu\u015Fturmak amac\u0131yla hizmet vermektedir.",
+    address: "Zafer Mah. Adile Na\u015Fit Bulv. No:1, Esenyurt / \u0130stanbul / T\u00FCrkiye",
     email: "kariyer@esenyurt.edu.tr",
-    phone: "+90 (212) 444 37 98 - Dahili: 1140",
+    phone: "444 9 123 / +90 (212) 699 09 90",
     workingHours: "Hafta içi 08:30 - 17:30",
     coordinators: [
       { name: "Dr. Öğr. Üyesi Kevser Soydan", title: "Kariyer Geliştirme Ofisi Koordinatörü", email: "kevser.soydan@esenyurt.edu.tr" },
@@ -93,6 +93,16 @@ export const MOCK_IESU_KARIYER_DATA = {
   source: "fallback",
   status: "success"
 };
+
+// Keep the official contact record authoritative even when an older cached payload exists.
+MOCK_IESU_KARIYER_DATA.officeInfo.description = 'Kariyer Geliştirme Ofisi Koordinatörlüğü, öğrencilerimizin ve mezunlarımızın mesleki gelişimlerini desteklemek, kariyer planlamalarına rehberlik etmek ve onları iş dünyası ile buluşturmak amacıyla hizmet vermektedir.';
+MOCK_IESU_KARIYER_DATA.officeInfo.address = 'Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt / İstanbul / Türkiye';
+MOCK_IESU_KARIYER_DATA.officeInfo.phone = '444 9 123 / +90 (212) 699 09 90';
+MOCK_IESU_KARIYER_DATA.officeInfo.sourceUrl = 'https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu';
+MOCK_IESU_KARIYER_DATA.officeInfo.coordinators = MOCK_IESU_KARIYER_DATA.officeInfo.coordinators.map((coordinator) => ({
+  ...coordinator,
+  role: coordinator.role || coordinator.title
+}));
 
 export function fetchIesuKariyerData() {
   try {

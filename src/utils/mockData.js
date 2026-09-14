@@ -12,10 +12,13 @@ export const generateStudents = () => {
 
 export const generateAlumni = () => {
   return [
-    { id: 'ALU-001', studentId: '20190001', name: 'Caner Öztürk', department: 'Yazılım Mühendisliği', gradYear: 2023, email: 'caner@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff', company: 'Trendyol', title: 'Frontend Developer' },
-    { id: 'ALU-002', studentId: '20180002', name: 'Seda Çelik', department: 'Endüstri Mühendisliği', gradYear: 2022, email: 'seda@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff', company: 'Ford Otosan', title: 'Üretim Planlama Uzmanı' },
-    { id: 'ALU-003', studentId: '20200003', name: 'Tolgahan Aslan', department: 'Uluslararası Ticaret', gradYear: 2024, email: 'tolga@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Tolgahan+Aslan&background=EA580C&color=fff', company: 'Getir', title: 'Operasyon Uzmanı' },
-    { id: 'ALU-004', studentId: '20170004', name: 'Ayça Yurt', department: 'Psikoloji', gradYear: 2021, email: 'ayca@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Ayça+Yurt&background=EA580C&color=fff', company: 'Kendi Kliniği', title: 'Klinik Psikolog' }
+    { id: 'ALU-001', studentId: '20190001', name: 'Caner Öztürk', department: 'Yazılım Mühendisliği', gradYear: 2023, email: 'caner@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff', company: 'Trendyol', title: 'Frontend Developer', city: 'İstanbul', country: 'Türkiye', showOnGlobalMap: true, coordinates: [28.9784, 41.0082] },
+    { id: 'ALU-002', studentId: '20180002', name: 'Seda Çelik', department: 'Endüstri Mühendisliği', gradYear: 2022, email: 'seda@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff', company: 'Delivery Hero', title: 'Üretim ve Operasyon Yöneticisi', city: 'Berlin', country: 'Almanya', showOnGlobalMap: true, coordinates: [13.4050, 52.5200] },
+    { id: 'ALU-003', studentId: '20200003', name: 'Tolgahan Aslan', department: 'Uluslararası Ticaret', gradYear: 2024, email: 'tolga@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Tolgahan+Aslan&background=EA580C&color=fff', company: 'Amazon UK', title: 'Operasyon & Finans Analisti', city: 'Londra', country: 'Birleşik Krallık', showOnGlobalMap: true, coordinates: [-0.1276, 51.5072] },
+    { id: 'ALU-004', studentId: '20170004', name: 'Ayça Yurt', department: 'Psikoloji', gradYear: 2021, email: 'ayca@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Ayça+Yurt&background=EA580C&color=fff', company: 'Kendi Kliniği', title: 'Klinik Psikolog', city: 'Amsterdam', country: 'Hollanda', showOnGlobalMap: true, coordinates: [4.9041, 52.3676] },
+    { id: 'ALU-005', studentId: '20190005', name: 'Zeynep Demir', department: 'Bilgisayar Mühendisliği', gradYear: 2023, email: 'zeynep.demir@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Zeynep+Demir&background=0284C7&color=fff', company: 'Google', title: 'Senior Software Engineer', city: 'San Francisco', country: 'Amerika Birleşik Devletleri', showOnGlobalMap: true, coordinates: [-122.4194, 37.7749] },
+    { id: 'ALU-006', studentId: '20180006', name: 'Emre Kaya', department: 'Mimarlık', gradYear: 2022, email: 'emre.kaya@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Emre+Kaya&background=059669&color=fff', company: 'EMAAR Properties', title: 'Kıdemli Mimar & BIM Uzmanı', city: 'Dubai', country: 'Birleşik Arap Emirlikleri', showOnGlobalMap: true, coordinates: [55.2708, 25.2048] },
+    { id: 'ALU-007', studentId: '20160007', name: 'Elif Yıldız', department: 'Elektrik-Elektronik Mühendisliği', gradYear: 2020, email: 'elif.yildiz@mezun.esenyurt.edu.tr', password: 'password', role: 'alumni', avatar: 'https://ui-avatars.com/api/?name=Elif+Yıldız&background=7C3AED&color=fff', company: 'Sony Research', title: 'Robotik ve AI Araştırmacısı', city: 'Tokyo', country: 'Japonya', showOnGlobalMap: true, coordinates: [139.6917, 35.6895] }
   ];
 };
 
@@ -79,8 +82,8 @@ export const initialNews = [
   {
     "id": "NEWS-005",
     "title": "İstanbul Esenyurt Üniversitesi, “Dumansız Kampüs Sağlıklı Gelecek Projesi” Lansmanında Yerini Aldı",
-    "date": "26/07/2684",
-    "content": "Sağlık Bakanlığı, Y&uuml;ksek&ouml;ğretim Kurulu ve T&uuml;rkiye Yeşilay Cemiyetinin iş birliğiyle hayata ge&ccedil;irilen &quot;Dumansız Kamp&uuml;s Sağlıklı Gelecek Projesi&quot;nin tanıtım programı, 4 Temmuz 2026 Cumartesi g&uuml;n&uuml; İstanbul&rsquo;da ger&ccedil;ekleştirildi. Programa; Sağlık Bakanı Prof. Dr. Kemal Memişoğlu, Y&uuml;ksek&ouml;ğretim Kurulu Başkanı Prof. Dr. Erol &Ouml;zvar, Yeşilay Genel Başkanı Do&ccedil;. Dr. Mehmet Din&ccedil;, İstanbuldaki &uuml;niversitelerin rekt&ouml;rleri, rekt&ouml;r yardımcıları, akademik personelleri ile &ouml;ğrenciler katılım sağladı. Progr",
+    "date": "26/07/2026",
+    "content": "Sağlık Bakanlığı, Yükseköğretim Kurulu ve Türkiye Yeşilay Cemiyetinin iş birliğiyle hayata geçirilen \"Dumansız Kampüs Sağlıklı Gelecek Projesi\"nin tanıtım programı, 4 Temmuz 2026 Cumartesi günü İstanbul'da gerçekleştirildi. Programa; Sağlık Bakanı Prof. Dr. Kemal Memişoğlu, Yükseköğretim Kurulu Başkanı Prof. Dr. Erol Özvar, Yeşilay Genel Başkanı Doç. Dr. Mehmet Dinç, İstanbul'daki üniversitelerin rektörleri, rektör yardımcıları, akademik personelleri ile öğrenciler katılım sağladı.",
     "category": "Haber",
     "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/07/29u5jw3tnlh7g-istanbul-esenyurt-universitesi-“dumansiz-kampus-saglikli-gelecek-projesi”-lansmaninda-yerini-aldi-1.jpg",
     "url": "https://www.esenyurt.edu.tr/haber/2161-istanbul-esenyurt-universitesi-“dumansiz-kampus-saglikli-gelecek-projesi”-lansmaninda-yerini-aldi-1"
@@ -317,7 +320,7 @@ export const initialEvents = [
   {
     "id": "EVT-013",
     "title": "Eğitimin geleceğini yeniden şekillendiren iki büyük güç bir arada: Yapay Zekâ ve Sosyal Öğrenme!",
-    "description": "İstanbul Esenyurt &Uuml;niversitesi Yabanı Diller Y&uuml;ksekokulu M&uuml;d&uuml;r&uuml; Dr. &Ouml;ğretim &Uuml;yesi Ali KURTun moderat&ouml;rl&uuml;ğ&uuml;nde ger&ccedil;ekleşecek &quot;Akıllı Pedagoji: Yapay Zekadan Sosyal &Ouml;ğrenmeye Eğitimde B&uuml;t&uuml;nc&uuml;l Yaklaşım&quot; seminerine davetlisiniz! ✨🧠 Teknolojinin ve insan etkileşiminin eğitimdeki rol&uuml;n&uuml;, alanında uzman &ccedil;ok değerli iki konuğumuzla enine boyuna tartışıyoruz: 👤 Konuklarımız: &bull; Do&ccedil;. Dr. Tuncer CAN (İstanbul &Uuml;niversitesi-Cerrahpaşa, Hasan Ali Y&uuml;cel Eğitim Fak&uuml;ltesi) &ndash",
+    "description": "İstanbul Esenyurt Üniversitesi Yabancı Diller Yüksekokulu Müdürü Dr. Öğretim Üyesi Ali KURT'un moderatörlüğünde gerçekleşecek \"Akıllı Pedagoji: Yapay Zekadan Sosyal Öğrenmeye Eğitimde Bütüncül Yaklaşım\" seminerine davetlisiniz! ✨🧠 Teknolojinin ve insan etkileşiminin eğitimdeki rolünü, alanında uzman çok değerli iki konuğumuzla enine boyuna tartışıyoruz: 👤 Konuklarımız: • Doç. Dr. Tuncer CAN (İstanbul Üniversitesi-Cerrahpaşa, Hasan Ali Yücel Eğitim Fakültesi) akademisyenlerimizin sunumlarıyla geleceğin eğitim teknolojilerini keşfediyoruz.",
     "date": "15/05/2026",
     "time": "14:00",
     "location": "Kampüs",
@@ -327,8 +330,8 @@ export const initialEvents = [
   },
   {
     "id": "EVT-014",
-    "title": "&quot;Heybemden Masallar&quot; ile masalların büyülü dünyasına yolculuğa çıkıyoruz!",
-    "description": "Yer: 2. Kat - Prof. Dr. Aziz SANCAR Kütüphane Amfisi İstanbul Esenyurt &Uuml;niversitesi SHMYO &Ccedil;ocuk Esenyurti Programı ve Parlayan &Ccedil;ocuklar Kul&uuml;b&uuml; iş birliğiyle d&uuml;zenlenen &quot;Masal Anlatıcılığı ve Eğitimde Uygulamaları&quot; etkinliğimizde buluşuyoruz. 🌈🦋 Masal Anlatıcısı ve Yazar Fatma GE&Ccedil;ER DEVRİM&rsquo;in değerli katılımıyla, masalların eğitimdeki g&uuml;c&uuml;n&uuml; keşfedeceğimiz ve heybesindeki eşsiz hikayelere ortak olacağımız bu keyifli etkinliği sakın ka&ccedil;ırmayın!",
+    "title": "\"Heybemden Masallar\" ile masalların büyülü dünyasına yolculuğa çıkıyoruz!",
+    "description": "Yer: 2. Kat - Prof. Dr. Aziz SANCAR Kütüphane Amfisi İstanbul Esenyurt Üniversitesi SHMYO Çocuk Gelişimi Programı ve Parlayan Çocuklar Kulübü iş birliğiyle düzenlenen \"Masal Anlatıcılığı ve Eğitimde Uygulamaları\" etkinliğimizde buluşuyoruz. 🌈🦋 Masal Anlatıcısı ve Yazar Fatma GEÇER DEVRİM'in değerli katılımıyla, masalların eğitimdeki gücünü keşfedeceğimiz ve heybesindeki eşsiz hikayelere ortak olacağımız bu keyifli etkinliği sakın kaçırmayın!",
     "date": "15/05/2026",
     "time": "14:00",
     "location": "Kampüs",

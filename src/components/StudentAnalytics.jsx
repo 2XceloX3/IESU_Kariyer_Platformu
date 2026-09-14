@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, TrendingUp, Search, Eye, BarChart2, Star, 
@@ -11,6 +11,7 @@ import {
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import useAppStore from '../store/useAppStore';
+import DailyQuestsPanel from './DailyQuestsPanel';
 import { 
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
   CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, 
@@ -366,6 +367,11 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
 
 
 
+          {/* GÜNLÜK KARİYER GÖREVLERİ & GELİŞİM HEDEFLERİ (DAILY QUESTS) */}
+          <motion.div variants={itemVars}>
+            <DailyQuestsPanel />
+          </motion.div>
+
           {/* BİREBİR KARİYER DANIŞMANLIĞI & RANDEVU MERKEZİ (HUMAN ADVISORY) */}
           <motion.div variants={itemVars} className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-8 shadow-sm overflow-hidden">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-gray-100 pb-6 mb-6">
@@ -530,7 +536,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                     <p className="text-xs text-gray-500 font-medium">İş ilanlarında talep oranı: <strong className="text-gray-700">{sk.demand}</strong></p>
                   </div>
                   <button 
-                    onClick={() => { setView('sem_courses'); }} 
+                    onClick={() => { setView('sem'); }} 
                     className="mt-4 w-full bg-white border border-gray-200 hover:bg-red-50 hover:border-red-200 text-[#990000] font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <BookOpen size={14} /> SEM Kursunu Tamamla

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { OFFICIAL_PAGES, runFullSync, syncSinglePage, loadSyncLog, loadVersionHistory } from '../../services/syncEngine';
 import useAppStore from '../../store/useAppStore';
+import CMSFirestoreBackup from './CMSFirestoreBackup';
 
 const CHANGE_COLORS = {
   NEW: 'text-emerald-700 bg-emerald-50 border-emerald-200',
@@ -99,13 +100,13 @@ export default function CMSSyncCenter() {
         });
 
         if (newsItems.length > 0 && store.setNews) {
-          store.setNews([...newsItems, ...(store.news || [])].slice(0, 60));
+          store.setNews(current => [...newsItems, ...(current || [])].slice(0, 60));
         }
         if (annItems.length > 0 && store.setAnnouncements) {
-          store.setAnnouncements([...annItems, ...(store.announcements || [])].slice(0, 60));
+          store.setAnnouncements(current => [...annItems, ...(current || [])].slice(0, 60));
         }
         if (eventItems.length > 0 && store.setEvents) {
-          store.setEvents([...eventItems, ...(store.events || [])].slice(0, 60));
+          store.setEvents(current => [...eventItems, ...(current || [])].slice(0, 60));
         }
 
         if (window.toast) {
@@ -222,6 +223,7 @@ export default function CMSSyncCenter() {
           { id: 'pages', label: '🌐 Tüm Sayfalar' },
           { id: 'log', label: '📋 Sync Log' },
           { id: 'versions', label: '🕰 Versiyon Geçmişi' },
+          { id: 'firestore_backup', label: '☁️ Firestore Cloud Yedek' },
         ].map(tab => (
           <button
             key={tab.id}
@@ -454,6 +456,11 @@ export default function CMSSyncCenter() {
             })
           )}
         </div>
+      )}
+
+      {/* Tab: Firestore Cloud Yedekleme */}
+      {activeTab === 'firestore_backup' && (
+        <CMSFirestoreBackup />
       )}
     </div>
   );

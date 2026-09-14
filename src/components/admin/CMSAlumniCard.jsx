@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
 import { CreditCard, CheckCircle, Clock, XCircle, Search, Download, Settings, FileText } from 'lucide-react';
 import PanelHeader from './PanelHeader';
+import useAppStore from '../../store/useAppStore';
 
-export default function CMSAlumniCard({ alumniCardApplications = [], setAlumniCardApplications, alumniCardForms = [], setAlumniCardForms }) {
+export default function CMSAlumniCard() {
+  const alumniCardApplications = useAppStore(state => state.alumniCardApplications) || [];
+  const setAlumniCardApplications = useAppStore(state => state.setAlumniCardApplications);
+  const featureAlumniCard = useAppStore(state => state.featureAlumniCard);
+  const setFeatureAlumniCard = useAppStore(state => state.setFeatureAlumniCard);
+
   const [search, setSearch] = useState('');
-  const [isFormActive, setIsFormActive] = useState(
-    (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true
-  );
 
-  const filtered = (alumniCardApplications || []).filter(app => 
+  const filtered = alumniCardApplications.filter(app => 
     app.name?.toLowerCase().includes(search.toLowerCase()) || 
     app.email?.toLowerCase().includes(search.toLowerCase()) ||
-    app.tc?.includes(search)
+    app.tcNo?.includes(search) || app.studentId?.includes(search)
   );
 
   const toggleFormStatus = () => {
-    const newState = !isFormActive;
-    setIsFormActive(newState);
-    setAlumniCardForms([{ id: 'FORM-1', isActive: newState, lastUpdated: new Date().toLocaleDateString('tr-TR') }]);
+    const newState = featureAlumniCard === false ? true : false;
+    setFeatureAlumniCard(newState);
+    if (window.toast) {
+      window.toast.success(newState ? "Mezun Kart başvuru formu aktif edildi." : "Mezun Kart başvuru formu kapatıldı.");
+    }
   };
 
   const updateStatus = (id, newStatus) => {
@@ -71,9 +76,9 @@ export default function CMSAlumniCard({ alumniCardApplications = [], setAlumniCa
           </div>
           <button 
             onClick={toggleFormStatus}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition ${isFormActive ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100' : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${featureAlumniCard !== false ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100' : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'}`}
           >
-            {isFormActive ? 'Form Aktif' : 'Form Kapalı'}
+            {featureAlumniCard !== false ? 'Form Aktif' : 'Form Kapalı'}
           </button>
         </div>
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">

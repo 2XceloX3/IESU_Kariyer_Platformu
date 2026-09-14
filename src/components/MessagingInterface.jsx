@@ -1,4 +1,4 @@
-﻿import useAppStore from '../store/useAppStore';
+import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, MicOff, VideoOff, Monitor, MonitorOff, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2, Bell, BellOff, Shield, ShieldOff, UserX, UserPlus, Building2, GraduationCap, School, Activity, Wifi } from 'lucide-react';
 import Logo from './Logo';
@@ -178,56 +178,70 @@ const createFallbackStream = (label, isRemote = false) => {
   const draw = () => {
     if (!ctx) return;
     phase += 0.05;
-    const grad = ctx.createLinearGradient(0, 0, 640, 480);
-    if (isRemote) {
-      grad.addColorStop(0, '#0f172a');
-      grad.addColorStop(0.5, '#1e1b4b');
-      grad.addColorStop(1, '#090d16');
-    } else {
-      grad.addColorStop(0, '#1e293b');
-      grad.addColorStop(0.5, '#0f172a');
-      grad.addColorStop(1, '#1e1b4b');
-    }
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 640, 480);
+    
+    try {
+      if (typeof ctx.createLinearGradient === 'function') {
+        const grad = ctx.createLinearGradient(0, 0, 640, 480);
+        if (isRemote) {
+          grad.addColorStop(0, '#0f172a');
+          grad.addColorStop(0.5, '#1e1b4b');
+          grad.addColorStop(1, '#090d16');
+        } else {
+          grad.addColorStop(0, '#1e293b');
+          grad.addColorStop(0.5, '#0f172a');
+          grad.addColorStop(1, '#1e1b4b');
+        }
+        ctx.fillStyle = grad;
+      } else {
+        ctx.fillStyle = isRemote ? '#0f172a' : '#1e293b';
+      }
 
-    ctx.strokeStyle = isRemote ? 'rgba(99, 102, 241, 0.15)' : 'rgba(239, 68, 68, 0.15)';
-    ctx.lineWidth = 2;
-    for (let r = 50; r < 300; r += 60) {
-      ctx.beginPath();
-      ctx.arc(320, 240, r + Math.sin(phase + r) * 10, 0, Math.PI * 2);
-      ctx.stroke();
-    }
+      if (typeof ctx.fillRect === 'function') {
+        ctx.fillRect(0, 0, 640, 480);
+      }
 
-    ctx.beginPath();
-    ctx.arc(320, 200, 70, 0, Math.PI * 2);
-    ctx.fillStyle = isRemote ? 'rgba(99, 102, 241, 0.25)' : 'rgba(239, 68, 68, 0.25)';
-    ctx.fill();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = isRemote ? '#6366f1' : '#ef4444';
-    ctx.stroke();
+      if (typeof ctx.beginPath === 'function') {
+        ctx.strokeStyle = isRemote ? 'rgba(99, 102, 241, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+        ctx.lineWidth = 2;
+        for (let r = 50; r < 300; r += 60) {
+          ctx.beginPath();
+          if (typeof ctx.arc === 'function') ctx.arc(320, 240, r + Math.sin(phase + r) * 10, 0, Math.PI * 2);
+          if (typeof ctx.stroke === 'function') ctx.stroke();
+        }
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 36px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const initials = (label || 'HD').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-    ctx.fillText(initials, 320, 200);
+        ctx.beginPath();
+        if (typeof ctx.arc === 'function') ctx.arc(320, 200, 70, 0, Math.PI * 2);
+        ctx.fillStyle = isRemote ? 'rgba(99, 102, 241, 0.25)' : 'rgba(239, 68, 68, 0.25)';
+        if (typeof ctx.fill === 'function') ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = isRemote ? '#6366f1' : '#ef4444';
+        if (typeof ctx.stroke === 'function') ctx.stroke();
 
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillText(label || 'Katılımcı', 320, 300);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const initials = (label || 'HD').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        if (typeof ctx.fillText === 'function') ctx.fillText(initials, 320, 200);
 
-    ctx.font = '600 13px sans-serif';
-    ctx.fillStyle = '#10b981';
-    ctx.fillText('● 1080p HD Stüdyo Akışı', 320, 330);
+        ctx.font = 'bold 20px sans-serif';
+        if (typeof ctx.fillText === 'function') ctx.fillText(label || 'Katılımcı', 320, 300);
 
-    ctx.fillStyle = isRemote ? '#818cf8' : '#f87171';
-    const barCount = 16;
-    const barWidth = 8;
-    const startX = 320 - (barCount * (barWidth + 4)) / 2;
-    for (let i = 0; i < barCount; i++) {
-      const h = Math.abs(Math.sin(phase + i * 0.4)) * 35 + 5;
-      ctx.fillRect(startX + i * (barWidth + 4), 420 - h, barWidth, h);
+        ctx.font = '600 13px sans-serif';
+        ctx.fillStyle = '#10b981';
+        if (typeof ctx.fillText === 'function') ctx.fillText('● 1080p HD Stüdyo Akışı', 320, 330);
+
+        ctx.fillStyle = isRemote ? '#818cf8' : '#f87171';
+        const barCount = 16;
+        const barWidth = 8;
+        const startX = 320 - (barCount * (barWidth + 4)) / 2;
+        for (let i = 0; i < barCount; i++) {
+          const h = Math.abs(Math.sin(phase + i * 0.4)) * 35 + 5;
+          if (typeof ctx.fillRect === 'function') ctx.fillRect(startX + i * (barWidth + 4), 420 - h, barWidth, h);
+        }
+      }
+    } catch (e) {
+      console.warn("Canvas fallback animation draw error:", e);
     }
 
     animFrameId = requestAnimationFrame(draw);
@@ -310,7 +324,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
   const companies = useAppStore(state => state.companies);
   const academicStaff = useAppStore(state => state.academicStaff);
 
-  const contacts = useMemo(() => {
+  const rawContacts = useMemo(() => {
     if (propsContacts && propsContacts.length) return propsContacts;
     return [
       ...(students || []),
@@ -319,6 +333,17 @@ export default function MessagingInterface({ previousView, currentUser, userRole
       ...(academicStaff || [])
     ];
   }, [propsContacts, students, alumni, companies, academicStaff]);
+
+  const contacts = useMemo(() => {
+    const role = userRole || currentUser?.role;
+    if (role === 'student') {
+      return rawContacts.filter(c => c.type !== 'company' && c.role !== 'company');
+    }
+    if (role === 'company' || role === 'employer') {
+      return rawContacts.filter(c => c.type === 'academic' || c.role === 'academic');
+    }
+    return rawContacts;
+  }, [rawContacts, userRole, currentUser]);
 
   const [activeContactId, setActiveContactId] = useState(selectedUserId || selectedGroupId || null);
   const [currentTab, setCurrentTab] = useState('chats'); // 'updates', 'calls', 'communities', 'chats', 'profile'
@@ -914,7 +939,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
       onClose();
       return;
     }
-    const validViews = ['student', 'alumni', 'company', 'academic'];
+    const validViews = ['student', 'alumni', 'company', 'academic', 'admin'];
     if (previousView && validViews.includes(previousView)) {
       if (typeof setView === 'function') setView(previousView);
       return;
@@ -925,8 +950,9 @@ export default function MessagingInterface({ previousView, currentUser, userRole
     else if (role === 'student_user') role = 'student';
     else if (role === 'academic_staff') role = 'academic';
     else if (role === 'alumni_user') role = 'alumni';
+    else if (role === 'admin' || role === 'administrator') role = 'admin';
 
-    if (role === 'admin' || role === 'administrator' || !validViews.includes(role)) {
+    if (!validViews.includes(role)) {
       role = 'student';
     }
 

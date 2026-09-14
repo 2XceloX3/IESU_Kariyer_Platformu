@@ -1,8 +1,10 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import {  Briefcase, CheckCircle2, Clock, XCircle, ChevronRight, UserCircle2 , ChevronLeft, Home, Compass, Users, MessageCircle, Bell, Search, Globe } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
+import SafeAvatar from './shared/SafeAvatar';
+import AdminOmniDock from './AdminOmniDock';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
   const getClasses = () => {
@@ -29,14 +31,24 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
 
 export default function ApplicationsPanel({ currentUser, userRole, setView, setSelectedUserId }) {
   const { applications, setApplications } = useAppStore();
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const effectiveRole = (activePortalBranch === 'student') ? 'student' : (activePortalBranch === 'alumni' ? 'alumni' : (userRole || 'student'));
   // If student: show their applications
   // If company: show applications to their jobs
 
   const myApplications = useMemo(() => {
-    return userRole === 'student' 
-      ? (applications || []).filter(app => app.applicantId === currentUser?.id)
-      : (applications || []).filter(app => app.company === currentUser?.name);
-  }, [applications, userRole, currentUser]);
+    if (effectiveRole === 'student' || effectiveRole === 'alumni') {
+      return (applications || []).filter(app => app.applicantId === currentUser?.id || app.userId === currentUser?.id || app.applicantName === currentUser?.name);
+    }
+    if (userRole === 'admin' || currentUser?.role === 'admin') {
+      return applications || [];
+    }
+    const myCompanyName = (currentUser?.companyName || currentUser?.name || '').toLowerCase();
+    return (applications || []).filter(app => {
+      const appCompany = (app.company || '').toLowerCase();
+      return myCompanyName && appCompany === myCompanyName;
+    });
+  }, [applications, effectiveRole, userRole, currentUser]);
 
   const handleStatusChange = (appId, newStatus) => {
     setApplications((applications || []).map(app => 
@@ -64,17 +76,17 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
     <div className="min-h-screen bg-gray-50 pb-20">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <Logo className="h-10 w-auto hover:scale-105 transition-transform" color={userRole === 'admin' ? 'amber' : 'red'} />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Başvuru Masası' : 'Kariyer Geliştirme Merkezi'}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView('network')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={true} onClick={() => setView('jobs')} />
             <div className="ml-2">
               <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -85,15 +97,15 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
       <main className="max-w-[1000px] mx-auto px-4 lg:px-8 pt-24">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 min-h-[500px]">
       <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
-        <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${userRole === 'admin' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-600'}`}>
           <Briefcase size={24} />
         </div>
         <div>
           <h2 className="text-xl font-black text-gray-900">
-            {userRole === 'student' ? 'Başvurularım' : 'Gelen Başvurular'}
+            {userRole === 'admin' ? 'Tüm Üniversite Başvuru & Aday Havuzu (Süper Yönetici)' : userRole === 'student' ? 'Başvurularım' : 'Gelen Başvurular'}
           </h2>
           <p className="text-sm text-gray-500 font-medium">
-            {userRole === 'student' ? 'İş ve staj başvurularınızın durumunu takip edin.' : 'İlanlarınıza gelen başvuruları inceleyin ve yönetin.'}
+            {userRole === 'admin' ? 'Öğrenci ve mezunların kurumsal firmalara yaptığı tüm başvuruları inceleyin ve durumlarını denetleyin.' : userRole === 'student' ? 'İş ve staj başvurularınızın durumunu takip edin.' : 'İlanlarınıza gelen başvuruları inceleyin ve yönetin.'}
           </p>
         </div>
       </div>
@@ -121,9 +133,7 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
                   
                   {userRole === 'company' && (
                     <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-xl">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
-                        <img src={`https://ui-avatars.com/api/?name=${app.applicantName}&background=random&color=fff`} alt={app.applicantName} />
-                      </div>
+                      <SafeAvatar name={app.applicantName} size="md" className="shrink-0" />
                       <div>
                         <p className="text-sm font-bold text-gray-900">{app.applicantName}</p>
                         <p className="text-xs text-gray-500">Aday Profili</p>
@@ -158,7 +168,7 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
                   </div>
                 )}
                 
-                {userRole === 'student' && (
+                {effectiveRole === 'student' && (
                   <div className="pt-4 mt-2 border-t border-gray-100 flex justify-end">
                     <button className="text-sm font-bold text-red-600 hover:text-red-800 flex items-center gap-1 transition">
                       İlan Detayı <ChevronRight size={16} />
@@ -169,9 +179,14 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
       </main>
+
+      {/* Admin Omni Dock */}
+      {effectiveRole === 'admin' && (
+        <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="applications" />
+      )}
     </div>
   );
 }

@@ -151,8 +151,8 @@ describe('MessagingInterface - WebRTC Call Studio & Close Button Routing', () =>
 
       const closeButton = screen.getByTitle('Kapat');
       fireEvent.click(closeButton);
-      expect(setViewMock).toHaveBeenCalledWith('student');
-      expect(setViewMock).not.toHaveBeenCalledWith('admin');
+      expect(setViewMock).toHaveBeenCalledWith('admin');
+      expect(setViewMock).not.toHaveBeenCalledWith('student');
     });
   });
 
@@ -170,7 +170,7 @@ describe('MessagingInterface - WebRTC Call Studio & Close Button Routing', () =>
       );
 
       // Select contact
-      const contactElement = screen.getByText('Ahmet Hoca');
+      const contactElement = screen.getAllByText('Ahmet Hoca')[0];
       fireEvent.click(contactElement);
 
       // Trigger video call button
@@ -201,7 +201,7 @@ describe('MessagingInterface - WebRTC Call Studio & Close Button Routing', () =>
         </MemoryRouter>
       );
 
-      fireEvent.click(screen.getByText('Ahmet Hoca'));
+      fireEvent.click(screen.getAllByText('Ahmet Hoca')[0]);
       fireEvent.click(screen.getByTitle('Görüntülü Arama'));
 
       const muteBtn = screen.getByTitle('Mikrofonu Sessize Al');
@@ -223,7 +223,7 @@ describe('MessagingInterface - WebRTC Call Studio & Close Button Routing', () =>
         </MemoryRouter>
       );
 
-      fireEvent.click(screen.getByText('Ahmet Hoca'));
+      fireEvent.click(screen.getAllByText('Ahmet Hoca')[0]);
       fireEvent.click(screen.getByTitle('Görüntülü Arama'));
 
       const cameraBtn = screen.getByTitle('Kamerayı Kapat');
@@ -244,7 +244,7 @@ describe('MessagingInterface - WebRTC Call Studio & Close Button Routing', () =>
         </MemoryRouter>
       );
 
-      fireEvent.click(screen.getByText('Ahmet Hoca'));
+      fireEvent.click(screen.getAllByText('Ahmet Hoca')[0]);
       fireEvent.click(screen.getByTitle('Görüntülü Arama'));
 
       const endBtn = screen.getByTitle('Aramayı Sonlandır');

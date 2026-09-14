@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -7,13 +8,27 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
     this.setState({ error, errorInfo });
     console.error("ErrorBoundary caught an error:", error, errorInfo);
+    try {
+      const store = useAppStore.getState();
+      if (store && typeof store.logAction === 'function') {
+        store.logAction(
+          'System/ErrorBoundary',
+          `Çalışma zamanı arayüz hatası: ${error?.message || String(error)}`,
+          'Frontend',
+          'critical',
+          { stack: errorInfo?.componentStack?.slice(0, 300) }
+        );
+      }
+    } catch {
+      // Safe fallback if store is not yet initialized
+    }
   }
 
   render() {
@@ -28,10 +43,12 @@ class ErrorBoundary extends React.Component {
             <p className="text-sm font-medium text-gray-500 mb-4">
               Sistemsel bir sorun nedeniyle bu sayfayı şu an görüntüleyemiyoruz. Lütfen sayfayı yenilemeyi deneyin veya ana sayfaya dönün.
             </p>
-            <div className="text-left mb-6 p-3 bg-red-50 text-red-800 rounded-xl overflow-auto text-xs font-mono max-h-48 border border-red-100">
-              <p className="font-bold mb-1 text-red-900">{this.state.error && this.state.error.toString()}</p>
-              <pre className="text-[10px] whitespace-pre-wrap">{this.state.errorInfo && this.state.errorInfo.componentStack}</pre>
-            </div>
+            {import.meta.env.DEV && this.state.error && (
+              <div className="text-left mb-6 p-3 bg-red-50 text-red-800 rounded-xl overflow-auto text-xs font-mono max-h-48 border border-red-100">
+                <p className="font-bold mb-1 text-red-900">{this.state.error.toString()}</p>
+                <pre className="text-[10px] whitespace-pre-wrap">{this.state.errorInfo?.componentStack}</pre>
+              </div>
+            )}
             
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button 

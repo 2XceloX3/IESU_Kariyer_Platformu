@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Award, Globe, Users, ShieldCheck, HeartHandshake, CheckCircle2, Building, BookOpen, Sparkles, TrendingUp, Compass, Clock, GraduationCap, Target, FileText, ChevronRight, UserCheck, Phone, Mail, MapPin, ExternalLink } from 'lucide-react';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import MainHeader from './MainHeader';
@@ -52,7 +52,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
-      <MainHeader setView={setView} />
+      <MainHeader setView={setView} currentUser={currentUser} userRole={userRole} />
 
       <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
@@ -249,6 +249,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
                         <img 
                           src={staff.photo} 
                           alt={staff.name} 
+                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/iesu-logo.svg'; }}
                           className="h-full w-full object-contain drop-shadow-md rounded-2xl group-hover:scale-105 transition-transform duration-500" 
                         />
                         <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
@@ -295,5 +296,4 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
     </div>
   );
 }
-
 

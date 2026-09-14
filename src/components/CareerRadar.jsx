@@ -1,11 +1,23 @@
-﻿import React from 'react';
+import React from 'react';
 import { Megaphone, Calendar, Briefcase, GraduationCap, ChevronRight, Compass } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
 
-export default function CareerRadar({ announcements = [], events = [], jobs = [], setView }) {
+export default function CareerRadar({ announcements: propAnnouncements, events: propEvents, jobs: propJobs, setView: propSetView }) {
+  const storeAnnouncements = useAppStore(state => state.announcements);
+  const storeEvents = useAppStore(state => state.events);
+  const storeJobs = useAppStore(state => state.jobs);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const announcements = (propAnnouncements && propAnnouncements.length > 0) ? propAnnouncements : (storeAnnouncements || []);
+  const events = (propEvents && propEvents.length > 0) ? propEvents : (storeEvents || []);
+  const jobs = (propJobs && propJobs.length > 0) ? propJobs : (storeJobs || []);
+
+  const setView = propSetView || window.setViewGlobal;
+
   // Sort and slice data to get the latest 2-3 items of each category
-  const activeAnnouncements = (announcements || []).filter(a => a.status === 'Yayında').slice(0, 2);
-  const activeEvents = (events || []).filter(e => e.status === 'Yayında').slice(0, 2);
-  const activeJobs = (jobs || []).filter(j => j.status === 'Yayında').slice(0, 2);
+  const activeAnnouncements = (announcements || []).filter(a => a.status === 'Yayında' || !a.status).slice(0, 2);
+  const activeEvents = (events || []).filter(e => e.status === 'Yayında' || !e.status).slice(0, 2);
+  const activeJobs = (jobs || []).filter(j => j.status === 'Yayında' || !j.status).slice(0, 2);
 
   // Combine into a highlights array
   const highlights = [];
@@ -24,7 +36,7 @@ export default function CareerRadar({ announcements = [], events = [], jobs = []
 
   // If no highlights, show a fallback card
   if (highlights.length === 0) {
-    highlights.push({ type: 'welcome', icon: <Compass size={18} />, title: 'Profilinizi Tamamlayın', desc: 'Kariyer danışmanlığı randevusu alın.', color: 'bg-red-50 text-red-600', link: 'student' });
+    highlights.push({ type: 'welcome', icon: <Compass size={18} />, title: 'Profilinizi Tamamlayın', desc: 'Kariyer danışmanlığı randevusu alın.', color: 'bg-red-50 text-red-600', link: activePortalBranch === 'alumni' ? 'alumni' : 'student' });
   }
 
   return (

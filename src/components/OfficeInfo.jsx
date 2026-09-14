@@ -1,14 +1,14 @@
-﻿import React from 'react';
-import { MapPin, Phone, Mail, Clock, UserCheck, Building } from 'lucide-react';
+import React from 'react';
+import { MapPin, Phone, Mail, Clock, UserCheck, Building, ExternalLink } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 
 export default function OfficeInfo() {
   const storeOfficeInfo = useAppStore((state) => state.officeInfo) || {};
 
   const title = storeOfficeInfo.title || "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi";
-  const description = storeOfficeInfo.description || "Kariyer Geliştirme Merkezi, öğrencilerimizin ve mezunlarımızın mesleki esenyurtlerini desteklemek, kariyer planlamalarına rehberlik etmek ve onları iş dünyası ile buluşturmak amacıyla hizmet vermektedir.";
-  const address = storeOfficeInfo.address || "Zafer Mah. Adile Naşit Bulvarı No:1 Esenyurt / İstanbul";
-  const phone = storeOfficeInfo.phone || "+90 (212) 444 37 98 - Dahili: 1140";
+  const description = storeOfficeInfo.description || "Kariyer Geliştirme Merkezi, öğrencilerimizin ve mezunlarımızın mesleki gelişimlerini desteklemek, kariyer planlamalarına rehberlik etmek ve onları iş dünyası ile buluşturmak amacıyla hizmet vermektedir.";
+  const address = storeOfficeInfo.address || "Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt, İstanbul / Türkiye";
+  const phone = storeOfficeInfo.phone || "444 9 123 / +90 (212) 699 09 90";
   const email = storeOfficeInfo.email || "kariyer@esenyurt.edu.tr";
   const workingHours = storeOfficeInfo.workingHours || "Hafta içi 08:30 - 17:30";
   const coordinators = storeOfficeInfo.coordinators || [];
@@ -88,12 +88,17 @@ export default function OfficeInfo() {
                       {coord.name}
                     </h4>
                     <p className="text-xs text-red-700 font-bold" data-testid="coordinator-role">
-                      {coord.role}
+                      {coord.role || coord.title || 'Kariyer Geliştirme Ofisi'}
                     </p>
                     <div className="mt-2 text-[11px] text-slate-500 font-medium space-y-0.5">
                       <p data-testid="coordinator-email">E-posta: {coord.email}</p>
-                      <p data-testid="coordinator-phone">Tel: {coord.phone}</p>
+                      {coord.phone && <p data-testid="coordinator-phone">Tel: {coord.phone}</p>}
                     </div>
+                    {storeOfficeInfo.sourceUrl && (
+                      <a href={storeOfficeInfo.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 text-xs font-bold text-[#990000] hover:underline">
+                        Resmî kaynak sayfasını görüntüle <ExternalLink size={13} />
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
@@ -104,4 +109,3 @@ export default function OfficeInfo() {
     </section>
   );
 }
-

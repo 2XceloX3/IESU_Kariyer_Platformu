@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { BookOpen, Users, BarChart3, Download, Plus, CheckCircle, Search, Eye, Trash2, ImagePlus, ChevronDown, ChevronUp, FileText, AlertCircle, Award, Star } from 'lucide-react';
 import PostCard from '../PostCard';
 
@@ -325,7 +325,12 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                           <span className="text-xs font-medium text-gray-500 mt-1">Sistem gerçek afişleri işleyebilir</span>
                           <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
-                              setForm({...form, imageUrl: URL.createObjectURL(e.target.files[0])});
+                              const reader = new FileReader();
+                              reader.onload = event => {
+                                if (typeof event.target?.result === 'string') setForm(current => ({ ...current, imageUrl: event.target.result }));
+                              };
+                              reader.onerror = () => window.toast?.error('Görsel okunamadı. Lütfen tekrar deneyin.');
+                              reader.readAsDataURL(e.target.files[0]);
                             }
                           }} />
                         </label>
@@ -894,4 +899,3 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
     </div>
   );
 }
-

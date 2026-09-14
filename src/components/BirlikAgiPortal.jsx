@@ -10,10 +10,19 @@ import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import SubPanelFooter from './SubPanelFooter';
 import useAppStore from '../store/useAppStore';
+import { combineFeedItems } from '../utils/feedCombiner';
+import PostCard from './PostCard';
+import AdminOmniDock from './AdminOmniDock';
 
 export default function BirlikAgiPortal({ currentUser, setView, previousView, setSelectedGroupId, setSelectedUserId, userRole, academicRole }) {
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
+  const events = useAppStore(state => state.events) || [];
+  const news = useAppStore(state => state.news) || [];
+  const announcements = useAppStore(state => state.announcements) || [];
+  const jobs = useAppStore(state => state.jobs) || [];
+  const students = useAppStore(state => state.students) || [];
+  const alumni = useAppStore(state => state.alumni) || [];
   const alumniAssocBoard = useAppStore(state => state.alumniAssocBoard) || [];
   const alumniAssocApplications = useAppStore(state => state.alumniAssocApplications) || [];
   const featureAlumniAssocToggle = useAppStore(state => state.featureAlumniAssocToggle);
@@ -43,37 +52,24 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
     { id: 4, name: 'Dernek Burs Fonu', logo: 'https://ui-avatars.com/api/?name=BF&background=059669&color=fff', tag: 'Sosyal', hasUnseen: false, image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80', caption: 'Başarılı öğrencilerimize sunduğumuz Dernek Burs Komisyonu başvuruları açıldı.' },
   ];
 
-  // Mezun Derneği Resmî Akış Paylaşımları
-  const assocPosts = useMemo(() => {
-    return (posts || []).filter(p => p.category === 'Mezun Derneği' || p.author?.id === 'mezun_dernegi' || p.title?.includes('MEZUN DERNEĞİ'));
-  }, [posts]);
-
-  const defaultAssocFeed = [
-    {
-      id: 'assoc-feed-1',
-      title: 'İESÜ Mezunlar Derneği 2026 Büyük Bahar Buluşması ve Kariyer Zirvesi',
-      author: { name: 'İESÜ Mezunlar Derneği', role: 'Resmî Dernek Yönetimi', avatar: '/iesu-logo.svg' },
-      date: 'Bugün, 14:30',
-      content: 'Değerli Mezunlarımız ve Öğrencilerimiz! 🎓 2026 yılı geleneksel mezunlar buluşmamızı bu yıl dev bir Kariyer Zirvesi ile taçlandırıyoruz. Sektör lideri mezunlarımız deneyimlerini paylaşacak, yeni üyelikler kabul edilecek.',
-      imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
-      likes: 184,
-      comments: 32,
-      category: 'Mezun Derneği'
-    },
-    {
-      id: 'assoc-feed-2',
-      title: 'Küresel Mezun Ağı & Profesyonel İş Birliği Portalı Hizmette!',
-      author: { name: 'Mezun Derneği Yönetim Kurulu', role: 'Resmî Dernek Yöneticisi', avatar: 'https://ui-avatars.com/api/?name=Mezun+Dernegi&background=990000&color=fff' },
-      date: 'Dün, 09:15',
-      content: 'Dünyanın 40’tan fazla ülkesinde görev yapan İESÜ mezunlarını tek bir çatı altında birleştiriyoruz. Dernek üyelerimiz özel mentorluk verebilir ve dernek içi iş ilanları yayınlayabilir.',
-      imageUrl: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80',
-      likes: 129,
-      comments: 18,
-      category: 'Mezun Derneği'
-    }
-  ];
-
-  const displayPosts = assocPosts.length > 0 ? assocPosts : defaultAssocFeed;
+  // Live platform feed stream connected seamlessly with Mezun Derneği official items
+  const displayPosts = useMemo(() => {
+    const combined = combineFeedItems(posts, events, news, announcements, jobs);
+    if (combined.length > 0) return combined;
+    return [
+      {
+        id: 'assoc-feed-1',
+        title: 'İESÜ Mezunlar Derneği 2026 Büyük Bahar Buluşması ve Kariyer Zirvesi',
+        author: { name: 'İESÜ Mezunlar Derneği', role: 'Resmî Dernek Yönetimi', avatar: '/iesu-logo.svg' },
+        date: 'Bugün, 14:30',
+        content: 'Değerli Mezunlarımız ve Öğrencilerimiz! 🎓 2026 yılı geleneksel mezunlar buluşmamızı bu yıl dev bir Kariyer Zirvesi ile taçlandırıyoruz. Sektör lideri mezunlarımız deneyimlerini paylaşacak, yeni üyelikler kabul edilecek.',
+        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
+        likes: 184,
+        comments: 32,
+        category: 'Mezun Derneği'
+      }
+    ];
+  }, [posts, events, news, announcements, jobs]);
 
   const handleApplySubmit = (e) => {
     e.preventDefault();
@@ -93,7 +89,11 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
     };
 
     setAlumniAssocApplications([newApp, ...currentApps]);
-    alert('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
+    if (window.toast?.success) {
+      window.toast.success('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
+    } else {
+      alert('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
+    }
     setAppForm({ ...appForm, phone: '', note: '' });
     setActiveTab('feed');
   };
@@ -102,29 +102,25 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans">
       {/* FULL STANDARD WHITE NAVBAR MATCHING ALUMNI FEED */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
-        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between relative">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => {
-            const currentRole = currentUser?.role || userRole;
-            setView(currentRole === 'admin' ? 'admin' : (currentRole === 'employer' || currentRole === 'company') ? 'company' : currentRole === 'alumni' ? 'alumni' : currentRole === 'academic' ? 'academic' : 'student');
+            const store = useAppStore.getState();
+            if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+            setView('alumni');
           }}>
-            <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
+            <Logo color="emerald" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
             <div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Portalı & Mezun Akışı</p>
+              <h1 className="text-[13px] font-black text-emerald-800 tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">İESÜ Mezunlar Portalı</p>
             </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-md mx-6">
-            <div className="relative w-full group">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search size={16} className="text-gray-400 group-focus-within:text-red-500 transition-colors" />
-              </div>
-              <input 
-                type="text" 
-                placeholder="Öğrenci, firma, mezun veya içerik ara..." 
-                className="w-full bg-[#EEF3F8] text-gray-900 text-sm rounded-md focus:ring-2 focus:ring-red-500 focus:bg-white focus:outline-none block pl-10 p-2 transition-all"
-              />
-            </div>
+          {/* CENTER: Mezunlar Derneği Portalı Emerald Badge */}
+          <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-none z-20">
+            <span className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 shadow-md shadow-emerald-600/30 border border-emerald-300/60 flex items-center gap-2 whitespace-nowrap shrink-0">
+              <span className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0"></span>
+              🎓 MEZUNLAR DERNEĞİ PORTALI
+            </span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
@@ -146,7 +142,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
       <main className="flex-1 w-full max-w-[1300px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         
         {/* ULTRA-PREMIUM GOOGLE STITCH HERO BANNER */}
-        <div className="bg-gradient-to-r from-slate-950 via-[#800000] to-red-950 text-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-red-900/40 relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+        <div className="bg-gradient-to-r from-slate-950 via-emerald-950 to-teal-950 text-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-emerald-800/40 relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
           <div className="max-w-3xl space-y-4 z-10">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-950/80 px-4 py-1.5 rounded-full border border-amber-500/40 flex items-center gap-1.5">
@@ -163,17 +159,6 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               İstanbul Esenyurt Üniversitesi Mezunlar Derneği; 77.000+ mezunumuz ile öğrencilerimiz arasında yaşam boyu köprü kurar, kariyer fıkirlerini destekler ve dayanışmayı büyütür.
             </p>
           </div>
-
-          {(userRole === 'admin' || (alumniAssocBoard || []).some(m => m.email === currentUser?.email)) && (
-            <div className="z-10 flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto">
-              <button
-                onClick={() => setView('alumni_assoc_portal')}
-                className="px-6 py-3.5 bg-white/10 backdrop-blur-md text-white font-bold text-xs rounded-2xl border border-white/20 hover:bg-white/20 transition text-center flex items-center justify-center gap-2"
-              >
-                <ShieldCheck size={16} className="text-amber-400" /> Özel Yönetici Portalı →
-              </button>
-            </div>
-          )}
         </div>
 
         {/* NAVIGATION TABS */}
@@ -190,7 +175,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-black transition whitespace-nowrap ${
                 activeTab === t.id 
-                  ? 'bg-gradient-to-r from-[#990000] to-[#800000] text-white shadow-md' 
+                  ? 'bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 text-white shadow-md' 
                   : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
@@ -205,48 +190,20 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               {displayPosts.map((post) => (
-                <div key={post.id} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition">
-                  <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <img src={post.author?.avatar || '/iesu-logo.svg'} alt={post.author?.name} className="w-11 h-11 rounded-full object-cover border border-slate-200 bg-slate-900" />
-                      <div>
-                        <h4 className="text-sm font-black text-slate-900">{post.author?.name || 'Mezun Derneği'}</h4>
-                        <span className="text-[10px] font-bold text-[#990000] bg-red-50 px-2 py-0.5 rounded-md border border-red-100">
-                          {post.author?.role || 'Resmî Duyuru'}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="text-xs font-semibold text-slate-400">{post.date || 'Bugün'}</span>
-                  </div>
-
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-lg font-black text-slate-900">{post.title}</h3>
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                      {post.content}
-                    </p>
-                    {post.imageUrl && (
-                      <div className="rounded-2xl overflow-hidden max-h-96 border border-slate-100">
-                        <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1.5 text-[#990000]"><Heart size={16} /> {post.likes || 140} Beğeni</span>
-                      <span className="flex items-center gap-1.5"><MessageCircle size={16} /> {post.comments || 22} Yorum</span>
-                    </div>
-                    <button onClick={() => alert('Paylaşım bağlantısı kopyalandı!')} className="flex items-center gap-1 hover:text-[#990000]">
-                      <Share2 size={16} /> Paylaş
-                    </button>
-                  </div>
-                </div>
+                <PostCard 
+                  key={post.id} 
+                  post={post} 
+                  currentUser={currentUser} 
+                  students={students} 
+                  alumni={alumni} 
+                  setPosts={setPosts} 
+                />
               ))}
             </div>
 
             {/* SAĞ YAN PANEL: DERNEK ÖZETİ & DUYURU paneli */}
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-slate-900 to-red-950 text-white p-6 rounded-3xl border border-red-900/50 shadow-xl space-y-4">
+              <div className="bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-950 text-white p-6 rounded-3xl border border-emerald-800/50 shadow-xl space-y-4">
                 <div className="flex items-center gap-2">
                   <Sparkles size={18} className="text-amber-400" />
                   <h3 className="font-black text-base">Dernek Hakkında Özet</h3>
@@ -254,16 +211,11 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                 <p className="text-xs text-slate-300 leading-relaxed font-medium">
                   İstanbul Esenyurt Üniversitesi Mezunlar Derneği, tüm mezunlarımızın haklarını gözeten, kariyer imkânları oluşturan ve sosyal dayanışmayı yüksek tutan resmi kurumsal yapıdır.
                 </p>
-                <div className="p-4 bg-white/10 rounded-2xl border border-white/10 space-y-2 text-xs font-semibold">
-                  <div className="flex justify-between"><span>Kayıtlı Üye Sayısı:</span> <strong className="text-amber-300">12.450+</strong></div>
-                  <div className="flex justify-between"><span>Düzenlenen Etkinlik:</span> <strong className="text-emerald-300">140+</strong></div>
-                  <div className="flex justify-between"><span>Dağıtılan Burs/Destek:</span> <strong className="text-cyan-300">₺450.000+</strong></div>
-                </div>
               </div>
 
               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                 <h3 className="font-black text-sm text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                  <Bell size={16} className="text-[#990000]" /> Dernek İletişim Kanalları
+                  <Bell size={16} className="text-emerald-700" /> Dernek İletişim Kanalları
                 </h3>
                 <div className="space-y-3 text-xs font-semibold text-slate-600">
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -298,8 +250,8 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                 { title: 'Girişimcilik ve Yatırımcı Meclisi', count: '650 Mezun', desc: 'Kendi şirketini kuran girişimci mezunlar ve melek yatırımcılar fonu.' },
                 { title: 'Avrupa ve Almanya Bölge Komitesi', count: '410 Mezun', desc: 'Avrupa ülkelerinde çalışan mezunlarımızın sosyal ve akademik yardımlaşma ağı.' },
               ].map((kom, i) => (
-                <div key={i} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 space-y-3 hover:border-red-200 hover:shadow-md transition">
-                  <span className="text-[10px] font-black text-[#990000] bg-red-100 px-2.5 py-1 rounded-md">{kom.count}</span>
+                <div key={i} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 space-y-3 hover:border-emerald-300 hover:shadow-md transition">
+                  <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md">{kom.count}</span>
                   <h4 className="text-base font-black text-slate-900">{kom.title}</h4>
                   <p className="text-xs font-medium text-slate-600 leading-relaxed">{kom.desc}</p>
                 </div>
@@ -323,7 +275,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                 { title: 'Sektör Liderleri ile Mezun-Öğrenci Buluşması', date: '02 Haziran 2026', loc: 'İESÜ Kampüs Kuluçka Merkezi', desc: 'CEO ve direktör pozisyonundaki mezunlarımızla birebir kariyer sohbetleri.' },
               ].map((ev, i) => (
                 <div key={i} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-start gap-4">
-                  <div className="p-4 bg-red-100 text-[#990000] rounded-2xl text-center flex-shrink-0 font-black">
+                  <div className="p-4 bg-emerald-100 text-emerald-800 rounded-2xl text-center flex-shrink-0 font-black">
                     <Calendar size={24} className="mx-auto mb-1" />
                     <span className="text-[10px] block">ETKİNLİK</span>
                   </div>
@@ -350,11 +302,11 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {(alumniAssocBoard || []).map((m) => (
                 <div key={m.id} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#990000] to-red-900 text-white font-black flex items-center justify-center text-lg shadow">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-800 to-teal-900 text-white font-black flex items-center justify-center text-lg shadow">
                     {m.name?.substring(0, 2)?.toUpperCase()}
                   </div>
                   <div>
-                    <span className="text-[10px] font-black text-[#990000] uppercase bg-red-100 px-2 py-0.5 rounded-md">{m.role}</span>
+                    <span className="text-[10px] font-black text-emerald-800 uppercase bg-emerald-100 px-2 py-0.5 rounded-md">{m.role}</span>
                     <h4 className="text-base font-black text-slate-900 mt-1">{m.name}</h4>
                     <p className="text-xs font-medium text-slate-500">{m.email}</p>
                   </div>
@@ -393,7 +345,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                         required
                         value={appForm.name} 
                         onChange={(e) => setAppForm({ ...appForm, name: e.target.value })}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#990000] outline-none"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-600 outline-none"
                       />
                     </div>
                     <div>
@@ -401,7 +353,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                       <select 
                         value={appForm.type}
                         onChange={(e) => setAppForm({ ...appForm, type: e.target.value })}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#990000] outline-none"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-600 outline-none"
                       >
                         <option value="Asıl Üyelik">Asıl Dernek Üyeliği</option>
                         <option value="Yönetim Ekibi Adaylığı">Yönetim Ekibi & Komite Adaylığı</option>
@@ -417,7 +369,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                         required
                         value={appForm.department} 
                         onChange={(e) => setAppForm({ ...appForm, department: e.target.value })}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#990000] outline-none"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-600 outline-none"
                       />
                     </div>
                     <div>
@@ -427,7 +379,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                         required
                         value={appForm.graduationYear} 
                         onChange={(e) => setAppForm({ ...appForm, graduationYear: e.target.value })}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#990000] outline-none"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-600 outline-none"
                       />
                     </div>
                   </div>
@@ -440,7 +392,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                         required
                         value={appForm.email} 
                         onChange={(e) => setAppForm({ ...appForm, email: e.target.value })}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#990000] outline-none"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-600 outline-none"
                       />
                     </div>
                     <div>
@@ -451,7 +403,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                         value={appForm.phone} 
                         placeholder="0532 000 0000"
                         onChange={(e) => setAppForm({ ...appForm, phone: e.target.value })}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#990000] outline-none"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-600 outline-none"
                       />
                     </div>
                   </div>
@@ -463,13 +415,13 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
                       value={appForm.note}
                       onChange={(e) => setAppForm({ ...appForm, note: e.target.value })}
                       placeholder="Dernek bünyesinde üstlenmek istediğiniz görevler veya uzmanlık alanlarınız..."
-                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#990000] outline-none"
+                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-600 outline-none"
                     />
                   </div>
 
                   <button 
                     type="submit"
-                    className="w-full py-4 bg-gradient-to-r from-[#990000] to-red-900 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
                   >
                     <Send size={16} /> Başvurumu Gönder ve Kaydet
                   </button>
@@ -512,7 +464,10 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
         </div>
       )}
 
-      <SubPanelFooter setView={setView} />
+      {/* Floating Bottom Navigation Dock for easy return to main feed */}
+      <AdminOmniDock setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} currentUser={currentUser} setSelectedUserId={setSelectedUserId} theme="emerald" />
+
+      <SubPanelFooter setView={setView} theme="emerald" />
     </div>
   );
 }

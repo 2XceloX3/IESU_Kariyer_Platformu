@@ -1,8 +1,10 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import SubPanelFooter from './SubPanelFooter';
+import AdminOmniDock from './AdminOmniDock';
+import SafeAvatar from './shared/SafeAvatar';
 import { 
   Users, Megaphone, Calendar, ShieldCheck, Plus, CheckCircle2, XCircle, 
   Trash2, UserPlus, Eye, MessageSquare, Award, Clock, ArrowRight, Lock, 
@@ -25,6 +27,19 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
   const [newAnnounce, setNewAnnounce] = useState({ title: '', content: '', imageUrl: '' });
   const [newEvent, setNewEvent] = useState({ title: '', date: '', time: '', location: '', description: '', imageUrl: '' });
   const [newMember, setNewMember] = useState({ name: '', role: '', email: '', phone: '' });
+
+  const readImageFile = (file, onLoad) => {
+    if (!file || !file.type.startsWith('image/')) {
+      window.toast?.error('Lütfen geçerli bir görsel dosyası seçin.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = event => {
+      if (typeof event.target?.result === 'string') onLoad(event.target.result);
+    };
+    reader.onerror = () => window.toast?.error('Görsel okunamadı. Lütfen tekrar deneyin.');
+    reader.readAsDataURL(file);
+  };
 
   // Authorization check
   const isSuperAdmin = userRole === 'admin' || currentUser?.role === 'admin';
@@ -60,9 +75,10 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
       category: 'Mezun Derneği',
       publisher: currentUser?.name || 'Mezun Derneği Yönetimi'
     };
-    setAnnouncements([created, ...(announcements || [])]);
+    setAnnouncements(current => [created, ...(current || [])]);
     setNewAnnounce({ title: '', content: '', imageUrl: '' });
-    alert('Duyuru başarıyla yayınlandı ve platform akışına eklendi!');
+    if (window.toast?.success) window.toast.success('Duyuru başarıyla yayınlandı ve platform akışına eklendi!');
+    else alert('Duyuru başarıyla yayınlandı ve platform akışına eklendi!');
   };
 
   const handleCreateEvent = (e) => {
@@ -79,9 +95,10 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
       status: 'Aktif',
       category: 'Mezun Derneği'
     };
-    setEvents([created, ...(events || [])]);
+    setEvents(current => [created, ...(current || [])]);
     setNewEvent({ title: '', date: '', time: '', location: '', description: '', imageUrl: '' });
-    alert('Etkinlik başarıyla oluşturuldu ve etkinlikler listesine yayınlandı!');
+    if (window.toast?.success) window.toast.success('Etkinlik başarıyla oluşturuldu ve etkinlikler listesine yayınlandı!');
+    else alert('Etkinlik başarıyla oluşturuldu ve etkinlikler listesine yayınlandı!');
   };
 
   const handleAddBoardMember = (e) => {
@@ -96,7 +113,8 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     };
     setAlumniAssocBoard([...(alumniAssocBoard || []), created]);
     setNewMember({ name: '', role: '', email: '', phone: '' });
-    alert(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
+    if (window.toast?.success) window.toast.success(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
+    else alert(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
   };
 
   const handleRemoveBoardMember = (memberId) => {
@@ -110,7 +128,11 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
       <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
         <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
           <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => {
+              const store = useAppStore.getState();
+              if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+              setView('alumni');
+            }}>
               <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
               <div className="hidden sm:block text-left">
                 <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -145,7 +167,11 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
       {/* FULL STANDARD WHITE NAVBAR MATCHING ALUMNI FEED */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => {
+            const store = useAppStore.getState();
+            if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+            setView('alumni');
+          }}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
             <div className="hidden sm:block text-left">
               <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -153,18 +179,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
             </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-md mx-6">
-            <div className="relative w-full group">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search size={16} className="text-gray-400 group-focus-within:text-red-500 transition-colors" />
-              </div>
-              <input 
-                type="text" 
-                placeholder="Öğrenci, firma, mezun veya içerik ara..." 
-                className="w-full bg-[#EEF3F8] text-gray-900 text-sm rounded-md focus:ring-2 focus:ring-red-500 focus:bg-white focus:outline-none block pl-10 p-2 transition-all"
-              />
-            </div>
-          </div>
+
 
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
@@ -378,7 +393,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                         className="hidden" 
                         onChange={(e) => {
                           if (e.target.files && e.target.files[0]) {
-                            setNewAnnounce({ ...newAnnounce, imageUrl: URL.createObjectURL(e.target.files[0]) });
+                            readImageFile(e.target.files[0], imageUrl => setNewAnnounce(current => ({ ...current, imageUrl })));
                           }
                         }} 
                       />
@@ -422,7 +437,13 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                 </span>
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center gap-3">
-                    <img src={currentUser?.avatar || '/iesu-logo.svg'} alt="" className="w-9 h-9 rounded-full object-cover border border-slate-200" />
+                    <SafeAvatar
+                      src={currentUser?.avatar}
+                      name={currentUser?.name || 'Mezun'}
+                      size="md"
+                      alt="Profil"
+                      className="border border-slate-200"
+                    />
                     <div>
                       <h4 className="text-xs font-black text-slate-900">{currentUser?.name || 'Mezun Derneği'}</h4>
                       <span className="text-[9px] font-bold text-[#990000] bg-red-100 px-1.5 py-0.5 rounded">Resmî Duyuru</span>
@@ -512,7 +533,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                         className="hidden" 
                         onChange={(e) => {
                           if (e.target.files && e.target.files[0]) {
-                            setNewEvent({ ...newEvent, imageUrl: URL.createObjectURL(e.target.files[0]) });
+                            readImageFile(e.target.files[0], imageUrl => setNewEvent(current => ({ ...current, imageUrl })));
                           }
                         }} 
                       />
@@ -629,8 +650,10 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
 
       </main>
 
+      {/* Floating Bottom Navigation Dock for easy return to main feed (Emerald Theme) */}
+      <AdminOmniDock setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} currentUser={currentUser} setSelectedUserId={setSelectedUserId} theme="emerald" />
+
       <SubPanelFooter setView={setView} />
     </div>
   );
 }
-

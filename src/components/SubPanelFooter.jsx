@@ -1,8 +1,9 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, MapPin, ArrowRight, ChevronRight, CheckCircle2, X, FileText, User, GraduationCap, Calendar, BookOpen, Send } from 'lucide-react';
 import Logo from './Logo';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import useAppStore from '../store/useAppStore';
+import ContactModal from './ContactModal';
 
 // Authentic Social Brand SVG Components
 const FacebookIcon = ({ size = 14 }) => (
@@ -35,13 +36,24 @@ const XIcon = ({ size = 14, className = "" }) => (
   </svg>
 );
 
-export default function SubPanelFooter({ setView }) {
+export default function SubPanelFooter({ setView, theme = 'red' }) {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
   const [showKvkkModal, setShowKvkkModal] = useState(false);
   const [showSubscriberModal, setShowSubscriberModal] = useState(false);
-  const [kvkkAgreed, setKvkkAgreed] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
 
+  const isEmerald = theme === 'emerald';
+  const waveBgClass = isEmerald ? 'text-[#064E3B]' : 'text-[#8F0808]';
+  const waveOpacityFill = isEmerald ? '#022C22' : '#750606';
+  const footerBgClass = isEmerald ? 'bg-[#064E3B]' : 'bg-[#8F0808]';
+  const buttonHoverClass = isEmerald ? 'hover:text-[#064E3B]' : 'hover:text-[#8F0808]';
+  const kvkkAgreedState = useState(false);
+  const kvkkAgreed = kvkkAgreedState[0];
+  const setKvkkAgreed = kvkkAgreedState[1];
+
+  const siteConfig = useAppStore(state => state.siteConfig);
   const addNewsletterSubscriber = useAppStore(state => state.addNewsletterSubscriber);
 
   const [form, setForm] = useState({
@@ -286,7 +298,7 @@ export default function SubPanelFooter({ setView }) {
       {/* 🌊 TOP ORGANIC SVG WAVE DIVIDER TRANSITION */}
       <div className="w-full overflow-hidden leading-none bg-[#F8FAFC]">
         <svg 
-          className="relative block w-full h-12 sm:h-16 text-[#8F0808]" 
+          className={`relative block w-full h-12 sm:h-16 ${waveBgClass}`} 
           viewBox="0 0 1440 120" 
           fill="none" 
           xmlns="http://www.w3.org/2000/svg"
@@ -298,14 +310,14 @@ export default function SubPanelFooter({ setView }) {
           />
           <path 
             d="M0 45C320 100 640 5 960 80C1280 20 1440 60 1440 60V120H0V45Z" 
-            fill="#750606" 
+            fill={waveOpacityFill} 
             fillOpacity="0.4"
           />
         </svg>
       </div>
 
       {/* SUB-PANEL FOOTER MAIN CONTAINER */}
-      <footer className="w-full bg-[#8F0808] text-white pt-8 pb-6 px-4 sm:px-8 lg:px-12 shadow-2xl relative overflow-hidden">
+      <footer className={`w-full ${footerBgClass} text-white pt-8 pb-6 px-4 sm:px-8 lg:px-12 shadow-2xl relative overflow-hidden`}>
         
         {/* Subtle Background Accent Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
@@ -344,12 +356,12 @@ export default function SubPanelFooter({ setView }) {
               <Logo size="lg" variant="white" />
               <div>
                 <h3 className="font-black text-sm text-white tracking-wide">{corporateData.university}</h3>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-wider">Kariyer Geliştirme Merkezi</p>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-wider">{siteConfig?.logoSubText || 'Kariyer Geliştirme Merkezi'}</p>
               </div>
             </div>
 
             <p className="text-xs text-white/95 leading-relaxed font-medium">
-              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
+              {siteConfig?.footerMotto || 'Geleceğe açılan kapı.'}
             </p>
 
             {/* Social Circle Icons */}
@@ -395,12 +407,22 @@ export default function SubPanelFooter({ setView }) {
               </li>
               <li>
                 <button onClick={() => setView && setView('staj')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
-                  <ChevronRight size={14} className="text-white/80 shrink-0" /> Gönüllü Staj Süreçleri
+                  <ChevronRight size={14} className="text-white/80 shrink-0" /> İsteğe Bağlı Staj Süreçleri
                 </button>
               </li>
               <li>
-                <button onClick={() => setView && setView('sem')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
-                  <ChevronRight size={14} className="text-white/80 shrink-0" /> Kariyer ve Yetenek Akademisi
+                <button onClick={() => setView && setView('knowledge_portal')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
+                  <ChevronRight size={14} className="text-white/80 shrink-0" /> Bilgi Bankası & Mevzuat
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setView && setView('leaderboard')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
+                  <ChevronRight size={14} className="text-white/80 shrink-0" /> Başarı & Liderlik Sıralaması
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setShowContactModal(true)} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
+                  <ChevronRight size={14} className="text-white/80 shrink-0" /> İletişim & Bize Ulaşın
                 </button>
               </li>
             </ul>
@@ -408,9 +430,18 @@ export default function SubPanelFooter({ setView }) {
 
           {/* Column 3: Contact Info Box */}
           <div className="space-y-3 text-xs font-medium text-white">
-            <h4 className="text-sm font-black text-white uppercase tracking-wider border-b border-white/20 pb-2">
-              İletişim Bilgileri
-            </h4>
+            <div className="flex items-center justify-between border-b border-white/20 pb-2">
+              <h4 className="text-sm font-black text-white uppercase tracking-wider">
+                İletişim Bilgileri
+              </h4>
+              <button 
+                type="button"
+                onClick={() => setShowContactModal(true)}
+                className="text-[10px] bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg transition font-bold cursor-pointer border border-white/20"
+              >
+                Mesaj Bırak
+              </button>
+            </div>
             <div className="flex items-start gap-3">
               <div className="p-2 rounded-lg bg-white/10 text-white shrink-0 mt-0.5 border border-white/10">
                 <Mail size={16} />
@@ -443,9 +474,9 @@ export default function SubPanelFooter({ setView }) {
           </div>
 
           {/* Column 4: Newsletter Box */}
-          <div className="bg-[#660000]/80 backdrop-blur-md p-5 rounded-3xl border border-white/20 shadow-2xl space-y-3">
+          <div className={`${isEmerald ? 'bg-[#022C22]/80 border-emerald-500/30' : 'bg-[#660000]/80 border-white/20'} backdrop-blur-md p-5 rounded-3xl border shadow-2xl space-y-3`}>
             <h4 className="text-xs font-black text-white uppercase tracking-wider border-b border-white/20 pb-1.5">
-              E-Bülten'e Kayıt Olun
+              E-Bülten&apos;e Kayıt Olun
             </h4>
             <p className="text-[11px] text-white/90 leading-relaxed font-medium">
               Sektör buluşmaları, yeni staj programları ve duyurulardan ilk siz haberdar olun.
@@ -468,7 +499,7 @@ export default function SubPanelFooter({ setView }) {
                   />
                   <button
                     type="submit"
-                    className="w-8 h-8 bg-white text-[#990000] hover:bg-slate-100 rounded-xl flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg"
+                    className={`w-8 h-8 bg-white ${isEmerald ? 'text-[#064E3B]' : 'text-[#990000]'} hover:bg-slate-100 rounded-xl flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg`}
                   >
                     <ArrowRight size={16} />
                   </button>
@@ -510,6 +541,13 @@ export default function SubPanelFooter({ setView }) {
           </div>
         </div>
       </footer>
+
+      {showContactModal && (
+        <ContactModal 
+          isOpen={showContactModal} 
+          onClose={() => setShowContactModal(false)} 
+        />
+      )}
     </div>
   );
 }

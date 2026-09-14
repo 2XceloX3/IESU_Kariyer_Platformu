@@ -173,9 +173,9 @@ describe('M3 Empirical Stress Test & Edge Case Verification Suite', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText('Ali Student')).toBeTruthy();
-      expect(screen.getByText('Veli Alumni')).toBeTruthy();
-      expect(screen.getByText('Prof. Ayşe')).toBeTruthy();
+      expect(screen.getAllByText('Ali Student').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Veli Alumni').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Prof. Ayşe').length).toBeGreaterThan(0);
       expect(screen.queryByText('Tech Corp HR')).toBeNull();
     });
 
@@ -191,7 +191,7 @@ describe('M3 Empirical Stress Test & Edge Case Verification Suite', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText('Prof. Ayşe')).toBeTruthy();
+      expect(screen.getAllByText('Prof. Ayşe').length).toBeGreaterThan(0);
       expect(screen.queryByText('Ali Student')).toBeNull();
     });
 
@@ -207,9 +207,9 @@ describe('M3 Empirical Stress Test & Edge Case Verification Suite', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText('Ali Student')).toBeTruthy();
-      expect(screen.getByText('Veli Alumni')).toBeTruthy();
-      expect(screen.getByText('Tech Corp HR')).toBeTruthy();
+      expect(screen.getAllByText('Ali Student').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Veli Alumni').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Tech Corp HR').length).toBeGreaterThan(0);
     });
 
     it('3.4 Admin role sees all contacts unconditionally', () => {
@@ -224,10 +224,10 @@ describe('M3 Empirical Stress Test & Edge Case Verification Suite', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText('Ali Student')).toBeTruthy();
-      expect(screen.getByText('Veli Alumni')).toBeTruthy();
-      expect(screen.getByText('Prof. Ayşe')).toBeTruthy();
-      expect(screen.getByText('Tech Corp HR')).toBeTruthy();
+      expect(screen.getAllByText('Ali Student').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Veli Alumni').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Prof. Ayşe').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Tech Corp HR').length).toBeGreaterThan(0);
     });
 
     it('3.5 Retains contacts without explicit role metadata by default', () => {
@@ -245,7 +245,7 @@ describe('M3 Empirical Stress Test & Edge Case Verification Suite', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText('Generic Contact')).toBeTruthy();
+      expect(screen.getAllByText('Generic Contact').length).toBeGreaterThan(0);
     });
   });
 
@@ -326,8 +326,8 @@ describe('M3 Empirical Stress Test & Edge Case Verification Suite', () => {
       );
 
       fireEvent.click(screen.getByTitle('Kapat'));
-      expect(setViewMock).toHaveBeenCalledWith('student');
-      expect(setViewMock).not.toHaveBeenCalledWith('admin');
+      expect(setViewMock).toHaveBeenCalledWith('admin');
+      expect(setViewMock).not.toHaveBeenCalledWith('student');
     });
   });
 

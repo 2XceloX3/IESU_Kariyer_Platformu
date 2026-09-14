@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ArrowLeft, Users, ChevronRight } from 'lucide-react';
 import Logo from './Logo';
 
@@ -8,14 +8,14 @@ export default function OrganizationChart({ setView, userRole }) {
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50 border-b-4 border-iesu-blue">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-4 cursor-pointer" onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-4 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
             <Logo className="h-10 sm:h-12 w-auto text-[#990000]" />
             <div className="hidden sm:block">
               <h1 className="text-[16px] md:text-xl font-black text-gray-900 leading-tight tracking-tight whitespace-nowrap">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
               <p className="text-[10px] md:text-[12px] text-iesu-primary font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">Kariyer Geliştirme Merkezi</p>
             </div>
           </div>
-          <button onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="text-gray-500 hover:text-[#990000] flex items-center gap-2 font-bold transition">
+          <button onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} className="text-gray-500 hover:text-[#990000] flex items-center gap-2 font-bold transition">
             <ArrowLeft size={18} /> Ana Sayfaya Dön
           </button>
         </div>

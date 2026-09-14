@@ -1,9 +1,11 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useAppStore from '../store/useAppStore';
 import Logo from './Logo';
 import ProfileUpdate from './ProfileUpdate';
 import TopProfileMenu from './TopProfileMenu';
+import SafeAvatar from './shared/SafeAvatar';
+import AdminOmniDock from './AdminOmniDock';
 import AICVBuilder from './AICVBuilder';
 import { exportPDF } from '../lib/pdfExporter';
 import {
@@ -196,20 +198,20 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-red-900 pb-20 selection:bg-red-500/20">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800 pb-20 selection:bg-emerald-500/20">
       
       {/* Header */}
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
             className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
           >
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-2">
-            <GraduationCap className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight text-md sm:text-lg">Mezun Bilgi Sistemi (MBS)</h1>
+            <GraduationCap className="text-emerald-600" size={24} />
+            <h1 className="font-black text-slate-900 tracking-tight text-md sm:text-lg">Mezun Bilgi Sistemi (MBS)</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -223,11 +225,11 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
           {/* Top Profile Summary Bar */}
           <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <img src={currentUser?.avatar || "https://i.pravatar.cc/150?img=11"} alt="Profile" className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover shadow-md border border-gray-100" />
+              <SafeAvatar src={currentUser?.avatar} name={currentUser?.name || "Kariyer Geliştirme Merkezi"} size="lg" rounded="rounded-2xl" className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-md border border-gray-100 shrink-0" />
               <div>
-                <h2 className="font-black text-red-950 text-base sm:text-lg leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
+                <h2 className="font-black text-slate-900 text-base sm:text-lg leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] font-black text-red-700 bg-red-50 border border-red-100 px-2 py-0.5 rounded uppercase">Mezun Üye</span>
+                  <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded uppercase">Mezun Üye</span>
                   <span className="text-xs text-slate-500 font-semibold">{currentUser?.department || profileData.education[0]?.major || 'Esenyurt Üniversitesi'}</span>
                 </div>
               </div>
@@ -236,13 +238,13 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
             <div className="w-full sm:w-64 space-y-1.5 shrink-0 bg-slate-50 p-3 rounded-xl border border-slate-100">
               <div className="flex justify-between text-xs font-black">
                 <span className="text-slate-500">Profil Doluluk Oranı</span>
-                <span className="text-red-600">%{completeness}</span>
+                <span className="text-emerald-600">%{completeness}</span>
               </div>
               <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner">
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${completeness}%` }}
-                  className="bg-[#990000] h-full rounded-full" 
+                  className="bg-emerald-600 h-full rounded-full" 
                 />
               </div>
             </div>
@@ -257,8 +259,8 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap flex items-center gap-2 ${
                     activeTab === tab.id 
-                      ? 'bg-[#990000] text-white shadow-md shadow-red-900/20 scale-[1.02]' 
-                      : 'text-slate-600 hover:bg-red-50 hover:text-[#990000]'
+                      ? 'bg-emerald-600 text-white shadow-md shadow-emerald-900/20 scale-[1.02]' 
+                      : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
                   }`}
                 >
                   {tab.label}
@@ -289,7 +291,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                     <button 
                       onClick={handleAiEnhanceSummary}
                       disabled={aiEnhancing}
-                      className="text-xs font-black bg-red-50 text-[#990000] border border-red-100 hover:bg-red-100 px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition disabled:opacity-50"
+                      className="text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition disabled:opacity-50"
                     >
                       {aiEnhancing ? 'Optimize Ediliyor...' : 'Yapay Zekâ ile Özeti İyileştir'}
                       <Wand2 size={14} />
@@ -305,7 +307,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           type="text" 
                           value={profileData.name || currentUser?.name || ''}
                           onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -314,7 +316,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           type="email" 
                           value={profileData.email || currentUser?.email || ''}
                           onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -323,7 +325,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           type="text" 
                           value={profileData.phone}
                           onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                           placeholder="+90 5XX XXX XX XX"
                         />
                       </div>
@@ -336,7 +338,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           type="text" 
                           value={profileData.birthCity || '15/05/2001 - İstanbul'}
                           onChange={(e) => setProfileData({...profileData, birthCity: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -345,7 +347,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           type="text" 
                           value={profileData.linkedin}
                           onChange={(e) => setProfileData({...profileData, linkedin: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                           placeholder="https://linkedin.com/in/kullanici"
                         />
                       </div>
@@ -355,7 +357,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           type="text" 
                           value={profileData.website}
                           onChange={(e) => setProfileData({...profileData, website: e.target.value})}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                           placeholder="https://kisiselsite.com"
                         />
                       </div>
@@ -366,7 +368,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       <textarea 
                         value={profileData.summary}
                         onChange={(e) => setProfileData({...profileData, summary: e.target.value})}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs font-medium focus:outline-none focus:border-red-500 min-h-[110px] leading-relaxed text-slate-800"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs font-medium focus:outline-none focus:border-emerald-500 min-h-[110px] leading-relaxed text-slate-800"
                         placeholder="Kariyer hedeflerinizi ve uzmanlık alanlarınızı detaylandırın..."
                       />
                     </div>
@@ -375,7 +377,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   <div className="flex justify-end pt-2">
                     <button 
                       onClick={() => window.toast && window.toast.success('Kişisel bilgileriniz kaydedildi!')} 
-                      className="px-6 py-2.5 bg-[#990000] text-white text-xs font-bold rounded-xl hover:bg-red-800 transition flex items-center gap-2 shadow-md"
+                      className="px-6 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 transition flex items-center gap-2 shadow-md"
                     >
                       <Save size={14} /> Bilgileri Kaydet
                     </button>
@@ -396,18 +398,18 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   {/* Add Education Form */}
                   <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
                     <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                      <Plus size={14} className="text-[#990000]" /> Yeni Eğitim Bilgisi Ekle
+                      <Plus size={14} className="text-emerald-700" /> Yeni Eğitim Bilgisi Ekle
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <input 
                         type="text" placeholder="Üniversite / Okul Adı" 
                         value={newEdu.school} onChange={e => setNewEdu({...newEdu, school: e.target.value})}
-                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                       />
                       <input 
                         type="text" placeholder="Fakülte & Bölüm" 
                         value={newEdu.major} onChange={e => setNewEdu({...newEdu, major: e.target.value})}
-                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                       />
                       <select 
                         value={newEdu.degree} onChange={e => setNewEdu({...newEdu, degree: e.target.value})}
@@ -443,7 +445,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             setNewEdu({ school: '', major: '', degree: 'Lisans', startYear: '', endYear: '', gpa: '' });
                             window.toast && window.toast.success('Eğitim bilgisi eklendi!');
                           }}
-                          className="px-5 bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-red-800 transition shrink-0"
+                          className="px-5 bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition shrink-0"
                         >
                           Ekle
                         </button>
@@ -454,9 +456,9 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   {/* Education List */}
                   <div className="space-y-3">
                     {profileData.education.map(edu => (
-                      <div key={edu.id} className="p-5 rounded-2xl border border-slate-200 bg-white flex justify-between items-start gap-4 shadow-sm hover:border-red-200 transition">
+                      <div key={edu.id} className="p-5 rounded-2xl border border-slate-200 bg-white flex justify-between items-start gap-4 shadow-sm hover:border-emerald-200 transition">
                         <div className="flex gap-4">
-                          <div className="w-11 h-11 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center shrink-0"><GraduationCap size={24}/></div>
+                          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><GraduationCap size={24}/></div>
                           <div>
                             <h4 className="font-black text-sm text-slate-900">{edu.school}</h4>
                             <p className="text-xs text-slate-600 font-bold mt-1">{edu.degree} - {edu.major}</p>
@@ -468,12 +470,40 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         </div>
                         <button 
                           onClick={() => setProfileData(prev => ({ ...prev, education: prev.education.filter(e => e.id !== edu.id) }))}
-                          className="text-slate-400 hover:text-red-600 transition p-1"
+                          className="text-slate-400 hover:text-emerald-600 transition p-1"
                         >
                           <Trash2 size={18}/>
                         </button>
                       </div>
                     ))}
+                  </div>
+
+                  {/* Bottom Navigation & Save Action Bar */}
+                  <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-6">
+                    <button 
+                      type="button"
+                      onClick={() => setActiveTab('ozluk')}
+                      className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition flex items-center gap-1.5"
+                    >
+                      <ChevronLeft size={16} /> Önceki Adım
+                    </button>
+
+                    <div className="flex items-center gap-2.5">
+                      <button 
+                        type="button"
+                        onClick={() => window.toast && window.toast.success('Akademik bilgileriniz başarıyla kaydedildi!')} 
+                        className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-md shadow-emerald-900/10"
+                      >
+                        <Save size={14} /> Bilgileri Kaydet
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => setActiveTab('staj')}
+                        className="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition flex items-center gap-1.5"
+                      >
+                        Sonraki Adım <ChevronRight size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -491,7 +521,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                     {/* Add Experience Form */}
                     <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 mb-5">
                       <h4 className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                        <Plus size={14} className="text-[#990000]" /> Yeni Deneyim Ekle
+                        <Plus size={14} className="text-emerald-700" /> Yeni Deneyim Ekle
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input 
@@ -529,7 +559,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             setNewExp({ company: '', role: '', type: 'Tam Zamanlı', startYear: '', endYear: '', desc: '' });
                             window.toast && window.toast.success('Deneyim bilgisi eklendi!');
                           }}
-                          className="bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-red-800 transition"
+                          className="bg-emerald-600 text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition"
                         >
                           Deneyimi Ekle
                         </button>
@@ -543,18 +573,18 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                     <div className="space-y-3">
                       {profileData.experience.map(exp => (
-                        <div key={exp.id} className="p-5 rounded-2xl border border-slate-200 bg-white flex justify-between items-start gap-4 shadow-sm hover:border-red-200 transition">
+                        <div key={exp.id} className="p-5 rounded-2xl border border-slate-200 bg-white flex justify-between items-start gap-4 shadow-sm hover:border-emerald-200 transition">
                           <div className="flex gap-4">
-                            <div className="w-11 h-11 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center shrink-0"><Building2 size={22}/></div>
+                            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><Building2 size={22}/></div>
                             <div>
                               <h4 className="font-black text-sm text-slate-900">{exp.role}</h4>
-                              <p className="text-xs text-slate-600 font-bold mt-0.5">{exp.company} • <span className="text-[#990000]">{exp.type}</span> ({exp.startYear} - {exp.endYear})</p>
+                              <p className="text-xs text-slate-600 font-bold mt-0.5">{exp.company} • <span className="text-emerald-700">{exp.type}</span> ({exp.startYear} - {exp.endYear})</p>
                               {exp.desc && <p className="text-xs text-slate-500 font-medium leading-relaxed mt-2">{exp.desc}</p>}
                             </div>
                           </div>
                           <button 
                             onClick={() => setProfileData(prev => ({ ...prev, experience: prev.experience.filter(e => e.id !== exp.id) }))}
-                            className="text-slate-400 hover:text-red-600 transition p-1"
+                            className="text-slate-400 hover:text-emerald-600 transition p-1"
                           >
                             <Trash2 size={18}/>
                           </button>
@@ -575,7 +605,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         placeholder="Yetenek ekle (Örn: Python, Liderlik, SQL)..." 
                         value={newSkill}
                         onChange={e => setNewSkill(e.target.value)}
-                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                       />
                       <button 
                         onClick={() => {
@@ -583,7 +613,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           setProfileData(prev => ({ ...prev, skills: [...prev.skills, newSkill.trim()] }));
                           setNewSkill('');
                         }}
-                        className="bg-[#990000] text-white font-bold px-5 py-2.5 rounded-xl text-xs hover:bg-red-800 transition"
+                        className="bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs hover:bg-emerald-700 transition"
                       >
                         Ekle
                       </button>
@@ -595,7 +625,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           {skill} 
                           <button 
                             onClick={() => setProfileData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }))}
-                            className="text-slate-400 hover:text-red-600 font-black ml-1 text-xs"
+                            className="text-slate-400 hover:text-emerald-600 font-black ml-1 text-xs"
                           >
                             ✕
                           </button>
@@ -640,7 +670,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             setNewCert({ title: '', issuer: '', date: '' });
                             window.toast && window.toast.success('Sertifika eklendi!');
                           }}
-                          className="flex-1 bg-[#990000] text-white font-bold rounded-xl text-xs hover:bg-red-800 transition"
+                          className="flex-1 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 transition"
                         >
                           Ekle
                         </button>
@@ -651,7 +681,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       {profileData.certs.map(c => (
                         <div key={c.id} className="p-4 rounded-2xl border border-slate-200 bg-white flex items-center justify-between shadow-sm">
                           <div className="flex items-center gap-3">
-                            <Award className="text-[#990000]" size={22} />
+                            <Award className="text-emerald-700" size={22} />
                             <div>
                               <h4 className="font-black text-xs text-slate-900">{c.title}</h4>
                               <p className="text-[11px] text-slate-500 font-semibold mt-0.5">{c.issuer} • {c.date}</p>
@@ -659,7 +689,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           </div>
                           <button 
                             onClick={() => setProfileData(prev => ({ ...prev, certs: prev.certs.filter(item => item.id !== c.id) }))}
-                            className="text-slate-400 hover:text-red-600 transition"
+                            className="text-slate-400 hover:text-emerald-600 transition"
                           >
                             <Trash2 size={16}/>
                           </button>
@@ -680,7 +710,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           onClick={() => toggleGoal(g.id)}
                           className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100 transition"
                         >
-                          <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition ${g.done ? 'bg-[#990000] border-[#990000] text-white' : 'border-slate-300 bg-white'}`}>
+                          <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition ${g.done ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'}`}>
                             {g.done && <Check size={14} strokeWidth={3} />}
                           </div>
                           <span className={`text-xs font-bold ${g.done ? 'line-through text-slate-400' : 'text-slate-700'}`}>{g.text}</span>
@@ -719,7 +749,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         setNewLang({ name: '', level: 'Orta (B1-B2)' });
                         window.toast && window.toast.success('Dil eklendi!');
                       }}
-                      className="bg-[#990000] text-white font-bold px-5 py-2 rounded-xl text-xs hover:bg-red-800 transition"
+                      className="bg-emerald-600 text-white font-bold px-5 py-2 rounded-xl text-xs hover:bg-emerald-700 transition"
                     >
                       Ekle
                     </button>
@@ -729,15 +759,15 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                     {profileData.languages.map(lang => (
                       <div key={lang.id} className="p-4 rounded-2xl bg-white border border-slate-200 flex justify-between items-center shadow-sm">
                         <div className="flex items-center gap-3">
-                          <Languages size={22} className="text-[#990000]" />
+                          <Languages size={22} className="text-emerald-700" />
                           <div>
                             <h4 className="font-black text-xs text-slate-900">{lang.language}</h4>
-                            <p className="text-[11px] text-[#990000] font-bold tracking-wider mt-0.5">{lang.level}</p>
+                            <p className="text-[11px] text-emerald-700 font-bold tracking-wider mt-0.5">{lang.level}</p>
                           </div>
                         </div>
                         <button 
                           onClick={() => setProfileData(prev => ({ ...prev, languages: prev.languages.filter(l => l.id !== lang.id) }))}
-                          className="text-slate-400 hover:text-red-600 transition"
+                          className="text-slate-400 hover:text-emerald-600 transition"
                         >
                           <Trash2 size={16}/>
                         </button>
@@ -758,10 +788,10 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'kariyer_checkup' && (
                 <div className="space-y-6">
                   <div className="bg-gradient-to-br from-[#0A2342] via-[#0d2d54] to-slate-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-blue-900/50">
-                    <div className="absolute top-0 right-0 w-72 h-72 bg-[#990000]/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none"></div>
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div>
-                        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#990000] text-white text-[11px] font-black uppercase tracking-wider rounded-xl mb-3 shadow-md">
+                        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-emerald-600 text-white text-[11px] font-black uppercase tracking-wider rounded-xl mb-3 shadow-md">
                           <Compass size={14} /> Mezunlara Özel Paneli
                         </span>
                         <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
@@ -825,7 +855,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 key={opt}
                                 type="button"
                                 onClick={() => setCheckupAnswers({ ...checkupAnswers, 1: opt })}
-                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[1] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[1] === opt ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'}`}
                               >
                                 {opt}
                               </button>
@@ -841,7 +871,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           <select
                             value={checkupAnswers[2] || ''}
                             onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 2: e.target.value })}
-                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             required
                           >
                             <option value="">Seçiniz...</option>
@@ -862,7 +892,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             placeholder="Örn: Teknoloji & Yazılım, Finans, Sağlık..."
                             value={checkupAnswers[3] || ''}
                             onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 3: e.target.value })}
-                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             required
                           />
                         </div>
@@ -877,7 +907,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             placeholder="Örn: Özel Şirket, Kamu Kurumu, Kendi İşletmem..."
                             value={checkupAnswers[4] || ''}
                             onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 4: e.target.value })}
-                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             required
                           />
                         </div>
@@ -892,7 +922,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             placeholder="Örn: Yazılım Uzmanı, Ürün Yöneticisi..."
                             value={checkupAnswers[5] || ''}
                             onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 5: e.target.value })}
-                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             required
                           />
                         </div>
@@ -908,7 +938,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 key={opt}
                                 type="button"
                                 onClick={() => setCheckupAnswers({ ...checkupAnswers, 6: opt })}
-                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[6] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[6] === opt ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'}`}
                               >
                                 {opt}
                               </button>
@@ -916,7 +946,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           </div>
                           {checkupAnswers[6] === 'Hayır' && (
                             <div className="pt-2 animate-fade-in">
-                              <label className="text-[11px] font-bold text-[#990000] block mb-1">
+                              <label className="text-[11px] font-bold text-emerald-700 block mb-1">
                                 Şu an ne iş yapıyorsunuz? (Mevcut Alan / Meslek)
                               </label>
                               <input
@@ -924,7 +954,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 placeholder="Örn: Gayrimenkul Danışmanı, Dijital İçerik Üreticisi..."
                                 value={checkupAnswers['6_sub'] || ''}
                                 onChange={(e) => setCheckupAnswers({ ...checkupAnswers, '6_sub': e.target.value })}
-                                className="w-full bg-white border border-red-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                                className="w-full bg-white border border-emerald-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                                 required
                               />
                             </div>
@@ -941,7 +971,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             placeholder="Örn: İstanbul / Türkiye, Berlin / Almanya..."
                             value={checkupAnswers[7] || ''}
                             onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 7: e.target.value })}
-                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             required
                           />
                         </div>
@@ -954,7 +984,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           <select
                             value={checkupAnswers[8] || ''}
                             onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 8: e.target.value })}
-                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                            className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             required
                           >
                             <option value="">Seçiniz...</option>
@@ -976,7 +1006,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 key={opt}
                                 type="button"
                                 onClick={() => setCheckupAnswers({ ...checkupAnswers, 9: opt })}
-                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[9] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[9] === opt ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'}`}
                               >
                                 {opt}
                               </button>
@@ -995,7 +1025,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 key={opt}
                                 type="button"
                                 onClick={() => setCheckupAnswers({ ...checkupAnswers, 10: opt })}
-                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[10] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[10] === opt ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'}`}
                               >
                                 {opt}
                               </button>
@@ -1003,7 +1033,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           </div>
                           {checkupAnswers[10] === 'Hayır' && (
                             <div className="pt-2 animate-fade-in">
-                              <label className="text-[11px] font-bold text-[#990000] block mb-1">
+                              <label className="text-[11px] font-bold text-emerald-700 block mb-1">
                                 Yeni Telefon Numarası
                               </label>
                               <input
@@ -1011,7 +1041,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 placeholder="+90 5XX XXX XX XX"
                                 value={checkupAnswers['10_sub'] || ''}
                                 onChange={(e) => setCheckupAnswers({ ...checkupAnswers, '10_sub': e.target.value })}
-                                className="w-full bg-white border border-red-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                                className="w-full bg-white border border-emerald-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                                 required
                               />
                             </div>
@@ -1029,7 +1059,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 key={opt}
                                 type="button"
                                 onClick={() => setCheckupAnswers({ ...checkupAnswers, 11: opt })}
-                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[11] === opt ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}
+                                className={`py-3 px-4 rounded-xl text-xs font-black transition border cursor-pointer ${checkupAnswers[11] === opt ? 'bg-emerald-600 text-white border-emerald-600 shadow-md' : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'}`}
                               >
                                 {opt}
                               </button>
@@ -1037,7 +1067,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           </div>
                           {checkupAnswers[11] === 'Hayır' && (
                             <div className="pt-2 animate-fade-in">
-                              <label className="text-[11px] font-bold text-[#990000] block mb-1">
+                              <label className="text-[11px] font-bold text-emerald-700 block mb-1">
                                 Yeni E-Posta Adresi
                               </label>
                               <input
@@ -1045,7 +1075,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                 placeholder="yeni.eposta@gmail.com"
                                 value={checkupAnswers['11_sub'] || ''}
                                 onChange={(e) => setCheckupAnswers({ ...checkupAnswers, '11_sub': e.target.value })}
-                                className="w-full bg-white border border-red-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-600"
+                                className="w-full bg-white border border-emerald-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                                 required
                               />
                             </div>
@@ -1063,13 +1093,13 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           placeholder="Görüş, istek ve önerilerinizi buraya yazabilirsiniz..."
                           value={checkupAnswers[12] || ''}
                           onChange={(e) => setCheckupAnswers({ ...checkupAnswers, 12: e.target.value })}
-                          className="w-full bg-white border border-slate-200 rounded-xl p-3.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-red-600 resize-none"
+                          className="w-full bg-white border border-slate-200 rounded-xl p-3.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500 resize-none"
                         />
                       </div>
 
                       <button
                         type="submit"
-                        className="w-full py-4 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-sm uppercase tracking-widest transition shadow-xl cursor-pointer active:scale-98 flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-sm uppercase tracking-widest transition shadow-xl cursor-pointer active:scale-98 flex items-center justify-center gap-2"
                       >
                         <CheckCircle size={18} /> Mezun Kariyer Anketi Formunu Gönder
                       </button>
@@ -1101,10 +1131,10 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         <div className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
                           <div className="flex justify-between items-center mb-2">
                             <span className="text-xs font-black text-slate-900">Profil & İletişim Güncelliği</span>
-                            <span className="text-xs font-black text-[#990000]">%100</span>
+                            <span className="text-xs font-black text-emerald-700">%100</span>
                           </div>
                           <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                            <div className="bg-[#990000] h-full w-[100%]"></div>
+                            <div className="bg-emerald-600 h-full w-[100%]"></div>
                           </div>
                         </div>
                       </div>
@@ -1137,7 +1167,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   {cardAppStatus === 'form' && (
                     <form onSubmit={handleCardApplication} className="w-full max-w-xl bg-slate-50 border border-slate-200 p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm">
                       <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-2">
-                        <CreditCard className="text-[#990000]" size={24} />
+                        <CreditCard className="text-emerald-700" size={24} />
                         <div>
                           <h4 className="font-black text-sm text-slate-900">Mezun Kart Talep Formu</h4>
                           <p className="text-[11px] text-slate-500 font-medium">Bilgileriniz Öğrenci İşleri ve Mezun Takip Sistemi verileriyle doğrulanır.</p>
@@ -1151,7 +1181,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={cardForm.name} 
                             onChange={e => setCardForm({...cardForm, name: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             placeholder="Ad Soyad"
                           />
                         </div>
@@ -1161,7 +1191,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={cardForm.tcNo} 
                             onChange={e => setCardForm({...cardForm, tcNo: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             placeholder="11 haneli T.C. No"
                           />
                         </div>
@@ -1174,7 +1204,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={cardForm.dept} 
                             onChange={e => setCardForm({...cardForm, dept: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
@@ -1183,7 +1213,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={cardForm.gradYear} 
                             onChange={e => setCardForm({...cardForm, gradYear: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                           />
                         </div>
                         <div className="flex flex-col gap-1.5">
@@ -1192,7 +1222,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={cardForm.studentId} 
                             onChange={e => setCardForm({...cardForm, studentId: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                           />
                         </div>
                       </div>
@@ -1204,7 +1234,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={cardForm.phone} 
                             onChange={e => setCardForm({...cardForm, phone: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             placeholder="+90 5XX XXX XX XX"
                           />
                         </div>
@@ -1214,7 +1244,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="email" 
                             value={cardForm.email} 
                             onChange={e => setCardForm({...cardForm, email: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                           />
                         </div>
                       </div>
@@ -1223,7 +1253,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       <div className="flex flex-col gap-1.5 pt-2">
                         <label className="text-xs font-bold text-slate-700">Kart Formatı & Teslimat Tercihi</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-3 transition ${cardForm.deliveryType === 'digital' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-3 transition ${cardForm.deliveryType === 'digital' ? 'border-emerald-600 bg-emerald-50/50 text-emerald-700' : 'border-slate-200 bg-white text-slate-700'}`}>
                             <input 
                               type="radio" 
                               name="delivery" 
@@ -1236,7 +1266,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             </div>
                           </label>
 
-                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-3 transition ${cardForm.deliveryType === 'physical' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-3 transition ${cardForm.deliveryType === 'physical' ? 'border-emerald-600 bg-emerald-50/50 text-emerald-700' : 'border-slate-200 bg-white text-slate-700'}`}>
                             <input 
                               type="radio" 
                               name="delivery" 
@@ -1257,7 +1287,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           id="agree"
                           checked={cardForm.agreed} 
                           onChange={e => setCardForm({...cardForm, agreed: e.target.checked})}
-                          className="mt-1 accent-[#990000]"
+                          className="mt-1 accent-emerald-600"
                         />
                         <label htmlFor="agree" className="text-[11px] text-slate-600 leading-relaxed font-bold">
                           Mezuniyet beyanımın Öğrenci İşleri kayıtlarıyla doğrulanmasını ve İESÜ Mezun Kimlik Kartı şartlarını kabul ediyorum.
@@ -1266,7 +1296,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                       <button
                         type="submit"
-                        className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md mt-4"
+                        className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md mt-4"
                       >
                         Mezun Kart Başvurusunu Tamamla
                       </button>
@@ -1275,7 +1305,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                   {cardAppStatus === 'loading' && (
                     <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="w-12 h-12 border-4 border-slate-200 border-t-[#990000] rounded-full animate-spin mb-4"></div>
+                      <div className="w-12 h-12 border-4 border-slate-200 border-t-emerald-600 rounded-full animate-spin mb-4"></div>
                       <h4 className="font-black text-slate-900 mb-1">Başvurunuz İşleniyor...</h4>
                       <p className="text-slate-500 text-xs max-w-xs leading-relaxed font-semibold">
                         Öğrenci İşleri ve Mezun Bilgi Sistemi kayıtları kontrol edilerek kartınız tanımlanıyor.
@@ -1303,7 +1333,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         >
                           {/* Front Side */}
                           <div 
-                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-red-950 via-indigo-950 to-red-950 border border-red-900 p-6 flex flex-col justify-between text-white shadow-2xl"
+                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-teal-950 via-slate-900 to-emerald-950 border border-emerald-800 p-6 flex flex-col justify-between text-white shadow-2xl"
                             style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                           >
                             <div className="flex justify-between items-start">
@@ -1333,7 +1363,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                           {/* Back Side */}
                           <div 
-                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-indigo-950 via-red-950 to-indigo-950 border border-red-900 p-6 flex flex-col justify-between text-white shadow-2xl"
+                            className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 border border-emerald-800 p-6 flex flex-col justify-between text-white shadow-2xl"
                             style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                           >
                             <div className="flex justify-between items-start">
@@ -1346,7 +1376,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                               </div>
                             </div>
 
-                            <div className="text-center text-[10px] text-slate-400 font-bold border-t border-red-900 pt-4 leading-relaxed">
+                            <div className="text-center text-[10px] text-slate-400 font-bold border-t border-emerald-800/60 pt-4 leading-relaxed">
                               Bu kart İESÜ Mezuniyet Ağı akıllı kimlik doğrulama protokolüyle şifrelenmiştir.
                             </div>
                           </div>
@@ -1417,7 +1447,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       className="w-full max-w-xl bg-slate-50 border border-slate-200 p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm"
                     >
                       <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-2">
-                        <Users className="text-[#990000]" size={24} />
+                        <Users className="text-emerald-700" size={24} />
                         <div>
                           <h4 className="font-black text-sm text-slate-900">Dernek Katılım & Adaylık Formu</h4>
                           <p className="text-[11px] text-slate-500 font-medium">Resmî Dernek Tüzüğü ve Yönetim Kurulu değerlendirmesi için.</p>
@@ -1428,7 +1458,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-bold text-slate-700">Başvuru Niteliği</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2.5 transition ${assocForm.type === 'Genel Üyelik' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2.5 transition ${assocForm.type === 'Genel Üyelik' ? 'border-emerald-600 bg-emerald-50/50 text-emerald-700' : 'border-slate-200 bg-white text-slate-700'}`}>
                             <input 
                               type="radio" 
                               name="assoc_type" 
@@ -1441,7 +1471,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             </div>
                           </label>
 
-                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2.5 transition ${assocForm.type === 'Yönetim Ekibi Adaylığı' ? 'border-[#990000] bg-red-50/50 text-[#990000]' : 'border-slate-200 bg-white text-slate-700'}`}>
+                          <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2.5 transition ${assocForm.type === 'Yönetim Ekibi Adaylığı' ? 'border-emerald-600 bg-emerald-50/50 text-emerald-700' : 'border-slate-200 bg-white text-slate-700'}`}>
                             <input 
                               type="radio" 
                               name="assoc_type" 
@@ -1463,7 +1493,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={assocForm.name} 
                             onChange={e => setAssocForm({...assocForm, name: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             placeholder="Ad Soyad"
                             required
                           />
@@ -1474,7 +1504,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={assocForm.department} 
                             onChange={e => setAssocForm({...assocForm, department: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             placeholder="Örn: İşletme"
                           />
                         </div>
@@ -1487,7 +1517,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={assocForm.gradYear} 
                             onChange={e => setAssocForm({...assocForm, gradYear: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             placeholder="Örn: 2023"
                           />
                         </div>
@@ -1497,7 +1527,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="text" 
                             value={assocForm.phone} 
                             onChange={e => setAssocForm({...assocForm, phone: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             placeholder="+90 5XX XXX XX XX"
                             required
                           />
@@ -1508,7 +1538,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                             type="email" 
                             value={assocForm.email} 
                             onChange={e => setAssocForm({...assocForm, email: e.target.value})}
-                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500"
                             required
                           />
                         </div>
@@ -1520,7 +1550,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           rows={3}
                           value={assocForm.notes} 
                           onChange={e => setAssocForm({...assocForm, notes: e.target.value})}
-                          className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500"
+                          className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-500"
                           placeholder="Dernek çatısı altında yürütmek istediğiniz projeler veya uzmanlık alanlarınız..."
                         />
                       </div>
@@ -1531,7 +1561,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           id="agree_assoc"
                           checked={assocForm.agreed} 
                           onChange={e => setAssocForm({...assocForm, agreed: e.target.checked})}
-                          className="mt-1 accent-[#990000]"
+                          className="mt-1 accent-emerald-600"
                         />
                         <label htmlFor="agree_assoc" className="text-[11px] text-slate-600 leading-relaxed font-bold">
                           Mezunlar Derneği Tüzüğünü okuduğumu ve bilgilerimin Dernek Yönetim Kurulu ile paylaşılmasını onaylıyorum.
@@ -1540,7 +1570,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                       <button
                         type="submit"
-                        className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md mt-4"
+                        className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md mt-4"
                       >
                         Dernek Başvurusunu Gönder
                       </button>
@@ -1553,7 +1583,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'kulup_basvuru' && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-red-950">Aktif Kulüp Başvuruları</h3>
+                    <h3 className="text-lg font-black text-slate-900">Aktif Kulüp Başvuruları</h3>
                   </div>
 
                   <div className="space-y-3">
@@ -1616,7 +1646,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {activeTab === 'anket' && userRole === 'alumni' && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-red-950">Mezun Memnuniyet & Anket Merkezi</h3>
+                    <h3 className="text-lg font-black text-slate-900">Mezun Memnuniyet & Anket Merkezi</h3>
                     <p className="text-xs text-slate-500 font-bold mt-1">
                       Geri bildirimleriniz üniversitemizin kalitesini artırmasında büyük rol oynuyor. Aktif anketlere katılarak düşüncelerinizi bizimle paylaşın.
                     </p>
@@ -1625,7 +1655,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   {!surveyCompleted ? (
                     <div className="space-y-4">
                       <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
-                        <h4 className="font-black text-xs text-red-600 uppercase tracking-wider mb-2">Aktif Anket: 2026 İstihdam ve Memnuniyet Anketi</h4>
+                        <h4 className="font-black text-xs text-emerald-600 uppercase tracking-wider mb-2">Aktif Anket: 2026 İstihdam ve Memnuniyet Anketi</h4>
                         <p className="text-xs text-slate-500 font-bold mb-4">Mezunlarımızın iş bulma süreleri ve aldıkları eğitimin sektörel geçerliliği ölçülmektedir.</p>
                         
                         <div className="space-y-4 pt-2">
@@ -1692,6 +1722,15 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
           </AnimatePresence>
         </div>
       </main>
+
+      {/* Floating Bottom OmniDock */}
+      <AdminOmniDock 
+        setView={setView} 
+        activeTab="alumni_info_system" 
+        currentUser={currentUser} 
+        setSelectedUserId={setSelectedUserId} 
+        theme={useAppStore.getState().activePortalBranch === 'admin' ? 'amber' : 'emerald'} 
+      />
     </div>
   );
 }

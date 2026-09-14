@@ -6,6 +6,19 @@ import PostCard from '../PostCard';
 
 export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setView }) {
   const alumniAssocApplications = useAppStore(state => state.alumniAssocApplications) || [];
+  const setAlumniAssocApplications = useAppStore(state => state.setAlumniAssocApplications);
+  const logAction = useAppStore(state => state.logAction);
+
+  const handleUpdateAppStatus = (appId, newStatus) => {
+    if (setAlumniAssocApplications) {
+      setAlumniAssocApplications(
+        (alumniAssocApplications || []).map(a => a.id === appId ? { ...a, status: newStatus } : a)
+      );
+      if (window.toast?.success) window.toast.success(`Başvuru durumu '${newStatus}' olarak güncellendi.`);
+      logAction?.(currentUser?.name || 'Süper Admin', `Mezun Derneği Başvurusu: ${newStatus} (ID: ${appId})`, 'Mezun Derneği');
+    }
+  };
+
   const [showForm, setShowForm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [form, setForm] = useState({
@@ -150,8 +163,12 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
                       <span className="text-xs font-medium text-gray-500 mt-1">PNG, JPG veya WEBP (Maks 5MB)</span>
                       <input type="file" accept="image/*" className="hidden" onChange={(e) => {
                         if (e.target.files && e.target.files[0]) {
-                          const url = URL.createObjectURL(e.target.files[0]);
-                          setForm({...form, imageUrl: url});
+                          const reader = new FileReader();
+                          reader.onload = event => {
+                            if (typeof event.target?.result === 'string') setForm(current => ({ ...current, imageUrl: event.target.result }));
+                          };
+                          reader.onerror = () => window.toast?.error('Görsel okunamadı. Lütfen tekrar deneyin.');
+                          reader.readAsDataURL(e.target.files[0]);
                         }
                       }} />
                     </label>
@@ -257,12 +274,13 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
                 <th className="p-3">İletişim</th>
                 <th className="p-3">Tarih</th>
                 <th className="p-3">Durum</th>
+                <th className="p-3 text-right">İşlemler</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
               {alumniAssocApplications.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="p-6 text-center text-slate-500">Henüz kayıtlı başvuru bulunmamaktadır.</td>
+                  <td colSpan="8" className="p-6 text-center text-slate-500">Henüz kayıtlı başvuru bulunmamaktadır.</td>
                 </tr>
               ) : (
                 alumniAssocApplications.map(app => (
@@ -286,6 +304,28 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
                       }`}>
                         {app.status}
                       </span>
+                    </td>
+                    <td className="p-3 text-right">
+                      {app.status === 'Beklemede' || !app.status ? (
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button 
+                            type="button" 
+                            onClick={() => handleUpdateAppStatus(app.id, 'Onaylandı')}
+                            className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold transition border border-emerald-200 cursor-pointer shadow-xs"
+                          >
+                            Onayla
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => handleUpdateAppStatus(app.id, 'Reddedildi')}
+                            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-xs font-bold transition border border-rose-200 cursor-pointer shadow-xs"
+                          >
+                            Reddet
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400 font-medium">İşlem Yapıldı</span>
+                      )}
                     </td>
                   </tr>
                 ))

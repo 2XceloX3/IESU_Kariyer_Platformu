@@ -1,12 +1,14 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2, GraduationCap, KeyRound, Lock } from 'lucide-react';
-import Logo from './Logo';
 
 // IT Departmanı için Not: Firebase Kimlik Doğrulama (Auth) ve Veritabanı (Firestore) modülleri içeri aktarıldı.
 import { auth, db } from '../utils/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
+
+const REGISTRATION_UNAVAILABLE_MESSAGE = 'Kayıt servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.';
+const PROFILE_SAVE_FAILED_MESSAGE = 'Profil bilgileriniz kaydedilemedi. Lütfen tekrar deneyin veya Kariyer Geliştirme Merkezi ile iletişime geçin.';
 
 export default function Register({ setView, setCurrentUser, setUserRole }) {
   const { setStudents, setAlumni, setAcademicStaff, setCompanies } = useAppStore();
@@ -27,6 +29,37 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const createAccount = async (email, password, mockPrefix) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      return userCredential.user.uid;
+    } catch (authErr) {
+      if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
+        throw authErr;
+      }
+
+      if (import.meta.env.DEV) {
+        console.warn('Firebase Auth bağlanamadı, geliştirme kaydı kullanılıyor:', authErr.message);
+        return `${mockPrefix}_${Date.now()}`;
+      }
+
+      throw new Error(REGISTRATION_UNAVAILABLE_MESSAGE);
+    }
+  };
+
+  const saveProfile = async (userId, profile) => {
+    try {
+      await setDoc(doc(db, 'users', userId), profile);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.warn("Firestore'a kayıt edilemedi, geliştirme verisiyle devam ediliyor:", err);
+        return;
+      }
+
+      throw new Error(PROFILE_SAVE_FAILED_MESSAGE);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -43,17 +76,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           return;
         }
 
-        // [FİREBASE AUTH] - Yeni Öğrenci Kullanıcısı Oluştur (Hata durumunda lokal veriyle devam et)
-        let studentUid = `mock_stu_${Date.now()}`;
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, formData.studentEmail, formData.password);
-          studentUid = userCredential.user.uid;
-        } catch(authErr) {
-          console.warn("Firebase Auth bağlanamadı, lokal kayıt yapılıyor:", authErr.message);
-          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
-            throw authErr;
-          }
-        }
+        const studentUid = await createAccount(formData.studentEmail, formData.password, 'mock_stu');
 
         // [FİREBASE FIRESTORE] - Kullanıcı Detaylarını Veritabanına Kaydet
         const newStudent = {
@@ -71,17 +94,12 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           createdAt: new Date().toISOString()
         };
 
-        // Arayüzü güncelle (Geçici)
+        await saveProfile(studentUid, newStudent);
+
+        // Arayüzü yalnızca doğrulanmış kayıt sonrasında güncelle.
         if (setStudents) setStudents(prev => [...(prev || []), newStudent]);
         if (setCurrentUser) setCurrentUser(newStudent);
         if (setUserRole) setUserRole('student');
-
-        // users koleksiyonuna uid ile kaydet (Firestore) - hata fırlatsa da uygulama devam etsin
-        try {
-          await setDoc(doc(db, "users", studentUid), newStudent);
-        } catch(err) {
-          console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
-        }
         
       } else if (accountType === 'employer') {
         // [FİREBASE AUTH] - Yeni Firma Kullanıcısı Oluştur
@@ -91,16 +109,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           return;
         }
         
-        let companyUid = `mock_cmp_${Date.now()}`;
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-          companyUid = userCredential.user.uid;
-        } catch(authErr) {
-          console.warn("Firebase Auth bağlanamadı, lokal firma kaydı yapılıyor:", authErr.message);
-          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
-            throw authErr;
-          }
-        }
+        const companyUid = await createAccount(formData.email, formData.password, 'mock_cmp');
 
         // [FİREBASE FIRESTORE] - Firma Detaylarını Veritabanına Kaydet
         const newCompany = {
@@ -119,13 +128,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           createdAt: new Date().toISOString()
         };
 
+        await saveProfile(companyUid, newCompany);
         if (setCompanies) setCompanies(prev => [...(prev || []), newCompany]);
-
-        try {
-          await setDoc(doc(db, "users", companyUid), newCompany);
-        } catch(err) {
-          console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
-        }
       } else if (accountType === 'academic') {
         if (formData.password !== formData.passwordConfirm) {
           setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
@@ -136,17 +140,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           return;
         }
 
-        // [FİREBASE AUTH] - Yeni Akademik Kullanıcı Oluştur
-        let academicUid = `mock_acad_${Date.now()}`;
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, formData.academicEmail, formData.password);
-          academicUid = userCredential.user.uid;
-        } catch(authErr) {
-          console.warn("Firebase Auth bağlanamadı, lokal akademik kaydı yapılıyor:", authErr.message);
-          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
-            throw authErr;
-          }
-        }
+        const academicUid = await createAccount(formData.academicEmail, formData.password, 'mock_acad');
 
         // [FİREBASE FIRESTORE] - Akademik Detayları Veritabanına Kaydet
         const newAcademic = {
@@ -161,15 +155,10 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           createdAt: new Date().toISOString()
         };
 
+        await saveProfile(academicUid, newAcademic);
         if (setAcademicStaff) setAcademicStaff(prev => [...(prev || []), newAcademic]);
         if (setCurrentUser) setCurrentUser(newAcademic);
         if (setUserRole) setUserRole('academic');
-
-        try {
-          await setDoc(doc(db, "users", academicUid), newAcademic);
-        } catch(err) {
-          console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
-        }
       } else if (accountType === 'alumni') {
         if (formData.password !== formData.passwordConfirm) {
           setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
@@ -180,17 +169,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           return;
         }
 
-        // [FİREBASE AUTH] - Yeni Mezun Kullanıcı Oluştur
-        let alumniUid = `mock_alum_${Date.now()}`;
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, formData.alumniEmail, formData.password);
-          alumniUid = userCredential.user.uid;
-        } catch(authErr) {
-          console.warn("Firebase Auth bağlanamadı, lokal mezun kaydı yapılıyor:", authErr.message);
-          if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
-            throw authErr;
-          }
-        }
+        const alumniUid = await createAccount(formData.alumniEmail, formData.password, 'mock_alum');
 
         // [FİREBASE FIRESTORE] - Mezun Detayları
         const newAlumni = {
@@ -206,15 +185,10 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           createdAt: new Date().toISOString()
         };
 
+        await saveProfile(alumniUid, newAlumni);
         if (setAlumni) setAlumni(prev => [...(prev || []), newAlumni]);
         if (setCurrentUser) setCurrentUser(newAlumni);
         if (setUserRole) setUserRole('alumni');
-
-        try {
-          await setDoc(doc(db, "users", alumniUid), newAlumni);
-        } catch(err) {
-          console.warn("Firestore'a kayıt edilemedi, lokal storage ile devam ediliyor:", err);
-        }
       }
       
       // Tüm caselerde başarılı olursa Success (Adım 2) göster
@@ -223,7 +197,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') setError('Bu e-posta adresi zaten kullanımda!');
       else if (err.code === 'auth/weak-password') setError('Şifre çok zayıf. Lütfen daha güçlü bir şifre seçin.');
-      else setError("Kayıt olurken bir hata oluştu: " + err.message);
+      else if (err.message === REGISTRATION_UNAVAILABLE_MESSAGE || err.message === PROFILE_SAVE_FAILED_MESSAGE) setError(err.message);
+      else setError('Kayıt işlemi tamamlanamadı. Lütfen daha sonra tekrar deneyin.');
     } finally {
       setIsLoading(false);
     }
@@ -528,12 +503,31 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                   ? "Mezun hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Aramıza tekrar hoş geldiniz, artık giriş yapabilirsiniz."
                   : "Öğrenci hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık öğrenci numaranız ve şifrenizle giriş yapabilirsiniz."}
               </p>
-              <button 
-                onClick={() => setView('login')}
-                className="inline-flex items-center justify-center bg-gray-900 text-white font-bold py-3.5 px-8 rounded-xl hover:bg-black transition-all shadow-lg active:scale-[0.98]"
-              >
-                Giriş Ekranına Dön
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                {accountType === 'employer' ? (
+                  <button 
+                    onClick={() => setView('login')}
+                    className="inline-flex items-center justify-center bg-gray-900 text-white font-bold py-3.5 px-8 rounded-xl hover:bg-black transition-all shadow-lg active:scale-[0.98] cursor-pointer"
+                  >
+                    Giriş Ekranına Dön
+                  </button>
+                ) : (
+                  <>
+                    <button 
+                      onClick={() => setView(accountType === 'academic' ? 'academic' : accountType === 'alumni' ? 'alumni' : 'student')}
+                      className="inline-flex items-center justify-center bg-[#990000] hover:bg-red-800 text-white font-bold py-3.5 px-8 rounded-xl transition-all shadow-lg active:scale-[0.98] cursor-pointer"
+                    >
+                      Platforma Giriş Yap & Devam Et
+                    </button>
+                    <button 
+                      onClick={() => setView('login')}
+                      className="inline-flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 px-6 rounded-xl transition-all active:scale-[0.98] cursor-pointer text-sm"
+                    >
+                      Giriş Ekranı
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>

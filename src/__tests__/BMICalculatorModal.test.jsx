@@ -20,7 +20,7 @@ describe('BMICalculatorModal Component', () => {
     render(<BMICalculatorModal isOpen={true} onClose={() => {}} />);
 
     // Default height 170cm, weight 70kg -> BMI = 70 / (1.7^2) = 24.2 (Normal)
-    const submitButton = screen.getByText(/VKİ Hesapla & Değerlendir/i);
+    const submitButton = screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i);
     fireEvent.click(submitButton);
 
     expect(screen.getByText('24.2')).toBeTruthy();
@@ -38,7 +38,7 @@ describe('BMICalculatorModal Component', () => {
     fireEvent.change(numberInputs[0], { target: { value: 180 } });
     fireEvent.change(numberInputs[1], { target: { value: 50 } });
 
-    fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+    fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
     expect(screen.getByText('15.4')).toBeTruthy();
     expect(screen.getByText(/Zayıf \(Düşük Kilo\)/i)).toBeTruthy();
@@ -53,7 +53,7 @@ describe('BMICalculatorModal Component', () => {
     fireEvent.change(numberInputs[0], { target: { value: 160 } });
     fireEvent.change(numberInputs[1], { target: { value: 90 } });
 
-    fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+    fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
     expect(screen.getByText('35.2')).toBeTruthy();
     expect(screen.getByText(/Obez \(Yüksek Risk\)/i)).toBeTruthy();
@@ -68,7 +68,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 100 } });
       fireEvent.change(numberInputs[1], { target: { value: 18.5 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getAllByText('18.5').length).toBeGreaterThan(0);
       expect(screen.getByText(/Normal \(İdeal Kilo\)/i)).toBeTruthy();
@@ -80,7 +80,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 100 } });
       fireEvent.change(numberInputs[1], { target: { value: 24.9 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getAllByText('24.9').length).toBeGreaterThan(0);
       expect(screen.getByText(/Normal \(İdeal Kilo\)/i)).toBeTruthy();
@@ -92,7 +92,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 100 } });
       fireEvent.change(numberInputs[1], { target: { value: 25.0 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getAllByText('25.0').length).toBeGreaterThan(0);
       expect(screen.getAllByText(/Fazla Kilolu/i).length).toBeGreaterThan(0);
@@ -104,7 +104,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 100 } });
       fireEvent.change(numberInputs[1], { target: { value: 29.9 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getAllByText('29.9').length).toBeGreaterThan(0);
       expect(screen.getAllByText(/Fazla Kilolu/i).length).toBeGreaterThan(0);
@@ -117,7 +117,7 @@ describe('BMICalculatorModal Component', () => {
       // Height 100cm (1.0m), Weight 30.0kg -> BMI = 30.0 / (1.0^2) = 30.0
       fireEvent.change(numberInputs[0], { target: { value: 100 } });
       fireEvent.change(numberInputs[1], { target: { value: 30.0 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText('30.0')).toBeTruthy();
       expect(screen.getByText(/Obez \(Yüksek Risk\)/i)).toBeTruthy();
@@ -131,7 +131,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 100 } });
       fireEvent.change(numberInputs[1], { target: { value: 250 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText('250.0')).toBeTruthy();
       expect(screen.getByText(/Obez \(Yüksek Risk\)/i)).toBeTruthy();
@@ -145,7 +145,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 250 } });
       fireEvent.change(numberInputs[1], { target: { value: 30 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText('4.8')).toBeTruthy();
       expect(screen.getByText(/Zayıf \(Düşük Kilo\)/i)).toBeTruthy();
@@ -165,7 +165,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 250 } });
       fireEvent.change(numberInputs[1], { target: { value: 250 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText('40.0')).toBeTruthy();
       expect(screen.getByText(/Obez \(Yüksek Risk\)/i)).toBeTruthy();
@@ -191,7 +191,7 @@ describe('BMICalculatorModal Component', () => {
         const numberInputs = screen.getAllByRole('spinbutton');
         fireEvent.change(numberInputs[0], { target: { value: h } });
         fireEvent.change(numberInputs[1], { target: { value: w } });
-        fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+        fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
         const arrowIndicator = document.querySelector('.animate-bounce')?.parentElement;
         const pointerPercent = parseFloat(arrowIndicator?.style.left || '0');
@@ -215,7 +215,7 @@ describe('BMICalculatorModal Component', () => {
         const numberInputs = screen.getAllByRole('spinbutton');
         fireEvent.change(numberInputs[0], { target: { value: h } });
         fireEvent.change(numberInputs[1], { target: { value: 70 } });
-        fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+        fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
         const hM = h / 100;
         const expectedMin = (18.5 * hM * hM).toFixed(1);
@@ -234,7 +234,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 180 } });
       fireEvent.change(numberInputs[1], { target: { value: 50 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText(/Diyetisyen ve Beslenme Danışmanlığı birimimize başvurarak/i)).toBeTruthy();
     });
@@ -244,7 +244,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 170 } });
       fireEvent.change(numberInputs[1], { target: { value: 70 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText(/Spor Birimi kampüs aktivitelerine katılım sağlayabilirsiniz/i)).toBeTruthy();
     });
@@ -254,7 +254,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 170 } });
       fireEvent.change(numberInputs[1], { target: { value: 80 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText(/Sağlık Birimi rehberliğinde düzenli egzersiz programları/i)).toBeTruthy();
     });
@@ -264,7 +264,7 @@ describe('BMICalculatorModal Component', () => {
       const numberInputs = screen.getAllByRole('spinbutton');
       fireEvent.change(numberInputs[0], { target: { value: 170 } });
       fireEvent.change(numberInputs[1], { target: { value: 100 } });
-      fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+      fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
 
       expect(screen.getByText(/Sağlık Danışmanlığı birimi uzmanlarımızla görüşerek/i)).toBeTruthy();
     });
@@ -273,19 +273,19 @@ describe('BMICalculatorModal Component', () => {
   it('resets form when Yeniden Hesapla is clicked', () => {
     render(<BMICalculatorModal isOpen={true} onClose={() => {}} />);
 
-    fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+    fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
     expect(screen.getByText('24.2')).toBeTruthy();
 
     fireEvent.click(screen.getByText(/Yeniden Hesapla/i));
     expect(screen.queryByText('24.2')).toBeNull();
-    expect(screen.getByText(/VKİ Hesapla & Değerlendir/i)).toBeTruthy();
+    expect(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i)).toBeTruthy();
   });
 
   it('calls onClose when close button or Tamam is clicked', () => {
     const onCloseMock = vi.fn();
     render(<BMICalculatorModal isOpen={true} onClose={onCloseMock} />);
 
-    fireEvent.click(screen.getByText(/VKİ Hesapla & Değerlendir/i));
+    fireEvent.click(screen.getByText(/Bilimsel VKİ & Kalori Hesabını Gör|VKİ Hesapla/i));
     fireEvent.click(screen.getByText(/Tamam/i));
 
     expect(onCloseMock).toHaveBeenCalled();

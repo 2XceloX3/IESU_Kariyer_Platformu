@@ -8,7 +8,9 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
   const currentUser = useAppStore(state => state.currentUser) || {};
   const [height, setHeight] = useState(170);
   const [weight, setWeight] = useState(70);
+  const [age, setAge] = useState(22);
   const [gender, setGender] = useState('female');
+  const [activityLevel, setActivityLevel] = useState('1.375'); // Default: Hafif Hareketli (Haftada 1-3 gün spor)
   const [result, setResult] = useState(null);
 
   useEffect(() => {
@@ -29,10 +31,22 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
     if (e) e.preventDefault();
     const hInMeters = parseFloat(height) / 100;
     const wInKg = parseFloat(weight);
+    const ageVal = parseInt(age, 10) || 22;
+    const actMult = parseFloat(activityLevel) || 1.375;
 
     if (!hInMeters || !wInKg || hInMeters <= 0 || wInKg <= 0) return;
 
     const bmiVal = parseFloat((wInKg / (hInMeters * hInMeters)).toFixed(1));
+
+    // Mifflin-St Jeor BMR Formula (Scientific accurate calculation with Age)
+    // Male: 10*weight + 6.25*height - 5*age + 5
+    // Female: 10*weight + 6.25*height - 5*age - 161
+    const bmrVal = Math.round(
+      10 * wInKg + 6.25 * parseFloat(height) - 5 * ageVal + (gender === 'male' ? 5 : -161)
+    );
+
+    // Total Daily Energy Expenditure (TDEE) based on Activity Multiplier
+    const tdeeVal = Math.round(bmrVal * actMult);
 
     let category = '';
     let categoryKey = '';
@@ -96,6 +110,9 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
     const calculatedResult = {
       bmi: bmiVal.toFixed(1),
       bmiVal,
+      age: ageVal,
+      bmr: bmrVal,
+      tdee: tdeeVal,
       category,
       categoryKey,
       color,
@@ -117,9 +134,11 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
         role: currentUser?.role || 'Öğrenci',
         height: height,
         weight: weight,
+        age: ageVal,
+        gender: gender === 'male' ? 'Erkek' : 'Kadın',
         bmi: bmiVal,
-        bmr: Math.round(10 * weight + 6.25 * height - 5 * 22 + (gender === 'male' ? 5 : -161)),
-        targetCal: Math.round((10 * weight + 6.25 * height - 5 * 22 + (gender === 'male' ? 5 : -161)) * 1.375),
+        bmr: bmrVal,
+        targetCal: tdeeVal,
         category: category,
         dietitianRequested: bmiVal > 25 || bmiVal < 18.5,
         date: new Date().toLocaleString('tr-TR')
@@ -130,6 +149,7 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
   const handleReset = () => {
     setHeight(170);
     setWeight(70);
+    setAge(22);
     setResult(null);
   };
 
@@ -247,19 +267,64 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
                 />
               </div>
 
+              {/* Age Input & Slider */}
+              <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <Info size={16} className="text-[#990000]" /> Yaşınız (BMR & Kalori İhtiyacı İçin)
+                  </label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      required
+                      min="14"
+                      max="100"
+                      value={age || ''}
+                      onChange={(e) => setAge(e.target.value === '' ? '' : Math.max(0, Number(e.target.value)))}
+                      className="w-20 px-2 py-1 bg-white border border-slate-300 rounded-xl text-sm font-black text-right text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-200"
+                    />
+                    <span className="text-xs font-bold text-slate-500">yaş</span>
+                  </div>
+                </div>
+                <input
+                  type="range"
+                  min="16"
+                  max="80"
+                  value={age || 22}
+                  onChange={(e) => setAge(Number(e.target.value))}
+                  className="w-full accent-[#990000] cursor-pointer"
+                />
+              </div>
+
+              {/* Physical Activity Level Selector */}
+              <div className="space-y-1.5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <label className="text-xs font-bold text-slate-700 block">Günlük Fiziksel Aktivite Düzeyi</label>
+                <select
+                  value={activityLevel}
+                  onChange={(e) => setActivityLevel(e.target.value)}
+                  className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-200"
+                >
+                  <option value="1.2">Hareketsiz / Masa Başı (Spor Yok)</option>
+                  <option value="1.375">Hafif Hareketli (Haftada 1-3 Gün Egzersiz)</option>
+                  <option value="1.55">Orta Derece Hareketli (Haftada 3-5 Gün Egzersiz)</option>
+                  <option value="1.725">Yüksek Hareketli (Haftada 6-7 Gün Ağır Spor)</option>
+                  <option value="1.9">Profesyonel Sporcu / Yoğun Fiziksel İş</option>
+                </select>
+              </div>
+
               <button
                 type="submit"
                 onClick={handleCalculate}
                 className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition shadow-lg hover:shadow-xl active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Sparkles size={16} /> VKİ Hesapla & Değerlendir
+                <Sparkles size={16} /> Bilimsel VKİ & Kalori Hesabını Gör
               </button>
             </form>
           ) : (
             <div className="space-y-5 animate-fade-in">
               {/* BMI Result Summary */}
               <div className={`p-5 rounded-2xl border ${result.bgColor} text-center space-y-2`}>
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-500">Hesaplanan Vücut Kitle İndeksi</p>
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-500">Hesaplanan Vücut Kitle İndeksi ({result.age} Yaş)</p>
                 <h4 className="text-4xl font-black text-slate-900">{result.bmi} <span className="text-sm font-bold text-slate-500">kg/m²</span></h4>
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-black uppercase border ${result.color} shadow-sm`}>
                   {result.category}
@@ -292,7 +357,7 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Ideal Weight & Delta Info */}
+              {/* Ideal Weight & Delta Info Grid */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-center">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">İdeal Kilo Aralığınız</p>
@@ -301,6 +366,20 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
                 <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-center">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Hedef Değerlendirmesi</p>
                   <p className="text-sm font-black text-[#990000] mt-1">{result.weightDeltaMsg}</p>
+                </div>
+              </div>
+
+              {/* BMR (Bazal Metabolizma) & TDEE (Günlük Kalori İhtiyacı) Calculation Block */}
+              <div className="grid grid-cols-2 gap-3 bg-slate-900 text-white p-4 rounded-2xl border border-slate-800 shadow-md">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase text-amber-400 block">Bazal Metabolizma Hızı (BMR)</span>
+                  <p className="text-lg font-black text-white">{result.bmr} <span className="text-xs font-semibold text-slate-400">kcal/gün</span></p>
+                  <p className="text-[10px] text-slate-400 leading-tight">Dinlenirken vücudun yaktığı minimum enerji</p>
+                </div>
+                <div className="space-y-1 border-l border-slate-800 pl-3">
+                  <span className="text-[10px] font-black uppercase text-emerald-400 block">Günlük Kalori İhtiyacı (TDEE)</span>
+                  <p className="text-lg font-black text-emerald-300">{result.tdee} <span className="text-xs font-semibold text-slate-400">kcal/gün</span></p>
+                  <p className="text-[10px] text-slate-400 leading-tight">Kilonuzu korumak için gerekli toplam enerji</p>
                 </div>
               </div>
 

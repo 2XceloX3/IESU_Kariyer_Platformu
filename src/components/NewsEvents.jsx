@@ -1,448 +1,417 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Calendar, FileText, ExternalLink, Bell, Newspaper, Image as ImageIcon, MapPin, Clock, ChevronRight, ArrowRight, Download, Sparkles, Megaphone, Tag, ShieldCheck } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { 
+  Newspaper, Bell, Calendar, Sparkles, Search, Filter, 
+  ArrowRight, Clock, Users, MapPin, Tag, ChevronRight, 
+  ShieldCheck, Share2, Bookmark, CheckCircle2, Megaphone,
+  ArrowLeft, Flame, Award, Building2, UserCheck, MessageCircle, Heart, X, Home
+} from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import MainHeader from './MainHeader';
-import SubPanelFooter from './SubPanelFooter';
+import Logo from './Logo';
+import TopProfileMenu from './TopProfileMenu';
+import ConnectionSuggestions from './ConnectionSuggestions';
+import SafeAvatar from './shared/SafeAvatar';
 
-export default function NewsEvents({ setView, currentUser, userRole }) {
+export default function NewsEvents({ setView, currentUser, userRole, setSelectedUserId }) {
   const news = useAppStore(state => state.news) || [];
   const announcements = useAppStore(state => state.announcements) || [];
   const events = useAppStore(state => state.events) || [];
-  
-  const path = window.location.pathname;
-  const initialCategory = path.includes('duyurular') ? 'duyurular' : path.includes('etkinlikler') ? 'etkinlikler' : 'haberler';
-  
-  const [activeTab, setActiveTab] = useState(initialCategory);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const students = useAppStore(state => state.students) || [];
+  const alumni = useAppStore(state => state.alumni) || [];
+  const companies = useAppStore(state => state.companies) || [];
+  const academicStaff = useAppStore(state => state.academicStaff) || [];
+  const posts = useAppStore(state => state.posts) || [];
 
-  useEffect(() => {
-    setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 200);
-    return () => clearTimeout(timer);
-  }, [activeTab]);
+  const [activeCategory, setActiveCategory] = useState('all'); // all, news, announcement, event
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedNewsItem, setSelectedNewsItem] = useState(null);
+  const [likedNews, setLikedNews] = useState({});
 
-  const handleTabChange = (tab) => {
-    if (tab === activeTab) return;
-    setActiveTab(tab);
-    if (setView) setView(tab);
-  };
+  // Unified Store Automation Data Fetching
+  const allItems = useMemo(() => {
+    let list = [];
+    if (news && news.length > 0) {
+      list = [...list, ...news.map((item, i) => ({ ...item, id: item.id || `n_${i}`, itemType: 'news' }))];
+    }
+    if (announcements && announcements.length > 0) {
+      list = [...list, ...announcements.map((item, i) => ({ ...item, id: item.id || `a_${i}`, itemType: 'announcement' }))];
+    }
+    if (events && events.length > 0) {
+      list = [...list, ...events.map((item, i) => ({ ...item, id: item.id || `e_${i}`, itemType: 'event' }))];
+    }
 
-  const getCleanText = (str) => {
-    if (!str) return '';
-    return str
-      .replace(/<br\s*\/?>/gi, ' ')
-      .replace(/<\/p>/gi, ' ')
-      .replace(/<\/span>/gi, ' ')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/gi, ' ')
-      .replace(/&amp;/gi, '&')
-      .replace(/&quot;/gi, '"')
-      .replace(/\s+/g, ' ')
-      .trim();
-  };
-
-  // 📰 HABERLER SEKMESİ (Stitch Corporate Redesign)
-  const renderHaberler = () => (
-    <div className={`grid grid-cols-1 md:grid-cols-12 gap-8 transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
-      {(news || []).map((item, index) => {
-        const cleanTitle = getCleanText(item?.title);
-        const cleanDesc = getCleanText(item?.description || item?.content);
-
-        // Öne Çıkan Büyük Haber (Bento Featured Card)
-        if (index === 0) {
-          return (
-            <div 
-              key={index}
-              onClick={() => setSelectedItem(item)}
-              className="md:col-span-8 group bg-[#800000] rounded-3xl overflow-hidden shadow-2xl hover:shadow-red-950/40 transition-all duration-500 min-h-[460px] flex flex-col justify-end relative cursor-pointer border border-red-900"
-            >
-              <img 
-                src={item?.imageUrl || 'https://www.esenyurt.edu.tr/uploads/2025/12/pjhehwxvm6o1u-yok-universite-izleme-ve-degerlendirme-genel-raporu-2025’te-onemli-basari.jpg'} 
-                alt={cleanTitle} 
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-60" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
-              
-              <div className="relative z-10 p-8 md:p-12">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="bg-[#990000] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow border border-red-500/30 flex items-center gap-1.5">
-                    <Sparkles size={12} className="text-amber-300" /> {item.category || 'Öne Çıkan Haber'}
-                  </span>
-                  <span className="text-slate-300 text-xs font-bold flex items-center gap-1">
-                    <Calendar size={14} className="text-amber-400" /> {item.date || '02 Ocak 2026'}
-                  </span>
-                </div>
-
-                <h3 className="text-2xl md:text-3xl font-black text-white leading-snug mb-3 group-hover:text-amber-300 transition-colors drop-shadow-md">
-                  {cleanTitle}
-                </h3>
-
-                <p className="text-slate-300 text-xs md:text-sm font-medium leading-relaxed max-w-3xl line-clamp-3 mb-6">
-                  {cleanDesc}
-                </p>
-
-                <div className="inline-flex items-center gap-2 bg-white text-[#990000] hover:bg-amber-300 hover:text-slate-950 px-6 py-3 rounded-2xl font-black text-xs transition-colors shadow-lg">
-                  Resmî Haberi İncele <ArrowRight size={15} />
-                </div>
-              </div>
-            </div>
-          );
+    // Fallback demo dataset if store is loading
+    if (list.length === 0) {
+      list = [
+        {
+          id: 'k1',
+          itemType: 'news',
+          category: 'Kariyer Fuarı',
+          title: '2026 Ulusal Kariyer & Sektör Buluşması Kayıtları Başladı',
+          date: '15 Nisan 2026',
+          time: '12 saat önce',
+          location: 'İESÜ Ana Kampüs Konferans Salonu',
+          readers: '4.2B Okuma',
+          imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+          description: '50+ Lider savunma, bilişim ve sanayi kuruluşu kampüsümüzde öğrencilerimizle buluşuyor. Birebir staj mülakatları ve CV danışmanlık stantları açık olacaktır.'
+        },
+        {
+          id: 'k2',
+          itemType: 'announcement',
+          category: 'Rapor & Analiz',
+          title: 'Yapay Zeka ve İstihdam Raporu Yayımlandı',
+          date: '10 Nisan 2026',
+          time: '1 gün önce',
+          location: 'İESÜ Ar-Ge OS Merkezi',
+          readers: '3.1B Okuma',
+          imageUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80',
+          description: 'İESÜ Araştırma OS Merkezi tarafından yayımlanan 2026 raporuna göre yapay zeka entegrasyonu olan mezunların işe kabul oranı %45 arttı.'
+        },
+        {
+          id: 'k3',
+          itemType: 'event',
+          category: 'Zirve',
+          title: 'Geleneksel Hibrit Mezunlar ve Sektör Zirvesi',
+          date: '22 Nisan 2026',
+          time: '2 gün önce',
+          location: 'Kültür Merkezi & Canlı Stream',
+          readers: '8.4B Okuma',
+          imageUrl: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&q=80',
+          description: 'Global şirketlerde çalışan mezunlarımız aktif öğrencilerimizle buluşup birebir mentörlük ve yurt dışı staj tecrübelerini aktarıyor.'
         }
+      ];
+    }
 
-        // Standart Haber Kartları
-        return (
-          <div 
-            key={index}
-            onClick={() => setSelectedItem(item)}
-            className="md:col-span-4 group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
-          >
-            <div>
-              <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
-                <img 
-                  src={item?.imageUrl || 'https://www.esenyurt.edu.tr/uploads/2026/06/qd2nc7jccjlfr-universitemizin-14-yil-donumu-kutlu-olsun.jfif'} 
-                  alt={cleanTitle} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
-                <div className="absolute top-3 left-3 bg-[#990000] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                  {item.category || 'Haber'}
-                </div>
-              </div>
+    return list;
+  }, [news, announcements, events]);
 
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400 mb-2">
-                  <Calendar size={13} className="text-[#990000]" /> {item.date || 'Tarih'}
-                </div>
-                <h4 className="text-base font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug line-clamp-2 mb-2">
-                  {cleanTitle}
-                </h4>
-                <p className="text-xs font-medium text-slate-600 leading-relaxed line-clamp-3 mb-4">
-                  {cleanDesc}
-                </p>
-              </div>
-            </div>
+  const filteredItems = useMemo(() => {
+    return allItems.filter(item => {
+      const matchCat = activeCategory === 'all' || item.itemType === activeCategory;
+      const matchQuery = !searchQuery || 
+        (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchCat && matchQuery;
+    });
+  }, [allItems, activeCategory, searchQuery]);
 
-            <div className="p-6 pt-0 flex items-center justify-between border-t border-slate-100 pt-4 text-xs font-black text-[#990000]">
-              <span>Detaylı İncele</span>
-              <div className="w-7 h-7 rounded-xl bg-red-50 group-hover:bg-[#990000] group-hover:text-white transition-colors flex items-center justify-center shadow-sm">
-                <ChevronRight size={15} />
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-
-  // 🔔 DUYURULAR SEKMESİ (Stitch Corporate Redesign)
-  const renderDuyurular = () => (
-    <div className={`grid grid-cols-1 md:grid-cols-12 gap-8 transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
-      <div className="md:col-span-4">
-        <div className="bg-gradient-to-br from-slate-950 via-[#800000] to-slate-900 rounded-3xl p-8 text-white shadow-xl sticky top-28 border border-red-900">
-          <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 text-amber-300 border border-white/10">
-            <Bell size={28} />
-          </div>
-          <h2 className="text-2xl font-black mb-3 tracking-tight">Resmî Duyurular Hub</h2>
-          <p className="text-slate-300 text-xs font-medium leading-relaxed mb-6">
-            İstanbul Esenyurt Üniversitesi Rektörlüğü, Öğrenci İşleri ve Fakülte Dekanlıkları tarafından yayımlanan resmî bildirim ve duyuru akışı.
-          </p>
-          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 text-[11px] font-bold text-amber-200">
-            📌 Tüm duyurular senkronizasyon otomasyonu ile anlık güncellenmektedir.
-          </div>
-        </div>
-      </div>
-
-      <div className="md:col-span-8 flex flex-col gap-4">
-        {(announcements || []).map((item, index) => {
-          const cleanTitle = getCleanText(item?.title);
-          const cleanDesc = getCleanText(item?.description || item?.content);
-
-          return (
-            <div 
-              key={index}
-              onClick={() => setSelectedItem(item)}
-              className="group bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden"
-            >
-              <div className="absolute left-0 top-0 bottom-0 w-2 bg-[#990000] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              
-              <div className="flex items-start gap-4">
-                <div className="p-3.5 bg-red-50 text-[#990000] rounded-2xl shrink-0 group-hover:bg-[#990000] group-hover:text-white transition-colors shadow-sm">
-                  <Megaphone size={22} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-3 mb-1.5">
-                    <span className="text-[10px] font-black uppercase text-[#990000] bg-red-100/80 px-2.5 py-0.5 rounded-full border border-red-200">
-                      {item.tag || 'Resmî Duyuru'}
-                    </span>
-                    <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
-                      <Calendar size={12} /> {item.date || 'Yayın Tarihi'}
-                    </span>
-                  </div>
-
-                  <h3 className="text-base font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug mb-1">
-                    {cleanTitle}
-                  </h3>
-
-                  <p className="text-xs font-medium text-slate-600 line-clamp-2 leading-relaxed">
-                    {cleanDesc}
-                  </p>
-                </div>
-              </div>
-
-              <div className="self-end sm:self-center shrink-0 w-9 h-9 rounded-xl bg-slate-100 group-hover:bg-[#990000] group-hover:text-white transition-colors flex items-center justify-center text-slate-600 shadow-sm">
-                <ChevronRight size={18} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  // 🎪 ETKİNLİKLER SEKMESİ (Stitch Corporate Redesign)
-  const renderEtkinlikler = () => (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
-      {(events || []).map((item, index) => {
-        const cleanTitle = getCleanText(item?.title);
-        const cleanDesc = getCleanText(item?.description || item?.content);
-
-        return (
-          <div 
-            key={index}
-            onClick={() => setSelectedItem(item)}
-            className="group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-300 transition-all duration-300 overflow-hidden flex flex-col justify-between cursor-pointer"
-          >
-            <div>
-              <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
-                <img 
-                  src={item?.imageUrl || 'https://www.esenyurt.edu.tr/uploads/2026/07/tjb9hhos5ydrt-gelecegin-dunyasini-sekillendiren-teknolojiler-ve-dijital-donusum-bilim-kafe’de-konusuluyor.jfif'} 
-                  alt={cleanTitle} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
-                <div className="absolute top-3 left-3 bg-[#990000] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                  {item.category || 'Etkinlik'}
-                </div>
-              </div>
-
-              <div className="p-6">
-                <div className="flex items-center gap-3 text-[11px] font-bold text-[#990000] mb-2">
-                  <span className="flex items-center gap-1"><Calendar size={13} /> {item.date}</span>
-                  {item.time && <span className="flex items-center gap-1"><Clock size={13} /> {item.time}</span>}
-                </div>
-
-                <h3 className="text-base font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug line-clamp-2 mb-2">
-                  {cleanTitle}
-                </h3>
-
-                <p className="text-xs font-medium text-slate-600 leading-relaxed line-clamp-3 mb-4">
-                  {cleanDesc}
-                </p>
-
-                {item.location && (
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 pt-3 border-t border-slate-100">
-                    <MapPin size={14} className="text-[#990000] shrink-0" />
-                    <span className="truncate">{item.location}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="p-6 pt-0">
-              <button className="w-full py-3 bg-[#990000] group-hover:bg-red-800 text-white font-black rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
-                Etkinlik Detaylarını Gör <ChevronRight size={15} />
-              </button>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+  const toggleLike = (id) => {
+    setLikedNews(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans">
-      <MainHeader setView={setView} />
-
-      <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
-        
-        {/* Banner Header */}
-        <div className="bg-gradient-to-r from-slate-950 via-[#800000] to-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-2xl border border-red-900 relative overflow-hidden">
-          <div className="max-w-3xl relative z-10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-950/80 px-3.5 py-1.5 rounded-full border border-amber-500/40 inline-block mb-3">
-              RESMİ CANLI YAYIN MERKEZİ
-            </span>
-            <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
-              Neler Oluyor?
-            </h1>
-            <p className="text-slate-200 text-sm md:text-base leading-relaxed font-medium">
-              İstanbul Esenyurt Üniversitesi'nin en son duyuruları, bilimsel sempozyumları, akademisyen haberleri ve kampüs içi tüm gelişmeler burada!
-            </p>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans pb-32">
+      
+      {/* ─── 1. TOP HEADER BAR (SOL LOGO & ÜNİVERSİTE İSMİ, ORTA ARAMA, SAĞ PROFİL) ─── */}
+      <header className="bg-white/90 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-40 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
+        {/* SOL: LOGO & ÜNİVERSİTE İSMİ */}
+        <div className="flex items-center gap-3">
+          <Logo size="sm" />
+          <div className="hidden sm:flex flex-col border-l border-slate-200 pl-3">
+            <span className="font-black text-slate-900 text-xs tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</span>
+            <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">Kariyer Geliştirme Merkezi</span>
           </div>
         </div>
 
-        {/* Dynamic Nav Tabs */}
-        <div className="flex justify-center bg-white p-2 rounded-2xl border border-slate-200 shadow-sm max-w-xl mx-auto w-full">
-          <button
-            onClick={() => handleTabChange('haberler')}
-            className={`flex-1 py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              activeTab === 'haberler'
-                ? 'bg-[#990000] text-white shadow-md'
-                : 'text-slate-600 hover:text-[#990000] hover:bg-red-50'
-            }`}
-          >
-            <Newspaper size={16} /> Haberler
-          </button>
-          
-          <button
-            onClick={() => handleTabChange('duyurular')}
-            className={`flex-1 py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              activeTab === 'duyurular'
-                ? 'bg-[#990000] text-white shadow-md'
-                : 'text-slate-600 hover:text-[#990000] hover:bg-red-50'
-            }`}
-          >
-            <Bell size={16} /> Duyurular
-          </button>
-          
-          <button
-            onClick={() => handleTabChange('etkinlikler')}
-            className={`flex-1 py-3 px-4 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              activeTab === 'etkinlikler'
-                ? 'bg-[#990000] text-white shadow-md'
-                : 'text-slate-600 hover:text-[#990000] hover:bg-red-50'
-            }`}
-          >
-            <Calendar size={16} /> Etkinlikler
-          </button>
+        {/* ORTA: ARAMA ÇUBUĞU */}
+        <div className="flex-1 max-w-md mx-4">
+          <div className="relative">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Resmi haber, duyuru veya etkinlik ara..."
+              className="w-full pl-9 pr-4 py-2 bg-slate-100/80 focus:bg-white border border-transparent focus:border-red-300 rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none transition-all"
+            />
+          </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="min-h-[400px]">
-          {activeTab === 'haberler' && renderHaberler()}
-          {activeTab === 'duyurular' && renderDuyurular()}
-          {activeTab === 'etkinlikler' && renderEtkinlikler()}
+        {/* SAĞ: TOP PROFILE MENU */}
+        <div className="flex items-center gap-2">
+          <TopProfileMenu currentUser={currentUser} setView={setView} userRole={userRole} />
         </div>
+      </header>
 
-      </main>
-
-      {/* ULTRA-PREMIUM 5XL SPLIT-VIEW EXHIBITION MODAL */}
-      {selectedItem && (
-        <div className="fixed inset-0 z-[100] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-2 sm:p-6 overflow-y-auto animate-fade-in font-sans">
-          <div className="bg-white border border-slate-200/80 w-full max-w-5xl rounded-[32px] shadow-[0_35px_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row relative my-auto max-h-[92vh]">
-            
-            {/* Top-Right Absolute Close (X) Button */}
-            <button 
-              onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 z-50 w-11 h-11 rounded-full bg-slate-900/80 hover:bg-[#990000] text-white flex items-center justify-center transition-all shadow-xl backdrop-blur-md cursor-pointer border border-white/20 hover:scale-110 active:scale-95"
-              title="Pencereyi Kapat"
-            >
-              ✕
-            </button>
-
-            {/* LEFT SIDE: Full-Size High Resolution Poster Canvas */}
-            <div className="md:w-1/2 bg-slate-950 relative flex items-center justify-center p-4 min-h-[320px] md:min-h-[580px] border-b md:border-b-0 md:border-r border-slate-800 shrink-0">
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 z-10 pointer-events-none"></div>
-              {selectedItem.imageUrl ? (
-                <img 
-                  src={selectedItem.imageUrl} 
-                  alt={getCleanText(selectedItem.title)} 
-                  className="w-full h-full max-h-[520px] object-contain relative z-0 drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]" 
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center text-slate-500 gap-3 p-8 text-center">
-                  <ImageIcon size={64} className="opacity-40" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Afiş Görseli Bulunmuyor</span>
-                </div>
-              )}
-              
-              {/* Category Badge on Poster */}
-              <div className="absolute top-5 left-5 z-20">
-                <span className="bg-[#990000] text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-xl border border-red-400/30 flex items-center gap-1.5">
-                  <Sparkles size={13} className="text-amber-300" /> {selectedItem.category || 'Resmî Etkinlik'}
-                </span>
+      {/* ─── 2. MAIN 3-COLUMN IN-FEED LAYOUT CONTAINER ─── */}
+      <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex gap-6 justify-center">
+        
+        {/* ─── LEFT PANEL (w-[270px]): PROFİL KARTI VE HABER FİLTRELERİ ─── */}
+        <div className="hidden lg:block w-[270px] shrink-0 space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm space-y-3">
+            <div className="flex items-center gap-3">
+              <SafeAvatar 
+                src={currentUser?.avatar} 
+                name={currentUser?.name || 'Kullanıcı'} 
+                size="lg" 
+                rounded="rounded-2xl" 
+                className="border border-slate-200 shadow-xs" 
+                alt={currentUser?.name}
+              />
+              <div className="min-w-0">
+                <h4 className="font-bold text-slate-900 text-sm truncate flex items-center gap-1">
+                  {currentUser?.name || 'Kullanıcı'} <ShieldCheck size={14} className="text-[#990000]" />
+                </h4>
+                <p className="text-[11px] font-semibold text-slate-500 truncate">{currentUser?.department || 'İESÜ Öğrencisi'}</p>
               </div>
             </div>
+          </div>
 
-            {/* RIGHT SIDE: Rich Multi-Paragraph Content & Event Metadata */}
-            <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-between overflow-y-auto custom-scrollbar bg-white">
-              
-              {/* Header Info */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-xs font-black text-[#990000]">
-                  {selectedItem.date && (
-                    <span className="flex items-center gap-1.5 bg-red-50 px-3 py-1 rounded-full border border-red-100">
-                      <Calendar size={14} /> {selectedItem.date}
-                    </span>
-                  )}
-                  {selectedItem.time && (
-                    <span className="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1 rounded-full">
-                      <Clock size={14} /> {selectedItem.time}
-                    </span>
-                  )}
-                </div>
-
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight tracking-tight">
-                  {getCleanText(selectedItem.title)}
-                </h2>
-
-                {/* Metadata Details Grid */}
-                {(selectedItem.location || selectedItem.speaker || selectedItem.organizer) && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200/80 my-4">
-                    {selectedItem.location && (
-                      <div className="flex items-start gap-2.5">
-                        <MapPin size={18} className="text-[#990000] shrink-0 mt-0.5" />
-                        <div>
-                          <div className="text-[10px] font-black uppercase text-slate-400">Konum / Salon</div>
-                          <div className="text-xs font-bold text-slate-900 leading-snug">{selectedItem.location}</div>
-                        </div>
-                      </div>
-                    )}
-                    {selectedItem.speaker && (
-                      <div className="flex items-start gap-2.5">
-                        <Tag size={18} className="text-[#990000] shrink-0 mt-0.5" />
-                        <div>
-                          <div className="text-[10px] font-black uppercase text-slate-400">Konuşmacı / Düzenleyen</div>
-                          <div className="text-xs font-bold text-slate-900 leading-snug">{selectedItem.speaker}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Multi-paragraph Full Description Body */}
-                <div className="space-y-3 pt-2 border-t border-slate-100">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-[#990000]">Etkinlik Açıklaması & Program Detayı:</h4>
-                  <div className="text-xs md:text-sm font-medium text-slate-700 leading-relaxed space-y-3 whitespace-pre-line pr-1">
-                    {selectedItem.content || selectedItem.description || getCleanText(selectedItem.title)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons Footer */}
-              <div className="pt-6 mt-6 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
-                {selectedItem.url && (
-                  <a
-                    href={selectedItem.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 py-4 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 text-center hover:scale-[1.02] active:scale-95"
+          {/* KGM Kategorileri Widget */}
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm">
+            <h3 className="font-black text-xs uppercase tracking-wider text-slate-400 mb-3">Haber Filtreleri</h3>
+            <div className="space-y-1.5">
+              {[
+                { id: 'all', label: 'Tüm Gönderiler', count: allItems.length, icon: Newspaper },
+                { id: 'news', label: 'Resmi Haberler', count: (news || []).length || 2, icon: Flame },
+                { id: 'announcement', label: 'Duyurular', count: (announcements || []).length || 3, icon: Bell },
+                { id: 'event', label: 'Etkinlikler & Zirveler', count: (events || []).length || 2, icon: Calendar },
+              ].map(cat => {
+                const Icon = cat.icon;
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`w-full p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-between cursor-pointer ${
+                      isActive 
+                        ? 'bg-red-50 text-[#990000] border border-red-100 shadow-xs' 
+                        : 'text-slate-600 hover:bg-slate-50'
+                    }`}
                   >
-                    Resmî Duyuruyu İncele <ExternalLink size={15} />
-                  </a>
+                    <div className="flex items-center gap-2">
+                      <Icon size={15} className={isActive ? 'text-[#990000]' : 'text-slate-400'} />
+                      <span>{cat.label}</span>
+                    </div>
+                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isActive ? 'bg-[#990000] text-white' : 'bg-slate-100 text-slate-500'}`}>
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ─── CENTER PANEL (max-w-[620px]): AKIŞ GÖNDERİLERİ GİBİ HABER AKIŞI ─── */}
+        <div className="w-full max-w-[620px] shrink-0 space-y-6">
+          
+          {/* Header Card Banner */}
+          <div className="bg-gradient-to-r from-slate-950 via-[#7A0000] to-slate-900 text-white rounded-3xl p-6 shadow-xl border border-red-900 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-2">
+              <span className="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                <Sparkles size={11} /> KGM Basın & Duyuru Portalı
+              </span>
+              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+            </div>
+            <h2 className="text-xl font-black text-white leading-tight mb-1">Resmi Kariyer Haber Akışı</h2>
+            <p className="text-xs text-slate-200 font-medium">İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tüm resmi duyuruları.</p>
+          </div>
+
+          {/* Feed List Items */}
+          <div className="space-y-5">
+            {filteredItems.map(item => (
+              <div 
+                key={item.id}
+                className="bg-white rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+              >
+                {/* News Card Header */}
+                <div className="p-5 pb-3 flex items-center justify-between border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center font-black border border-red-100 shadow-inner">
+                      <Building2 size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1">
+                        Kariyer Geliştirme Merkezi <CheckCircle2 size={13} className="text-[#990000] fill-current text-white" />
+                      </h4>
+                      <p className="text-[10px] text-slate-400 font-medium flex items-center gap-1 mt-0.5">
+                        <Clock size={11} /> {item.time || item.date || 'Bugün'} • {item.category || 'Resmi Duyuru'}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                    {item.itemType === 'event' ? 'Etkinlik' : item.itemType === 'announcement' ? 'Duyuru' : 'Haber'}
+                  </span>
+                </div>
+
+                {/* News Image Header (If available) */}
+                {(item.imageUrl || item.image) && (
+                  <div 
+                    onClick={() => setSelectedNewsItem(item)}
+                    className="w-full h-52 sm:h-64 bg-slate-950 relative overflow-hidden cursor-pointer group"
+                  >
+                    <img 
+                      src={item.imageUrl || item.image} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
+                  </div>
                 )}
-                <button
-                  onClick={() => setSelectedItem(null)}
-                  className="py-4 px-8 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs uppercase tracking-widest transition-all shadow-md cursor-pointer hover:scale-[1.02] active:scale-95 text-center"
-                >
-                  Kapat
-                </button>
+
+                {/* News Content Body */}
+                <div className="p-5 space-y-2">
+                  <h3 
+                    onClick={() => setSelectedNewsItem(item)}
+                    className="text-base font-black text-slate-900 hover:text-[#990000] transition-colors leading-snug cursor-pointer"
+                  >
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-slate-600 font-medium leading-relaxed line-clamp-3">
+                    {item.description || item.summary || item.content}
+                  </p>
+
+                  {item.location && (
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 pt-2">
+                      <MapPin size={13} className="text-[#990000]" /> {item.location}
+                    </div>
+                  )}
+                </div>
+
+                {/* News Action Footer (Social Interactivity) */}
+                <div className="p-4 bg-slate-50/60 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={() => toggleLike(item.id)}
+                      className={`flex items-center gap-1.5 transition cursor-pointer ${likedNews[item.id] ? 'text-[#990000]' : 'hover:text-slate-900'}`}
+                    >
+                      <Heart size={16} className={likedNews[item.id] ? 'fill-current text-[#990000]' : ''} />
+                      <span>{likedNews[item.id] ? 'Beğenildi' : 'Beğen'}</span>
+                    </button>
+                    <button 
+                      onClick={() => setSelectedNewsItem(item)}
+                      className="flex items-center gap-1.5 hover:text-slate-900 transition cursor-pointer"
+                    >
+                      <MessageCircle size={16} />
+                      <span>Detay Gör</span>
+                    </button>
+                  </div>
+
+                  <button 
+                    onClick={() => setSelectedNewsItem(item)}
+                    className="text-[#990000] hover:text-red-800 font-black text-xs flex items-center gap-1 cursor-pointer"
+                  >
+                    Tamamını Oku <ArrowRight size={13} />
+                  </button>
+                </div>
               </div>
+            ))}
+          </div>
+
+        </div>
+
+        {/* ─── RIGHT PANEL (w-[300px]): SAĞ SÜTUN BAĞLANTI & MENTÖR KARTLARI ─── */}
+        <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
+          <ConnectionSuggestions 
+            currentUser={currentUser}
+            students={students}
+            alumni={alumni}
+            companies={companies}
+            academicStaff={academicStaff}
+            setView={setView}
+            setSelectedUserId={setSelectedUserId}
+            maxSuggestions={3}
+          />
+
+
+        </div>
+
+      </div>
+
+      {/* IN-APP DETAIL MODAL (Z-200 PERFECT OVERLAY & HEADER CLEARANCE) */}
+      {selectedNewsItem && (
+        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 pt-16 pb-24 animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[70vh] relative">
+            <div className="p-5 bg-gradient-to-r from-slate-900 via-slate-800 to-[#990000] text-white flex items-center justify-between">
+              <h3 className="font-black text-sm text-white flex items-center gap-2">
+                <Newspaper size={18} className="text-amber-400" /> KGM Duyuru Detayı
+              </h3>
+              <button 
+                onClick={() => setSelectedNewsItem(null)} 
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer"
+              >
+                <X size={16} />
+              </button>
             </div>
 
+            <div className="p-6 overflow-y-auto space-y-4 flex-1 text-slate-700 custom-scrollbar">
+              <h2 className="text-base font-black text-slate-900 leading-snug">{selectedNewsItem.title}</h2>
+              <p className="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
+                <Clock size={12} /> {selectedNewsItem.time || selectedNewsItem.date}
+              </p>
+              <p className="text-xs font-medium text-slate-600 leading-relaxed whitespace-pre-line border-t border-slate-100 pt-3">
+                {selectedNewsItem.description || selectedNewsItem.summary || selectedNewsItem.content}
+              </p>
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
+              <button 
+                onClick={() => setSelectedNewsItem(null)}
+                className="px-5 py-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Kapat
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      <SubPanelFooter setView={setView} />
+      {/* ─── 3. FLOATING DOCK BAR (ALWAYS VISIBLE Z-150 & GEÇİŞ PANELİ) ─── */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[150] w-[95%] max-w-[420px] pointer-events-auto">
+        <div className="bg-white/95 backdrop-blur-2xl border-2 border-[#990000]/30 p-2 sm:p-2.5 rounded-full shadow-[0_20px_50px_rgba(153,0,0,0.25)] flex items-center justify-between px-4 text-slate-800">
+          
+          {/* HOME / ANA AKIŞ - RED */}
+          <button 
+            onClick={() => setView(userRole === 'alumni' ? 'alumni' : 'student')} 
+            className="p-2.5 rounded-full transition-all flex items-center justify-center bg-[#990000] text-white shadow-md shadow-red-500/40 hover:scale-110 active:scale-95 cursor-pointer" 
+            title="Ana Akışa Dön"
+          >
+            <Home size={24} strokeWidth={2.2} />
+          </button>
+          
+          {/* JOBS - PURPLE */}
+          <button 
+            onClick={() => setView('jobs')} 
+            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-purple-600 hover:bg-purple-50 hover:scale-110 cursor-pointer" 
+            title="İş İlanları"
+          >
+            <Building2 size={22} strokeWidth={2} />
+          </button>
+          
+          {/* CENTER: SEARCH ICON */}
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+            className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#7A0000] via-[#990000] to-rose-600 text-white shadow-lg shadow-red-600/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer" 
+            title="Sayfa Başına Git"
+          >
+            <Search size={22} strokeWidth={2.8} />
+          </button>
+          
+          {/* MESSAGES */}
+          <button 
+            onClick={() => setView('messaging')} 
+            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 hover:scale-110 cursor-pointer" 
+            title="Mesajlar"
+          >
+            <MessageCircle size={22} strokeWidth={2} />
+          </button>
+          
+          {/* PROFILE AVATAR */}
+          <button 
+            onClick={() => setView('user_profile')} 
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-110 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
+            title="Profilim"
+          >
+            <SafeAvatar 
+              src={currentUser?.avatar} 
+              name={currentUser?.name || 'Kullanıcı'} 
+              size="xs" 
+              alt="Profile" 
+            />
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 }

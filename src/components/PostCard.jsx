@@ -1,16 +1,153 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
-import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2 } from 'lucide-react';
+import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin } from 'lucide-react';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
+import SafeAvatar from './shared/SafeAvatar';
+import DOMPurify from 'dompurify';
 
-const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessages }) {
+
+const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessages, setSelectedUserId, setView }) {
   const sendMessage = useAppStore(state => state.sendMessage);
   const activeFrame = useAppStore(state => state.activeFrame);
+  const storeSetSelectedUserId = useAppStore(state => state.setSelectedUserId);
+  const storeSetView = useAppStore(state => state.setView);
+  const activeSetSelectedUserId = setSelectedUserId || storeSetSelectedUserId;
+  const activeSetView = setView || storeSetView;
+
+  const handleProfileClick = (e) => {
+    e.stopPropagation();
+    const targetUserId = post?.authorId || post?.author?.id || post?.userId || post?.authorName || (typeof post?.author === 'string' ? post.author : post?.author?.name);
+    if (targetUserId && activeSetSelectedUserId && activeSetView) {
+      activeSetSelectedUserId(targetUserId);
+      const isSelf = targetUserId === currentUser?.id || targetUserId === 'self';
+      activeSetView(isSelf ? 'user_profile' : 'public_profile');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // ─── İŞ & STAJ BAŞVURU SİSTEMİ ───
+  const applications = useAppStore(state => state.applications) || [];
+  const setApplications = useAppStore(state => state.setApplications);
+  const addApplication = useAppStore(state => state.addApplication);
+  const addNotification = useAppStore(state => state.addNotification);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [applyPhone, setApplyPhone] = useState(currentUser?.phone || '');
+  const [applyCvType, setApplyCvType] = useState('KGM Akredite İESÜ Dijital CV');
+  const [applyCoverLetter, setApplyCoverLetter] = useState('');
+  const [isApplying, setIsApplying] = useState(false);
+
+  const effectiveApplicantId = currentUser?.id || (activePortalBranch === 'alumni' ? 'ALU-001' : 'STU-001');
+  const targetJobId = post?.jobData?.id || post?.id;
+  const rawTitle = post?.jobData?.title || (post?.content ? post.content.split('\n')[0].replace('💼 YENİ İLAN:', '').trim() : 'Ulusal Staj Programı İlanı');
+  const cleanJobTitle = rawTitle.length > 75 ? rawTitle.slice(0, 75) + '...' : rawTitle;
+  const companyName = post?.jobData?.company || post?.author?.name || 'İESÜ Kariyer Geliştirme Koordinatörlüğü';
+  const jobLocation = post?.jobData?.location || 'İstanbul / Türkiye Geneli';
+  const jobType = post?.jobData?.type || 'STAJ';
+
+  const hasApplied = applications.some(a => 
+    (a.jobId === targetJobId || (cleanJobTitle && a.jobTitle === cleanJobTitle)) &&
+    (a.applicantId === effectiveApplicantId || (currentUser?.email && a.applicantEmail === currentUser.email))
+  );
+
+  const handleOpenApplyModal = (e) => {
+    e?.stopPropagation?.();
+    if (hasApplied) {
+      window.toast?.info?.("Bu ilana zaten başvuruda bulundunuz. Başvurunuz Yönetici Paneli Başvuru Havuzunda incelenmektedir.");
+      return;
+    }
+    setIsApplyModalOpen(true);
+  };
+
+  const handleApplySubmit = (e) => {
+    e.preventDefault();
+    if (hasApplied) {
+      window.toast?.info?.("Bu ilana zaten başvuruda bulundunuz.");
+      setIsApplyModalOpen(false);
+      return;
+    }
+
+    setIsApplying(true);
+    const applicantName = currentUser?.name || (activePortalBranch === 'alumni' ? 'Caner Yıldız (Mezun)' : 'Mert Demir');
+    const applicantDept = currentUser?.department || 'Bilgisayar Mühendisliği';
+    const applicantEmail = currentUser?.email || (activePortalBranch === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr');
+    const applicantPhone = applyPhone || currentUser?.phone || '0555 123 4567';
+
+    const newApp = {
+      id: 'APP-' + Date.now(),
+      jobId: targetJobId,
+      jobTitle: cleanJobTitle,
+      company: companyName,
+      applicantId: effectiveApplicantId,
+      applicantName: applicantName,
+      applicantEmail: applicantEmail,
+      applicantPhone: applicantPhone,
+      applicantDept: applicantDept,
+      coverLetter: applyCoverLetter || `${cleanJobTitle} programına başvuruda bulunmaktayım.`,
+      cvType: applyCvType,
+      status: 'Beklemede',
+      companyContacted: false,
+      date: new Date().toLocaleDateString('tr-TR'),
+      timestamp: new Date().toISOString()
+    };
+
+    if (addApplication) {
+      addApplication(newApp);
+    } else if (setApplications) {
+      setApplications(prev => [newApp, ...(prev || [])]);
+    } else {
+      useAppStore.getState().setApplications?.([newApp, ...(useAppStore.getState().applications || [])]);
+    }
+
+    if (addNotification) {
+      addNotification({
+        id: 'N-' + Date.now(),
+        userId: effectiveApplicantId,
+        text: `${cleanJobTitle} için başvurunuz Yönetici Paneli Başvuru Havuzuna iletildi.`,
+        read: false,
+        time: 'Az önce',
+        type: 'application'
+      });
+    }
+
+    try {
+      const LOCAL_STORAGE_KEY = 'iesu_candidate_pool_v1';
+      const existing = localStorage.getItem(LOCAL_STORAGE_KEY);
+      let poolData = existing ? JSON.parse(existing) : null;
+      if (poolData && Array.isArray(poolData.candidates)) {
+        const candidateRecord = {
+          id: newApp.id,
+          name: newApp.applicantName,
+          department: newApp.applicantDept,
+          gpa: currentUser?.gpa || '3.50',
+          company: newApp.company,
+          date: newApp.date,
+          stage: 'Başvuru',
+          matchScore: 95,
+          experience: (newApp.coverLetter || '').slice(0, 45) + '...',
+          lang: 'İngilizce (B2)',
+          phone: newApp.applicantPhone,
+          email: newApp.applicantEmail
+        };
+        poolData.candidates.unshift(candidateRecord);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(poolData));
+      }
+    } catch (err) {
+      console.warn('Candidate pool sync warning:', err);
+    }
+
+    setIsApplying(false);
+    setIsApplyModalOpen(false);
+    setApplyCoverLetter('');
+    window.toast?.success?.("Başvurunuz başarıyla kaydedildi! Yönetici Paneli Başvuru Havuzuna iletildi.");
+  };
+
   const [liked, setLiked] = useState(post?.likes > 0);
   const [showHeart, setShowHeart] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState(Array.isArray(post?.commentsList) ? post.commentsList : []);
   const [newComment, setNewComment] = useState('');
   
   // Share Modal State
@@ -91,39 +228,87 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   useEffect(() => {
     if (isShareModalOpen && availableUsers.length === 0) {
       try {
-        const students = JSON.parse(localStorage.getItem('igu_students_v3')) || [];
-        const alumni = JSON.parse(localStorage.getItem('igu_alumni_v3')) || [];
+        const students = JSON.parse(localStorage.getItem('iesu_students_v3') || localStorage.getItem('igu_students_v3') || '[]');
+        const alumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || localStorage.getItem('igu_alumni_v3') || '[]');
         setAvailableUsers([...students, ...alumni].filter(u => u.source !== 'demo_seed'));
       } catch (e) { console.error(e); }
     }
-  }, [isShareModalOpen]);
+  }, [isShareModalOpen, availableUsers.length]);
 
   const handleAddComment = useCallback(() => {
-    if (!newComment.trim()) return;
-    setComments([...comments, { id: Date.now(), text: newComment, author: currentUser?.name || 'Siz', time: 'Şimdi' }]);
+    const trimmed = newComment.trim();
+    if (!trimmed) return;
+    const sanitizedText = DOMPurify.sanitize(trimmed).slice(0, 500);
+    const commentObj = {
+      id: 'cmt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      text: sanitizedText,
+      author: currentUser?.name || 'Siz',
+      authorId: currentUser?.id,
+      time: 'Şimdi',
+      createdAt: new Date().toISOString()
+    };
+    const updatedComments = [...comments, commentObj];
+    setComments(updatedComments);
     setNewComment('');
-  }, [newComment, comments, currentUser?.name]);
+    if (setPosts) {
+      setPosts(prev => (prev || []).map(p => 
+        p.id === post.id 
+          ? { ...p, comments: (p.comments || 0) + 1, commentsList: updatedComments } 
+          : p
+      ));
+    }
+  }, [newComment, comments, currentUser?.name, currentUser?.id, post?.id, setPosts]);
+
+  const handleDeleteComment = useCallback((commentId) => {
+    const updatedComments = comments.filter(c => c.id !== commentId);
+    setComments(updatedComments);
+    if (setPosts) {
+      setPosts(prev => (prev || []).map(p => 
+        p.id === post.id 
+          ? { ...p, comments: Math.max(0, (p.comments || 1) - 1), commentsList: updatedComments } 
+          : p
+      ));
+    }
+  }, [comments, post?.id, setPosts]);
 
   const handleCopyLink = useCallback(() => {
-    navigator.clipboard.writeText(`https://igu-kariyer-platformu.vercel.app/post/${post.id}`);
-    window.toast.success("Bağlantı kopyalandı!");
+    const shareUrl = typeof window !== 'undefined' && window.location?.origin 
+      ? `${window.location.origin}/post/${post.id}` 
+      : `https://kariyer.esenyurt.edu.tr/post/${post.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    if (window.toast && typeof window.toast.success === 'function') {
+      window.toast.success("Bağlantı kopyalandı!");
+    }
   }, [post?.id]);
 
   const handleWhatsappShare = useCallback(() => {
-    const text = `Bu ilana göz at: ${post.title || 'Kariyer İlanı'} \nhttps://igu-kariyer-platformu.vercel.app/post/${post.id}`;
+    const shareUrl = typeof window !== 'undefined' && window.location?.origin 
+      ? `${window.location.origin}/post/${post.id}` 
+      : `https://kariyer.esenyurt.edu.tr/post/${post.id}`;
+    const text = `Bu ilana göz at: ${post.title || 'Kariyer İlanı'} \n${shareUrl}`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   }, [post?.id, post?.title]);
 
   const handleDiscordShare = useCallback(() => {
-    navigator.clipboard.writeText(`https://igu-kariyer-platformu.vercel.app/post/${post.id}`);
-    window.toast.info("Link kopyalandı. Discord'a yapıştırabilirsiniz!");
+    const shareUrl = typeof window !== 'undefined' && window.location?.origin 
+      ? `${window.location.origin}/post/${post.id}` 
+      : `https://kariyer.esenyurt.edu.tr/post/${post.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    if (window.toast && typeof window.toast.info === 'function') {
+      window.toast.info("Link kopyalandı. Discord'a yapıştırabilirsiniz!");
+    }
   }, [post?.id]);
 
   const handleShare = useCallback(() => {
-    if (!shareTarget) return window.toast.error("Lütfen paylaşılacak kişiyi seçin.");
+    if (!shareTarget) {
+      if (window.toast && typeof window.toast.error === 'function') {
+        window.toast.error("Lütfen paylaşılacak kişiyi seçin.");
+      }
+      return;
+    }
     
     const newMsg = {
-      id: Date.now(),
+      id: 'msg_' + Date.now(),
       senderId: currentUser?.id || 'unknown',
       receiverId: shareTarget,
       text: `[GÖNDERİ PAYLAŞIMI]\n${shareText ? shareText + '\n\n' : ''}Gönderi: ${(post.content || '').substring(0, 100)}...`,
@@ -135,20 +320,23 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       setMessages(prev => [...(prev || []), newMsg]);
     } else {
       try {
-        const msgs = JSON.parse(localStorage.getItem('igu_messages_v2')) || [];
-        localStorage.setItem('igu_messages_v2', JSON.stringify([...msgs, newMsg]));
+        const msgs = JSON.parse(localStorage.getItem('iesu_messages_v2') || localStorage.getItem('igu_messages_v2') || '[]');
+        localStorage.setItem('iesu_messages_v2', JSON.stringify([...msgs, newMsg]));
       } catch(e) {}
     }
     
     setIsShareModalOpen(false);
     setShareText('');
     setShareTarget('');
-    window.toast.success("Gönderi başarıyla paylaşıldı!");
+    if (window.toast && typeof window.toast.success === 'function') {
+      window.toast.success("Gönderi başarıyla paylaşıldı!");
+    }
   }, [shareTarget, shareText, post?.content, currentUser?.id, setMessages]);
 
   const handleSaveEdit = useCallback(() => {
     if (setPosts) {
-      setPosts(prev => prev.map(p => p.id === post.id ? { ...p, content: editContent } : p));
+      const sanitizedContent = DOMPurify.sanitize(editContent);
+      setPosts(prev => prev.map(p => p.id === post.id ? { ...p, content: sanitizedContent } : p));
     }
     setIsEditing(false);
     setIsMenuOpen(false);
@@ -168,14 +356,14 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] shadow-[var(--shadow-soft)] overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
       {/* Header */}
       <div className="p-4 flex justify-between items-center">
-        <div className="flex items-center gap-3 cursor-pointer group">
-          {post?.author?.role === 'admin' ? (
-            <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-200 shrink-0 p-1">
-              <img src="/iesu-logo.svg" alt="Logo" className="w-full h-full object-contain" />
-            </div>
-          ) : (
-            <img src={(post?.author?.avatar === '/logo.png' ? '/iesu-logo.svg' : post?.author?.avatar) || `https://ui-avatars.com/api/?name=U&background=0A2342&color=fff`} alt="Author" className="w-11 h-11 rounded-full object-cover shadow-sm border border-gray-100 shrink-0" />
-          )}
+        <div onClick={handleProfileClick} className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity">
+          <SafeAvatar
+            src={post?.author?.avatar}
+            name={typeof post.author === 'string' ? post.author : post?.author?.name}
+            isAdmin={post?.author?.role === 'admin'}
+            size="lg"
+            className="shadow-sm border border-gray-100"
+          />
           <div className="flex flex-col">
             <h4 className="font-bold text-[14px] text-gray-900 leading-tight group-hover:text-[#990000] transition-colors flex items-center flex-wrap">
               {typeof post.author === 'string' ? post.author : (post.author?.name || 'Kullanıcı')}
@@ -455,9 +643,148 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       {/* Fast Action for Jobs */}
       {post.isJob && (
         <div className="px-4 pb-4">
-          <button aria-label="Başvur" onClick={() => window.toast.success('Başvurunuz başarıyla kaydedildi. Firma temsilcisine iletilecektir.')} className="w-full bg-gradient-to-r from-[var(--brand-navy)] to-[var(--brand-secondary)] hover:shadow-lg text-white font-bold py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-95">
-            <Briefcase size={18} /> Hemen Başvur
+          <button 
+            aria-label="Başvur" 
+            onClick={handleOpenApplyModal} 
+            className={`w-full py-3.5 rounded-2xl transition-all flex justify-center items-center gap-2 cursor-pointer ${
+              hasApplied 
+                ? 'bg-emerald-600 text-white font-black shadow-md' 
+                : 'bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 hover:shadow-lg text-white font-bold active:scale-95'
+            }`}
+          >
+            {hasApplied ? (
+              <>
+                <CheckCircle2 size={18} className="text-emerald-300" /> Başvuruldu (Havuzda İnceleniyor)
+              </>
+            ) : (
+              <>
+                <Briefcase size={18} /> Hemen Başvur
+              </>
+            )}
           </button>
+        </div>
+      )}
+
+      {/* ─── KGM İŞ & STAJ BAŞVURU FORMU MODALI (Z-[9999] OVERLAY) ─── */}
+      {isApplyModalOpen && (
+        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] relative">
+            
+            {/* Header */}
+            <div className="p-5 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/10 text-indigo-300 flex items-center justify-center font-black">
+                  <Briefcase size={20} />
+                </div>
+                <div>
+                  <h3 className="font-black text-sm text-white">İş & Staj Başvuru Formu</h3>
+                  <p className="text-[11px] text-indigo-200 font-medium">KGM & Yönetici Paneli Başvuru Havuzu</p>
+                </div>
+              </div>
+
+              <button 
+                type="button"
+                onClick={() => setIsApplyModalOpen(false)}
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body Form */}
+            <form onSubmit={handleApplySubmit} className="p-6 overflow-y-auto space-y-4 flex-1 text-slate-700 bg-white custom-scrollbar">
+              {/* Job Info Banner */}
+              <div className="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Başvurulan İlan / Program</p>
+                  <h4 className="font-black text-slate-900 text-sm truncate">{cleanJobTitle}</h4>
+                  <p className="text-[11px] text-slate-500 font-semibold truncate">{companyName} • {jobLocation}</p>
+                </div>
+                <span className="bg-indigo-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
+                  {jobType}
+                </span>
+              </div>
+
+              {/* Applicant Info Banner */}
+              <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Aday Kimlik Bilgileri</p>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-500 font-medium">Aday Adı:</span>
+                    <p className="font-bold text-slate-900">{currentUser?.name || (activePortalBranch === 'alumni' ? 'Caner Yıldız (Mezun)' : 'Mert Demir')}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 font-medium">Bölüm:</span>
+                    <p className="font-bold text-slate-900">{currentUser?.department || 'Bilgisayar Mühendisliği'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phone Field */}
+              <div>
+                <label className="block text-xs font-black text-slate-800 mb-1">İletişim Telefon Numarası *</label>
+                <input 
+                  type="tel" 
+                  required
+                  value={applyPhone}
+                  onChange={e => setApplyPhone(e.target.value)}
+                  placeholder="05xx xxx xx xx"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-600"
+                />
+              </div>
+
+              {/* CV Selection */}
+              <div>
+                <label className="block text-xs font-black text-slate-800 mb-1">Eklenecek Özgeçmiş / CV *</label>
+                <select 
+                  value={applyCvType}
+                  onChange={e => setApplyCvType(e.target.value)}
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-600"
+                >
+                  <option value="KGM Akredite İESÜ Dijital CV">KGM Akredite İESÜ Dijital Özgeçmiş (Profilinizdeki Otomatik CV)</option>
+                  <option value="İESÜ Kariyer Havuzundaki Yüklenmiş PDF CV">İESÜ Kariyer Havuzundaki Yüklenmiş PDF CV</option>
+                  <option value="Özel Harici Özgeçmiş Belgesi">Özel Harici Özgeçmiş Belgesi</option>
+                </select>
+              </div>
+
+              {/* Cover Letter */}
+              <div>
+                <label className="block text-xs font-black text-slate-800 mb-1">Ön Yazı / Başvuru Notunuz *</label>
+                <textarea 
+                  rows={3}
+                  required
+                  value={applyCoverLetter}
+                  onChange={e => setApplyCoverLetter(e.target.value)}
+                  placeholder="Bu ilana neden başvuruyorsunuz? Yetkinlikleriniz ve staj/iş hedefleriniz hakkında kısa bir açıklama yazınız..."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-600"
+                />
+              </div>
+
+              {/* Notice */}
+              <div className="p-3 bg-amber-50 border border-amber-200/70 rounded-xl flex items-start gap-2 text-[11px] text-amber-900 font-medium">
+                <CheckCircle2 size={16} className="text-amber-700 shrink-0 mt-0.5" />
+                <span>Bu form onaylandığında doğrudan <b>Yönetici Paneli Başvuru Havuzuna</b> aktarılacaktır.</span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="button" 
+                  onClick={() => setIsApplyModalOpen(false)} 
+                  className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer"
+                >
+                  Vazgeç
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isApplying}
+                  className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-slate-900 hover:from-indigo-700 hover:to-slate-950 text-white font-bold rounded-xl text-xs shadow-md transition cursor-pointer"
+                >
+                  {isApplying ? 'Kaydediliyor...' : 'Başvuruyu Tamamla & İlet'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -560,19 +887,27 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           <div className="space-y-3 mb-4">
             {comments.map(comment => (
               <div key={comment.id} className="flex gap-3">
-                {comment.author === 'Kariyer Geliştirme Merkezi' || comment.author === 'Kariyer Geliştirme Merkezi' ? (
-                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0 border border-gray-200 p-0.5 shadow-sm">
-                    <img src="/logo.png" alt="Admin" className="w-full h-full object-contain" />
-                  </div>
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
-                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author)}&background=0A2342&color=fff`} alt={comment.author} className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <div className="bg-white px-4 py-2.5 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex-1">
+                <SafeAvatar
+                  src={comment.avatar}
+                  name={comment.author}
+                  isAdmin={comment.author === 'Kariyer Geliştirme Merkezi'}
+                  size="sm"
+                />
+                <div className="bg-white px-4 py-2.5 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex-1 relative group">
                   <div className="flex justify-between items-baseline mb-1">
                     <span className="font-bold text-[13px] text-gray-900">{comment.author}</span>
-                    <span className="text-[11px] text-gray-500 font-medium">{comment.time}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-gray-500 font-medium">{comment.time}</span>
+                      {(currentUser?.role === 'admin' || currentUser?.name === comment.author || (comment.authorId && currentUser?.id === comment.authorId)) && (
+                        <button 
+                          onClick={() => handleDeleteComment(comment.id)}
+                          title="Yorumu Sil"
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-opacity p-0.5"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p className="text-[14px] text-gray-700 leading-snug">{comment.text}</p>
                 </div>
@@ -580,15 +915,12 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
             ))}
           </div>
           <div className="flex items-center gap-3 relative">
-            {(currentUser?.role === 'admin' || window.localStorage.getItem('igu_user_role_v1') === '"admin"') ? (
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0 border border-gray-200 p-0.5 shadow-sm">
-                <img src="/logo.png" alt="Admin" className="w-full h-full object-contain" />
-              </div>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
-                <img src={currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'Siz')}&background=red&color=fff`} alt="Siz" className="w-full h-full object-cover" />
-              </div>
-            )}
+            <SafeAvatar
+              src={currentUser?.avatar}
+              name={currentUser?.name}
+              isAdmin={currentUser?.role === 'admin'}
+              size="sm"
+            />
             <input 
               type="text" 
               placeholder="Bir yorum yaz..."  

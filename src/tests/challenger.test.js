@@ -119,7 +119,7 @@ describe('Adversarial Challenger Suite: Scraper Resilience, Edge Cases & Brandin
       expect(MOCK_IESU_KARIYER_DATA.officeInfo).toBeDefined();
       expect(MOCK_IESU_KARIYER_DATA.officeInfo.title).toContain('İstanbul Esenyurt Üniversitesi');
       expect(MOCK_IESU_KARIYER_DATA.officeInfo.email).toBe('kariyer@esenyurt.edu.tr');
-      expect(MOCK_IESU_KARIYER_DATA.officeInfo.phone).toBe('+90 (212) 444 37 98 - Dahili: 1140');
+      expect(MOCK_IESU_KARIYER_DATA.officeInfo.phone).toBe('444 9 123 / +90 (212) 699 09 90');
       expect(MOCK_IESU_KARIYER_DATA.officeInfo.address).toContain('Esenyurt / İstanbul');
 
       expect(Array.isArray(MOCK_IESU_KARIYER_DATA.officeInfo.coordinators)).toBe(true);
@@ -162,9 +162,9 @@ describe('Adversarial Challenger Suite: Scraper Resilience, Edge Cases & Brandin
       const configContent = fs.readFileSync(configPath, 'utf8');
 
       expect(configContent).toContain('iesu:');
-      expect(configContent).toContain("primary: '#A80016'");
-      expect(configContent).toContain("secondary: '#800000'");
-      expect(configContent).toContain("accent: '#9E0B0F'");
+      expect(configContent).toContain("primary: '#990000'");
+      expect(configContent).toContain("secondary: '#D32F2F'");
+      expect(configContent).toContain("accent: '#FF6F61'");
       expect(configContent).toContain("soft: '#FFF5F5'");
     });
 

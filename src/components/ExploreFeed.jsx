@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, Compass, Heart, MessageCircle, UserPlus, UserCheck, Eye, Sparkles, Building2, GraduationCap, Award, BookOpen, X } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import PostCard from './PostCard';
+import TrendingHashtags from './TrendingHashtags';
 
 export default function ExploreFeed({ posts: propPosts, setView, setSelectedUserId, currentUser }) {
   const storePosts = useAppStore(state => state.posts);
@@ -28,21 +29,17 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
   const handleViewProfile = (userId) => {
     if (setSelectedUserId && setView) {
       setSelectedUserId(userId);
-      setView('user_profile');
+      const isSelf = userId === currentUser?.id || userId === 'self';
+      setView(isSelf ? 'user_profile' : 'public_profile');
     }
   };
 
-  // Filter posts dynamically based on search and category (Firmalar Kesinlikle Kaldırıldı)
+  // Filter posts dynamically based on search and category
   const filteredPosts = useMemo(() => {
     return (posts || []).filter(post => {
       const authorRoleStr = typeof post.authorRole === 'string' ? post.authorRole : (typeof post.author === 'object' ? post.author?.role : '');
-      
-      // Firmaları akıştan tamamen engelle
-      if (authorRoleStr === 'company' || authorRoleStr === 'employer' || authorRoleStr === 'İşveren' || authorRoleStr === 'Kurumsal') {
-        return false;
-      }
 
-      const authorNameStr = typeof post.authorName === 'string' ? post.authorName : (typeof post.author === 'object' ? post.author?.name : (typeof post.author === 'string' ? post.author : ''));
+      const authorNameStr = typeof post.authorName === 'string' ? post.authorName : (typeof post.author === 'string' ? post.author : (typeof post.author === 'object' ? post.author?.name : ''));
       const contentStr = typeof post.content === 'string' ? post.content : '';
       const titleStr = typeof post.title === 'string' ? post.title : '';
 
@@ -57,6 +54,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
       if (activeCategory === 'students') return authorRoleStr === 'student' || authorRoleStr === 'Öğrenci';
       if (activeCategory === 'alumni') return authorRoleStr === 'alumni' || authorRoleStr === 'Mezun';
       if (activeCategory === 'academic') return authorRoleStr === 'academic' || authorRoleStr === 'Akademisyen';
+      if (activeCategory === 'companies') return authorRoleStr === 'company' || authorRoleStr === 'employer' || authorRoleStr === 'İşveren' || authorRoleStr === 'Kurumsal' || authorRoleStr === 'Firma';
       return true;
     });
   }, [posts, searchQuery, activeCategory]);
@@ -66,7 +64,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
       {/* Header */}
       <div className="flex items-center justify-between gap-3 mb-6 border-b border-gray-100 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-tr from-red-600 to-amber-500 rounded-xl flex items-center justify-center text-white shadow-md">
+          <div className="w-10 h-10 bg-gradient-to-tr from-indigo-900 via-purple-900 to-slate-900 rounded-xl flex items-center justify-center text-white shadow-md">
             <Compass size={22} />
           </div>
           <div>
@@ -79,31 +77,32 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
       {/* Search Input */}
       <div className="w-full mb-6">
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#990000] transition-colors" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-900 transition-colors" size={18} />
           <input 
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Öğrenci, mezun, akademisyen veya konu ara..." 
-            className="bg-slate-50 pl-11 pr-4 py-3 rounded-xl text-sm font-medium w-full focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white border border-gray-200 transition-all shadow-inner placeholder:text-gray-400" 
+            className="bg-slate-50 pl-11 pr-4 py-3 rounded-xl text-sm font-medium w-full focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white border border-gray-200 transition-all shadow-inner placeholder:text-gray-400" 
           />
         </div>
       </div>
 
-      {/* Category Pills (Firmalar Kaldırıldı) */}
-      <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-6 pb-1">
+      {/* Category Pills */}
+      <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-4 pb-1">
         {[
           { id: 'all', label: 'Tümü', icon: <Sparkles size={14}/> },
           { id: 'students', label: 'Öğrenciler', icon: <GraduationCap size={14}/> },
           { id: 'alumni', label: 'Mezunlar', icon: <Award size={14}/> },
           { id: 'academic', label: 'Akademisyenler', icon: <BookOpen size={14}/> },
+          { id: 'companies', label: 'Firmalar & İşverenler', icon: <Building2 size={14}/> },
         ].map(cat => (
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border ${
               activeCategory === cat.id
-                ? 'bg-[#990000] text-white border-[#990000] shadow-sm'
+                ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
                 : 'bg-slate-50 text-gray-600 hover:bg-gray-100 border-gray-200'
             }`}
           >
@@ -113,6 +112,11 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
         ))}
       </div>
 
+      {/* Trending Hashtags Section */}
+      <div className="mb-6">
+        <TrendingHashtags posts={posts} onTagClick={(tag) => setSearchQuery(tag)} limit={8} />
+      </div>
+
       {/* Live Content Masonry Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredPosts.map((item, index) => {
@@ -120,12 +124,12 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
           const isFollowing = !!followedUsers[authorId];
           const authorName = (typeof item.authorName === 'string' && item.authorName) || (typeof item.author === 'string' && item.author) || (typeof item.author === 'object' && item.author?.name) || 'Esenyurt Üyesi';
           const authorDepartment = (typeof item.authorDepartment === 'string' && item.authorDepartment) || (typeof item.department === 'string' && item.department) || (typeof item.author === 'object' && item.author?.title) || (typeof item.author === 'object' && item.author?.role) || 'Öğrenci / Üye';
-          const authorAvatar = (typeof item.authorAvatar === 'string' && item.authorAvatar) || (typeof item.avatar === 'string' && item.avatar) || (typeof item.author === 'object' && item.author?.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=990000&color=fff`;
+          const authorAvatar = (typeof item.authorAvatar === 'string' && item.authorAvatar) || (typeof item.avatar === 'string' && item.avatar) || (typeof item.author === 'object' && item.author?.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0A2342&color=fff`;
 
           return (
             <div 
               key={item.id || index} 
-              className="bg-white border border-slate-200/80 hover:border-red-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+              className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
             >
               {/* Post Author Info Header */}
               <div>
@@ -138,7 +142,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
                       <img src={authorAvatar} alt={authorName} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="font-bold text-sm text-gray-900 truncate hover:text-[#990000] transition">
+                      <h4 className="font-bold text-sm text-gray-900 truncate hover:text-slate-700 transition">
                         {authorName}
                       </h4>
                       <p className="text-[11px] text-gray-500 truncate font-medium">
@@ -152,8 +156,8 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
                     onClick={() => handleToggleFollow(authorId, authorName)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${
                       isFollowing
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-red-50 text-[#990000] hover:bg-[#990000] hover:text-white border border-red-200'
+                        ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                        : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-700 hover:text-white border border-emerald-200'
                     }`}
                   >
                     {isFollowing ? (
@@ -187,13 +191,13 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
                 <div className="flex items-center gap-4">
                   <span 
                     onClick={() => setSelectedPost(item)}
-                    className="flex items-center gap-1 hover:text-red-600 cursor-pointer font-bold"
+                    className="flex items-center gap-1 hover:text-rose-600 cursor-pointer font-bold"
                   >
                     <Heart size={15} /> {item.likesCount || item.likes || 12}
                   </span>
                   <span 
                     onClick={() => setSelectedPost(item)}
-                    className="flex items-center gap-1 hover:text-red-600 cursor-pointer font-bold"
+                    className="flex items-center gap-1 hover:text-blue-600 cursor-pointer font-bold"
                   >
                     <MessageCircle size={15} /> {item.commentsCount || item.comments?.length || 4}
                   </span>
@@ -202,7 +206,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
                 <div className="flex items-center gap-3">
                   <button 
                     onClick={() => handleViewProfile(authorId)}
-                    className="flex items-center gap-1 text-[#990000] hover:underline font-bold text-xs cursor-pointer"
+                    className="flex items-center gap-1 text-slate-700 hover:text-black font-bold text-xs cursor-pointer"
                   >
                     <Eye size={14} /> Profili İncele
                   </button>
@@ -226,7 +230,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl overflow-hidden border border-gray-100 max-h-[90vh] flex flex-col relative animate-scale-up">
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-slate-50 shrink-0">
-              <span className="text-xs font-black uppercase tracking-wider text-[#990000] bg-red-50 px-3 py-1 rounded-full border border-red-100">
+              <span className="text-xs font-black uppercase tracking-wider text-slate-800 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                 Gönderi Detayı & Etkileşim
               </span>
               <button 

@@ -6,7 +6,13 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   server: {
     port: 5175,
-    host: true
+    host: true,
+    hmr: {
+      overlay: false
+    }
+  },
+  optimizeDeps: {
+    entries: ['index.html']
   },
   plugins: [
     react(),
@@ -61,7 +67,7 @@ export default defineConfig({
         name: 'İESÜ Kariyer Platformu',
         short_name: 'İESÜ Kariyer',
         description: 'İstanbul Esenyurt Üniversitesi Kariyer ve Geliştirme Ofisi Platformu',
-        theme_color: '#B91C1C',
+        theme_color: '#990000',
         background_color: '#ffffff',
         display: 'standalone',
         icons: [
@@ -84,12 +90,27 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'vendor-react';
-            if (id.includes('lucide')) return 'vendor-lucide';
-            if (id.includes('framer-motion')) return 'vendor-framer';
-            return 'vendor';
-          }
+          const normalizedId = id.replaceAll('\\', '/');
+          if (!normalizedId.includes('/node_modules/')) return;
+
+          const isFrameworkModule = [
+            '/node_modules/react/',
+            '/node_modules/react-dom/',
+            '/node_modules/react-router/',
+            '/node_modules/react-router-dom/',
+            '/node_modules/scheduler/',
+          ].some((segment) => normalizedId.includes(segment));
+
+          if (isFrameworkModule) return 'vendor-react';
+          if (normalizedId.includes('/node_modules/lucide-react/')) return 'vendor-lucide';
+          if (normalizedId.includes('/node_modules/framer-motion/')) return 'vendor-framer';
+          if (normalizedId.includes('/node_modules/firebase/') || normalizedId.includes('/node_modules/@firebase/')) return 'vendor-firebase';
+          if (normalizedId.includes('/node_modules/recharts/') || normalizedId.includes('/node_modules/d3-')) return 'vendor-charts';
+          if (normalizedId.includes('/node_modules/react-simple-maps/') || normalizedId.includes('/node_modules/topojson-client/')) return 'vendor-maps';
+          if (normalizedId.includes('/node_modules/html2pdf.js/') || normalizedId.includes('/node_modules/pdfkit/')) return 'vendor-documents';
+          if (normalizedId.includes('/node_modules/react-icons/')) return 'vendor-icons';
+          if (normalizedId.includes('/node_modules/react-confetti/') || normalizedId.includes('/node_modules/canvas-confetti/')) return 'vendor-effects';
+          if (normalizedId.includes('/node_modules/@supabase/')) return 'vendor-supabase';
         }
       }
     }

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
@@ -70,7 +70,7 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
         } : p));
       }
     } else {
-      setAnnouncements([{ ...form, id: newId, type: 'Duyuru', createdAt: new Date().toISOString() }, ...announcements]);
+      setAnnouncements(current => [{ ...form, id: newId, type: 'Duyuru', createdAt: new Date().toISOString() }, ...(current || [])]);
       
       // Add new post to feed
       if (setPosts && form.status === 'Yayında') {
@@ -358,4 +358,3 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
     />
   );
 }
-

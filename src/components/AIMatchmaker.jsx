@@ -2,21 +2,40 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wand2, UserCheck } from 'lucide-react';
 
-export default function AIMatchmaker({ alumniList = [] }) {
+export default function AIMatchmaker({ alumniList = [], setView, setSelectedUserId, currentUser, onSelectMentor }) {
   const [isMatching, setIsMatching] = useState(false);
   const [match, setMatch] = useState(null);
 
   const findMatch = () => {
     setIsMatching(true);
     setTimeout(() => {
-      const bestMatch = alumniList[Math.floor(Math.random() * alumniList.length)] || { 
-        name: 'Ahmet Yılmaz', 
-        department: 'Yazılım Mühendisi', 
-        avatar: 'https://ui-avatars.com/api/?name=Ahmet' 
-      };
+      const bestMatch = (alumniList && alumniList.length > 0) 
+        ? alumniList[Math.floor(Math.random() * alumniList.length)] 
+        : { 
+            id: 'm-default-1',
+            name: 'Ahmet Yılmaz', 
+            department: 'Kıdemli Yazılım Mimarı @ Trendyol Tech', 
+            avatar: 'https://ui-avatars.com/api/?name=Ahmet+Yilmaz&background=990000&color=fff' 
+          };
       setMatch(bestMatch);
       setIsMatching(false);
-    }, 2500);
+    }, 1800);
+  };
+
+  const handleConnectMentor = () => {
+    if (!match) return;
+    if (onSelectMentor) {
+      onSelectMentor(match);
+      return;
+    }
+    if (setSelectedUserId && match.id) {
+      setSelectedUserId(match.id);
+      if (setView) setView('user_profile');
+      return;
+    }
+    if (window.toast?.success) {
+      window.toast.success(`🎯 ${match.name} ile mentorluk eşleşme talebiniz kaydedildi!`);
+    }
   };
 
   return (
@@ -34,7 +53,7 @@ export default function AIMatchmaker({ alumniList = [] }) {
           whileTap={{ scale: 0.98 }}
           onClick={findMatch}
           disabled={isMatching}
-          className="w-full bg-red-600 text-white text-[13px] font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-md relative overflow-hidden"
+          className="w-full bg-red-600 text-white text-[13px] font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-md relative overflow-hidden cursor-pointer"
         >
           {isMatching ? 'Profiller Analiz Ediliyor...' : 'Eşleş'}
           {isMatching && (
@@ -50,14 +69,36 @@ export default function AIMatchmaker({ alumniList = [] }) {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           className="bg-white p-4 rounded-2xl shadow-sm border border-indigo-100 flex items-center gap-3"
         >
-          <img src={match.avatar} className="w-12 h-12 rounded-full border-2 border-indigo-100" alt="Mentor" />
+          <img 
+            src={match.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(match.name || 'Mentor')}&background=990000&color=fff`} 
+            onError={(e) => { e.currentTarget.src = '/iesu-logo.svg'; }}
+            className="w-12 h-12 rounded-full border-2 border-indigo-100 object-cover" 
+            alt="Mentor" 
+          />
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-[13px] text-gray-900 truncate">{match.name}</h4>
-            <p className="text-[11px] text-gray-500 truncate">{match.department}</p>
+            <div className="flex items-center gap-2">
+              <h4 className="font-bold text-[13px] text-gray-900 truncate">{match.name}</h4>
+              <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">%96 Uyum</span>
+            </div>
+            <p className="text-[11px] text-gray-500 truncate">{match.department || match.title || 'Mezun Mentor'}</p>
           </div>
-          <button className="bg-indigo-50 text-indigo-700 p-2 rounded-lg hover:bg-indigo-100 transition-colors shrink-0">
-            <UserCheck size={18} />
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button 
+              onClick={handleConnectMentor}
+              title="Bağlantı Kur / Randevu Al"
+              className="bg-red-600 text-white hover:bg-red-700 p-2 rounded-lg transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold shadow-xs"
+            >
+              <UserCheck size={16} />
+              <span className="hidden sm:inline">Bağlan</span>
+            </button>
+            <button 
+              onClick={() => setMatch(null)}
+              title="Farklı Bir Mentor Bul"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-lg transition-colors cursor-pointer text-xs font-semibold"
+            >
+              Yenile
+            </button>
+          </div>
         </motion.div>
       )}
     </div>

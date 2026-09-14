@@ -1,7 +1,8 @@
-﻿import React, { useState } from 'react';
-import { ClipboardList, Edit, Trash2, Plus, Search, Filter, CheckCircle2, Download, Table, BarChart3, Target, Share2, Eye, X, ChevronDown, ChevronUp, Users } from 'lucide-react';
+import React, { useState } from 'react';
+import { ClipboardList, Edit, Trash2, Plus, Search, Filter, CheckCircle2, Download, Table, BarChart3, Target, Share2, Eye, X, ChevronDown, ChevronUp, Users, Sparkles } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard, Badge } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
+import SurveyIntelligenceModal from '../SurveyIntelligenceModal';
 
 export default function CMSSurveys({ surveys = [], setSurveys, students = [], isAlumniTab = false, posts, setPosts, currentUser }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -10,6 +11,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   const [statusFilter, setStatusFilter] = useState('all');
   const [previewSurvey, setPreviewSurvey] = useState(null);
   const [expandedSurveyId, setExpandedSurveyId] = useState(null);
+  const [showIntelligenceModal, setShowIntelligenceModal] = useState(false);
 
   const [form, setForm] = useState({
     title: '',
@@ -170,9 +172,18 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
       title="Form ve Anket Yönetimi" 
       sub="Öğrenci ve mezun anketlerini yönetin, SPSS uyumlu dışa aktarın." 
       action={
-        <button onClick={handleAddNew} className="bg-white text-emerald-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
-          <Plus size={18} /> Yeni Anket
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button 
+            type="button"
+            onClick={() => setShowIntelligenceModal(true)} 
+            className="bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+          >
+            <Sparkles size={18} className="text-purple-600" /> Anket İstihbaratı & YÖK
+          </button>
+          <button onClick={handleAddNew} className="bg-white text-emerald-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all cursor-pointer">
+            <Plus size={18} /> Yeni Anket
+          </button>
+        </div>
       } 
     />
   );
@@ -547,6 +558,12 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   return (
     <div className="animate-fade-in">
       {isEditing ? formView : listView}
+      {showIntelligenceModal && (
+        <SurveyIntelligenceModal 
+          isOpen={showIntelligenceModal} 
+          onClose={() => setShowIntelligenceModal(false)} 
+        />
+      )}
     </div>
   );
 }

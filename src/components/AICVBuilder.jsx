@@ -8,7 +8,7 @@ import { generateAIResponse } from '../lib/gemini';
 import { exportPDF } from '../lib/pdfExporter';
 
 
-export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId }) {
+export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId, onUpdateProfile }) {
   const messages = useAppStore(state => state.messages);
   const setMessages = useAppStore(state => state.setMessages);
 
@@ -18,7 +18,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   // Initialize from localStorage OR currentUser if available
   const [cvData, setCvData] = useState(() => {
     try {
-      const saved = localStorage.getItem(`igu_cv_draft_${currentUser?.id || 'guest'}`);
+      const saved = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`) || localStorage.getItem(`igu_cv_draft_${currentUser?.id || 'guest'}`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed === 'object') return parsed;
@@ -28,7 +28,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     }
     return {
       name: currentUser?.name || '',
-      photo: (currentUser?.avatar && currentUser.avatar !== '/iesu-logo.svg') ? currentUser.avatar : 'https://www.esenyurt.edu.tr/uploads/2024/06/emyjxq7cgdfy4-esenyurt-universitesi-logo.png',
+      photo: (currentUser?.avatar && currentUser.avatar !== '/iesu-logo.svg') ? currentUser.avatar : '/iesu-logo.svg',
       title: currentUser?.department ? `${currentUser.department} Öğrencisi` : '',
       email: currentUser?.email || '',
       phone: '',
@@ -53,9 +53,9 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
         if (currentUser.faculty || currentUser.department) {
           eduList.push({
             id: 'edu-profile-main',
-            institution: 'İstanbul Esenyurt Üniversitesi (Ana Anadal)',
+            institution: 'İstanbul Esenyurt Üniversitesi',
             degree: `${currentUser.faculty || 'Fakülte'} - ${currentUser.department || 'Bölüm'}`,
-            date: currentUser.grade ? `Sınıf: ${currentUser.grade} (AGNO: ${currentUser.gpa || 'Belirtilmedi'})` : '2020-2024',
+            date: currentUser.grade ? `2022 - 2026 (${currentUser.grade})` : '2022 - 2026',
             desc: currentUser.thesis ? `Bitirme Projesi: ${currentUser.thesis}` : ''
           });
         }
@@ -64,7 +64,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
             id: 'edu-profile-cap',
             institution: 'İstanbul Esenyurt Üniversitesi (Çift Anadal / Yandal)',
             degree: `${currentUser.capFaculty || 'ÇAP Fakültesi'} - ${currentUser.capDept || 'ÇAP Bölümü'}`,
-            date: currentUser.capGrade ? `Sınıf: ${currentUser.capGrade} (ÇAP AGNO: ${currentUser.capGpa || 'Belirtilmedi'})` : 'ÇAP Programı',
+            date: currentUser.capGrade ? `ÇAP (${currentUser.capGrade})` : 'ÇAP Programı',
             desc: currentUser.capThesis ? `ÇAP Projesi: ${currentUser.capThesis}` : ''
           });
         }
@@ -113,6 +113,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   }, [currentUser]);
 
   useEffect(() => {
+    localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
     localStorage.setItem(`igu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
     setPhotoError(false);
   }, [cvData, currentUser?.id]);
@@ -193,6 +194,35 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
       if (isMounted.current) setIsGenerating(false);
     }
   }, [cvData.education, cvData.skills, cvData.experience]);
+
+  const handleSaveToProfile = useCallback(() => {
+    try {
+      localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
+      localStorage.setItem(`igu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
+    } catch (e) {}
+    if (onUpdateProfile) {
+      onUpdateProfile(cvData);
+    } else {
+      const store = useAppStore.getState();
+      if (currentUser?.id && store.setCurrentUser) {
+        const updated = {
+          ...currentUser,
+          cv: true,
+          bio: cvData.summary || currentUser.bio,
+          skills: cvData.skills?.length ? cvData.skills : currentUser.skills
+        };
+        store.setCurrentUser(updated);
+        if (store.setStudents && userRole === 'student' && store.students) {
+          store.setStudents(store.students.map(s => s.id === currentUser.id ? { ...s, ...updated } : s));
+        } else if (store.setAlumni && userRole === 'alumni' && store.alumni) {
+          store.setAlumni(store.alumni.map(a => a.id === currentUser.id ? { ...a, ...updated } : a));
+        }
+      }
+    }
+    if (window.toast && window.toast.success) {
+      window.toast.success('CV başarıyla kaydedildi ve profilinizle eşitlendi!');
+    }
+  }, [cvData, currentUser, userRole, onUpdateProfile]);
 
   // --- EXPERIENCE CRUD ---
   const handleAddExperience = useCallback(() => {
@@ -302,13 +332,47 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
         <div className="w-full bg-slate-100/80 flex flex-col relative overflow-hidden py-8 px-4 sm:px-8">
         
         {/* Preview Actions */}
-        <div className="max-w-[210mm] mx-auto w-full flex justify-end gap-2 mb-4 z-20">
-          <button onClick={() => window.print()} className="bg-white text-gray-700 hover:text-red-600 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition flex items-center gap-2" title="Yazdır">
-            <Printer size={16} /> <span className="text-xs font-bold">Yazdır</span>
-          </button>
-          <button onClick={() => exportPDF('cv-print-area', 'Ozgecmisim.pdf')} className="bg-[#990000] text-white hover:bg-red-800 px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2" title="PDF İndir">
-            <Download size={16} /> <span className="text-xs font-bold">PDF İndir</span>
-          </button>
+        <div className="max-w-[210mm] mx-auto w-full flex flex-wrap items-center justify-between gap-2 mb-4 z-20">
+          <div className="flex flex-wrap items-center gap-2">
+            <button 
+              type="button"
+              onClick={handleAIGenerateSummary} 
+              disabled={isGenerating}
+              className="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2 text-xs font-bold disabled:opacity-50 cursor-pointer"
+              title="Yapay zeka ile etkileyici kariyer özeti oluştur"
+            >
+              <Wand2 size={15} className={isGenerating ? "animate-spin" : ""} />
+              <span>{isGenerating ? 'ANKA Yazıyor...' : 'AI Özet Üret'}</span>
+            </button>
+            <button 
+              type="button"
+              onClick={evolveCVWithGeneticAlgorithms} 
+              disabled={isEvolving}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2 text-xs font-bold disabled:opacity-50 cursor-pointer"
+              title="ATS sistemleri için anahtar kelimeleri ve etkiyi optimize et"
+            >
+              <Dna size={15} className={isEvolving ? "animate-pulse" : ""} />
+              <span>{isEvolving ? 'ATS Optimize Ediliyor...' : 'AI ATS Optimize'}</span>
+            </button>
+            <button 
+              type="button"
+              onClick={handleSaveToProfile} 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2 text-xs font-bold cursor-pointer"
+              title="CV'yi kaydet ve profil ile eşitle"
+            >
+              <ShieldCheck size={15} />
+              <span>Kaydet & Eşitle</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button onClick={() => window.print()} className="bg-white text-gray-700 hover:text-red-600 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition flex items-center gap-2 cursor-pointer" title="Yazdır">
+              <Printer size={16} /> <span className="text-xs font-bold">Yazdır</span>
+            </button>
+            <button onClick={() => exportPDF('cv-print-area', 'Ozgecmisim.pdf')} className="bg-[#990000] text-white hover:bg-red-800 px-4 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer" title="PDF İndir">
+              <Download size={16} /> <span className="text-xs font-bold">PDF İndir</span>
+            </button>
+          </div>
         </div>
 
         {/* The CV Document (A4 Ratio Centered Paper) */}
@@ -331,7 +395,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
               {/* Photo Area */}
               <div className="w-24 h-32 bg-white border-2 border-gray-200 rounded overflow-hidden flex items-center justify-center shrink-0 shadow-sm p-1">
                 <img 
-                  src={((cvData || {})?.photo && !photoError) ? (cvData || {})?.photo : 'https://www.esenyurt.edu.tr/uploads/2024/06/emyjxq7cgdfy4-esenyurt-universitesi-logo.png'} 
+                  src={((cvData || {})?.photo && !photoError) ? (cvData || {})?.photo : '/iesu-logo.svg'} 
                   className="w-full h-full object-contain" 
                   alt="Kurumsal Fotoğraf" 
                   onError={() => setPhotoError(true)}

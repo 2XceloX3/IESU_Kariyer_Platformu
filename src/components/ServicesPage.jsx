@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Briefcase, GraduationCap, ArrowRight, ShieldCheck, 
   BookOpen, Globe2, Sparkles, Building2, Zap, Award, Eye, 
@@ -168,7 +168,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans">
-      <MainHeader setView={setView} />
+      <MainHeader setView={setView} currentUser={currentUser} userRole={userRole} />
 
       <main className="flex-1 w-full max-w-[1250px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
@@ -344,5 +344,4 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
     </div>
   );
 }
-
 

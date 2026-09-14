@@ -70,7 +70,7 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
         <div className="space-y-8">
           {activeSurvey.questions.map((q, idx) => (
             <div key={q.id} className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-              <h3 className="font-bold text-gray-900 mb-4">{idx + 1}. {q.text}</h3>
+              <h3 className="font-bold text-gray-900 mb-4">{idx + 1}. {q.text ? q.text.replace(/^\d+[\.\)]\s*/, '') : ''}</h3>
               {q.type === 'likert' ? (
                 <div className="flex justify-between items-center gap-2 sm:gap-4">
                   {[1, 2, 3, 4, 5].map(score => (

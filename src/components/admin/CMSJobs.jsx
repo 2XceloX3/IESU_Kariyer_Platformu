@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
@@ -70,7 +70,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
     if (currentId) {
       setJobs((jobs || []).map(job => job.id === currentId ? { ...job, ...form, updatedAt: new Date().toISOString() } : job));
     } else {
-      setJobs([{ ...form, id: 'JOB-' + Date.now(), applicants: 0, createdAt: new Date().toISOString() }, ...jobs]);
+      setJobs(current => [{ ...form, id: 'JOB-' + Date.now(), applicants: 0, createdAt: new Date().toISOString() }, ...(current || [])]);
     }
     setIsEditing(false);
   };
@@ -505,4 +505,3 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
     />
   );
 }
-

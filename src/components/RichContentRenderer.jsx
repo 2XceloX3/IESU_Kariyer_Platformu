@@ -1,10 +1,14 @@
 import React from 'react';
+import DOMPurify from 'dompurify';
 
 export default function RichContentRenderer({ content }) {
   if (!content) return null;
 
+  const sanitizedContent = typeof content === 'string' ? DOMPurify.sanitize(content) : '';
+  if (!sanitizedContent) return null;
+
   // Split content into blocks by double newlines or table boundaries
-  const lines = content.split('\n');
+  const lines = sanitizedContent.split('\n');
   const blocks = [];
   let currentTable = null;
   let currentParagraph = [];

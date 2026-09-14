@@ -29,25 +29,40 @@ import InstitutionalStatsManager from './admin/InstitutionalStatsManager';
 import CMSAlumniAssoc from './admin/CMSAlumniAssoc';
 import CMSAlumniCard from './admin/CMSAlumniCard';
 import CMSGroups from './admin/CMSGroups';
-import CMSClubs from './admin/CMSClubs';
 import CMSSSP from './admin/CMSSSP';
 import CMSLiveRooms from './admin/CMSLiveRooms';
 import CMSDataPoolExport from './admin/CMSDataPoolExport';
 import CMSStaff from './admin/CMSStaff';
 import CMSSyncCenter from './admin/CMSSyncCenter';
-import CMSFirestoreBackup from './admin/CMSFirestoreBackup';
-
-
+import CMSMentorshipPool from './admin/CMSMentorshipPool';
+import CMSCompanyEducationRequests from './admin/CMSCompanyEducationRequests';
+import CMSCompanyEventMessages from './admin/CMSCompanyEventMessages';
+import CMSCareerCounseling from './admin/CMSCareerCounseling';
+import CMSCorporatePartnerships from './admin/CMSCorporatePartnerships';
+import CMSAcademicRadar from './admin/CMSAcademicRadar';
+import CMSCandidatePool from './admin/CMSCandidatePool';
+import CMSApplicationsPool from './admin/CMSApplicationsPool';
+import CMSUserTypeManager from './admin/CMSUserTypeManager';
+import CMSAuditTrail from './admin/CMSAuditTrail';
+import CMSSiteEditor from './admin/CMSSiteEditor';
+import CMSGallery from './admin/CMSGallery';
+import CMSPortfolios from './admin/CMSPortfolios';
+import CMSAISwarmCenter from './admin/CMSAISwarmCenter';
+import CMSDeveloperProtocol from './admin/CMSDeveloperProtocol';
+import CMSGoogleStitch from './admin/CMSGoogleStitch';
+import CMSSuperAdminHub from './admin/CMSSuperAdminHub';
+import AkademikPanel from './admin/AkademikPanel';
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
 import {
-  LayoutDashboard, Users, Briefcase, Calendar,
+  LayoutDashboard, Users, Briefcase, Calendar, Crown,
   MessageSquare, GraduationCap, Building2, CreditCard,
   BarChart3, Network, ClipboardList, LogOut,
   ChevronDown, ChevronUp, Search, Bell, BellIcon,
   CheckCircle, XCircle, Plus, Trash2, Send,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
-  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles, Cloud
+  TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles, Cloud, Code2, Palette,
+  Cpu, Terminal, Camera
 } from 'lucide-react';
 
 import { STUDENTS, ALUMNI, COMPANIES, ALUMNI_CARDS, JOBS_INIT, MENTORSHIPS_INIT, VOLUNTEER_INIT, MESSAGES_INIT, SURVEYS_INIT, SEM_INIT, NEWS_INIT, EVENTS_INIT, ORG } from '../data/mockAdminData';
@@ -61,7 +76,7 @@ import { Badge, Card, StatCard, Progress, Tbl, BtnGreen, BtnRed, BtnPrimary } fr
 // ── 1. Kontrol Merkezi ────────────────────────────────────────
 
 
-function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [],  mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [], setView }) {
+function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [], mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [], applications = [], setActiveTab, setView }) {
   const messages = useAppStore(state => state.messages);
   
   return (
@@ -74,13 +89,18 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
           <h3 className="font-black text-gray-900 mb-4">Bekleyen İşlemler</h3>
           <div className="space-y-2.5">
             {[
+              { label:'İlan & Staj Başvuru Havuzu', val: (applications || []).filter(a=>a?.status==='Beklemede'||!a?.status).length, color:'purple', tab:'basvuru_havuzu' },
               { label:'Onay Bekleyen İlan',       val: (jobs || []).filter(j=>j?.status==='Beklemede').length,              color:'amber'   },
               { label:'Staj Onay Bekliyor',        val: (voluntaryInternships || []).filter(v=>v.status==='Taslak').length, color:'orange' },
               { label:'Akademik Profil Onayı',    val: (academicApprovals || []).filter(a=>a.status==='Beklemede').length, color:'red' },
               { label:'Mentor Eşleşme Bekliyor',  val: (mentorships || []).filter(m=>m.status==='Eşleştirme Bekliyor').length, color:'sky'  },
               { label:'Aktif Anket',               val: (surveys || []).filter(s=>s?.status==='Aktif').length,                color:'green'  },
             ].map(item => (
-              <div key={item.label} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200">
+              <div 
+                key={item.label} 
+                onClick={() => item.tab && setActiveTab && setActiveTab(item.tab)}
+                className={`flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 ${item.tab ? 'cursor-pointer hover:bg-amber-50/50' : ''}`}
+              >
                 <span className="text-sm text-gray-600 font-medium">{item.label}</span>
                 <span className={`text-lg font-black ${item.val>0?'text-red-600':'text-gray-500'}`}>{item.val}</span>
               </div>
@@ -229,109 +249,15 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
   );
 }
 
-function AkademikPanel({ students = [] }) {
-  const avg = students?.length ? ((students || []).reduce((a,s)=>a+parseFloat(s?.gpa||0),0)/students.length).toFixed(2) : "0.00";
-  const honor = (students || []).filter(s=>s?.gpa>=3.5).length;
-  const withCV = (students || []).filter(s=>s?.cv).length;
-  const [search, setSearch] = useState('');
-  const filtered = (students || []).filter(s=>s?.name.toLowerCase().includes(search.toLowerCase())||s?.dept.toLowerCase().includes(search.toLowerCase()));
-
-  return (
-    <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Akademik Performans" sub="GPA, bölüm dağılımı ve öğrenci özeti" />
-
-      <div className="grid grid-cols-3 gap-4">
-        <StatCard icon={<BarChart3 size={20}/>} label="Ortalama GPA" value={avg} sub="Tüm öğrenciler" color="blue"/>
-        <StatCard icon={<Award size={20}/>} label="Yüksek Onur" value={honor} sub="GPA ≥ 3.5" color="green"/>
-        <StatCard icon={<FileText size={20}/>} label="CV Yüklemiş" value={withCV} sub={`${(students || []).length-withCV} eksik`} color="orange"/>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="p-6 col-span-1">
-          <h3 className="font-black text-gray-900 mb-4">GPA Dağılımı</h3>
-          <div className="space-y-3">
-            {[
-              {label:'3.5 – 4.0 (Yüksek Onur)',val:(students || []).filter(s=>s?.gpa>=3.5).length,color:'green'},
-              {label:'3.0 – 3.5 (Onur)',        val:(students || []).filter(s=>s?.gpa>=3.0&&s?.gpa<3.5).length,color:'blue'},
-              {label:'2.5 – 3.0 (Geçer)',       val:(students || []).filter(s=>s?.gpa>=2.5&&s?.gpa<3.0).length,color:'orange'},
-              {label:'2.0 – 2.5 (Alt Sınır)',   val:(students || []).filter(s=>s?.gpa<2.5).length,color:'red'},
-            ].map(g=>(
-              <div key={g.label}>
-                <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1">
-                  <span>{g.label}</span><span className="font-black text-gray-900">{g.val}</span>
-                </div>
-                <Progress value={g.val} max={(students || []).length || 1} color={g.color}/>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card className="p-6 col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-black text-gray-900">Öğrenci Listesi</h3>
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"/>
-              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Ara..." className="pl-8 pr-3 py-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-300"/>
-            </div>
-          </div>
-          <Tbl
-            headers={['Ad Soyad','Bölüm','Sınıf','GPA','CV','Durum']}
-            rows={filtered.map(s=>[
-              <span className="font-bold text-gray-900">{s?.name}</span>,
-              s?.dept,
-              `${s?.year}. Sınıf`,
-              <span className={`font-black ${s?.gpa>=3.5?'text-emerald-600':s?.gpa>=3.0?'text-red-600':'text-orange-600'}`}>{s?.gpa}</span>,
-              s?.cv?<CheckCircle size={15} className="text-emerald-500"/>:<XCircle size={15} className="text-gray-400"/>,
-              <Badge status={s?.status}/>
-            ])}
-          />
-        </Card>
-      </div>
-    </div>
-  );
-}
-
 // ══════════════════════════════════════════════════════════════
 //  SIDEBAR NAVIGATION CONFIG
 // ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
-  { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'cms_datapool', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'sem'] },
-  { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'cms_jobs', 'cms_feat', 'cms_ment', 'kariyer_gunleri'] },
-  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['institutional_stats', 'platform_ayarlari', 'cms_firestore_backup', 'cms_sync', 'cms_datapool', 'content_import', 'analytics', 'anket', 'kart'] }
-];
-
-const MAIN_TABS = [
-  { id:'overview',   label:'Kontrol Merkezi',    icon:<LayoutDashboard size={17}/> },
-  { id:'institutional_stats', label:'🏛️ Kurumsal İstatistikler', icon:<BarChart3 size={17}/> },
-  { id:'cms_datapool', label:'Veri Havuzu & Excel', icon:<Database size={17}/> },
-  { id:'operasyon',  label:'Operasyon Özeti',    icon:<Activity size={17}/> },
-  { id:'akademik',   label:'Akademik Performans',icon:<TrendingUp size={17}/> },
-  { id:'academic_catalog', label:'Akademik Katalog', icon:<Library size={17}/> },
-  { id:'academic_approvals', label:'Akademik Bilgi Onayları', icon:<ShieldCheck size={17}/> },
-  { id:'cms_news',    label:'Haberler (CMS)',   icon:<FileText size={17}/> },
-  { id:'alumni',     label:'Mezun Bilgi Havuzu', icon:<GraduationCap size={17}/> },
-  { id:'students',   label:'Aktif Öğrenciler',   icon:<Users size={17}/> },
-  { id:'academic_staff', label:'Akademik Personel', icon:<BookOpen size={17}/> },
-  { id:'companies',  label:'Firma Bilgi Havuzu', icon:<Building2 size={17}/> },
-  { id:'mezun_dernek',label:'Mezun Derneği',     icon:<Heart size={17}/> },
-  { id:'kart',       label:'Kart Başvuruları',   icon:<CreditCard size={17}/> },
-  { id:'cms_jobs',   label:'İlan & Başvuru Havuzu', icon:<Briefcase size={17}/> },
-  { id:'kariyer_gunleri', label:'Kariyer Günleri', icon:<Briefcase size={17}/> },
-  { id:'cms_events', label:'Etkinlikler (CMS)',  icon:<Calendar size={17}/> },
-  { id:'cms_ann',    label:'Duyurular (CMS)',    icon:<Megaphone size={17}/> },
-  { id:'cms_feat',   label:'Öne Çıkanlar (CMS)', icon:<Star size={17}/> },
-  { id:'mesajlar',   label:'İletişim Havuzu (Loglar)', icon:<MessageSquare size={17}/> },
-];
-
-const MORE_TABS = [
-  { id:'cms_ment',   label:'Mentorluk (CMS)', icon:<UserCheck size={17}/> },
-  { id:'gonullu',    label:'Gönüllü Staj',        icon:<Award size={17}/> },
-  { id:'sem',        label:'Kariyer Akademisi Yönetimi', icon:<BookOpen size={17}/> },
-  
-  { id:'anket',      label:'Anket & Veri Havuzu',      icon:<BarChart3 size={17}/> },
-  { id:'cms_ssp',    label:'SSP Puan Havuzu',   icon:<Award size={17}/> },
-  { id:'platform_ayarlari', label:'Platform Ayarları', icon:<Settings size={17}/> },
+  { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'basvuru_havuzu', 'operasyon', 'akademik'] },
+  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'user_types'] },
+  { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'cms_groups', 'kariyer_gunleri', 'mesajlar'] },
+  { id: 'kgm_danismanlik', label: 'Kariyer Danışmanlığı & Sektör', icon: <UserCheck size={14}/>, panels: ['cms_ment', 'mentorluk', 'cms_mentorship_pool', 'cms_career_counseling', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] },
+  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp', 'cms_live_rooms', 'cms_ai_swarm', 'cms_super_hub', 'cms_google_stitch', 'cms_dev_protocol'] }
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -391,10 +317,6 @@ export default function AdminDashboard({
   const setShowInstitutionalStats = useAppStore(state => state.setShowInstitutionalStats);
   const institutionalStatsData = useAppStore(state => state.institutionalStatsData);
   const setInstitutionalStatsData = useAppStore(state => state.setInstitutionalStatsData);
-  const clubs = useAppStore(state => state.clubs);
-  const setClubs = useAppStore(state => state.setClubs);
-  const clubApplications = useAppStore(state => state.clubApplications);
-  const setClubApplications = useAppStore(state => state.setClubApplications);
   const academicApprovals = useAppStore(state => state.academicApprovals);
   const setAcademicApprovals = useAppStore(state => state.setAcademicApprovals);
   const groups = useAppStore(state => state.groups);
@@ -406,6 +328,10 @@ export default function AdminDashboard({
   const setSspUsers = useAppStore(state => state.setSspUsers);
   const featureAlumniAssocToggle = useAppStore(state => state.featureAlumniAssocToggle);
   const setFeatureAlumniAssocToggle = useAppStore(state => state.setFeatureAlumniAssocToggle);
+  const featureCareerCheckup = useAppStore(state => state.featureCareerCheckup);
+  const setFeatureCareerCheckup = useAppStore(state => state.setFeatureCareerCheckup);
+  const featureCareerFair = useAppStore(state => state.featureCareerFair);
+  const setFeatureCareerFair = useAppStore(state => state.setFeatureCareerFair);
   const [activeTab, setActiveTab]       = useState('overview');
   const [activeCategory, setActiveCategory] = useState('genel');
   const [searchQuery, setSearchQuery] = useState('');
@@ -418,8 +344,9 @@ export default function AdminDashboard({
   const pending = useMemo(() => (jobs || []).filter(j=>j?.status==='Beklemede').length + (voluntaryInternships || []).filter(v=>v.status==='Taslak').length, [jobs, voluntaryInternships]);
 
   const renderPanel = () => {
-    const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships,   surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser, setView };
+    const p = { students, alumni, companies, jobs, setJobs, mentorships, voluntaryInternships, setVoluntaryInternships, surveys, semCourses, newsEvents: news, setNewsEvents: setNews, alumniCards, events, setEvents, academicApprovals, alumniCardApplications, setAlumniCardApplications, alumniCardForms, setAlumniCardForms, posts, setPosts, currentUser, setView, applications, setApplications, setActiveTab };
     switch(activeTab) {
+      case 'basvuru_havuzu': return <CMSApplicationsPool applications={applications || []} setApplications={setApplications} setSelectedUserId={setSelectedUserId} setView={setView} currentUser={currentUser} />;
       case 'academic_catalog': return <CMSAcademicCatalog academicCatalog={academicCatalog || []} setAcademicCatalog={setAcademicCatalog} />;
       case 'academic_approvals': return <CMSAcademicApprovals academicApprovals={academicApprovals || []} setAcademicApprovals={setAcademicApprovals} students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} />;
       case 'cms_events':  return <CMSEvents events={events || []} setEvents={setEvents} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
@@ -428,41 +355,60 @@ export default function AdminDashboard({
       case 'cms_feat':    return <CMSFeatured featuredOpportunities={featuredOpportunities || []} setFeaturedOpportunities={setFeaturedOpportunities} />;
       case 'cms_ment':    return <CMSMentorship mentorships={mentorships || []} setMentorships={setMentorships} />;
       case 'cms_groups':  return <CMSGroups groups={groups || []} setGroups={setGroups} currentUser={currentUser} />;
-      case 'clubs_pool':  return <CMSClubs clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={currentUser} />;
       case 'cms_ssp':     return <CMSSSP sspEnabled={sspEnabled} setSspEnabled={setSspEnabled} sspUsers={sspUsers} setSspUsers={setSspUsers} />;
       case 'cms_live_rooms': return <CMSLiveRooms currentUser={currentUser} userRole={userRole} liveRooms={liveRooms} />;
       case 'cms_datapool': return <CMSDataPoolExport />;
       case 'cms_staff': return <CMSStaff />;
+      case 'cms_sync':    return <CMSSyncCenter />;
       case 'overview':    return <OverviewPanel {...p}/>;
       case 'operasyon':   return <OperasyonPanel {...p}/>;
-      case 'akademik':    return <AkademikPanel {...p}/>;
+      case 'akademik':    return <AkademikPanel {...p} setActiveTab={setActiveTab} />;
       case 'cms_news':    return <CMSNews news={p.newsEvents || []} setNews={p.setNewsEvents} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
       case 'companies':   return <CMSCompanies companies={companies || []} setCompanies={setCompanies} />;
       case 'students':    return <CMSStudents students={students || []} setStudents={setStudents} />;
       case 'academic_staff': return <CMSAcademicStaff academicStaff={academicStaff || []} setAcademicStaff={setAcademicStaff} />;
-      case 'alumni':      return <CMSAlumni alumni={alumni || []} setAlumni={setAlumni} surveys={surveys} setSurveys={setSurveys} currentUser={currentUser} setPosts={setPosts} posts={posts} />;
+      case 'alumni':      return <CMSAlumni alumni={alumni || []} setAlumni={setAlumni} surveys={surveys} setSurveys={setSurveys} currentUser={currentUser} setPosts={setPosts} posts={posts} setView={setView} />;
       case 'mezun_dernek':return <CMSAlumniAssoc setView={setView} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
       case 'kart':        return <CMSAlumniCard alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} setAlumniCardForms={setAlumniCardForms} />;
       case 'ilan':        return <CMSJobs jobs={jobs || []} setJobs={setJobs} applications={applications || []} setApplications={setApplications} setSelectedUserId={setSelectedUserId} setView={setView} />;
       case 'etkinlik':    return <CMSEvents events={events || []} setEvents={setEvents} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
       case 'mentorluk':   return <CMSMentorship mentorships={mentorships || []} setMentorships={setMentorships} />;
+      case 'cms_mentorship_pool': return <CMSMentorshipPool />;
       case 'gonullu':     return <CMSVoluntaryInternships volunteerInterns={voluntaryInternships || []} setVolunteerInterns={setVoluntaryInternships} />;
-      case 'sem':         return <CMSSEMCourses semCourses={semCourses || []} setSemCourses={setSemCourses} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
-      case 'mesajlar':    return <CMSMessages messages={messages || []} />;
+      case 'sem':         return <CMSSEMCourses semCourses={semCourses || []} setSemCourses={setSemCourses} posts={posts} setPosts={setPosts} currentUser={currentUser} students={students || []} alumni={alumni || []} />;
+      case 'mesajlar':    return <CMSMessages messages={messages || []} setMessages={useAppStore.getState().setMessages} />;
       case 'entegrasyon': return <CMSIntegrations />;
       case 'anket':       return <CMSSurveys surveys={surveys || []} setSurveys={setSurveys} posts={posts} setPosts={setPosts} currentUser={currentUser} announcements={announcements} setAnnouncements={setAnnouncements} students={students || []} alumni={alumni || []} />;
       case 'analytics':   return <CMSAnalytics students={students || []} alumni={alumni || []} companies={companies || []} jobs={jobs || []} applications={applications || []} />;
       case 'content_import': return <OfficialContentImport news={news || []} setNews={setNews} announcements={announcements || []} setAnnouncements={setAnnouncements} events={events || []} setEvents={setEvents} />;
       case 'kariyer_gunleri': return <CMSCareerFair />;
+      case 'company_edu_requests': return <CMSCompanyEducationRequests />;
+      case 'company_event_msgs': return <CMSCompanyEventMessages />;
+      case 'cms_career_counseling': return <CMSCareerCounseling />;
+      case 'cms_corporate_partnerships': return <CMSCorporatePartnerships />;
+      case 'akademik_radar': return <CMSAcademicRadar />;
+      case 'aday_havuzu': return <CMSCandidatePool />;
+      case 'user_types': return <CMSUserTypeManager />;
+      case 'audit_log': return <CMSAuditTrail />;
       case 'institutional_stats': return <InstitutionalStatsManager />;
-      case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} showInstitutionalStats={showInstitutionalStats} setShowInstitutionalStats={setShowInstitutionalStats} institutionalStatsData={institutionalStatsData} setInstitutionalStatsData={setInstitutionalStatsData} featureAlumniAssocToggle={featureAlumniAssocToggle} setFeatureAlumniAssocToggle={setFeatureAlumniAssocToggle} />;
+      case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} showInstitutionalStats={showInstitutionalStats} setShowInstitutionalStats={setShowInstitutionalStats} institutionalStatsData={institutionalStatsData} setInstitutionalStatsData={setInstitutionalStatsData} featureAlumniAssocToggle={featureAlumniAssocToggle} setFeatureAlumniAssocToggle={setFeatureAlumniAssocToggle} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureCareerFair={featureCareerFair} setFeatureCareerFair={setFeatureCareerFair} />;
 
+      case 'data_cleanup': return <DataCleanup students={students} setStudents={setStudents} alumni={alumni} setAlumni={setAlumni} companies={companies} setCompanies={setCompanies} messages={messages} setMessages={useAppStore.getState().setMessages} posts={posts} setPosts={setPosts} jobs={jobs} setJobs={setJobs} />;
+      case 'cms_gallery': return <CMSGallery />;
+      case 'cms_portfolios': return <CMSPortfolios />;
+      case 'cms_ai_swarm': return <CMSAISwarmCenter />;
+      case 'cms_super_hub': return <CMSSuperAdminHub academicRole={academicRole} currentUser={currentUser} setActiveTab={setActiveTab} />;
+      case 'cms_google_stitch': return <CMSGoogleStitch />;
+      case 'cms_dev_protocol': return <CMSDeveloperProtocol />;
+      case 'site_editor': return <CMSSiteEditor />;
       default:            return <OverviewPanel {...p}/>;
     }
   };
 
   const MAIN_TABS = [
     { id: 'overview', icon: <LayoutDashboard size={14}/>, label: 'Genel Bakış' },
+    { id: 'basvuru_havuzu', icon: <Briefcase size={14}/>, label: 'İlan & Staj Başvuru Havuzu' },
+    { id: 'cms_mentorship_pool', icon: <UserCheck size={14}/>, label: 'Mentörlük & Danışmanlık Havuzu' },
     { id: 'cms_datapool', icon: <Database size={14}/>, label: 'Veri Havuzu & Excel' },
     { id: 'operasyon', icon: <Activity size={14}/>, label: 'Operasyon' },
     { id: 'akademik', icon: <BookOpen size={14}/>, label: 'Akademik' },
@@ -475,6 +421,7 @@ export default function AdminDashboard({
   ];
 
   const MORE_TABS = [
+    { id: 'data_cleanup', icon: <Trash2 size={14}/>, label: 'Demo Veri Temizliği', superAdminOnly: true },
     { id: 'ilan', icon: <Briefcase size={14}/>, label: 'İş & Staj İlanları' },
     { id: 'cms_feat', icon: <Star size={14}/>, label: 'Öne Çıkanlar' },
     { id: 'cms_jobs', icon: <TrendingUp size={14}/>, label: 'Kariyer Fırsatları' },
@@ -496,17 +443,37 @@ export default function AdminDashboard({
     { id: 'cms_groups', icon: <Users size={14}/>, label: 'Gruplar' },
     { id: 'cms_ssp', icon: <Trophy size={14}/>, label: 'SSP Puanlama' },
     { id: 'cms_live_rooms', icon: <Radio size={14}/>, label: 'Canlı Yayın Odaları' },
-    { id: 'platform_ayarlari', icon: <Settings size={14}/>, label: 'Platform Ayarları' },
-
+    { id: 'platform_ayarlari', icon: <Settings size={14}/>, label: 'Platform Ayarları', superAdminOnly: true },
+    { id: 'akademik_radar', icon: <BookOpen size={14}/>, label: 'Akademik Radar & Onay Merkezi' },
+    { id: 'aday_havuzu', icon: <Building2 size={14}/>, label: 'Aday Havuzunu Yönet & Takip Et' },
+    { id: 'user_types', icon: <Users size={14}/>, label: 'Personel & Yetki Yönetimi', superAdminOnly: true },
+    { id: 'audit_log', icon: <ShieldCheck size={14}/>, label: 'Denetim Logu & Aktivite Takibi', superAdminOnly: true },
+    { id: 'site_editor', icon: <Palette size={14}/>, label: 'Site Düzenleyici', superAdminOnly: true },
+    { id: 'cms_sync', icon: <Cloud size={14}/>, label: 'CMS Senkronizasyon', superAdminOnly: true },
+    { id: 'institutional_stats', icon: <BarChart3 size={14}/>, label: 'Kurumsal İstatistikler', superAdminOnly: true },
+    { id: 'cms_career_counseling', icon: <UserCheck size={14}/>, label: 'Bire Bir Kariyer Danışmanlığı & Randevular' },
+    { id: 'cms_corporate_partnerships', icon: <Building2 size={14}/>, label: 'Sektör Protokolleri & Şirket Anlaşmaları' },
+    { id: 'company_edu_requests', icon: <GraduationCap size={14}/>, label: 'Eğitim & Kampüs Etkinlik Talepleri' },
+    { id: 'company_event_msgs', icon: <MessageSquare size={14}/>, label: 'Şirket Yönetici Mesaj Talepleri' },
+    { id: 'content_import', icon: <FileText size={14}/>, label: 'Resmi İçerik Aktarımı' },
+    { id: 'cms_ment', icon: <Network size={14}/>, label: 'Mentörlük Sistemi' },
+    { id: 'cms_portfolios', icon: <FileText size={14}/>, label: 'CV & Portfolyo Onay Havuzu' },
+    { id: 'cms_gallery', icon: <Camera size={14}/>, label: 'Medya & Etkinlik Galerisi' },
+    { id: 'cms_ai_swarm', icon: <Cpu size={14}/>, label: 'AI Swarm Sürü Yönetimi', superAdminOnly: true },
+    { id: 'cms_super_hub', icon: <ShieldAlert size={14}/>, label: 'Süper Yönetici Hub & Güvenlik', superAdminOnly: true },
+    { id: 'cms_google_stitch', icon: <Wand2 size={14}/>, label: 'Google Stitch Tasarım Stüdyosu', superAdminOnly: true },
+    { id: 'cms_dev_protocol', icon: <Terminal size={14}/>, label: 'Geliştirici Protokolü & Teşhis', superAdminOnly: true },
   ];
+
+  const isSuperAdmin = academicRole === 'super_admin';
 
   const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
     if (tab.id === 'anket' && !featureSurveys) return false;
     if (tab.id === 'kart' && !featureAlumniCard) return false;
     if (tab.id === 'cms_ssp' && !sspEnabled) return false;
+    if (tab.superAdminOnly && !isSuperAdmin) return false;
     return true;
   });
-
 
   // Arama filtresi
   const filteredPanels = searchQuery 
@@ -523,69 +490,32 @@ export default function AdminDashboard({
       <header className="bg-white border-b border-gray-100 px-5 py-3 flex items-center gap-4 shrink-0 sticky top-0 z-40">
         
         <div className="flex items-center gap-3 pr-4 border-r border-gray-100 shrink-0">
-          <Logo className="w-9 h-9 text-red-700 bg-red-50 rounded-xl p-1.5" />
+          <Logo className="w-9 h-9 text-amber-700 bg-amber-50 rounded-xl p-1.5" />
           <div className="hidden sm:block">
             <h1 className="text-[14px] font-black text-gray-900 leading-tight">Yönetici Paneli</h1>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{academicRole === 'super_admin' ? 'SÜPER ADMİN' : 'KARİYER OFİSİ'}</p>
+            <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider">{academicRole === 'super_admin' ? 'SÜPER ADMİN' : 'KARİYER OFİSİ'}</p>
           </div>
         </div>
 
-        <div className="relative w-64 xl:w-80 ml-2 shrink-0">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"/>
-          <input 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Panel ara... (örn: ilan, öğrenci)" 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-[13px] font-medium text-gray-700 focus:outline-none focus:bg-white focus:border-red-300 focus:ring-4 focus:ring-red-100 transition-all placeholder:text-gray-500"
-          />
-        </div>
-
-        <div className="flex overflow-x-auto hide-scrollbar gap-1 flex-1 mx-2 justify-end">
+        <div className="flex overflow-x-auto hide-scrollbar gap-1.5 ml-4 flex-1 items-center">
           {PANEL_CATEGORIES.map(cat => (
             <button 
               key={cat.id} 
               onClick={() => { setActiveCategory(cat.id); setActiveTab(cat.panels[0]); setSearchQuery(''); }}
-              className={`group flex items-center gap-1.5 px-4 py-2 text-[12px] font-bold transition-all duration-300 whitespace-nowrap rounded-lg ${
+              className={`group flex items-center gap-1.5 px-4 py-2 text-[12px] font-bold transition-all duration-300 whitespace-nowrap rounded-xl ${
                 activeCategory === cat.id 
-                  ? (() => {
-                      switch (cat.id) {
-                        case 'genel': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
-                        case 'kullanici': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
-                        case 'icerik': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
-                        case 'sistem': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
-                        case 'birlik': return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
-                        default: return 'bg-slate-100 text-red-900 border border-slate-300 shadow-sm';
-                      }
-                    })()
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 border border-transparent hover:shadow-sm'
+                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border border-amber-500 font-black shadow-md shadow-amber-500/25'
+                  : 'text-gray-500 hover:text-amber-800 hover:bg-amber-50/50 border border-transparent hover:shadow-sm'
               }`}
             >
               <span className={`transition-transform duration-300 group-hover:scale-110 ${
-                activeCategory === cat.id 
-                  ? (() => {
-                      switch (cat.id) {
-                        case 'genel': return 'text-[#990000]';
-                        case 'kullanici': return 'text-[#990000]';
-                        case 'icerik': return 'text-[#990000]';
-                        case 'sistem': return 'text-[#990000]';
-                        case 'birlik': return 'text-[#990000]';
-                        default: return 'text-red-600 shadow-sm';
-                      }
-                    })()
-                  : (() => {
-                      switch (cat.id) {
-                        case 'genel': return 'text-gray-500 group-hover:text-red-500 group-hover:shadow-sm';
-                        case 'kullanici': return 'text-gray-500 group-hover:text-purple-500 group-hover:shadow-sm';
-                        case 'icerik': return 'text-gray-500 group-hover:text-emerald-500 group-hover:shadow-sm';
-                        case 'sistem': return 'text-gray-500 group-hover:text-amber-500 group-hover:shadow-sm';
-                        case 'birlik': return 'text-gray-500 group-hover:text-pink-500 group-hover:shadow-sm';
-                        default: return 'text-gray-500 group-hover:text-red-500 group-hover:shadow-sm';
-                      }
-                    })()
+                activeCategory === cat.id ? 'text-white font-black' : 'text-gray-500 group-hover:text-amber-600'
               }`}>
                 {cat.icon}
               </span>
-              {cat.label}
+              <span className={activeCategory === cat.id ? 'text-white font-black' : ''}>
+                {cat.label}
+              </span>
             </button>
           ))}
         </div>
@@ -603,7 +533,7 @@ export default function AdminDashboard({
               </div>
             )}
           </div>
-          <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} />
+          <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="admin_cms" />
         </div>
       </header>
 
@@ -614,12 +544,13 @@ export default function AdminDashboard({
             {searchQuery && <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider self-center mr-1">"{searchQuery}" araması:</span>}
             {filteredPanels.map(tab => {
               const catId = PANEL_CATEGORIES.find(c => c.panels.includes(tab.id))?.id || 'genel';
+              const activeThemeClass = 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black border-amber-500 shadow-md shadow-amber-500/25';
               const theme = {
-                genel: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-red-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                kullanici: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-purple-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                icerik: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-emerald-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                sistem: { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-amber-500', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-              }[catId] || { active: 'bg-[#990000] text-white border-[#990000] shadow-sm', hoverText: 'group-hover:text-red-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' };
+                genel: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                kullanici: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                icerik: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                sistem: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+              }[catId] || { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' };
 
               return (
                 <button
@@ -632,13 +563,10 @@ export default function AdminDashboard({
                   }`}
                 >
                   <span className={`transition-transform duration-300 group-hover:scale-110 ${activeTab === tab.id ? `text-white ${theme.iconGlow}` : `text-gray-500 ${theme.hoverText} ${theme.hoverGlow}`}`}>{tab.icon}</span>
-                  <span className={activeTab === tab.id ? '' : theme.hoverText}>{tab.label}</span>
+                  <span className={activeTab === tab.id ? 'text-white' : theme.hoverText}>{tab.label}</span>
                 </button>
               );
             })}
-            {filteredPanels.length === 0 && (
-              <p className="text-[13px] font-medium text-gray-500 p-2">Eşleşen panel bulunamadı.</p>
-            )}
           </div>
         </div>
       </div>

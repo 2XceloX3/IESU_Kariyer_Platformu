@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Award, ShieldCheck, CheckCircle2, Download, QrCode, Search, FileCheck, Lock, ChevronLeft, ArrowRight, AlertCircle, Building, Sparkles, MonitorPlay } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -86,7 +86,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
             onClick={() => {
               if (setView) {
                 if (!userRole) { setView('sem'); return; }
-                const target = userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student';
+                const target = userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student';
                 setView(target);
               }
             }} 

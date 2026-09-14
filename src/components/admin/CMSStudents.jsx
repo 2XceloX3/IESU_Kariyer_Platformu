@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, CheckCircle2, Download } from 'lucide-react';
-import { exportToCSV } from '../../utils/export';export default function CMSStudents({ students = [], setStudents }) {
+import CMSCandidatePool from './CMSCandidatePool';
+import { GraduationCap, Edit, Trash2, Plus, Search, Filter, UserCircle2, Mail, Briefcase, FileText, CheckCircle2, Download, Users, UserCheck, Sparkles, Layers } from 'lucide-react';
+import { exportToCSV } from '../../utils/export';
+
+export default function CMSStudents({ students = [], setStudents }) {
+  const [activeTab, setActiveTab] = useState('staj_takip'); // 'staj_takip' | 'aday_havuzu'
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,13 +85,64 @@ import { exportToCSV } from '../../utils/export';export default function CMSStud
   const internshipSeekers = safeStudents.filter(s => s.internshipStatus === 'Arıyor').length;
 
   const listView = (
-    <div className="space-y-6">
-      {/* HEADER & STATS */}
-      <PanelHeader 
-        title="Aktif Öğrenciler" 
-        sub="Sisteme kayıtlı aktif öğrencileri yönetin ve staj durumlarını takip edin." 
-        action={
-          <div className="flex items-center gap-3">
+    <div className="space-y-6 font-sans">
+      {/* PANEL MOD GEÇİŞ SEKMELERİ */}
+      <div className="flex items-center gap-2 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 w-fit">
+        <button
+          onClick={() => setActiveTab('staj_takip')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+            activeTab === 'staj_takip'
+              ? 'bg-[#990000] text-white shadow-md shadow-red-950/20'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <GraduationCap size={16} />
+          Öğrenci & Staj Takibi
+        </button>
+        <button
+          onClick={() => setActiveTab('aday_havuzu')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+            activeTab === 'aday_havuzu'
+              ? 'bg-[#990000] text-white shadow-md shadow-red-950/20'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+          }`}
+        >
+          <Sparkles size={16} className="text-amber-400" />
+          Öğrenci Aday Havuzu & Eşleşme Paneli
+        </button>
+      </div>
+
+      {activeTab === 'aday_havuzu' ? (
+        <CMSCandidatePool />
+      ) : (
+        <>
+      {/* HEADER & BANNER */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#990000] via-rose-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl shadow-red-950/20">
+        <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-inner shrink-0">
+              <GraduationCap size={28} className="text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-400/30">
+                  Öğrenci & Staj Koordinasyon Radarı
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] font-black uppercase tracking-wider border border-emerald-400/30">
+                  Canlı Takip
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-amber-300 drop-shadow-md">
+                Öğrenci Yönetimi & Staj Durum Takibi
+              </h1>
+              <p className="text-xs text-rose-100/90 mt-1 max-w-xl">
+                Kayıtlı aktif öğrencilerin bölüm, sınıf ve kurumsal staj durumlarını (Zorunlu / Gönüllü Staj) inceleyin ve güncelleyin.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
             <button 
               onClick={() => {
                 const headers = ['Öğrenci ID', 'Ad Soyad', 'Bölüm', 'Sınıf', 'Staj Durumu'];
@@ -108,122 +163,154 @@ import { exportToCSV } from '../../utils/export';export default function CMSStud
                 link.download = 'Ogrenciler.csv';
                 link.click();
               }}
-              className="flex items-center justify-center gap-2 bg-emerald-600/90 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all active:scale-95 border border-emerald-500/30"
+              className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 border border-white/20 transition-all cursor-pointer"
             >
-              <Download size={18} /> Excel'e Aktar
+              <Download size={16} /> Excel Dışa Aktar
             </button>
-            <button onClick={handleAddNew} className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all backdrop-blur-md">
-              <Plus size={18} /> Öğrenci Ekle
+            <button 
+              onClick={handleAddNew} 
+              className="bg-gradient-to-r from-amber-400 to-rose-500 hover:from-amber-500 hover:to-rose-600 text-slate-950 px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-rose-950/30 transition-all cursor-pointer hover:scale-105"
+            >
+              <Plus size={16} /> Yeni Öğrenci Ekle
             </button>
-          </div>
-        } 
-      />
-
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><GraduationCap size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Öğrenci</p><p className="text-2xl font-black text-gray-900">{safeStudents.length}</p></div>
-          </div>
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Aktif Kullanıcı</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
-          </div>
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center"><Briefcase size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Staj Arayan</p><p className="text-2xl font-black text-gray-900">{internshipSeekers}</p></div>
           </div>
         </div>
       </div>
 
-      {/* FILTERS */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4 justify-between">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
+      {/* STATS CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Toplam Kayıtlı Öğrenci</p>
+            <p className="text-2xl font-black text-slate-900 mt-0.5">{(students || []).length}</p>
+          </div>
+          <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold"><Users size={20}/></div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-emerald-200/80 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Aktif Kullanıcı</p>
+            <p className="text-2xl font-black text-emerald-600 mt-0.5">{(students || []).filter(s=>s.status==='Aktif').length}</p>
+          </div>
+          <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center font-bold"><UserCheck size={20}/></div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-rose-200/80 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Staj Arayan Öğrenciler</p>
+            <p className="text-2xl font-black text-rose-600 mt-0.5">{(students || []).filter(s=>s.internshipStatus==='Arıyor').length}</p>
+          </div>
+          <div className="w-10 h-10 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center font-bold"><Briefcase size={20}/></div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl border border-purple-200/80 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Şu An Stajda</p>
+            <p className="text-2xl font-black text-purple-600 mt-0.5">{(students || []).filter(s=>s.internshipStatus==='Stajda').length}</p>
+          </div>
+          <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center font-bold"><GraduationCap size={20}/></div>
+        </div>
+      </div>
+
+      {/* FILTERS BAR */}
+      <div className="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
-            type="text" placeholder="Ad Soyad veya Öğrenci No ara..." 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
+            type="text" placeholder="Öğrenci adı, no veya bölüm ara..." 
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#990000] focus:bg-white transition-all"
             value={searchQuery} onChange={e=>setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex gap-2">
-          <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="bg-gray-50 border-none text-sm font-medium rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-500/20 outline-none cursor-pointer">
-            <option value="all">Tüm Durumlar</option>
-            <option value="aktif">Aktif</option>
-            <option value="pasif">Pasif / Mezun</option>
-          </select>
-          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
-          <button onClick={() => exportToCSV(filtered, 'ogrenciler.csv')} className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition text-sm font-bold">
-            <Download size={18} /> Excel'e Aktar
-          </button>
+
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+            {['all', 'aktif', 'pasif'].map(st => (
+              <button
+                key={st}
+                onClick={() => setStatusFilter(st)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  statusFilter === st ? 'bg-[#990000] text-white shadow-sm font-black' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {st === 'all' ? 'TÜM DURUMLAR' : st.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* TABLE */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      {/* RICH CARDS LIST */}
+      <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 text-gray-500 rounded-full flex items-center justify-center mb-4"><GraduationCap size={32}/></div>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
-            <p className="text-sm text-gray-500">Arama kriterlerine uygun öğrenci bulunmuyor.</p>
+          <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-sm">
+            <GraduationCap size={36} className="text-slate-300 mx-auto mb-3" />
+            <h3 className="text-base font-bold text-slate-800">Kayıt Bulunamadı</h3>
+            <p className="text-xs text-slate-400 mt-1">Arama kriterlerine uygun öğrenci bulunmuyor.</p>
           </div>
         ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Öğrenci</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Bölüm & Sınıf</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">İletişim</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum & Staj</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filtered.map(s => (
-                <tr key={s.id} className="hover:bg-gray-50/50 transition group">
-                  <td className="py-3 px-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
-                        {s.avatar ? <img src={s.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={20} className="text-gray-500"/>}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-gray-900">{s.name}</p>
-                        <p className="text-[11px] font-medium text-gray-500 mt-0.5">{s.studentId}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-5">
-                    <p className="text-xs font-bold text-gray-700">{s.department || 'Belirtilmedi'}</p>
-                    <p className="text-[10px] font-bold text-gray-500 mt-0.5 uppercase">{s.year ? `${s.year}. Sınıf` : '-'}</p>
-                  </td>
-                  <td className="py-3 px-5">
-                    <p className="text-xs font-medium text-gray-600 flex items-center gap-1.5">
-                      <Mail size={12} className="text-gray-500"/> {s.email || '-'}
-                    </p>
-                  </td>
-                  <td className="py-3 px-5">
-                    <div className="flex flex-col gap-1.5 items-start">
-                      <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider
-                        ${s.status === 'Aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
-                        {s.status}
-                      </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded font-black uppercase tracking-wider bg-red-50 text-red-600 flex items-center gap-1">
-                        <Briefcase size={10}/> {s.internshipStatus}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-5 text-right">
-                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(s)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
-                      <button onClick={() => handleDelete(s.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          filtered.map(s => (
+            <div 
+              key={s.id}
+              className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-rose-200 relative overflow-hidden"
+            >
+              {/* Left Accent Indicator */}
+              <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${
+                s.status === 'Aktif' ? 'bg-emerald-500' : 'bg-slate-400'
+              }`} />
+
+              <div className="flex items-center gap-4 pl-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 to-rose-950 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-md border border-white/20 overflow-hidden">
+                  {s.avatar ? <img src={s.avatar} className="w-full h-full object-cover" /> : s.name.split(' ').map(n=>n[0]).join('')}
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-black text-slate-900 text-sm">{s.name}</h4>
+                    <span className="text-[11px] font-mono text-slate-400">({s.studentId})</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+                    <span className="font-bold text-[#990000]">{s.department || 'Bölüm Belirtilmedi'}</span>
+                    <span>•</span>
+                    <span className="font-semibold text-slate-600">{s.year ? `${s.year}. Sınıf` : '-'}</span>
+                    <span>•</span>
+                    <span className="text-slate-500 font-medium">{s.email || '-'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 pl-2 md:pl-0 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
+                <span className={`inline-flex px-2.5 py-1 rounded-xl text-xs font-black uppercase tracking-wider ${
+                  s.status === 'Aktif' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-700'
+                }`}>
+                  {s.status}
+                </span>
+
+                <span className="inline-flex px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider bg-rose-50 text-[#990000] border border-rose-200/60 flex items-center gap-1.5">
+                  <Briefcase size={12}/> Staj: {s.internshipStatus || 'Arıyor'}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 justify-end pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
+                <button 
+                  onClick={() => handleEdit(s)} 
+                  className="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-[#990000] hover:text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Edit size={14} /> Profili Düzenle
+                </button>
+                <button 
+                  onClick={() => handleDelete(s.id)} 
+                  className="px-3 py-2 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                  title="Sil"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))
         )}
       </div>
+        </>
+      )}
     </div>
   );
 

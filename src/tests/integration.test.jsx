@@ -60,7 +60,7 @@ describe('Milestone 3 Integration Test Suite: Scraper & Component Wiring', () =>
     expect(screen.getByTestId('office-info-section')).toBeInTheDocument();
     expect(screen.getByTestId('office-title')).toHaveTextContent(/İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi/i);
     expect(screen.getByTestId('office-address')).toHaveTextContent(/Zafer Mah/i);
-    expect(screen.getByTestId('office-phone')).toHaveTextContent(/444 37 98/i);
+    expect(screen.getByTestId('office-phone')).toHaveTextContent(/444 9 123/i);
     expect(screen.getByTestId('office-email')).toHaveTextContent(/kariyer@esenyurt.edu.tr/i);
 
     const coordinatorsList = screen.getByTestId('coordinators-list');

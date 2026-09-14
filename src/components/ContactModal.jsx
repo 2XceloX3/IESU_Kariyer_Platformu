@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Send, CheckCircle2 } from 'lucide-react';
 import OfficeInfo from './OfficeInfo';
 
@@ -6,10 +6,34 @@ export default function ContactModal({ isOpen, onClose }) {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose?.();
+    };
+    if (isOpen) window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    try {
+      const stored = JSON.parse(localStorage.getItem('iesu_admin_messages_v1') || '[]');
+      const newMsg = {
+        id: 'msg_' + Date.now(),
+        from: form.name || 'Ziyaretçi',
+        email: form.email || 'bilgi@esenyurt.edu.tr',
+        subject: form.subject || 'Genel İletişim / Koordinatörlük Talebi',
+        body: form.message,
+        date: new Date().toLocaleDateString('tr-TR'),
+        read: false,
+        source: 'ContactModal'
+      };
+      localStorage.setItem('iesu_admin_messages_v1', JSON.stringify([newMsg, ...stored]));
+    } catch (err) {
+      console.warn('Mesaj kaydedilemedi:', err);
+    }
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);

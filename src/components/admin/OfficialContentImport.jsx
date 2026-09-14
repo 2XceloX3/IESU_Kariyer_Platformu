@@ -1,44 +1,45 @@
-﻿import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DownloadCloud, CheckCircle2, AlertCircle, Plus, Search, ExternalLink, Image as ImageIcon } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
-
-const FETCHED_CONTENT = [
-  {
-    id: 'FETCH-001',
-    type: 'Haber',
-    title: 'Kariyer Fuarı 2026 Büyük Bir Coşkuyla Gerçekleşti',
-    date: '2026-06-20',
-    description: 'Esenyurt Kariyer Geliştirme Merkezi tarafından düzenlenen Kariyer Fuarı, 50\'den fazla firmanın katılımıyla başarıyla tamamlandı.',
-    originalImageUrl: 'https://www.esenyurt.edu.tr/uploads/images/kariyer-fuari.jpg',
-    source: 'esenyurt.edu.tr',
-    imported: false
-  },
-  {
-    id: 'FETCH-002',
-    type: 'Duyuru',
-    title: '2026-2027 Gönüllü Staj Başvuruları Başladı',
-    date: '2026-07-01',
-    description: 'Öğrencilerimiz için gönüllü staj programı başvuruları açılmıştır. Detaylar ve başvuru formları için tıklayınız.',
-    originalImageUrl: null,
-    source: 'esenyurt.edu.tr',
-    imported: false
-  },
-  {
-    id: 'FETCH-003',
-    type: 'Etkinlik',
-    title: 'SEM: Python ile Veri Bilimi Eğitimleri Başlıyor',
-    date: '2026-07-10',
-    description: 'Sürekli Eğitim Merkezi (SEM) kapsamında düzenlenecek olan Veri Bilimi eğitimleri için ön kayıtlar alınmaya başlandı.',
-    originalImageUrl: 'https://sem.esenyurt.edu.tr/uploads/images/python.jpg',
-    source: 'sem.esenyurt.edu.tr',
-    imported: false
-  }
-];
+import { scrapeLiveOrFallback } from '../../services/scraper';
 
 export default function OfficialContentImport({ news, setNews, announcements, setAnnouncements, events, setEvents }) {
-  const [fetchedData, setFetchedData] = useState(FETCHED_CONTENT);
+  const [fetchedData, setFetchedData] = useState([]);
   const [isImporting, setIsImporting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const refreshFromOfficialSource = async () => {
+    setIsRefreshing(true);
+    try {
+      const liveData = await scrapeLiveOrFallback({ forceRefresh: true });
+      const sourceUrl = 'https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu';
+      const liveItems = [
+        ...(liveData.announcements || []).map(item => ({ ...item, type: 'Duyuru' })),
+        ...(liveData.events || []).map(item => ({ ...item, type: 'Etkinlik' }))
+      ].map((item, index) => ({
+        id: item.id || `LIVE-${index}`,
+        type: item.type,
+        title: item.title,
+        date: item.date,
+        description: item.summary || item.description || item.content || item.title,
+        originalImageUrl: item.imageUrl || null,
+        source: 'esenyurt.edu.tr',
+        sourceUrl: item.link || sourceUrl,
+        imported: false
+      }));
+      if (liveItems.length > 0) setFetchedData(liveItems);
+      window.toast?.success(`${liveItems.length} resmî içerik güncellendi.`);
+    } catch (error) {
+      window.toast?.error(`Resmî içerikler güncellenemedi: ${error?.message || 'Bilinmeyen hata'}`);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshFromOfficialSource();
+  }, []);
 
   const handleImport = (item) => {
     // Determine target pool
@@ -54,15 +55,15 @@ export default function OfficialContentImport({ news, setNews, announcements, se
     };
 
     if (item.type === 'Haber') {
-      if (setNews) setNews([newItem, ...(news || [])]);
+      if (setNews) setNews(current => [newItem, ...(current || [])]);
     } else if (item.type === 'Duyuru') {
-      if (setAnnouncements) setAnnouncements([newItem, ...(announcements || [])]);
+      if (setAnnouncements) setAnnouncements(current => [newItem, ...(current || [])]);
     } else if (item.type === 'Etkinlik') {
-      if (setEvents) setEvents([newItem, ...(events || [])]);
+      if (setEvents) setEvents(current => [newItem, ...(current || [])]);
     }
 
     // Mark as imported
-    setFetchedData(fetchedData.map(f => f.id === item.id ? { ...f, imported: true } : f));
+    setFetchedData(current => current.map(f => f.id === item.id ? { ...f, imported: true } : f));
     window.toast.success(`${item.title} başarıyla Taslak olarak içe aktarıldı. Artık ilgili CMS modülünden düzenleyebilir ve yayınlayabilirsiniz.`);
   };
 
@@ -101,12 +102,11 @@ export default function OfficialContentImport({ news, setNews, announcements, se
           <div className="flex gap-2">
             <button 
               onClick={() => {
-                setFetchedData(FETCHED_CONTENT.map(f => ({ ...f, imported: false })));
-                window.toast.info("Veriler yeniden çekildi (Senkronize edildi).");
+                refreshFromOfficialSource();
               }}
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-200 transition"
             >
-              Yenile
+              {isRefreshing ? 'Yükleniyor...' : 'Resmî Kaynaktan Yenile'}
             </button>
             <button 
               onClick={handleImportAll}
@@ -187,4 +187,3 @@ export default function OfficialContentImport({ news, setNews, announcements, se
     </AdminCMSLayout>
   );
 }
-

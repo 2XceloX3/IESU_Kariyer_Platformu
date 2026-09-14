@@ -1,7 +1,7 @@
 export const innerPagesData = {
   hakkimizda: {
     title: "Hakkımızda",
-    subtitle: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü",
+    subtitle: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi",
     heroImage: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
     sections: [
       {
@@ -13,19 +13,19 @@ export const innerPagesData = {
       {
         id: "vizyon",
         title: "Vizyonumuz",
-        content: "Ulusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, öncü bir kariyer koordinatörlüğü olmak.",
+        content: "Ulusal ve uluslararası düzeyde iş dünyası ile güçlü entegrasyon kuran, öğrenci ve mezunlarının kariyer yolculuklarında referans alınan, öncü bir kariyer merkezi olmak.",
         icon: "TrendingUp"
       }
     ],
     contactInfo: {
       email: "kariyer@esenyurt.edu.tr",
       phone: "444 9 123 / 0 (212) 422 70 00",
-      office: "Kariyer Geliştirme Koordinatörlüğü / Rektörlük Binası"
+      office: "Kariyer Geliştirme Merkezi / Rektörlük Binası"
     }
   },
   hizmetlerimiz: {
     title: "Hizmetlerimizi İnceleyin",
-    subtitle: "Kariyer Geliştirme Koordinatörlüğü Olarak Sizin İçin Neler Yapıyoruz?",
+    subtitle: "Kariyer Geliştirme Merkezi Olarak Sizin İçin Neler Yapıyoruz?",
     heroImage: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
     sections: [
       {
@@ -45,7 +45,7 @@ export const innerPagesData = {
       {
         id: "staj-ve-istihdam",
         title: "Staj ve İstihdam Fırsatları",
-        content: "Sektör lideri firmalarla yapılan kurumsal iş birlikleri ve Yetenek Kapısı / Cumhurbaşkanlığı İnsan Kaynakları Ofisi entegrasyonu ile zorunlu ve gönüllü staj başvuruları yönetilmektedir.",
+        content: "Sektör lideri firmalarla yapılan kurumsal iş birlikleri ve Yetenek Kapısı / Cumhurbaşkanlığı İnsan Kaynakları Ofisi entegrasyonu ile zorunlu ve isteğe bağlı staj başvuruları yönetilmektedir.",
         target: "Öğrenciler ve Mezunlar",
         icon: "Briefcase"
       },
@@ -60,19 +60,19 @@ export const innerPagesData = {
   },
   sss: {
     title: "Sıkça Sorulan Sorular",
-    subtitle: "Kariyer Geliştirme Koordinatörlüğü Hakkında Merak Edilenler",
+    subtitle: "Kariyer Geliştirme Merkezi Hakkında Merak Edilenler",
     faqs: [
       {
         q: "Kariyer Danışmanlığı randevusunu nasıl alabilirim?",
         a: "Öğrenci Girişi yaparak 'Randevu Al' sekmesinden dilediğiniz gün ve saat için Kariyer Danışmanımızdan birebir randevu oluşturabilirsiniz."
       },
       {
-        q: "Staj yeri bulma konusunda Koordinatörlükten destek alabilir miyim?",
-        a: "Evet! Koordinatörlüğümüz Yetenek Kapısı portalı ve anlaşmalı kurumlarımız üzerinden öğrencilerimize staj ilanları sunmakta ve başvuru süreçlerini desteklemektedir."
+        q: "Staj yeri bulma konusunda Merkezden destek alabilir miyim?",
+        a: "Evet! Merkezimiz Yetenek Kapısı portalı ve anlaşmalı kurumlarımız üzerinden öğrencilerimize staj ilanları sunmakta ve başvuru süreçlerini desteklemektedir."
       },
       {
         q: "Özgeçmişimi (CV) kontrol ettirmek için ne yapmalıyım?",
-        a: "Hazırladığınız CV'nizi kariyer@esenyurt.edu.tr adresine gönderebilir veya randevu alarak Koordinatörlüğümüzde yüz yüze inceletebilirsiniz."
+        a: "Hazırladığınız CV'nizi kariyer@esenyurt.edu.tr adresine gönderebilir veya randevu alarak Merkezimizde yüz yüze inceletebilirsiniz."
       },
       {
         q: "Mezun olduktan sonra da hizmetlerden yararlanabilir miyim?",
@@ -88,7 +88,7 @@ export const innerPagesData = {
       {
         id: "veri-guvenligi",
         title: "Kişisel Verilerin Korunması",
-        content: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.\\n\\nKişisel verileriniz hiçbir üçüncü taraf reklam veya pazarlama şirketine satılmaz. Özgeçmişiniz ve başvuru bilgileriniz yalnızca başvurduğunuz onaylı anlaşmalı kurumsal firmalara ve üniversite idari birimlerine gösterilir.",
+        content: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.\\n\\nKişisel verileriniz hiçbir üçüncü taraf reklam veya pazarlama şirketine satılmaz. Özgeçmişiniz ve başvuru bilgileriniz yalnızca başvurduğunuz onaylı anlaşmalı kurumsal firmalara ve üniversite idari birimlerine gösterilir.",
         icon: "Shield"
       }
     ]
@@ -114,8 +114,21 @@ export const innerPagesData = {
       {
         id: "kvkk-isleme",
         title: "Kişisel Verilerin İşlenme Amacı ve Haklarınız",
-        content: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca; kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü tarafından işlenmektedir.\\n\\nVerileriniz staj başvurularının alınması, kariyer danışmanlığı, yetenek kapısı eşleşmeleri ve mezun istihdam takibi amacıyla kullanılmaktadır. KVKK Madde 11 uyarınca verilerinizin silinmesini, düzeltilmesini veya işlenme amacını öğrenmeyi kvkk@esenyurt.edu.tr adresi üzerinden talep edebilirsiniz.",
+        content: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca; kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından işlenmektedir.\\n\\nVerileriniz staj başvurularının alınması, kariyer danışmanlığı, yetenek kapısı eşleşmeleri ve mezun istihdam takibi amacıyla kullanılmaktadır. KVKK Madde 11 uyarınca verilerinizin silinmesini, düzeltilmesini veya işlenme amacını öğrenmeyi kvkk@esenyurt.edu.tr adresi üzerinden talep edebilirsiniz.",
         icon: "ShieldCheck"
+      }
+    ]
+  },
+  voluntary_internship: {
+    title: "İsteğe Bağlı Staj Süreçleri",
+    subtitle: "Öğrenci Kariyer Destek",
+    heroImage: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
+    sections: [
+      {
+        id: "surec",
+        title: "İsteğe Bağlı Staj Başvuru ve Uygulama Adımları",
+        content: "İş dünyasını erkenden tanıyın, tecrübe edinin. İstanbul Esenyurt Üniversitesi İsteğe Bağlı Staj programı işleyişi, sigorta süreçleri ve resmî yönerge detayları.",
+        icon: "Briefcase"
       }
     ]
   }

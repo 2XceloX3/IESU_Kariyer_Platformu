@@ -4,7 +4,7 @@ import { Card, StatCard, Progress, Tbl, Badge } from './AdminShared';
 import { BarChart3, Award, FileText, Search, CheckCircle, XCircle } from 'lucide-react';
 import useAppStore from '../../store/useAppStore';
 
-export default function AkademikPanel() {
+export default function AkademikPanel({ setView, setActiveTab }) {
   const students = useAppStore(state => state.students) || [];
   const avg = students?.length ? ((students || []).reduce((a,s)=>a+parseFloat(s?.gpa||0),0)/students.length).toFixed(2) : "0.00";
   const honor = (students || []).filter(s=>s?.gpa>=3.5).length;
@@ -12,9 +12,33 @@ export default function AkademikPanel() {
   const [search, setSearch] = useState('');
   const filtered = (students || []).filter(s=>s?.name.toLowerCase().includes(search.toLowerCase())||s?.dept.toLowerCase().includes(search.toLowerCase()));
 
+  const handleOpenAcademicRadar = () => {
+    if (setActiveTab) {
+      setActiveTab('akademik_radar');
+    } else if (window.setActiveTabGlobal) {
+      window.setActiveTabGlobal('akademik_radar');
+    } else if (window.toast?.info) {
+      window.toast.info("Akademik Staj Onay Listesi ve Evrak Havuzu açılıyor...");
+    } else {
+      alert("Akademik Staj Onay Listesi ve Evrak Havuzuna Yönlendiriliyorsunuz...");
+    }
+  };
+
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Akademik Performans" sub="GPA, bölüm dağılımı ve öğrenci özeti" />
+      <PanelHeader 
+        title="Akademik Performans & Evrak Havuzu" 
+        sub="GPA, bölüm dağılımı, zorunlu staj onayları ve resmi evrak takibi"
+        action={
+          <button 
+            onClick={handleOpenAcademicRadar}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black text-xs shadow-lg shadow-amber-500/20 transition-all cursor-pointer border border-amber-300/30"
+          >
+            <FileText size={16} />
+            <span>Akademik Staj Onay Listesi & Evrak Havuzu</span>
+          </button>
+        }
+      />
 
       <div className="grid grid-cols-3 gap-4">
         <StatCard icon={<BarChart3 size={20}/>} label="Ortalama GPA" value={avg} sub="Tüm öğrenciler" color="blue"/>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, ArrowRight, ArrowLeft, Printer, Mail, MapPin, Download, FileText, ExternalLink, X, LogIn, Briefcase, Search, Users, Handshake, TrendingUp, Target, Sparkles, Zap, GraduationCap, Building, ChevronRight, ShieldCheck, Heart, MessageSquare, Send, Bookmark } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import useAppStore from '../store/useAppStore';
@@ -7,15 +7,10 @@ import Logo from './Logo';
 import MainHeader from './MainHeader';
 import SpotlightCard from './shared/SpotlightCard';
 import HeroSlider from './landing/HeroSlider';
-import Footer from './landing/Footer';
 import SubPanelFooter from './SubPanelFooter';
 import SEO from './SEO';
 import RichContentRenderer from './RichContentRenderer';
 import TuitionAccordion from './TuitionAccordion';
-import ScraperSyncBar from './ScraperSyncBar';
-import KgmNewsSection from './KgmNewsSection';
-import Events from './Events';
-import OfficeInfo from './OfficeInfo';
 
 
 const style = document.createElement('style');
@@ -40,7 +35,7 @@ style.textContent = `
 
 document.head.appendChild(style);
 
-export default function LandingPage({ setView }) {
+export default function LandingPage({ setView, currentUser, userRole }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedPillModal, setSelectedPillModal] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -68,6 +63,7 @@ export default function LandingPage({ setView }) {
   const events = useAppStore(state => state.events) || [];
   const showInstitutionalStats = useAppStore(state => state.showInstitutionalStats);
   const institutionalStatsData = useAppStore(state => state.institutionalStatsData);
+  const siteConfig = useAppStore(state => state.siteConfig);
 
   const heroSlides = liveSliderData;
 
@@ -182,11 +178,35 @@ export default function LandingPage({ setView }) {
 
 
 
-      {/* Unified Main Header for identical alignment */}
-      <MainHeader setView={setView} />
+      {/* Dynamic Announcement Banner (Controlled via Super Admin CMSSiteEditor) */}
+      {siteConfig?.announcementBanner?.visible && siteConfig?.announcementBanner?.text && (
+        <aside 
+          aria-label="Acil Sistem Duyurusu" 
+          className={`text-white text-xs font-bold py-2.5 px-4 text-center sticky top-0 z-50 shadow-md flex items-center justify-center gap-2 border-b transition-colors duration-300 ${
+            siteConfig.announcementBanner.color === 'amber' ? 'bg-amber-600 border-amber-700' :
+            siteConfig.announcementBanner.color === 'green' ? 'bg-emerald-600 border-emerald-700' :
+            siteConfig.announcementBanner.color === 'blue' ? 'bg-blue-600 border-blue-700' :
+            'bg-[#990000] border-red-800'
+          }`}
+        >
+          <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] uppercase font-black tracking-wider">Duyuru</span>
+          <span>{siteConfig.announcementBanner.text}</span>
+          {siteConfig.announcementBanner.link && (
+            <a 
+              href={siteConfig.announcementBanner.link} 
+              className="underline text-red-100 hover:text-white font-black ml-1 text-xs inline-flex items-center gap-1 transition-colors"
+            >
+              İncele →
+            </a>
+          )}
+        </aside>
+      )}
 
-      {/* Hero Slider with internal detail modal on click */}
-      <HeroSlider slides={heroSlides} currentSlide={currentSlide} onSelectSlide={setSelectedItem} />
+      {/* Unified Main Header for identical alignment */}
+      <MainHeader setView={setView} currentUser={currentUser} userRole={userRole} />
+
+      {/* Hero Slider with internal detail modal on click and visual CMS overlay */}
+      <HeroSlider slides={heroSlides} currentSlide={currentSlide} onSelectSlide={setSelectedItem} setView={setView} />
 
       {/* 1. INSTITUTIONAL STATISTICAL RIBBON (Controlled via Admin Panel) */}
       {showInstitutionalStats && (
@@ -818,5 +838,4 @@ export default function LandingPage({ setView }) {
     </div>
   );
 }
-
 

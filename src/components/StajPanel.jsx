@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { downloadReportPdf } from '../utils/downloadPdf';
 import { FileText, CheckCircle, Clock, Download, Briefcase, FileSignature, ArrowRight, ShieldCheck, HelpCircle, LogIn, Search } from 'lucide-react';
 import Logo from './Logo';
@@ -32,7 +32,7 @@ export default function StajPanel({ setView, userRole }) {
   ];
 
   const dokumanlar = [
-    { title: "Gönüllü Staj Başvuru Formu (FR-012)", size: "124 KB", ext: "PDF" },
+    { title: "İsteğe Bağlı Staj Başvuru Formu (FR-012)", size: "124 KB", ext: "PDF" },
     { title: "İşveren Stajyer Değerlendirme Formu", size: "86 KB", ext: "DOCX" },
     { title: "Staj Defteri Şablonu", size: "215 KB", ext: "PDF" },
     { title: "Staj Ücretlerine İşsizlik Fonu Katkısı Formu", size: "142 KB", ext: "PDF" }
@@ -41,8 +41,8 @@ export default function StajPanel({ setView, userRole }) {
   return (
     <div className="min-h-screen bg-[#f8f9fc] font-sans flex flex-col justify-between">
       <SEO 
-        title="Gönüllü Staj Süreçleri" 
-        description="İstanbul Esenyurt Üniversitesi Gönüllü Staj başvuru yönergesi, sigorta süreçleri ve resmî belgeler."
+        title="İsteğe Bağlı Staj Süreçleri" 
+        description="İstanbul Esenyurt Üniversitesi İsteğe Bağlı Staj başvuru yönergesi, sigorta süreçleri ve resmî belgeler."
       />
 
       <div>
@@ -105,7 +105,7 @@ export default function StajPanel({ setView, userRole }) {
               <span>/</span>
               <button onClick={() => setView('services')} className="hover:text-white hover:underline transition cursor-pointer">Kariyer Destek</button>
               <span>/</span>
-              <span className="text-white font-black">Gönüllü Staj Süreçleri</span>
+              <span className="text-white font-black">İsteğe Bağlı Staj Süreçleri</span>
             </div>
 
             <div className="flex flex-col md:flex-row gap-8 items-start md:items-end justify-between">
@@ -114,10 +114,10 @@ export default function StajPanel({ setView, userRole }) {
                   <Briefcase size={14} className="text-red-200" /> Öğrenci Kariyer Destek
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tight text-white leading-tight drop-shadow-md">
-                  Gönüllü Staj Süreçleri
+                  İsteğe Bağlı Staj Süreçleri
                 </h1>
                 <p className="text-slate-200 text-base md:text-lg font-medium leading-relaxed opacity-95">
-                  İş dünyasını erkenden tanıyın, tecrübe edinin. İstanbul Esenyurt Üniversitesi Gönüllü Staj programı işleyişi, sigorta süreçleri ve resmî yönerge detayları.
+                  İş dünyasını erkenden tanıyın, tecrübe edinin. İstanbul Esenyurt Üniversitesi İsteğe Bağlı Staj programı işleyişi, sigorta süreçleri ve resmî yönerge detayları.
                 </p>
               </div>
 
@@ -185,11 +185,11 @@ export default function StajPanel({ setView, userRole }) {
                     </li>
                     <li className="flex items-start gap-3">
                       <CheckCircle className="text-red-200 shrink-0 mt-0.5" size={18} />
-                      <span className="text-xs font-semibold text-white/95 leading-relaxed">Gönüllü staj başvuruları sadece Eğitim-Öğretim dönemi dışındaki yaz aylarında yapılabilir.</span>
+                      <span className="text-xs font-semibold text-white/95 leading-relaxed">İsteğe bağlı staj başvuruları sadece Eğitim-Öğretim dönemi dışındaki yaz aylarında yapılabilir.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <CheckCircle className="text-red-200 shrink-0 mt-0.5" size={18} />
-                      <span className="text-xs font-semibold text-white/95 leading-relaxed">Mezun durumundaki öğrenciler gönüllü staj programından faydalanamaz.</span>
+                      <span className="text-xs font-semibold text-white/95 leading-relaxed">Mezun durumundaki öğrenciler isteğe bağlı staj programından faydalanamaz.</span>
                     </li>
                   </ul>
 

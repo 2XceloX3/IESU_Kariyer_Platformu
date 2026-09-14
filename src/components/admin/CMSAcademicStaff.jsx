@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import { UserCircle2, Edit, Trash2, Plus, Search, Filter, Star, BookOpen, MapPin, CheckCircle2, Award } from 'lucide-react';
@@ -217,12 +217,23 @@ export default function CMSAcademicStaff({ academicStaff = [], setAcademicStaff 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1.5">Fakülte</label>
-                <input type="text" value={form.faculty} onChange={e=>setForm({...form, faculty: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" />
+                <label className="text-xs font-bold text-gray-600 block mb-1.5">Fakülte / Yüksekokul</label>
+                <select value={form.faculty} onChange={e=>setForm({...form, faculty: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
+                  <option value="">Fakülte / Yüksekokul Seçin</option>
+                  <option value="İşletme ve Yönetim Bilimleri Fakültesi">İşletme ve Yönetim Bilimleri Fakültesi (İYBF)</option>
+                  <option value="Mühendislik ve Mimarlık Fakültesi">Mühendislik ve Mimarlık Fakültesi (MMF)</option>
+                  <option value="Sağlık Bilimleri Fakültesi">Sağlık Bilimleri Fakültesi (SBF)</option>
+                  <option value="Sanat ve Sosyal Bilimler Fakültesi">Sanat ve Sosyal Bilimler Fakültesi (SSBF)</option>
+                  <option value="Spor Bilimleri Fakültesi">Spor Bilimleri Fakültesi (SPO)</option>
+                  <option value="Uygulamalı Bilimler Fakültesi">Uygulamalı Bilimler Fakültesi (UBF)</option>
+                  <option value="Bilişim Teknolojileri Meslek Yüksekokulu">Bilişim Teknolojileri Meslek Yüksekokulu (BTMYO)</option>
+                  <option value="Meslek Yüksekokulu">Meslek Yüksekokulu (MYO)</option>
+                  <option value="Sağlık Hizmetleri Meslek Yüksekokulu">Sağlık Hizmetleri Meslek Yüksekokulu (SHMYO)</option>
+                </select>
               </div>
               <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1.5">Bölüm <span className="text-red-500">*</span></label>
-                <input type="text" value={form.department} onChange={e=>setForm({...form, department: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" required />
+                <label className="text-xs font-bold text-gray-600 block mb-1.5">Bölüm / Program <span className="text-red-500">*</span></label>
+                <input type="text" value={form.department} onChange={e=>setForm({...form, department: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" placeholder="Örn: Yazılım Mühendisliği (İngilizce) Bölümü" required />
               </div>
             </div>
 

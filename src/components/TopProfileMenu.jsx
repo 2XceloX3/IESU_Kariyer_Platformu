@@ -10,20 +10,32 @@ import Logo from './Logo';
 import useAppStore from '../store/useAppStore';
 import BMICalculatorModal from './BMICalculatorModal';
 import CompanyManagementModal from './CompanyManagementModal';
+import SafeAvatar from './shared/SafeAvatar';
+import { signOut } from 'firebase/auth';
+import { auth } from '../utils/firebase';
 
-export default function TopProfileMenu({ currentUser, userRole, setView, setSelectedUserId, academicRole, currentView }) {
+export default function TopProfileMenu({ currentUser, userRole, setView, setSelectedUserId, academicRole, currentView, setCurrentUser, isDark = false }) {
   const [showBmiModal, setShowBmiModal] = useState(false);
   const [showCompanyModal, setShowCompanyModal] = useState(false);
-  const ghostMode = useAppStore(state => state?.ghostMode);
-  const setGhostMode = useAppStore(state => state?.setGhostMode);
-  const focusMode = useAppStore(state => state?.focusMode);
-  const setFocusMode = useAppStore(state => state?.setFocusMode);
   const activeFrame = useAppStore(state => state?.activeFrame);
   const alumniAssocBoard = useAppStore?.(state => state.alumniAssocBoard) || [];
-  const featureAlumniAssocToggle = useAppStore?.(state => state.featureAlumniAssocToggle);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const avatarFileInputRef = useRef(null);
+
+  const persistMockUser = (user) => {
+    try {
+      localStorage.setItem('iesu_mock_user', JSON.stringify(user));
+      localStorage.setItem('igu_mock_user', JSON.stringify(user));
+    } catch (e) {}
+  };
+
+  const updateActiveUser = (user) => {
+    const state = useAppStore.getState();
+    if (state.setCurrentUser) state.setCurrentUser(user);
+    if (setCurrentUser) setCurrentUser(user);
+    persistMockUser(user);
+  };
 
   const handleAvatarUpload = (e) => {
     const file = e.target.files?.[0];
@@ -38,8 +50,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
         const updatedUser = { ...(currentUser || {}), avatar: newAvatarUrl };
         
         const state = useAppStore.getState();
-        if (state.setCurrentUser) state.setCurrentUser(updatedUser);
-        localStorage.setItem('igu_mock_user', JSON.stringify(updatedUser));
+        updateActiveUser(updatedUser);
         
         if (userRole === 'student' && state.setStudents) {
           state.setStudents((state.students || []).map(s => s.id === updatedUser.id ? { ...s, avatar: newAvatarUrl } : s));
@@ -76,9 +87,17 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     };
   }, [menuRef]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch {
+      // The local session still needs to be cleared if Firebase is unavailable.
+    }
+    window?.localStorage?.removeItem?.('iesu_mock_user');
     window?.localStorage?.removeItem?.('igu_mock_user');
+    window?.localStorage?.removeItem?.('iesu_user_role_v1');
     window?.localStorage?.removeItem?.('igu_user_role_v1');
+    window?.localStorage?.removeItem?.('iesu_view_v1');
     window?.localStorage?.removeItem?.('igu_view_v1');
     useAppStore?.getState?.()?.setUserRole?.(null);
     setIsOpen(false);
@@ -108,9 +127,23 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     m.email === currentUser?.email || m.name === currentUser?.name
   );
 
-  // Tek yetki kaynağı: rol yalnızca currentUser.role + userRole üzerinden türetilir.
-  // Avatar adı / sabit isim heuristic kullanılmaz (eski: 'Kariyer Geliştirme Merkezi' adı).
+  const activePortalBranch = useAppStore(state => state?.activePortalBranch);
+
+  // Dal Egemenliği: Sayfa görünümü (currentView) veya açıkça belirtilen userRole önceliklidir
+  const effectiveBranch = 
+    (currentView === 'student') ? 'student' :
+    (currentView === 'alumni') ? 'alumni' :
+    (currentView === 'academic') ? 'academic' :
+    (currentView === 'company' || currentView === 'employer') ? 'company' :
+    (currentView === 'admin' || currentView === 'admin_cms' || currentView === 'yonetim_konsolu') ? 'admin' :
+    (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
+    (activePortalBranch || currentUser?.role || 'student');
+
   const isAdmin = userRole === 'admin' || currentUser?.role === 'admin' || academicRole === 'super_admin';
+
+  const branchUserName = currentUser?.name || (isAdmin ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
+
+  const branchUserAvatar = currentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : '/iesu-logo.svg');
 
   if (!currentUser) {
     return (
@@ -133,40 +166,53 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
           aria-label="Profil Menüsünü Aç/Kapat" 
           aria-expanded={isOpen} 
           aria-haspopup="true" 
-          className="flex items-center gap-2.5 p-1 sm:pr-3 bg-slate-50/90 hover:bg-slate-100/90 border border-slate-200/80 rounded-full transition-all duration-200 shadow-sm hover:shadow cursor-pointer"
+          className={`flex items-center gap-2.5 p-1 sm:pr-3 rounded-full transition-all duration-200 shadow-sm hover:shadow cursor-pointer ${
+            isDark 
+              ? 'bg-[#111c33]/90 hover:bg-[#182847] border border-cyan-500/30 text-white shadow-[0_0_12px_rgba(34,211,238,0.15)]' 
+              : 'bg-slate-50/90 hover:bg-slate-100/90 border border-slate-200/80'
+          }`}
         >
-          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 flex items-center justify-center p-0.5 bg-white border-2 border-[#990000]/30 shadow-inner ${activeFrame ? activeFrame : ''}`}>
-            {userRole === 'admin' || currentUser?.role === 'admin' || currentUser?.name === 'Kariyer Geliştirme Merkezi' ? (
-              <Logo size="sm" className="w-full h-full justify-center" />
+          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 flex items-center justify-center p-0.5 ${isDark ? 'bg-white/15 border-white/20' : 'bg-white'} border-2 ${
+            effectiveBranch === 'student' ? 'border-[#990000]/40' :
+            effectiveBranch === 'alumni' ? 'border-emerald-600/40' :
+            effectiveBranch === 'academic' ? 'border-purple-700/40' :
+            effectiveBranch === 'company' ? 'border-blue-700/40' :
+            'border-amber-500/40'
+          } shadow-inner ${activeFrame ? activeFrame : ''}`}>
+            {effectiveBranch === 'admin' ? (
+              <Logo size="sm" variant={isDark ? "white" : "default"} className="w-full h-full justify-center" />
             ) : (
-              <img 
-                src={currentUser?.avatar || '/iesu-logo.svg'} 
-                alt="Profile" 
-                className="w-full h-full rounded-full object-cover" 
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/iesu-logo.svg';
-                }}
+              <SafeAvatar
+                src={branchUserAvatar}
+                name={branchUserName}
+                size="full"
+                alt="Profile"
               />
             )}
           </div>
 
           <div className="hidden md:flex flex-col text-left">
-            <span className="text-[12px] font-black text-gray-900 leading-tight truncate max-w-[135px]">
-              {currentView === 'admin' ? 'KGM Yönetimi' : (currentUser?.name || 'Hesabım')}
+            <span className={`text-[12px] font-black leading-tight truncate max-w-[135px] ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {branchUserName}
             </span>
-            <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">
-              {currentView === 'admin' ? 'Yönetici' : getRoleLabel(userRole)}
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${
+              effectiveBranch === 'student' ? 'text-[#990000]' :
+              effectiveBranch === 'alumni' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') :
+              effectiveBranch === 'academic' ? (isDark ? 'text-purple-400' : 'text-purple-700') :
+              effectiveBranch === 'company' ? (isDark ? 'text-blue-400' : 'text-blue-700') :
+              (isDark ? 'text-amber-400' : 'text-amber-600')
+            }`}>
+              {getRoleLabel(effectiveBranch)}
             </span>
           </div>
 
-          <ChevronDown size={14} className={`text-gray-500 transition-transform duration-200 ml-0.5 ${isOpen ? 'rotate-180 text-[#990000]' : ''}`} />
+          <ChevronDown size={14} className={`transition-transform duration-200 ml-0.5 ${isDark ? 'text-slate-300' : 'text-gray-500'} ${isOpen ? 'rotate-180 text-[#990000]' : ''}`} />
         </button>
 
       {isOpen && (
         <div role="menu" className="absolute right-0 mt-2 w-[280px] bg-white rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.2)] border border-gray-100 py-2 z-[9999] animate-fade-in origin-top-right transition-all duration-200">
           
-          {userRole === 'admin' || currentUser?.role === 'admin' || academicRole === 'super_admin' ? (
+          {isAdmin ? (
             <>
               {/* ADMIN HEADER */}
               <div className="px-4 py-3 border-b border-gray-50 bg-orange-50/20">
@@ -188,44 +234,48 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Sistem Portalları Arası Geçiş</p>
                 <div className="grid grid-cols-2 gap-2">
                   
-                  {/* 1. Yönetici Paneli */}
+                  {/* 1. Yönetici Paneli (Tam CMS Veri Kontrol Merkezi) */}
                   <button 
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
-                      useAppStore.getState().setUserRole('admin');
-                      setView?.('admin');
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('admin');
+                      if (setSelectedUserId) setSelectedUserId('admin_1513');
+                      setView?.('admin_cms');
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                      (userRole === 'admin' && currentView === 'admin')
-                        ? 'bg-[#990000] text-white font-black border-[#990000] shadow-red-950/20' 
-                        : 'bg-white hover:bg-red-50 text-gray-700 font-bold border-gray-200 hover:border-red-300'
+                      (userRole === 'admin' && currentView === 'admin_cms')
+                        ? 'bg-amber-600 text-white font-black border-amber-600 shadow-amber-950/20' 
+                        : 'bg-white hover:bg-amber-50 text-slate-700 font-bold border-slate-200 hover:border-amber-300'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
                       <LayoutDashboard size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin' ? 'text-white' : 'text-gray-800'}`}>Yönetici Paneli</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin_cms' ? 'text-white' : 'text-slate-800'}`}>Yönetici Paneli (CMS)</span>
                   </button>
 
-                  {/* 2. Süper Admin Portalı */}
+                  {/* 2. Süper Admin Portalı (Sosyal Akış & Omni Modu) */}
                   <button 
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
-                      useAppStore.getState().setUserRole('admin');
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('admin');
+                      if (setSelectedUserId) setSelectedUserId('admin_1513');
                       setView?.('admin');
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       (userRole === 'admin' && currentView === 'admin')
-                        ? 'bg-amber-600 text-white font-black border-amber-600 shadow-amber-900/20' 
-                        : 'bg-white hover:bg-amber-50 text-gray-700 font-bold border-gray-200 hover:border-amber-300'
+                        ? 'bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-black border-amber-500 shadow-amber-950/30' 
+                        : 'bg-white hover:bg-amber-50 text-slate-700 font-bold border-slate-200 hover:border-amber-400'
                     }`}
                   >
                     <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
                       <Crown size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin' ? 'text-white' : 'text-gray-800'}`}>Süper Admin Portalı</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin' ? 'text-white' : 'text-slate-800'}`}>Süper Admin Portalı</span>
                   </button>
 
                   {/* 3. Mezun Portalı */}
@@ -233,19 +283,20 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
-                      useAppStore.getState().setUserRole('alumni'); 
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('alumni');
                       setView?.('alumni'); 
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                      userRole === 'alumni' 
+                      userRole === 'alumni' || currentView === 'alumni'
                         ? 'bg-emerald-600 text-white font-black border-emerald-700 shadow-emerald-900/20' 
-                        : 'bg-white hover:bg-emerald-50 text-gray-700 font-bold border-gray-200 hover:border-emerald-300'
+                        : 'bg-white hover:bg-emerald-50 text-slate-700 font-bold border-slate-200 hover:border-emerald-300'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'alumni' || currentView === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
                       <UsersIcon size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'alumni' ? 'text-white' : 'text-gray-800'}`}>Mezun Portalı</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'alumni' || currentView === 'alumni' ? 'text-white' : 'text-slate-800'}`}>Mezun Portalı</span>
                   </button>
 
                   {/* 4. Öğrenci Portalı */}
@@ -253,19 +304,20 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
-                      useAppStore.getState().setUserRole('student');
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('student');
                       setView?.('student');
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                      (userRole === 'student' && currentView === 'student')
+                      userRole === 'student' || currentView === 'student'
                         ? 'bg-rose-600 text-white font-black border-rose-600 shadow-rose-900/20' 
-                        : 'bg-white hover:bg-rose-50 text-gray-700 font-bold border-gray-200 hover:border-rose-300'
+                        : 'bg-white hover:bg-rose-50 text-slate-700 font-bold border-slate-200 hover:border-rose-300'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'student' && currentView === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700 group-hover:bg-rose-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'student' || currentView === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700 group-hover:bg-rose-600 group-hover:text-white'}`}>
                       <GraduationCap size={16} />
                     </div>
-                    <span className={`text-[11px] font-black leading-tight text-center ${userRole === 'student' && currentView === 'student' ? 'text-white' : 'text-gray-800'}`}>Öğrenci Portalı</span>
+                    <span className={`text-[11px] font-black leading-tight text-center ${userRole === 'student' || currentView === 'student' ? 'text-white' : 'text-slate-800'}`}>Öğrenci Portalı</span>
                   </button>
 
                   {/* 5. Akademik Portal */}
@@ -273,19 +325,20 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
-                      useAppStore.getState().setUserRole('academic'); 
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('academic');
                       setView?.('academic'); 
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                      userRole === 'academic' 
-                        ? 'bg-blue-600 text-white font-black border-blue-700 shadow-blue-900/20' 
-                        : 'bg-white hover:bg-blue-50 text-gray-700 font-bold border-gray-200 hover:border-blue-300'
+                      userRole === 'academic' || currentView === 'academic'
+                        ? 'bg-[#4C1D95] text-white font-black border-purple-900 shadow-purple-950/20' 
+                        : 'bg-white hover:bg-purple-50 text-slate-700 font-bold border-slate-200 hover:border-purple-300'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'academic' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'academic' || currentView === 'academic' ? 'bg-white/20 text-white' : 'bg-purple-100 text-[#4C1D95] group-hover:bg-[#4C1D95] group-hover:text-white'}`}>
                       <BookOpen size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'academic' ? 'text-white' : 'text-gray-800'}`}>Akademik Portal</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'academic' || currentView === 'academic' ? 'text-white' : 'text-slate-800'}`}>Akademik Portal</span>
                   </button>
 
                   {/* 6. Firma Portalı */}
@@ -293,42 +346,28 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     role="menuitem" 
                     onClick={() => { 
                       setIsOpen(false); 
-                      useAppStore.getState().setUserRole('company'); 
+                      const store = useAppStore.getState();
+                      store.setActivePortalBranch?.('company');
                       setView?.('company');
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
-                      (userRole === 'company' || userRole === 'employer') 
-                        ? 'bg-purple-600 text-white font-black border-purple-700 shadow-purple-900/20' 
-                        : 'bg-white hover:bg-purple-50 text-gray-700 font-bold border-gray-200 hover:border-purple-300'
+                      userRole === 'company' || userRole === 'employer' || currentView === 'company'
+                        ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white font-black border-blue-800 shadow-blue-950/30' 
+                        : 'bg-white hover:bg-blue-50 text-slate-700 font-bold border-slate-200 hover:border-blue-300'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'company' || userRole === 'employer') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-900 group-hover:bg-[#0A2342] group-hover:text-white'}`}>
                       <Building2 size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${(userRole === 'company' || userRole === 'employer') ? 'text-white' : 'text-gray-800'}`}>Firma Portalı</span>
+                    <span className={`text-[11px] font-bold ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'text-white' : 'text-slate-800'}`}>Firma Portalı</span>
                   </button>
                 </div>
               </div>
 
               {/* ADMIN QUICK ACTIONS */}
               <div className="py-1">
-                {featureAlumniAssocToggle && (
-                  <button 
-                    role="menuitem"
-                    onClick={() => { setIsOpen(false); setView?.('alumni_assoc_portal'); }}
-                    className="w-full text-left px-4 py-2.5 text-[13px] font-black text-[#990000] bg-red-50 hover:bg-red-100 transition-all duration-200 flex items-center gap-3 group border-l-4 border-[#990000]"
-                  >
-                    <Crown size={16} className="text-[#990000] group-hover:scale-110 transition-transform" /> Mezun Derneği Özel Yönetim Paneli
-                  </button>
-                )}
-
-
-
-                <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group">
+                <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
                   <Calendar size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Takvim
-                </button>
-                <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('profile_update'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group">
-                  <Settings size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Bilgileri Düzenle
                 </button>
                 <button role="menuitem" onClick={() => { setIsOpen(false); setShowBmiModal(true); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 hover:bg-emerald-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
                   <Activity size={16} className="text-emerald-600 group-hover:scale-110 transition-all duration-200" /> Kilo & Sağlık VKİ Ölçümü
@@ -348,144 +387,159 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               <div className="px-4 py-3 border-b border-gray-50">
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <p className="text-sm font-black text-gray-900 truncate flex items-center gap-1 transition-all duration-200">
-                    {currentUser?.name || 'Kullanıcı'}
+                    {branchUserName}
                     {currentUser?.badge && <ShieldCheck size={14} className="text-red-500 shrink-0" title={currentUser?.badge} />}
                   </p>
                 </div>
                 <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5 flex items-center gap-1 transition-all duration-200">
-                  <Shield size={10} /> {getRoleLabel(userRole)}
+                  <Shield size={10} /> {getRoleLabel(effectiveBranch)}
                 </p>
               </div>
               
-              {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
+              {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> SÜPER ADMİN -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
               <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Panel Geçişi</p>
                 <div className="flex flex-col gap-1.5">
-                  {isAdmin && (
-                  <button 
-                    role="menuitem" 
-                    onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('admin'); setView?.('admin'); }} 
-                    className={`flex items-center justify-center gap-2 p-2 rounded-xl text-center transition-all duration-200 group border shadow-sm ${
-                      userRole === 'admin' 
-                        ? 'bg-[#990000] text-white font-black border-[#990000]' 
-                        : 'bg-white hover:bg-red-50 text-[#990000] font-black border-red-200 hover:-translate-y-0.5 active:scale-95'
-                    }`}
-                  >
-                    <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'admin' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white'}`}>
-                      <LayoutDashboard size={16} />
-                    </div>
-                    <span className="text-[11px] font-black">Yönetim Paneli</span>
-                  </button>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-1.5">
+                  <div className="grid grid-cols-2 gap-1.5 mb-1">
                     <button 
                       role="menuitem" 
-                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('alumni'); setTimeout(() => setView?.('alumni'), 50); }} 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' };
+                        const store = useAppStore.getState();
+                        store.setUserRole('admin'); 
+                        store.setActivePortalBranch?.('admin');
+                        updateActiveUser(adminUser);
+                        if (setSelectedUserId) setSelectedUserId('admin_1513');
+                        setView?.('admin_cms'); 
+                      }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-center transition-all duration-200 group border shadow-sm ${
+                        (userRole === 'admin' && currentView === 'admin_cms')
+                          ? 'bg-[#990000] text-white font-black border-[#990000]' 
+                          : 'bg-white hover:bg-red-50 text-[#990000] font-black border-red-200 hover:-translate-y-0.5 active:scale-95'
+                      }`}
+                    >
+                      <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'admin' && currentView === 'admin_cms') ? 'bg-white/20 text-white' : 'bg-red-100 text-[#990000] group-hover:bg-[#990000] group-hover:text-white'}`}>
+                        <LayoutDashboard size={14} />
+                      </div>
+                      <span className="text-[9px] font-black uppercase tracking-wider">CMS Editör</span>
+                    </button>
+
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('admin');
+                        if (setSelectedUserId) setSelectedUserId('admin_1513');
+                        setView?.('admin'); 
+                      }} 
+                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-center transition-all duration-200 group border shadow-sm ${
+                        (userRole === 'admin' && currentView === 'admin')
+                          ? 'bg-amber-600 text-white font-black border-amber-600' 
+                          : 'bg-white hover:bg-amber-50 text-amber-700 font-black border-amber-200 hover:-translate-y-0.5 active:scale-95'
+                      }`}
+                    >
+                      <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'admin' && currentView === 'admin') ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
+                        <Crown size={14} />
+                      </div>
+                      <span className="text-[9px] font-black uppercase tracking-wider">Süper Admin</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-1">
+                    <button 
+                      role="menuitem" 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('alumni');
+                        setView?.('alumni'); 
+                      }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        userRole === 'alumni' 
+                        effectiveBranch === 'alumni' 
                           ? 'bg-emerald-600 text-white font-black border-emerald-700 shadow-emerald-900/20' 
                           : 'bg-white hover:bg-emerald-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-emerald-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
                         <UsersIcon size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${userRole === 'alumni' ? 'text-white' : 'text-gray-700'}`}>Mezun</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'alumni' ? 'text-white' : 'text-gray-700'}`}>Mezun</span>
                     </button>
 
                     <button 
                       role="menuitem" 
-                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('student'); setTimeout(() => setView?.('student'), 50); }} 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('student');
+                        setView?.('student'); 
+                      }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        userRole === 'student' 
-                          ? 'bg-orange-600 text-white font-black border-orange-700 shadow-orange-900/20' 
-                          : 'bg-white hover:bg-orange-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-orange-200'
+                        effectiveBranch === 'student' 
+                          ? 'bg-rose-600 text-white font-black border-rose-700 shadow-rose-900/20' 
+                          : 'bg-white hover:bg-rose-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-rose-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'student' ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white'}`}>
                         <GraduationCap size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${userRole === 'student' ? 'text-white' : 'text-gray-700'}`}>Öğrenci</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'student' ? 'text-white' : 'text-gray-700'}`}>Öğrenci</span>
                     </button>
 
                     <button 
                       role="menuitem" 
-                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('academic'); setTimeout(() => setView?.('academic'), 50); }} 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('academic');
+                        setView?.('academic'); 
+                      }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        userRole === 'academic' 
-                          ? 'bg-blue-600 text-white font-black border-blue-700 shadow-blue-900/20' 
-                          : 'bg-white hover:bg-blue-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200'
+                        effectiveBranch === 'academic' 
+                          ? 'bg-indigo-600 text-white font-black border-indigo-700 shadow-indigo-900/20' 
+                          : 'bg-white hover:bg-indigo-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-indigo-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${userRole === 'academic' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'academic' ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white'}`}>
                         <BookOpen size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${userRole === 'academic' ? 'text-white' : 'text-gray-700'}`}>Akademik</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'academic' ? 'text-white' : 'text-gray-700'}`}>Akademik</span>
                     </button>
 
                     <button 
                       role="menuitem" 
-                      onClick={() => { setIsOpen(false); useAppStore.getState().setUserRole('company'); setTimeout(() => setView?.('company'), 50); }} 
+                      onClick={() => { 
+                        setIsOpen(false); 
+                        const store = useAppStore.getState();
+                        store.setActivePortalBranch?.('company');
+                        setView?.('company'); 
+                      }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
-                        (userRole === 'company' || userRole === 'employer') 
+                        effectiveBranch === 'company' 
                           ? 'bg-purple-600 text-white font-black border-purple-700 shadow-purple-900/20' 
                           : 'bg-white hover:bg-purple-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-purple-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${(userRole === 'company' || userRole === 'employer') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'company' ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white'}`}>
                         <Building2 size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${(userRole === 'company' || userRole === 'employer') ? 'text-white' : 'text-gray-700'}`}>Firma</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'company' ? 'text-white' : 'text-gray-700'}`}>Firma</span>
                     </button>
                   </div>
                 </div>
               </div>
-              
+
               <div className="py-1">
-                {featureAlumniAssocToggle && isAssocAdmin && (
-                  <button 
-                    role="menuitem"
-                    onClick={() => { setIsOpen(false); setView?.('alumni_assoc_portal'); }}
-                    className="w-full text-left px-4 py-2.5 text-[13px] font-black text-[#990000] bg-red-50 hover:bg-red-100 transition-all duration-200 flex items-center gap-3 group border-l-4 border-[#990000]"
-                  >
-                    <Crown size={16} className="text-[#990000] group-hover:scale-110 transition-transform" /> Mezun Derneği Özel Yönetim Paneli
-                  </button>
-                )}
-                
-
-
-
-
-                <button 
-                  role="menuitem"
-                  onClick={() => avatarFileInputRef.current?.click()}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-red-700 bg-red-50/70 hover:bg-red-100 transition-all duration-200 flex items-center gap-3 group cursor-pointer"
-                >
-                  <Camera size={16} className="text-[#990000] group-hover:scale-110 transition-all duration-200" /> 📷 Profil Fotoğrafı Yükle
-                </button>
-                <input 
-                  type="file" 
-                  ref={avatarFileInputRef} 
-                  accept="image/*" 
-                  onChange={handleAvatarUpload} 
-                  className="hidden" 
-                />
-
-                <button 
-                  role="menuitem"
-                  onClick={() => { setIsOpen(false); setView?.('profile_update'); }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 flex items-center gap-3 group"
-                >
-                  <Settings size={16} className="text-gray-500 group-hover:text-red-600 transition-all duration-200" /> Bilgilerimi Düzenle
-                </button>
-
                 <button 
                   role="menuitem"
                   onClick={() => { setIsOpen(false); setView?.('calendar'); }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000] transition-all duration-200 flex items-center gap-3 group"
+                  className={`w-full text-left px-4 py-2 text-[13px] font-bold transition-all duration-200 flex items-center gap-3 group cursor-pointer ${
+                    effectiveBranch === 'alumni' ? 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-800' : 'text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000]'
+                  }`}
                 >
-                  <Calendar size={16} className="text-gray-500 group-hover:text-[#990000] transition-all duration-200" /> Takvim
+                  <Calendar size={16} className={`text-gray-500 transition-all duration-200 ${userRole === 'alumni' ? 'group-hover:text-emerald-700' : 'group-hover:text-[#990000]'}`} /> Takvim
                 </button>
 
                 <button 
@@ -516,4 +570,3 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     </div>
   );
 }
-

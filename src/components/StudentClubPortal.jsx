@@ -20,7 +20,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
   const [createForm, setCreateForm] = useState({ name: '', category: 'Bilim ve Teknoloji', description: '', purpose: '', advisor: '' });
   const [eventForm, setEventForm] = useState({ name: '', date: '', location: '', budget: '', description: '' });
 
-  const isAdmin = currentUser?.role === 'admin' || window.localStorage.getItem('igu_user_role_v1') === '"admin"';
+  const isAdmin = currentUser?.role === 'admin';
   const isDean = currentUser?.title?.toLowerCase().includes('dekan');
   
   // Use global clubApplications from props, fall back to local sample data

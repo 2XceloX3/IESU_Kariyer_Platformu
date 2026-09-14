@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
@@ -71,7 +71,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
         } : p));
       }
     } else {
-      setNews([{ ...form, id: newId, type: 'Haber', createdAt: new Date().toISOString() }, ...news]);
+      setNews(current => [{ ...form, id: newId, type: 'Haber', createdAt: new Date().toISOString() }, ...(current || [])]);
       
       // Add new post to feed
       if (setPosts && form.status === 'Yayında') {
@@ -371,4 +371,3 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
     />
   );
 }
-

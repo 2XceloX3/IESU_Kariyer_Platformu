@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronRight, Mail, ArrowRight, CheckCircle } from 'lucide-react';
 import Logo from '../Logo';
 
@@ -63,9 +63,9 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
             <h3 className="text-lg font-black text-white mb-6 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-iesu-accent"></span> Hızlı Bağlantılar</h3>
             <ul className="space-y-3 font-medium text-[14px]">
               <li><a href="https://obs.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Öğrenci Bilgi Sistemi (OBS)</a></li>
-              <li><a href="https://eslms.esenyurt.edu.tr/almsp" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> İESÜZEM (Uzaktan Eğitim)</a></li>
+              <li><a href="https://esuzemi.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Esuzemi (Uzaktan Eğitim)</a></li>
               <li><a href="https://kutuphane.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Merkez Kütüphane</a></li>
-              <li><button onClick={() => setView('staj')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Gönüllü Staj Süreçleri</button></li>
+              <li><button onClick={() => setView('staj')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> İsteğe Bağlı Staj Süreçleri</button></li>
               <li><button onClick={() => setView('sem')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> SEM (Sürekli Eğitim Merkezi)</button></li>
             </ul>
           </div>

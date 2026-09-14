@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { X, Info, Accessibility, HelpCircle, ShieldCheck, Megaphone, Briefcase, CheckCircle2 } from 'lucide-react';
 
 export default function FooterModals({ activeModal, onClose, setView }) {

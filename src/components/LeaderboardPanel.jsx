@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Trophy, Medal, Star, ChevronLeft, Award, Crown, TrendingUp, ShieldCheck, Briefcase, Users, Link as LinkIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Logo from './Logo';
@@ -21,7 +21,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
       <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
             className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition"
           >
             <ChevronLeft size={20} />

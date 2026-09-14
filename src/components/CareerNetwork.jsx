@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Building2, Calendar, Users, Briefcase, ExternalLink, ShieldCheck, ChevronRight, BookOpen, X, Search, CheckCircle2, MapPin, Sparkles } from 'lucide-react';
+import SafeAvatar from './shared/SafeAvatar';
 
 export default function CareerNetwork({ companies = [], academicStaff = [], setView, setSelectedUserId, currentUser }) {
   const [activeModal, setActiveModal] = useState(null); // 'companies', 'participants', 'internships'
@@ -122,18 +123,17 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
             {networkAcademics.slice(0, showAllAcademics ? networkAcademics.length : 5).map(academic => (
               <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={academic.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:border-red-100 transition-all group cursor-pointer" onClick={() => {
                 if (setSelectedUserId) setSelectedUserId(academic.id);
-                if (setView) setView('user_profile');
+                if (setView) setView('public_profile');
               }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
-                    {academic.avatar ? (
-                      <img src={academic.avatar} alt={academic.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-lg font-black text-gray-400">
-                        {(academic.name || '?').substring(0, 2).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
+                  <SafeAvatar 
+                    name={academic.name} 
+                    src={academic.avatar} 
+                    isAdmin={false} 
+                    size="lg" 
+                    rounded="rounded-full" 
+                    className="w-12 h-12 shrink-0" 
+                  />
                   <div className="flex-1 min-w-0">
                     <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-[#990000] transition-colors">{academic.name}</h4>
                     <p className="text-[11px] font-bold text-gray-500 truncate mb-1">{academic.title || 'Akademisyen'} / {academic.department}</p>

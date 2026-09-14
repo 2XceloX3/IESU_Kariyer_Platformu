@@ -1,7 +1,8 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Users, Search, Plus, ShieldCheck, MapPin, Calendar, Home, Compass, Briefcase } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
+import AdminOmniDock from './AdminOmniDock';
 import useAppStore from '../store/useAppStore';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
@@ -29,6 +30,8 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
 
 export default function GroupsPanel({ previousView, currentUser, userRole, setView, setSelectedGroupId, setSelectedUserId }) {
   const { groups, setGroups } = useAppStore();
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const effectiveRole = (activePortalBranch === 'student' || previousView === 'student') ? 'student' : (activePortalBranch === 'alumni' || previousView === 'alumni') ? 'alumni' : (userRole || 'student');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newGroup, setNewGroup] = useState({
@@ -77,17 +80,17 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
     <div className="min-h-screen bg-gray-50 pb-20">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto text-[#990000] hover:scale-105 transition-transform" />
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
             <div className="hidden lg:block">
-              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
-            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView('network')} />
             <NavIcon icon={<Users />} label="Topluluklar" active={true} onClick={() => setView('groups')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" onClick={() => setView('jobs')} />
             <div className="ml-2">
@@ -223,6 +226,11 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
             </form>
           </div>
         </div>
+      )}
+
+      {/* Admin Omni Dock */}
+      {effectiveRole === 'admin' && (
+        <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="groups" />
       )}
     </div>
   );

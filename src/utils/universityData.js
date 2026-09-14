@@ -34,7 +34,7 @@ export const IESU_FACULTIES = [
       'Hemşirelik',
       'Sağlık Yönetimi',
       'Sosyal Hizmet',
-      'Çocuk Esenyurti'
+      'Çocuk Gelişimi'
     ]
   },
   {

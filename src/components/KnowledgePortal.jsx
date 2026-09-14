@@ -248,7 +248,7 @@ export default function KnowledgePortal({ setView, currentUser, userRole }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] font-sans">
-      <MainHeader setView={setView} />
+      <MainHeader setView={setView} currentUser={currentUser} userRole={userRole} />
 
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-[#990000] via-[#800000] to-[#660000] text-white py-10 px-4 sm:px-8 lg:px-12">

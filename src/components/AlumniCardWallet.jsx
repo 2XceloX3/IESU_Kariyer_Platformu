@@ -13,7 +13,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole, setSe
       <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
             className="p-2 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 transition"
           >
             <ChevronLeft size={20} />

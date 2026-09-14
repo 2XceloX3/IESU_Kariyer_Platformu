@@ -146,7 +146,7 @@
     display: inline-block;
     will-change: transform;
   }
-  .animate-emoji-[#990000] {
+  .animate-emoji-spin3d {
     animation: emojiSpin3D 2s infinite ease-in-out;
     display: inline-block;
     will-change: transform;

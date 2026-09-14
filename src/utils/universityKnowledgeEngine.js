@@ -10,7 +10,7 @@ export const universityKnowledgeBase = {
     candidateWebsite: "https://aday.esenyurt.edu.tr/kontenjanlar-ve-ucretler",
     phone: "444 9 123",
     email: "kariyer@esenyurt.edu.tr",
-    address: "Zafer Mahallesi, Adile Naşit Bulvarı No:1, 34513 Esenyurt / İstanbul",
+    address: "Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt, İstanbul / Türkiye",
     verificationStatus: "VERIFIED",
     lastSynced: new Date().toISOString()
   },

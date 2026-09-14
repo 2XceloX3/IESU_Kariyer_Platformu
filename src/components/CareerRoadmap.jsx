@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map, MapPin, Target, Sparkles, ChevronLeft, ArrowRight, Zap, CheckCircle2, CircleDashed, Rocket, Code, Award, Users, CalendarClock } from 'lucide-react';
 import Logo from './Logo';
@@ -40,7 +40,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
       try {
         const response = await generateAIResponse(prompt, "Sadece JSON dön");
         // Clean markdown backticks if AI still returns them
-        let cleanJson = response.replace(/json/gi, '').replace(/[\`]/g, '').trim();
+        let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
         const data = JSON.parse(cleanJson);
         setRoadmap(data);
         setIsGenerating(false);
@@ -50,7 +50,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
           title: `${dreamRole} Yol Haritası`,
           phases: [
             { id: 1, title: 'Temeller ve İlk Adımlar', timeframe: '0-6 Ay', desc: 'Sektörün temellerini öğrenmek ve ilk portfolyoyu oluşturmak.', tasks: ['İlgili temel eğitimleri tamamla', 'GitHub/Behance profili aç', 'İlk küçük projeni yayınla'] },
-            { id: 2, title: 'Esenyurt ve Derinleşme', timeframe: '6-12 Ay', desc: 'İleri düzey kavramları öğrenmek ve mentor bulmak.', tasks: ['İleri seviye kurslara katıl', 'Mezun ağından bir mentor bul', 'Gönüllü staj başvuruları yap'] },
+            { id: 2, title: 'Gelişim ve Derinleşme', timeframe: '6-12 Ay', desc: 'İleri düzey kavramları öğrenmek ve mentor bulmak.', tasks: ['İleri seviye kurslara katıl', 'Mezun ağından bir mentor bul', 'Gönüllü staj başvuruları yap'] },
             { id: 3, title: 'Saha Deneyimi', timeframe: '1-2 Yıl', desc: 'Gerçek dünya projelerinde yer almak ve sektörle tanışmak.', tasks: ['Kariyer Fuarında staj ayarla', 'Freelance / Açık kaynak projelere katkı yap', 'Mülakat simülasyonları ile pratik yap'] },
             { id: 4, title: 'Zirve ve Hedef', timeframe: '2+ Yıl', desc: 'Açık pozisyonlara başvuru ve profesyonel kariyerin başlangıcı.', tasks: ['CV ve Portfolyoyu son haline getir', 'Şirketlerin Senior İK çalışanları ile bağlantı kur', 'Hedef rol için resmi başvurulara başla'] },
           ]
@@ -65,7 +65,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
       <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
             className="p-2 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 transition"
           >
             <ChevronLeft size={20} />

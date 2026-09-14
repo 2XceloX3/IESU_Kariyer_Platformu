@@ -16,6 +16,7 @@ export default {
           darkRed: '#B71C1C',
           coral: '#FF6F61',
           lightCoral: '#FF8A80',
+          soft: '#FFF5F5',
         }
       },
       fontFamily: {

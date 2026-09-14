@@ -2,7 +2,7 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
   const combined = [...(Array.isArray(posts) ? posts : []).filter(p => typeof p === 'object' && p !== null && p.status !== 'Beklemede' && p.status !== 'Reddedildi')];
 
   const adminAuthor = {
-    name: 'Kariyer Geliştirme Koordinatörlüğü',
+    name: 'Kariyer Geliştirme Merkezi',
     role: 'admin',
     avatar: '/iesu-logo.svg',
     title: 'Süper Yönetici'
@@ -65,9 +65,10 @@ export function combineFeedItems(posts, events, news, announcements, jobs) {
       combined.push({
         id: j.id,
         author: { ...adminAuthor, title: 'Kariyer Fırsatı' },
-        content: `💼 YENİ İLAN: ${j.title || ''}\n🏢 ${j.company || 'Firma'}\n📍 ${j.location || 'Konum'}\n\n${j.description || ''}`,
+        content: `💼 YENİ İLAN: ${j.title || ''}\n🏢 ${j.company || 'İESÜ Kariyer Geliştirme Merkezi'}\n📍 ${j.location || 'Konum'}\n\n${j.description || ''}`,
         image: j.imageUrl || j.companyLogo || null,
         isJob: true,
+        jobData: j,
         time: j.date || 'Yakın Zamanda',
         createdAt: j.createdAt || getDeterministicDate(j.id),
         likes: j.likes || 0,

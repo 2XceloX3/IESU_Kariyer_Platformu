@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Award, BookOpen, CheckCircle2, Clock, Download, FileText, MonitorPlay, QrCode, ShieldCheck, UserCheck } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 

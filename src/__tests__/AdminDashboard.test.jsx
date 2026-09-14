@@ -32,7 +32,6 @@ describe('AdminDashboard Component', () => {
     groups: [], setGroups: vi.fn(),
     clubs: [], setClubs: vi.fn(),
     clubApplications: [], setClubApplications: vi.fn(),
-    // Features toggles if any
     featureSurveys: true,
     featureAlumniCard: true,
     featureClubsShowcase: true,
@@ -66,5 +65,17 @@ describe('AdminDashboard Component', () => {
     const settingsTab = screen.getByRole('button', { name: /Platform Ayarları/i });
     fireEvent.click(settingsTab);
     expect(screen.getAllByText(/Platform Ayarları/i).length).toBeGreaterThan(0);
+  });
+
+  it('strictly isolates branches: does NOT embed Super Admin Portal / Decision Desk inside AdminDashboard', () => {
+    render(<AdminDashboard {...mockProps} />);
+
+    // Must NOT contain the Super Admin Karar Masası / Console inside CMS tabs
+    expect(screen.queryByText(/KGM Merkezi Yönetim Konsolu & Karar Masası/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Yönetim Konsolu & Karar Masası/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Süper Admin Merkezi/i })).not.toBeInTheDocument();
+
+    // Default primary tab in Genel Bakış must be overview
+    expect(screen.getAllByRole('button', { name: /Genel Bakış/i }).length).toBeGreaterThan(0);
   });
 });

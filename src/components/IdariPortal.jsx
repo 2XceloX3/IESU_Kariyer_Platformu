@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Building2, BookOpen, FileText, Phone, Mail, 
   MapPin, ShieldAlert, ArrowLeft, ArrowRight, Download 

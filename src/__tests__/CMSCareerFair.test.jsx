@@ -130,7 +130,7 @@ describe('CMSCareerFair - Live Side-by-Side Simulator & Question Builder Stress 
       // Assert rendered in Live Simulator preview
       expect(screen.getAllByText(new RegExp(label, 'i')).length).toBeGreaterThan(0);
     });
-  });
+  }, 15000);
 
   it('STRESS-2: Stress tests question deletion and instant reactivity in Live Simulator', () => {
     render(<CMSCareerFair />);

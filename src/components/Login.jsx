@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
@@ -71,6 +71,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       console.log("Firebase Login Failed, falling back to mock logic:", err.message);
     }
     
+    if (!import.meta.env.DEV) {
+      setError("Giriş servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.");
+      setIsLoading(false);
+      return;
+    }
+
     // STRICT MOCK LOGIN LOGIC (No bypasses)
     if (loginRole === 'admin') {
       const adminUser = academicStaff.find(a => (a.email === username || a.id === username) && a.password === password);
@@ -120,6 +126,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         setError("Hatalı öğrenci numarası veya şifresi!");
       }
     }
+    setIsLoading(false);
   };
 
   const handleEDevlet = () => {
@@ -212,9 +219,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           {/* Login Form */}
           <form className="space-y-4" onSubmit={handleLogin}>
             <div className="relative">
+              <label htmlFor="username" className="sr-only">Kullanıcı Adı veya E-Posta</label>
               <User className="absolute left-4 top-3.5 text-slate-400" size={18} />
               <input 
                 id="username"
+                name="username"
+                aria-label="Kullanıcı Adı veya E-Posta"
                 type="text" 
                 placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : "Kullanıcı Adı / E-Posta"} 
                 className="w-full pl-11 pr-4 py-3 bg-white border border-red-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 placeholder:text-slate-400" 
@@ -225,9 +235,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </div>
             
             <div className="relative">
+              <label htmlFor="password" className="sr-only">Şifre</label>
               <Lock className="absolute left-4 top-3.5 text-slate-400" size={18} />
               <input 
                 id="password"
+                name="password"
+                aria-label="Şifre"
                 type="password" 
                 placeholder="Şifre" 
                 className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 placeholder:text-slate-400" 

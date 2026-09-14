@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { User, ChevronLeft, MapPin, Building2, Briefcase, Award, Star, MessageCircle, CheckCircle2, Search, Filter, CalendarCheck } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import AIMatchmaker from './AIMatchmaker';
 
 const MOCK_MENTORS = [
   {
@@ -85,8 +86,8 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
       <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4 w-full max-w-[1200px] mx-auto">
           <button 
-            onClick={() => setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="flex items-center gap-2 text-gray-500 hover:text-[#990000] font-semibold transition-colors"
+            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            className="flex items-center gap-2 text-gray-500 hover:text-[#990000] font-semibold transition-colors cursor-pointer"
           >
             <ChevronLeft size={20} /> Ana Sayfa
           </button>
@@ -102,6 +103,12 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
       </header>
 
       <main className="flex-1 w-full max-w-[1200px] mx-auto p-4 lg:py-8">
+        <AIMatchmaker 
+          alumniList={MOCK_MENTORS} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          currentUser={currentUser} 
+        />
         
         <div className="bg-white rounded-lg border border-gray-200 p-4 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
           <div className="flex flex-col sm:flex-row w-full gap-4 items-center">

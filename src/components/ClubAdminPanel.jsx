@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Shield, Users, Check, X, Megaphone, MapPin, Send, FileText, Image as ImageIcon } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';

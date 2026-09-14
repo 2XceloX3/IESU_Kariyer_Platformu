@@ -1,5 +1,5 @@
-﻿import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle2, ShieldCheck, Heart, X, FileText, User, GraduationCap, Calendar, BookOpen } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, ShieldCheck, Heart, X, FileText, User, GraduationCap, Calendar, BookOpen, ChevronRight } from 'lucide-react';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import Logo from './Logo';
 import useAppStore from '../store/useAppStore';
@@ -12,6 +12,7 @@ export default function MainFooter({ setView }) {
   const [kvkkAgreed, setKvkkAgreed] = useState(false);
 
   const addNewsletterSubscriber = useAppStore(state => state.addNewsletterSubscriber);
+  const siteConfig = useAppStore(state => state.siteConfig);
 
   const [form, setForm] = useState({
     fullName: '',
@@ -287,11 +288,11 @@ export default function MainFooter({ setView }) {
               <Logo size="lg" />
               <div>
                 <h3 className="font-black text-sm text-white tracking-wide">{corporateData.university}</h3>
-                <p className="text-[11px] font-bold text-red-200 uppercase tracking-wider">Kariyer Geliştirme Merkezi</p>
+                <p className="text-[11px] font-bold text-red-200 uppercase tracking-wider">{siteConfig?.logoSubText || 'Kariyer Geliştirme Merkezi'}</p>
               </div>
             </div>
             <p className="text-xs text-red-100/90 leading-relaxed font-medium">
-              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
+              {siteConfig?.footerMotto || 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.'}
             </p>
           </div>
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 import MainHeader from './MainHeader';
 import SubPanelFooter from './SubPanelFooter';
-import NelerOluyorPanel from './NelerOluyorPanel';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 
 export default function ContactPage({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -12,16 +11,34 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.message.trim()) {
-      window.toast && window.toast.error("Lütfen bir mesaj yazın.");
+      if (window.toast?.error) window.toast.error("Lütfen bir mesaj yazın.");
+      else alert("Lütfen bir mesaj yazın.");
       return;
     }
+    try {
+      const stored = JSON.parse(localStorage.getItem('iesu_admin_messages_v1') || '[]');
+      const newMsg = {
+        id: 'msg_' + Date.now(),
+        from: form.name || 'Ziyaretçi',
+        email: form.email || 'bilgi@esenyurt.edu.tr',
+        subject: 'İletişim Sayfası Mesajı',
+        body: form.message,
+        date: new Date().toLocaleDateString('tr-TR'),
+        read: false,
+        source: 'ContactPage'
+      };
+      localStorage.setItem('iesu_admin_messages_v1', JSON.stringify([newMsg, ...stored]));
+    } catch (err) {
+      console.warn('Mesaj kaydedilemedi:', err);
+    }
     setSent(true);
-    window.toast && window.toast.success("Mesajınız İletişim Koordinatörlüğüne ulaştırıldı.");
+    if (window.toast?.success) window.toast.success("Mesajınız İletişim Koordinatörlüğüne ulaştırıldı.");
+    else alert("Mesajınız İletişim Koordinatörlüğüne ulaştırıldı.");
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
-      <MainHeader setView={setView} />
+      <MainHeader setView={setView} currentUser={currentUser} userRole={userRole} />
 
       <main className="flex-1 w-full max-w-[1100px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

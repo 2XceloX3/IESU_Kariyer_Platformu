@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import useAppStore from '../../store/useAppStore';
 import { 
   Settings, Edit3, Eye, Calendar, Plus, Trash2, Check, X, Megaphone, 

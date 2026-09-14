@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
-import { Building2, Edit, Trash2, Plus, Search, Filter, Mail, Phone, MapPin, CheckCircle2, Clock, Download, ShieldCheck } from 'lucide-react';
+import { Building2, Edit, Trash2, Plus, Search, Mail, Phone, CheckCircle2, Clock, Download, ShieldCheck, Eye } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
+import useAppStore from '../../store/useAppStore';
+
 export default function CMSCompanies({ companies = [], setCompanies }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedCompany, setSelectedCompany] = useState(null);
+
+  const careerFairApplications = useAppStore(state => state.careerFairApplications) || [];
+  const adminMessages = useAppStore(state => state.adminMessages) || [];
+  const jobs = useAppStore(state => state.jobs) || [];
 
   const [form, setForm] = useState({
     name: '',
@@ -16,9 +23,12 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
     email: '',
     phone: '',
     location: '',
-    status: 'Onaylı', // Onaylı, Beklemede, Reddedildi, Pasif
+    status: 'Onaylı',
     logo: '',
-    description: ''
+    description: '',
+    isProtocol: true,
+    protocolDate: '2025-2028',
+    protocolQuota: '25 Öğrenci'
   });
 
   const handleAddNew = () => {
@@ -31,7 +41,10 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
       location: '',
       status: 'Onaylı',
       logo: '',
-      description: ''
+      description: '',
+      isProtocol: true,
+      protocolDate: '2025-2028',
+      protocolQuota: '25 Öğrenci'
     });
     setCurrentId(null);
     setIsEditing(true);
@@ -44,7 +57,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Bu firmayı silmek istediğinize emin misiniz? (Firmaya ait ilanlar da etkilenebilir)")) {
+    if (window.confirm("Bu firmayı silmek istediğinize emin misiniz?")) {
       setCompanies(prev => (prev || []).filter(c => c.id !== id));
     }
   };
@@ -75,21 +88,18 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   const listView = (
     <div className="space-y-6">
       {/* STATS */}
-      <div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><Building2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Firma</p><p className="text-2xl font-black text-gray-900">{safeCompanies.length}</p></div>
-          </div>
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Onaylı Firma</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
-          </div>
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-            <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center"><Clock size={24}/></div>
-            <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Onay Bekleyen</p><p className="text-2xl font-black text-gray-900">{pendingCount}</p></div>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center"><Building2 size={24}/></div>
+          <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Toplam Firma</p><p className="text-2xl font-black text-gray-900">{safeCompanies.length}</p></div>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center"><CheckCircle2 size={24}/></div>
+          <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Onaylı Firma</p><p className="text-2xl font-black text-gray-900">{activeCount}</p></div>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center"><Clock size={24}/></div>
+          <div><p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Onay Bekleyen</p><p className="text-2xl font-black text-gray-900">{pendingCount}</p></div>
         </div>
       </div>
 
@@ -98,86 +108,75 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
           <input 
-            type="text" placeholder="Firma adı veya sektör ara..." 
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 transition-all"
-            value={searchQuery} onChange={e=>setSearchQuery(e.target.value)}
+            type="text" 
+            placeholder="Firma adı veya sektör ara..." 
+            value={searchQuery} 
+            onChange={e=>setSearchQuery(e.target.value)} 
+            className="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2 text-sm font-medium focus:ring-2 focus:ring-red-500/20"
           />
         </div>
-        <div className="flex gap-2">
-          <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="bg-gray-50 border-none text-sm font-medium rounded-xl px-4 py-2 focus:ring-2 focus:ring-red-500/20 outline-none cursor-pointer">
-            <option value="all">Tüm Durumlar</option>
-            <option value="onaylı">Onaylı</option>
-            <option value="beklemede">Beklemede</option>
-            <option value="reddedildi">Reddedildi</option>
-          </select>
-          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
-          <button onClick={() => exportToCSV(filtered, 'firmalar.csv')} className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition text-sm font-bold">
-            <Download size={18} /> Excel'e Aktar
-          </button>
-        </div>
+        <select 
+          value={statusFilter} 
+          onChange={e=>setStatusFilter(e.target.value)} 
+          className="bg-gray-50 border-none rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-red-500/20"
+        >
+          <option value="all">Tüm Durumlar</option>
+          <option value="onaylı">Onaylı</option>
+          <option value="beklemede">Beklemede</option>
+          <option value="reddedildi">Reddedildi</option>
+        </select>
       </div>
 
       {/* TABLE */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-16 h-16 bg-gray-50 text-gray-500 rounded-full flex items-center justify-center mb-4"><Building2 size={32}/></div>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Kayıt Bulunamadı</h3>
-            <p className="text-sm text-gray-500">Arama kriterlerine uygun firma bulunmuyor.</p>
-          </div>
-        ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Firma</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">İletişim</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">İlan Sayısı</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum</th>
-                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-gray-50/50 border-b border-gray-100">
+              <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Firma</th>
+              <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">İletişim</th>
+              <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">İlan Sayısı</th>
+              <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum</th>
+              <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">İşlemler</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {filtered.map(c => (
+              <tr key={c.id} onClick={() => setSelectedCompany(c)} className="cursor-pointer hover:bg-red-50/20 transition group">
+                <td className="py-3 px-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
+                      {c.logo ? <img src={c.logo} className="w-full h-full object-cover" /> : <Building2 size={20} className="text-gray-400"/>}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900 group-hover:text-red-600 transition flex items-center gap-1.5">
+                        {c.name} <Eye size={13} className="opacity-0 group-hover:opacity-100 transition text-red-600" />
+                      </p>
+                      <p className="text-[11px] font-medium text-gray-500">{c.sector || 'Sektör Belirtilmedi'}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="py-3 px-5">
+                  <p className="text-xs font-bold text-gray-700">{c.authorizedPerson || '-'}</p>
+                  <p className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mt-0.5"><Mail size={10}/> {c.email || '-'}</p>
+                </td>
+                <td className="py-3 px-5">
+                  <span className="text-[11px] font-black bg-red-50 text-red-600 px-2 py-1 rounded-md">{c.activeJobs || 0} Aktif</span>
+                </td>
+                <td className="py-3 px-5">
+                  <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${c.status === 'Onaylı' ? 'bg-emerald-100 text-emerald-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    {c.status}
+                  </span>
+                </td>
+                <td className="py-3 px-5 text-right" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
+                    <button onClick={() => handleEdit(c)} className="p-2 text-gray-500 hover:text-red-600 rounded-lg"><Edit size={16}/></button>
+                    <button onClick={() => handleDelete(c.id)} className="p-2 text-gray-500 hover:text-red-600 rounded-lg"><Trash2 size={16}/></button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filtered.map(c => (
-                <tr key={c.id} className="hover:bg-gray-50/50 transition group">
-                  <td className="py-3 px-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 overflow-hidden shrink-0 flex items-center justify-center p-1.5">
-                        {c.logo ? <img src={c.logo} className="w-full h-full object-contain" /> : <Building2 size={24} className="text-gray-400"/>}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-gray-900">{c.name}</p>
-                        <p className="text-[11px] font-medium text-gray-500 mt-0.5">{c.sector || 'Sektör Belirtilmedi'}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-5">
-                    <p className="text-xs font-bold text-gray-700">{c.authorizedPerson || 'Yetkili Belirtilmedi'}</p>
-                    <p className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mt-1"><Mail size={10}/> {c.email || '-'}</p>
-                  </td>
-                  <td className="py-3 px-5">
-                    <span className="text-[11px] font-black uppercase tracking-wider bg-red-50 text-red-600 px-2 py-1 rounded-md">
-                      {c.activeJobs || 0} Aktif İlan
-                    </span>
-                  </td>
-                  <td className="py-3 px-5">
-                    <span className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-black uppercase tracking-wider
-                      ${c.status === 'Onaylı' ? 'bg-emerald-100 text-emerald-700' : 
-                        c.status === 'Beklemede' ? 'bg-yellow-100 text-yellow-700' : 
-                        'bg-red-100 text-red-700'}`}>
-                      {c.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-5 text-right">
-                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition">
-                      <button onClick={() => handleEdit(c)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Edit size={16}/></button>
-                      <button onClick={() => handleDelete(c.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"><Trash2 size={16}/></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -238,56 +237,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                 </select>
               </div>
             </div>
-
-            {/* GOOGLE STITCH PROTOCOL FIELDS */}
-            <div className="p-4 bg-red-50/60 border border-red-100 rounded-2xl space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-[#990000] uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldCheck size={14} /> Resmî Üniversite Protokolü
-                </span>
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
-                  <input 
-                    type="checkbox" 
-                    checked={form.isProtocol !== false} 
-                    onChange={e => setForm({...form, isProtocol: e.target.checked})}
-                    className="accent-[#990000] rounded"
-                  /> Protokol Aktif
-                </label>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] font-bold text-gray-600 block mb-1">Protokol Geçerlilik Tarihi</label>
-                  <input 
-                    type="text" 
-                    value={form.protocolDate || '2025-2028'} 
-                    onChange={e => setForm({...form, protocolDate: e.target.value})}
-                    placeholder="Örn: 2025-2028" 
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold text-gray-600 block mb-1">Tahsis Edilen Staj Kontenjanı</label>
-                  <input 
-                    type="text" 
-                    value={form.protocolQuota || '25 Öğrenci'} 
-                    onChange={e => setForm({...form, protocolQuota: e.target.value})}
-                    placeholder="Örn: 30 Öğrenci" 
-                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold"
-                  />
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
-
-        <div className="pt-4 border-t border-gray-100">
-          <label className="text-xs font-bold text-gray-600 block mb-1.5">Merkez / Konum</label>
-          <input type="text" value={form.location} onChange={e=>setForm({...form, location: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" placeholder="Açık adres veya şehir..." />
-        </div>
-
-        <div className="pt-4 border-t border-gray-100">
-          <label className="text-xs font-bold text-gray-600 block mb-1.5">Firma Hakkında</label>
-          <textarea value={form.description} onChange={e=>setForm({...form, description: e.target.value})} rows={4} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none" placeholder="Firma profili, vizyon ve misyon..."></textarea>
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
@@ -299,22 +249,99 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   );
 
   return (
-    <AdminCMSLayout
-      title={isEditing ? (currentId ? 'Firma Profilini Düzenle' : 'Yeni Firma Ekle') : 'Firma & İşveren Yönetimi'}
-      sub={isEditing ? 'Firma verilerini buradan güncelleyebilirsiniz.' : 'Sisteme kayıtlı firmaları ve işveren profillerini yönetin.'}
-      headerAction={
-        !isEditing ? (
+    <AdminCMSLayout 
+      title="Firma Bilgi Havuzu" 
+      description="Üniversite ile iş birliği yapan kurumsal firmaların liste ve detay yönetimi."
+      actions={
+        !isEditing && (
           <div className="flex items-center gap-2">
-            <button onClick={handleAddNew} className="bg-white text-purple-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all">
-              <Plus size={18} /> Yeni Firma Ekle
-            </button>
+            <button onClick={() => exportToCSV(safeCompanies, 'Firma_Listesi')} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5"><Download size={14}/> CSV İndir</button>
+            <button onClick={handleAddNew} className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-red-900/20"><Plus size={14}/> Yeni Firma Ekle</button>
           </div>
-        ) : null
+        )
       }
     >
-      <div className="animate-fade-in">
-        {isEditing ? formView : listView}
-      </div>
+      {isEditing ? formView : listView}
+
+      {/* COMPANY DETAIL POPUP MODAL */}
+      {selectedCompany && (
+        <div className="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-slate-900 via-[#990000] to-slate-900 p-6 text-white shrink-0 relative">
+              <button onClick={() => setSelectedCompany(null)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition text-white">✕</button>
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white p-1 shadow-md flex items-center justify-center overflow-hidden shrink-0">
+                  {selectedCompany.logo ? <img src={selectedCompany.logo} alt={selectedCompany.name} className="w-full h-full object-cover" /> : <Building2 size={28} className="text-[#990000]" />}
+                </div>
+                <div>
+                  <h2 className="text-xl font-black">{selectedCompany.name}</h2>
+                  <p className="text-red-200 text-xs mt-0.5">{selectedCompany.sector || 'Sektör Belirtilmedi'} • {selectedCompany.location || 'İstanbul / Türkiye'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6 overflow-y-auto flex-1 text-xs">
+              {/* General Info */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div><span className="font-bold text-gray-400 block">Yetkili Kişi</span><span className="font-black text-gray-900 text-sm">{selectedCompany.authorizedPerson || '-'}</span></div>
+                <div><span className="font-bold text-gray-400 block">E-Posta</span><span className="font-semibold text-gray-800">{selectedCompany.email || '-'}</span></div>
+                <div><span className="font-bold text-gray-400 block">Telefon</span><span className="font-semibold text-gray-800">{selectedCompany.phone || '-'}</span></div>
+                <div><span className="font-bold text-gray-400 block">Sistem Durumu</span><span className="font-black text-emerald-600">{selectedCompany.status || 'Onaylı'}</span></div>
+                <div><span className="font-bold text-gray-400 block">Aktif İlan Sayısı</span><span className="font-black text-[#990000]">{selectedCompany.activeJobs || 0} İlan</span></div>
+                <div><span className="font-bold text-gray-400 block">Kayıt Tarihi</span><span className="font-semibold text-gray-600">{selectedCompany.createdAt ? new Date(selectedCompany.createdAt).toLocaleDateString('tr-TR') : 'Resmî Kayıt'}</span></div>
+              </div>
+
+              {/* Education / Event Requests from this company */}
+              <div>
+                <h4 className="font-black text-gray-900 text-sm mb-2 flex items-center gap-1.5"><Building2 size={16} className="text-[#990000]"/> Kampüs Etkinlik & Eğitim Talepleri ({careerFairApplications.filter(a => a.companyName?.toLowerCase() === selectedCompany.name?.toLowerCase()).length})</h4>
+                {careerFairApplications.filter(a => a.companyName?.toLowerCase() === selectedCompany.name?.toLowerCase()).length === 0 ? (
+                  <p className="text-gray-400 italic bg-gray-50 p-3 rounded-xl">Bu firmaya ait etkinlik/eğitim talebi bulunmamaktadır.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {careerFairApplications.filter(a => a.companyName?.toLowerCase() === selectedCompany.name?.toLowerCase()).map(app => (
+                      <div key={app.id} className="bg-red-50/50 border border-red-100 p-3 rounded-xl flex justify-between items-center">
+                        <div>
+                          <p className="font-black text-[#990000]">{app.answers?.eventType || 'Eğitim Talebi'}</p>
+                          <p className="text-[11px] text-gray-600">Mekan: {app.answers?.venueType || '-'} | Bölümler: {app.answers?.targetDepts || '-'}</p>
+                        </div>
+                        <span className="font-black text-[10px] bg-white px-2 py-1 rounded-md text-amber-700 border border-amber-200">{app.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Admin Messages from this company */}
+              <div>
+                <h4 className="font-black text-gray-900 text-sm mb-2 flex items-center gap-1.5"><Mail size={16} className="text-slate-700"/> KGM Yöneticisine Gönderilen Mesajlar ({adminMessages.filter(m => m.companyName?.toLowerCase() === selectedCompany.name?.toLowerCase()).length})</h4>
+                {adminMessages.filter(m => m.companyName?.toLowerCase() === selectedCompany.name?.toLowerCase()).length === 0 ? (
+                  <p className="text-gray-400 italic bg-gray-50 p-3 rounded-xl">Bu firmaya ait özel yönetici mesajı bulunmamaktadır.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {adminMessages.filter(m => m.companyName?.toLowerCase() === selectedCompany.name?.toLowerCase()).map(msg => (
+                      <div key={msg.id} className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                        <div className="flex justify-between items-center">
+                          <p className="font-bold text-gray-900">{msg.subject}</p>
+                          <span className="text-[10px] text-gray-400">{msg.date}</span>
+                        </div>
+                        <p className="text-gray-600 mt-1">{msg.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 bg-slate-50 border-t border-gray-100 flex justify-between items-center shrink-0">
+              <button onClick={() => { handleEdit(selectedCompany); setSelectedCompany(null); }} className="px-4 py-2 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition">Profil Düzenle</button>
+              <button onClick={() => setSelectedCompany(null)} className="px-5 py-2 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition">Kapat</button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminCMSLayout>
   );
 }

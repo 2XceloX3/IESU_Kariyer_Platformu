@@ -5,51 +5,58 @@
  * This service connects to an external LLM (e.g. Google Gemini or OpenAI)
  * 
  * Flow:
- * 1. Checks localStorage for 'anka_api_key'
- * 2. If present, it makes a real fetch to the generative AI endpoint.
- * 3. If absent, it simulates the response locally for development/demo.
+ * 1. In development, an explicitly configured local gateway may be used.
+ * 2. In production, the client uses the local simulator until a server-side
+ *    AI gateway is connected. Browser bundles must not contain API secrets.
  */
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+const getDevelopmentGateway = () => {
+  if (!import.meta.env.DEV) return null;
+
+  const url = import.meta.env.VITE_OMNIROUTE_API_URL?.trim();
+  const apiKey = import.meta.env.VITE_OMNIROUTE_API_KEY?.trim();
+
+  return url && apiKey ? { url, apiKey } : null;
+};
 
 export const generateAIResponse = async (prompt, systemInstruction = "Sen İESÜ Kariyer Geliştirme Koordinatörlüğü'nin dijital asistanı Anka'sın. Arkadaş canlısı ve profesyonelsin.") => {
-  const apiKey = localStorage.getItem('anka_api_key') || import.meta.env.VITE_ANKA_API_KEY;
+  const safePrompt = typeof prompt === 'string' ? prompt.slice(0, 4000) : String(prompt || '').slice(0, 4000);
+  const safeInstruction = typeof systemInstruction === 'string' ? systemInstruction.slice(0, 4000) : String(systemInstruction || '');
 
-  if (!apiKey) {
-    console.warn("Anka AI: API key bulunamadı. Yerel (Mock) yanıt üretiliyor.");
-    return await simulateLocalResponse(prompt);
+  const developmentGateway = getDevelopmentGateway();
+
+  if (!developmentGateway) {
+    return simulateLocalResponse(safePrompt);
   }
 
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+    const response = await fetch(developmentGateway.url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${developmentGateway.apiKey}`
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }],
-        systemInstruction: {
-          parts: [{ text: systemInstruction }]
-        },
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 500,
-        }
+        model: "auto/best-coding",
+        messages: [
+          { role: "system", content: safeInstruction },
+          { role: "user", content: safePrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 500
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`API Hatası: ${response.status}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data?.choices?.[0]?.message?.content) {
+        return data.choices[0].message.content;
+      }
     }
-
-    const data = await response.json();
-    return data.candidates[0].content.parts[0].text;
-    
+    throw new Error(`OmniRoute API Status: ${response.status}`);
   } catch (error) {
-    console.error("Anka AI API Error:", error);
-    return "Üzgünüm, şu an sunucularıma bağlanamıyorum. Lütfen daha sonra tekrar deneyin veya API anahtarınızı kontrol edin.";
+    console.warn("OmniRoute canlı servisine ulaşılamadı. Yerel akıllı simülatöre geçiliyor:", error);
+    return await simulateLocalResponse(safePrompt);
   }
 };
 

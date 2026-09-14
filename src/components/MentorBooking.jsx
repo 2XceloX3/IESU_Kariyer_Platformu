@@ -29,7 +29,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                 setBookingStep(bookingStep - 1);
                 if (bookingStep === 2) setSelectedMentor(null);
               } else {
-                setView(userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student');
+                setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student');
               }
             }} 
             className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
