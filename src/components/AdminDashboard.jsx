@@ -7,6 +7,7 @@ import CMSEvents from './admin/CMSEvents';
 import CMSNews from './admin/CMSNews';
 import CMSAnnouncements from './admin/CMSAnnouncements';
 import CMSJobs from './admin/CMSJobs';
+import CMSCareerOpportunities from './admin/CMSCareerOpportunities';
 import CMSFeatured from './admin/CMSFeatured';
 import CMSMentorship from './admin/CMSMentorship';
 import CMSStudents from './admin/CMSStudents';
@@ -284,6 +285,8 @@ export default function AdminDashboard({
   const setJobs = useAppStore(state => state.setJobs);
   const featuredOpportunities = useAppStore(state => state.featuredOpportunities);
   const setFeaturedOpportunities = useAppStore(state => state.setFeaturedOpportunities);
+  const careerOpportunities = useAppStore(state => state.careerOpportunities);
+  const setCareerOpportunities = useAppStore(state => state.setCareerOpportunities);
   const mentorships = useAppStore(state => state.mentorships);
   const setMentorships = useAppStore(state => state.setMentorships);
   const voluntaryInternships = useAppStore(state => state.voluntaryInternships);
@@ -354,7 +357,7 @@ export default function AdminDashboard({
       case 'academic_approvals': return <CMSAcademicApprovals academicApprovals={academicApprovals || []} setAcademicApprovals={setAcademicApprovals} students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} />;
       case 'cms_events':  return <CMSEvents events={events || []} setEvents={setEvents} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
       case 'cms_ann':     return <CMSAnnouncements announcements={announcements || []} setAnnouncements={setAnnouncements} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
-      case 'cms_jobs':    return <CMSJobs jobs={jobs || []} setJobs={setJobs} applications={applications || []} setApplications={setApplications} setSelectedUserId={setSelectedUserId} setView={setView} />;
+      case 'cms_jobs':    return <CMSCareerOpportunities careerOpportunities={careerOpportunities} setCareerOpportunities={setCareerOpportunities} />;
       case 'cms_feat':    return <CMSFeatured featuredOpportunities={featuredOpportunities || []} setFeaturedOpportunities={setFeaturedOpportunities} />;
       case 'cms_ment':    return <CMSMentorship mentorships={mentorships || []} setMentorships={setMentorships} />;
       case 'cms_groups':  return <CMSGroups groups={groups || []} setGroups={setGroups} currentUser={currentUser} />;

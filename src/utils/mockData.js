@@ -443,6 +443,105 @@ export const initialFeatured = [
   { id: "FTR-005", title: "İşbirliklerimiz", imageUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80" },
 ];
 
+export const initialCareerOpportunities = [
+  {
+    id: "OPP-001",
+    title: "Koç Holding Genç Yetenek & Management Trainee (MT) 2026",
+    organization: "Koç Holding A.Ş.",
+    category: "MT Programı",
+    location: "İstanbul (Hibrit)",
+    deadline: "2026-04-30",
+    targetAudience: "Mühendislik & İİBF Son Sınıf ve Yeni Mezunlar",
+    description: "Koç Topluluğu şirketlerinde liderlik basamaklarına adım atmak isteyen genç yetenekler için 12 aylık rotasyonlu ve mentorluk destekli üst düzey kariyer programı.",
+    benefits: ["Tam Zamanlı İstihdam", "Yönetici Rotasyonu", "Yabancı Dil Bursu", "Özel Sağlık Sigortası"],
+    logo: "https://ui-avatars.com/api/?name=KOC&background=990000&color=fff&size=120",
+    applicationUrl: "https://koc.com.tr/kariyer",
+    status: "Yayında",
+    featured: true,
+    applicantCount: 84
+  },
+  {
+    id: "OPP-002",
+    title: "Erasmus+ Uluslararası Staj ve Küresel Araştırma Hareketliliği",
+    organization: "Avrupa Birliği & İESÜ Dış İlişkiler",
+    category: "Global / Yurt Dışı",
+    location: "Almanya / Hollanda / İtalya",
+    deadline: "2026-05-15",
+    targetAudience: "Tüm Fakülteler (GPA 2.50+ Öğrenciler)",
+    description: "Avrupa'nın önde gelen teknoloji merkezlerinde ve üniversitelerinde 3 ila 6 ay süreyle AB hibeli staj ve araştırma yapma fırsatı.",
+    benefits: ["Aylık 750€ AB Hibesi", "Vize Kolaylığı", "Avrupa Dil Portföyü", "Uluslararası Referans"],
+    logo: "https://ui-avatars.com/api/?name=EU&background=0A2342&color=fff&size=120",
+    applicationUrl: "https://esenyurt.edu.tr/erasmus",
+    status: "Yayında",
+    featured: true,
+    applicantCount: 126
+  },
+  {
+    id: "OPP-003",
+    title: "TEKNOFEST 2026 Sanayide Yapay Zekâ & Otonom Sistemler Yarışması",
+    organization: "T3 Vakfı & Sanayi ve Teknoloji Bakanlığı",
+    category: "Yarışma & Hackathon",
+    location: "İstanbul Atatürk Havalimanı",
+    deadline: "2026-03-31",
+    targetAudience: "Ön Lisans, Lisans ve Lisansüstü Takımları",
+    description: "Üniversitemiz takımlarının Ar-Ge bütçesi ve KGM laboratuvar imkanlarıyla destekleneceği, toplam 500.000 TL ödüllü ulusal teknoloji şampiyonası.",
+    benefits: ["500.000 TL Para Ödülü", "TÜBİTAK Proje Desteği", "Baykar & Aselsan Mülakat Hakkı"],
+    logo: "https://ui-avatars.com/api/?name=TF&background=DC2626&color=fff&size=120",
+    applicationUrl: "https://teknofest.org",
+    status: "Yayında",
+    featured: false,
+    applicantCount: 42
+  },
+  {
+    id: "OPP-004",
+    title: "TÜBİTAK 2209-A Üniversite Öğrencileri Araştırma Projeleri Hibesi",
+    organization: "TÜBİTAK BİDEB",
+    category: "Burs & Hibe",
+    location: "Türkiye Geneli",
+    deadline: "2026-04-10",
+    targetAudience: "Tüm Lisans Öğrencileri",
+    description: "Danışman hocanız ile birlikte hazırlayacağınız araştırma projeleri için karşılıksız 9.000 TL araştırma ve malzeme bütçesi.",
+    benefits: ["9.000 TL Karşılıksız Destek", "Resmi TÜBİTAK Proje Yürütücüsü Unvanı", "Akademik Teşvik"],
+    logo: "https://ui-avatars.com/api/?name=TB&background=0F172A&color=fff&size=120",
+    applicationUrl: "https://tubitak.gov.tr",
+    status: "Yayında",
+    featured: false,
+    applicantCount: 65
+  },
+  {
+    id: "OPP-005",
+    title: "Google & Girişimcilik Vakfı Oyun ve Uygulama Akademisi 2026",
+    organization: "Google Türkiye & Sanayi Bakanlığı",
+    category: "Yetenek Akademisi",
+    location: "Çevrim İçi (Online Bootcamp)",
+    deadline: "2026-06-01",
+    targetAudience: "Üniversite Öğrencileri ve Mezunları",
+    description: "Flutter ile mobil uygulama geliştirme, Unity ile oyun tasarımı ve teknoloji girişimciliği alanında 400 saatlik ücretsiz prestijli eğitim bursu.",
+    benefits: ["Google Sertifikası", "Uygulama Hızlandırma Kampı", "Melek Yatırımcı Buluşmaları"],
+    logo: "https://ui-avatars.com/api/?name=GA&background=2563EB&color=fff&size=120",
+    applicationUrl: "https://oyunveuygulamaakademisi.com",
+    status: "Yayında",
+    featured: true,
+    applicantCount: 95
+  },
+  {
+    id: "OPP-006",
+    title: "Aselsan Aday Mühendislik ve Savunma Sanayii Yetenek Havuzu",
+    organization: "Aselsan A.Ş.",
+    category: "MT Programı",
+    location: "Ankara / İstanbul",
+    deadline: "2026-04-20",
+    targetAudience: "Elektrik-Elektronik, Bilgisayar ve Makine Mühendisliği 4. Sınıf",
+    description: "Haftada 2-3 gün Aselsan tesislerinde maaşlı ve sigortalı çalışarak mezuniyette doğrudan tam zamanlı mühendis kadrosuna geçiş imkanı.",
+    benefits: ["Maaş & SGK", "Savunma Sanayii Güvenlik Belgesi", "Mezuniyet Sonrası Doğrudan İstihdam"],
+    logo: "https://ui-avatars.com/api/?name=AS&background=1E3A8A&color=fff&size=120",
+    applicationUrl: "https://aselsan.com/kariyer",
+    status: "Yayında",
+    featured: true,
+    applicantCount: 78
+  }
+];
+
 export const initialMentorships = [];
 export const initialVoluntaryInternships = [];
 export const initialAcademicCatalog = [];

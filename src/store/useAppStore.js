@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import DOMPurify from 'dompurify';
 import { 
   initialNews, initialEvents, initialAnnouncements, 
-  initialSemCourses, initialJobs, initialFeatured, 
+  initialSemCourses, initialJobs, initialFeatured, initialCareerOpportunities,
   initialMentorships, initialVoluntaryInternships, 
   initialAcademicCatalog, initialAcademicApprovals, 
   initialInternships, initialGroups, initialSurveys 
@@ -362,6 +362,10 @@ const useAppStore = create(
         // UI featuredOpportunities adını kullanıyor (featuredItems değil)
         featuredOpportunities: initialFeatured,
         setFeaturedOpportunities: setter('featuredOpportunities'),
+
+        // Kariyer Fırsatları & Küresel Olanaklar Portalı (MT, Erasmus, Hackathon, Burs)
+        careerOpportunities: initialCareerOpportunities,
+        setCareerOpportunities: setter('careerOpportunities'),
 
         alumniCardApplications: [],
         setAlumniCardApplications: setter('alumniCardApplications'),
@@ -882,6 +886,7 @@ const useAppStore = create(
         staffList: state.staffList,
         adminMessages: state.adminMessages,
         applications: state.applications,
+        careerOpportunities: state.careerOpportunities,
         alumniCardApplications: state.alumniCardApplications,
         alumniCardForms: state.alumniCardForms,
         alumniAssocApplications: state.alumniAssocApplications,
