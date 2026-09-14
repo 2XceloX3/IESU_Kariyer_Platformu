@@ -215,6 +215,48 @@ const useAppStore = create(
           { id: 'STU-03', name: 'Caner Demir', department: 'Tiyatro Kulübü', points: 2100 }
         ],
         setSspUsers: setter('sspUsers'),
+
+        // KGB — Kariyer Gelişim Belgesi
+        kgbEnabled: true,
+        setKgbEnabled: setter('kgbEnabled'),
+
+        kgbStudentRecords: [
+          {
+            id: 'STU-01', name: 'Ahmet Yılmaz', department: 'Bilgisayar Mühendisliği',
+            internships: 2, certifications: 3, workshopsAttended: 7, mentorMeetings: 4,
+            cvCompleteness: 85, portfolioItems: 5, targetSector: 'Yazılım',
+            lastActivity: '2024-03-15'
+          },
+          {
+            id: 'STU-02', name: 'Zeynep Kaya', department: 'İşletme',
+            internships: 1, certifications: 2, workshopsAttended: 12, mentorMeetings: 6,
+            cvCompleteness: 92, portfolioItems: 3, targetSector: 'Finans',
+            lastActivity: '2024-03-18'
+          },
+          {
+            id: 'STU-03', name: 'Caner Demir', department: 'Grafik Tasarım',
+            internships: 3, certifications: 1, workshopsAttended: 5, mentorMeetings: 2,
+            cvCompleteness: 78, portfolioItems: 8, targetSector: 'Yaratıcı Endüstriler',
+            lastActivity: '2024-03-10'
+          }
+        ],
+        setKgbStudentRecords: setter('kgbStudentRecords'),
+
+        kgbAlumniRecords: [
+          {
+            id: 'ALU-01', name: 'Selin Arslan', graduationYear: 2021, department: 'Yazılım Müh.',
+            currentPosition: 'Senior Developer', company: 'TechCorp',
+            mentoringSessions: 8, jobsShared: 15, eventsAttended: 4,
+            menteeCount: 3, alumniCardActive: true, networkStrength: 'Güçlü'
+          },
+          {
+            id: 'ALU-02', name: 'Burak Çelik', graduationYear: 2019, department: 'İşletme',
+            currentPosition: 'Proje Yöneticisi', company: 'Startup A.Ş.',
+            mentoringSessions: 12, jobsShared: 8, eventsAttended: 7,
+            menteeCount: 5, alumniCardActive: true, networkStrength: 'Çok Güçlü'
+          }
+        ],
+        setKgbAlumniRecords: setter('kgbAlumniRecords'),
         
         previousView: 'landing',
         setPreviousView: setter('previousView'),
@@ -840,6 +882,9 @@ const useAppStore = create(
         institutionalStatsData: state.institutionalStatsData,
         showInstitutionalStats: state.showInstitutionalStats,
         sspUsers: state.sspUsers,
+        kgbEnabled: state.kgbEnabled,
+        kgbStudentRecords: state.kgbStudentRecords,
+        kgbAlumniRecords: state.kgbAlumniRecords,
         liveRooms: state.liveRooms,
         labReservations: state.labReservations,
         researchCallApplications: state.researchCallApplications,

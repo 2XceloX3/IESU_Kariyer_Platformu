@@ -92,7 +92,7 @@ export default function AlumniDAO({ setView, currentUser, userRole, setSelectedU
             </div>
             
             <p className="text-xs text-slate-500 leading-relaxed font-bold mb-6">
-              İstanbul Esenyurt Üniversitesi Mezuniyet Ağı kararlarında söz sahibi olun. Oy ağırlığı profil doluluk oranınıza ve kazandığınız SSP puanlarına göre belirlenir.
+              İstanbul Esenyurt Üniversitesi Mezuniyet Ağı kararlarında söz sahibi olun. Oy ağırlığı profil doluluk oranınıza ve onaylı KGB kariyer katkı seviyenize göre belirlenir.
             </p>
 
             <div className="space-y-4">

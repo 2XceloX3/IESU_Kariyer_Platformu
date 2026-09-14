@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap, BookOpen } from 'lucide-react';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
 import JobsAndInternships from './JobsAndInternships';
@@ -224,6 +224,49 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                     </button>
                   </div>
                 </div>
+          </div>
+
+          {/* Mezun KGB — Kariyer Katkı & Mentörlük Karnesi */}
+          <div className="mt-4 bg-gradient-to-br from-teal-950 via-slate-900 to-emerald-950 rounded-2xl p-4 text-white shadow-sm border border-emerald-800/40 text-left">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
+                  <BookOpen size={14} />
+                </div>
+                <div>
+                  <h4 className="text-[12px] font-black leading-tight text-white">Mezun KGB Karnem</h4>
+                  <p className="text-[9px] text-emerald-200/70">Kariyer & Mentörlük Katkısı</p>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-black">
+                Güçlü Ağ
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 py-2.5 border-y border-white/10 mb-3 text-center">
+              <div className="bg-white/5 rounded-xl p-2">
+                <span className="block text-base font-black text-emerald-300">{currentUser?.mentoringSessions ?? 8}</span>
+                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Mentörlük</span>
+              </div>
+              <div className="bg-white/5 rounded-xl p-2">
+                <span className="block text-base font-black text-teal-300">{currentUser?.jobsShared ?? 15}</span>
+                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">İş İlanı</span>
+              </div>
+              <div className="bg-white/5 rounded-xl p-2">
+                <span className="block text-base font-black text-cyan-300">{currentUser?.eventsAttended ?? 4}</span>
+                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Etkinlik</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                if (setSelectedUserId) setSelectedUserId(alumniId);
+                setView('user_profile');
+              }}
+              className="w-full py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 hover:text-white rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <BookOpen size={12} /> KGB Katkı Profilimi Gör
+            </button>
           </div>
         </div>
 

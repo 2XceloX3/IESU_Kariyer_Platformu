@@ -99,6 +99,8 @@ export default function CMSSiteEditor() {
     if (store.setFeatureAlumniCard) store.setFeatureAlumniCard(formData.featureToggles.alumniCard);
     if (store.setFeatureSurveys) store.setFeatureSurveys(formData.featureToggles.surveys);
     if (store.setFeatureSSPLeaderboard) store.setFeatureSSPLeaderboard(formData.featureToggles.sspSystem);
+    if (store.setKgbEnabled) store.setKgbEnabled(formData.featureToggles.sspSystem);
+    if (store.setSspEnabled) store.setSspEnabled(formData.featureToggles.sspSystem);
 
     setToastMessage('Tüm site düzenlemeleri başarıyla yayınlandı ve canlıya aktarıldı!');
   };
@@ -441,7 +443,7 @@ export default function CMSSiteEditor() {
               { key: 'virtualFair', label: 'Sanal Kariyer Fuarı (Metaverse)', desc: '3D sanal stantlar ve dijital fuar deneyimi' },
               { key: 'liveRooms', label: 'Canlı Mülakat & Yayın Odaları', desc: 'WebRTC tabanlı doğrudan işveren-öğrenci görüşme odaları' },
               { key: 'alumniCard', label: 'Dijital Mezun Kartı & Cüzdan', desc: 'Mezunlara özel ayrıcalıklı indirim ve kimlik kartı' },
-              { key: 'sspSystem', label: 'SSP (Sosyal Sorumluluk Puanı)', desc: 'Gönüllülük ve toplumsal katkı puanlama tablosu' },
+              { key: 'sspSystem', label: 'KGB (Kariyer Gelişim Belgesi & Yetkinlik)', desc: 'Öğrenci ve mezun kariyer gelişim akreditasyon sistemi' },
               { key: 'surveys', label: 'Kurumsal Anket & Araştırma', desc: 'YÖK ve akreditasyon uyumlu mezun takip anketleri' },
             ].map(item => (
               <div key={item.key} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100/60 transition">

@@ -601,38 +601,72 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               </div>
             </motion.div>
 
-            {/* Competitor Board */}
+            {/* KGB — Kariyer Gelisim Profilim */}
             <motion.div variants={itemVars} className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm flex flex-col h-full bg-gradient-to-b from-white to-red-50/20">
               <h3 className="text-xs font-black text-gray-900 mb-2 flex items-center gap-2 uppercase tracking-widest">
-                <Medal size={16} className="text-amber-500" /> Sınıf İçi Liderlik Tablosu
+                <GraduationCap size={16} className="text-red-600" /> Kariyer Gelişim Profilim
               </h3>
-              <p className="text-[10px] font-bold text-gray-500 mb-4">Esenyurt Ekosistemindeki genel durumunuz (Anonimleştirilmiş veriler)</p>
-              
-              <div className="space-y-3 flex-grow relative">
-                <div className="absolute left-6 top-2 bottom-2 w-px bg-gray-100 z-0"></div>
+              <p className="text-[10px] font-bold text-gray-500 mb-4">KGB — Kariyer Gelişim Belgesi özet görünümü</p>
+
+              {/* 4 metrik kart */}
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                {[
+                  { icon: '🏢', label: 'Staj', value: currentUser?.internships ?? 2 },
+                  { icon: '📜', label: 'Sertifika', value: currentUser?.certifications ?? 3 },
+                  { icon: '🎯', label: 'Workshop', value: currentUser?.workshopsAttended ?? 7 },
+                  { icon: '👥', label: 'Mentor Görüşmesi', value: currentUser?.mentorMeetings ?? 4 },
+                ].map(({ icon, label, value }) => (
+                  <div key={label} className="bg-red-50 border border-red-100 rounded-xl p-3 flex flex-col items-center">
+                    <span className="text-lg mb-0.5">{icon}</span>
+                    <span className="text-base font-black text-gray-900">{value}</span>
+                    <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CV Doluluk % */}
+              {(() => {
+                const pct = currentUser?.cvCompleteness ?? 85;
+                const color = pct >= 80 ? 'bg-emerald-500' : pct >= 51 ? 'bg-orange-400' : 'bg-red-500';
+                const textColor = pct >= 80 ? 'text-emerald-600' : pct >= 51 ? 'text-orange-500' : 'text-red-600';
+                return (
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">CV Doluluk</span>
+                      <span className={`text-xs font-black ${textColor}`}>{pct}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <button
+                onClick={() => setView('user_profile')}
+                className="w-full py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition mb-4 flex items-center justify-center gap-1.5"
+              >
+                <BookOpen size={13}/> KGB Belgemi Görüntüle
+              </button>
+
+              {/* Sektörden anonim karşılaştırma profilleri */}
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Sektörünüzdeki Diğer Kariyer Profilleri</p>
+              <div className="space-y-2">
                 {topCompetitors.map((comp, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-2xl shadow-sm relative z-10 hover:-translate-y-0.5 transition-transform">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-sm ${idx === 0 ? 'bg-amber-100 text-amber-700 border border-amber-200' : idx === 1 ? 'bg-gray-100 text-gray-700 border border-gray-200' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+                  <div key={idx} className="flex items-center gap-3 p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-[11px] ${idx === 0 ? 'bg-amber-100 text-amber-700' : idx === 1 ? 'bg-gray-100 text-gray-700' : 'bg-red-50 text-red-700'}`}>
                       {comp.rank}
                     </div>
-                    <div className="flex-grow min-w-0 flex items-center justify-between">
-                      <div>
-                        <h4 className="font-black text-gray-900 text-xs">{comp.init}</h4>
-                        <p className="text-[10px] text-gray-500 font-bold">{comp.projects} Proje</p>
-                      </div>
-                      <div className="text-right">
-                        <span className="block text-xs font-black text-gray-900">{comp.ssp}</span>
-                        <span className="block text-[9px] font-bold text-gray-400 uppercase">SSP Puanı</span>
-                      </div>
+                    <div className="flex-grow min-w-0">
+                      <p className="font-black text-gray-900 text-[11px]">{comp.init}</p>
+                      <p className="text-[10px] text-gray-500 font-bold">{comp.projects} Workshop</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="block text-[11px] font-black text-gray-900">{comp.certifications ?? comp.ssp}</span>
+                      <span className="block text-[9px] font-bold text-gray-400 uppercase">Sertifika</span>
                     </div>
                   </div>
                 ))}
-                
-                {/* User's position indicator */}
-                <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between px-2">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sizin Sıranız</span>
-                  <span className="text-sm font-black text-[#990000] bg-red-50 px-3 py-1 rounded-full border border-red-100">#42</span>
-                </div>
               </div>
             </motion.div>
 

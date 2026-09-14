@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -211,6 +211,46 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                     </button>
                   </div>
                 </div>
+          </div>
+
+          {/* Öğrenci KGB — Kariyer Gelişim Belgesi Özeti */}
+          <div className="mt-4 bg-gradient-to-br from-red-950 via-slate-900 to-black rounded-2xl p-4 text-white shadow-sm border border-red-900/40 text-left">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-red-500/20 border border-red-400/30 flex items-center justify-center text-red-400">
+                  <GraduationCap size={14} />
+                </div>
+                <div>
+                  <h4 className="text-[12px] font-black leading-tight text-white">KGB Kariyer Karnem</h4>
+                  <p className="text-[9px] text-red-200/70">Kariyer Gelişim Durumu</p>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-black">
+                Aktif
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 py-2.5 border-y border-white/10 mb-3 text-center">
+              <div className="bg-white/5 rounded-xl p-2">
+                <span className="block text-base font-black text-red-400">{currentUser?.internships ?? 2}</span>
+                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Staj</span>
+              </div>
+              <div className="bg-white/5 rounded-xl p-2">
+                <span className="block text-base font-black text-amber-400">{currentUser?.certifications ?? 3}</span>
+                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Sertifika</span>
+              </div>
+              <div className="bg-white/5 rounded-xl p-2">
+                <span className="block text-base font-black text-blue-400">{currentUser?.workshopsAttended ?? 7}</span>
+                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Workshop</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setView('analytics')}
+              className="w-full py-2 bg-red-600/30 hover:bg-red-600/50 border border-red-500/40 text-red-100 hover:text-white rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <BookOpen size={12} /> Detaylı KGB Karnesini Aç
+            </button>
           </div>
         </div>
 

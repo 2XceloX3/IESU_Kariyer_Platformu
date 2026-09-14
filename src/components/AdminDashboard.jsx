@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
 
-import { Megaphone, Star, Trophy } from 'lucide-react';
+import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
 import CMSNews from './admin/CMSNews';
 import CMSAnnouncements from './admin/CMSAnnouncements';
@@ -441,7 +441,7 @@ export default function AdminDashboard({
     { id: 'mezun_dernek', icon: <Users size={14}/>, label: 'Mezunlar Derneği' },
     { id: 'kart', icon: <CreditCard size={14}/>, label: 'Mezun Kartı' },
     { id: 'cms_groups', icon: <Users size={14}/>, label: 'Gruplar' },
-    { id: 'cms_ssp', icon: <Trophy size={14}/>, label: 'SSP Puanlama' },
+    { id: 'cms_ssp', icon: <BookOpenKgb size={14}/>, label: 'KGB Sistemi' },
     { id: 'cms_live_rooms', icon: <Radio size={14}/>, label: 'Canlı Yayın Odaları' },
     { id: 'platform_ayarlari', icon: <Settings size={14}/>, label: 'Platform Ayarları', superAdminOnly: true },
     { id: 'akademik_radar', icon: <BookOpen size={14}/>, label: 'Akademik Radar & Onay Merkezi' },
