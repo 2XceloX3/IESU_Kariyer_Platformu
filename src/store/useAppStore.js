@@ -208,6 +208,9 @@ const useAppStore = create(
 
         registerAccountType: 'alumni',
         setRegisterAccountType: setter('registerAccountType'),
+
+        featureSEMAcademy: false,
+        setFeatureSEMAcademy: setter('featureSEMAcademy'),
         
         sspEnabled: true,
         setSspEnabled: setter('sspEnabled'),
@@ -863,6 +866,7 @@ const useAppStore = create(
         featureClubsShowcase: state.featureClubsShowcase,
         featureClubApplications: state.featureClubApplications,
         featureSSPLeaderboard: state.featureSSPLeaderboard,
+        featureSEMAcademy: state.featureSEMAcademy,
         auditLogs: state.auditLogs,
         featureSurveys: state.featureSurveys,
         featureCareerCheckup: state.featureCareerCheckup,

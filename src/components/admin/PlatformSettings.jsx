@@ -1,5 +1,6 @@
 import React from 'react';
-import { Check, X, Shield, Settings, Database, Server, Smartphone, Globe, Cloud, Layout, Bell, BookOpen, Users, Briefcase, CalendarHeart, Trophy, Award } from 'lucide-react';
+import { Check, X, Shield, Settings, Database, Server, Smartphone, Globe, Cloud, Layout, Bell, BookOpen, Users, Briefcase, CalendarHeart, Trophy, Award, GraduationCap } from 'lucide-react';
+import useAppStore from '../../store/useAppStore';
 
 const Toggle = ({ label, description, enabled, onChange, icon: Icon }) => (
   <div className="flex items-center justify-between p-5 bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:border-red-100 transition-all group">
@@ -28,8 +29,13 @@ const PlatformSettings = ({
   featureCareerFair, setFeatureCareerFair,
   showInstitutionalStats, setShowInstitutionalStats,
   institutionalStatsData, setInstitutionalStatsData,
-  featureAlumniAssocToggle, setFeatureAlumniAssocToggle
+  featureAlumniAssocToggle, setFeatureAlumniAssocToggle,
+  featureSEMAcademy, setFeatureSEMAcademy
 }) => {
+  const storeFeatureSEMAcademy = useAppStore(state => state.featureSEMAcademy);
+  const storeSetFeatureSEMAcademy = useAppStore(state => state.setFeatureSEMAcademy);
+  const semEnabled = featureSEMAcademy !== undefined ? featureSEMAcademy : storeFeatureSEMAcademy;
+  const toggleSem = setFeatureSEMAcademy || storeSetFeatureSEMAcademy;
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="bg-gradient-to-r from-[#990000] to-red-900 p-8 rounded-xl text-white shadow-xl relative overflow-hidden">
@@ -96,6 +102,14 @@ const PlatformSettings = ({
               icon={Award}
               enabled={featureAlumniAssocToggle !== false}
               onChange={() => setFeatureAlumniAssocToggle && setFeatureAlumniAssocToggle(!featureAlumniAssocToggle)}
+            />
+
+            <Toggle 
+              label="Kariyer & Yetenek Akademisi (SEM) Modülü"
+              description="Açık eğitim, atölye ve sertifika programları yönetim portalını aktif/pasif eder. Kapalı olduğunda menülerden gizlenir."
+              icon={GraduationCap}
+              enabled={Boolean(semEnabled)}
+              onChange={() => toggleSem && toggleSem(!semEnabled)}
             />
 
             {/* Live Stats Editor Panel */}

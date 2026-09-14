@@ -30,7 +30,6 @@ import CMSAlumniAssoc from './admin/CMSAlumniAssoc';
 import CMSAlumniCard from './admin/CMSAlumniCard';
 import CMSGroups from './admin/CMSGroups';
 import CMSSSP from './admin/CMSSSP';
-import CMSLiveRooms from './admin/CMSLiveRooms';
 import CMSDataPoolExport from './admin/CMSDataPoolExport';
 import CMSStaff from './admin/CMSStaff';
 import CMSSyncCenter from './admin/CMSSyncCenter';
@@ -47,10 +46,6 @@ import CMSAuditTrail from './admin/CMSAuditTrail';
 import CMSSiteEditor from './admin/CMSSiteEditor';
 import CMSGallery from './admin/CMSGallery';
 import CMSPortfolios from './admin/CMSPortfolios';
-import CMSAISwarmCenter from './admin/CMSAISwarmCenter';
-import CMSDeveloperProtocol from './admin/CMSDeveloperProtocol';
-import CMSGoogleStitch from './admin/CMSGoogleStitch';
-import CMSSuperAdminHub from './admin/CMSSuperAdminHub';
 import AkademikPanel from './admin/AkademikPanel';
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
@@ -62,7 +57,7 @@ import {
   CheckCircle, XCircle, Plus, Trash2, Send,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
   TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles, Cloud, Code2, Palette,
-  Cpu, Terminal, Camera
+  Camera
 } from 'lucide-react';
 
 import { STUDENTS, ALUMNI, COMPANIES, ALUMNI_CARDS, JOBS_INIT, MENTORSHIPS_INIT, VOLUNTEER_INIT, MESSAGES_INIT, SURVEYS_INIT, SEM_INIT, NEWS_INIT, EVENTS_INIT, ORG } from '../data/mockAdminData';
@@ -257,7 +252,7 @@ const PANEL_CATEGORIES = [
   { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'user_types'] },
   { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'cms_groups', 'kariyer_gunleri', 'mesajlar'] },
   { id: 'kgm_danismanlik', label: 'Kariyer Danışmanlığı & Sektör', icon: <UserCheck size={14}/>, panels: ['cms_ment', 'mentorluk', 'cms_mentorship_pool', 'cms_career_counseling', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] },
-  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp', 'cms_live_rooms', 'cms_ai_swarm', 'cms_super_hub', 'cms_google_stitch', 'cms_dev_protocol'] }
+  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] }
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -332,7 +327,15 @@ export default function AdminDashboard({
   const setFeatureCareerCheckup = useAppStore(state => state.setFeatureCareerCheckup);
   const featureCareerFair = useAppStore(state => state.featureCareerFair);
   const setFeatureCareerFair = useAppStore(state => state.setFeatureCareerFair);
+  const featureSEMAcademy = useAppStore(state => state.featureSEMAcademy);
+  const setFeatureSEMAcademy = useAppStore(state => state.setFeatureSEMAcademy);
   const [activeTab, setActiveTab]       = useState('overview');
+
+  React.useEffect(() => {
+    if (activeTab === 'sem' && !featureSEMAcademy) {
+      setActiveTab('cms_news');
+    }
+  }, [activeTab, featureSEMAcademy]);
   const [activeCategory, setActiveCategory] = useState('genel');
   const [searchQuery, setSearchQuery] = useState('');
   const [alumniCards]                    = useState(ALUMNI_CARDS);
@@ -356,7 +359,6 @@ export default function AdminDashboard({
       case 'cms_ment':    return <CMSMentorship mentorships={mentorships || []} setMentorships={setMentorships} />;
       case 'cms_groups':  return <CMSGroups groups={groups || []} setGroups={setGroups} currentUser={currentUser} />;
       case 'cms_ssp':     return <CMSSSP sspEnabled={sspEnabled} setSspEnabled={setSspEnabled} sspUsers={sspUsers} setSspUsers={setSspUsers} />;
-      case 'cms_live_rooms': return <CMSLiveRooms currentUser={currentUser} userRole={userRole} liveRooms={liveRooms} />;
       case 'cms_datapool': return <CMSDataPoolExport />;
       case 'cms_staff': return <CMSStaff />;
       case 'cms_sync':    return <CMSSyncCenter />;
@@ -391,15 +393,11 @@ export default function AdminDashboard({
       case 'user_types': return <CMSUserTypeManager />;
       case 'audit_log': return <CMSAuditTrail />;
       case 'institutional_stats': return <InstitutionalStatsManager />;
-      case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} showInstitutionalStats={showInstitutionalStats} setShowInstitutionalStats={setShowInstitutionalStats} institutionalStatsData={institutionalStatsData} setInstitutionalStatsData={setInstitutionalStatsData} featureAlumniAssocToggle={featureAlumniAssocToggle} setFeatureAlumniAssocToggle={setFeatureAlumniAssocToggle} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureCareerFair={featureCareerFair} setFeatureCareerFair={setFeatureCareerFair} />;
+      case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} showInstitutionalStats={showInstitutionalStats} setShowInstitutionalStats={setShowInstitutionalStats} institutionalStatsData={institutionalStatsData} setInstitutionalStatsData={setInstitutionalStatsData} featureAlumniAssocToggle={featureAlumniAssocToggle} setFeatureAlumniAssocToggle={setFeatureAlumniAssocToggle} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureCareerFair={featureCareerFair} setFeatureCareerFair={setFeatureCareerFair} featureSEMAcademy={featureSEMAcademy} setFeatureSEMAcademy={setFeatureSEMAcademy} />;
 
       case 'data_cleanup': return <DataCleanup students={students} setStudents={setStudents} alumni={alumni} setAlumni={setAlumni} companies={companies} setCompanies={setCompanies} messages={messages} setMessages={useAppStore.getState().setMessages} posts={posts} setPosts={setPosts} jobs={jobs} setJobs={setJobs} />;
       case 'cms_gallery': return <CMSGallery />;
       case 'cms_portfolios': return <CMSPortfolios />;
-      case 'cms_ai_swarm': return <CMSAISwarmCenter />;
-      case 'cms_super_hub': return <CMSSuperAdminHub academicRole={academicRole} currentUser={currentUser} setActiveTab={setActiveTab} />;
-      case 'cms_google_stitch': return <CMSGoogleStitch />;
-      case 'cms_dev_protocol': return <CMSDeveloperProtocol />;
       case 'site_editor': return <CMSSiteEditor />;
       default:            return <OverviewPanel {...p}/>;
     }
@@ -442,7 +440,6 @@ export default function AdminDashboard({
     { id: 'kart', icon: <CreditCard size={14}/>, label: 'Mezun Kartı' },
     { id: 'cms_groups', icon: <Users size={14}/>, label: 'Gruplar' },
     { id: 'cms_ssp', icon: <BookOpenKgb size={14}/>, label: 'KGB Sistemi' },
-    { id: 'cms_live_rooms', icon: <Radio size={14}/>, label: 'Canlı Yayın Odaları' },
     { id: 'platform_ayarlari', icon: <Settings size={14}/>, label: 'Platform Ayarları', superAdminOnly: true },
     { id: 'akademik_radar', icon: <BookOpen size={14}/>, label: 'Akademik Radar & Onay Merkezi' },
     { id: 'aday_havuzu', icon: <Building2 size={14}/>, label: 'Aday Havuzunu Yönet & Takip Et' },
@@ -459,10 +456,6 @@ export default function AdminDashboard({
     { id: 'cms_ment', icon: <Network size={14}/>, label: 'Mentörlük Sistemi' },
     { id: 'cms_portfolios', icon: <FileText size={14}/>, label: 'CV & Portfolyo Onay Havuzu' },
     { id: 'cms_gallery', icon: <Camera size={14}/>, label: 'Medya & Etkinlik Galerisi' },
-    { id: 'cms_ai_swarm', icon: <Cpu size={14}/>, label: 'AI Swarm Sürü Yönetimi', superAdminOnly: true },
-    { id: 'cms_super_hub', icon: <ShieldAlert size={14}/>, label: 'Süper Yönetici Hub & Güvenlik', superAdminOnly: true },
-    { id: 'cms_google_stitch', icon: <Wand2 size={14}/>, label: 'Google Stitch Tasarım Stüdyosu', superAdminOnly: true },
-    { id: 'cms_dev_protocol', icon: <Terminal size={14}/>, label: 'Geliştirici Protokolü & Teşhis', superAdminOnly: true },
   ];
 
   const isSuperAdmin = academicRole === 'super_admin';
@@ -471,6 +464,7 @@ export default function AdminDashboard({
     if (tab.id === 'anket' && !featureSurveys) return false;
     if (tab.id === 'kart' && !featureAlumniCard) return false;
     if (tab.id === 'cms_ssp' && !sspEnabled) return false;
+    if (tab.id === 'sem' && !featureSEMAcademy) return false;
     if (tab.superAdminOnly && !isSuperAdmin) return false;
     return true;
   });
