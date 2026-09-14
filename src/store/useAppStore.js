@@ -205,6 +205,9 @@ const useAppStore = create(
 
         viewState: 'landing',
         setViewState: setter('viewState'),
+
+        registerAccountType: 'alumni',
+        setRegisterAccountType: setter('registerAccountType'),
         
         sspEnabled: true,
         setSspEnabled: setter('sspEnabled'),

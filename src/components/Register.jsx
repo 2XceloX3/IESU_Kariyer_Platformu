@@ -11,11 +11,17 @@ const REGISTRATION_UNAVAILABLE_MESSAGE = 'Kayıt servisine şu anda ulaşılamı
 const PROFILE_SAVE_FAILED_MESSAGE = 'Profil bilgileriniz kaydedilemedi. Lütfen tekrar deneyin veya Kariyer Geliştirme Merkezi ile iletişime geçin.';
 
 export default function Register({ setView, setCurrentUser, setUserRole }) {
-  const { setStudents, setAlumni, setAcademicStaff, setCompanies } = useAppStore();
+  const { setStudents, setAlumni, setAcademicStaff, setCompanies, registerAccountType } = useAppStore();
   const [step, setStep] = useState(1); // 1: Info, 2: Success
-  const [accountType, setAccountType] = useState('alumni'); // 'alumni', 'student', 'employer', 'academic'
+  const [accountType, setAccountType] = useState(registerAccountType || 'alumni'); // 'alumni', 'student', 'employer', 'academic'
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  React.useEffect(() => {
+    if (registerAccountType) {
+      setAccountType(registerAccountType);
+    }
+  }, [registerAccountType]);
 
   // Form State
   const [formData, setFormData] = useState({

@@ -9,7 +9,7 @@ import useAppStore from '../store/useAppStore';
 
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
-  const { students, alumni, companies, academicStaff } = useAppStore();
+  const { students, alumni, companies, academicStaff, setRegisterAccountType } = useAppStore();
   const [loginRole, setLoginRole] = useState('alumni');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -270,25 +270,30 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           </form>
 
           {/* First Time Login Card (Soft Red Light Palette from Screenshot) */}
-          {(loginRole === 'student' || loginRole === 'admin' || loginRole === 'alumni') && (
-            <div className="mt-8 pt-6 border-t border-slate-200/80">
-              <div className="bg-[#fef2f2] rounded-3xl p-5 border border-red-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
-                <div className="text-center sm:text-left">
-                  <h4 className="text-[#dc2626] font-extrabold text-xs sm:text-sm">İlk Kez Mi Giriyorsunuz?</h4>
-                  <p className="text-slate-500 text-[11px] font-semibold mt-0.5 leading-snug">
-                    Sisteme kayıt olmak ve şifre belirlemek için tıklayın.
-                  </p>
-                </div>
-                <button 
-                  onClick={() => setView('register')} 
-                  type="button" 
-                  className="w-full sm:w-auto px-5 py-3 bg-white text-[#dc2626] hover:bg-red-50 rounded-2xl font-extrabold text-xs shadow-md border border-red-100 transition-all active:scale-[0.98] shrink-0 cursor-pointer text-center"
-                >
-                  Hesabımı Aktifleştir
-                </button>
+          <div className="mt-8 pt-6 border-t border-slate-200/80">
+            <div className="bg-[#fef2f2] rounded-3xl p-5 border border-red-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+              <div className="text-center sm:text-left">
+                <h4 className="text-[#dc2626] font-extrabold text-xs sm:text-sm">İlk Kez Mi Giriyorsunuz?</h4>
+                <p className="text-slate-500 text-[11px] font-semibold mt-0.5 leading-snug">
+                  {loginRole === 'employer'
+                    ? 'İş veya staj ilanı vermek için kurumsal firma kaydınızı oluşturun.'
+                    : 'Sisteme kayıt olmak ve şifre belirlemek için tıklayın.'}
+                </p>
               </div>
+              <button 
+                onClick={() => {
+                  if (setRegisterAccountType) {
+                    setRegisterAccountType(loginRole === 'employer' ? 'employer' : loginRole === 'student' ? 'student' : loginRole === 'admin' ? 'academic' : 'alumni');
+                  }
+                  setView('register');
+                }} 
+                type="button" 
+                className="w-full sm:w-auto px-5 py-3 bg-white text-[#dc2626] hover:bg-red-50 rounded-2xl font-extrabold text-xs shadow-md border border-red-100 transition-all active:scale-[0.98] shrink-0 cursor-pointer text-center whitespace-nowrap"
+              >
+                {loginRole === 'employer' ? 'Firma Kaydı Oluştur' : 'Hesabımı Aktifleştir'}
+              </button>
             </div>
-          )}
+          </div>
 
           {/* e-Devlet Login Button */}
           {loginRole === 'student' && (
