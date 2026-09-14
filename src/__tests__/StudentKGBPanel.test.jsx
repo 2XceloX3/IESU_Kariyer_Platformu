@@ -35,15 +35,19 @@ describe('StudentKGBPanel Component Integrity', () => {
     expect(screen.getByText('A+ Düzeyi (Pekiyi)')).toBeDefined();
   });
 
-  it('navigates back to student portal on clicking return button', () => {
+  it('navigates back to student portal on clicking logo and ensures top left redundant button is removed', () => {
     render(
       <MemoryRouter>
         <StudentKGBPanel setView={mockSetView} currentUser={mockStudent} userRole="student" previousView="student" />
       </MemoryRouter>
     );
 
-    const backButton = screen.getByTitle('Öğrenci Portalına Dön');
-    fireEvent.click(backButton);
+    // Redundant top-left arrow button should NOT exist
+    expect(screen.queryByRole('button', { name: /Öğrenci Portalına Dön/i })).toBeNull();
+
+    // Clicking the header logo navigates back
+    const logoTitle = screen.getByTitle('Öğrenci Portalına Dön');
+    fireEvent.click(logoTitle);
     expect(mockSetView).toHaveBeenCalledWith('student');
   });
 
