@@ -98,8 +98,9 @@ window.toast = toast;
 const AlumniAssocPortal = lazy(() => import('./components/AlumniAssocPortal'));
 const KGMManagementConsole = lazy(() => import('./components/admin/KGMManagementConsole'));
 const PublicUserProfile = lazy(() => import('./components/PublicUserProfile'));
+const StudentKGBPanel = lazy(() => import('./components/StudentKGBPanel'));
 
-const validViews = ['explore', 'contact', 'gizlilik', 'kullanim', 'kvkk', 'network', 'bmi_calculator', 'mezun_dernek', 'alumni_assoc_portal', 'knowledge_portal', 'reward_store', 'student_analytics', 'landing', 'leaderboard', 'live_rooms', 'mentor_match', 'virtual_fair', 'alumni_card', 'career_test', 'career_roadmap', 'startup_incubator', 'login', 'register', 'forgot_password', 'create_job', 'student', 'alumni', 'academic', 'company', 'admin', 'admin_cms', 'yonetim_konsolu', 'admin_console', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'public_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging', 'interview_sim', 'birlik_agi', 'idari_portal', 'audit_logs', 'wallet', 'mentor_booking', 'smart_certs', 'company_ats', 'digital_portfolio', 'metaverse_library', 'hackathon_market', 'alumni_dao', 'campus_map', 'anka_chat', 'global_map', 'sksdb_lunch', 'bidb_status', 'bidb_helpdesk', 'kariyer_board', 'about_us', 'services', 'events_list', 'contact_us', 'research_hub', 'club_admin', 'club_portal', 'news', 'events', 'sksdb_clubs'];
+const validViews = ['explore', 'contact', 'gizlilik', 'kullanim', 'kvkk', 'network', 'bmi_calculator', 'mezun_dernek', 'alumni_assoc_portal', 'knowledge_portal', 'reward_store', 'student_analytics', 'student_kgb', 'landing', 'leaderboard', 'live_rooms', 'mentor_match', 'virtual_fair', 'alumni_card', 'career_test', 'career_roadmap', 'startup_incubator', 'login', 'register', 'forgot_password', 'create_job', 'student', 'alumni', 'academic', 'company', 'admin', 'admin_cms', 'yonetim_konsolu', 'admin_console', 'organization', 'jobs', 'haberler', 'duyurular', 'etkinlikler', 'sem', 'staj', 'profile_update', 'mbs', 'user_profile', 'public_profile', 'groups', 'group_profile', 'notifications', 'calendar', 'applications', 'cvbuilder', 'messaging', 'interview_sim', 'birlik_agi', 'idari_portal', 'audit_logs', 'wallet', 'mentor_booking', 'smart_certs', 'company_ats', 'digital_portfolio', 'metaverse_library', 'hackathon_market', 'alumni_dao', 'campus_map', 'anka_chat', 'global_map', 'sksdb_lunch', 'bidb_status', 'bidb_helpdesk', 'kariyer_board', 'about_us', 'services', 'events_list', 'contact_us', 'research_hub', 'club_admin', 'club_portal', 'news', 'events', 'sksdb_clubs'];
 
 function App() {
   const previousView = useAppStore(state => state.previousView);
@@ -526,6 +527,7 @@ function App() {
           setDirectMessageUser={setSelectedUserId}
         />}
         {view === 'student_analytics' && <StudentAnalytics setView={setView} currentUser={currentUser} userRole={userRole} previousView={previousView} />}
+        {view === 'student_kgb' && <StudentKGBPanel setView={setView} currentUser={currentUser} userRole={userRole} previousView={previousView} />}
         {view === 'group_profile' && <GroupProfile
                   groupId={selectedGroupId}
                   groupData={groups.find(g => g.id === selectedGroupId) || null}

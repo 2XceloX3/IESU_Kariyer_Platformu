@@ -60,7 +60,7 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
     ] : []),
     { id: 'knowledge_portal', title: '📚 Kurumsal Bilgi Bankası & Mevzuat', category: 'Bilgi Merkezi', icon: <BookOpen size={18} className="text-blue-600" />, action: () => setView('knowledge_portal') },
     { id: 'leaderboard', title: '🏆 İESÜ Başarı & Liderlik Sıralaması', category: 'Sosyal & Puan', icon: <Trophy size={18} className="text-amber-500" />, action: () => setView('leaderboard') },
-    { id: 'global_map', title: '🌍 Küresel Mezun & Kariyer Haritası', category: 'Sosyal & Ağ', icon: <Globe size={18} className="text-emerald-600" />, action: () => setView('global_map') },
+    { id: 'student_kgb', title: '🎓 KGB Kariyer Karnem & Yetenek Belgesi', category: 'Kariyer & Gelişim', icon: <GraduationCap size={18} className="text-[#990000]" />, action: () => setView('student_kgb') },
     { id: 'jobs', title: 'İş ve Staj İlanları', category: 'Kariyer Fırsatları', icon: <Briefcase size={18} className="text-emerald-600" />, action: () => setView('jobs') },
     { id: 'company_ats', title: 'İşe Alım Panosu (ATS)', category: 'Kurumsal', icon: <Briefcase size={18} className="text-purple-600" />, action: () => setView('company_ats') },
     { id: 'events', title: 'Yaklaşan Etkinlikler & Seminerler', category: 'Akademik & Sosyal', icon: <Calendar size={18} className="text-orange-600" />, action: () => setView('etkinlikler') },

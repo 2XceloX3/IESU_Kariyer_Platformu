@@ -163,12 +163,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
       {/* Main Container - Padded for Navbar */}
       <div className="pt-24 max-w-[1320px] mx-auto px-4 flex justify-center gap-6 pb-20">
         
-        {/* LEFT PANEL: Profile (Fast Access) */}
-        <div className="hidden lg:block w-[270px] shrink-0">
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-24">
-            <div className="h-24 bg-gradient-to-r from-[#8F0808] to-[#990000] relative">
-              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-                <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white shadow-md flex items-center justify-center">
+        {/* LEFT PANEL: Profile & KGB Kariyer Karnesi */}
+        <div className="hidden lg:block w-[280px] shrink-0 sticky top-24 space-y-3 self-start">
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+            <div className="h-20 bg-gradient-to-r from-[#8F0808] to-[#990000] relative">
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
+                <div className="w-16 h-16 rounded-full border-3 border-white overflow-hidden bg-white shadow-md flex items-center justify-center">
                   <SafeAvatar 
                     src={studentAvatar} 
                     name={studentName} 
@@ -179,77 +179,88 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 </div>
               </div>
             </div>
-            <div className="pt-14 pb-6 px-6 text-center">
-              <h2 onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); setView('user_profile'); }} className="text-[18px] font-black text-gray-900 leading-none mb-1 cursor-pointer hover:text-[#990000] transition">{studentName}</h2>
-              <p className="text-[13px] font-medium text-gray-500 mb-4">
+            <div className="pt-10 pb-4 px-4 text-center">
+              <h2 onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); setView('user_profile'); }} className="text-[16px] font-black text-gray-900 leading-tight mb-0.5 cursor-pointer hover:text-[#990000] transition">{studentName}</h2>
+              <p className="text-[12px] font-medium text-gray-500 mb-3">
                 {isAdmin ? 'Süper Yönetici & Koordinatör' : `${studentDept}${currentUser?.role === 'student' && currentUser?.graduationYear ? `, ${currentUser.graduationYear}` : ', 3. Sınıf'}`}
               </p>
                   
-                  <div className="flex justify-center gap-6 border-y border-gray-50 py-4 mb-4">
-                    <div className="text-center cursor-pointer group">
-                      <p className="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-0.5">Ağım</p>
-                      <p className="text-[16px] font-black text-gray-900 group-hover:text-[#990000] transition">120</p>
-                    </div>
-                    <div className="w-px bg-gray-100"></div>
-                    <div className="text-center cursor-pointer group">
-                      <p className="text-gray-500 text-[11px] font-bold uppercase tracking-wider mb-0.5">Gönderi</p>
-                      <p className="text-[16px] font-black text-gray-900 group-hover:text-[#990000] transition">15</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <button 
-                      onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); setView('user_profile'); }} 
-                      className="w-full py-2.5 bg-gradient-to-r from-red-900 via-[#990000] to-red-700 hover:from-red-800 hover:to-red-600 text-white rounded-xl text-[12px] font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs border border-red-400/30"
-                    >
-                      <User size={14} /> Öğrenci Profilimi Görüntüle
-                    </button>
-                    <button 
-                      onClick={() => setView('profile_update')} 
-                      className="w-full py-2 bg-red-50 text-[#990000] hover:bg-red-100 rounded-xl text-[11px] font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <Settings size={13} /> Kariyer Durumunu Güncelle
-                    </button>
-                  </div>
+              <div className="flex justify-center gap-6 border-y border-gray-50 py-2.5 mb-3">
+                <div className="text-center cursor-pointer group">
+                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Ağım</p>
+                  <p className="text-[14px] font-black text-gray-900 group-hover:text-[#990000] transition">120</p>
                 </div>
-          </div>
-
-          {/* Öğrenci KGB — Kariyer Gelişim Belgesi Özeti */}
-          <div className="mt-4 bg-gradient-to-br from-red-950 via-slate-900 to-black rounded-2xl p-4 text-white shadow-sm border border-red-900/40 text-left">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-red-500/20 border border-red-400/30 flex items-center justify-center text-red-400">
-                  <GraduationCap size={14} />
-                </div>
-                <div>
-                  <h4 className="text-[12px] font-black leading-tight text-white">KGB Kariyer Karnem</h4>
-                  <p className="text-[9px] text-red-200/70">Kariyer Gelişim Durumu</p>
+                <div className="w-px bg-gray-100"></div>
+                <div className="text-center cursor-pointer group">
+                  <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Gönderi</p>
+                  <p className="text-[14px] font-black text-gray-900 group-hover:text-[#990000] transition">15</p>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[9px] font-black">
-                Aktif
+              <div className="flex flex-col gap-1.5">
+                <button 
+                  onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); setView('user_profile'); }} 
+                  className="w-full py-2 bg-gradient-to-r from-red-900 via-[#990000] to-red-700 hover:from-red-800 hover:to-red-600 text-white rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs border border-red-400/30"
+                >
+                  <User size={13} /> Öğrenci Profilimi Görüntüle
+                </button>
+                <button 
+                  onClick={() => setView('profile_update')} 
+                  className="w-full py-1.5 bg-red-50 text-[#990000] hover:bg-red-100 rounded-xl text-[11px] font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Settings size={12} /> Kariyer Durumunu Güncelle
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Öğrenci KGB — Kariyer Gelişim Belgesi & Yetenek Karnesi Özeti */}
+          <div className="bg-white rounded-2xl border border-red-100 shadow-[0_4px_20px_rgb(153,0,0,0.03)] p-3.5 text-left transition-all hover:border-red-200">
+            <div className="flex items-center justify-between mb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-xl bg-red-50 border border-red-200/60 flex items-center justify-center text-[#990000] shadow-2xs">
+                  <GraduationCap size={15} />
+                </div>
+                <div>
+                  <h4 className="text-[12px] font-black leading-tight text-gray-900">KGB Kariyer Karnem</h4>
+                  <p className="text-[9px] font-semibold text-gray-500">Kariyer Gelişim Durumu</p>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black">
+                Aktif • %88
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 py-2.5 border-y border-white/10 mb-3 text-center">
-              <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-red-400">{currentUser?.internships ?? 2}</span>
-                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Staj</span>
+            {/* İlerleme Çubuğu */}
+            <div className="mb-2.5">
+              <div className="flex justify-between text-[10px] font-bold text-gray-500 mb-1">
+                <span>YÖK Kariyer Standartları</span>
+                <span className="text-[#990000] font-black">A+ Seviye</span>
               </div>
-              <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-amber-400">{currentUser?.certifications ?? 3}</span>
-                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Sertifika</span>
+              <div className="h-1.5 w-full bg-red-50 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-amber-500 via-[#990000] to-emerald-500 rounded-full" style={{ width: '88%' }} />
               </div>
-              <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-blue-400">{currentUser?.workshopsAttended ?? 7}</span>
-                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Workshop</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-1.5 py-2 border-y border-gray-100 mb-2.5 text-center">
+              <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
+                <span className="block text-sm font-black text-[#990000]">{currentUser?.internships ?? 2}</span>
+                <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Staj</span>
+              </div>
+              <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
+                <span className="block text-sm font-black text-amber-700">{currentUser?.certifications ?? 3}</span>
+                <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Sertifika</span>
+              </div>
+              <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
+                <span className="block text-sm font-black text-blue-700">{currentUser?.workshopsAttended ?? 7}</span>
+                <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Workshop</span>
               </div>
             </div>
 
             <button
-              onClick={() => setView('analytics')}
-              className="w-full py-2 bg-red-600/30 hover:bg-red-600/50 border border-red-500/40 text-red-100 hover:text-white rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+              onClick={() => setView('student_kgb')}
+              className="w-full py-2 bg-gradient-to-r from-red-900 via-[#990000] to-red-700 hover:from-red-800 hover:to-red-600 text-white rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs border border-red-400/30"
             >
-              <BookOpen size={12} /> Detaylı KGB Karnesini Aç
+              <BookOpen size={13} /> Detaylı KGB Karnesini Aç
             </button>
           </div>
         </div>
