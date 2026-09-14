@@ -542,6 +542,105 @@ export const initialCareerOpportunities = [
   }
 ];
 
+export const initialGeneralEvents = [
+  {
+    id: "GEVT-001",
+    title: "2025–2026 Akademik Yılı Görkemli Mezuniyet Töreni",
+    category: "Rektörlük & Tören",
+    date: "2026-06-28",
+    time: "13:00",
+    location: "Yahya Kemal Beyatlı Gösteri Merkezi",
+    organizer: "T.C. İstanbul Esenyurt Üniversitesi Rektörlüğü",
+    quota: 5000,
+    registeredCount: 4200,
+    description: "Yaklaşık 5.000 kişinin katılımıyla tüm fakülte ve meslek yüksekokulu mezunlarımızın diplomalarını alarak geleceğe uğurlanacağı büyük gurur günü.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/8gqx0jthi7yos-istanbul-esenyurt-universitesi-2025–2026-akademik-yili-mezuniyet-toreni-buyuk-bir-cosku-ve-yogun-katilimla-gerceklesti.jpg",
+    registrationLink: "https://esenyurt.edu.tr/mezuniyet",
+    status: "Yayında",
+    featured: true
+  },
+  {
+    id: "GEVT-002",
+    title: "III. Uluslararası Yönetim Bilimleri Sempozyumu: Yapay Zekâ ve Etik",
+    category: "Akademik & Sempozyum",
+    date: "2026-07-20",
+    time: "14:00",
+    location: "Prof. Dr. Fuat Sezgin Konferans Salonu (3. Kat) & Online",
+    organizer: "İşletme ve Yönetim Bilimleri Fakültesi",
+    quota: 350,
+    registeredCount: 280,
+    description: "Yapay zekanın geleceğini, etik kurallar ve uluslararası mevzuatlar çerçevesinde alanın uzmanları ve dünyaca ünlü akademisyenlerle ele alacağız.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/oh0lm0qvjbwgc-iii-yonetim-bilimleri-sempozyumu.jfif",
+    registrationLink: "https://esenyurt.edu.tr/sempozyum",
+    status: "Yayında",
+    featured: true
+  },
+  {
+    id: "GEVT-003",
+    title: "İESÜ Geleneksel Bahar Şenliği & Kampüs Müzik Festivali 2026",
+    category: "Kulüp & Bahar Şenliği",
+    date: "2026-05-14",
+    time: "11:00 - 21:00",
+    location: "Merkez Kampüs Bahçesi & Açık Hava Sahnesi",
+    organizer: "Sağlık, Kültür ve Spor Daire Başkanlığı (SKS)",
+    quota: 2500,
+    registeredCount: 1850,
+    description: "Öğrenci kulüplerimizin canlı stantları, dans gösterileri, yarışmalar, yemek ikramları ve ünlü sanatçı konseriyle dolu coşkulu bahar festivali.",
+    imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80",
+    registrationLink: "https://esenyurt.edu.tr/bahar-senligi",
+    status: "Yayında",
+    featured: true
+  },
+  {
+    id: "GEVT-004",
+    title: "15 Temmuz Milli İrade Destanı Anma Programı ve Fotoğraf Sergisi",
+    category: "Kültür & Sanat",
+    date: "2026-07-15",
+    time: "13:30",
+    location: "Merkez Kampüs 3. Kat Fuaye Alanı",
+    organizer: "Kurumsal İletişim & Kültür Koordinatörlüğü",
+    quota: 500,
+    registeredCount: 390,
+    description: "Milletimizin kahramanlık hikayesini ve demokrasi zaferini simgeleyen tarihi fotoğraf kareleri ve akademisyenlerimizin katıldığı anma paneli.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/p9hgqcbup3l96-15-temmuz-demokrasi-ve-milli-birlik-gunu-kapsaminda-duzenlenen-sergi-ve-panelimizi-gerceklestirdik.jpg",
+    registrationLink: "",
+    status: "Yayında",
+    featured: false
+  },
+  {
+    id: "GEVT-005",
+    title: "Cumhuriyet Kupası Fakülteler Arası Voleybol & Basketbol Turnuvası",
+    category: "Spor & Turnuvalar",
+    date: "2026-04-25",
+    time: "15:00",
+    location: "Kapalı Spor Salonu & Fitness Kompleksi",
+    organizer: "Spor Kulübü & Beden Eğitimi Bölümü",
+    quota: 150,
+    registeredCount: 112,
+    description: "Fakültelerimizin öğrenci ve personel takımlarının kıyasıya mücadele edeceği, kupa ve madalya ödüllü geleneksel spor şöleni.",
+    imageUrl: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=1200&q=80",
+    registrationLink: "https://esenyurt.edu.tr/spor-turnuva",
+    status: "Yayında",
+    featured: false
+  },
+  {
+    id: "GEVT-006",
+    title: "Geleceğin Meslekleri ve Dijitalleşme 'Bilim Kafe' Buluşmaları",
+    category: "Akademik & Sempozyum",
+    date: "2026-07-18",
+    time: "14:00",
+    location: "City Center AVM & Kampüs Konferans Salonu",
+    organizer: "Bilim İletişimi Koordinatörlüğü",
+    quota: 200,
+    registeredCount: 165,
+    description: "Dijital Oyun Tasarımı, Yapay Zekâ ve Bilgisayar Destekli Animasyon programlarının sektör uzmanlarıyla geleceğe yönelik analizleri.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/sk9wusz8f4voh-gelecegin-meslekleri-bilim-kafe-bulusmalarinda-ele-alindi-dijitallesme-ve-yapay-zeka-odakli-programlar-1-etkinligimizi-gerceklestirdik.jpg",
+    registrationLink: "https://esenyurt.edu.tr/bilim-kafe",
+    status: "Yayında",
+    featured: false
+  }
+];
+
 export const initialMentorships = [];
 export const initialVoluntaryInternships = [];
 export const initialAcademicCatalog = [];

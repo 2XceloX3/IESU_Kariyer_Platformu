@@ -4,6 +4,7 @@ import TopProfileMenu from './TopProfileMenu';
 
 import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
+import CMSGeneralEvents from './admin/CMSGeneralEvents';
 import CMSNews from './admin/CMSNews';
 import CMSAnnouncements from './admin/CMSAnnouncements';
 import CMSJobs from './admin/CMSJobs';
@@ -287,6 +288,8 @@ export default function AdminDashboard({
   const setFeaturedOpportunities = useAppStore(state => state.setFeaturedOpportunities);
   const careerOpportunities = useAppStore(state => state.careerOpportunities);
   const setCareerOpportunities = useAppStore(state => state.setCareerOpportunities);
+  const generalEvents = useAppStore(state => state.generalEvents);
+  const setGeneralEvents = useAppStore(state => state.setGeneralEvents);
   const mentorships = useAppStore(state => state.mentorships);
   const setMentorships = useAppStore(state => state.setMentorships);
   const voluntaryInternships = useAppStore(state => state.voluntaryInternships);
@@ -355,7 +358,7 @@ export default function AdminDashboard({
       case 'basvuru_havuzu': return <CMSApplicationsPool applications={applications || []} setApplications={setApplications} setSelectedUserId={setSelectedUserId} setView={setView} currentUser={currentUser} />;
       case 'academic_catalog': return <CMSAcademicCatalog academicCatalog={academicCatalog || []} setAcademicCatalog={setAcademicCatalog} />;
       case 'academic_approvals': return <CMSAcademicApprovals academicApprovals={academicApprovals || []} setAcademicApprovals={setAcademicApprovals} students={students || []} setStudents={setStudents} alumni={alumni || []} setAlumni={setAlumni} />;
-      case 'cms_events':  return <CMSEvents events={events || []} setEvents={setEvents} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
+      case 'cms_events':  return <CMSGeneralEvents generalEvents={generalEvents} setGeneralEvents={setGeneralEvents} />;
       case 'cms_ann':     return <CMSAnnouncements announcements={announcements || []} setAnnouncements={setAnnouncements} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
       case 'cms_jobs':    return <CMSCareerOpportunities careerOpportunities={careerOpportunities} setCareerOpportunities={setCareerOpportunities} />;
       case 'cms_feat':    return <CMSFeatured featuredOpportunities={featuredOpportunities || []} setFeaturedOpportunities={setFeaturedOpportunities} />;

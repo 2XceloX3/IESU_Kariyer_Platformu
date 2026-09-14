@@ -153,11 +153,11 @@ export default function CMSEvents({ events = [], setEvents }) {
       <div>
         <div className="flex justify-between items-end mb-4">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Etkinlik Yönetimi</h2>
-            <p className="text-sm font-medium text-gray-500 mt-1">Sistemdeki kariyer fuarları, seminerler ve etkinlikleri yönetin.</p>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Kariyer Etkinlikleri Yönetimi</h2>
+            <p className="text-sm font-medium text-gray-500 mt-1">Kariyer zirveleri, mülakat simülasyonları, CV atölyeleri ve sektör buluşmalarını yönetin.</p>
           </div>
           <button onClick={handleAddNew} className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm transition-all hover:shadow-md">
-            <Plus size={18} /> Yeni Etkinlik Ekle
+            <Plus size={18} /> Yeni Kariyer Etkinliği Ekle
           </button>
         </div>
         
