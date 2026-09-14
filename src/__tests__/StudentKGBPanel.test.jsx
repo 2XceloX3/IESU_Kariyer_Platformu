@@ -91,4 +91,48 @@ describe('StudentKGBPanel Component Integrity', () => {
 
     expect(screen.queryByPlaceholderText(/Örn: Yapay Zekâ Eğitimi/i)).toBeNull();
   });
+
+  it('renders corporate floating dock with navigation items', () => {
+    render(
+      <MemoryRouter>
+        <StudentKGBPanel setView={mockSetView} currentUser={mockStudent} userRole="student" previousView="student" />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTitle('Akış')).toBeDefined();
+    expect(screen.getByTitle('KGB Karnesi')).toBeDefined();
+    expect(screen.getByTitle('Kariyer Fırsatları')).toBeDefined();
+    expect(screen.getByTitle('Profilim')).toBeDefined();
+
+    // Click on Akış button navigates to student
+    fireEvent.click(screen.getByTitle('Akış'));
+    expect(mockSetView).toHaveBeenCalledWith('student');
+
+    // Click on Kariyer Fırsatları navigates to jobs
+    fireEvent.click(screen.getByTitle('Kariyer Fırsatları'));
+    expect(mockSetView).toHaveBeenCalledWith('jobs');
+  });
+
+  it('renders student selector and student data when admin views KGB panel', () => {
+    const mockAdmin = {
+      id: 'ADM-01',
+      name: 'Kariyer Geliştirme Merkezi (Süper Yönetici)',
+      role: 'admin'
+    };
+
+    render(
+      <MemoryRouter>
+        <StudentKGBPanel setView={mockSetView} currentUser={mockAdmin} userRole="admin" previousView="admin" />
+      </MemoryRouter>
+    );
+
+    // Admin banner and select dropdown should be rendered
+    expect(screen.getByText('Resmî KGB Karnesi & Portföy Doğrulama Masası')).toBeDefined();
+    expect(screen.getByLabelText(/İncelenen Öğrenci Portföyü/i)).toBeDefined();
+
+    // The card should display a student's record (e.g. Ahmet Yılmaz), NOT the admin's name
+    expect(screen.queryByText(/Kariyer Geliştirme Merkezi \(Süper Yönetici\) - Öğrenci No/i)).toBeNull();
+    expect(screen.getAllByText('Ahmet Yılmaz').length).toBeGreaterThan(0);
+  });
 });
+

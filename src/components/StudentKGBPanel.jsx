@@ -4,7 +4,7 @@ import {
   Download, ExternalLink, FileText, Share2, Sparkles, Star, Users,
   Building2, ShieldCheck, Check, Clock, QrCode, BookOpen, AlertCircle,
   Copy, Printer, ChevronRight, BarChart3, Layers, Compass, Plus,
-  Search, Filter, CheckCircle, Info, FileCheck, Bookmark
+  Search, Filter, CheckCircle, Info, FileCheck, Bookmark, Home, User
 } from 'lucide-react';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
@@ -18,9 +18,70 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   const addNotification = useAppStore(state => state.addNotification);
   const logAction = useAppStore(state => state.logAction);
 
+  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin';
+  const defaultStudentId = useMemo(() => {
+    if (isAdmin) {
+      return kgbStudentRecords[0]?.id || 'STU-01';
+    }
+    const match = kgbStudentRecords.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
+    return match?.id || currentUser?.id || 'STU-01';
+  }, [isAdmin, currentUser, kgbStudentRecords]);
+
+  const [selectedStudentId, setSelectedStudentId] = useState(defaultStudentId);
+
+  const currentStudentRecord = useMemo(() => {
+    if (isAdmin) {
+      return kgbStudentRecords.find(r => r.id === selectedStudentId) || kgbStudentRecords[0];
+    }
+    return kgbStudentRecords.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
+  }, [isAdmin, selectedStudentId, currentUser, kgbStudentRecords]);
+
   // Match student record from store or fallback to currentUser
   const studentData = useMemo(() => {
-    const match = kgbStudentRecords.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
+    if (isAdmin) {
+      const rec = currentStudentRecord || {
+        id: 'STU-01',
+        name: 'Ahmet Yılmaz',
+        department: 'Bilgisayar Mühendisliği',
+        internships: 2,
+        certifications: 3,
+        workshopsAttended: 7,
+        mentorMeetings: 4,
+        cvCompleteness: 88,
+        portfolioItems: 5,
+        targetSector: 'Yazılım'
+      };
+      const facultyMap = {
+        'Bilgisayar Mühendisliği': 'Mühendislik ve Mimarlık Fakültesi',
+        'İşletme': 'İktisadi, İdari ve Sosyal Bilimler Fakültesi',
+        'Grafik Tasarım': 'Sanat ve Tasarım Fakültesi',
+      };
+      const noMap = {
+        'STU-01': '2023010482',
+        'STU-02': '2023010485',
+        'STU-03': '2023010490',
+      };
+      return {
+        id: rec.id,
+        name: rec.name,
+        department: rec.department || 'Bilgisayar Mühendisliği',
+        faculty: facultyMap[rec.department] || 'Mühendislik ve Mimarlık Fakültesi',
+        grade: '3. Sınıf',
+        studentNo: noMap[rec.id] || '2023010482',
+        targetSector: rec.targetSector || 'Yazılım & Bilişim Mimarisi',
+        internshipsCount: rec.internships ?? 2,
+        certificationsCount: rec.certifications ?? 3,
+        workshopsCount: rec.workshopsAttended ?? 7,
+        mentorMeetingsCount: rec.mentorMeetings ?? 4,
+        cvCompleteness: rec.cvCompleteness ?? 88,
+        portfolioItems: rec.portfolioItems ?? 5,
+        accreditationScore: 88,
+        verificationCode: `İESÜ-KGB-2026-${(rec.id || 'STU-01').replace('STU-', '994')}`,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.name)}&background=990000&color=fff&size=120`
+      };
+    }
+
+    const match = currentStudentRecord;
     return {
       id: currentUser?.id || match?.id || 'STU-2026-001',
       name: currentUser?.name || match?.name || 'Öğrenci Adı',
@@ -37,8 +98,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       portfolioItems: match?.portfolioItems ?? 5,
       accreditationScore: 88, // A Seviyesi
       verificationCode: 'İESÜ-KGB-2026-9941',
+      avatar: currentUser?.avatar
     };
-  }, [currentUser, kgbStudentRecords]);
+  }, [isAdmin, currentStudentRecord, currentUser]);
 
   const [activeTab, setActiveTab] = useState('ozet'); // 'ozet' | 'stajlar' | 'sertifikalar' | 'etkinlikler' | 'transkript'
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -162,21 +224,20 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 pb-20 selection:bg-red-100">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 pb-32 selection:bg-red-100">
       
       {/* ── ÜST SABİT GEZİNME ÇUBUĞU ───────────────────────────────── */}
       <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-4 sm:px-8 py-3 shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
           {/* Sol: Geri Dön Butonu ve Logo */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
-              onClick={() => setView(previousView || 'student')}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gray-50 hover:bg-red-50 text-gray-700 hover:text-[#990000] border border-gray-200 transition font-bold text-xs group cursor-pointer"
+              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
+              className="w-10 h-10 rounded-full bg-white border border-gray-200 hover:bg-red-50 text-gray-700 hover:text-[#990000] flex items-center justify-center shadow-xs transition cursor-pointer shrink-0 group"
               title="Öğrenci Portalına Dön"
             >
-              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform text-gray-500 group-hover:text-[#990000]" />
-              <span className="hidden sm:inline">Öğrenci Portalına Dön</span>
+              <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             </button>
 
             <div className="h-6 w-px bg-gray-200 hidden sm:block"></div>
@@ -216,6 +277,50 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
       {/* ── ANA İÇERİK ALANI ─────────────────────────────────────── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
+
+        {/* ── YÖNETİCİ / KOORDİNATÖR KGB İNCELEME KONSOLU & ÖĞRENCİ SEÇİCİ ── */}
+        {isAdmin && (
+          <section className="bg-gradient-to-r from-amber-950 via-slate-900 to-amber-900 text-white rounded-3xl p-5 sm:p-6 border border-amber-500/30 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
+                <ShieldCheck size={26} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="px-2 py-0.5 rounded-md bg-amber-400/20 border border-amber-400/30 text-amber-300 text-[10px] font-black uppercase tracking-wider">
+                    Süper Yönetici & Koordinatör Denetimi
+                  </span>
+                  <span className="text-slate-400 text-xs">• Öğrenci Karnesi İnceleme</span>
+                </div>
+                <h2 className="text-base sm:text-lg font-black text-white">
+                  Resmî KGB Karnesi & Portföy Doğrulama Masası
+                </h2>
+              </div>
+            </div>
+
+            {/* Öğrenci Seçici Dropdown */}
+            <div className="flex items-center gap-3 w-full sm:w-auto self-stretch sm:self-auto bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/15">
+              <Users size={18} className="text-amber-300 shrink-0" />
+              <div className="flex-1 min-w-[220px]">
+                <label htmlFor="admin-kgb-student-select" className="block text-[10px] font-bold text-amber-200 uppercase tracking-wider mb-0.5">
+                  İncelenen Öğrenci Portföyü
+                </label>
+                <select
+                  id="admin-kgb-student-select"
+                  value={selectedStudentId}
+                  onChange={(e) => setSelectedStudentId(e.target.value)}
+                  className="w-full bg-transparent text-white font-black text-xs sm:text-sm focus:outline-none cursor-pointer [&>option]:bg-slate-900 [&>option]:text-white"
+                >
+                  {kgbStudentRecords.map((stu) => (
+                    <option key={stu.id} value={stu.id}>
+                      {stu.name} — {stu.department}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </section>
+        )}
         
         {/* ── 1. KARNE PASAPORT KARTI (HERO STUDENT PASSPORT) ─────── */}
         <section className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_35px_rgb(0,0,0,0.03)] overflow-hidden">
@@ -241,7 +346,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               <div className="flex items-end gap-5">
                 <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border-4 border-white bg-white shadow-xl overflow-hidden shrink-0">
                   <SafeAvatar
-                    src={currentUser?.avatar}
+                    src={studentData.avatar || currentUser?.avatar}
                     name={studentData.name}
                     size="2xl"
                     className="w-full h-full"
@@ -249,7 +354,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   />
                 </div>
                 <div className="pb-1">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
                     <h2 className="text-2xl sm:text-3xl font-black text-gray-900 leading-tight">
                       {studentData.name}
                     </h2>
@@ -257,12 +362,31 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                       KGB Onaylı
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm font-semibold text-gray-600 mb-1">
-                    {studentData.faculty} • <span className="text-[#990000] font-bold">{studentData.department}</span> ({studentData.grade})
-                  </p>
-                  <p className="text-[11px] text-gray-400 font-mono">
-                    Öğrenci No: {studentData.studentNo} • Hedef Alan: <strong className="text-gray-700 font-bold">{studentData.targetSector}</strong>
-                  </p>
+
+                  <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap text-xs sm:text-sm font-semibold text-slate-700 mb-2">
+                    <span className="flex items-center gap-1.5 text-slate-800">
+                      <GraduationCap size={15} className="text-[#990000]" />
+                      {studentData.faculty}
+                    </span>
+                    <span className="text-slate-300">•</span>
+                    <span className="px-2.5 py-0.5 rounded-lg bg-red-50 text-[#990000] font-black border border-red-200/60">
+                      {studentData.department}
+                    </span>
+                    <span className="text-slate-300">•</span>
+                    <span className="text-slate-600 font-bold">{studentData.grade}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap text-xs">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-800 border border-slate-200 font-medium">
+                      <span className="text-slate-500 font-bold">Öğrenci No:</span>
+                      <span className="font-black text-slate-900">{studentData.studentNo}</span>
+                    </div>
+
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-50/70 text-slate-800 border border-red-100 font-medium">
+                      <span className="text-slate-500 font-bold">Hedef Kariyer Alanı:</span>
+                      <strong className="font-black text-[#990000]">{studentData.targetSector}</strong>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -915,6 +1039,53 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
           </div>
         </div>
       )}
+      {/* ── 5. FLOATING DOCK (KURUMSAL ÖĞRENCİ DOCK'U) ─────────────── */}
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
+        <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
+          
+          {/* Akış */}
+          <button 
+            onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))} 
+            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
+            title="Akış"
+          >
+            <Home size={22} strokeWidth={2.2} />
+          </button>
+          
+          {/* KGB Karnesi - ACTIVE */}
+          <button 
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setActiveTab('ozet');
+            }}
+            className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center mx-1 shrink-0 border border-red-300/40 cursor-pointer" 
+            title="KGB Karnesi"
+          >
+            <GraduationCap size={22} strokeWidth={2.5} />
+          </button>
+
+          {/* Kariyer Fırsatları */}
+          <button 
+            onClick={() => setView('jobs')} 
+            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
+            title="Kariyer Fırsatları"
+          >
+            <Briefcase size={22} strokeWidth={2.2} />
+          </button>
+          
+          {/* Profil */}
+          <button 
+            onClick={() => {
+              if (setSelectedUserId) setSelectedUserId(studentData.id);
+              setView('user_profile');
+            }} 
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
+            title="Profilim"
+          >
+            <SafeAvatar src={studentData.avatar || currentUser?.avatar} name={studentData.name} size="xs" alt="Profile" />
+          </button>
+        </div>
+      </div>
 
     </div>
   );

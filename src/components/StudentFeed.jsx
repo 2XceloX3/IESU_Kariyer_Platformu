@@ -161,10 +161,10 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
       </nav>
 
       {/* Main Container - Padded for Navbar */}
-      <div className="pt-24 max-w-[1320px] mx-auto px-4 flex justify-center gap-6 pb-20">
+      <div className="pt-24 max-w-[1320px] mx-auto px-4 flex items-start justify-center gap-6 pb-20">
         
         {/* LEFT PANEL: Profile & KGB Kariyer Karnesi */}
-        <div className="hidden lg:block w-[280px] shrink-0 sticky top-24 space-y-3 self-start">
+        <div className="hidden lg:block w-[280px] shrink-0 sticky top-24 space-y-3 self-start max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar">
           <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
             <div className="h-20 bg-gradient-to-r from-[#8F0808] to-[#990000] relative">
               <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
