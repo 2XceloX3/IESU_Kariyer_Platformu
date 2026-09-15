@@ -327,6 +327,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
               students={students || []} 
               alumni={alumni || []} 
               companies={companies || []} 
+              academicStaff={academicStaff || []}
               setSelectedUserId={setSelectedUserId} 
               setView={setView} 
             />

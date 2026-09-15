@@ -186,7 +186,9 @@ export default function ConnectionSuggestions({
       list = list.filter(u => 
         (u.name || '').toLowerCase().includes(q) || 
         (u.department || '').toLowerCase().includes(q) ||
-        (u.title || '').toLowerCase().includes(q)
+        (u.title || '').toLowerCase().includes(q) ||
+        (u.sector || '').toLowerCase().includes(q) ||
+        (u.location || '').toLowerCase().includes(q)
       );
     }
     return list;
@@ -244,7 +246,7 @@ export default function ConnectionSuggestions({
                       {person.name}
                     </h4>
                     <p className="text-[10px] font-medium text-slate-500 truncate">
-                      {person.department || person.title || 'İESÜ Üyesi'}
+                      {person.sector ? `${person.sector} • ${person.location || 'Kurumsal Paydaş'}` : (person.department || person.title || 'İESÜ Üyesi')}
                     </p>
                   </div>
                 </div>
@@ -375,7 +377,9 @@ export default function ConnectionSuggestions({
                           </h4>
                           <ShieldCheck size={14} className="text-teal-600 shrink-0" />
                         </div>
-                        <p className="text-xs font-semibold text-slate-500 truncate">{userItem.department || userItem.title || 'İESÜ Kariyer Üyesi'}</p>
+                        <p className="text-xs font-semibold text-slate-500 truncate">
+                          {userItem.sector ? `${userItem.sector} • ${userItem.location || 'Kurumsal Paydaş'}` : (userItem.department || userItem.title || 'İESÜ Kariyer Üyesi')}
+                        </p>
                       </div>
                     </div>
 

@@ -252,7 +252,7 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
 const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'basvuru_havuzu', 'operasyon', 'akademik'] },
   { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'user_types'] },
-  { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'cms_groups', 'kariyer_gunleri', 'mesajlar'] },
+  { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'kariyer_gunleri', 'mesajlar'] },
   { id: 'kgm_danismanlik', label: 'Kariyer Danışmanlığı & Sektör', icon: <UserCheck size={14}/>, panels: ['cms_ment', 'mentorluk', 'cms_mentorship_pool', 'cms_career_counseling', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] },
   { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] }
 ];
@@ -444,7 +444,6 @@ export default function AdminDashboard({
     { id: 'entegrasyon', icon: <Radio size={14}/>, label: 'Entegrasyonlar' },
     { id: 'mezun_dernek', icon: <Users size={14}/>, label: 'Mezunlar Derneği' },
     { id: 'kart', icon: <CreditCard size={14}/>, label: 'Mezun Kartı' },
-    { id: 'cms_groups', icon: <Users size={14}/>, label: 'Gruplar' },
     { id: 'cms_ssp', icon: <BookOpenKgb size={14}/>, label: 'KGB Sistemi' },
     { id: 'platform_ayarlari', icon: <Settings size={14}/>, label: 'Platform Ayarları', superAdminOnly: true },
     { id: 'akademik_radar', icon: <BookOpen size={14}/>, label: 'Akademik Radar & Onay Merkezi' },

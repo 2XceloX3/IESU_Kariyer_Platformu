@@ -141,16 +141,34 @@ export default function PublicUserProfile({
         return;
       }
 
-      if (targetId.startsWith('CMP-') || targetId === 'trendyol') {
-        const found = (companies || []).find(c => c.id === targetId || (typeof c.name === 'string' && c.name.toLowerCase().includes('trendyol')));
-        setUser(found || {
-          id: 'CMP-001',
-          name: 'Trendyol',
-          sector: 'E-Ticaret & Teknoloji',
-          location: 'İstanbul Maslak Kampüsü',
-          foundingYear: '2010',
-          description: 'Türkiye\'nin lider teknoloji ve e-ticaret platformu. İESÜ Kariyer Geliştirme Merkezi akredite sanayi ve staj partneri.',
-          avatar: 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150',
+      // D. Firma / Kurumsal Kontrolü (CMP- öneki veya username/isim eşleşmesi)
+      const foundCompany = (companies || []).find(c => 
+        c.id === targetId || 
+        c.username === targetId ||
+        (c.name && c.name.toLowerCase() === targetId.toLowerCase())
+      );
+
+      if (foundCompany) {
+        setUser({
+          ...foundCompany,
+          role: 'company',
+          badges: foundCompany.badges || ['verified', 'corporate_partner']
+        });
+        setUserType('company');
+        setIsLoading(false);
+        return;
+      }
+
+      if (targetId.startsWith('CMP-') || targetId.startsWith('cmp_')) {
+        const fallbackName = targetId.replace(/^(CMP-|cmp_)/i, 'Kurumsal Paydaş ').trim();
+        setUser({
+          id: targetId,
+          name: fallbackName,
+          sector: 'Teknoloji & Sanayi',
+          location: 'İstanbul, TR',
+          foundingYear: '2015',
+          description: `${fallbackName} — İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi onaylı kurumsal staj ve istihdam paydaşı.`,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=0A2342&color=fff`,
           role: 'company',
           badges: ['verified', 'corporate_partner']
         });
@@ -170,8 +188,18 @@ export default function PublicUserProfile({
     foundUser = (academicStaff || []).find(a => a.id === targetId || a.id === parseInt(targetId));
     if (foundUser) { setUser(foundUser); setUserType('academic'); setIsLoading(false); return; }
 
-    foundUser = (companies || []).find(c => c.id === targetId || c.id === parseInt(targetId));
-    if (foundUser) { setUser(foundUser); setUserType('company'); setIsLoading(false); return; }
+    foundUser = (companies || []).find(c => 
+      c.id === targetId || 
+      c.username === targetId || 
+      (c.name && c.name.toLowerCase() === targetId.toLowerCase()) || 
+      c.id === parseInt(targetId)
+    );
+    if (foundUser) { 
+      setUser({ ...foundUser, role: 'company', badges: foundUser.badges || ['verified', 'corporate_partner'] }); 
+      setUserType('company'); 
+      setIsLoading(false); 
+      return; 
+    }
 
     // Fallback: Öğrenci
     setUser({

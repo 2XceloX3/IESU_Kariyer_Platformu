@@ -454,7 +454,12 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
 
     // 3. Koleksiyonlarda Arama (Eğer başka bir spesifik kullanıcı aranıyorsa)
     if (targetUserId && targetUserId !== currentUser?.id && targetUserId !== 'admin_1513') {
-      let found = (companies || []).find(c => c.id === targetUserId || c.id === parseInt(targetUserId));
+      let found = (companies || []).find(c => 
+        c.id === targetUserId || 
+        c.username === targetUserId || 
+        (c.name && c.name.toLowerCase() === targetUserId.toLowerCase()) || 
+        c.id === parseInt(targetUserId)
+      );
       if (found) { setUser(found); setUserType('company'); setIsLoading(false); return; }
 
       found = (academicStaff || []).find(a => a.id === targetUserId || a.id === parseInt(targetUserId));
