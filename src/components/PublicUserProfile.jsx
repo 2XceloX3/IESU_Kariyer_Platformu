@@ -575,19 +575,18 @@ export default function PublicUserProfile({
             </button>
           </div>
 
-          {/* Orta: Dinamik Portal ve Rol Rozeti & Context Badge */}
-          <div className="flex items-center gap-2">
+          {/* Orta: Dinamik Portal Context Rozeti + Dal Kimlik Rozeti */}
+          <div className="flex flex-col items-center justify-center gap-1">
+            <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${branchTheme.badgeClasses} pointer-events-none select-none`}>
+              {branchTheme.leafBadge}
+            </span>
             <span 
               data-testid="hive-context-badge"
-              className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-xs ${viewerHiveInfo.badgeClass}`}
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border shadow-xs pointer-events-none select-none ${viewerHiveInfo.badgeClass}`}
               title={`You are viewing this profile from the ${viewerHiveInfo.label} Portal`}
             >
-              <span className={`w-2 h-2 rounded-full animate-pulse ${viewerHiveInfo.dotClass}`}></span>
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${viewerHiveInfo.dotClass}`}></span>
               <span>{viewerHiveInfo.icon} You are viewing from {viewerHiveInfo.label} portal</span>
-            </span>
-            <span className={`hidden md:flex px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs font-black uppercase tracking-wider items-center gap-2 shadow-xs border ${branchTheme.badgeClasses}`}>
-              <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${branchTheme.pulseColor}`}></span>
-              {branchTheme.leafBadge}
             </span>
           </div>
 

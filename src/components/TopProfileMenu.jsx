@@ -429,8 +429,11 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       role="menuitem" 
                       onClick={() => { 
                         setIsOpen(false); 
+                        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' };
                         const store = useAppStore.getState();
+                        store.setUserRole('admin');
                         store.setActivePortalBranch?.('admin');
+                        updateActiveUser(adminUser);
                         if (setSelectedUserId) setSelectedUserId('admin_1513');
                         setView?.('admin'); 
                       }} 

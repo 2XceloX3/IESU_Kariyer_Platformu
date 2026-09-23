@@ -1,8 +1,14 @@
-import React, { Suspense, lazy } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { Suspense, lazy, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { HiveProvider } from './HiveContext';
 import useStudentStore from './store/useStudentStore';
 import useAppStore from '../../store/useAppStore';
+
+const PORTAL_ROUTES = new Set([
+  'student', 'alumni', 'company', 'academic', 'admin', 'admin_cms', 
+  'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
+  'landing', 'forgot_password'
+]);
 
 // Lazy-loaded feed and subviews
 const StudentFeed = lazy(() => import('../../components/StudentFeed'));
@@ -62,7 +68,8 @@ const DynamicContentPage = lazy(() => import('../../components/DynamicContentPag
  * Owns internal navigation and theming for the student portal.
  * Accepts only currentUser as prop from App.jsx.
  */
-export default function StudentHive({ currentUser }) {
+export default function StudentHive({ currentUser, setView }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const pathView = location?.pathname?.split('/').filter(Boolean).pop() || '';
   const activeView = useStudentStore((state) => state.activeView);
@@ -74,119 +81,138 @@ export default function StudentHive({ currentUser }) {
   const setSelectedGroupId = useAppStore((state) => state.setSelectedGroupId);
   const posts = useAppStore((state) => state.posts);
 
+  const handleSetView = useCallback((v) => {
+    if (typeof v === 'string') {
+      const clean = v.replace(/^\//, '');
+      if (PORTAL_ROUTES.has(clean) && clean !== 'student') {
+        const store = useAppStore.getState();
+        if (['alumni', 'company', 'academic'].includes(clean)) {
+          store.setActivePortalBranch?.(clean);
+        } else if (clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') {
+          store.setActivePortalBranch?.('admin');
+        }
+        setActiveView('feed');
+        if (setView) setView(clean);
+        else navigate(clean === 'landing' ? '/' : '/' + clean);
+        return;
+      }
+    }
+    setActiveView(v);
+  }, [setView, navigate, setActiveView]);
+
   const currentView = (pathView && pathView !== 'student') ? pathView : activeView;
 
   const renderActiveView = () => {
     switch (currentView) {
       case 'jobs':
-        return <JobsAndInternships setView={setActiveView} previousView={previousView} currentUser={currentUser} userRole="student" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="student" />;
       case 'user_profile':
-        return <UserProfile userId={selectedUserId} viewerHive="student" setView={setActiveView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <UserProfile userId={selectedUserId} viewerHive="student" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
-        return <PublicUserProfile userId={selectedUserId} viewerHive="student" setView={setActiveView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <PublicUserProfile userId={selectedUserId} viewerHive="student" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
-        return <ProfileUpdate setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <ProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'student_kgb':
-        return <StudentKGBPanel setView={setActiveView} previousView={previousView} currentUser={currentUser} userRole="student" />;
+        return <StudentKGBPanel setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="student" />;
       case 'student_analytics':
-        return <StudentAnalytics setView={setActiveView} currentUser={currentUser} />;
+        return <StudentAnalytics setView={handleSetView} currentUser={currentUser} />;
       case 'cvbuilder':
-        return <AICVBuilder setView={setActiveView} currentUser={currentUser} />;
+        return <AICVBuilder setView={handleSetView} currentUser={currentUser} />;
       case 'interview_sim':
-        return <InterviewSimulator setView={setActiveView} currentUser={currentUser} />;
+        return <InterviewSimulator setView={handleSetView} currentUser={currentUser} />;
       case 'applications':
-        return <ApplicationsPanel setView={setActiveView} currentUser={currentUser} />;
+        return <ApplicationsPanel setView={handleSetView} currentUser={currentUser} />;
       case 'career_test':
-        return <CareerTest setView={setActiveView} currentUser={currentUser} />;
+        return <CareerTest setView={handleSetView} currentUser={currentUser} />;
       case 'career_roadmap':
-        return <CareerRoadmap setView={setActiveView} currentUser={currentUser} />;
+        return <CareerRoadmap setView={handleSetView} currentUser={currentUser} />;
       case 'startup_incubator':
-        return <StartupIncubator setView={setActiveView} currentUser={currentUser} />;
+        return <StartupIncubator setView={handleSetView} currentUser={currentUser} />;
       case 'smart_certs':
-        return <SmartCertificates setView={setActiveView} currentUser={currentUser} />;
+        return <SmartCertificates setView={handleSetView} currentUser={currentUser} />;
       case 'digital_portfolio':
-        return <DigitalPortfolio setView={setActiveView} currentUser={currentUser} />;
+        return <DigitalPortfolio setView={handleSetView} currentUser={currentUser} />;
       case 'reward_store':
-        return <RewardStore setView={setActiveView} currentUser={currentUser} />;
+        return <RewardStore setView={handleSetView} currentUser={currentUser} />;
       case 'metaverse_library':
-        return <MetaverseLibrary setView={setActiveView} currentUser={currentUser} />;
+        return <MetaverseLibrary setView={handleSetView} currentUser={currentUser} />;
       case 'hackathon_market':
-        return <HackathonMarket setView={setActiveView} currentUser={currentUser} />;
+        return <HackathonMarket setView={handleSetView} currentUser={currentUser} />;
       case 'club_portal':
-        return <StudentClubPortal setView={setActiveView} currentUser={currentUser} previousView="student" />;
+        return <StudentClubPortal setView={handleSetView} currentUser={currentUser} previousView="student" />;
       case 'club_admin':
-        return <ClubAdminPanel setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <ClubAdminPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'sem':
-        return <SemPanel setView={setActiveView} currentUser={currentUser} />;
+        return <SemPanel setView={handleSetView} currentUser={currentUser} />;
       case 'staj':
-        return <StajPanel setView={setActiveView} currentUser={currentUser} />;
+        return <StajPanel setView={handleSetView} currentUser={currentUser} />;
       case 'explore':
-        return <ExploreFeed posts={posts} setView={setActiveView} currentUser={currentUser} />;
+        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
       case 'network':
-        return <CareerNetwork setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'groups':
-        return <GroupsPanel setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'group_profile':
-        return <GroupProfile setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <GroupProfile setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'notifications':
-        return <NotificationsPanel setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'calendar':
-        return <CalendarView setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <CalendarView setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'messaging':
-        return <MessagingInterface setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'leaderboard':
-        return <LeaderboardPanel setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <LeaderboardPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'live_rooms':
-        return <LiveRoomsPanel setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <LiveRoomsPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'mentor_match':
-        return <MentorMatch setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <MentorMatch setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'mentor_booking':
-        return <MentorBooking setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <MentorBooking setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'virtual_fair':
-        return <VirtualCareerFair setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <VirtualCareerFair setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'wallet':
-        return <IesuWallet setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <IesuWallet setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'campus_map':
-        return <CampusMap setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <CampusMap setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'anka_chat':
-        return <AnkaChat setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <AnkaChat setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'bmi_calculator':
-        return <BMICalculatorModal setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <BMICalculatorModal setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'sksdb_lunch':
-        return <SKSDBLunchWidget setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <SKSDBLunchWidget setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'sksdb_clubs':
-        return <SKSDBClubsDirectory setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <SKSDBClubsDirectory setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'bidb_status':
-        return <BIDBSystemStatusCard setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <BIDBSystemStatusCard setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'bidb_helpdesk':
-        return <BIDBHelpdeskModal setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <BIDBHelpdeskModal setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'kariyer_board':
-        return <KariyerJobBoard setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <KariyerJobBoard setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'knowledge_portal':
-        return <KnowledgePortal setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <KnowledgePortal setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'organization':
-        return <OrganizationChart setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <OrganizationChart setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'news':
       case 'haberler':
-        return <NewsEvents setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <NewsEvents setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'events':
       case 'events_list':
       case 'etkinlikler':
-        return <EventsPage setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <EventsPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'contact':
       case 'contact_us':
-        return <ContactPage setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <ContactPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'about_us':
-        return <AboutUsPage setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'services':
-        return <ServicesPage setView={setActiveView} currentUser={currentUser} userRole="student" />;
+        return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
       default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
-          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={setActiveView} previousView="student" />;
+          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="student" />;
         }
         return (
           <StudentFeed
-            setView={setActiveView}
+            setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={currentUser}
             userRole="student"

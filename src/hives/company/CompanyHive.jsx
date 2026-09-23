@@ -1,8 +1,14 @@
-import React, { Suspense, lazy } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { Suspense, lazy, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { HiveProvider } from './HiveContext';
 import useCompanyStore from './store/useCompanyStore';
 import useAppStore from '../../store/useAppStore';
+
+const PORTAL_ROUTES = new Set([
+  'student', 'alumni', 'company', 'academic', 'admin', 'admin_cms', 
+  'yonetim_konsolu', 'admin_console', 'audit_logs', 'login', 'register', 
+  'landing', 'forgot_password'
+]);
 
 // Lazy-loaded feed and subviews
 const CompanyFeed = lazy(() => import('../../components/CompanyFeed'));
@@ -31,9 +37,10 @@ const DynamicContentPage = lazy(() => import('../../components/DynamicContentPag
 /**
  * Company Hive Root Component.
  * Owns internal navigation and theming for the company/employer portal.
- * Accepts only currentUser as prop from App.jsx.
+ * Accepts currentUser and setView as props from App.jsx.
  */
-export default function CompanyHive({ currentUser }) {
+export default function CompanyHive({ currentUser, setView }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const pathView = location?.pathname?.split('/').filter(Boolean).pop() || '';
   const activeView = useCompanyStore((state) => state.activeView);
@@ -45,61 +52,80 @@ export default function CompanyHive({ currentUser }) {
   const setSelectedGroupId = useAppStore((state) => state.setSelectedGroupId);
   const posts = useAppStore((state) => state.posts);
 
+  const handleSetView = useCallback((v) => {
+    if (typeof v === 'string') {
+      const clean = v.replace(/^\//, '');
+      if (PORTAL_ROUTES.has(clean) && clean !== 'company') {
+        const store = useAppStore.getState();
+        if (['student', 'alumni', 'academic'].includes(clean)) {
+          store.setActivePortalBranch?.(clean);
+        } else if (clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') {
+          store.setActivePortalBranch?.('admin');
+        }
+        setActiveView('feed');
+        if (setView) setView(clean);
+        else navigate(clean === 'landing' ? '/' : '/' + clean);
+        return;
+      }
+    }
+    setActiveView(v);
+  }, [setView, navigate, setActiveView]);
+
   const currentView = (pathView && pathView !== 'company') ? pathView : activeView;
 
   const renderActiveView = () => {
     switch (currentView) {
       case 'explore':
-        return <ExploreFeed posts={posts} setView={setActiveView} currentUser={currentUser} />;
+        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
       case 'company_ats':
-        return <CompanyATSBoard setView={setActiveView} currentUser={currentUser} />;
+        return <CompanyATSBoard setView={handleSetView} currentUser={currentUser} />;
       case 'create_job':
-        return <JobCreator setView={setActiveView} currentUser={currentUser} />;
+        return <JobCreator setView={handleSetView} currentUser={currentUser} />;
       case 'jobs':
-        return <JobsAndInternships setView={setActiveView} previousView={previousView} currentUser={currentUser} userRole="company" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="company" />;
       case 'user_profile':
-        return <UserProfile userId={selectedUserId} viewerHive="company" setView={setActiveView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <UserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
-        return <PublicUserProfile userId={selectedUserId} viewerHive="company" setView={setActiveView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <PublicUserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
-        return <ProfileUpdate setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <ProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'applications':
-        return <ApplicationsPanel setView={setActiveView} currentUser={currentUser} />;
+        return <ApplicationsPanel setView={handleSetView} currentUser={currentUser} />;
       case 'virtual_fair':
-        return <VirtualCareerFair setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <VirtualCareerFair setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'notifications':
-        return <NotificationsPanel setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'calendar':
-        return <CalendarView setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <CalendarView setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'messaging':
-        return <MessagingInterface setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'network':
-        return <CareerNetwork setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'groups':
-        return <GroupsPanel setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'group_profile':
-        return <GroupProfile setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <GroupProfile setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'news':
       case 'haberler':
-        return <NewsEvents setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <NewsEvents setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'events':
       case 'events_list':
       case 'etkinlikler':
-        return <EventsPage setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <EventsPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'contact':
       case 'contact_us':
-        return <ContactPage setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <ContactPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'about_us':
-        return <AboutUsPage setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'services':
-        return <ServicesPage setView={setActiveView} currentUser={currentUser} userRole="company" />;
+        return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
       default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
-          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={setActiveView} previousView="company" />;
+          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="company" />;
         }
         return (
           <CompanyFeed
-            setView={setActiveView}
+            setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
             currentUser={currentUser}
             userRole="company"

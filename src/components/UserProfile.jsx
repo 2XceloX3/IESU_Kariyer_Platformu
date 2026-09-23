@@ -2168,20 +2168,20 @@ export default function UserProfile({
                 'text-[#990000]'
               }`}>İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                {currentBranch === 'alumni' ? 'İESÜ Mezunlar Portalı' :
+                {currentBranch === 'alumni' ? 'İESÜ Mezun Portalı' :
                  currentBranch === 'academic' ? 'Akademik Bilgi & Yönetim Portalı' :
                  currentBranch === 'company' ? 'Kurumsal İnsan Kaynakları Portalı' :
                  currentBranch === 'admin' ? 'Kariyer Geliştirme Merkezi (Yönetim)' :
-                 'Kariyer Geliştirme Merkezi'}
+                 'ÖĞRENCİ PORTALI'}
               </p>
             </div>
           </div>
           
-          {/* TOP CENTER DYNAMIC ROLE PORTAL PILL BADGE & HIVE CONTEXT BADGE */}
-          <div className="hidden md:flex items-center justify-center gap-2 z-20">
+          {/* TOP CENTER HIVE CONTEXT BADGE */}
+          <div className="hidden md:flex items-center justify-center z-20">
             <span 
               data-testid="hive-context-badge"
-              className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-xs ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border shadow-xs pointer-events-none select-none ${
                 currentBranch === 'alumni' ? 'bg-emerald-50 text-[#059669] border-emerald-200 shadow-emerald-900/5' :
                 currentBranch === 'academic' ? 'bg-violet-50 text-[#7c3aed] border-violet-200 shadow-violet-900/5' :
                 currentBranch === 'company' ? 'bg-blue-50 text-[#1e3a5f] border-blue-200 shadow-blue-900/5' :
@@ -2190,7 +2190,7 @@ export default function UserProfile({
               }`}
               title={`You are viewing this profile from the ${currentBranch} Portal`}
             >
-              <span className={`w-2 h-2 rounded-full animate-pulse ${
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
                 currentBranch === 'alumni' ? 'bg-[#059669]' :
                 currentBranch === 'academic' ? 'bg-[#7c3aed]' :
                 currentBranch === 'company' ? 'bg-[#1e3a5f]' :
@@ -2205,17 +2205,6 @@ export default function UserProfile({
                 '🎓 You are viewing from Student portal'
               }</span>
             </span>
-
-            <div className={`px-4 py-1.5 rounded-full text-white font-black text-xs shadow-md border border-white/50 flex items-center gap-2 tracking-wider uppercase whitespace-nowrap shrink-0 ${
-              currentBranch === 'admin' ? 'bg-gradient-to-r from-slate-950 via-[#b45309] to-amber-900 shadow-amber-900/40 border-amber-400/60 text-amber-300' :
-              currentBranch === 'alumni' ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 shadow-emerald-600/30 border-emerald-300/60' :
-              currentBranch === 'academic' ? 'bg-gradient-to-r from-violet-900 via-purple-900 to-slate-900 shadow-purple-950/40 border-purple-400/40' :
-              currentBranch === 'company' ? 'bg-gradient-to-r from-slate-950 via-[#1e3a5f] to-blue-900 shadow-blue-950/40 border-sky-400/40' :
-              'bg-gradient-to-r from-red-900 via-[#990000] to-red-700 shadow-red-900/30 border-red-300/60'
-            }`}>
-              <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${currentBranch === 'admin' ? 'bg-amber-400' : 'bg-white'}`}></span>
-              {currentBranch === 'admin' ? '👑 KGM SÜPER YÖNETİCİ PORTALI' : currentBranch === 'alumni' ? '🎓 MEZUN PORTALI' : currentBranch === 'academic' ? '🏛️ AKADEMİK PORTAL' : currentBranch === 'company' ? '🏢 KURUMSAL PORTAL' : '🎓 ÖĞRENCİ PORTALI'}
-            </div>
           </div>
           
           {/* RIGHT: Notifications & Profile Menu */}

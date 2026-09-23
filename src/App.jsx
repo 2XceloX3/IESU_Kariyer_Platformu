@@ -8,30 +8,18 @@ import { ToastContainer, toast } from './components/shared/Toast';
 import NotificationEngine from './components/NotificationEngine';
 import ErrorBoundary from './components/ErrorBoundary';
 
-const LandingPage = lazy(() => import('./components/LandingPage')), Login = lazy(() => import('./components/Login'));
-const Register = lazy(() => import('./components/Register')), ForgotPassword = lazy(() => import('./components/ForgotPassword'));
-const PublicNewsView = lazy(() => import('./components/PublicNewsView')), AdminFeed = lazy(() => import('./components/AdminFeed'));
-const AdminDashboard = lazy(() => import('./components/AdminDashboard')), StudentHive = lazy(() => import('./hives/student/StudentHive'));
-const AlumniHive = lazy(() => import('./hives/alumni/AlumniHive')), CompanyHive = lazy(() => import('./hives/company/CompanyHive'));
-const AcademicHive = lazy(() => import('./hives/academic/AcademicHive')), FloatingChatWidget = lazy(() => import('./components/FloatingChatWidget'));
-const CommandPalette = lazy(() => import('./components/CommandPalette')), PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'));
-const SurveyPopupModal = lazy(() => import('./components/SurveyPopupModal')), GlobalSearchOverlay = lazy(() => import('./components/GlobalSearchOverlay'));
-const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserProfile = lazy(() => import('./components/PublicUserProfile'));
-const JobsAndInternships = lazy(() => import('./components/JobsAndInternships'));
+const LandingPage = lazy(() => import('./components/LandingPage')), Login = lazy(() => import('./components/Login')), Register = lazy(() => import('./components/Register')), ForgotPassword = lazy(() => import('./components/ForgotPassword'));
+const PublicNewsView = lazy(() => import('./components/PublicNewsView')), AdminFeed = lazy(() => import('./components/AdminFeed')), AdminDashboard = lazy(() => import('./components/AdminDashboard')), StudentHive = lazy(() => import('./hives/student/StudentHive'));
+const AlumniHive = lazy(() => import('./hives/alumni/AlumniHive')), CompanyHive = lazy(() => import('./hives/company/CompanyHive')), AcademicHive = lazy(() => import('./hives/academic/AcademicHive')), FloatingChatWidget = lazy(() => import('./components/FloatingChatWidget'));
+const CommandPalette = lazy(() => import('./components/CommandPalette')), PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt')), SurveyPopupModal = lazy(() => import('./components/SurveyPopupModal')), GlobalSearchOverlay = lazy(() => import('./components/GlobalSearchOverlay'));
+const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserProfile = lazy(() => import('./components/PublicUserProfile')), JobsAndInternships = lazy(() => import('./components/JobsAndInternships'));
 
 window.toast = toast;
-const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events']);
-const ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
-const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao', 'global_map']);
-const ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
-const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
-const STUDENT_ROUTES = new Set(['student', 'student_kgb', 'student_analytics', 'cvbuilder', 'interview_sim', 'career_test', 'career_roadmap', 'startup_incubator', 'smart_certs', 'digital_portfolio', 'reward_store', 'metaverse_library', 'hackathon_market', 'club_portal', 'club_admin', 'sem', 'staj']);
+const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
+const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao', 'global_map']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
+const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']), STUDENT_ROUTES = new Set(['student', 'student_kgb', 'student_analytics', 'cvbuilder', 'interview_sim', 'career_test', 'career_roadmap', 'startup_incubator', 'smart_certs', 'digital_portfolio', 'reward_store', 'metaverse_library', 'hackathon_market', 'club_portal', 'club_admin', 'sem', 'staj']);
 
-const Spinner = () => (
-  <div className="flex items-center justify-center min-h-screen bg-[#f8f9fc]">
-    <div className="w-12 h-12 border-4 border-[#990000] border-t-transparent rounded-full animate-spin shadow-lg" />
-  </div>
-);
+const Spinner = () => (<div className="flex items-center justify-center min-h-screen bg-[#f8f9fc]"><div className="w-12 h-12 border-4 border-[#990000] border-t-transparent rounded-full animate-spin shadow-lg" /></div>);
 
 export default function App() {
   const navigate = useNavigate();
@@ -46,23 +34,19 @@ export default function App() {
       return p;
     } catch { return null; }
   });
-  const [authenticatedUserId, setAuthenticatedUserId] = useState(null);
-  const [isAuthStateResolved, setIsAuthStateResolved] = useState(false);
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [authenticatedUserId, setAuthenticatedUserId] = useState(null), [isAuthStateResolved, setIsAuthStateResolved] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false), [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const { userRole, setUserRole, siteConfig, activePortalBranch, setActivePortalBranch } = useAppStore();
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
-  const isAdmin = !import.meta.env.DEV
-    ? (Boolean(authenticatedUserId && (currentUser?.role === 'admin' || userRole === 'admin')) || currentUser?.id === 'admin_1513')
-    : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
-  const currentBranch = isAdmin
-    ? (activePortalBranch || 'admin')
-    : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
+  const isAdmin = !import.meta.env.DEV ? (Boolean(authenticatedUserId && (currentUser?.role === 'admin' || userRole === 'admin')) || currentUser?.id === 'admin_1513') : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
+  const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
 
   const setView = useCallback((v) => {
-    navigate(v === 'landing' ? '/' : '/' + (typeof v === 'function' ? v(pathView) : v));
+    const raw = typeof v === 'function' ? v(pathView) : v;
+    const clean = typeof raw === 'string' ? raw.replace(/^\//, '') : raw;
+    navigate(clean === 'landing' || clean === '' ? '/' : '/' + clean);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [navigate, pathView]);
 
@@ -70,26 +54,20 @@ export default function App() {
     if (currentUser) {
       ['iesu_mock_user', 'igu_mock_user'].forEach(k => localStorage.setItem(k, JSON.stringify(currentUser)));
       try { useAppStore.getState().setCurrentUser(currentUser); } catch {}
+      if (!userRole && currentUser.role) setUserRole(currentUser.role);
+      if (currentUser.role !== 'admin') setActivePortalBranch?.(currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
     } else {
       ['iesu_mock_user', 'igu_mock_user', 'iesu_user_role_v1', 'igu_user_role_v1'].forEach(k => localStorage.removeItem(k));
       try { useAppStore.getState().setCurrentUser(null); } catch {}
     }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (!userRole && currentUser?.role) setUserRole(currentUser.role);
-    if (currentUser?.role && currentUser.role !== 'admin') {
-      const b = currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role;
-      setActivePortalBranch?.(b);
-    }
-  }, [currentUser?.role, setUserRole, userRole, setActivePortalBranch]);
+  }, [currentUser, userRole, setUserRole, setActivePortalBranch]);
 
   useEffect(() => {
     if (!pathView) return;
     if (ACADEMIC_ROUTES.has(pathView)) setActivePortalBranch?.('academic');
     else if (COMPANY_ROUTES.has(pathView)) setActivePortalBranch?.('company');
     else if (ALUMNI_ROUTES.has(pathView)) setActivePortalBranch?.('alumni');
-    else if (ADMIN_CMS.has(pathView) || pathView === 'admin') { if (isAdmin) setActivePortalBranch?.('admin'); }
+    else if ((ADMIN_CMS.has(pathView) || pathView === 'admin') && isAdmin) setActivePortalBranch?.('admin');
     else if (STUDENT_ROUTES.has(pathView)) setActivePortalBranch?.('student');
   }, [pathView, setActivePortalBranch, isAdmin]);
 
@@ -99,13 +77,8 @@ export default function App() {
       if (!u) { setIsAuthStateResolved(true); return; }
       try {
         const snap = await getDoc(doc(db, 'users', u.uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          setCurrentUser({ id: u.uid, ...data });
-          if (data.role) setUserRole(data.role);
-        } else {
-          setCurrentUser(prev => prev || { id: u.uid, email: u.email, name: u.displayName || 'Kullanıcı' });
-        }
+        if (snap.exists()) { const data = snap.data(); setCurrentUser({ id: u.uid, ...data }); if (data.role) setUserRole(data.role); }
+        else { setCurrentUser(prev => prev || { id: u.uid, email: u.email, name: u.displayName || 'Kullanıcı' }); }
       } catch (e) { console.error('Auth sync error:', e); } finally { setIsAuthStateResolved(true); }
     }, () => { setAuthenticatedUserId(null); setIsAuthStateResolved(true); });
     return () => unsub();
@@ -122,39 +95,28 @@ export default function App() {
 
   const renderHive = () => {
     const s = useAppStore.getState();
-    if (ADMIN_CMS.has(pathView)) {
-      return isAdmin
-        ? <AdminDashboard setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" />
-        : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={s.students} alumni={s.alumni} companies={s.companies} academicStaff={s.academicStaff} />;
-    }
-    if (pathView === 'admin') {
-      return isAdmin
-        ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />
-        : <StudentHive currentUser={currentUser} />;
-    }
-    if (ALUMNI_ROUTES.has(pathView)) return <AlumniHive currentUser={currentUser} />;
-    if (STUDENT_ROUTES.has(pathView)) return <StudentHive currentUser={currentUser} />;
-    if (ACADEMIC_ROUTES.has(pathView)) return <AcademicHive currentUser={currentUser} />;
-    if (COMPANY_ROUTES.has(pathView)) return <CompanyHive currentUser={currentUser} />;
-
+    if (ADMIN_CMS.has(pathView)) return isAdmin ? <AdminDashboard setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" /> : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={s.students} alumni={s.alumni} companies={s.companies} academicStaff={s.academicStaff} />;
+    if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : <StudentHive currentUser={currentUser} setView={setView} />;
+    if (ALUMNI_ROUTES.has(pathView)) return <AlumniHive currentUser={currentUser} setView={setView} />;
+    if (STUDENT_ROUTES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
+    if (ACADEMIC_ROUTES.has(pathView)) return <AcademicHive currentUser={currentUser} setView={setView} />;
+    if (COMPANY_ROUTES.has(pathView)) return <CompanyHive currentUser={currentUser} setView={setView} />;
     if (currentBranch === 'admin' && isAdmin) {
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" />;
       if (pathView === 'user_profile') return <UserProfile userId={s.selectedUserId || currentUser?.id} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'public_profile') return <PublicUserProfile userId={s.selectedUserId} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
     }
-    if (currentBranch === 'alumni') return <AlumniHive currentUser={currentUser} />;
-    if (currentBranch === 'company') return <CompanyHive currentUser={currentUser} />;
-    if (currentBranch === 'academic') return <AcademicHive currentUser={currentUser} />;
-    return <StudentHive currentUser={currentUser} />;
+    if (currentBranch === 'alumni') return <AlumniHive currentUser={currentUser} setView={setView} />;
+    if (currentBranch === 'company') return <CompanyHive currentUser={currentUser} setView={setView} />;
+    if (currentBranch === 'academic') return <AcademicHive currentUser={currentUser} setView={setView} />;
+    return <StudentHive currentUser={currentUser} setView={setView} />;
   };
 
   const store = useAppStore.getState();
-
   return (
     <ErrorBoundary>
-      <ToastContainer />
-      <NotificationEngine />
+      <ToastContainer /><NotificationEngine />
       <Suspense fallback={<Spinner />}>
         {siteConfig?.maintenanceMode && !isAdmin && pathView !== 'login' ? (
           <div className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-6 text-center z-50">
@@ -174,8 +136,7 @@ export default function App() {
             {renderHive()}
             <Suspense fallback={null}>
               <SurveyPopupModal currentUser={currentUser} userRole={effectiveRole} currentView={pathView} activePortalBranch={currentBranch} />
-              <PWAInstallPrompt />
-              <CommandPalette isOpen={isCommandPaletteOpen} setIsOpen={setIsCommandPaletteOpen} currentUser={currentUser} setView={setView} />
+              <PWAInstallPrompt /><CommandPalette isOpen={isCommandPaletteOpen} setIsOpen={setIsCommandPaletteOpen} currentUser={currentUser} setView={setView} />
               <GlobalSearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} setView={setView} />
             </Suspense>
           </>
