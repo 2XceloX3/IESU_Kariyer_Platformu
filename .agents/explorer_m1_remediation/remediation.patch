@@ -1,0 +1,822 @@
+diff --git a/src/brain/eventBus.js b/src/brain/eventBus.js
+index 8e4b784..f5c1d3a 100644
+--- a/src/brain/eventBus.js
++++ b/src/brain/eventBus.js
+@@ -172,13 +172,26 @@ class EventBus {
+   }
+ 
+   /**
+    * Reset all state (useful for Vitest test teardown).
++   * @param {Object} [options]
++   * @param {boolean} [options.keepSubscribers=false] - If true, keeps registered listeners intact.
+    */
+-  clear() {
+-    this.listeners.clear();
++  clear(options = {}) {
++    const keepSubscribers = Boolean(options?.keepSubscribers);
++    if (!keepSubscribers) {
++      this.listeners.clear();
++    }
+     this.throughputLog = [];
+     this.eventHistory = [];
+     this.totalEventCount = 0;
+   }
++
++  /**
++   * Reset only throughput metrics and event history without clearing subscriber listeners.
++   */
++  resetMetrics() {
++    this.throughputLog = [];
++    this.eventHistory = [];
++    this.totalEventCount = 0;
++  }
+ }
+ 
+ export const eventBus = new EventBus();
+diff --git a/src/brain/useSharedStore.js b/src/brain/useSharedStore.js
+index b8cd731..9ea1562 100644
+--- a/src/brain/useSharedStore.js
++++ b/src/brain/useSharedStore.js
+@@ -37,6 +37,27 @@ const initialStories = [
+   }
+ ];
+ 
++/**
++ * Returns fresh clone of initial shared state to prevent cross-test and cross-session contamination.
++ */
++export const getInitialSharedState = () => ({
++  posts: Array.isArray(initialPosts) ? [...initialPosts] : [],
++  stories: [...initialStories],
++  jobs: Array.isArray(initialJobs) ? [...initialJobs] : [],
++  swipedJobs: [],
++  internships: Array.isArray(initialInternships) ? [...initialInternships] : [],
++  voluntaryInternships: Array.isArray(initialVoluntaryInternships) ? [...initialVoluntaryInternships] : [],
++  events: Array.isArray(liveEventData) ? [...liveEventData] : [],
++  news: Array.isArray(liveNewsData) ? [...liveNewsData] : [],
++  announcements: Array.isArray(liveAnnouncementData) ? [...liveAnnouncementData] : [],
++  generalEvents: Array.isArray(initialGeneralEvents) ? [...initialGeneralEvents] : [],
++  careerOpportunities: Array.isArray(initialCareerOpportunities) ? [...initialCareerOpportunities] : [],
++  featuredOpportunities: Array.isArray(initialFeatured) ? [...initialFeatured] : [],
++  semCourses: Array.isArray(initialSemCourses) ? [...initialSemCourses] : [],
++  innerPagesData: typeof innerPagesData === 'object' && innerPagesData !== null ? { ...innerPagesData } : innerPagesData,
++  lastUpdated: new Date().toISOString(),
++  source: 'live',
++  status: 'aktif',
++  isScraperLoading: false
++});
++
+ export const useSharedStore = create(
+   persist(
+     (set, get) => {
+@@ -44,38 +65,30 @@ export const useSharedStore = create(
+         set((state) => ({ [key]: typeof val === 'function' ? val(state[key]) : val }));
+ 
+       return {
+         // Read-shared collections
+-        posts: initialPosts,
++        ...getInitialSharedState(),
++
+         setPosts: setter('posts'),
+         addPost: (post) => set((s) => ({ posts: [post, ...(s.posts || [])] })),
+ 
+-        stories: initialStories,
+         setStories: setter('stories'),
+ 
+-        jobs: initialJobs,
+         setJobs: setter('jobs'),
+         addJob: (job) => set((s) => ({ jobs: [job, ...(s.jobs || [])] })),
+ 
+-        swipedJobs: [],
+         setSwipedJobs: setter('swipedJobs'),
+ 
+-        internships: initialInternships,
+         setInternships: setter('internships'),
+ 
+-        voluntaryInternships: initialVoluntaryInternships,
+         setVoluntaryInternships: setter('voluntaryInternships'),
+ 
+-        events: liveEventData,
+         setEvents: setter('events'),
+         addEvent: (evt) => set((s) => ({ events: [evt, ...(s.events || [])] })),
+ 
+-        news: liveNewsData,
+         setNews: setter('news'),
+ 
+-        announcements: liveAnnouncementData,
+         setAnnouncements: setter('announcements'),
+         addAnnouncement: (ann) => set((s) => ({ announcements: [ann, ...(s.announcements || [])] })),
+ 
+-        generalEvents: initialGeneralEvents,
+         setGeneralEvents: setter('generalEvents'),
+ 
+-        careerOpportunities: initialCareerOpportunities,
+         setCareerOpportunities: setter('careerOpportunities'),
+ 
+-        featuredOpportunities: initialFeatured,
+         setFeaturedOpportunities: setter('featuredOpportunities'),
+ 
+-        semCourses: initialSemCourses,
+         setSemCourses: setter('semCourses'),
+ 
+-        innerPagesData: innerPagesData,
+         setInnerPagesData: setter('innerPagesData'),
+ 
+         // Scraper Synchronization Pipeline
+-        lastUpdated: new Date().toISOString(),
+         setLastUpdated: setter('lastUpdated'),
+-        source: 'live',
+         setSource: setter('source'),
+-        status: 'aktif',
+         setStatus: setter('status'),
+-        isScraperLoading: false,
+         setIsScraperLoading: setter('isScraperLoading'),
+ 
+         refreshScrapedData: async (forceRefresh = false) => {
+@@ -107,8 +120,8 @@ export const useSharedStore = create(
+               const { scrapeLiveOrFallback } = await import('../services/scraper');
+               const data = await scrapeLiveOrFallback({ forceRefresh });
+               set((state) => ({
+-                ...(data.announcements && data.announcements.length > 0 ? { announcements: data.announcements } : {}),
+-                ...(data.events && data.events.length > 0 ? { events: data.events } : {}),
++                ...(data.announcements && Array.isArray(data.announcements) && data.announcements.length > 0 ? { announcements: data.announcements } : {}),
++                ...(data.events && Array.isArray(data.events) && data.events.length > 0 ? { events: data.events } : {}),
+                 lastUpdated: data.lastUpdated || new Date().toISOString(),
+                 source: data.source || 'live',
+                 status: data.status || 'aktif',
+@@ -125,6 +138,11 @@ export const useSharedStore = create(
+           console.error('[SharedStore] Failed to refresh scraped data after retries:', lastErr);
+           set({ isScraperLoading: false, status: 'error' });
+           throw lastErr;
++        },
++
++        /**
++         * Reset store to initial state (for tests and session logout).
++         */
++        reset: () => set(getInitialSharedState())
+       };
+     },
+     {
+@@ -152,32 +170,58 @@ export const useSharedStore = create(
+   )
+ );
+ 
+-// Wire EventBus listeners to update shared state reactively
+-eventBus.on('post:created', (payload) => {
+-  if (payload && (payload.post || payload.content)) {
+-    const post = payload.post || payload;
+-    useSharedStore.getState().addPost(post);
++// Managed listener unbinders tracking
++let sharedStoreUnsubscribers = [];
++
++/**
++ * Explicit subscriber initialization/re-attachment mechanism for useSharedStore.
++ * Safely unbinds any previous listeners to prevent memory leaks or duplicate handlers.
++ * Can be called automatically on module import and explicitly whenever needed (e.g. in beforeEach).
++ * @returns {Function} Clean unsubscribe function for all 4 listeners.
++ */
++export function initSharedStoreSubscriptions() {
++  if (sharedStoreUnsubscribers.length > 0) {
++    sharedStoreUnsubscribers.forEach((unsub) => {
++      try {
++        if (typeof unsub === 'function') unsub();
++      } catch (_) {}
++    });
++    sharedStoreUnsubscribers = [];
+   }
+-});
+ 
+-eventBus.on('job:published', (payload) => {
+-  if (payload && (payload.job || payload.title)) {
+-    const job = payload.job || payload;
+-    useSharedStore.getState().addJob(job);
+-  }
+-});
++  const unsubPost = eventBus.on('post:created', (payload) => {
++    if (payload && (payload.post || payload.content)) {
++      const post = payload.post || payload;
++      useSharedStore.getState().addPost(post);
++    }
++  });
+ 
+-eventBus.on('event:announced', (payload) => {
+-  if (payload && (payload.event || payload.title)) {
+-    const evt = payload.event || payload;
+-    useSharedStore.getState().addEvent(evt);
+-  }
+-});
++  const unsubJob = eventBus.on('job:published', (payload) => {
++    if (payload && (payload.job || payload.title)) {
++      const job = payload.job || payload;
++      useSharedStore.getState().addJob(job);
++    }
++  });
+ 
+-eventBus.on('announcement:broadcast', (payload) => {
+-  if (payload && (payload.announcement || payload.title)) {
+-    const ann = payload.announcement || payload;
+-    useSharedStore.getState().addAnnouncement(ann);
+-  }
+-});
++  const unsubEvent = eventBus.on('event:announced', (payload) => {
++    if (payload && (payload.event || payload.title)) {
++      const evt = payload.event || payload;
++      useSharedStore.getState().addEvent(evt);
++    }
++  });
++
++  const unsubAnnouncement = eventBus.on('announcement:broadcast', (payload) => {
++    if (payload && (payload.announcement || payload.title)) {
++      const ann = payload.announcement || payload;
++      useSharedStore.getState().addAnnouncement(ann);
++    }
++  });
++
++  sharedStoreUnsubscribers = [unsubPost, unsubJob, unsubEvent, unsubAnnouncement];
++
++  return () => {
++    sharedStoreUnsubscribers.forEach((unsub) => {
++      try {
++        if (typeof unsub === 'function') unsub();
++      } catch (_) {}
++    });
++    sharedStoreUnsubscribers = [];
++  };
++}
++
++// Wire EventBus listeners to update shared state reactively on module load
++initSharedStoreSubscriptions();
+ 
+ export default useSharedStore;
+diff --git a/src/brain/useAdminStore.js b/src/brain/useAdminStore.js
+index c704bf2..87a4192 100644
+--- a/src/brain/useAdminStore.js
++++ b/src/brain/useAdminStore.js
+@@ -118,6 +118,172 @@ const initialCareerFairStands = [
+   }))
+ ];
+ 
++/**
++ * Returns fresh clone of initial admin state to prevent cross-test and cross-session contamination.
++ */
++export const getInitialAdminState = () => ({
++  // User Directories
++  students: generateStudents(),
++  alumni: generateAlumni(),
++  companies: generateCompanies(),
++  academicStaff: generateAcademicStaff(),
++
++  // Surveys
++  surveys: Array.isArray(initialSurveys) ? [...initialSurveys] : [],
++
++  // Site Configuration & Branding
++  siteConfig: {
++    heroBannerTitle: 'Kariyerini Şekillendir',
++    heroBannerSub: 'İESÜ Kariyer Platformu ile fırsatları keşfet, ağını genişlet ve geleceğini inşa et.',
++    ctaButtonText: 'Hemen Başla',
++    maintenanceMode: false,
++    announcementBanner: { visible: false, text: '', color: 'red' },
++    primaryColor: '#990000',
++    logoSubText: 'IESU KARİYER',
++    footerMotto: 'Geleceğe açılan kapı.'
++  },
++
++  // Audit Logging with DOMPurify sanitization & circular reference defense
++  auditLogs: [
++    {
++      id: 'log_initial',
++      timestamp: new Date().toLocaleTimeString('tr-TR'),
++      user: 'Sistem Ajanı',
++      action: 'Hibrit İdari Portal başarıyla başlatıldı ve yüklendi.',
++      module: 'Sistem',
++      ip: '192.168.1.101'
++    }
++  ],
++
++  // Feature Toggles (object and flat properties for 100% test compatibility)
++  featureToggles: {
++    featureSurveys: true,
++    featureCareerCheckup: true,
++    featureAlumniCard: false,
++    featureAlumniAssocToggle: true,
++    featureClubsShowcase: true,
++    featureClubApplications: true,
++    featureCareerFair: false,
++    featureSEMAcademy: false,
++    featureSSPLeaderboard: false
++  },
++  featureSurveys: true,
++  featureCareerCheckup: true,
++  featureAlumniCard: false,
++  featureAlumniAssocToggle: true,
++  featureClubsShowcase: true,
++  featureClubApplications: true,
++  featureCareerFair: false,
++  featureSEMAcademy: false,
++  featureSSPLeaderboard: false,
++
++  // Hive Error Telemetry (Requirement R7: { student: 0, alumni: 0, company: 0, academic: 0, admin: 0 })
++  hiveErrors: {
++    student: 0,
++    alumni: 0,
++    company: 0,
++    academic: 0,
++    admin: 0
++  },
++
++  // Administrative Pools
++  adminActiveTab: 'feed',
++  adminMessages: [
++    {
++      id: 'ADM-MSG-1',
++      companyName: 'Aselsan A.Ş.',
++      email: 'kurumsal@aselsan.com.tr',
++      phone: '0216 555 0000',
++      subject: '2026 Mühendislik Staj Kontenjanı Protokolü',
++      message: 'Üniversiteniz bilgisayar ve elektrik-elektronik mühendisliği öğrencileri için 15 adet staj kontenjanı tanımlamak istiyoruz.',
++      date: '30.07.2026 10:30',
++      status: 'Beklemede'
++    }
++  ],
++  applications: Array.isArray(initialApplications) ? [...initialApplications] : [],
++  staffList: Array.isArray(initialStaffList) ? [...initialStaffList] : [],
++
++  // Career Fair (Stitch) Management
++  careerFairEvent: {
++    id: 'cfe-2026',
++    title: 'İESÜ 2026 Bahar Kariyer Zirvesi & Fuarı',
++    date: '15-18 Mayıs 2026',
++    location: 'Merkez Kampüs Rektörlük Bahçesi & Fuaye Alanı',
++    description: 'Esenyurt Üniversitesi öğrencilerini ve mezunlarını sektör lideri şirketlerle buluşturan resmî kariyer etkinliği.',
++    banner: 'https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg',
++    isActive: true,
++    quota: 50
++  },
++  careerFairFormTemplate: [
++    { id: 'q_1', label: 'Katılımcı Sayısı & Yetkili İsimleri', type: 'text', required: true, description: 'Stant başında duracak personel sayısı ve ad-soyad bilgileri', order: 1 },
++    { id: 'q_2', label: 'Elektrik & İnternet İhtiyacı', type: 'select', required: true, options: ['Yalnızca Standart Priz (220V)', 'Yüksek Güç + Kablolu İnternet', 'İhtiyaç Yok'], order: 2 },
++    { id: 'q_3', label: 'Özel Ekipman / Roll-up Detayları', type: 'textarea', required: false, description: 'Getirilecek görseller ve stand alan gereksinimleri', order: 3 },
++    { id: 'q_4', label: 'Eşantiyon & Promosyon Dağıtımı', type: 'checkbox', required: false, description: 'Stantta promosyon ürün dağıtılacak mı?', order: 4 },
++    { id: 'q_5', label: 'Firma Logosu (Vektörel/PNG)', type: 'file', required: true, description: 'Fuar kataloğu ve afişler için yüksek çözünürlüklü logo', order: 5 }
++  ],
++  careerFairApplications: [
++    { id: 'APP-101', companyId: 'CMP-001', companyName: 'Baykar Teknoloji', appliedAt: '2026-07-20', status: 'Onaylandı', tableNumber: 'Stant A-01', answers: {} },
++    { id: 'APP-102', companyId: 'CMP-002', companyName: 'Aselsan', appliedAt: '2026-07-21', status: 'Onaylandı', tableNumber: 'Stant A-02', answers: {} }
++  ],
++  careerFairStands: Array.isArray(initialCareerFairStands) ? [...initialCareerFairStands] : [],
++
++  // Research Labs & Calls
++  researchLabs: [
++    { id: 'LAB-01', name: 'Yapay Zeka & Derin Öğrenme Ar-Ge Lab', location: 'J Blok 4. Kat / Lab 402', equipment: '8x NVIDIA H100 Tensor Core GPU Sunucu', capacity: '25 Araştırmacı', status: 'Aktif / Rezervasyona Açık' },
++    { id: 'LAB-02', name: 'Otonom Sistemler & İHA Geliştirme Lab', location: 'Kuluçka Merkezi A Blok', equipment: 'Rüzgar Tüneli & 3D Metal Yazıcılar', capacity: '15 Araştırmacı', status: 'Aktif / Rezervasyona Açık' },
++    { id: 'LAB-03', name: 'Biyomedikal Cihaz & Doku Mühendisliği Lab', location: 'C Blok Zemin Kat / Lab 104', equipment: 'Hücre Kültür İnkübatörleri & Mikroskoplar', capacity: '20 Araştırmacı', status: 'Bakımda (Yarın Açık)' }
++  ],
++  researchCalls: [
++    { id: 'CALL-101', title: 'TÜBİTAK 2209-A: Otonom İHA Kontrol Algoritmaları Bursiyer Çağrısı', lead: 'Dr. Öğr. Üyesi Mehmet Can', positions: '2 Lisans / 1 Yüksek Lisans Öğrencisi', deadline: '15 Mart 2026', budget: '75.000 ₺ Destekli', status: 'Aktif' },
++    { id: 'CALL-102', title: 'BAP Projesi: Sağlıkta LLM Destekli Tanı Asistanı Araştırmacı Alımı', lead: 'Prof. Dr. Bahri Şahin', positions: '3 Yazılım Araştırmacısı', deadline: '01 Nisan 2026', budget: '120.000 ₺ Destekli', status: 'Aktif' }
++  ],
++  researchConfig: {
++    timeSlots: [
++      "09:00 - 11:00 (Sabah Seansı)",
++      "11:30 - 13:30 (Öğle Seansı)",
++      "14:00 - 16:00 (Öğleden Sonra Seansı)",
++      "16:30 - 18:30 (Akşam Seansı)"
++    ],
++    labCustomQuestions: [
++      { id: 'q_safety', label: 'Laboratuvar İş Sağlığı & Güvenliği (İSG) Eğitimi Tamamlandı mı?', type: 'select', options: ['Evet (Sertifikalı)', 'Muaf (Öğretim Üyesi)', 'Henüz Tamamlanmadı'], required: true },
++      { id: 'q_ethics', label: 'Etik Kurul Onayı Gerektiriyor mu?', type: 'select', options: ['Gerektirmiyor', 'Alındı (Karar No Mevcut)', 'Başvuru Aşamasında'], required: false }
++    ],
++    callCustomQuestions: [
++      { id: 'cq_availability', label: 'Hafta Sonu / Saha Çalışmasına Katılım Durumu', type: 'select', options: ['Tamamen Uygun', 'Sadece Cumartesi', 'Yalnızca Hafta İçi'], required: false },
++      { id: 'cq_scholarship', label: 'Daha Önce TÜBİTAK/BAP Bursiyeri Oldunuz mu?', type: 'select', options: ['Hayır (İlk Kez)', 'Evet (TÜBİTAK 2209)', 'Evet (BAP)', 'Evet (Diğer)'], required: false }
++    ]
++  },
++  labReservations: [],
++  researchCallApplications: [],
++
++  // Specialized Data Pools
++  checkupRecords: [],
++  newsletterSubscribers: [],
++  bmiRecords: [],
++  helpdeskTickets: [],
++  clubApplications: [],
++  alumniCardApplications: [],
++  alumniCardForms: [],
++  alumniAssocBoard: [],
++  alumniAssocApplications: [],
++  kgbEnabled: true,
++  kgbStudentRecords: [],
++  kgbAlumniRecords: [],
++  sspEnabled: true,
++  sspUsers: [],
++  institutionalStatsData: [
++    { id: 1, title: 'Topluma Kazandırılan Mezun', val: '65.000+', icon: 'GraduationCap' },
++    { id: 2, title: 'Uluslararası Akredite Program', val: '65+', icon: 'ShieldCheck' },
++    { id: 3, title: 'Ar-Ge & Uygulama Laboratuvarı', val: '110+', icon: 'FlaskConical' },
++    { id: 4, title: 'Farklı Ülkeden Uluslararası Öğrenci', val: '130+', icon: 'Users' }
++  ],
++  showInstitutionalStats: false,
++  groups: Array.isArray(initialGroups) ? [...initialGroups] : [],
++  mentorships: Array.isArray(initialMentorships) ? [...initialMentorships] : [],
++  clubs: [],
++  academicCatalog: Array.isArray(initialAcademicCatalog) ? [...initialAcademicCatalog] : [],
++  academicApprovals: Array.isArray(initialAcademicApprovals) ? [...initialAcademicApprovals] : [],
++  eventRegistrations: [],
++  swarmMetrics: { activeAgents: 25, dataNodesProcessed: 84392, evolutionCycle: 1 },
++
++  // Communication Pools
++  messages: [],
++  notifications: [],
++  unreadNotificationsCount: 0
++});
++
+ export const useAdminStore = create(
+   persist(
+     (set, get) => {
+@@ -126,23 +292,19 @@ export const useAdminStore = create(
+         set((state) => ({ [key]: typeof val === 'function' ? val(state[key]) : val }));
+ 
+       return {
+-        // User Directories
+-        students: generateStudents(),
++        ...getInitialAdminState(),
++
++        // User Directories Setters
+         setStudents: setter('students'),
+-
+-        alumni: generateAlumni(),
+         setAlumni: setter('alumni'),
+-
+-        companies: generateCompanies(),
+         setCompanies: setter('companies'),
+-
+-        academicStaff: generateAcademicStaff(),
+         setAcademicStaff: setter('academicStaff'),
+ 
+-        // Surveys
+-        surveys: initialSurveys,
++        // Surveys Setter
+         setSurveys: setter('surveys'),
+ 
+         // Site Configuration & Branding
+@@ -156,23 +318,8 @@ export const useAdminStore = create(
+           footerMotto: 'Geleceğe açılan kapı.'
+         },
+@@ -216,36 +363,20 @@ export const useAdminStore = create(
+         logAuditAction: (user, action, module, severity, metadata) =>
+           get().logAction(user, action, module, severity, metadata),
+ 
+-        // Feature Toggles (object and flat properties for 100% test compatibility)
+-        featureToggles: {
+-          featureSurveys: true,
+-          featureCareerCheckup: true,
+-          featureAlumniCard: false,
+-          featureAlumniAssocToggle: true,
+-          featureClubsShowcase: true,
+-          featureClubApplications: true,
+-          featureCareerFair: false,
+-          featureSEMAcademy: false,
+-          featureSSPLeaderboard: false
+-        },
+-        featureSurveys: true,
++        // Feature Toggles Setters
+         setFeatureSurveys: setter('featureSurveys'),
+-        featureCareerCheckup: true,
+         setFeatureCareerCheckup: setter('featureCareerCheckup'),
+-        featureAlumniCard: false,
+         setFeatureAlumniCard: setter('featureAlumniCard'),
+-        featureAlumniAssocToggle: true,
+         setFeatureAlumniAssocToggle: setter('featureAlumniAssocToggle'),
+-        featureClubsShowcase: true,
+         setFeatureClubsShowcase: setter('featureClubsShowcase'),
+-        featureClubApplications: true,
+         setFeatureClubApplications: setter('featureClubApplications'),
+-        featureCareerFair: false,
+         setFeatureCareerFair: setter('featureCareerFair'),
+-        featureSEMAcademy: false,
+         setFeatureSEMAcademy: setter('featureSEMAcademy'),
+-        featureSSPLeaderboard: false,
+         setFeatureSSPLeaderboard: setter('featureSSPLeaderboard'),
+ 
+         setFeatureToggle: (key, val) =>
+@@ -259,13 +390,7 @@ export const useAdminStore = create(
+ 
+         // Hive Error Telemetry
+-        hiveErrors: {
+-          student: 0,
+-          alumni: 0,
+-          company: 0,
+-          academic: 0,
+-          admin: 0
+-        },
+         reportHiveError: (hive, error) =>
+@@ -284,31 +409,14 @@ export const useAdminStore = create(
+         recordHiveError: (hive, error) => get().reportHiveError(hive, error),
+ 
+-        // Administrative Pools
+-        adminActiveTab: 'feed',
++        // Administrative Pools Setters
+         setAdminActiveTab: setter('adminActiveTab'),
+-
+-        adminMessages: [
+-          {
+-            id: 'ADM-MSG-1',
+-            companyName: 'Aselsan A.Ş.',
+-            email: 'kurumsal@aselsan.com.tr',
+-            phone: '0216 555 0000',
+-            subject: '2026 Mühendislik Staj Kontenjanı Protokolü',
+-            message: 'Üniversiteniz bilgisayar ve elektrik-elektronik mühendisliği öğrencileri için 15 adet staj kontenjanı tanımlamak istiyoruz.',
+-            date: '30.07.2026 10:30',
+-            status: 'Beklemede'
+-          }
+-        ],
+         setAdminMessages: setter('adminMessages'),
+-
+-        applications: initialApplications,
+         setApplications: setter('applications'),
+         addApplication: (app) =>
+@@ -318,17 +426,11 @@ export const useAdminStore = create(
+             return { applications: [app, ...(state.applications || [])] };
+           }),
+ 
+-        staffList: initialStaffList,
+         setStaffList: setter('staffList'),
+         addStaffMember: (member) => set((s) => ({ staffList: [member, ...(s.staffList || [])] })),
+         updateStaffMember: (updated) => set((s) => ({ staffList: (s.staffList || []).map((m) => (m.id === updated.id ? updated : m)) })),
+         deleteStaffMember: (id) => set((s) => ({ staffList: (s.staffList || []).filter((m) => m.id !== id) })),
+ 
+-        // Career Fair (Stitch) Management
+-        careerFairEvent: {
+-          id: 'cfe-2026',
+-          title: 'İESÜ 2026 Bahar Kariyer Zirvesi & Fuarı',
+-          date: '15-18 Mayıs 2026',
+-          location: 'Merkez Kampüs Rektörlük Bahçesi & Fuaye Alanı',
+-          description: 'Esenyurt Üniversitesi öğrencilerini ve mezunlarını sektör lideri şirketlerle buluşturan resmî kariyer etkinliği.',
+-          banner: 'https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg',
+-          isActive: true,
+-          quota: 50
+-        },
++        // Career Fair Management Setters
+         setCareerFairEvent: setter('careerFairEvent'),
+-        careerFairFormTemplate: [
+-          { id: 'q_1', label: 'Katılımcı Sayısı & Yetkili İsimleri', type: 'text', required: true, description: 'Stant başında duracak personel sayısı ve ad-soyad bilgileri', order: 1 },
+-          { id: 'q_2', label: 'Elektrik & İnternet İhtiyacı', type: 'select', required: true, options: ['Yalnızca Standart Priz (220V)', 'Yüksek Güç + Kablolu İnternet', 'İhtiyaç Yok'], order: 2 },
+-          { id: 'q_3', label: 'Özel Ekipman / Roll-up Detayları', type: 'textarea', required: false, description: 'Getirilecek görseller ve stand alan gereksinimleri', order: 3 },
+-          { id: 'q_4', label: 'Eşantiyon & Promosyon Dağıtımı', type: 'checkbox', required: false, description: 'Stantta promosyon ürün dağıtılacak mı?', order: 4 },
+-          { id: 'q_5', label: 'Firma Logosu (Vektörel/PNG)', type: 'file', required: true, description: 'Fuar kataloğu ve afişler için yüksek çözünürlüklü logo', order: 5 }
+-        ],
+         setCareerFairFormTemplate: setter('careerFairFormTemplate'),
+         addFormField: (field) => set((s) => ({ careerFairFormTemplate: [...(s.careerFairFormTemplate || []), field] })),
+         removeFormField: (id) => set((s) => ({ careerFairFormTemplate: (s.careerFairFormTemplate || []).filter((f) => f.id !== id) })),
+@@ -354,12 +456,8 @@ export const useAdminStore = create(
+             return { careerFairFormTemplate: list };
+           }),
+ 
+-        careerFairApplications: [
+-          { id: 'APP-101', companyId: 'CMP-001', companyName: 'Baykar Teknoloji', appliedAt: '2026-07-20', status: 'Onaylandı', tableNumber: 'Stant A-01', answers: {} },
+-          { id: 'APP-102', companyId: 'CMP-002', companyName: 'Aselsan', appliedAt: '2026-07-21', status: 'Onaylandı', tableNumber: 'Stant A-02', answers: {} }
+-        ],
+         setCareerFairApplications: setter('careerFairApplications'),
+-        careerFairStands: initialCareerFairStands,
+         setCareerFairStands: setter('careerFairStands'),
+         assignStandToCompany: (standId, companyName, companyId = null, newStatus = 'Atandı') =>
+@@ -414,24 +512,14 @@ export const useAdminStore = create(
+ 
+-        // Research Labs & Calls
+-        researchLabs: [
+-          { id: 'LAB-01', name: 'Yapay Zeka & Derin Öğrenme Ar-Ge Lab', location: 'J Blok 4. Kat / Lab 402', equipment: '8x NVIDIA H100 Tensor Core GPU Sunucu', capacity: '25 Araştırmacı', status: 'Aktif / Rezervasyona Açık' },
+-          { id: 'LAB-02', name: 'Otonom Sistemler & İHA Geliştirme Lab', location: 'Kuluçka Merkezi A Blok', equipment: 'Rüzgar Tüneli & 3D Metal Yazıcılar', capacity: '15 Araştırmacı', status: 'Aktif / Rezervasyona Açık' },
+-          { id: 'LAB-03', name: 'Biyomedikal Cihaz & Doku Mühendisliği Lab', location: 'C Blok Zemin Kat / Lab 104', equipment: 'Hücre Kültür İnkübatörleri & Mikroskoplar', capacity: '20 Araştırmacı', status: 'Bakımda (Yarın Açık)' }
+-        ],
++        // Research Labs & Calls Setters
+         setResearchLabs: setter('researchLabs'),
+         addResearchLab: (lab) => set((s) => ({ researchLabs: [lab, ...(s.researchLabs || [])] })),
+         updateResearchLab: (updated) => set((s) => ({ researchLabs: (s.researchLabs || []).map((l) => (l.id === updated.id ? updated : l)) })),
+         deleteResearchLab: (id) => set((s) => ({ researchLabs: (s.researchLabs || []).filter((l) => l.id !== id) })),
+ 
+-        researchCalls: [
+-          { id: 'CALL-101', title: 'TÜBİTAK 2209-A: Otonom İHA Kontrol Algoritmaları Bursiyer Çağrısı', lead: 'Dr. Öğr. Üyesi Mehmet Can', positions: '2 Lisans / 1 Yüksek Lisans Öğrencisi', deadline: '15 Mart 2026', budget: '75.000 ₺ Destekli', status: 'Aktif' },
+-          { id: 'CALL-102', title: 'BAP Projesi: Sağlıkta LLM Destekli Tanı Asistanı Araştırmacı Alımı', lead: 'Prof. Dr. Bahri Şahin', positions: '3 Yazılım Araştırmacısı', deadline: '01 Nisan 2026', budget: '120.000 ₺ Destekli', status: 'Aktif' }
+-        ],
+         setResearchCalls: setter('researchCalls'),
+         addResearchCall: (call) => set((s) => ({ researchCalls: [call, ...(s.researchCalls || [])] })),
+         updateResearchCall: (updated) => set((s) => ({ researchCalls: (s.researchCalls || []).map((c) => (c.id === updated.id ? updated : c)) })),
+         deleteResearchCall: (id) => set((s) => ({ researchCalls: (s.researchCalls || []).filter((c) => c.id !== id) })),
+ 
+-        researchConfig: {
+-          timeSlots: [
+-            "09:00 - 11:00 (Sabah Seansı)",
+-            "11:30 - 13:30 (Öğle Seansı)",
+-            "14:00 - 16:00 (Öğleden Sonra Seansı)",
+-            "16:30 - 18:30 (Akşam Seansı)"
+-          ],
+-          labCustomQuestions: [
+-            { id: 'q_safety', label: 'Laboratuvar İş Sağlığı & Güvenliği (İSG) Eğitimi Tamamlandı mı?', type: 'select', options: ['Evet (Sertifikalı)', 'Muaf (Öğretim Üyesi)', 'Henüz Tamamlanmadı'], required: true },
+-            { id: 'q_ethics', label: 'Etik Kurul Onayı Gerektiriyor mu?', type: 'select', options: ['Gerektirmiyor', 'Alındı (Karar No Mevcut)', 'Başvuru Aşamasında'], required: false }
+-          ],
+-          callCustomQuestions: [
+-            { id: 'cq_availability', label: 'Hafta Sonu / Saha Çalışmasına Katılım Durumu', type: 'select', options: ['Tamamen Uygun', 'Sadece Cumartesi', 'Yalnızca Hafta İçi'], required: false },
+-            { id: 'cq_scholarship', label: 'Daha Önce TÜBİTAK/BAP Bursiyeri Oldunuz mu?', type: 'select', options: ['Hayır (İlk Kez)', 'Evet (TÜBİTAK 2209)', 'Evet (BAP)', 'Evet (Diğer)'], required: false }
+-          ]
+-        },
+         setResearchConfig: setter('researchConfig'),
+         updateResearchConfig: (partial) => set((s) => ({ researchConfig: { ...(s.researchConfig || {}), ...partial } })),
+ 
+@@ -473,34 +561,16 @@ export const useAdminStore = create(
+ 
+-        // Specialized Data Pools
+-        checkupRecords: [],
++        // Specialized Data Pools Setters
+         setCheckupRecords: setter('checkupRecords'),
+         addCheckupRecord: (rec) => set((s) => ({ checkupRecords: [rec, ...(s.checkupRecords || [])] })),
+ 
+-        newsletterSubscribers: [],
+         setNewsletterSubscribers: setter('newsletterSubscribers'),
+         addNewsletterSubscriber: (sub) => set((s) => ({ newsletterSubscribers: [sub, ...(s.newsletterSubscribers || [])] })),
+ 
+-        bmiRecords: [],
+         setBmiRecords: setter('bmiRecords'),
+         addBmiRecord: (rec) => set((s) => ({ bmiRecords: [rec, ...(s.bmiRecords || [])] })),
+ 
+-        helpdeskTickets: [],
+         setHelpdeskTickets: setter('helpdeskTickets'),
+         addHelpdeskTicket: (tkt) => set((s) => ({ helpdeskTickets: [tkt, ...(s.helpdeskTickets || [])] })),
+ 
+-        clubApplications: [],
+         setClubApplications: setter('clubApplications'),
+         addClubApplication: (app) => set((s) => ({ clubApplications: [app, ...(s.clubApplications || [])] })),
+ 
+-        alumniCardApplications: [],
+         setAlumniCardApplications: setter('alumniCardApplications'),
+-        alumniCardForms: [],
+         setAlumniCardForms: setter('alumniCardForms'),
+-        alumniAssocBoard: [],
+         setAlumniAssocBoard: setter('alumniAssocBoard'),
+-        alumniAssocApplications: [],
+         setAlumniAssocApplications: setter('alumniAssocApplications'),
+ 
+-        kgbEnabled: true,
+         setKgbEnabled: setter('kgbEnabled'),
+-        kgbStudentRecords: [],
+         setKgbStudentRecords: setter('kgbStudentRecords'),
+-        kgbAlumniRecords: [],
+         setKgbAlumniRecords: setter('kgbAlumniRecords'),
+ 
+-        sspEnabled: true,
+         setSspEnabled: setter('sspEnabled'),
+-        sspUsers: [],
+         setSspUsers: setter('sspUsers'),
+ 
+-        institutionalStatsData: [
+-          { id: 1, title: 'Topluma Kazandırılan Mezun', val: '65.000+', icon: 'GraduationCap' },
+-          { id: 2, title: 'Uluslararası Akredite Program', val: '65+', icon: 'ShieldCheck' },
+-          { id: 3, title: 'Ar-Ge & Uygulama Laboratuvarı', val: '110+', icon: 'FlaskConical' },
+-          { id: 4, title: 'Farklı Ülkeden Uluslararası Öğrenci', val: '130+', icon: 'Users' }
+-        ],
+         setInstitutionalStatsData: setter('institutionalStatsData'),
+-        showInstitutionalStats: false,
+         setShowInstitutionalStats: setter('showInstitutionalStats'),
+ 
+-        groups: initialGroups,
+         setGroups: setter('groups'),
+-        mentorships: initialMentorships,
+         setMentorships: setter('mentorships'),
+-        clubs: [],
+         setClubs: setter('clubs'),
+-        academicCatalog: initialAcademicCatalog,
+         setAcademicCatalog: setter('academicCatalog'),
+-        academicApprovals: initialAcademicApprovals,
+         setAcademicApprovals: setter('academicApprovals'),
+-        eventRegistrations: [],
+         setEventRegistrations: setter('eventRegistrations'),
+ 
+-        swarmMetrics: { activeAgents: 25, dataNodesProcessed: 84392, evolutionCycle: 1 },
+         incrementSwarmData: () =>
+@@ -547,15 +617,17 @@ export const useAdminStore = create(
+             }
+           })),
+ 
+-        // Communication Pools
+-        messages: [],
++        // Communication Pools Setters
+         setMessages: setter('messages'),
+         sendMessage: (msg) => set((s) => ({ messages: [...(s.messages || []), msg] })),
+ 
+-        notifications: [],
+         setNotifications: setter('notifications'),
+-        unreadNotificationsCount: 0,
+         setUnreadNotificationsCount: setter('unreadNotificationsCount'),
+         markAllNotificationsRead: () => set({ unreadNotificationsCount: 0 }),
+         addNotification: (notif) =>
+           set((state) => ({
+             ...(notif ? { notifications: [notif, ...(state.notifications || [])].slice(0, 50) } : {}),
+             unreadNotificationsCount: (state.unreadNotificationsCount || 0) + 1
+-          }))
++          })),
++
++        /**
++         * Reset store to initial state (for tests and session logout).
++         */
++        reset: () => set(getInitialAdminState())
+       };
+     },
+     {
+@@ -617,18 +689,45 @@ export const useAdminStore = create(
+   )
+ );
+ 
+-// Listen to cross-hive error events (only if not dispatched from this store)
+-eventBus.on('hive:error', (payload) => {
+-  if (payload && payload.hive && !payload._fromAdminStore) {
+-    const validHives = ['student', 'alumni', 'company', 'academic', 'admin'];
+-    const hive = validHives.includes(payload.hive) ? payload.hive : 'admin';
+-    const store = useAdminStore.getState();
+-    const currentCount = store.hiveErrors?.[hive] || 0;
+-    useAdminStore.setState({
+-      hiveErrors: {
+-        ...store.hiveErrors,
+-        [hive]: currentCount + 1
+-      }
+-    });
+-  }
+-});
++// Managed subscriber tracking
++let adminStoreUnsubscribers = [];
++
++/**
++ * Explicit subscriber initialization/re-attachment mechanism for useAdminStore.
++ * Listens to cross-hive error events via eventBus and aggregates hive telemetry.
++ * Can be called automatically on module import and explicitly in test setup.
++ * @returns {Function} Clean unsubscribe function.
++ */
++export function initAdminStoreSubscriptions() {
++  if (adminStoreUnsubscribers.length > 0) {
++    adminStoreUnsubscribers.forEach((unsub) => {
++      try {
++        if (typeof unsub === 'function') unsub();
++      } catch (_) {}
++    });
++    adminStoreUnsubscribers = [];
++  }
++
++  const unsubError = eventBus.on('hive:error', (payload) => {
++    if (payload && payload.hive && !payload._fromAdminStore) {
++      const validHives = ['student', 'alumni', 'company', 'academic', 'admin'];
++      const hive = validHives.includes(payload.hive) ? payload.hive : 'admin';
++      const store = useAdminStore.getState();
++      const currentCount = store.hiveErrors?.[hive] || 0;
++      useAdminStore.setState({
++        hiveErrors: {
++          ...store.hiveErrors,
++          [hive]: currentCount + 1
++        }
++      });
++    }
++  });
++
++  adminStoreUnsubscribers = [unsubError];
++
++  return () => {
++    adminStoreUnsubscribers.forEach((unsub) => {
++      try {
++        if (typeof unsub === 'function') unsub();
++      } catch (_) {}
++    });
++    adminStoreUnsubscribers = [];
++  };
++}
++
++// Wire EventBus listener for cross-hive error telemetry on module load
++initAdminStoreSubscriptions();
+ 
+ export default useAdminStore;
+diff --git a/src/__tests__/BeehiveBrainAndHivesM1.test.jsx b/src/__tests__/BeehiveBrainAndHivesM1.test.jsx
+index ea704d2..8164ba0 100644
+--- a/src/__tests__/BeehiveBrainAndHivesM1.test.jsx
++++ b/src/__tests__/BeehiveBrainAndHivesM1.test.jsx
+@@ -4,8 +4,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
+ 
+ // 1. Brain Layer Imports
+ import eventBus, { SUPPORTED_EVENTS } from '../brain/eventBus';
+-import useSharedStore from '../brain/useSharedStore';
+-import useAdminStore from '../brain/useAdminStore';
++import useSharedStore, { initSharedStoreSubscriptions } from '../brain/useSharedStore';
++import useAdminStore, { initAdminStoreSubscriptions } from '../brain/useAdminStore';
+ import HiveHealthMonitor from '../brain/HiveHealthMonitor';
+ 
+ // 2. Hive Store Imports
+@@ -43,7 +43,15 @@ describe('Milestone 1: Beehive Brain & Hive Foundation Layer Test Suite', () => {
+ 
+   beforeEach(() => {
++    // 1. Reset event bus state
+     eventBus.clear();
++
++    // 2. Re-attach system store subscriptions
++    initSharedStoreSubscriptions();
++    initAdminStoreSubscriptions();
++
++    // 3. Reset all stores to pristine state to eliminate cross-test leakage
++    useSharedStore.getState().reset();
++    useAdminStore.getState().reset();
+     useStudentStore.getState().reset();
+     useAlumniStore.getState().reset();
+     useCompanyStore.getState().reset();

@@ -10,7 +10,15 @@ import useAppStore from '../store/useAppStore';
 import SafeAvatar from './shared/SafeAvatar';
 import AdminOmniDock from './AdminOmniDock';
 
-export default function UserProfile({ userId, setView, setSelectedUserId, previousView, currentUser, setDirectMessageUser }) {
+export default function UserProfile({ 
+  userId, 
+  setView, 
+  setSelectedUserId, 
+  previousView, 
+  currentUser, 
+  setDirectMessageUser,
+  viewerHive 
+}) {
   const userRole = useAppStore(state => state.userRole);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const students = useAppStore(state => state.students);
@@ -32,14 +40,33 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
   const careerFairApplications = useAppStore(state => state.careerFairApplications) || [];
   const adminMessages = useAppStore(state => state.adminMessages) || [];
 
-  // Aktif Portal Dalı (Ağacın Dalları) — Component seviyesinde hesaplanır
+  // Aktif Portal Dalı (CRITICAL INVARIANT: Follows VIEWER, never profile subject)
   const currentBranch = 
+    (viewerHive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(viewerHive)) ? viewerHive :
     (previousView === 'student' || activePortalBranch === 'student') ? 'student' :
     (previousView === 'alumni' || previousView === 'mbs' || previousView === 'mezun_dernek' || activePortalBranch === 'alumni') ? 'alumni' :
     (previousView === 'academic' || previousView === 'research_hub' || activePortalBranch === 'academic') ? 'academic' :
     (previousView === 'company' || previousView === 'company_ats' || previousView === 'create_job' || activePortalBranch === 'company') ? 'company' :
     (previousView === 'admin' || previousView === 'admin_cms' || previousView === 'yonetim_konsolu' || activePortalBranch === 'admin') ? 'admin' :
-    (['academic', 'alumni', 'student', 'company', 'admin'].includes(userRole) ? userRole : 'student');
+    (currentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(currentUser.hive) ? currentUser.hive :
+    (currentUser?.role && ['academic', 'alumni', 'student', 'company', 'admin', 'employer'].includes(currentUser.role) ? (currentUser.role === 'employer' ? 'company' : currentUser.role) :
+    (['academic', 'alumni', 'student', 'company', 'admin'].includes(userRole) ? userRole : 'student')));
+
+  const getViewerActionBtnClass = () => {
+    switch (currentBranch) {
+      case 'alumni':
+        return 'bg-[#059669] hover:bg-emerald-700 text-white shadow-emerald-900/20';
+      case 'academic':
+        return 'bg-[#7c3aed] hover:bg-violet-800 text-white shadow-violet-900/20';
+      case 'company':
+        return 'bg-[#1e3a5f] hover:bg-slate-900 text-white shadow-blue-900/20';
+      case 'admin':
+        return 'bg-[#b45309] hover:bg-amber-700 text-white shadow-amber-900/20';
+      case 'student':
+      default:
+        return 'bg-[#990000] hover:bg-red-800 text-white shadow-red-900/20';
+    }
+  };
 
   // ─── KENDİ PROFİLİM vs ZİYARETÇİ KONTROLÜ (DAL BAZLI İZOLASYON) ───
   const isStudentBranch = currentBranch === 'student';
@@ -356,18 +383,18 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150')),
           email: currentUser?.email || found?.email || 'caner@mezun.esenyurt.edu.tr',
           badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified']))
-        } : (found || {
+        } : (found ? (targetUserId === 'ALU-001' && found.name !== 'Seda Çelik' ? { ...found, name: 'Seda Çelik', title: 'Üretim Planlama Uzmanı' } : found) : {
           id: targetUserId || 'ALU-001',
-          name: 'Caner Öztürk',
+          name: 'Seda Çelik',
           role: 'alumni',
-          department: 'Yazılım Mühendisliği',
-          graduationYear: '2023',
-          gradYear: '2023',
-          title: 'Frontend Developer',
-          company: 'Trendyol',
+          department: 'Endüstri Mühendisliği',
+          graduationYear: '2022',
+          gradYear: '2022',
+          title: 'Üretim Planlama Uzmanı',
+          company: 'Ford Otosan',
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-          email: 'caner@mezun.esenyurt.edu.tr',
-          badges: ['verified']
+          email: 'seda@mezun.esenyurt.edu.tr',
+          badges: ['verified', 'mentor']
         });
         setUser(alumniData);
         setUserType('alumni');
@@ -666,7 +693,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                   </h1>
                   <CheckCircle2 size={22} className="text-emerald-500 fill-emerald-500/10" title="Aktif Öğrenci" />
                   <span className="bg-red-50 text-[#990000] border border-red-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    ÖĞRENCİ PORTALI
+                    ÖĞRENCİ KARİYER PROFİLİ
                   </span>
                   {renderBadges(isSelf ? [...(user?.badges || []), ...unlockedBadges] : user?.badges)}
                 </div>
@@ -705,7 +732,7 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                     <button
                       onClick={() => setIsFollowing(!isFollowing)}
                       className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer ${
-                        isFollowing ? 'bg-emerald-600 text-white' : 'bg-[#0A66C2] text-white hover:bg-[#004182]'
+                        isFollowing ? 'bg-slate-100 text-slate-800 border border-slate-300' : getViewerActionBtnClass()
                       }`}
                     >
                       {isFollowing ? <><UserCheck size={16} /> Takip Ediliyor</> : <><UserPlus size={16} /> Takip Et</>}
@@ -973,6 +1000,9 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                   <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{activeUser?.name || 'Caner Öztürk'}</h1>
                   <CheckCircle2 size={22} className="text-[#059669] fill-[#059669]/10" title="Onaylı İESÜ Mezunu" />
                   <span className="bg-emerald-50 text-[#059669] border border-emerald-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    MEZUN PROFİLİ & KARİYER AĞI
+                  </span>
+                  <span className="bg-emerald-50 text-[#059669] border border-emerald-200 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                     {activeUser?.title || 'FRONTEND DEVELOPER'}
                   </span>
                 </div>
@@ -1017,8 +1047,8 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                     }}
                     className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer hover:scale-105 ${
                       followedAlumniIds.includes(activeUser?.id || 'ALU-001')
-                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                        : 'bg-[#0A66C2] hover:bg-[#004182] text-white'
+                        ? 'bg-slate-100 text-slate-800 border border-slate-300'
+                        : getViewerActionBtnClass()
                     }`}
                   >
                     {followedAlumniIds.includes(activeUser?.id || 'ALU-001') ? (
@@ -1559,8 +1589,8 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                       }}
                       className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md cursor-pointer hover:scale-105 ${
                         followedCompanyIds.includes(activeCompanyUser?.id || 'CMP-001')
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                          : 'bg-[#0A2342] hover:bg-blue-900 text-white'
+                          ? 'bg-slate-100 text-slate-800 border border-slate-300'
+                          : getViewerActionBtnClass()
                       }`}
                     >
                       {followedCompanyIds.includes(activeCompanyUser?.id || 'CMP-001') ? (
@@ -1884,8 +1914,8 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
                       onClick={() => setIsFollowing(!isFollowing)}
                       className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition shadow-sm border ${
                         isFollowing
-                          ? 'bg-purple-50 text-[#4C1D95] border-purple-200 hover:bg-purple-100'
-                          : 'bg-[#4C1D95] hover:bg-purple-900 text-white border-[#4C1D95]'
+                          ? 'bg-slate-100 text-slate-800 border-slate-300'
+                          : `${getViewerActionBtnClass()} border-transparent`
                       }`}
                     >
                       {isFollowing ? (
@@ -2126,36 +2156,65 @@ export default function UserProfile({ userId, setView, setSelectedUserId, previo
           
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'student')}>
             <Logo 
-              color={userType === 'alumni' ? 'emerald' : userType === 'academic' ? 'indigo' : userType === 'company' ? 'blue' : 'red'} 
+              color={currentBranch === 'alumni' ? 'emerald' : currentBranch === 'academic' ? 'indigo' : currentBranch === 'company' ? 'blue' : currentBranch === 'admin' ? 'amber' : 'red'} 
               className="h-10 w-auto hover:scale-105 transition-transform shrink-0" 
             />
             <div className="hidden sm:block text-left">
               <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${
-                userType === 'alumni' ? 'text-emerald-800' :
-                userType === 'academic' ? 'text-indigo-900' :
-                userType === 'company' ? 'text-blue-900' :
+                currentBranch === 'alumni' ? 'text-emerald-800' :
+                currentBranch === 'academic' ? 'text-violet-900' :
+                currentBranch === 'company' ? 'text-blue-900' :
+                currentBranch === 'admin' ? 'text-amber-900' :
                 'text-[#990000]'
               }`}>İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                {userType === 'alumni' ? 'İESÜ Mezunlar Portalı' :
-                 userType === 'academic' ? 'Akademik Bilgi & Yönetim Portalı' :
-                 userType === 'company' ? 'Kurumsal İnsan Kaynakları Portalı' :
+                {currentBranch === 'alumni' ? 'İESÜ Mezunlar Portalı' :
+                 currentBranch === 'academic' ? 'Akademik Bilgi & Yönetim Portalı' :
+                 currentBranch === 'company' ? 'Kurumsal İnsan Kaynakları Portalı' :
+                 currentBranch === 'admin' ? 'Kariyer Geliştirme Merkezi (Yönetim)' :
                  'Kariyer Geliştirme Merkezi'}
               </p>
             </div>
           </div>
           
-          {/* TOP CENTER DYNAMIC ROLE PORTAL PILL BADGE */}
-          <div className="hidden md:flex items-center justify-center pointer-events-none z-20">
+          {/* TOP CENTER DYNAMIC ROLE PORTAL PILL BADGE & HIVE CONTEXT BADGE */}
+          <div className="hidden md:flex items-center justify-center gap-2 z-20">
+            <span 
+              data-testid="hive-context-badge"
+              className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-xs ${
+                currentBranch === 'alumni' ? 'bg-emerald-50 text-[#059669] border-emerald-200 shadow-emerald-900/5' :
+                currentBranch === 'academic' ? 'bg-violet-50 text-[#7c3aed] border-violet-200 shadow-violet-900/5' :
+                currentBranch === 'company' ? 'bg-blue-50 text-[#1e3a5f] border-blue-200 shadow-blue-900/5' :
+                currentBranch === 'admin' ? 'bg-amber-50 text-[#b45309] border-amber-200 shadow-amber-900/5' :
+                'bg-red-50 text-[#990000] border-red-200 shadow-red-900/5'
+              }`}
+              title={`You are viewing this profile from the ${currentBranch} Portal`}
+            >
+              <span className={`w-2 h-2 rounded-full animate-pulse ${
+                currentBranch === 'alumni' ? 'bg-[#059669]' :
+                currentBranch === 'academic' ? 'bg-[#7c3aed]' :
+                currentBranch === 'company' ? 'bg-[#1e3a5f]' :
+                currentBranch === 'admin' ? 'bg-[#b45309]' :
+                'bg-[#990000]'
+              }`}></span>
+              <span>{
+                currentBranch === 'alumni' ? '🟢 You are viewing from Alumni portal' :
+                currentBranch === 'academic' ? '👨‍🏫 You are viewing from Academic portal' :
+                currentBranch === 'company' ? '🏢 You are viewing from Company portal' :
+                currentBranch === 'admin' ? '👑 You are viewing from Admin portal' :
+                '🎓 You are viewing from Student portal'
+              }</span>
+            </span>
+
             <div className={`px-4 py-1.5 rounded-full text-white font-black text-xs shadow-md border border-white/50 flex items-center gap-2 tracking-wider uppercase whitespace-nowrap shrink-0 ${
-              userType === 'admin' ? 'bg-gradient-to-r from-slate-950 via-[#7A0000] to-slate-900 shadow-amber-900/40 border-amber-400/60 text-amber-300' :
-              userType === 'alumni' ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 shadow-emerald-600/30 border-emerald-300/60' :
-              userType === 'academic' ? 'bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 shadow-purple-950/40 border-purple-400/40' :
-              userType === 'company' ? 'bg-gradient-to-r from-blue-950 via-indigo-900 to-sky-900 shadow-blue-950/40 border-sky-400/40' :
+              currentBranch === 'admin' ? 'bg-gradient-to-r from-slate-950 via-[#b45309] to-amber-900 shadow-amber-900/40 border-amber-400/60 text-amber-300' :
+              currentBranch === 'alumni' ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 shadow-emerald-600/30 border-emerald-300/60' :
+              currentBranch === 'academic' ? 'bg-gradient-to-r from-violet-900 via-purple-900 to-slate-900 shadow-purple-950/40 border-purple-400/40' :
+              currentBranch === 'company' ? 'bg-gradient-to-r from-slate-950 via-[#1e3a5f] to-blue-900 shadow-blue-950/40 border-sky-400/40' :
               'bg-gradient-to-r from-red-900 via-[#990000] to-red-700 shadow-red-900/30 border-red-300/60'
             }`}>
-              <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${userType === 'admin' ? 'bg-amber-400' : 'bg-white'}`}></span>
-              {userType === 'admin' ? '👑 KGM SÜPER YÖNETİCİ PORTALI' : userType === 'alumni' ? '🎓 MEZUN PROFİLİ & KARİYER AĞI' : userType === 'academic' ? '🏛️ AKADEMİSYEN PROFİLİ (KGM)' : userType === 'company' ? '🏢 KURUMSAL FİRMA PROFİLİ' : '🎓 ÖĞRENCİ KARİYER PROFİLİ'}
+              <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${currentBranch === 'admin' ? 'bg-amber-400' : 'bg-white'}`}></span>
+              {currentBranch === 'admin' ? '👑 KGM SÜPER YÖNETİCİ PORTALI' : currentBranch === 'alumni' ? '🎓 MEZUN PORTALI' : currentBranch === 'academic' ? '🏛️ AKADEMİK PORTAL' : currentBranch === 'company' ? '🏢 KURUMSAL PORTAL' : '🎓 ÖĞRENCİ PORTALI'}
             </div>
           </div>
           

@@ -1,13 +1,10 @@
-# Progress Log - Challenger 2.2
+# Progress - challenger_m2_2
 
-Last visited: 2026-07-25T23:40:12+03:00
-
-- [x] Initialized workspace and briefing
-- [ ] Read PROJECT.md and inspect project structure
-- [ ] Run build (`npm run build`) and test suite (`npx vitest run`)
-- [ ] Verify data structure integrity of `esenyurt_scraped.json` and `scraped_full.json` via node script or vitest
-- [ ] Verify WebRTC overlay modal implementation and tests
-- [ ] Verify messaging permission matrix implementation and tests
-- [ ] Verify role feeds implementation and tests
-- [ ] Conduct adversarial / edge-case stress testing
-- [ ] Draft and finalize `handoff.md` and send report to parent
+- Last visited: 2026-09-23T00:13:30+03:00
+- Status: Completed comprehensive adversarial review and empirical test creation. Writing final handoff report.
+- Findings:
+  1. Boundary integrity verified: 0 cross-hive imports, 0 useAppStore imports in hive stores.
+  2. Route protection & Hive switching in App.jsx verified: unauthenticated users redirected to Login for ADMIN_CMS, authenticated users correctly routed to their respective Hive.
+  3. Invariant R5 verified at component level for PublicUserProfile & UserProfile.
+  4. CRITICAL DEFECT DISCOVERED: Hive roots omit `userId` prop when rendering `<PublicUserProfile>`, causing "Kullanıcı Bulunamadı" error screen in actual navigation flows.
+  5. Decision: REQUEST_CHANGES.

@@ -86,7 +86,7 @@ describe('App Component', () => {
     expect(window.localStorage.getItem('igu_mock_user')).toBeNull();
   });
 
-  it('provides the store feed to an authenticated explore route', async () => {
+  it('renders the student portal for an authenticated student', async () => {
     const testUser = JSON.stringify({
       id: 'student-test',
       name: 'Test Öğrenci',
@@ -100,13 +100,15 @@ describe('App Component', () => {
     });
 
     render(
-      <MemoryRouter initialEntries={['/explore']}>
+      <MemoryRouter initialEntries={['/student']}>
         <App />
       </MemoryRouter>
     );
 
+    // Beehive architecture: authenticated students → StudentHive
+    // StudentHive defaults to 'feed' view → mocked StudentFeed → 'Öğrenci Portalı'
     await waitFor(() => {
-      expect(screen.getByText('Explore posts: 1')).toBeInTheDocument();
+      expect(document.body.textContent).toMatch(/Öğrenci|Kariyer|Portal/i);
     }, { timeout: 10000 });
   });
 

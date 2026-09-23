@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
+import HiveHealthMonitor from '../brain/HiveHealthMonitor';
 
 import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
@@ -79,6 +80,9 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
   return (
     <div className="animate-fade-in space-y-6">
       <PanelHeader title="Kontrol Merkezi" sub="Sistemdeki genel durum ve özet veriler" />
+
+      {/* R7 Beehive Health Monitor */}
+      <HiveHealthMonitor />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Pending approvals */}

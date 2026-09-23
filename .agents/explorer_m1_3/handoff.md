@@ -1,102 +1,130 @@
-# Handoff Report — Explorer 3 (Integration Blueprint Designer)
-
-**Project**: IESU Kariyer Platformu Data Integration & QA  
-**Milestone**: Milestone 1 (Web Data Extraction & Analysis)  
-**Agent**: Explorer 3 (Integration Blueprint Designer)  
-**Date**: 2026-07-24  
-**Working Directory**: `C:\Users\celil\.gemini\antigravity\scratch\IESU_Kariyer_Platformu\.agents\explorer_m1_3\`  
+# Milestone 1: Hive Contexts (R3) & HiveHealthMonitor (R7) — Handoff Report
+**Agent**: Explorer M1-3  
+**Date**: 2026-09-22  
+**Target Working Directory**: `C:\Users\celil\.gemini\antigravity\scratch\IESU_Kariyer_Platformu_Active`  
+**Handoff Type**: Hard (Task Complete)  
 
 ---
 
 ## 1. Observation
 
-1. **Build Audit (`cmd /c npm run build`)**:
-   - Failed during Vite build transformation with exit code 1.
-   - Error: `[plugin vite-plugin-pwa:build] Error: Build failed with 1 error: [builtin:vite-transform] Invalid Character '¶' at src/components/StudentAnalytics.jsx:64:31`.
-   - Affected line: `{ name: '1. Hafta', GÃ¶rÃ¼ntÃ¼lenme: Math.round(30 * factor), Arama: Math.round(15 * factor) }`.
+1. **Hive Color Identity & Invariant Requirements**:
+   - `ORIGINAL_REQUEST.md` (lines 78–87) and `PROJECT.md` (lines 13–19) define the strict theme invariants:
+     - Student Hive: `#990000`, `red`, `bg-red-50`, `border-red-200`
+     - Alumni Hive: `#059669`, `emerald`, `bg-emerald-50`, `border-emerald-200`
+     - Company Hive: `#1e3a5f`, `blue`, `bg-blue-50`, `border-blue-200`
+     - Academic Hive: `#7c3aed`, `violet`, `bg-violet-50`, `border-violet-200`
+   - Requirement R3 explicitly mandates:
+     > "Each context must export a `useHiveContext()` hook with a safe fallback if used outside provider."
 
-2. **Test Audit (`cmd /c npm test`)**:
-   - Vitest suite executed 7 test files, resulting in 6 failed test files and 12 failed individual test cases.
-   - Example failure: `src/__tests__/TopProfileMenu.test.jsx:41:19` failed `expect(screen.getByText(/Kariyer Geliştirme/i)).toBeTruthy()` because rendered DOM contained corrupted string `Kariyer GeliÅŸtirme...` and `SÃœPER ADMIN`.
+2. **OverviewPanel Structure & Insertion Point**:
+   - `src/components/admin/OverviewPanel.jsx` lines 14–17:
+     ```jsx
+     return (
+       <div className="animate-fade-in space-y-6">
+         <PanelHeader title="Kontrol Merkezi" sub="Sistemin genel durumu" />
+         
+         {/* AI Modülleri Banner */}
+     ```
+   - Line 16 (`<PanelHeader ... />`) is the authoritative mount target for `<HiveHealthMonitor />`.
 
-3. **Code Quality Audit (`cmd /c npx oxlint src/`)**:
-   - Oxlint identified 19 errors (mostly unused variables/catch parameters in root script files) and 983 warnings across `src/` (unused lucide icon imports, unused state variables).
+3. **AdminDashboard Co-Location**:
+   - Inspection of `src/components/AdminDashboard.jsx` lines 76–84 revealed an internal inline `OverviewPanel` component:
+     ```jsx
+     function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [], mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [], applications = [], setActiveTab, setView }) {
+       const messages = useAppStore(state => state.messages);
+       
+       return (
+         <div className="animate-fade-in space-y-6">
+           <PanelHeader title="Kontrol Merkezi" sub="Sistemdeki genel durum ve özet veriler" />
+     ```
+   - When running existing test suite `src/__tests__/AdminDashboard.test.jsx`, `AdminDashboard` renders this internal `OverviewPanel`. Therefore, mounting `<HiveHealthMonitor />` in both `OverviewPanel.jsx` and the inline component ensures consistent admin panel behavior across tests and runtime.
 
-4. **Target Mock Data Utility Files (`src/utils/`)**:
-   - `src/utils/universityData.js`: Contains `IGU_FACULTIES`, `IGU_MYO`, `IGU_YUKSEKOKUL`, `IGU_ENSTITU` with outdated department data and legacy naming.
-   - `src/utils/mockData.js`: Contains corrupted UTF-8 string encoding across student names, department names, news titles, and academic staff.
-   - `src/utils/innerPagesData.js`: Contains corrupted UTF-8 strings in `hakkimizda`, `hizmetlerimiz`, `ulusal_staj`, `akran_mentor`, `isbirlikleri`.
-   - `src/utils/liveData.js`: Contains corrupted UTF-8 strings in live sliders, news, and announcements.
-   - `src/utils/integrationService.js`: Contains OBS API and e-Devlet authentication fallbacks.
-   - `src/utils/feedCombiner.js`: Combines posts, events, news, announcements, and jobs using deterministic timestamps.
+4. **Test Suite Baseline Health**:
+   - Running `npx vitest run src/__tests__/AdminDashboard.test.jsx`: 4 passed (1 file) in 3.67s.
+   - Running `npx vitest run src/__tests__/ComponentIntegrity.test.jsx`: 59 passed (1 file) across 6 role permutations in 6.47s.
+   - Running `npx vitest run src/__tests__/BranchContextAndAdminFeed.test.jsx`: 36 passed (1 file) in 4.04s.
+   - Total existing baseline: 40 test files, 360 passed.
 
-5. **Extracted Real Web Data (Esenyurt University Kariyer Geliştirme Ofisi)**:
-   - Source: Target URL `https://www.esenyurt.edu.tr/icerik/2355-kariyer-gelistirme-ofisi-koordinatorlugu` saved in `.agents/explorer_m1_1/page_raw.html`.
-   - Leadership: Rektör Prof. Dr. Süleyman Özdemir, Kariyer Geliştirme Ofisi Koordinatörü Dr. Öğr. Üyesi Mustafa Özan.
-   - Address: Zafer Mah. Adile Naşit Bulv. No:1 Esenyurt İstanbul / Türkiye.
-   - Contact: 444 9 123 / +90 212 699 09 90 / `kariyer@esenyurt.edu.tr`.
-   - Real News & Events: 21/07/2026 Rektör mesajı, 09/07/2026 e-Rehberlik, 01/07/2026 Mezuniyet Töreni, Bahar Şenliği 26.
+5. **Cross-Agent Coordination**:
+   - `explorer_m1_1` is specifying `eventBus.js` (with `getThroughput()` and typed events) and `useAdminStore.js` (with `hiveErrors: { student: 0, alumni: 0, company: 0, academic: 0, admin: 0 }`).
+   - `explorer_m1_2` is specifying the 4 isolated stores (`useStudentStore`, `useAlumniStore`, `useCompanyStore`, `useAcademicStore`).
+   - `HiveHealthMonitor.jsx` binds these components defensively so that any delayed store initialization degrades gracefully without throwing uncaught exceptions.
 
 ---
 
 ## 2. Logic Chain
 
-1. **Observation**: `npm run build` fails at line 64 of `src/components/StudentAnalytics.jsx` due to corrupted character `GÃ¶rÃ¼ntÃ¼lenme`.
-   - **Reasoning**: A non-UTF-8 character byte sequence causes Vite's transform engine to crash. Fixing this single string fixes the build step.
+1. **Deduction 1 (Token Safety & Safe Fallback)**:
+   - *Observation*: Components like `PublicUserProfile.jsx` and `UserProfile.jsx` are often mounted in isolated unit tests without an enclosing `<HiveProvider>`.
+   - *Reasoning*: If `useHiveContext()` returned `undefined` when `useContext` is empty, destructuring `{ hiveColor, hiveName, hiveAccent }` would immediately throw a `TypeError: Cannot destructure property of undefined`.
+   - *Conclusion*: Each `HiveContext.jsx` must supply `DEFAULT_XXX_HIVE` to `createContext()` AND check `useContext(HiveContext) || DEFAULT_XXX_HIVE` in the hook.
 
-2. **Observation**: 6 of 7 test files fail because DOM elements contain corrupted UTF-8 text (e.g. `Kariyer GeliÅŸtirme`).
-   - **Reasoning**: Mock data exported from `src/utils/` files feeds directly into components. When `src/utils/` files are sanitized and updated with clean UTF-8 text, component renders will match expected regex patterns in Vitest tests.
+2. **Deduction 2 (Zero Cross-Hive Imports)**:
+   - *Observation*: Requirement R200 states: "No direct cross-hive imports (student hive must NOT import from alumni hive)".
+   - *Reasoning*: Placing each context in its own folder (`src/hives/student/HiveContext.jsx`, etc.) with zero imports from sibling hive directories guarantees complete physical and logical isolation.
+   - *Conclusion*: All 4 context files are 100% self-contained, sharing no code directly with other hives.
 
-3. **Observation**: `universityData.js` exports `IGU_*` constants which reference outdated faculty data.
-   - **Reasoning**: Standardizing exports to `IESU_*` for İstanbul Esenyurt Üniversitesi while re-exporting `IGU_*` as alias constants ensures both brand correctness and zero breakage for legacy component imports.
+3. **Deduction 3 (HiveHealthMonitor Resilience in Vitest)**:
+   - *Observation*: `src/__tests__/ComponentIntegrity.test.jsx` renders `AdminDashboard` with `role: undefined`, `role: null`, and mock stores.
+   - *Reasoning*: If `HiveHealthMonitor` assumed stores or `eventBus` were always defined functions without checking `typeof store?.getState === 'function'`, `ComponentIntegrity.test.jsx` would crash across all 6 test suites.
+   - *Conclusion*: `HiveHealthMonitor` must use defensive accessors (`eventBus?.getThroughput?.() || 0`, `useAdminStore?.(s => s.hiveErrors) || defaultErrors`, and store checks).
 
-4. **Observation**: Extracted web data from Esenyurt University provides authentic mission, vision, leadership, unit names, and news items.
-   - **Reasoning**: Mapping these exact structured entities into `src/utils/` replaces placeholder data while maintaining full object schema compatibility for components.
+4. **Deduction 4 (Dual Mounting in OverviewPanels)**:
+   - *Observation*: The project contains both `src/components/admin/OverviewPanel.jsx` (modular) and `AdminDashboard.jsx` (legacy inline OverviewPanel).
+   - *Reasoning*: The task explicitly asks to inspect `OverviewPanel.jsx` lines 1–30 and mount `<HiveHealthMonitor />` under `PanelHeader`. Mounting it there fulfills R7. Mounting it also in `AdminDashboard.jsx` ensures that tests running `AdminDashboard` will exercise `<HiveHealthMonitor />`.
+   - *Conclusion*: Provide exact integration blueprints for both locations.
 
 ---
 
 ## 3. Caveats
 
-- **External Backend Integration**: `integrationService.js` currently relies on mock fallback responses when no live REST API proxy endpoint (`import.meta.env.VITE_INTERNAL_API_URL`) is configured. This behavior is intentional for frontend offline development.
-- **Image URLs**: External Unsplash and Esenyurt panel image links depend on network access at runtime; fallback fallback avatars are included via `ui-avatars.com`.
+1. **External Milestone Dependencies**:
+   - `HiveHealthMonitor.jsx` imports `src/brain/eventBus.js` and `src/brain/useAdminStore.js` (being specified by Explorer M1-1) and `src/hives/*/store/useXxxStore.js` (being specified by Explorer M1-2). Worker M1 should implement M1-1 and M1-2 files prior to or alongside M1-3 components so that relative import paths resolve correctly during `npm run build`.
+2. **EventBus Wildcard Support**:
+   - If `eventBus.js` does not implement wildcard `'*'` event listening, `HiveHealthMonitor.jsx` includes an automatic 3-second `setInterval` polling fallback that guarantees EPM updates continue to refresh reliably.
+3. **No Codebase Modification by Explorer**:
+   - In accordance with Explorer read-only rules, no source files were directly modified in `src/`. All specifications, code blueprints, and integration patches are delivered to `.agents/explorer_m1_3/report.md`.
 
 ---
 
 ## 4. Conclusion
 
-A comprehensive data mapping specification (`mapping_blueprint.md`) has been designed and stored in `.agents/explorer_m1_3/mapping_blueprint.md`.
+The blueprints for Requirement R3 (Hive Contexts) and Requirement R7 (HiveHealthMonitor & OverviewPanel integration) are fully designed, documented, and delivered in:
+`C:\Users\celil\.gemini\antigravity\scratch\IESU_Kariyer_Platformu_Active\.agents\explorer_m1_3\report.md`
 
-The blueprint provides:
-1. Exact replacement schemas for `universityData.js`, `innerPagesData.js`, `mockData.js`, and `liveData.js` populated with structured Esenyurt University Kariyer Geliştirme Ofisi data.
-2. Backward compatibility layer via alias re-exports (`IGU_* = IESU_*`).
-3. Targeted encoding fix for `StudentAnalytics.jsx` to resolve the Vite build failure.
-4. Step-by-step verification protocol for the Worker in Phase 2.
+All architectural criteria have been satisfied:
+- Exact theme tokens and color hexes for all 4 user hives.
+- Safe fallback hook pattern eliminating white-screen crashes.
+- Hexagonal honeycomb cells with active/idle indicators and error counts.
+- Real-time EPM throughput counter.
+- "All hives connected" green status indicator.
+- Immediate sub-header mounting in `OverviewPanel.jsx`.
 
 ---
 
 ## 5. Verification Method
 
-To independently verify the integration blueprint once implemented by Worker:
+Subsequent implementers (Worker M1) can independently verify this blueprint using the following commands:
 
-1. **Build Verification**:
-   ```cmd
-   cmd /c npm run build
-   ```
-   *Expected result*: Build succeeds with exit code 0 and outputs production bundle into `dist/`.
+1. **Verify Context Fallbacks & Tokens**:
+   - Run the provided test suite:
+     ```powershell
+     npx vitest run src/__tests__/HiveContexts.test.jsx
+     ```
+2. **Verify HiveHealthMonitor & Admin Panels**:
+   - Run existing admin dashboard and integrity tests:
+     ```powershell
+     npx vitest run src/__tests__/AdminDashboard.test.jsx
+     npx vitest run src/__tests__/ComponentIntegrity.test.jsx
+     ```
+3. **Verify Build & Type Integrity**:
+   - Run the Vite production build:
+     ```powershell
+     npm run build
+     ```
+   - Must exit with code 0 and zero JSX/syntax errors.
+4. **Invalidation Conditions**:
+   - If any `useHiveContext()` call outside `<HiveProvider>` throws `Cannot read properties of undefined`, the safe fallback pattern was omitted.
+   - If `npm run build` fails on circular imports between hives, the strict isolation rule was breached.
 
-2. **Test Suite Verification**:
-   ```cmd
-   cmd /c npm test
-   ```
-   *Expected result*: All 7 test files (22 tests) pass successfully.
-
-3. **Code Quality Verification**:
-   ```cmd
-   cmd /c npx oxlint src/
-   ```
-   *Expected result*: 0 errors reported in `src/`.
-
-4. **Blueprint File Inspection**:
-   Inspect `.agents/explorer_m1_3/mapping_blueprint.md` for exact data structures and mapping rules.
-
----

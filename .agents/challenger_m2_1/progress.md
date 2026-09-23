@@ -1,16 +1,19 @@
-# Progress — Challenger 2.1 (Milestone 2)
+# Progress Log - challenger_m2_1
 
-Last visited: 2026-07-25T20:40:25Z
-
-## Current Status
-Started empirical stress-testing and verification of Milestone 2.
-
-## Tasks Completed
-- [x] Initialized agent directory (`ORIGINAL_REQUEST.md`, `BRIEFING.md`, `progress.md`)
-
-## Next Steps
-- [ ] Inspect main workspace files and `PROJECT.md`
-- [ ] Execute `npm run build` and `npx vitest run` via terminal
-- [ ] Inspect implementation code for `refreshScrapedData`, mock data fallbacks, image asset formatting, and role navigation close events
-- [ ] Write dedicated stress test script in agent directory if needed to reproduce edge cases
-- [ ] Compile findings and write `handoff.md`
+- **Last visited**: 2026-09-22T21:13:05Z
+- **Current Status**: Completed analysis and writing handoff report.
+- **Completed**:
+  - Dispatch logged
+  - Briefing initialized and updated
+  - Authoritative documents thoroughly reviewed (`ORIGINAL_REQUEST.md`, `PROJECT.md`, `worker_m2_2/handoff.md`)
+  - Full codebase inspection of `src/store/useAppStore.js`, `useSharedStore.js`, `useAdminStore.js`, `useStudentStore.js`, `useAlumniStore.js`, `useCompanyStore.js`, `useAcademicStore.js`
+  - Trace simulation and edge-case testing of all 4 challenge objectives
+  - Uncovered 5 failure modes:
+    1. CRITICAL: Inverted user/action parameter mapping in `logAuditAction` call
+    2. HIGH: Duplicate `audit:logged` emission across eventBus
+    3. HIGH: Dual source of truth / property shadowing for `careerFairApplications` and `adminActiveTab`
+    4. MEDIUM: Facade proxy referential instability on `getFacadeState()`
+    5. MEDIUM: `activeHive` not updated when `currentUser` changes
+- **Next Steps**:
+  - Write comprehensive 5-component handoff report (`handoff.md`) with explicit verdict `REQUEST_CHANGES`
+  - Send message to parent

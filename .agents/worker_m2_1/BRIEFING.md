@@ -1,59 +1,58 @@
-# BRIEFING — 2026-07-24T00:07:15Z
+# BRIEFING — 2026-09-22T19:49:21Z
 
 ## Mission
-Implement Esenyurt University mock data integration into `src/utils/` files and fix build/test encoding errors.
+Complete Milestone 2 Remaining Implementations: R6 (Simplify App.jsx < 150 lines) and R8 (Shrink useAppStore.js < 12KB with facade).
 
 ## 🔒 My Identity
-- Archetype: implementer
+- Archetype: teamwork_preview_worker
 - Roles: implementer, qa, specialist
-- Working directory: C:\Users\celil\.gemini\antigravity\scratch\IESU_Kariyer_Platformu\.agents\worker_m2_1
-- Original parent: 81511386-c04c-443b-93a3-7378ca43454f
-- Milestone: m2_mock_data_integration
+- Working directory: C:\Users\celil\.gemini\antigravity\scratch\IESU_Kariyer_Platformu_Active\.agents\worker_m2_1
+- Original parent: 1c445060-36da-4b11-8376-3cdd2146f48a
+- Milestone: Milestone 2 Remaining Implementations (R6 & R8)
 
 ## 🔒 Key Constraints
-- Minimal change principle.
-- Clean UTF-8 encoding throughout.
-- Backward compatibility for university data exports.
-- Robust date handling in feedCombiner.js.
-- Honest implementation (no cheating or hardcoding test outputs).
+- App.jsx must be strictly UNDER 150 lines.
+- useAppStore.js must be strictly UNDER 12,288 bytes (12KB).
+- Maintain 9 session/routing fields in useAppStore core state.
+- Delegate legacy getters/setters/state to useSharedStore and useAdminStore via backward-compatibility facade so all 40+ vitest test suites pass.
+- vitest run must pass cleanly (40+ test suites).
+- vite build must pass cleanly (exit code 0).
+- NO CHEATING, genuine implementation, real state.
 
 ## Current Parent
-- Conversation ID: 81511386-c04c-443b-93a3-7378ca43454f
-- Updated: 2026-07-24T00:07:15Z
+- Conversation ID: 1c445060-36da-4b11-8376-3cdd2146f48a
+- Updated: 2026-09-22T19:49:21Z
 
 ## Task Summary
-- **What to build**: Integrated extracted Esenyurt University data into mock data files (`universityData.js`, `innerPagesData.js`, `mockData.js`, `liveData.js`), fixed company role in `mockData.js`, fixed robust date sorting in `feedCombiner.js`, fixed UTF-8 corruption in `StudentAnalytics.jsx`, ran builds & tests, wrote handoff & changes logs.
-- **Success criteria**: Vite build passes with exit code 0, all unit tests pass, handoff report generated. (SUCCESS)
+- **What to build**:
+  1. R6: Refactor `src/App.jsx` to be clean, modular, routing to the 4 Hive components (`StudentHive`, `AlumniHive`, `CompanyHive`, `AcademicHive`, or `AdminDashboard`), displaying unauthenticated landing/login/register modals, global overlays, strictly < 150 lines.
+  2. R8: Refactor `src/store/useAppStore.js` to store 9 core session/routing fields, delegating legacy state and methods to `useSharedStore` and `useAdminStore` with proxy / facade pattern so tests and existing code continue working, strictly < 12KB.
+- **Success criteria**:
+  - `src/App.jsx` line count < 150.
+  - `src/store/useAppStore.js` file size < 12KB (12,288 bytes).
+  - All 40+ vitest test suites pass.
+  - `npx vite build` succeeds.
+- **Interface contracts**: `PROJECT.md`
+- **Code layout**: `src/` modular hive architecture.
 
 ## Key Decisions Made
-- Initialized workspace briefing and progress log.
-- Standardized master university exports to `IESU_*` and preserved `IGU_*` aliases for backward compatibility.
-- Updated `generateCompanies()` to return `role: 'company'` to align with route permission checks.
-- Implemented `getSafeTimestamp()` in `feedCombiner.js` to parse ISO dates, Turkish dot dates, and Turkish month names with fallback `0` to eliminate `NaN` in `.sort()`.
-- Cleaned UTF-8 string encoding across all mock data utility files and `StudentAnalytics.jsx`.
+- [Pending initial inspection]
 
 ## Artifact Index
-- `.agents/worker_m2_1/ORIGINAL_REQUEST.md` — Original prompt request
-- `.agents/worker_m2_1/BRIEFING.md` — Agent working memory
-- `.agents/worker_m2_1/progress.md` — Task progress & heartbeat log
-- `.agents/worker_m2_1/changes.md` — Detailed implementation changes log
-- `.agents/worker_m2_1/handoff.md` — 5-component handoff report
+- `DISPATCH.md` — Original task dispatch from parent
+- `BRIEFING.md` — Situational awareness and persistent memory
+- `progress.md` — Step-by-step progress heartbeat
+- `handoff.md` — Final handoff report
 
 ## Change Tracker
-- **Files modified**:
-  - `src/utils/universityData.js` — IESU faculties, schools, MYOs, enstitus + IGU re-exports
-  - `src/utils/innerPagesData.js` — Extracted Esenyurt mission, vision, leadership, contact info
-  - `src/utils/mockData.js` — Role: 'company', real Esenyurt news/events/announcements, SEM fields
-  - `src/utils/liveData.js` — Esenyurt slider, news, announcements
-  - `src/utils/feedCombiner.js` — Robust date sorting preventing NaN
-  - `src/components/StudentAnalytics.jsx` — UTF-8 encoding fix (`Görüntülenme`)
-- **Build status**: PASS (Vite build, exit code 0, 3254 modules transformed)
-- **Pending issues**: none
+- **Files modified**: None yet
+- **Build status**: Untested
+- **Pending issues**: None
 
 ## Quality Status
-- **Build/test result**: PASS (npm run build: exit code 0; npm test: 7/7 test suites passed, 22/22 tests passed)
-- **Lint status**: Ready
-- **Tests added/modified**: All 22 existing unit tests passing
+- **Build/test result**: Untested
+- **Lint status**: Untested
+- **Tests added/modified**: Untested
 
 ## Loaded Skills
-- None
+- None required for this task

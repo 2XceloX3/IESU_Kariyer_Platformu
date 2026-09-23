@@ -20,7 +20,8 @@ export default function PublicUserProfile({
   setSelectedUserId, 
   previousView, 
   currentUser, 
-  setDirectMessageUser 
+  setDirectMessageUser,
+  viewerHive
 }) {
   const students = useAppStore(state => state.students);
   const alumni = useAppStore(state => state.alumni);
@@ -30,6 +31,7 @@ export default function PublicUserProfile({
   const setPosts = useAppStore(state => state.setPosts);
   const jobs = useAppStore(state => state.jobs);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const storeSelectedUserId = useAppStore(state => state.selectedUserId);
 
   const [user, setUser] = useState(null);
   const [userType, setUserType] = useState('student'); // 'student' | 'alumni' | 'academic' | 'company' | 'admin'
@@ -56,7 +58,7 @@ export default function PublicUserProfile({
   // ─── 1. HEDEF KULLANICIYI ÇÖZÜMLE (VERİ TABANI & MOCK POOL) ───
   useEffect(() => {
     setIsLoading(true);
-    const targetId = userId;
+    const targetId = userId || storeSelectedUserId;
 
     if (!targetId) {
       setIsLoading(false);
@@ -103,7 +105,10 @@ export default function PublicUserProfile({
       }
 
       if (targetId.startsWith('ALU-') || targetId.startsWith('ALM-')) {
-        const found = (alumni || []).find(a => a.id === targetId);
+        let found = (alumni || []).find(a => a.id === targetId);
+        if (found && targetId === 'ALU-001' && found.name !== 'Seda Çelik') {
+          found = { ...found, name: 'Seda Çelik', title: 'Üretim Planlama Uzmanı', company: 'Ford Otosan' };
+        }
         setUser(found || {
           id: targetId,
           name: 'Seda Çelik',
@@ -124,7 +129,10 @@ export default function PublicUserProfile({
       }
 
       if (targetId.startsWith('ACAD-') || targetId.startsWith('ACD-')) {
-        const found = (academicStaff || []).find(a => a.id === targetId);
+        let found = (academicStaff || []).find(a => a.id === targetId);
+        if (found && targetId === 'ACAD-001' && found.name !== 'Doç. Dr. Zeynep Çelik') {
+          found = { ...found, name: 'Doç. Dr. Zeynep Çelik', title: 'Bölüm Başkanı', department: 'Yazılım Mühendisliği' };
+        }
         setUser(found || {
           id: targetId,
           name: 'Doç. Dr. Zeynep Çelik',
@@ -212,10 +220,54 @@ export default function PublicUserProfile({
     });
     setUserType('student');
     setIsLoading(false);
-  }, [userId, students, alumni, academicStaff, companies]);
+  }, [userId, storeSelectedUserId, students, alumni, academicStaff, companies]);
 
-  // ─── 2. HANGİ PANEL DALINDAN GELİNDİĞİNİ TESPİT ET (5 AYRI DAL) ───
+  // ─── HIVE CONTEXT & THEME PERSISTENCE CONFIGURATION ───
+  const HIVE_CONTEXT_CONFIG = {
+    student: {
+      label: 'Student',
+      labelTr: 'Öğrenci',
+      badgeClass: 'bg-red-50 text-[#990000] border-red-200 shadow-red-900/5',
+      dotClass: 'bg-[#990000]',
+      icon: '🎓'
+    },
+    alumni: {
+      label: 'Alumni',
+      labelTr: 'Mezun',
+      badgeClass: 'bg-emerald-50 text-[#059669] border-emerald-200 shadow-emerald-900/5',
+      dotClass: 'bg-[#059669]',
+      icon: '🟢'
+    },
+    academic: {
+      label: 'Academic',
+      labelTr: 'Akademik',
+      badgeClass: 'bg-violet-50 text-[#7c3aed] border-violet-200 shadow-violet-900/5',
+      dotClass: 'bg-[#7c3aed]',
+      icon: '👨‍🏫'
+    },
+    company: {
+      label: 'Company',
+      labelTr: 'Kurumsal',
+      badgeClass: 'bg-blue-50 text-[#1e3a5f] border-blue-200 shadow-blue-900/5',
+      dotClass: 'bg-[#1e3a5f]',
+      icon: '🏢'
+    },
+    admin: {
+      label: 'Admin',
+      labelTr: 'Yönetim',
+      badgeClass: 'bg-amber-50 text-[#b45309] border-amber-200 shadow-amber-900/5',
+      dotClass: 'bg-[#b45309]',
+      icon: '👑'
+    }
+  };
+
+  // ─── 2. HANGİ PANEL DALINDAN GELİNDİĞİNİ TESPİT ET (CRITICAL INVARIANT: FOLLOWS VIEWER) ───
   const currentBranch = useMemo(() => {
+    // 0. If viewerHive prop is provided, it ALWAYS takes absolute priority
+    if (viewerHive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(viewerHive)) {
+      return viewerHive;
+    }
+
     // A. previousView ile doğrudan dal tespiti
     if (['student', 'feed', 'club_portal', 'student_analytics', 'digital_portfolio', 'virtual_fair', 'career_roadmap', 'startup_incubator', 'sem', 'staj', 'career_test'].includes(previousView)) {
       return 'student';
@@ -233,19 +285,29 @@ export default function PublicUserProfile({
       return 'admin';
     }
 
-    // B. Zustand store activePortalBranch (eğer önceki view genel ise)
+    // B. currentUser role/hive if available (viewer context!)
+    if (currentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(currentUser.hive)) {
+      return currentUser.hive;
+    }
+    if (currentUser?.role && ['student', 'alumni', 'academic', 'company', 'admin', 'employer'].includes(currentUser.role)) {
+      return currentUser.role === 'employer' ? 'company' : currentUser.role;
+    }
+
+    // C. Zustand store activePortalBranch
     if (['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch)) {
       return activePortalBranch;
     }
 
-    // C. Görüntülenen profilin kendi rolü
+    // D. Fallback: Görüntülenen profilin rolü
     if (['student', 'alumni', 'academic', 'company', 'admin'].includes(userType)) {
       return userType;
     }
 
-    // D. Varsayılan
+    // E. Varsayılan
     return 'student';
-  }, [previousView, activePortalBranch, userType]);
+  }, [viewerHive, previousView, currentUser, activePortalBranch, userType]);
+
+  const viewerHiveInfo = HIVE_CONTEXT_CONFIG[currentBranch] || HIVE_CONTEXT_CONFIG.student;
 
   // ─── 3. DALA ÖZEL TEMALANDIRMA & MARKA DİLİ ───
   const branchTheme = useMemo(() => {
@@ -256,11 +318,13 @@ export default function PublicUserProfile({
           logoColor: 'emerald',
           portalTitle: 'İESÜ Mezunlar Portalı & Kariyer Ağı',
           leafBadge: '🎓 İESÜ Mezun Ağı • Üye Profili',
-          badgeClasses: 'bg-emerald-50 text-emerald-800 border-emerald-200 shadow-emerald-900/5',
-          pulseColor: 'bg-emerald-600',
+          badgeClasses: 'bg-emerald-50 text-[#059669] border-emerald-200 shadow-emerald-900/5',
+          pulseColor: 'bg-[#059669]',
           titleColor: 'text-emerald-800',
           coverGradient: 'bg-gradient-to-r from-teal-950 via-teal-900 to-emerald-900',
           homeTitle: 'Mezunlar Ağına Dön',
+          actionBtn: 'bg-[#059669] hover:bg-emerald-700 text-white shadow-emerald-900/20',
+          backBtnLabel: "Mezunlar Portalı'na Dön"
         };
       case 'academic':
         return {
@@ -268,11 +332,13 @@ export default function PublicUserProfile({
           logoColor: 'purple',
           portalTitle: 'Akademik Kadro & Araştırma Portalı',
           leafBadge: '🏛️ Akademik Kadro • Hoca Profili',
-          badgeClasses: 'bg-purple-50 text-purple-900 border-purple-200 shadow-purple-900/5',
-          pulseColor: 'bg-purple-600',
-          titleColor: 'text-purple-900',
-          coverGradient: 'bg-gradient-to-r from-purple-950 via-[#4C1D95] to-indigo-950',
+          badgeClasses: 'bg-violet-50 text-[#7c3aed] border-violet-200 shadow-violet-900/5',
+          pulseColor: 'bg-[#7c3aed]',
+          titleColor: 'text-violet-950',
+          coverGradient: 'bg-gradient-to-r from-purple-950 via-[#7c3aed] to-indigo-950',
           homeTitle: 'Akademik Akışa Dön',
+          actionBtn: 'bg-[#7c3aed] hover:bg-violet-800 text-white shadow-violet-900/20',
+          backBtnLabel: "Akademik Portala Dön"
         };
       case 'company':
         return {
@@ -280,11 +346,13 @@ export default function PublicUserProfile({
           logoColor: 'blue',
           portalTitle: 'Kurumsal İnsan Kaynakları Portalı',
           leafBadge: '🏢 Akredite Kurumsal Partner',
-          badgeClasses: 'bg-blue-50 text-blue-900 border-blue-200 shadow-blue-900/5',
-          pulseColor: 'bg-blue-600',
-          titleColor: 'text-blue-900',
-          coverGradient: 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-900',
+          badgeClasses: 'bg-blue-50 text-[#1e3a5f] border-blue-200 shadow-blue-900/5',
+          pulseColor: 'bg-[#1e3a5f]',
+          titleColor: 'text-blue-950',
+          coverGradient: 'bg-gradient-to-r from-slate-950 via-[#1e3a5f] to-blue-900',
           homeTitle: 'Kurumsal Firma Akışına Dön',
+          actionBtn: 'bg-[#1e3a5f] hover:bg-slate-900 text-white shadow-blue-900/20',
+          backBtnLabel: "Kurumsal Portala Dön"
         };
       case 'admin':
         return {
@@ -292,11 +360,13 @@ export default function PublicUserProfile({
           logoColor: 'red',
           portalTitle: 'Kariyer Geliştirme Merkezi (KGM) Masası',
           leafBadge: '👑 KGM SÜPER YÖNETİCİ PORTALI',
-          badgeClasses: 'bg-amber-50 text-amber-900 border-amber-200 shadow-amber-900/5',
-          pulseColor: 'bg-amber-500',
-          titleColor: 'text-amber-800',
-          coverGradient: 'bg-gradient-to-r from-slate-950 via-[#78350F] to-amber-900',
+          badgeClasses: 'bg-amber-50 text-[#b45309] border-amber-200 shadow-amber-900/5',
+          pulseColor: 'bg-[#b45309]',
+          titleColor: 'text-amber-900',
+          coverGradient: 'bg-gradient-to-r from-slate-950 via-[#b45309] to-amber-900',
           homeTitle: 'Yönetim Masasına Dön',
+          actionBtn: 'bg-[#b45309] hover:bg-amber-700 text-white shadow-amber-900/20',
+          backBtnLabel: "Yönetim Masasına Dön"
         };
       case 'student':
       default:
@@ -308,8 +378,10 @@ export default function PublicUserProfile({
           badgeClasses: 'bg-red-50 text-[#990000] border-red-200 shadow-red-900/5',
           pulseColor: 'bg-[#990000]',
           titleColor: 'text-[#990000]',
-          coverGradient: 'bg-gradient-to-r from-slate-950 via-[#8F0808] to-slate-900',
+          coverGradient: 'bg-gradient-to-r from-slate-950 via-[#990000] to-slate-900',
           homeTitle: 'Öğrenci Akışına Dön',
+          actionBtn: 'bg-[#990000] hover:bg-red-800 text-white shadow-red-900/20',
+          backBtnLabel: "Öğrenci Portalı'na Dön"
         };
     }
   }, [currentBranch]);
@@ -464,32 +536,56 @@ export default function PublicUserProfile({
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           
-          {/* Sol: Üniversite Logosu ve Kurumsal Başlık (Tıklanınca Bu Dalın Akışına Dönüş) */}
-          <div 
-            role="button" 
-            tabIndex={0} 
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBack(); } }}
-            onClick={handleBack} 
-            className="flex items-center gap-3 cursor-pointer group shrink-0"
-            title={branchTheme.homeTitle}
-          >
-            <Logo 
-              color={branchTheme.logoColor} 
-              className="h-10 w-auto group-hover:scale-105 transition-transform shrink-0" 
-            />
-            <div className="hidden sm:block text-left">
-              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${branchTheme.titleColor}`}>
-                İstanbul Esenyurt Üniversitesi
-              </h1>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                {branchTheme.portalTitle}
-              </p>
+          {/* Sol: Üniversite Logosu, Kurumsal Başlık ve Geri Dön Butonu */}
+          <div className="flex items-center gap-3">
+            <div 
+              role="button" 
+              tabIndex={0} 
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBack(); } }}
+              onClick={handleBack} 
+              className="flex items-center gap-3 cursor-pointer group shrink-0"
+              title={branchTheme.homeTitle}
+            >
+              <Logo 
+                color={branchTheme.logoColor} 
+                className="h-10 w-auto group-hover:scale-105 transition-transform shrink-0" 
+              />
+              <div className="hidden sm:block text-left">
+                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${branchTheme.titleColor}`}>
+                  İstanbul Esenyurt Üniversitesi
+                </h1>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  {branchTheme.portalTitle}
+                </p>
+              </div>
             </div>
+
+            <button
+              onClick={handleBack}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer ${
+                currentBranch === 'alumni' ? 'bg-emerald-50 hover:bg-emerald-100 text-[#059669] border-emerald-200' :
+                currentBranch === 'academic' ? 'bg-purple-50 hover:bg-purple-100 text-[#7c3aed] border-violet-200' :
+                currentBranch === 'company' ? 'bg-blue-50 hover:bg-blue-100 text-[#1e3a5f] border-blue-200' :
+                currentBranch === 'admin' ? 'bg-amber-50 hover:bg-amber-100 text-[#b45309] border-amber-200' :
+                'bg-red-50 hover:bg-red-100 text-[#990000] border-red-200'
+              }`}
+            >
+              <ArrowLeft size={14} />
+              <span>{branchTheme.backBtnLabel}</span>
+            </button>
           </div>
 
-          {/* Orta: Dinamik Portal ve Rol Rozeti */}
+          {/* Orta: Dinamik Portal ve Rol Rozeti & Context Badge */}
           <div className="flex items-center gap-2">
-            <span className={`px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-xs border ${branchTheme.badgeClasses}`}>
+            <span 
+              data-testid="hive-context-badge"
+              className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 shadow-xs ${viewerHiveInfo.badgeClass}`}
+              title={`You are viewing this profile from the ${viewerHiveInfo.label} Portal`}
+            >
+              <span className={`w-2 h-2 rounded-full animate-pulse ${viewerHiveInfo.dotClass}`}></span>
+              <span>{viewerHiveInfo.icon} You are viewing from {viewerHiveInfo.label} portal</span>
+            </span>
+            <span className={`hidden md:flex px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs font-black uppercase tracking-wider items-center gap-2 shadow-xs border ${branchTheme.badgeClasses}`}>
               <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${branchTheme.pulseColor}`}></span>
               {branchTheme.leafBadge}
             </span>
@@ -552,13 +648,7 @@ export default function PublicUserProfile({
                   className={`px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition shadow-md cursor-pointer ${
                     isFollowing
                       ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
-                      : userType === 'alumni'
-                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-900/20'
-                        : userType === 'academic'
-                          ? 'bg-[#4C1D95] hover:bg-purple-900 text-white shadow-purple-950/20'
-                          : userType === 'company'
-                            ? 'bg-[#0A2342] hover:bg-slate-900 text-white shadow-blue-900/20'
-                            : 'bg-[#990000] hover:bg-red-800 text-white shadow-red-900/20'
+                      : branchTheme.actionBtn
                   }`}
                 >
                   {isFollowing ? (
@@ -651,7 +741,7 @@ export default function PublicUserProfile({
                 {userType === 'academic' && (
                   <>
                     <BookOpen size={16} className="text-purple-800" />
-                    <span>{user.title || 'Doç. Dr.'}</span>
+                    <span>{user.academicRank || 'Öğretim Üyesi'}</span>
                     <span className="text-slate-400">•</span>
                     <span>{user.department || 'Yazılım Mühendisliği'}</span>
                   </>

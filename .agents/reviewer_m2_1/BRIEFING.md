@@ -1,47 +1,48 @@
-# BRIEFING — 2026-07-25T23:40:00Z
+# BRIEFING — 2026-09-22T21:13:00Z
 
 ## Mission
-Review Milestone 2 implementation, verify build & tests, check code quality and integrity, and write handoff report with verdict.
+Independently review and adversarial-stress-test Milestone 2 implementations (App.jsx decoupling, useAppStore split, hive routing) against requirements and verify test/build outputs.
 
 ## 🔒 My Identity
 - Archetype: reviewer_critic
 - Roles: reviewer, critic
 - Working directory: C:\Users\celil\.gemini\antigravity\scratch\IESU_Kariyer_Platformu_Active\.agents\reviewer_m2_1
-- Original parent: bbde1326-8c5b-460d-a5ad-b62c12c2655f
-- Milestone: Milestone 2 Review
+- Original parent: 1c445060-36da-4b11-8376-3cdd2146f48a
+- Milestone: Milestone 2 - Shell & State Decoupling
 - Instance: 1 of 1
 
 ## 🔒 Key Constraints
 - Review-only — do NOT modify implementation code
-- Code quality, correctness, and completeness check
-- Run npm run build and npx vitest run
-- Adversarial critic: check for integrity violations (hardcoding, dummy facades, shortcuts, self-certifying work)
-- Deliver handoff.md with final verdict PASS/FAIL
+- Integrity check: actively check for hardcoded test results, dummy/facade implementations, shortcuts, fabricated verification
+- Must verify test & build commands independently
+- Verdict must be APPROVE or REQUEST_CHANGES
 
 ## Current Parent
-- Conversation ID: bbde1326-8c5b-460d-a5ad-b62c12c2655f
-- Updated: 2026-07-25T23:40:16Z
+- Conversation ID: 1c445060-36da-4b11-8376-3cdd2146f48a
+- Updated: 2026-09-22T21:13:00Z
 
 ## Review Scope
-- Dock navigation alignment in `StudentFeed.jsx`, `AlumniFeed.jsx`, `CompanyFeed.jsx`, `AcademicStaffFeed.jsx`
-- `refreshScrapedData` store action in `src/store/useAppStore.js`
-- Image extraction & normalization in `src/services/scraper.js`
-- Esenyurt University asset links replacement in `src/utils/liveData.js` and `src/components/NewsEvents.jsx`
-- Datasets `scraped_full.json` and `esenyurt_scraped.json`
+- **Files to review**: `src/App.jsx`, `src/store/useAppStore.js`, `src/hives/*/XxxHive.jsx`, `dist/assets`
+- **Interface contracts**: PROJECT.md, ORIGINAL_REQUEST.md, worker_m2_2/handoff.md
+- **Review criteria**: App.jsx < 150 lines, proper hive routing without 90+ validViews, useAppStore.js < 12KB, 9 core session/routing fields, backward-compat facade delegation, test & build green
 
 ## Review Checklist
-- **Items reviewed**: Pending
-- **Verdict**: Pending
-- **Unverified claims**: Build and tests pending, code review pending
+- **Items reviewed**: `src/App.jsx` (143 lines), `src/store/useAppStore.js` (10,854 bytes), Hive roots (Student, Alumni, Company, Academic), PublicUserProfile/UserProfile viewerHive props, `dist/assets`
+- **Verdict**: APPROVE
+- **Unverified claims**: none
 
 ## Attack Surface
-- **Hypotheses tested**: Pending
-- **Vulnerabilities found**: Pending
-- **Untested angles**: Dock nav state, store actions, scraper image extraction, dataset validity, live asset URLs
+- **Hypotheses tested**: Proxy snapshot reference stability in Zustand, route path synchronization with hive internal navigation stack, logAction level normalization
+- **Vulnerabilities found**: 3 minor findings documented in handoff.md (Proxy memoization suggestion, route sync suggestion, logAction severity whitelist)
+- **Untested angles**: Live browser end-to-end WebRTC calling (out of M2 scope)
 
 ## Key Decisions Made
-- Initialized review process.
+- Confirmed full compliance with Requirements R4, R5, R6, R8
+- Issued verdict: APPROVE
+- Generated handoff report
 
 ## Artifact Index
-- ORIGINAL_REQUEST.md — Original user request log
-- BRIEFING.md — Persistent briefing file
+- DISPATCH.md — incoming task instructions
+- BRIEFING.md — working memory
+- progress.md — heartbeat and status
+- handoff.md — final review report and verdict
