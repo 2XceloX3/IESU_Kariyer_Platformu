@@ -29,6 +29,7 @@ const AboutUsPage = lazy(() => import('../../components/AboutUsPage'));
 const ServicesPage = lazy(() => import('../../components/ServicesPage'));
 const NewsEvents = lazy(() => import('../../components/NewsEvents'));
 const EventsPage = lazy(() => import('../../components/EventsPage'));
+const AcademicOnboarding = lazy(() => import('../../components/AcademicOnboarding'));
 const DynamicContentPage = lazy(() => import('../../components/DynamicContentPage'));
 
 /**
@@ -110,6 +111,8 @@ export default function AcademicHive({ currentUser, setView }) {
         return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="academic" />;
       case 'services':
         return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+      case 'academic_onboarding':
+        return <AcademicOnboarding onComplete={() => handleSetView('feed')} currentUser={currentUser} />;
       default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
           return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="academic" />;

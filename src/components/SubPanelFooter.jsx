@@ -411,6 +411,11 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
                 </button>
               </li>
               <li>
+                <button onClick={() => setView && setView('idari_portal')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
+                  <ChevronRight size={14} className="text-white/80 shrink-0" /> İdari Birimler & Formlar (SKSDB/BİDB)
+                </button>
+              </li>
+              <li>
                 <button onClick={() => setShowContactModal(true)} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
                   <ChevronRight size={14} className="text-white/80 shrink-0" /> İletişim & Bize Ulaşın
                 </button>

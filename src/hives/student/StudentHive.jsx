@@ -55,6 +55,8 @@ const BIDBSystemStatusCard = lazy(() => import('../../components/BIDBSystemStatu
 const BIDBHelpdeskModal = lazy(() => import('../../components/BIDBHelpdeskModal'));
 const KariyerJobBoard = lazy(() => import('../../components/KariyerJobBoard'));
 const KnowledgePortal = lazy(() => import('../../components/KnowledgePortal'));
+const IdariPortal = lazy(() => import('../../components/IdariPortal'));
+const SkillTree = lazy(() => import('../../components/SkillTree'));
 const OrganizationChart = lazy(() => import('../../components/OrganizationChart'));
 const NewsEvents = lazy(() => import('../../components/NewsEvents'));
 const EventsPage = lazy(() => import('../../components/EventsPage'));
@@ -130,6 +132,9 @@ export default function StudentHive({ currentUser, setView }) {
         return <StartupIncubator setView={handleSetView} currentUser={currentUser} />;
       case 'smart_certs':
         return <SmartCertificates setView={handleSetView} currentUser={currentUser} />;
+      case 'skills':
+      case 'skill_tree':
+        return <SkillTree setView={handleSetView} currentUser={currentUser} />;
       case 'digital_portfolio':
         return <DigitalPortfolio setView={handleSetView} currentUser={currentUser} />;
       case 'reward_store':
@@ -190,6 +195,8 @@ export default function StudentHive({ currentUser, setView }) {
         return <KariyerJobBoard setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'knowledge_portal':
         return <KnowledgePortal setView={handleSetView} currentUser={currentUser} userRole="student" />;
+      case 'idari_portal':
+        return <IdariPortal setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'organization':
         return <OrganizationChart setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'news':

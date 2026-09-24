@@ -316,6 +316,71 @@ export default function AcademicStaffFeed({
             </div>
           </div>
 
+          {/* Akademik Hızlı Erişim & Yönetim Araçları (Bento Grid) */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-purple-100 shadow-xs">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#7c3aed] inline-block animate-pulse"></span>
+                <h3 className="text-sm font-bold text-gray-900 tracking-tight">Akademik Araştırma & Yönetim</h3>
+              </div>
+              <span className="text-xs font-medium text-purple-600 font-semibold">İESÜ Portal</span>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button
+                onClick={() => setView('research_hub')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-purple-50/40 to-white hover:border-purple-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-purple-100/70 text-[#7c3aed] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <BookOpen size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-[#7c3aed] transition-colors leading-tight">ResearchOS Hub</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">TÜBİTAK & Ar-Ge</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsRadarOpen(true);
+                  setActiveTab('approvals');
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-indigo-50/40 to-white hover:border-indigo-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-indigo-100/70 text-indigo-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Radar size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-indigo-700 transition-colors leading-tight">Akademik Radar</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Staj & onay takibi</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsRadarOpen(true);
+                  setActiveTab('counseling');
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-teal-50/40 to-white hover:border-teal-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-teal-100/70 text-teal-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <UserCheck size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-teal-700 transition-colors leading-tight">Danışmanlık</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Öğrenci randevuları</span>
+              </button>
+
+              <button
+                onClick={() => setView('network')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Users size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-slate-900 transition-colors leading-tight">Kariyer Ağı</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Akademisyen & mezun</span>
+              </button>
+            </div>
+          </div>
+
         {/* --- KIRMZII RADAR & AKADEMİK YÖNETİM PANELİ (GELİŞTİRİLDİ) --- */}
         {isRadarOpen && (
           <div className="mb-8 animate-fade-in bg-white rounded-2xl p-6 shadow-xl border-2 border-purple-100">

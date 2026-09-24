@@ -56,13 +56,13 @@ export default function SkillTree() {
     }
 
     setIsEvaluating(node.id);
-    window.toast && window.toast.info(`AI: ${node.title} için açık kaynaklı projeleriniz ve Github kodlarınız analiz ediliyor...`);
+    window.toast && window.toast.info(`${node.title} için açık kaynaklı projeleriniz ve GitHub kodlarınız analiz ediliyor...`);
     
-    // Simulate taking an AI skill test
+    // Simulate taking a skill test
     setTimeout(() => {
       setUnlockedBadges([...unlockedBadges, node.id]);
       setIsEvaluating(null);
-      window.toast && window.toast.success(`✅ AI Onayı: ${node.title} yetkinliğiniz kanıtlandı ve blockchain ile mühürlendi!`);
+      window.toast && window.toast.success(`✅ Onaylandı: ${node.title} yetkinliğiniz doğrulandı ve profilinize eklendi!`);
     }, 3000);
   };
 
@@ -133,14 +133,14 @@ export default function SkillTree() {
                         e.preventDefault();
                         window.toast && window.toast.info(`"${node.title}" yetkinliğini kazanmanız için size özel çalışma planı oluşturuluyor...`);
                         setTimeout(() => {
-                          window.toast && window.toast.success("✅ AI Çalışma Planı: '3 haftalık yoğunlaştırılmış eğitim programı' oluşturuldu.");
+                          window.toast && window.toast.success("✅ Çalışma Planı: '3 haftalık yoğunlaştırılmış eğitim programı' oluşturuldu.");
                         }, 2500);
                       }}
                       className="text-sm font-bold py-2 px-4 rounded-full transition-colors border border-red-200 text-red-600 hover:bg-red-50 flex-1 flex items-center justify-center gap-1"
                       title="Bu yetkinliği nasıl kazanabilirim?"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                      AI Çalışma Planı
+                      Çalışma Planı
                     </button>
                   </div>
                 )}

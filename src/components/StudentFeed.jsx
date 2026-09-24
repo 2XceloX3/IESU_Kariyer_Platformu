@@ -583,7 +583,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 : "Akademik geçmişinizi, yeteneklerinizi ve CV tercihlerinizi profil alanından güncelleyin."}
             </p>
             <button 
-              onClick={() => setView('mbs')} 
+              onClick={() => setView(userRole === 'alumni' ? 'mbs' : 'profile_update')} 
               className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
             >
               {userRole === 'alumni' ? "Mezun Bilgi Sistemi'ne Git" : "Bilgilerimi Düzenle"} <ArrowRight size={16} />

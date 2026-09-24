@@ -50,6 +50,7 @@ import CMSAuditTrail from './admin/CMSAuditTrail';
 import CMSSiteEditor from './admin/CMSSiteEditor';
 import CMSGallery from './admin/CMSGallery';
 import CMSPortfolios from './admin/CMSPortfolios';
+import CMSClubs from './admin/CMSClubs';
 import AkademikPanel from './admin/AkademikPanel';
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
@@ -327,6 +328,10 @@ export default function AdminDashboard({
   const setAcademicApprovals = useAppStore(state => state.setAcademicApprovals);
   const groups = useAppStore(state => state.groups);
   const setGroups = useAppStore(state => state.setGroups);
+  const clubs = useAppStore(state => state.clubs);
+  const setClubs = useAppStore(state => state.setClubs);
+  const clubApplications = useAppStore(state => state.clubApplications);
+  const setClubApplications = useAppStore(state => state.setClubApplications);
   const sspEnabled = useAppStore(state => state.sspEnabled);
   const setSspEnabled = useAppStore(state => state.setSspEnabled);
   const sspUsers = useAppStore(state => state.sspUsers);
@@ -409,6 +414,7 @@ export default function AdminDashboard({
       case 'data_cleanup': return <DataCleanup students={students} setStudents={setStudents} alumni={alumni} setAlumni={setAlumni} companies={companies} setCompanies={setCompanies} messages={messages} setMessages={useAppStore.getState().setMessages} posts={posts} setPosts={setPosts} jobs={jobs} setJobs={setJobs} />;
       case 'cms_gallery': return <CMSGallery />;
       case 'cms_portfolios': return <CMSPortfolios />;
+      case 'cms_clubs': return <CMSClubs clubs={clubs || []} setClubs={setClubs} clubApplications={clubApplications || []} setClubApplications={setClubApplications} currentUser={currentUser} />;
       case 'cms_message_audit': return <CMSMessageAudit currentUser={currentUser} setView={setView} />;
       case 'site_editor': return <CMSSiteEditor />;
       default:            return <OverviewPanel {...p}/>;
@@ -466,6 +472,7 @@ export default function AdminDashboard({
     { id: 'content_import', icon: <FileText size={14}/>, label: 'Resmi İçerik Aktarımı' },
     { id: 'cms_ment', icon: <Network size={14}/>, label: 'Mentörlük Sistemi' },
     { id: 'cms_portfolios', icon: <FileText size={14}/>, label: 'CV & Portfolyo Onay Havuzu' },
+    { id: 'cms_clubs', icon: <Users size={14}/>, label: 'Öğrenci Kulüpleri & EK-1 Onay' },
     { id: 'cms_gallery', icon: <Camera size={14}/>, label: 'Medya & Etkinlik Galerisi' },
     { id: 'cms_message_audit', icon: <MessageSquare size={14}/>, label: 'Mesajlaşma & İletişim Denetimi', superAdminOnly: true },
   ];
