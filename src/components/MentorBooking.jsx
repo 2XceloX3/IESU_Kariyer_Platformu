@@ -5,7 +5,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 
 const MENTORS = [
-  { id: 1, name: 'Dr. Zeynep Kaya', role: 'Yapay Zeka Uzmanı', company: 'Google', rating: 4.9, sessions: 124, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80', availability: 'Bugün, 14:00' },
+  { id: 1, name: 'Dr. Zeynep Kaya', role: 'Veri Bilimi ve Sistem Mimarı', company: 'Google', rating: 4.9, sessions: 124, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80', availability: 'Bugün, 14:00' },
   { id: 2, name: 'Ahmet Yılmaz', role: 'Kıdemli Ürün Yöneticisi', company: 'Spotify', rating: 4.8, sessions: 89, avatar: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=150&q=80', availability: 'Yarın, 10:30' },
   { id: 3, name: 'Elif Demir', role: 'Kurucu Ortak', company: 'FinTech Startup', rating: 5.0, sessions: 42, avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80', availability: '12 Eki, 16:00' },
 ];
@@ -32,13 +32,17 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                 setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student');
               }
             }} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-2">
-            <CalendarCheck className="text-red-600" size={24} />
-            <h1 className="font-black tracking-tight text-red-950">Mentor Ajandası</h1>
+          <div className="flex items-center gap-3">
+            <Logo className="h-8 w-auto text-[#990000]" />
+            <div>
+              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Mentör Randevu Ajandası</h1>
+              <p className="text-[11px] font-bold text-gray-500">Birebir Görüşme Takvimi</p>
+            </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />

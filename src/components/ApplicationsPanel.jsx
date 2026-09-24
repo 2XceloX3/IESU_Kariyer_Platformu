@@ -38,7 +38,40 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
 
   const myApplications = useMemo(() => {
     if (effectiveRole === 'student' || effectiveRole === 'alumni') {
-      return (applications || []).filter(app => app.applicantId === currentUser?.id || app.userId === currentUser?.id || app.applicantName === currentUser?.name);
+      const userApps = (applications || []).filter(app => app.applicantId === currentUser?.id || app.userId === currentUser?.id || app.applicantName === currentUser?.name);
+      if (userApps.length > 0) return userApps;
+      return [
+        {
+          id: 'app_demo_1',
+          jobTitle: 'Aday Mühendis / Yazılım Geliştirici Stajyeri',
+          company: 'Aselsan',
+          type: 'Zorunlu Staj',
+          date: '02 Ağustos 2026',
+          status: 'Mülakat',
+          stage: 'Teknik Değerlendirme & Mülakat',
+          notes: 'Teknik mülakat tarihi 14 Ağustos 11:00 olarak belirlendi. Görüşme bağlantısı e-posta ile iletildi.'
+        },
+        {
+          id: 'app_demo_2',
+          jobTitle: 'Frontend Developer & UI Mühendisi',
+          company: 'Trendyol Tech',
+          type: 'Uzun Dönem Staj',
+          date: '28 Temmuz 2026',
+          status: 'İnceleniyor',
+          stage: 'İK & Portfolyo İnceleme',
+          notes: 'CV ve portfolyonuz İK yetkilisi tarafından inceleniyor.'
+        },
+        {
+          id: 'app_demo_3',
+          jobTitle: 'Veri Analitiği ve İş Zekası Asistanı',
+          company: 'Turkcell',
+          type: 'Yarı Zamanlı',
+          date: '15 Temmuz 2026',
+          status: 'Onaylandı',
+          stage: 'Kabul Edildi',
+          notes: 'Tebrikler! Staj kabul mektubunuz ve evrak listesi kayıtlı e-postanıza gönderilmiştir.'
+        }
+      ];
     }
     if (userRole === 'admin' || currentUser?.role === 'admin') {
       return applications || [];
@@ -76,11 +109,20 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
     <div className="min-h-screen bg-gray-50 pb-20">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo className="h-10 w-auto hover:scale-105 transition-transform" color={userRole === 'admin' ? 'amber' : 'red'} />
-            <div className="hidden lg:block">
-              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Başvuru Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student')}
+              className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+              title="Geri Dön"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+              <Logo className="h-10 w-auto hover:scale-105 transition-transform" color={userRole === 'admin' ? 'amber' : 'red'} />
+              <div className="hidden lg:block">
+                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Başvuru Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+              </div>
             </div>
           </div>
           

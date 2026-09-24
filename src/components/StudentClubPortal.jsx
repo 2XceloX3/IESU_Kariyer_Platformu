@@ -316,13 +316,19 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
     <div className="min-h-screen bg-slate-50 font-sans">
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView || 'landing')}>
-            <Logo className="h-8 w-auto text-red-950" />
-            <h1 className="text-lg font-black text-red-950 border-l-2 border-slate-200 pl-3">Öğrenci Kulüpleri Havuzu</h1>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setView(previousView || 'student')} 
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-red-950 transition cursor-pointer"
+              title="Geri Dön"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView || 'student')}>
+              <Logo className="h-8 w-auto text-red-950" />
+              <h1 className="text-lg font-black text-red-950 border-l-2 border-slate-200 pl-3">Öğrenci Kulüpleri Havuzu</h1>
+            </div>
           </div>
-          <button onClick={() => setView(previousView || 'landing')} className="text-sm font-bold text-slate-500 hover:text-red-950 flex items-center gap-1">
-            <ArrowLeft size={16} /> Geri Dön
-          </button>
         </div>
         <div className="max-w-7xl mx-auto px-6 flex gap-6">
           <button onClick={() => setActiveTab('discover')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'discover' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-red-950'}`}>Keşfet</button>

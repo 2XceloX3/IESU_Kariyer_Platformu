@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { User, ChevronLeft, MapPin, Building2, Briefcase, Award, Star, MessageCircle, CheckCircle2, Search, Filter, CalendarCheck } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import AIMatchmaker from './AIMatchmaker';
+import MentorRequestModal from './modals/MentorRequestModal';
+import { VERIFIED_MENTORS } from '../data/mentorsData';
 
 const MOCK_MENTORS = [
   {
@@ -59,11 +61,27 @@ const MOCK_MENTORS = [
 export default function MentorMatch({ setView, currentUser, userRole, setSelectedUserId }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('Tümü');
-  const [requestedMentors, setRequestedMentors] = useState([]);
+  const [selectedMentorForModal, setSelectedMentorForModal] = useState(null);
 
-  const allTags = ['Tümü', ...new Set(MOCK_MENTORS.flatMap(m => m.tags))];
+  const combinedMentors = useMemo(() => {
+    const verifiedFormatted = VERIFIED_MENTORS.map(vm => ({
+      id: vm.id,
+      name: vm.name,
+      role: vm.title,
+      company: vm.company,
+      location: 'İstanbul, TR',
+      avatar: vm.avatar,
+      tags: vm.mentoringTopics ? vm.mentoringTopics.map(t => t.split(' ')[0]) : ['Kariyer', 'Mentörlük'],
+      bio: vm.bio,
+      rating: vm.rating || 5.0,
+      sessions: vm.menteeCount || 10
+    }));
+    return [...verifiedFormatted, ...MOCK_MENTORS];
+  }, []);
 
-  const filteredMentors = MOCK_MENTORS.filter(m => {
+  const allTags = ['Tümü', ...new Set(combinedMentors.flatMap(m => m.tags))];
+
+  const filteredMentors = combinedMentors.filter(m => {
     const matchesSearch = m.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           m.role.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           m.company.toLowerCase().includes(searchTerm.toLowerCase());
@@ -71,30 +89,29 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
     return matchesSearch && matchesTag;
   });
 
-  const handleRequest = (mentorId) => {
-      setRequestedMentors([...requestedMentors, mentorId]);
-      window.toast && window.toast.success("Mentorluk talebi iletildi.");
-    };
-    const cancelRequest = (mentorId) => {
-      setRequestedMentors(requestedMentors.filter(id => id !== mentorId));
-      window.toast && window.toast.info("Talep iptal edildi. Dilerseniz yeniden gönderebilirsiniz.");
-          };
+  const handleRequest = (mentor) => {
+    setSelectedMentorForModal(mentor);
+  };
 
-        return (
+  return (
     <div className="min-h-screen bg-[#f3f2ef] flex flex-col font-sans">
       {/* Header */}
       <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4 w-full max-w-[1200px] mx-auto">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="flex items-center gap-2 text-gray-500 hover:text-[#990000] font-semibold transition-colors cursor-pointer"
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+            title="Geri Dön"
           >
-            <ChevronLeft size={20} /> Ana Sayfa
+            <ChevronLeft size={20} />
           </button>
           
-          <div className="hidden md:flex items-center gap-2 ml-4">
-            <Award className="text-[#0A66C2]" size={24} />
-            <h1 className="font-black text-[#990000] text-lg tracking-tight">Mezun Mentor Ağı</h1>
+          <div className="flex items-center gap-2">
+            <Logo className="h-8 w-auto text-[#990000]" />
+            <div>
+              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Mezun & Akademisyen Mentör Ağı</h1>
+              <p className="text-[11px] font-bold text-gray-500">Birebir Mentörlük & Danışmanlık Portalı</p>
+            </div>
           </div>
           
           <div className="flex-1"></div>
@@ -202,21 +219,12 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                 
                 {/* Actions */}
                 <div className="mt-auto border-t border-gray-100 pt-4 flex gap-3">
-                  {requestedMentors.includes(mentor.id) ? (
-                                      <div className="w-full flex items-center gap-2">
-                                        <span className="flex-1 py-2 bg-gray-100 text-gray-500 font-bold rounded-md text-sm flex items-center justify-center gap-2">
-                                          <CheckCircle2 size={16} /> Talep İletildi
-                                        </span>
-                                        <button onClick={() => cancelRequest(mentor.id)} className="py-2 px-3 bg-white border border-red-200 text-red-700 hover:bg-red-50 font-bold rounded-md text-sm transition-colors">İptal</button>
-                                      </div>
-                                    ) : (
-                    <button 
-                      onClick={() => handleRequest(mentor.id)}
-                      className="w-full py-2 bg-[#0A66C2] hover:bg-red-800 text-white font-bold rounded-md text-sm transition-colors flex items-center justify-center gap-2"
-                    >
-                      <CalendarCheck size={16} /> Mentorluk Talep Et
-                    </button>
-                  )}
+                  <button 
+                    onClick={() => handleRequest(mentor)}
+                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                  >
+                    <CalendarCheck size={16} /> Mentörlük İste
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -231,6 +239,14 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
           </div>
         )}
       </main>
+
+      {/* BIREBIR MENTORLUK ISTEK FORMU MODALI */}
+      <MentorRequestModal
+        isOpen={Boolean(selectedMentorForModal)}
+        onClose={() => setSelectedMentorForModal(null)}
+        mentor={selectedMentorForModal}
+        currentUser={currentUser}
+      />
     </div>
   );
 }

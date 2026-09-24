@@ -51,6 +51,7 @@ import CMSSiteEditor from './admin/CMSSiteEditor';
 import CMSGallery from './admin/CMSGallery';
 import CMSPortfolios from './admin/CMSPortfolios';
 import CMSClubs from './admin/CMSClubs';
+import CMSIncubator from './admin/CMSIncubator';
 import AkademikPanel from './admin/AkademikPanel';
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
@@ -62,7 +63,7 @@ import {
   CheckCircle, XCircle, Plus, Trash2, Send,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
   TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles, Cloud, Code2, Palette,
-  Camera
+  Camera, Rocket
 } from 'lucide-react';
 
 import { STUDENTS, ALUMNI, COMPANIES, ALUMNI_CARDS, JOBS_INIT, MENTORSHIPS_INIT, VOLUNTEER_INIT, MESSAGES_INIT, SURVEYS_INIT, SEM_INIT, NEWS_INIT, EVENTS_INIT, ORG } from '../data/mockAdminData';
@@ -257,9 +258,9 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
 // ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'basvuru_havuzu', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'user_types', 'cms_message_audit'] },
+  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'cms_clubs', 'user_types', 'cms_message_audit'] },
   { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'kariyer_gunleri', 'mesajlar'] },
-  { id: 'kgm_danismanlik', label: 'Kariyer Danışmanlığı & Sektör', icon: <UserCheck size={14}/>, panels: ['cms_ment', 'mentorluk', 'cms_mentorship_pool', 'cms_career_counseling', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] },
+  { id: 'kgm_danismanlik', label: 'Kariyer Danışmanlığı & Sektör', icon: <UserCheck size={14}/>, panels: ['cms_ment', 'mentorluk', 'cms_mentorship_pool', 'cms_career_counseling', 'cms_incubator', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] },
   { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'cms_message_audit', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] }
 ];
 
@@ -415,6 +416,7 @@ export default function AdminDashboard({
       case 'cms_gallery': return <CMSGallery />;
       case 'cms_portfolios': return <CMSPortfolios />;
       case 'cms_clubs': return <CMSClubs clubs={clubs || []} setClubs={setClubs} clubApplications={clubApplications || []} setClubApplications={setClubApplications} currentUser={currentUser} />;
+      case 'cms_incubator': return <CMSIncubator />;
       case 'cms_message_audit': return <CMSMessageAudit currentUser={currentUser} setView={setView} />;
       case 'site_editor': return <CMSSiteEditor />;
       default:            return <OverviewPanel {...p}/>;
@@ -472,6 +474,7 @@ export default function AdminDashboard({
     { id: 'content_import', icon: <FileText size={14}/>, label: 'Resmi İçerik Aktarımı' },
     { id: 'cms_ment', icon: <Network size={14}/>, label: 'Mentörlük Sistemi' },
     { id: 'cms_portfolios', icon: <FileText size={14}/>, label: 'CV & Portfolyo Onay Havuzu' },
+    { id: 'cms_incubator', icon: <Rocket size={14}/>, label: 'Kuluçka & Girişimcilik Projeleri' },
     { id: 'cms_clubs', icon: <Users size={14}/>, label: 'Öğrenci Kulüpleri & EK-1 Onay' },
     { id: 'cms_gallery', icon: <Camera size={14}/>, label: 'Medya & Etkinlik Galerisi' },
     { id: 'cms_message_audit', icon: <MessageSquare size={14}/>, label: 'Mesajlaşma & İletişim Denetimi', superAdminOnly: true },

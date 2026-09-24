@@ -56,13 +56,16 @@ export default function SemPanel({ setView, userRole, currentUser }) {
         <div className="max-w-7xl mx-auto relative z-10">
           <button 
             onClick={() => {
-              if (!userRole) { setView('landing'); return; }
-              if (userRole === 'employer') { setView('company'); return; }
-              setView(userRole === 'admin' ? 'admin' : userRole);
+              if (userRole === 'employer' || userRole === 'company') { setView('company'); return; }
+              if (userRole === 'alumni') { setView('alumni'); return; }
+              if (userRole === 'academic') { setView('academic'); return; }
+              if (userRole === 'admin') { setView('admin'); return; }
+              setView('student');
             }}
-            className="flex items-center gap-2 text-slate-300 hover:text-white transition font-bold mb-8 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-md border border-white/15 w-fit hover:bg-white/20 text-xs uppercase tracking-wider cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition mb-6 cursor-pointer"
+            title="Geri Dön"
           >
-            <ArrowLeft size={16} /> Portala Dön
+            <ArrowLeft size={18} />
           </button>
           
           <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-end justify-between">

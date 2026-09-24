@@ -11,7 +11,7 @@ const INTERVIEW_SCENARIOS = [
     icon: '💻',
     questions: [
       "Bize biraz kendinden ve bugüne kadar geliştirdiğin en karmaşık projeden bahseder misin?",
-      "Dağıtık bir sistemde (örneğin LangChain/AutoGPT tabanlı) çoklu yapay zeka ajanlarını orkestre ederken 'State' yönetimini nasıl tasarlarsın?",
+      "Dağıtık bir sistemde çoklu otonom mikroservis mimarilerini orkestre ederken 'State' yönetimini nasıl tasarlarsın?",
       "Teknik bir kararda kıdemli bir mühendis veya PM ile ciddi şekilde anlaşmazlığa düştüğün bir anı STAR(L) tekniği ile anlatır mısın?",
       "Beklenmedik bir şekilde bütçe kısıtlaması veya yüksek API maliyeti sorunuyla karşılaştığında mimariyi nasıl pivote ettin?"
     ]
@@ -207,15 +207,16 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
         <div className="flex items-center gap-6">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-200 hover:text-gray-900 transition-colors"
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+            title="Geri Dön"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={22} />
           </button>
           <div className="flex items-center gap-3">
             <Logo className="h-10 w-auto text-[#990000]" />
             <div className="hidden sm:block">
-              <h1 className="font-black text-gray-900 text-lg leading-tight">Simülasyon</h1>
-              <p className="text-[12px] font-bold text-gray-500">Simülasyon Merkezi</p>
+              <h1 className="font-black text-gray-900 text-lg leading-tight">Mülakat Provası</h1>
+              <p className="text-[12px] font-bold text-gray-500">Sektörel Mülakat Simülasyonu</p>
             </div>
           </div>
         </div>

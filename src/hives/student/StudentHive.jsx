@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { HiveProvider } from './HiveContext';
 import useStudentStore from './store/useStudentStore';
@@ -98,11 +98,27 @@ export default function StudentHive({ currentUser, setView }) {
         else navigate(clean === 'landing' ? '/' : '/' + clean);
         return;
       }
+
+      const target = (clean === 'student' || clean === '' || clean === 'feed') ? 'feed' : clean;
+      setActiveView(target);
+      if (target === 'feed') {
+        navigate('/student');
+      } else {
+        navigate('/' + target);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
     setActiveView(v);
   }, [setView, navigate, setActiveView]);
 
-  const currentView = (pathView && pathView !== 'student') ? pathView : activeView;
+  useEffect(() => {
+    if (pathView && pathView !== 'student' && pathView !== 'feed') {
+      setActiveView(pathView);
+    }
+  }, [pathView, setActiveView]);
+
+  const currentView = (pathView && pathView !== 'student' && pathView !== 'feed') ? pathView : (activeView || 'feed');
 
   const renderActiveView = () => {
     switch (currentView) {
@@ -117,40 +133,40 @@ export default function StudentHive({ currentUser, setView }) {
       case 'student_kgb':
         return <StudentKGBPanel setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="student" />;
       case 'student_analytics':
-        return <StudentAnalytics setView={handleSetView} currentUser={currentUser} />;
+        return <StudentAnalytics setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'cvbuilder':
-        return <AICVBuilder setView={handleSetView} currentUser={currentUser} />;
+        return <AICVBuilder setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'interview_sim':
-        return <InterviewSimulator setView={handleSetView} currentUser={currentUser} />;
+        return <InterviewSimulator setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'applications':
-        return <ApplicationsPanel setView={handleSetView} currentUser={currentUser} />;
+        return <ApplicationsPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" />;
       case 'career_test':
-        return <CareerTest setView={handleSetView} currentUser={currentUser} />;
+        return <CareerTest setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'career_roadmap':
-        return <CareerRoadmap setView={handleSetView} currentUser={currentUser} />;
+        return <CareerRoadmap setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'startup_incubator':
-        return <StartupIncubator setView={handleSetView} currentUser={currentUser} />;
+        return <StartupIncubator setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'smart_certs':
-        return <SmartCertificates setView={handleSetView} currentUser={currentUser} />;
+        return <SmartCertificates setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'skills':
       case 'skill_tree':
-        return <SkillTree setView={handleSetView} currentUser={currentUser} />;
+        return <SkillTree setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'digital_portfolio':
-        return <DigitalPortfolio setView={handleSetView} currentUser={currentUser} />;
+        return <DigitalPortfolio setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'reward_store':
-        return <RewardStore setView={handleSetView} currentUser={currentUser} />;
+        return <RewardStore setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'metaverse_library':
-        return <MetaverseLibrary setView={handleSetView} currentUser={currentUser} />;
+        return <MetaverseLibrary setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'hackathon_market':
-        return <HackathonMarket setView={handleSetView} currentUser={currentUser} />;
+        return <HackathonMarket setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'club_portal':
-        return <StudentClubPortal setView={handleSetView} currentUser={currentUser} previousView="student" />;
+        return <StudentClubPortal setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" />;
       case 'club_admin':
         return <ClubAdminPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'sem':
-        return <SemPanel setView={handleSetView} currentUser={currentUser} />;
+        return <SemPanel setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" />;
       case 'staj':
-        return <StajPanel setView={handleSetView} currentUser={currentUser} />;
+        return <StajPanel setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" />;
       case 'explore':
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
       case 'network':

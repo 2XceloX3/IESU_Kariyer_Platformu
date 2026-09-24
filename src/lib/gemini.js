@@ -64,6 +64,6 @@ export const generateAIResponse = async (prompt, systemInstruction = null) => {
   }
 
   return import.meta.env.DEV
-    ? "Yapay zeka geliştirme anahtarı yapılandırılmadı. Yerel .env.local dosyanızı kontrol edin."
+    ? "Geliştirme anahtarı yapılandırılmadı. Yerel .env.local dosyanızı kontrol edin."
     : "Yapay Zeka servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.";
 };

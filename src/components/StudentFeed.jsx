@@ -24,6 +24,8 @@ import SafeAvatar from './shared/SafeAvatar';
 import FooterModals from './FooterModals';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
+import MentorRequestModal from './modals/MentorRequestModal';
+import { VERIFIED_MENTORS } from '../data/mentorsData';
 
 export default function StudentFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
   const [footerModal, setFooterModal] = useState(null);
@@ -74,6 +76,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
+  const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
 
   // Guarantee Student branch isolation
   useEffect(() => {
@@ -502,7 +505,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
           {/* ─── IN-APP MENTORS REHBERİ MODALI (Z-300 ABSOLUTE OVERLAY & ZERO HEADER BLEED) ─── */}
           {showMentorsModal && (
             <div className="fixed inset-0 bg-slate-950/95 backdrop-blur-2xl z-[9999] flex items-center justify-center p-4 animate-fade-in">
-              <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[70vh]">
+              <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[75vh]">
                 
                 {/* Modal Header */}
                 <div className="p-6 bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 text-white flex items-center justify-between shrink-0">
@@ -525,13 +528,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
                 {/* Mentors List */}
                 <div className="p-6 overflow-y-auto space-y-4 flex-1">
-                  {[...(alumni || []), ...(academicStaff || [])].slice(0, 8).map((mentorItem) => (
+                  {VERIFIED_MENTORS.map((mentorItem) => (
                     <div 
                       key={mentorItem.id}
-                      className="p-4 bg-slate-50 hover:bg-teal-50/50 rounded-2xl border border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition cursor-pointer"
-                      onClick={() => { setShowMentorsModal(false); setSelectedUserId?.(mentorItem.id); setView?.('public_profile'); }}
+                      className="p-4 bg-slate-50 hover:bg-teal-50/50 rounded-2xl border border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition"
                     >
-                      <div className="flex items-center gap-3.5 min-w-0">
+                      <div 
+                        className="flex items-center gap-3.5 min-w-0 cursor-pointer flex-1"
+                        onClick={() => { setShowMentorsModal(false); setSelectedUserId?.(mentorItem.id); setView?.('public_profile'); }}
+                      >
                         <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white border border-slate-200 shrink-0">
                           <img 
                             src={mentorItem.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(mentorItem.name||'M')}&background=0F766E&color=fff&size=100`} 
@@ -540,25 +545,39 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                          <h4 className="font-bold text-slate-900 text-sm flex items-center gap-1.5 hover:text-teal-700 transition">
                             {mentorItem.name} <ShieldCheck size={16} className="text-teal-600" />
                           </h4>
                           <p className="text-xs font-semibold text-teal-700">{mentorItem.title || mentorItem.department || 'Onaylı Mentör'}</p>
-                          <p className="text-[11px] text-slate-400 font-medium mt-0.5">İstanbul Esenyurt Üniversitesi • Mentörlük Saati: 2 Saat/Hafta</p>
+                          <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                            {mentorItem.company ? `${mentorItem.company} • ` : ''}İstanbul Esenyurt Üniversitesi Mentörlük Ağı
+                          </p>
                         </div>
                       </div>
 
-                      <button 
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          setShowMentorsModal(false); 
-                          setSelectedUserId?.(mentorItem.id); 
-                          setView?.('public_profile'); 
-                        }}
-                        className="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl text-xs font-black transition shrink-0 cursor-pointer shadow-md"
-                      >
-                        Mentörlük İste
-                      </button>
+                      <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                        <button 
+                          type="button"
+                          onClick={() => { 
+                            setShowMentorsModal(false); 
+                            setSelectedUserId?.(mentorItem.id); 
+                            setView?.('public_profile'); 
+                          }}
+                          className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer"
+                        >
+                          Profili Gör
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => { 
+                            setShowMentorsModal(false); 
+                            setSelectedMentorForRequest(mentorItem);
+                          }}
+                          className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl text-xs font-black transition cursor-pointer shadow-md"
+                        >
+                          Mentörlük İste
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -732,7 +751,7 @@ groups={groups}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {[
                     { id: 'h1', title: '2026 Ulusal Kariyer Fuarı Başlıyor', time: '12 saat önce', readers: '4.2B okuyucu', category: 'Fuar', summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.', location: 'Ana Kampüs Konferans Salonu', date: '15 Nisan 2026' },
-                    { id: 'h2', title: 'Yapay Zeka ve Geleceğin Meslekleri Raporu', time: '1 gün önce', readers: '3.1B okuyucu', category: 'Rapor', summary: 'İESÜ Araştırma OS Merkezi tarafından hazırlanan 2026 Yapay Zeka ve Geleceğin Meslekleri raporu yayımlandı. Rapor, veri analitiği, istem mühendisliği ve yapay zeka entegrasyonunun mezun istihdamındaki %45 artışını belgeliyor.', location: 'İESÜ Ar-Ge OS Merkezi', date: '10 Nisan 2026' },
+                    { id: 'h2', title: 'İleri Bilişim ve Geleceğin Meslekleri Raporu', time: '1 gün önce', readers: '3.1B okuyucu', category: 'Rapor', summary: 'İESÜ Araştırma Merkezi tarafından hazırlanan 2026 Dijital Dönüşüm ve Geleceğin Meslekleri raporu yayımlandı. Rapor, veri analitiği, bulut mimarileri ve modern teknoloji entegrasyonunun mezun istihdamındaki %45 artışını belgeliyor.', location: 'İESÜ Ar-Ge Merkezi', date: '10 Nisan 2026' },
                     { id: 'h3', title: 'Geleneksel Mezunlar ve Sektör Zirvesi', time: '2 gün önce', readers: '8.4B okuyucu', category: 'Zirve', summary: 'Geleneksel İESÜ Mezunlar ve Sektör Zirvesi bu yıl hibrit katılım modeliyle kapılarını açıyor. Türkiye ve dünyadaki mezunlarımız deneyimlerini aktif öğrencilerimizle paylaşacak.', location: 'İESÜ Kültür Merkezi & Online Stream', date: '22 Nisan 2026' },
                     { id: 'h4', title: 'Erasmus+ & Uluslararası Staj Kontenjanları', time: '3 gün önce', readers: '5.2B okuyucu', category: 'Staj', summary: 'Erasmus+ ve uluslararası konsorsiyum ortaklıkları çerçevesinde 2026-2027 dönemi yurt dışı zorunlu/gönüllü staj başvuruları ve hibe kontenjanları açıklandı.', location: 'Dış İlişkiler & Erasmus Ofisi', date: '01 Mayıs 2026' }
                   ].map((item) => (
@@ -1075,6 +1094,14 @@ groups={groups}
 
       {/* INTERACTIVE FOOTER MODALS */}
       <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} setView={setView} />
+
+      {/* BIREBIR MENTORLUK ISTEK FORMU MODALI */}
+      <MentorRequestModal
+        isOpen={Boolean(selectedMentorForRequest)}
+        onClose={() => setSelectedMentorForRequest(null)}
+        mentor={selectedMentorForRequest}
+        currentUser={currentUser}
+      />
     </div>
   );
 }

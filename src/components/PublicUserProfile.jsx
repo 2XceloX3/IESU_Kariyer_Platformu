@@ -13,7 +13,9 @@ import useAppStore from '../store/useAppStore';
 import PostCard from './PostCard';
 import AdminOmniDock from './AdminOmniDock';
 import TopProfileMenu from './TopProfileMenu';
+import MentorRequestModal from './modals/MentorRequestModal';
 import { generateStudents, generateAlumni, generateCompanies, generateAcademicStaff } from '../utils/mockData';
+import { VERIFIED_MENTORS, MENTORS_MAP } from '../data/mentorsData';
 
 export default function PublicUserProfile({ 
   userId, 
@@ -39,6 +41,7 @@ export default function PublicUserProfile({
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('about');
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [showMentorRequestModal, setShowMentorRequestModal] = useState(false);
   const [appointmentForm, setAppointmentForm] = useState({
     subject: 'Kariyer & Akademik Danışmanlık Randevusu',
     date: new Date().toISOString().split('T')[0],
@@ -84,6 +87,15 @@ export default function PublicUserProfile({
       return;
     }
 
+    // A2. Doğrulanmış Mentör Rehberi Kontrolü (mnt_ öneki veya isim eşleşmesi)
+    const foundMentor = MENTORS_MAP[targetId] || VERIFIED_MENTORS.find(m => m.id === targetId || m.name?.toLowerCase() === String(targetId).toLowerCase());
+    if (foundMentor) {
+      setUser(foundMentor);
+      setUserType(foundMentor.role || 'alumni');
+      setIsLoading(false);
+      return;
+    }
+
     // B. ID Öneklerine Göre Arama (STU-, ALU-, ACAD-, CMP-)
     if (typeof targetId === 'string') {
       if (targetId.startsWith('STU-')) {
@@ -102,7 +114,7 @@ export default function PublicUserProfile({
           avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
           email: 'ogrenci@esenyurt.edu.tr',
           badges: ['verified', 'top_voice'],
-          bio: 'İstanbul Esenyurt Üniversitesi Yazılım Mühendisliği öğrencisi. Büyük veri, dağıtık sistemler ve yapay zeka alanında araştırmalar yapıyorum.'
+          bio: 'İstanbul Esenyurt Üniversitesi Yazılım Mühendisliği öğrencisi. Büyük veri, dağıtık sistemler ve otonom sistemler alanında araştırmalar yapıyorum.'
         });
         setUserType('student');
         setIsLoading(false);
@@ -685,7 +697,7 @@ export default function PublicUserProfile({
                 </button>
 
                 {/* Role-Specific Visitor Triggers */}
-                {userType === 'academic' && (
+                {(userType === 'academic' || user?.role === 'academic') && (
                   <button
                     onClick={() => setShowAppointmentModal(true)}
                     className="px-5 py-2.5 rounded-2xl text-xs font-black bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
@@ -694,12 +706,10 @@ export default function PublicUserProfile({
                   </button>
                 )}
 
-                {userType === 'alumni' && (
+                {(userType === 'alumni' || user?.isMentor || user?.role === 'academic' || user?.badges?.includes('mentor')) && (
                   <button
-                    onClick={() => {
-                      window.toast?.success(`${user.name} ile mentörlük talebi başarıyla iletildi.`);
-                    }}
-                    className="px-5 py-2.5 rounded-2xl text-xs font-black bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-2 transition cursor-pointer"
+                    onClick={() => setShowMentorRequestModal(true)}
+                    className="px-5 py-2.5 rounded-2xl text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
                   >
                     <Sparkles size={15} /> Mentörlük İste
                   </button>
@@ -962,7 +972,7 @@ export default function PublicUserProfile({
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
                       <p className="text-[11px] font-black text-slate-400 uppercase">UZMANLIK ALANI</p>
-                      <p className="text-base font-black text-slate-900 mt-1">Yapay Zeka & Sistemler</p>
+                      <p className="text-base font-black text-slate-900 mt-1">Otonom Sistemler & Algoritmalar</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
                       <p className="text-[11px] font-black text-slate-400 uppercase">OFİS SAATLERİ</p>
@@ -1092,7 +1102,7 @@ export default function PublicUserProfile({
                   </div>
                 </div>
                 <button
-                  onClick={() => window.toast?.success(`${user.name} ile mentörlük talebi iletildi.`)}
+                  onClick={() => setShowMentorRequestModal(true)}
                   className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black transition shadow-md cursor-pointer mt-3"
                 >
                   Bu Mezundan Mentörlük Talep Et
@@ -1174,7 +1184,7 @@ export default function PublicUserProfile({
                   <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <span className="text-[10px] font-black text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Zorunlu Stajyer • Uzaktan</span>
-                      <h4 className="font-bold text-slate-900 text-sm mt-1">Yapay Zeka & Veri Bilimi Yaz Stajyeri</h4>
+                      <h4 className="font-bold text-slate-900 text-sm mt-1">Büyük Veri & Analitik Yaz Stajyeri</h4>
                       <p className="text-xs text-slate-500 mt-0.5">Co-op Programı • 3. ve 4. Sınıf Mühendislik Öğrencileri</p>
                     </div>
                     <button 
@@ -1528,6 +1538,13 @@ export default function PublicUserProfile({
         </div>
       )}
 
+      {/* Birebir Mentörlük İstek Formu Modalı */}
+      <MentorRequestModal
+        isOpen={showMentorRequestModal}
+        onClose={() => setShowMentorRequestModal(false)}
+        mentor={user}
+        currentUser={currentUser}
+      />
     </div>
   );
 }

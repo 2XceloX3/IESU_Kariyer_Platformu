@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, ArrowRight, ChevronLeft, Target, Award, Sparkles, Zap, Rocket, Star, CheckCircle2, FileText, User, Building, Compass } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
+import Logo from './Logo';
 
 const FORM_QUESTIONS = [
   {
@@ -119,7 +120,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
 
   const getPersona = () => {
     const maxTrait = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b, 'logic');
-    if (maxTrait === 'logic') return { title: 'Sistem Mimarı & Analist', icon: <Brain className="text-[#990000]" size={48} />, desc: 'Analitik zekasıyla karmaşık sorunları çözen, veri odaklı stratejist.', color: 'from-red-600 to-red-800', paths: ['Yazılım & Sistem Mühendisliği', 'Veri Bilimi & Yapay Zeka', 'Finansal Analiz & Danışmanlık'] };
+    if (maxTrait === 'logic') return { title: 'Sistem Mimarı & Analist', icon: <Brain className="text-[#990000]" size={48} />, desc: 'Analitik zekasıyla karmaşık sorunları çözen, veri odaklı stratejist.', color: 'from-red-600 to-red-800', paths: ['Yazılım & Sistem Mühendisliği', 'Veri Bilimi & İleri Analitik', 'Finansal Analiz & Danışmanlık'] };
     if (maxTrait === 'creative') return { title: 'Vizyoner Tasarımcı & İnovatör', icon: <Sparkles className="text-purple-600" size={48} />, desc: 'Sınırları zorlayan, yenilikçi ve sanatsal düşünen yaratıcı güç.', color: 'from-purple-600 to-indigo-800', paths: ['UI/UX & Dijital Ürün Tasarımı', 'Pazarlama & İletişim Stratejisi', 'Oyun & Medya Tasarımı'] };
     if (maxTrait === 'social') return { title: 'Lider & İletişim Yöneticisi', icon: <Target className="text-emerald-600" size={48} />, desc: 'İnsanları bir araya getiren, güçlü iletişime sahip organizatör.', color: 'from-emerald-600 to-teal-800', paths: ['İnsan Kaynakları & Yetenek Yönetimi', 'Proje & Ürün Yöneticiliği', 'Satış & Kurumsal İş Geliştirme'] };
     return { title: 'Uygulama & Operasyon Uzmanı', icon: <Rocket className="text-amber-600" size={48} />, desc: 'Fikirleri anında sahaya döken, sonuç odaklı dinamik uygulayıcı.', color: 'from-amber-600 to-orange-800', paths: ['Operasyon & Tedarik Zinciri', 'Girişimcilik & Startup Yönetimi', 'Saha & Üretim Mühendisliği'] };
@@ -135,14 +136,17 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-xl bg-slate-100 text-gray-600 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-2">
-            <FileText className="text-[#990000]" size={22} />
-            <h1 className="font-extrabold text-gray-900 text-base sm:text-lg">Kariyer & Yetkinlik Değerlendirme Formu</h1>
+          <div className="flex items-center gap-3">
+            <Logo className="h-8 w-auto text-[#990000]" />
+            <div>
+              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Kariyer & Yetkinlik Testi</h1>
+              <p className="text-[11px] font-bold text-gray-500">Bilişsel & Sektörel Yatkınlık Değerlendirmesi</p>
+            </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -282,7 +286,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                     onChange={(e) => setTargetSector(e.target.value)}
                     className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
                   >
-                    <option value="yazilim">Yazılım, Bilişim & Yapay Zeka</option>
+                    <option value="yazilim">Yazılım, Bilişim & Büyük Veri</option>
                     <option value="tasarim">Tasarım, UI/UX & Dijital Medya</option>
                     <option value="muhendislik">Mühendislik & Mimarlık</option>
                     <option value="isletme">İşletme, Finans & Pazarlama</option>

@@ -62,17 +62,21 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
+      <header className="h-16 bg-white border-b border-gray-200/80 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 transition"
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-2">
-            <Target className="text-[#990000]" size={24} />
-            <h1 className="font-black text-[#990000]">Kariyer Simülasyonu</h1>
+          <div className="flex items-center gap-3">
+            <Logo className="h-8 w-auto text-[#990000]" />
+            <div>
+              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Kariyer Haritası</h1>
+              <p className="text-[11px] font-bold text-gray-500">Adım Adım Gelişim Rotası</p>
+            </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />

@@ -327,7 +327,28 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   }, []);
 
   return (
-    <div className="w-full bg-transparent">
+    <div className="w-full bg-slate-50 min-h-screen">
+      {setView && (
+        <header className="h-16 bg-white border-b border-gray-200/80 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between shadow-xs hide-on-print">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}
+              className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+              title="Geri Dön"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="flex items-center gap-3">
+              <Logo className="h-8 w-auto text-[#990000]" />
+              <div>
+                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Özgeçmiş Hazırlayıcı</h1>
+                <p className="text-[11px] font-bold text-gray-500">Kariyer & Yetenek Merkezi</p>
+              </div>
+            </div>
+          </div>
+          <TopProfileMenu currentUser={currentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
+        </header>
+      )}
       <main className="w-full hide-on-print">
         <div className="w-full bg-slate-100/80 flex flex-col relative overflow-hidden py-8 px-4 sm:px-8">
         

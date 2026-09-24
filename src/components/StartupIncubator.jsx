@@ -17,7 +17,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
     setIsGenerating(true);
 
     const prompt = `
-      Sen kurumsal bir melek yatırım ağının (Angel Investor Network) Yapay Zeka Analistisin.
+      Sen kurumsal bir melek yatırım ağının (Angel Investor Network) Kıdemli Girişim ve Fizibilite Danışmanısın.
       Şu girişim fikrini profesyonelce analiz et: "${pitch}".
       Fikrin pazar potansiyeli, riskleri ve büyüme metrikleri üzerinden bir "Fizibilite Skoru" ver.
       Sadece aşağıdaki JSON formatında bir cevap dön, markdown (\`\`\`) veya başka metin kullanma:
@@ -41,10 +41,31 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
         let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
         const data = JSON.parse(cleanJson);
         setCanvas(data);
+
+        // Sync with TTO Incubator projects for Admin
+        try {
+          const projectItem = {
+            id: 'proj_' + Date.now(),
+            name: data.name || 'Öğrenci Girişimi',
+            founderName: currentUser?.name || 'Öğrenci Girişimci',
+            founderDept: currentUser?.department || 'Öğrenci',
+            founderEmail: currentUser?.email || 'girisimci@esenyurt.edu.tr',
+            category: 'Bilişim & İnovasyon',
+            score: data.score || 85,
+            stage: 'Ön Kuluçka',
+            mentorName: 'TTO Danışmanı Atanıyor',
+            date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+            pitch: pitch,
+            canvas: data.canvas
+          };
+          const existing = JSON.parse(localStorage.getItem('iesu_incubator_projects_v1') || '[]');
+          localStorage.setItem('iesu_incubator_projects_v1', JSON.stringify([projectItem, ...existing]));
+        } catch (err) {}
+
         setIsGenerating(false);
       } catch (e) {
         // Fallback
-        setCanvas({
+        const fallbackData = {
           score: 82,
           name: "SmartCampus Solutions",
           feedback: "Pazar doğrulama (Market Validation) süreci iyi planlanmış ancak müşteri edinme maliyetleri (CAC) başlangıçta yüksek seyredebilir. B2B abonelik modeline odaklanılmasını tavsiye ediyoruz.",
@@ -55,7 +76,28 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
             customerSegment: ["B2B Kurumsal Şirketler", "KOBİ'ler"],
             revenueStreams: ["Yıllık Lisans (SaaS)", "Danışmanlık Hizmetleri"]
           }
-        });
+        };
+        setCanvas(fallbackData);
+
+        try {
+          const projectItem = {
+            id: 'proj_' + Date.now(),
+            name: fallbackData.name,
+            founderName: currentUser?.name || 'Öğrenci Girişimci',
+            founderDept: currentUser?.department || 'Öğrenci',
+            founderEmail: currentUser?.email || 'girisimci@esenyurt.edu.tr',
+            category: 'Bilişim & İnovasyon',
+            score: fallbackData.score,
+            stage: 'Ön Kuluçka',
+            mentorName: 'TTO Danışmanı Atanıyor',
+            date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+            pitch: pitch,
+            canvas: fallbackData.canvas
+          };
+          const existing = JSON.parse(localStorage.getItem('iesu_incubator_projects_v1') || '[]');
+          localStorage.setItem('iesu_incubator_projects_v1', JSON.stringify([projectItem, ...existing]));
+        } catch (err) {}
+
         setIsGenerating(false);
       }
     }, 2000);
@@ -69,7 +111,8 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-              className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition"
+              className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+              title="Geri Dön"
             >
               <ChevronLeft size={20} />
             </button>
@@ -110,7 +153,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
               <div className="text-left mb-2 text-sm font-bold text-gray-700">Proje Özeti (Executive Summary)</div>
               <textarea 
                 className="w-full bg-gray-50 border border-gray-100 rounded-xl outline-none resize-none text-gray-800 placeholder-gray-400 text-base p-4 min-h-[150px] mb-4 focus:bg-white transition-colors"
-                placeholder="Örn: KOBİ'ler için yapay zeka destekli ön muhasebe otomasyonu sunan B2B SaaS platformu..."
+                placeholder="Örn: KOBİ'ler için akıllı algoritmalar destekli ön muhasebe otomasyonu sunan B2B SaaS platformu..."
                 value={pitch}
                 onChange={(e) => setPitch(e.target.value)}
               />
