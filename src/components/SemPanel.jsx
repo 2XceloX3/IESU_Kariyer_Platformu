@@ -293,7 +293,7 @@ export default function SemPanel({ setView, userRole, currentUser }) {
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-400 focus:bg-white transition"
                   >
                     <option value="Yazılım & Teknoloji">Yazılım & Teknoloji</option>
-                    <option value="Yapay Zeka & Veri">Yapay Zeka & Veri</option>
+                    <option value="İleri Analitik & Veri Bilimi">İleri Analitik & Veri Bilimi</option>
                     <option value="Tasarım & Kreatif">Tasarım & Kreatif</option>
                     <option value="Dijital Pazarlama">Dijital Pazarlama</option>
                     <option value="Yabancı Dil">Yabancı Dil</option>

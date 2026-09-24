@@ -537,7 +537,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Kulüp Adı *</label>
                   <input 
                     type="text" required value={createForm.name} onChange={(e) => setCreateForm({...createForm, name: e.target.value})}
-                    placeholder="Örn: Yapay Zeka ve Robotik Kulübü" 
+                    placeholder="Örn: Bilişim ve Robotik Kulübü" 
                     className="w-full bg-slate-50 border border-slate-200 focus:border-red-900 rounded-xl px-4 py-3 outline-none transition-colors text-sm"
                   />
                 </div>
