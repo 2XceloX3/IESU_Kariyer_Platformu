@@ -158,6 +158,32 @@ export default function UserProfile({
     }
   });
 
+  // Canlı Sohbet & Mesajlaşma Entegrasyonu (FloatingChatWidget)
+  const handleOpenDirectChat = (targetUser, initialText = '') => {
+    if (!targetUser) return;
+    const targetId = targetUser.id || 'usr_' + Date.now();
+    const targetName = targetUser.name || 'İESÜ Üyesi';
+    const targetAvatar = targetUser.avatar || targetUser.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetName)}&background=0A2342&color=fff`;
+    const targetDept = targetUser.department || targetUser.sector || targetUser.title || targetUser.faculty || 'İESÜ Topluluğu';
+    const targetRole = targetUser.role || (targetUser.gpa ? 'student' : targetUser.graduationYear ? 'alumni' : targetUser.sector ? 'company' : 'academic');
+
+    if (setDirectMessageUser) setDirectMessageUser(targetId);
+    if (setSelectedUserId) setSelectedUserId(targetId);
+
+    window.dispatchEvent(new CustomEvent('iesu_open_chat', {
+      detail: {
+        candidateId: targetId,
+        candidateName: targetName,
+        candidateAvatar: targetAvatar,
+        candidateDept: targetDept,
+        candidateRole: targetRole,
+        initialMessage: initialText || `Merhaba ${targetName}, profilinizi İESÜ Kariyer Platformu üzerinden inceliyorum.`
+      }
+    }));
+
+    window.toast?.success?.(`${targetName} ile mesajlaşma paneli açıldı.`);
+  };
+
   // Likert Ölçekli Firma Değerlendirme Modalı State
   const [showCompanyReviewModal, setShowCompanyReviewModal] = useState(false);
   const [companyReviewForm, setCompanyReviewForm] = useState({
@@ -730,6 +756,13 @@ export default function UserProfile({
                 ) : (
                   <>
                     <button
+                      type="button"
+                      onClick={() => handleOpenDirectChat(user)}
+                      className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 hover:from-blue-600 hover:to-indigo-800 text-white shadow-blue-900/20 hover:scale-[1.02] active:scale-95"
+                    >
+                      <MessageSquare size={15} /> Mesaj Gönder
+                    </button>
+                    <button
                       onClick={() => setIsFollowing(!isFollowing)}
                       className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer ${
                         isFollowing ? 'bg-slate-100 text-slate-800 border border-slate-300' : getViewerActionBtnClass()
@@ -1030,33 +1063,42 @@ export default function UserProfile({
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={() => {
-                      const aluId = activeUser?.id || 'ALU-001';
-                      const isFollowingAlu = followedAlumniIds.includes(aluId);
-                      let updated;
-                      if (isFollowingAlu) {
-                        updated = followedAlumniIds.filter(id => id !== aluId);
-                        window.toast?.info(`${activeUser?.name || 'Mezun'} takipten çıkarıldı.`);
-                      } else {
-                        updated = [...followedAlumniIds, aluId];
-                        window.toast?.success(`${activeUser?.name || 'Mezun'} mezun ağı listenize eklendi! Paylaşımları akışınızda görünecektir.`);
-                      }
-                      setFollowedAlumniIds(updated);
-                      try { localStorage.setItem('iesu_followed_alumni_v1', JSON.stringify(updated)); } catch(e) {}
-                    }}
-                    className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer hover:scale-105 ${
-                      followedAlumniIds.includes(activeUser?.id || 'ALU-001')
-                        ? 'bg-slate-100 text-slate-800 border border-slate-300'
-                        : getViewerActionBtnClass()
-                    }`}
-                  >
-                    {followedAlumniIds.includes(activeUser?.id || 'ALU-001') ? (
-                      <><UserCheck size={16} /> Mezun Ağında</>
-                    ) : (
-                      <><UserPlus size={16} /> Bağlantı Kur & Takip Et</>
-                    )}
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenDirectChat(activeUser)}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 hover:from-blue-600 hover:to-indigo-800 text-white shadow-blue-900/20 hover:scale-105 active:scale-95"
+                    >
+                      <MessageSquare size={15} /> Mesaj Gönder
+                    </button>
+                    <button
+                      onClick={() => {
+                        const aluId = activeUser?.id || 'ALU-001';
+                        const isFollowingAlu = followedAlumniIds.includes(aluId);
+                        let updated;
+                        if (isFollowingAlu) {
+                          updated = followedAlumniIds.filter(id => id !== aluId);
+                          window.toast?.info(`${activeUser?.name || 'Mezun'} takipten çıkarıldı.`);
+                        } else {
+                          updated = [...followedAlumniIds, aluId];
+                          window.toast?.success(`${activeUser?.name || 'Mezun'} mezun ağı listenize eklendi! Paylaşımları akışınızda görünecektir.`);
+                        }
+                        setFollowedAlumniIds(updated);
+                        try { localStorage.setItem('iesu_followed_alumni_v1', JSON.stringify(updated)); } catch(e) {}
+                      }}
+                      className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer hover:scale-105 ${
+                        followedAlumniIds.includes(activeUser?.id || 'ALU-001')
+                          ? 'bg-slate-100 text-slate-800 border border-slate-300'
+                          : getViewerActionBtnClass()
+                      }`}
+                    >
+                      {followedAlumniIds.includes(activeUser?.id || 'ALU-001') ? (
+                        <><UserCheck size={16} /> Mezun Ağında</>
+                      ) : (
+                        <><UserPlus size={16} /> Bağlantı Kur & Takip Et</>
+                      )}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -1571,8 +1613,16 @@ export default function UserProfile({
                     </button>
                   </div>
                 ) : (
-                  <>
+                  <div className="flex flex-wrap items-center gap-2.5">
                     <button
+                      type="button"
+                      onClick={() => handleOpenDirectChat(activeCompanyUser)}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md cursor-pointer hover:scale-105 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 text-white shadow-blue-900/20 active:scale-95"
+                    >
+                      <MessageSquare size={16} /> Mesaj Gönder
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => {
                         const compId = activeCompanyUser?.id || 'CMP-001';
                         const isFollowing = followedCompanyIds.includes(compId);
@@ -1599,7 +1649,7 @@ export default function UserProfile({
                         <><UserPlus size={16} /> Firmayı Takip Et</>
                       )}
                     </button>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
@@ -1910,6 +1960,13 @@ export default function UserProfile({
                   </button>
                 ) : (
                   <>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenDirectChat(activeUser)}
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 hover:from-blue-600 hover:to-indigo-800 text-white shadow-blue-900/20 hover:scale-[1.02] active:scale-95"
+                    >
+                      <MessageSquare size={15} /> Mesaj Gönder
+                    </button>
                     <button
                       onClick={() => setIsFollowing(!isFollowing)}
                       className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition shadow-sm border ${

@@ -3,14 +3,18 @@ import PanelHeader from './PanelHeader';
 import { MessageSquare, Bell, CheckCircle2, Send, Trash2, Search, Filter, Users, User, Building2, BookOpen } from 'lucide-react';
 
 import useAppStore from '../../store/useAppStore';
+import CMSMessageAudit from './CMSMessageAudit';
 
 export default function CMSMessages({ messages, setMessages }) {
+  const currentUser = useAppStore(state => state.currentUser);
+  const userRole = useAppStore(state => state.userRole);
+  const isSuperAdmin = userRole === 'admin' || currentUser?.role === 'admin';
   const adminMessages = useAppStore(state => state.adminMessages);
   const setAdminMessages = useAppStore(state => state.setAdminMessages);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
   const [selectedAdminMsgId, setSelectedAdminMsgId] = useState(null);
   const [reply, setReply] = useState('');
-  const [activeTab, setActiveTab] = useState('inbox'); // inbox, admin_pool, bulk, pool
+  const [activeTab, setActiveTab] = useState('inbox'); // inbox, admin_pool, bulk, pool, audit
   
   // Bulk messaging state
   const [bulkForm, setBulkForm] = useState({
@@ -100,11 +104,23 @@ export default function CMSMessages({ messages, setMessages }) {
               >
                 İletişim Havuzu
               </button>
+              {isSuperAdmin && (
+                <button 
+                  onClick={() => setActiveTab('audit')}
+                  className={`px-4 py-2 text-sm font-bold rounded-lg transition ${activeTab === 'audit' ? 'bg-white text-amber-800 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                >
+                  🛡️ Mesajlaşma Denetimi
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {activeTab === 'admin_pool' ? (
+        {activeTab === 'audit' ? (
+          <div className="flex-1 overflow-y-auto">
+            <CMSMessageAudit currentUser={currentUser} />
+          </div>
+        ) : activeTab === 'admin_pool' ? (
           <div className="flex-1 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden flex">
             {/* ADMIN MESSAGES LIST */}
             <div className="w-1/3 border-r border-gray-100 flex flex-col bg-gray-50/50">

@@ -16,6 +16,7 @@ import CMSStudents from './admin/CMSStudents';
 import CMSAlumni from './admin/CMSAlumni';
 import CMSCompanies from './admin/CMSCompanies';
 import CMSMessages from './admin/CMSMessages';
+import CMSMessageAudit from './admin/CMSMessageAudit';
 import CMSIntegrations from './admin/CMSIntegrations';
 import CMSAcademicStaff from './admin/CMSAcademicStaff';
 import CMSVoluntaryInternships from './admin/CMSVoluntaryInternships';
@@ -255,10 +256,10 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
 // ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'basvuru_havuzu', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'user_types'] },
+  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'user_types', 'cms_message_audit'] },
   { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'kariyer_gunleri', 'mesajlar'] },
   { id: 'kgm_danismanlik', label: 'Kariyer Danışmanlığı & Sektör', icon: <UserCheck size={14}/>, panels: ['cms_ment', 'mentorluk', 'cms_mentorship_pool', 'cms_career_counseling', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] },
-  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] }
+  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'cms_message_audit', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] }
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -408,6 +409,7 @@ export default function AdminDashboard({
       case 'data_cleanup': return <DataCleanup students={students} setStudents={setStudents} alumni={alumni} setAlumni={setAlumni} companies={companies} setCompanies={setCompanies} messages={messages} setMessages={useAppStore.getState().setMessages} posts={posts} setPosts={setPosts} jobs={jobs} setJobs={setJobs} />;
       case 'cms_gallery': return <CMSGallery />;
       case 'cms_portfolios': return <CMSPortfolios />;
+      case 'cms_message_audit': return <CMSMessageAudit currentUser={currentUser} setView={setView} />;
       case 'site_editor': return <CMSSiteEditor />;
       default:            return <OverviewPanel {...p}/>;
     }
@@ -465,9 +467,10 @@ export default function AdminDashboard({
     { id: 'cms_ment', icon: <Network size={14}/>, label: 'Mentörlük Sistemi' },
     { id: 'cms_portfolios', icon: <FileText size={14}/>, label: 'CV & Portfolyo Onay Havuzu' },
     { id: 'cms_gallery', icon: <Camera size={14}/>, label: 'Medya & Etkinlik Galerisi' },
+    { id: 'cms_message_audit', icon: <MessageSquare size={14}/>, label: 'Mesajlaşma & İletişim Denetimi', superAdminOnly: true },
   ];
 
-  const isSuperAdmin = academicRole === 'super_admin';
+  const isSuperAdmin = academicRole === 'super_admin' || userRole === 'admin' || currentUser?.role === 'admin';
 
   const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
     if (tab.id === 'anket' && !featureSurveys) return false;
