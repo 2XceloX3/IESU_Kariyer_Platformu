@@ -13,6 +13,7 @@ import useAppStore from '../store/useAppStore';
 import PostCard from './PostCard';
 import AdminOmniDock from './AdminOmniDock';
 import TopProfileMenu from './TopProfileMenu';
+import { generateStudents, generateAlumni, generateCompanies, generateAcademicStaff } from '../utils/mockData';
 
 export default function PublicUserProfile({ 
   userId, 
@@ -86,7 +87,11 @@ export default function PublicUserProfile({
     // B. ID Öneklerine Göre Arama (STU-, ALU-, ACAD-, CMP-)
     if (typeof targetId === 'string') {
       if (targetId.startsWith('STU-')) {
-        const found = (students || []).find(s => s.id === targetId);
+        let found = (students || []).find(s => s.id === targetId);
+        if (!found) {
+          const allStudents = generateStudents ? generateStudents() : [];
+          found = allStudents.find(s => s.id === targetId);
+        }
         setUser(found || {
           id: targetId,
           name: 'Alperen Yılmaz',
@@ -106,23 +111,49 @@ export default function PublicUserProfile({
 
       if (targetId.startsWith('ALU-') || targetId.startsWith('ALM-')) {
         let found = (alumni || []).find(a => a.id === targetId);
-        if (found && targetId === 'ALU-001' && found.name !== 'Seda Çelik') {
-          found = { ...found, name: 'Seda Çelik', title: 'Üretim Planlama Uzmanı', company: 'Ford Otosan' };
+        if (!found) {
+          const allAlumni = generateAlumni ? generateAlumni() : [];
+          found = allAlumni.find(a => a.id === targetId);
         }
-        setUser(found || {
-          id: targetId,
+        setUser(found || (targetId === 'ALU-001' ? {
+          id: 'ALU-001',
+          name: 'Caner Öztürk',
+          role: 'alumni',
+          department: 'Yazılım Mühendisliği',
+          graduationYear: '2023',
+          gradYear: '2023',
+          title: 'Frontend Developer',
+          company: 'Trendyol',
+          avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff',
+          email: 'caner@mezun.esenyurt.edu.tr',
+          badges: ['verified', 'mentor'],
+          bio: 'İESÜ Yazılım Mühendisliği mezunuyum. Trendyol bünyesinde Frontend Developer olarak görev yapıyorum.'
+        } : (targetId === 'ALU-002' ? {
+          id: 'ALU-002',
           name: 'Seda Çelik',
           role: 'alumni',
           department: 'Endüstri Mühendisliği',
           graduationYear: '2022',
           gradYear: '2022',
-          title: 'Üretim Planlama Uzmanı',
+          title: 'Üretim ve Operasyon Yöneticisi',
           company: 'Ford Otosan',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+          avatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff',
           email: 'seda@mezun.esenyurt.edu.tr',
           badges: ['verified', 'mentor'],
-          bio: 'İESÜ 2022 Mezunu. Otomotiv sanayisinde tedarik zinciri ve yalın üretim süreçlerini yönetiyorum. Öğrenci arkadaşlarıma mentörlük vermekten mutluluk duyarım.'
-        });
+          bio: 'İESÜ 2022 Mezunu. Otomotiv sanayisinde tedarik zinciri ve yalın üretim süreçlerini yönetiyorum.'
+        } : {
+          id: targetId,
+          name: 'İESÜ Mezunu',
+          role: 'alumni',
+          department: 'Mühendislik Fakültesi',
+          graduationYear: '2023',
+          gradYear: '2023',
+          title: 'Uzman',
+          company: 'Sektör Lideri',
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(targetId)}&background=EA580C&color=fff`,
+          email: 'alumni@mezun.esenyurt.edu.tr',
+          badges: ['verified']
+        })));
         setUserType('alumni');
         setIsLoading(false);
         return;
@@ -434,13 +465,19 @@ export default function PublicUserProfile({
     if (setDirectMessageUser) setDirectMessageUser(user.id);
     if (setSelectedUserId) setSelectedUserId(user.id);
     
+    const targetDept = user.title 
+      ? (user.company ? `${user.title} • ${user.company}` : `${user.title} • ${user.department || 'İESÜ'}`)
+      : (user.department || user.sector || 'İESÜ Üyesi');
+    const targetCompany = user.company || (user.role === 'company' ? user.name : '');
+
     window.dispatchEvent(new CustomEvent('iesu_open_chat', {
       detail: {
         candidateId: user.id,
         candidateName: user.name,
         candidateAvatar: user.avatar || user.logo,
-        candidateDept: user.department || user.title || 'İESÜ Üyesi',
+        candidateDept: targetDept,
         candidateRole: user.role || userType,
+        candidateCompany: targetCompany,
         initialMessage: `Merhaba ${user.name}, profilinizi İESÜ Kariyer Platformu üzerinden inceliyorum.`
       }
     }));

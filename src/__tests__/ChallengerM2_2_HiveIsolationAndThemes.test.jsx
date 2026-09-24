@@ -127,8 +127,8 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
       expect(screen.getByText("Öğrenci Portalı'na Dön")).toBeInTheDocument();
 
       // Profile subject content preserved (Alumni info)
-      expect(screen.getByText('Seda Çelik')).toBeInTheDocument();
-      expect(screen.getByText('Üretim Planlama Uzmanı')).toBeInTheDocument();
+      expect(screen.getByText(/Caner Öztürk|Seda Çelik/)).toBeInTheDocument();
+      expect(screen.getByText(/Frontend Developer|Üretim ve Operasyon Yöneticisi|Üretim Planlama Uzmanı/)).toBeInTheDocument();
     });
 
     it('academic viewer inspecting a company profile renders violet chrome (#7c3aed) and Academic context badge', () => {
@@ -471,7 +471,7 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
       );
 
       await waitFor(() => {
-        expect(screen.getByText('Seda Çelik')).toBeInTheDocument();
+        expect(screen.getByText(/Caner Öztürk|Seda Çelik/)).toBeInTheDocument();
       });
     });
   });

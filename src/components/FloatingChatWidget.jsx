@@ -56,6 +56,52 @@ const INITIAL_CANDIDATE_CHATS = [
     messages: [
       { id: 'm1', sender: 'company', senderName: 'İnsan Kaynakları (Getir)', text: 'Zeynep Hanım merhaba, teknik değerlendirme süreciniz başarıyla tamamlandı. Detayları görüşmek üzere hazırız.', time: '2 gün önce' }
     ]
+  },
+  {
+    id: 'chat_peer_1',
+    candidateId: 'ALU-001',
+    candidateName: 'Caner Öztürk',
+    candidateAvatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff',
+    candidateDept: 'Frontend Developer • Trendyol',
+    candidateRole: 'alumni',
+    candidateCompany: 'Trendyol',
+    lastActive: '1 saat önce',
+    unreadCount: 0,
+    status: 'Mentörlük',
+    messages: [
+      { id: 'm1', sender: 'candidate', senderName: 'Alperen Yılmaz', text: 'Caner Bey merhaba, İESÜ Mezun Ağı üzerinden profilinize ulaştım. Frontend alanında mentörlük desteği alabilir miyim?', time: 'Dün 16:30' },
+      { id: 'm2', sender: 'alumni', senderName: 'Caner Öztürk', text: 'Selam Alperen! Tabii ki, Trendyol frontend mimarisi ve React/Next.js mülakat süreçleri hakkında haftalık seans yapabiliriz.', time: '1 saat önce' }
+    ]
+  },
+  {
+    id: 'chat_peer_2',
+    candidateId: 'ALU-002',
+    candidateName: 'Seda Çelik',
+    candidateAvatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff',
+    candidateDept: 'Üretim ve Operasyon Yöneticisi • Ford Otosan',
+    candidateRole: 'alumni',
+    candidateCompany: 'Ford Otosan',
+    lastActive: '3 saat önce',
+    unreadCount: 0,
+    status: 'Mezun Ağı',
+    messages: [
+      { id: 'm1', sender: 'alumni', senderName: 'Seda Çelik', text: 'Merhaba! Otomotiv sanayisinde tedarik zinciri ve yalın üretim süreçleri üzerine deneyimlerimi paylaşmaktan mutluluk duyarım.', time: '3 saat önce' }
+    ]
+  },
+  {
+    id: 'chat_peer_3',
+    candidateId: 'STU-002',
+    candidateName: 'Zeynep Kaya',
+    candidateAvatar: 'https://ui-avatars.com/api/?name=Zeynep+Kaya&background=0A2342&color=fff',
+    candidateDept: 'Bilgisayar Mühendisliği (ÇAP)',
+    candidateRole: 'student',
+    candidateCompany: '',
+    lastActive: 'Dün 18:20',
+    unreadCount: 0,
+    status: 'Akran Dayanışması',
+    messages: [
+      { id: 'm1', sender: 'candidate', senderName: 'Zeynep Kaya', text: 'Selam, bitirme tezi ve yapay zeka proje dökümanlarını kütüphane çalışma odasında birlikte inceleyebiliriz.', time: 'Dün 18:20' }
+    ]
   }
 ];
 
@@ -227,23 +273,26 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
   // Mode:
   // - Super Admin: 'admin_eval' (Değerlendirme Havuzu - Kök Masası), 'admin_company', 'admin_academic', 'admin_ats'
+  // Modes:
+  // - Super Admin: 'admin_eval', 'admin_company', 'admin_academic', 'admin_ats'
   // - Company: 'candidate'
   // - Academic: 'counseling'
-  // - Student/Alumni: 'student_company' or 'student_counseling'
+  // - Alumni: 'alumni_network' (Mezun & Mentörlük Ağı), 'alumni_company' (Kurumsal & Sektörel)
+  // - Student: 'student_peer' (Akran & Mezun Sohbetleri), 'student_company' (Firma & Staj), 'student_counseling' (Akademik Danışmanlık)
   const [activeMode, setActiveMode] = useState(() => {
     if (isAdmin) return 'admin_eval';
     if (isCompany) return 'candidate';
     if (isAcademic) return 'counseling';
-    return 'student_company';
+    if (isAlumni) return 'alumni_network';
+    return 'student_peer';
   });
 
   useEffect(() => {
     if (isAdmin) setActiveMode('admin_eval');
     else if (isCompany) setActiveMode('candidate');
     else if (isAcademic) setActiveMode('counseling');
-    else if (isStudent || isAlumni) {
-      setActiveMode('student_company');
-    }
+    else if (isAlumni) setActiveMode('alumni_network');
+    else if (isStudent) setActiveMode('student_peer');
   }, [isAdmin, isCompany, isAcademic, isStudent, isAlumni]);
 
   // Store admin messages
@@ -583,8 +632,16 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
       setIsOpen(true);
       if (isAdmin) {
         setActiveMode('admin_ats');
-      } else if (isStudent || isAlumni) {
-        setActiveMode('student_company');
+      } else if (isAlumni) {
+        setActiveMode(detail.candidateRole === 'company' ? 'alumni_company' : 'alumni_network');
+      } else if (isStudent) {
+        if (detail.candidateRole === 'company') {
+          setActiveMode('student_company');
+        } else if (detail.candidateRole === 'academic') {
+          setActiveMode('student_counseling');
+        } else {
+          setActiveMode('student_peer');
+        }
       } else {
         setActiveMode('candidate');
       }
@@ -603,11 +660,12 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
               candidateDept: detail.candidateDept || existing.candidateDept,
               candidateRole: detail.candidateRole || existing.candidateRole,
               candidateAvatar: detail.candidateAvatar || existing.candidateAvatar,
+              candidateCompany: detail.candidateCompany || existing.candidateCompany || '',
               messages: [
                 ...(existing.messages || []),
                 {
                   id: 'm_' + Date.now(),
-                  sender: isCompany ? 'company' : 'candidate',
+                  sender: isCompany ? 'company' : (isAdmin ? 'admin' : 'candidate'),
                   senderName: currentUser?.name || (isCompany ? 'Kurumsal İK' : 'Siz'),
                   text: detail.initialMessage,
                   time: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
@@ -639,6 +697,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
           candidateAvatar: detail.candidateAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(detail.candidateName || 'U')}&background=0A2342&color=fff`,
           candidateDept: detail.candidateDept || 'İstanbul Esenyurt Üniversitesi',
           candidateRole: detail.candidateRole || 'İESÜ Üyesi',
+          candidateCompany: detail.candidateCompany || '',
           companyName: detail.companyName || (isCompany ? currentUser?.name : (currentUser?.name || 'Kullanıcı')),
           lastActive: 'Şimdi',
           unreadCount: 0,
@@ -904,15 +963,35 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
     setIsOpen(false);
   };
 
-  // Student / Alumni data filtering:
-  const studentChats = candidateChats.filter(c => 
-    c.candidateId === currentUser?.id || 
-    c.companyName === currentUser?.name ||
-    c.senderId === currentUser?.id ||
-    (c.messages || []).some(m => m.senderName === currentUser?.name) ||
-    (currentUser?.name && c.candidateName?.toLowerCase() === currentUser.name.toLowerCase())
-  );
-  const displayStudentChats = studentChats.length > 0 ? studentChats : candidateChats;
+  // Helper to distinguish corporate recruiter chats from peer/alumni chats
+  const isCorporateChat = useCallback((c) => {
+    return c.candidateRole === 'company' || 
+           c.candidateRole === 'employer' || 
+           c.isCompany === true || 
+           (Boolean(c.companyName) && !['alumni', 'student'].includes(c.candidateRole));
+  }, []);
+
+  // 1. Alumni portal lists:
+  const alumniNetworkChats = useMemo(() => {
+    return candidateChats.filter(c => !isCorporateChat(c));
+  }, [candidateChats, isCorporateChat]);
+
+  const alumniCompanyChats = useMemo(() => {
+    return candidateChats.filter(c => isCorporateChat(c));
+  }, [candidateChats, isCorporateChat]);
+
+  // 2. Student portal lists:
+  const studentPeerChats = useMemo(() => {
+    return candidateChats.filter(c => !isCorporateChat(c));
+  }, [candidateChats, isCorporateChat]);
+
+  const studentCompanyChats = useMemo(() => {
+    return candidateChats.filter(c => isCorporateChat(c));
+  }, [candidateChats, isCorporateChat]);
+
+  const displayStudentChats = isAlumni 
+    ? (activeMode === 'alumni_company' ? alumniCompanyChats : alumniNetworkChats)
+    : (activeMode === 'student_company' ? studentCompanyChats : studentPeerChats);
 
   const studentRequests = requests.filter(r => 
     r.studentId === currentUser?.id || 
@@ -921,10 +1000,18 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   const displayStudentRequests = studentRequests.length > 0 ? studentRequests : requests;
 
   // Notification badges
+  const alumniNetworkUnread = alumniNetworkChats.filter(c => (c.unreadCount || 0) > 0).length;
+  const alumniCompanyUnread = alumniCompanyChats.filter(c => (c.unreadCount || 0) > 0).length;
+
+  const studentPeerUnread = studentPeerChats.filter(c => (c.unreadCount || 0) > 0).length;
+  const studentCompanyUnread = studentCompanyChats.filter(c => (c.unreadCount || 0) > 0).length;
+  const studentApprovedCounselingsCount = displayStudentRequests.filter(r => r.status === 'Onaylandı' && (r.replies || []).length > 0).length;
+
   const pendingCounselingCount = requests.filter(r => r.status === 'Beklemede').length;
   const pendingCandidateCount = candidateChats.filter(c => (c.unreadCount || 0) > 0).length;
-  const studentUnreadChatsCount = displayStudentChats.filter(c => (c.unreadCount || 0) > 0).length;
-  const studentApprovedCounselingsCount = displayStudentRequests.filter(r => r.status === 'Onaylandı' && (r.replies || []).length > 0).length;
+  const studentUnreadChatsCount = isAlumni 
+    ? (alumniNetworkUnread + alumniCompanyUnread) 
+    : (studentPeerUnread + studentCompanyUnread);
   const pendingAdminMsgs = (adminMessages || []).filter(m => m.status === 'Beklemede').length;
 
   const totalBadge = isAdmin
@@ -933,8 +1020,10 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
     ? pendingCandidateCount 
     : isAcademic 
     ? pendingCounselingCount 
-    : (isStudent || isAlumni)
-    ? (studentUnreadChatsCount + (studentApprovedCounselingsCount > 0 ? 1 : 0))
+    : isAlumni
+    ? (alumniNetworkUnread + alumniCompanyUnread)
+    : isStudent
+    ? (studentPeerUnread + studentCompanyUnread + (studentApprovedCounselingsCount > 0 ? 1 : 0))
     : (pendingCounselingCount + pendingCandidateCount);
 
   // Theme Gradients & Accents per Role (The Tree Leaves & The Central Root)
@@ -1004,12 +1093,18 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       selectedCandidateChat ? selectedCandidateChat.candidateName : 'Aday İletişimi & İşe Alım'
                     ) : isAcademic ? (
                       activeReq ? 'Danışmanlık Talebi' : 'Danışmanlık & Randevular'
-                    ) : (isStudent || isAlumni) ? (
-                      activeMode === 'student_company' 
-                        ? (selectedCandidateChat ? selectedCandidateChat.companyName || selectedCandidateChat.candidateRole : 'Firma Mesajları & Davetler')
-                        : (activeReq ? activeReq.advisor || activeReq.mentorName || 'Danışman Randevusu' : 'Akademik Danışmanlıklarım')
+                    ) : isAlumni ? (
+                      selectedCandidateChat 
+                        ? selectedCandidateChat.candidateName 
+                        : 'İESÜ Mezun Ağı & Mentörlük Masası'
+                    ) : isStudent ? (
+                      selectedCandidateChat 
+                        ? (selectedCandidateChat.candidateName || selectedCandidateChat.companyName) 
+                        : activeReq 
+                        ? (activeReq.advisor || activeReq.mentorName || 'Danışman Randevusu')
+                        : 'Öğrenci İletişim & Akran Masası'
                     ) : (
-                      'Merkezi İletişim & Denetim Masası'
+                      'Merkezi İletişim Masası'
                     )}
                   </h3>
                   {isAdmin && selectedEvalItem?.status && (
@@ -1022,7 +1117,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       {selectedCandidateChat.status}
                     </span>
                   )}
-                  {(isStudent || isAlumni) && selectedCandidateChat?.status && activeMode === 'student_company' && (
+                  {(isStudent || isAlumni) && selectedCandidateChat?.status && (
                     <span className="bg-white/20 border border-white/30 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
                       {selectedCandidateChat.status}
                     </span>
@@ -1043,10 +1138,16 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                     selectedCandidateChat ? selectedCandidateChat.candidateRole : `${currentUser?.name || 'Kurumsal Firma'} • ATS Canlı Hat`
                   ) : isAcademic ? (
                     activeReq ? activeReq.studentName : 'İstanbul Esenyurt Üniversitesi • Fakülte Danışmanlığı'
-                  ) : (isStudent || isAlumni) ? (
-                    activeMode === 'student_company'
-                      ? (selectedCandidateChat ? `${selectedCandidateChat.candidateRole} Başvurusu` : 'İşverenler & Mülakat Davetleri')
-                      : (activeReq ? `${activeReq.topic || activeReq.subject}` : 'Öğrenci Resmî Görüşme Takibi')
+                  ) : isAlumni ? (
+                    selectedCandidateChat 
+                      ? (selectedCandidateChat.candidateDept || selectedCandidateChat.candidateCompany || 'Mezun Ağı Sohbeti')
+                      : 'Mezunlar Arası İletişim & Kariyer Dayanışması'
+                  ) : isStudent ? (
+                    selectedCandidateChat
+                      ? (selectedCandidateChat.candidateDept || (selectedCandidateChat.candidateRole === 'company' ? 'Kurumsal İlan İletişimi' : 'Akran Sohbeti'))
+                      : activeReq
+                      ? `${activeReq.topic || activeReq.subject}`
+                      : 'Akran Dayanışması & Kariyer Sohbeti'
                   ) : (
                     'Kariyer Koordinatörlüğü Süpervizör Görünümü'
                   )}
@@ -1088,38 +1189,93 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
               ROLE-AWARE DUAL-WING TAB SWITCHERS (BRANCH SELECTORS)
              ═══════════════════════════════════════════════════════════════════ */}
           
-          {/* A. Öğrenci / Mezun Çift Kanatlı Sekmesi */}
-          {(isStudent || isAlumni) && (
+          {/* A1. Mezun Portalı Özel Sekmeleri (Zümrüt Yeşili) */}
+          {isAlumni && (
             <div className="flex border-b border-slate-200 bg-slate-50 shrink-0 text-xs font-bold">
               <button 
-                onClick={() => { setActiveMode('student_company'); setSelectedCandidateChat(null); setActiveReq(null); }}
-                className={`flex-1 py-2.5 text-center transition flex items-center justify-center gap-1.5 ${
-                  activeMode === 'student_company'
-                    ? isStudent
-                      ? 'bg-white text-[#990000] border-b-2 border-[#990000] font-black shadow-2xs'
-                      : 'bg-white text-[#0F766E] border-b-2 border-[#0F766E] font-black shadow-2xs'
+                type="button"
+                onClick={() => { setActiveMode('alumni_network'); setSelectedCandidateChat(null); }}
+                className={`flex-1 py-2.5 text-center transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeMode === 'alumni_network'
+                    ? 'bg-white text-[#0F766E] border-b-2 border-[#0F766E] font-black shadow-2xs'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
-                <Building2 size={14} /> 
-                <span>Firma Mesajları</span>
-                {studentUnreadChatsCount > 0 && (
-                  <span className="w-4 h-4 bg-red-600 text-white rounded-full text-[9px] flex items-center justify-center font-black">
-                    {studentUnreadChatsCount}
+                <Users size={14} className="text-[#0F766E]" /> 
+                <span>Mezun & Mentörlük Ağı</span>
+                {alumniNetworkUnread > 0 && (
+                  <span className="w-4 h-4 bg-[#0F766E] text-white rounded-full text-[9px] flex items-center justify-center font-black">
+                    {alumniNetworkUnread}
                   </span>
                 )}
               </button>
               <button 
-                onClick={() => { setActiveMode('student_counseling'); setSelectedCandidateChat(null); setActiveReq(null); }}
-                className={`flex-1 py-2.5 text-center transition flex items-center justify-center gap-1.5 ${
-                  activeMode === 'student_counseling'
-                    ? isStudent
-                      ? 'bg-white text-[#990000] border-b-2 border-[#990000] font-black shadow-2xs'
-                      : 'bg-white text-[#0F766E] border-b-2 border-[#0F766E] font-black shadow-2xs'
+                type="button"
+                onClick={() => { setActiveMode('alumni_company'); setSelectedCandidateChat(null); }}
+                className={`flex-1 py-2.5 text-center transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeMode === 'alumni_company'
+                    ? 'bg-white text-[#0F766E] border-b-2 border-[#0F766E] font-black shadow-2xs'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
-                <GraduationCap size={14} /> 
+                <Building2 size={14} className="text-[#0F766E]" /> 
+                <span>Kurumsal İletişim</span>
+                {alumniCompanyUnread > 0 && (
+                  <span className="w-4 h-4 bg-[#0F766E] text-white rounded-full text-[9px] flex items-center justify-center font-black">
+                    {alumniCompanyUnread}
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* A2. Öğrenci Portalı Özel Sekmeleri (Kurumsal Kırmızı) */}
+          {isStudent && (
+            <div className="flex border-b border-slate-200 bg-slate-50 shrink-0 text-xs font-bold">
+              <button 
+                type="button"
+                onClick={() => { setActiveMode('student_peer'); setSelectedCandidateChat(null); setActiveReq(null); }}
+                className={`flex-1 py-2.5 text-center transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeMode === 'student_peer'
+                    ? 'bg-white text-[#990000] border-b-2 border-[#990000] font-black shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <MessageSquare size={13} /> 
+                <span>Akran & Mezun</span>
+                {studentPeerUnread > 0 && (
+                  <span className="w-4 h-4 bg-[#990000] text-white rounded-full text-[9px] flex items-center justify-center font-black">
+                    {studentPeerUnread}
+                  </span>
+                )}
+              </button>
+              <button 
+                type="button"
+                onClick={() => { setActiveMode('student_company'); setSelectedCandidateChat(null); setActiveReq(null); }}
+                className={`flex-1 py-2.5 text-center transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeMode === 'student_company'
+                    ? 'bg-white text-[#990000] border-b-2 border-[#990000] font-black shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Building2 size={13} /> 
+                <span>Firma Mesajları</span>
+                {studentCompanyUnread > 0 && (
+                  <span className="w-4 h-4 bg-red-600 text-white rounded-full text-[9px] flex items-center justify-center font-black">
+                    {studentCompanyUnread}
+                  </span>
+                )}
+              </button>
+              <button 
+                type="button"
+                onClick={() => { setActiveMode('student_counseling'); setSelectedCandidateChat(null); setActiveReq(null); }}
+                className={`flex-1 py-2.5 text-center transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeMode === 'student_counseling'
+                    ? 'bg-white text-[#990000] border-b-2 border-[#990000] font-black shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <GraduationCap size={13} /> 
                 <span>Akademik Danışmanlık</span>
                 {studentApprovedCounselingsCount > 0 && (
                   <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
@@ -2392,27 +2548,239 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
           {/* ═══════════════════════════════════════════════════════════════════
               LEAF 3: ÖĞRENCİ & MEZUN KANADI (İKİ DALLI GELEN KUTUSU)
              ═══════════════════════════════════════════════════════════════════ */}
-          {(isStudent || isAlumni) && (
+          {/* ═══════════════════════════════════════════════════════════════════
+              LEAF 3: MEZUN PORTALI ÖZEL KANADI (ZÜMRÜT YEŞİLİ SOHBET MASASI)
+             ═══════════════════════════════════════════════════════════════════ */}
+          {isAlumni && (
             <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
               
-              {/* SUB-BRANCH 3A: FİRMA MESAJLARI & MÜLAKAT DAVETLERİ */}
-              {activeMode === 'student_company' && (
+              {/* SUB-BRANCH 3A: MEZUN & MENTÖRLÜK AĞI SOHBETLERİ */}
+              {activeMode === 'alumni_network' && (
                 <div className="flex-1 flex flex-col overflow-hidden">
                   {!selectedCandidateChat ? (
-                    // Company Messages List for Student
+                    // Alumni Peer & Mentorship Chat List
                     <div className="flex-1 flex flex-col overflow-hidden">
                       <div className="p-3 bg-white border-b border-slate-100 flex items-center justify-between text-xs shrink-0">
                         <span className="font-black text-slate-800 flex items-center gap-1.5">
-                          <Building2 size={15} className={isStudent ? 'text-[#990000]' : 'text-[#0F766E]'} />
-                          İşveren İletişim Kutusu
+                          <Users size={15} className="text-[#0F766E]" />
+                          Mezun & Mentörlük Ağı
                         </span>
                         <span className="text-[10px] text-slate-400 font-medium">
-                          {displayStudentChats.length} Aktif Görüşme
+                          {alumniNetworkChats.length} Aktif Görüşme
                         </span>
                       </div>
 
                       <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
-                        {displayStudentChats.map(chat => {
+                        {alumniNetworkChats.map(chat => {
+                          const lastMsg = chat.messages?.[chat.messages.length - 1];
+                          const isStudentContact = chat.candidateRole === 'student';
+                          return (
+                            <div 
+                              key={chat.id}
+                              onClick={() => setSelectedCandidateChat(chat)}
+                              className="p-3.5 bg-white hover:bg-emerald-50/30 border border-slate-200 hover:border-emerald-200 rounded-2xl transition cursor-pointer shadow-2xs space-y-2 group"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  {chat.candidateAvatar ? (
+                                    <img 
+                                      src={chat.candidateAvatar} 
+                                      alt={chat.candidateName || 'Profil'} 
+                                      className="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0" 
+                                    />
+                                  ) : (
+                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shrink-0 bg-gradient-to-br from-[#0F766E] to-emerald-900">
+                                      <Users size={18} />
+                                    </div>
+                                  )}
+                                  <div className="min-w-0">
+                                    <h4 className="font-black text-xs text-slate-900 truncate leading-tight group-hover:text-[#0F766E]">
+                                      {chat.candidateName || 'İESÜ Üyesi'}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-bold truncate mt-0.5">
+                                      {chat.candidateDept || (isStudentContact ? 'Öğrenci Mentee' : 'Mezun')}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shrink-0 border ${
+                                  isStudentContact
+                                    ? 'bg-rose-50 text-[#990000] border-rose-200'
+                                    : 'bg-emerald-50 text-[#0F766E] border-emerald-200'
+                                }`}>
+                                  {isStudentContact ? 'Öğrenci Mentee' : 'Mezun Ağı'}
+                                </span>
+                              </div>
+
+                              {lastMsg && (
+                                <p className="text-[11px] text-slate-600 line-clamp-2 bg-slate-50 p-2 rounded-xl border border-slate-100 leading-relaxed font-medium">
+                                  <span className="font-bold text-slate-800">{lastMsg.sender === 'candidate' ? `${chat.candidateName}: ` : 'Siz: '}</span>
+                                  {lastMsg.text}
+                                </p>
+                              )}
+
+                              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                                <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
+                                <span className="font-black flex items-center gap-0.5 text-[#0F766E]">
+                                  Sohbeti Aç <ChevronRight size={12} />
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {alumniNetworkChats.length === 0 && (
+                          <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-2">
+                            <Users size={32} className="mx-auto text-emerald-300" />
+                            <h4 className="text-xs font-black text-slate-800">Mezun Ağı Sohbetiniz Bulunmuyor</h4>
+                            <p className="text-[11px] text-slate-500 leading-relaxed">
+                              Mezun ve öğrenci arkadaşlarımızın profillerini ziyaret ederek doğrudan kariyer ve mentörlük sohbeti başlatabilirsiniz.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // Conversation View: Alumni Network Chat
+                    <div className="flex-1 flex flex-col overflow-hidden bg-white">
+                      <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <button 
+                            type="button"
+                            onClick={() => setSelectedCandidateChat(null)}
+                            className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition cursor-pointer shrink-0"
+                            title="Listeye Dön"
+                          >
+                            <ChevronLeft size={18} />
+                          </button>
+                          {selectedCandidateChat.candidateAvatar ? (
+                            <img 
+                              src={selectedCandidateChat.candidateAvatar} 
+                              alt={selectedCandidateChat.candidateName || 'Profil'} 
+                              className="w-8 h-8 rounded-xl object-cover border border-slate-200 shrink-0" 
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 bg-[#0F766E]">
+                              <Users size={16} />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <h4 className="font-black text-xs text-slate-900 truncate leading-tight">
+                              {selectedCandidateChat.candidateName || 'Görüşme'}
+                            </h4>
+                            <p className="text-[10px] text-slate-500 font-bold truncate">
+                              {selectedCandidateChat.candidateDept || 'İESÜ Üyesi'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-[#0F766E] border border-emerald-200 shrink-0">
+                          {selectedCandidateChat.candidateRole === 'student' ? '🎓 Mentee' : '🤝 Mezun Ağı'}
+                        </span>
+                      </div>
+
+                      {/* Messages Flow */}
+                      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-slate-50/40">
+                        {(selectedCandidateChat.messages || []).map(msg => {
+                          const isSelfMsg = msg.sender !== 'candidate' && msg.sender !== selectedCandidateChat.candidateId;
+                          const senderDisplay = isSelfMsg ? 'Siz' : (msg.senderName || selectedCandidateChat.candidateName || 'Muhatap');
+                          return (
+                            <div key={msg.id} className={`flex flex-col ${isSelfMsg ? 'items-end' : 'items-start'}`}>
+                              <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                                {senderDisplay}
+                              </span>
+                              <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
+                                isSelfMsg
+                                  ? 'bg-gradient-to-r from-[#0F766E] to-emerald-900 text-white rounded-tr-none'
+                                  : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-none'
+                              }`}>
+                                {msg.text}
+                              </div>
+                              <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Quick Chips for Alumni Mentorship */}
+                      <div className="p-2 bg-slate-50 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+                        <button 
+                          onClick={() => handleQuickChipStudent('🤝 Memnuniyetle mentörlük desteği sağlayabilirim.')}
+                          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          🤝 Mentörlük verebilirim
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('💼 Sektörel deneyimlerimi ve açık pozisyonları paylaşabilirim.')}
+                          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          💼 Deneyimlerimi paylaşayım
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('☕ Kampüste veya online bir kahve sohbeti ayarlayalım.')}
+                          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          ☕ Kahve sohbeti yapalım
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('🚀 Başarılar dilerim, her zaman yazabilirsin.')}
+                          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          🚀 Başarılar dilerim
+                        </button>
+                      </div>
+
+                      {/* Reply Form */}
+                      <form onSubmit={handleStudentSendCompanyReply} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+                        <input 
+                          type="text" 
+                          value={studentCompanyReplyText}
+                          onChange={(e) => setStudentCompanyReplyText(e.target.value)}
+                          placeholder={`${selectedCandidateChat.candidateName || 'Kişiye'} mesajınızı yazın...`} 
+                          className="flex-1 bg-slate-100 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0F766E]" 
+                        />
+                        <button 
+                          type="submit"
+                          disabled={!studentCompanyReplyText.trim()}
+                          className="w-9 h-9 bg-[#0F766E] hover:bg-emerald-950 text-white rounded-xl flex items-center justify-center transition shrink-0 disabled:opacity-40 cursor-pointer shadow-md"
+                          title="Yanıtı Gönder"
+                        >
+                          <Send size={15} />
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {/* Footer Bar */}
+                  <div className="px-4 py-2.5 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
+                    <span className="font-bold">İESÜ Mezunlar Ağı Dayanışma Masası</span>
+                    <button 
+                      onClick={() => { setView?.('alumni'); setIsOpen(false); }}
+                      className="font-black hover:underline flex items-center gap-1 cursor-pointer text-[#0F766E]"
+                    >
+                      Mezun Ağını Keşfet <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* SUB-BRANCH 3B: KURUMSAL İLETİŞİM & FİRMA MESAJLARI */}
+              {activeMode === 'alumni_company' && (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  {!selectedCandidateChat ? (
+                    // Corporate Messages List for Alumni
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                      <div className="p-3 bg-white border-b border-slate-100 flex items-center justify-between text-xs shrink-0">
+                        <span className="font-black text-slate-800 flex items-center gap-1.5">
+                          <Building2 size={15} className="text-[#0F766E]" />
+                          Kurumsal İletişim Kutusu
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {alumniCompanyChats.length} Kurumsal Görüşme
+                        </span>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
+                        {alumniCompanyChats.map(chat => {
                           const lastMsg = chat.messages?.[chat.messages.length - 1];
                           return (
                             <div 
@@ -2429,9 +2797,427 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                       className="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0" 
                                     />
                                   ) : (
-                                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shrink-0 ${
-                                      isStudent ? 'bg-gradient-to-br from-[#990000] to-rose-900' : 'bg-gradient-to-br from-[#0F766E] to-emerald-900'
-                                    }`}>
+                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shrink-0 bg-gradient-to-br from-[#0F766E] to-emerald-900">
+                                      <Building2 size={18} />
+                                    </div>
+                                  )}
+                                  <div className="min-w-0">
+                                    <h4 className="font-black text-xs text-slate-900 truncate leading-tight group-hover:text-blue-900">
+                                      {chat.companyName || chat.candidateName || 'Kurumsal Firma'}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-bold truncate mt-0.5">
+                                      {chat.candidateDept || 'Kurumsal İK & İşe Alım'}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shrink-0 border ${
+                                  chat.status === 'Mülakat' ? 'bg-purple-50 text-purple-800 border-purple-200' :
+                                  chat.status === 'Teklif Aşaması' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
+                                  'bg-blue-50 text-blue-800 border-blue-200'
+                                }`}>
+                                  {chat.status || 'Aktif Görüşme'}
+                                </span>
+                              </div>
+
+                              {lastMsg && (
+                                <p className="text-[11px] text-slate-600 line-clamp-2 bg-slate-50 p-2 rounded-xl border border-slate-100 leading-relaxed font-medium">
+                                  <span className="font-bold text-slate-800">{lastMsg.sender === 'company' ? 'Firma: ' : 'Siz: '}</span>
+                                  {lastMsg.text}
+                                </p>
+                              )}
+
+                              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                                <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
+                                <span className="font-black flex items-center gap-0.5 text-[#0F766E]">
+                                  Mesajı Yanıtla <ChevronRight size={12} />
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {alumniCompanyChats.length === 0 && (
+                          <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-2">
+                            <Building2 size={32} className="mx-auto text-slate-300" />
+                            <h4 className="text-xs font-black text-slate-800">Gelen Kurumsal Mesaj Yok</h4>
+                            <p className="text-[11px] text-slate-500 leading-relaxed">
+                              İşverenler profilinizi ve sektörel deneyimlerinizi incelediğinde kurumsal teklif ve mesajlar burada listelenir.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // Conversation View: Alumni talking to Company
+                    <div className="flex-1 flex flex-col overflow-hidden bg-white">
+                      <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <button 
+                            type="button"
+                            onClick={() => setSelectedCandidateChat(null)}
+                            className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition cursor-pointer shrink-0"
+                            title="Listeye Dön"
+                          >
+                            <ChevronLeft size={18} />
+                          </button>
+                          {selectedCandidateChat.candidateAvatar ? (
+                            <img 
+                              src={selectedCandidateChat.candidateAvatar} 
+                              alt={selectedCandidateChat.candidateName || selectedCandidateChat.companyName || 'Profil'} 
+                              className="w-8 h-8 rounded-xl object-cover border border-slate-200 shrink-0" 
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 bg-[#0F766E]">
+                              <Building2 size={16} />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <h4 className="font-black text-xs text-slate-900 truncate leading-tight">
+                              {selectedCandidateChat.companyName || selectedCandidateChat.candidateName || 'Kurumsal Görüşme'}
+                            </h4>
+                            <p className="text-[10px] text-slate-500 font-bold truncate">
+                              {selectedCandidateChat.candidateDept || 'İşe Alım Ekibi'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-50 text-blue-900 border border-blue-200 shrink-0">
+                          {selectedCandidateChat.status || 'Aktif Sohbet'}
+                        </span>
+                      </div>
+
+                      {/* Messages Flow */}
+                      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-slate-50/40">
+                        {(selectedCandidateChat.messages || []).map(msg => {
+                          const isSelfMsg = msg.sender !== 'company';
+                          const senderDisplay = isSelfMsg ? 'Siz' : (msg.senderName || selectedCandidateChat.companyName || 'Firma İK');
+                          return (
+                            <div key={msg.id} className={`flex flex-col ${isSelfMsg ? 'items-end' : 'items-start'}`}>
+                              <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                                {senderDisplay}
+                              </span>
+                              <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
+                                isSelfMsg
+                                  ? 'bg-gradient-to-r from-[#0F766E] to-emerald-900 text-white rounded-tr-none'
+                                  : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-none'
+                              }`}>
+                                {msg.text}
+                              </div>
+                              <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Quick Chips for Alumni Corporate */}
+                      <div className="p-2 bg-slate-50 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+                        <button 
+                          onClick={() => handleQuickChipStudent('Merhaba, güncel CV ve portfolyom profilimde yer almaktadır.')}
+                          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          📄 Portfolyom profilimde
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('Merhaba, pozisyon detayları hakkında görüşmeye hazırım.')}
+                          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          💼 Görüşmeye hazırım
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('İletişiminiz ve ilginiz için çok teşekkür ederim, detayları öğrenmek isterim.')}
+                          className="px-2.5 py-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          🙏 İlginiz için teşekkürler
+                        </button>
+                      </div>
+
+                      {/* Reply Form */}
+                      <form onSubmit={handleStudentSendCompanyReply} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+                        <input 
+                          type="text" 
+                          value={studentCompanyReplyText}
+                          onChange={(e) => setStudentCompanyReplyText(e.target.value)}
+                          placeholder={`${selectedCandidateChat.companyName || selectedCandidateChat.candidateName || 'Firmaya'} yanıtınızı yazın...`} 
+                          className="flex-1 bg-slate-100 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0F766E]" 
+                        />
+                        <button 
+                          type="submit"
+                          disabled={!studentCompanyReplyText.trim()}
+                          className="w-9 h-9 bg-[#0F766E] hover:bg-emerald-950 text-white rounded-xl flex items-center justify-center transition shrink-0 disabled:opacity-40 cursor-pointer shadow-md"
+                          title="Yanıtı Gönder"
+                        >
+                          <Send size={15} />
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {/* Footer Bar */}
+                  <div className="px-4 py-2.5 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
+                    <span className="font-bold">İESÜ Mezun İstihdam Masası</span>
+                    <button 
+                      onClick={() => { setView?.('jobs'); setIsOpen(false); }}
+                      className="font-black hover:underline flex items-center gap-1 cursor-pointer text-[#0F766E]"
+                    >
+                      Kariyer İlanları <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════
+              LEAF 4: ÖĞRENCİ PORTALI ÖZEL KANADI (KURUMSAL KIRMIZI SOHBET MASASI)
+             ═══════════════════════════════════════════════════════════════════ */}
+          {isStudent && (
+            <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
+              
+              {/* SUB-BRANCH 4A: AKRAN & MEZUN SOHBETLERİ */}
+              {activeMode === 'student_peer' && (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  {!selectedCandidateChat ? (
+                    // Student Peer & Alumni Chat List
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                      <div className="p-3 bg-white border-b border-slate-100 flex items-center justify-between text-xs shrink-0">
+                        <span className="font-black text-slate-800 flex items-center gap-1.5">
+                          <MessageSquare size={15} className="text-[#990000]" />
+                          Akran & Mezun İletişim Masası
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {studentPeerChats.length} Aktif Görüşme
+                        </span>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
+                        {studentPeerChats.map(chat => {
+                          const lastMsg = chat.messages?.[chat.messages.length - 1];
+                          const isAlumniContact = chat.candidateRole === 'alumni';
+                          return (
+                            <div 
+                              key={chat.id}
+                              onClick={() => setSelectedCandidateChat(chat)}
+                              className="p-3.5 bg-white hover:bg-rose-50/30 border border-slate-200 hover:border-red-200 rounded-2xl transition cursor-pointer shadow-2xs space-y-2 group"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  {chat.candidateAvatar ? (
+                                    <img 
+                                      src={chat.candidateAvatar} 
+                                      alt={chat.candidateName || 'Profil'} 
+                                      className="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0" 
+                                    />
+                                  ) : (
+                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shrink-0 bg-gradient-to-br from-[#990000] to-rose-900">
+                                      <MessageSquare size={18} />
+                                    </div>
+                                  )}
+                                  <div className="min-w-0">
+                                    <h4 className="font-black text-xs text-slate-900 truncate leading-tight group-hover:text-[#990000]">
+                                      {chat.candidateName || 'İESÜ Üyesi'}
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-bold truncate mt-0.5">
+                                      {chat.candidateDept || (isAlumniContact ? 'Mezun Mentörü' : 'Öğrenci Akran')}
+                                    </p>
+                                  </div>
+                                </div>
+                                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shrink-0 border ${
+                                  isAlumniContact
+                                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                    : 'bg-rose-50 text-[#990000] border-rose-200'
+                                }`}>
+                                  {isAlumniContact ? '🌟 Mezun Mentörü' : '💬 Akran Dayanışması'}
+                                </span>
+                              </div>
+
+                              {lastMsg && (
+                                <p className="text-[11px] text-slate-600 line-clamp-2 bg-slate-50 p-2 rounded-xl border border-slate-100 leading-relaxed font-medium">
+                                  <span className="font-bold text-slate-800">{lastMsg.sender === 'candidate' ? `${chat.candidateName}: ` : 'Siz: '}</span>
+                                  {lastMsg.text}
+                                </p>
+                              )}
+
+                              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                                <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
+                                <span className="font-black flex items-center gap-0.5 text-[#990000]">
+                                  Sohbeti Aç <ChevronRight size={12} />
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {studentPeerChats.length === 0 && (
+                          <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-2">
+                            <MessageSquare size={32} className="mx-auto text-rose-300" />
+                            <h4 className="text-xs font-black text-slate-800">Akran veya Mezun Sohbetiniz Bulunmuyor</h4>
+                            <p className="text-[11px] text-slate-500 leading-relaxed">
+                              Mezunlarımızın veya diğer öğrenci arkadaşlarımızın profillerini ziyaret ederek doğrudan soru sorabilir ve sohbet başlatabilirsiniz.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // Conversation View: Student talking to Peer / Alumni
+                    <div className="flex-1 flex flex-col overflow-hidden bg-white">
+                      <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <button 
+                            type="button"
+                            onClick={() => setSelectedCandidateChat(null)}
+                            className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition cursor-pointer shrink-0"
+                            title="Listeye Dön"
+                          >
+                            <ChevronLeft size={18} />
+                          </button>
+                          {selectedCandidateChat.candidateAvatar ? (
+                            <img 
+                              src={selectedCandidateChat.candidateAvatar} 
+                              alt={selectedCandidateChat.candidateName || 'Profil'} 
+                              className="w-8 h-8 rounded-xl object-cover border border-slate-200 shrink-0" 
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 bg-[#990000]">
+                              <MessageSquare size={16} />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <h4 className="font-black text-xs text-slate-900 truncate leading-tight">
+                              {selectedCandidateChat.candidateName || 'Görüşme'}
+                            </h4>
+                            <p className="text-[10px] text-slate-500 font-bold truncate">
+                              {selectedCandidateChat.candidateDept || 'İESÜ Üyesi'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-50 text-[#990000] border border-rose-200 shrink-0">
+                          {selectedCandidateChat.candidateRole === 'alumni' ? '🌟 Mezun Mentörü' : '💬 Akran'}
+                        </span>
+                      </div>
+
+                      {/* Messages Flow */}
+                      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-slate-50/40">
+                        {(selectedCandidateChat.messages || []).map(msg => {
+                          const isSelfMsg = msg.sender !== 'candidate' && msg.sender !== selectedCandidateChat.candidateId;
+                          const senderDisplay = isSelfMsg ? 'Siz' : (msg.senderName || selectedCandidateChat.candidateName || 'Muhatap');
+                          return (
+                            <div key={msg.id} className={`flex flex-col ${isSelfMsg ? 'items-end' : 'items-start'}`}>
+                              <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                                {senderDisplay}
+                              </span>
+                              <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
+                                isSelfMsg
+                                  ? 'bg-gradient-to-r from-[#990000] to-rose-900 text-white rounded-tr-none'
+                                  : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-none'
+                              }`}>
+                                {msg.text}
+                              </div>
+                              <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Quick Chips for Student Peer Communication */}
+                      <div className="p-2 bg-slate-50 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+                        <button 
+                          onClick={() => handleQuickChipStudent('👋 Merhaba, ders/proje veya staj süreci hakkında bilgi alabilir miyim?')}
+                          className="px-2.5 py-1 bg-white hover:bg-rose-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          👋 Bilgi alabilir miyim?
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('📚 Not ve kaynak paylaşımı yapabiliriz.')}
+                          className="px-2.5 py-1 bg-white hover:bg-rose-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          📚 Kaynak paylaşımı
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('🤝 Deneyimlerinizi ve tavsiyelerinizi dinlemeyi çok isterim.')}
+                          className="px-2.5 py-1 bg-white hover:bg-rose-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          🤝 Tavsiyelerinizi dinlemek isterim
+                        </button>
+                        <button 
+                          onClick={() => handleQuickChipStudent('☕ Kampüste uygun bir zamanda görüşebilir miyiz?')}
+                          className="px-2.5 py-1 bg-white hover:bg-rose-50 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold whitespace-nowrap transition cursor-pointer shadow-2xs"
+                        >
+                          ☕ Kampüste buluşalım
+                        </button>
+                      </div>
+
+                      {/* Reply Form */}
+                      <form onSubmit={handleStudentSendCompanyReply} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+                        <input 
+                          type="text" 
+                          value={studentCompanyReplyText}
+                          onChange={(e) => setStudentCompanyReplyText(e.target.value)}
+                          placeholder={`${selectedCandidateChat.candidateName || 'Kişiye'} mesajınızı yazın...`} 
+                          className="flex-1 bg-slate-100 rounded-xl px-3.5 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#990000]" 
+                        />
+                        <button 
+                          type="submit"
+                          disabled={!studentCompanyReplyText.trim()}
+                          className="w-9 h-9 bg-[#990000] hover:bg-rose-950 text-white rounded-xl flex items-center justify-center transition shrink-0 disabled:opacity-40 cursor-pointer shadow-md"
+                          title="Yanıtı Gönder"
+                        >
+                          <Send size={15} />
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {/* Footer Bar */}
+                  <div className="px-4 py-2.5 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
+                    <span className="font-bold">İESÜ Öğrenci Akran & Kariyer Dayanışması</span>
+                    <button 
+                      onClick={() => { setView?.('feed'); setIsOpen(false); }}
+                      className="font-black hover:underline flex items-center gap-1 cursor-pointer text-[#990000]"
+                    >
+                      Öğrenci Akışına Dön <ChevronRight size={12} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* SUB-BRANCH 4B: FİRMA MESAJLARI & MÜLAKAT DAVETLERİ */}
+              {activeMode === 'student_company' && (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                  {!selectedCandidateChat ? (
+                    // Company Messages List for Student
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                      <div className="p-3 bg-white border-b border-slate-100 flex items-center justify-between text-xs shrink-0">
+                        <span className="font-black text-slate-800 flex items-center gap-1.5">
+                          <Building2 size={15} className="text-[#990000]" />
+                          İşveren & Staj İletişim Kutusu
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {studentCompanyChats.length} Aktif Görüşme
+                        </span>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
+                        {studentCompanyChats.map(chat => {
+                          const lastMsg = chat.messages?.[chat.messages.length - 1];
+                          return (
+                            <div 
+                              key={chat.id}
+                              onClick={() => setSelectedCandidateChat(chat)}
+                              className="p-3.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl transition cursor-pointer shadow-2xs space-y-2 group"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  {chat.candidateAvatar ? (
+                                    <img 
+                                      src={chat.candidateAvatar} 
+                                      alt={chat.candidateName || chat.companyName || 'Profil'} 
+                                      className="w-9 h-9 rounded-xl object-cover border border-slate-200 shrink-0" 
+                                    />
+                                  ) : (
+                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white shrink-0 bg-gradient-to-br from-[#990000] to-rose-900">
                                       <Building2 size={18} />
                                     </div>
                                   )}
@@ -2462,7 +3248,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
                               <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
                                 <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
-                                <span className={`font-black flex items-center gap-0.5 ${isStudent ? 'text-[#990000]' : 'text-[#0F766E]'}`}>
+                                <span className="font-black flex items-center gap-0.5 text-[#990000]">
                                   Mesajı Yanıtla <ChevronRight size={12} />
                                 </span>
                               </div>
@@ -2470,7 +3256,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           );
                         })}
 
-                        {displayStudentChats.length === 0 && (
+                        {studentCompanyChats.length === 0 && (
                           <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-2">
                             <Building2 size={32} className="mx-auto text-slate-300" />
                             <h4 className="text-xs font-black text-slate-800">Gelen Firma Mesajı Yok</h4>
@@ -2501,9 +3287,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               className="w-8 h-8 rounded-xl object-cover border border-slate-200 shrink-0" 
                             />
                           ) : (
-                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 ${
-                              isStudent ? 'bg-[#990000]' : 'bg-[#0F766E]'
-                            }`}>
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 bg-[#990000]">
                               <Building2 size={16} />
                             </div>
                           )}
@@ -2534,9 +3318,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               </span>
                               <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
                                 isStudentMsg
-                                  ? isStudent 
-                                    ? 'bg-gradient-to-r from-[#990000] to-rose-900 text-white rounded-tr-none'
-                                    : 'bg-gradient-to-r from-[#0F766E] to-emerald-900 text-white rounded-tr-none'
+                                  ? 'bg-gradient-to-r from-[#990000] to-rose-900 text-white rounded-tr-none'
                                   : 'bg-white text-slate-800 border border-slate-200/90 rounded-tl-none'
                               }`}>
                                 {msg.text}
@@ -2581,9 +3363,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                         <button 
                           type="submit"
                           disabled={!studentCompanyReplyText.trim()}
-                          className={`w-9 h-9 text-white rounded-xl flex items-center justify-center transition shrink-0 disabled:opacity-40 cursor-pointer shadow-md ${
-                            isStudent ? 'bg-[#990000] hover:bg-rose-950' : 'bg-[#0F766E] hover:bg-emerald-950'
-                          }`}
+                          className="w-9 h-9 bg-[#990000] hover:bg-rose-950 text-white rounded-xl flex items-center justify-center transition shrink-0 disabled:opacity-40 cursor-pointer shadow-md"
                           title="Yanıtı Gönder"
                         >
                           <Send size={15} />
@@ -2597,7 +3377,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                     <span className="font-bold">İESÜ Kariyer & İstihdam Hattı</span>
                     <button 
                       onClick={() => { setView?.('jobs'); setIsOpen(false); }}
-                      className={`font-black hover:underline flex items-center gap-1 cursor-pointer ${isStudent ? 'text-[#990000]' : 'text-[#0F766E]'}`}
+                      className="font-black hover:underline flex items-center gap-1 cursor-pointer text-[#990000]"
                     >
                       İlanları İncele <ChevronRight size={12} />
                     </button>
@@ -2605,7 +3385,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                 </div>
               )}
 
-              {/* SUB-BRANCH 3B: AKADEMİK DANIŞMANLIK & RANDEVULARIM */}
+              {/* SUB-BRANCH 4C: AKADEMİK DANIŞMANLIK & RANDEVULARIM */}
               {activeMode === 'student_counseling' && (
                 <div className="flex-1 flex flex-col overflow-hidden bg-white">
                   {!activeReq ? (

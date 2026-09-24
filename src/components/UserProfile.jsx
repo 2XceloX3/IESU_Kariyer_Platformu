@@ -9,6 +9,7 @@ import NavIcon from './shared/NavIcon';
 import useAppStore from '../store/useAppStore';
 import SafeAvatar from './shared/SafeAvatar';
 import AdminOmniDock from './AdminOmniDock';
+import { generateStudents, generateAlumni, generateCompanies, generateAcademicStaff } from '../utils/mockData';
 
 export default function UserProfile({ 
   userId, 
@@ -79,29 +80,17 @@ export default function UserProfile({
     // 1. userId belirtilmediyse veya 'self' ise kullanıcının kendi profilidir
     if (!userId || userId === 'self') return true;
 
-    // 2. userId oturum açan kullanıcının kendi ID'sine eşitse veya admin ise kendi profilidir
+    // 2. userId oturum açan kullanıcının kendi ID'sine eşitse kendi profilidir
     if (currentUser?.id && (userId === currentUser.id || user?.id === currentUser.id)) {
-      if (currentUser?.role === profileType || currentUser?.role === 'admin' || (profileType === 'admin' && isAdminBranch)) return true;
+      return true;
     }
 
-    // 3. İlgili dalın varsayılan ID'si çağrılmışsa VE kullanıcı o daldaysa kendi profilidir:
-    if (profileType === 'student' && isStudentBranch) {
-      if (userId === 'STU-001' || user?.id === 'STU-001' || userId === 'admin_1513' || user?.id === 'admin_1513' || userId === 'admin') return true;
-    }
-    if (profileType === 'alumni' && isAlumniBranch) {
-      if (userId === 'ALU-001' || userId === 'ALM-001' || user?.id === 'ALU-001' || userId === 'admin_1513' || user?.id === 'admin_1513' || userId === 'admin') return true;
-    }
-    if (profileType === 'academic' && isAcademicBranch) {
-      if (userId === 'ACAD-001' || userId === 'ACD-001' || user?.id === 'ACAD-001' || userId === 'admin_1513' || user?.id === 'admin_1513' || userId === 'admin') return true;
-    }
-    if (profileType === 'company' && isCompanyBranch) {
-      if (userId === 'CMP-001' || user?.id === 'CMP-001' || userId === 'admin_1513' || user?.id === 'admin_1513' || userId === 'admin') return true;
-    }
-    if (profileType === 'admin' && isAdminBranch) {
-      if (userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513') return true;
+    // 3. Admin portalında admin kimlikleri kendi profilidir
+    if (isAdminBranch && (userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513')) {
+      return true;
     }
 
-    // Aksi takdirde (ör. STU-002, ALU-002, ACAD-002 veya farklı bir roldeki kullanıcı) bu bir ZİYARETÇİ profildir!
+    // Aksi takdirde (ör. Caner'e veya Seda'ya veya başka birine tıklandığında) bu bir ZİYARETÇİ profildir!
     return false;
   };
 
@@ -164,8 +153,11 @@ export default function UserProfile({
     const targetId = targetUser.id || 'usr_' + Date.now();
     const targetName = targetUser.name || 'İESÜ Üyesi';
     const targetAvatar = targetUser.avatar || targetUser.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetName)}&background=0A2342&color=fff`;
-    const targetDept = targetUser.department || targetUser.sector || targetUser.title || targetUser.faculty || 'İESÜ Topluluğu';
-    const targetRole = targetUser.role || (targetUser.gpa ? 'student' : targetUser.graduationYear ? 'alumni' : targetUser.sector ? 'company' : 'academic');
+    const targetRole = targetUser.role || (targetUser.gpa ? 'student' : (targetUser.graduationYear || targetUser.gradYear) ? 'alumni' : targetUser.sector ? 'company' : 'academic');
+    const targetDept = targetUser.title 
+      ? (targetUser.company ? `${targetUser.title} • ${targetUser.company}` : `${targetUser.title} • ${targetUser.department || 'İESÜ'}`)
+      : (targetUser.department || targetUser.sector || 'İESÜ Üyesi');
+    const targetCompany = targetUser.company || (targetRole === 'company' ? targetName : '');
 
     if (setDirectMessageUser) setDirectMessageUser(targetId);
     if (setSelectedUserId) setSelectedUserId(targetId);
@@ -177,6 +169,7 @@ export default function UserProfile({
         candidateAvatar: targetAvatar,
         candidateDept: targetDept,
         candidateRole: targetRole,
+        candidateCompany: targetCompany,
         initialMessage: initialText || `Merhaba ${targetName}, profilinizi İESÜ Kariyer Platformu üzerinden inceliyorum.`
       }
     }));
@@ -353,12 +346,13 @@ export default function UserProfile({
     if (typeof targetUserId === 'string') {
       if (targetUserId.startsWith('STU-')) {
         let found = (students || []).find(s => s.id === targetUserId);
+        if (!found) {
+          const allStudents = generateStudents ? generateStudents() : [];
+          found = allStudents.find(s => s.id === targetUserId);
+        }
         const isSelfStudent = isStudentBranch && (
-          targetUserId === 'STU-001' || 
-          targetUserId === currentUser?.id || 
-          targetUserId === 'admin_1513' || 
-          targetUserId === 'admin' ||
-          !targetUserId
+          (currentUser?.id && targetUserId === currentUser?.id) || 
+          (!targetUserId && currentUser?.role === 'student')
         );
         const studentData = isSelfStudent ? {
           id: currentUser?.id || targetUserId || 'STU-001',
@@ -389,13 +383,13 @@ export default function UserProfile({
 
       if (targetUserId.startsWith('ALU-') || targetUserId.startsWith('ALM-')) {
         let found = (alumni || []).find(a => a.id === targetUserId);
+        if (!found) {
+          const allAlumni = generateAlumni ? generateAlumni() : [];
+          found = allAlumni.find(a => a.id === targetUserId);
+        }
         const isSelfAlumni = isAlumniBranch && (
-          targetUserId === 'ALU-001' || 
-          targetUserId === 'ALM-001' || 
-          targetUserId === currentUser?.id || 
-          targetUserId === 'admin_1513' || 
-          targetUserId === 'admin' ||
-          !targetUserId
+          (currentUser?.id && targetUserId === currentUser?.id) || 
+          (!targetUserId && currentUser?.role === 'alumni')
         );
         const alumniData = isSelfAlumni ? {
           id: currentUser?.id || targetUserId || 'ALU-001',
@@ -406,22 +400,46 @@ export default function UserProfile({
           gradYear: currentUser?.graduationYear || currentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
           title: currentUser?.title || found?.title || 'Frontend Developer',
           company: currentUser?.company || (currentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : (found?.company || 'Trendyol')),
-          avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150')),
+          avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff')),
           email: currentUser?.email || found?.email || 'caner@mezun.esenyurt.edu.tr',
           badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified']))
-        } : (found ? (targetUserId === 'ALU-001' && found.name !== 'Seda Çelik' ? { ...found, name: 'Seda Çelik', title: 'Üretim Planlama Uzmanı' } : found) : {
-          id: targetUserId || 'ALU-001',
+        } : (found ? found : (targetUserId === 'ALU-001' ? {
+          id: 'ALU-001',
+          name: 'Caner Öztürk',
+          role: 'alumni',
+          department: 'Yazılım Mühendisliği',
+          graduationYear: '2023',
+          gradYear: '2023',
+          title: 'Frontend Developer',
+          company: 'Trendyol',
+          avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff',
+          email: 'caner@mezun.esenyurt.edu.tr',
+          badges: ['verified', 'mentor']
+        } : (targetUserId === 'ALU-002' ? {
+          id: 'ALU-002',
           name: 'Seda Çelik',
           role: 'alumni',
           department: 'Endüstri Mühendisliği',
           graduationYear: '2022',
           gradYear: '2022',
-          title: 'Üretim Planlama Uzmanı',
+          title: 'Üretim ve Operasyon Yöneticisi',
           company: 'Ford Otosan',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+          avatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff',
           email: 'seda@mezun.esenyurt.edu.tr',
           badges: ['verified', 'mentor']
-        });
+        } : {
+          id: targetUserId,
+          name: 'İESÜ Mezunu',
+          role: 'alumni',
+          department: 'Mühendislik Fakültesi',
+          graduationYear: '2023',
+          gradYear: '2023',
+          title: 'Uzman',
+          company: 'Sektör Lideri',
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(targetUserId)}&background=EA580C&color=fff`,
+          email: 'alumni@mezun.esenyurt.edu.tr',
+          badges: ['verified']
+        })));
         setUser(alumniData);
         setUserType('alumni');
         setIsLoading(false);
@@ -430,13 +448,13 @@ export default function UserProfile({
 
       if (targetUserId.startsWith('ACAD-') || targetUserId.startsWith('ACD-')) {
         let found = (academicStaff || []).find(a => a.id === targetUserId);
+        if (!found) {
+          const allStaff = generateAcademicStaff ? generateAcademicStaff() : [];
+          found = allStaff.find(a => a.id === targetUserId);
+        }
         const isSelfAcademic = isAcademicBranch && (
-          targetUserId === 'ACAD-001' || 
-          targetUserId === 'ACD-001' || 
-          targetUserId === currentUser?.id || 
-          targetUserId === 'admin_1513' || 
-          targetUserId === 'admin' ||
-          !targetUserId
+          (currentUser?.id && targetUserId === currentUser?.id) || 
+          (!targetUserId && currentUser?.role === 'academic')
         );
         const academicData = isSelfAcademic ? {
           id: currentUser?.id || targetUserId || 'ACAD-001',
