@@ -288,6 +288,73 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+          {/* Mezun Hızlı Erişim & Ekosistem Araçları */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-emerald-100 shadow-xs">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#059669] inline-block animate-pulse"></span>
+                <h3 className="text-sm font-bold text-gray-900 tracking-tight">Mezun Ekosistem Araçları</h3>
+              </div>
+              <span className="text-xs font-medium text-emerald-600 font-semibold">İESÜ Ağı</span>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button
+                onClick={() => {
+                  const store = useAppStore.getState();
+                  if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+                  setView('global_map');
+                }}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-emerald-50/40 to-white hover:border-emerald-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-emerald-100/70 text-[#059669] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Globe size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-[#059669] transition-colors leading-tight">Küresel Harita</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Dünya geneli mezunlar</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (setShowCardModal) setShowCardModal(true);
+                  else setView('alumni_card');
+                }}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-teal-50/40 to-white hover:border-teal-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-teal-100/70 text-teal-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <CreditCard size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-teal-600 transition-colors leading-tight">Mezun Kartı</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Dijital kimlik & haklar</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const store = useAppStore.getState();
+                  if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+                  setView('mezun_dernek');
+                }}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-cyan-50/40 to-white hover:border-cyan-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-cyan-100/70 text-cyan-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <GraduationCap size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-cyan-600 transition-colors leading-tight">Mezunlar Birliği</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Dernek & projeler</span>
+              </button>
+
+              <button
+                onClick={() => setView('cvbuilder')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <FileText size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-slate-900 transition-colors leading-tight">Özgeçmiş Hazırlayıcı</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Kariyer CV oluşturucu</span>
+              </button>
+            </div>
+          </div>
             <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">
             <button 
               onClick={() => setFeedFilter('for_you')} 

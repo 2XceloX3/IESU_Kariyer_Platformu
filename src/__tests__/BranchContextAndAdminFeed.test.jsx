@@ -75,7 +75,7 @@ describe('Branch Context Retention & Super Admin Root Command Center', () => {
       />
     );
 
-    const launcherBtn = screen.getByTitle(/Aday Mesajları & İşe Alım Masası/i);
+    const launcherBtn = screen.getByTitle(/Aday Mesajları/i);
     expect(launcherBtn).toBeInTheDocument();
     expect(launcherBtn.className).toContain('via-[#0A2342]');
   });
@@ -97,7 +97,7 @@ describe('Branch Context Retention & Super Admin Root Command Center', () => {
       />
     );
 
-    const launcherBtn = screen.getByTitle(/KGM Merkezi Yönetim & Değerlendirme Masası/i);
+    const launcherBtn = screen.getByTitle(/Kariyer Geliştirme İletişim Merkezi|KGM Merkezi Yönetim/i);
     expect(launcherBtn).toBeInTheDocument();
     expect(launcherBtn.className).toContain('via-orange-500');
   });
@@ -204,7 +204,7 @@ describe('Branch Context Retention & Super Admin Root Command Center', () => {
     );
 
     expect(screen.getByText(/Profili Düzenle/i)).toBeInTheDocument();
-    expect(screen.getByText(/AI CV & Portfolyo/i)).toBeInTheDocument();
+    expect(screen.getByText(/CV & Portfolyo/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^Takip Et$/i })).not.toBeInTheDocument();
   });
 
@@ -229,7 +229,7 @@ describe('Branch Context Retention & Super Admin Root Command Center', () => {
     // Visitor mode: shows Follow button, does NOT show self-edit actions
     expect(screen.getByRole('button', { name: /Takip Et/i })).toBeInTheDocument();
     expect(screen.queryByText(/Profili Düzenle/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/AI CV & Portfolyo/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/CV & Portfolyo/i)).not.toBeInTheDocument();
   });
 
   it('renders third-party alumni profile from suggestions in visitor mode with Bağlantı Kur and NO MBS or edit buttons', () => {
@@ -338,7 +338,7 @@ describe('Branch Context Retention & Super Admin Root Command Center', () => {
 
     // CRITICAL: NEVER displays self-profile controls
     expect(screen.queryByText(/Profili Düzenle/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/AI CV & Portfolyo/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/CV & Portfolyo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Kapak Değiştir/i)).not.toBeInTheDocument();
   });
 

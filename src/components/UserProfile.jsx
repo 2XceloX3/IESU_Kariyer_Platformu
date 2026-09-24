@@ -768,7 +768,7 @@ export default function UserProfile({
                       onClick={() => setView('cvbuilder')} 
                       className="flex-1 md:flex-none bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-black px-5 py-3 rounded-2xl transition shadow-md shadow-emerald-950/20 border border-emerald-500/50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
                     >
-                      <FileText size={15} /> AI CV & Portfolyo
+                      <FileText size={15} /> CV & Portfolyo
                     </button>
                   </>
                 ) : (

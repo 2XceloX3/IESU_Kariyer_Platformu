@@ -189,7 +189,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
       }
     } catch (error) {
       console.error(error);
-      window.toast && window.toast.error("Yapay zeka asistanı yanıt veremedi.");
+      window.toast && window.toast.error("Özet oluşturulurken bir hata oluştu.");
     } finally {
       if (isMounted.current) setIsGenerating(false);
     }
@@ -339,10 +339,10 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
               onClick={handleAIGenerateSummary} 
               disabled={isGenerating}
               className="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2 text-xs font-bold disabled:opacity-50 cursor-pointer"
-              title="Yapay zeka ile etkileyici kariyer özeti oluştur"
+              title="Etkileyici ve profesyonel kariyer özeti oluştur"
             >
               <Wand2 size={15} className={isGenerating ? "animate-spin" : ""} />
-              <span>{isGenerating ? 'ANKA Yazıyor...' : 'AI Özet Üret'}</span>
+              <span>{isGenerating ? 'Hazırlanıyor...' : 'Otomatik Özet Oluştur'}</span>
             </button>
             <button 
               type="button"
@@ -352,7 +352,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
               title="ATS sistemleri için anahtar kelimeleri ve etkiyi optimize et"
             >
               <Dna size={15} className={isEvolving ? "animate-pulse" : ""} />
-              <span>{isEvolving ? 'ATS Optimize Ediliyor...' : 'AI ATS Optimize'}</span>
+              <span>{isEvolving ? 'ATS Optimize Ediliyor...' : 'ATS Formatını İyileştir'}</span>
             </button>
             <button 
               type="button"

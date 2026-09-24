@@ -45,7 +45,7 @@ export default function DailyQuestsPanel() {
             <TrendingUp size={20} className="text-[#0A66C2]" />
             Esenyurt & Kariyer Hedefleri
           </h3>
-          <p className="text-sm text-gray-500 mt-1">Yapay zeka asistanı tarafından hazırlanan günlük kariyer kilometre taşlarınız.</p>
+          <p className="text-sm text-gray-500 mt-1">Kariyer Merkeziniz tarafından hazırlanan günlük kariyer kilometre taşlarınız.</p>
         </div>
       </div>
 

@@ -1088,7 +1088,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                         ? `Akademik: ${selectedAdminAcademicMsg.senderName}`
                         : selectedCandidateChat
                         ? `Aday: ${selectedCandidateChat.candidateName}`
-                        : 'KGM Merkezi Yönetim & Değerlendirme Masası'
+                        : 'Kariyer Merkezi İletişim'
                     ) : isCompany ? (
                       selectedCandidateChat ? selectedCandidateChat.candidateName : 'Aday İletişimi & İşe Alım'
                     ) : isAcademic ? (
@@ -1096,15 +1096,15 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                     ) : isAlumni ? (
                       selectedCandidateChat 
                         ? selectedCandidateChat.candidateName 
-                        : 'İESÜ Mezun Ağı & Mentörlük Masası'
+                        : 'İESÜ Mezun & Mentörlük İletişimi'
                     ) : isStudent ? (
                       selectedCandidateChat 
                         ? (selectedCandidateChat.candidateName || selectedCandidateChat.companyName) 
                         : activeReq 
                         ? (activeReq.advisor || activeReq.mentorName || 'Danışman Randevusu')
-                        : 'Öğrenci İletişim & Akran Masası'
+                        : 'Öğrenci & Akran İletişimi'
                     ) : (
-                      'Merkezi İletişim Masası'
+                      'Mesajlar'
                     )}
                   </h3>
                   {isAdmin && selectedEvalItem?.status && (
@@ -1406,7 +1406,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                     {/* Tree Branch Filter Pills */}
                     <div className="flex items-center gap-1 mt-2.5 overflow-x-auto no-scrollbar">
                       {[
-                        { id: 'all', label: 'Tüm Dallar' },
+                        { id: 'all', label: 'Tümü' },
                         { id: 'company', label: '🏢 Firmalar' },
                         { id: 'academic', label: '🏛️ Akademi' },
                         { id: 'student', label: '🎓 Öğrenciler' }
@@ -1534,7 +1534,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
                             <span>{item.date}</span>
                             <span className="font-black text-amber-700 hover:text-amber-900 flex items-center gap-0.5">
-                              Karar Masası <ChevronRight size={12} />
+                              Talebi İncele <ChevronRight size={12} />
                             </span>
                           </div>
                         </div>
@@ -1544,7 +1544,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   {/* Footer */}
                   <div className="px-4 py-2.5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-t border-amber-200 flex items-center justify-between text-[11px] shrink-0">
                     <span className="font-black text-amber-950 flex items-center gap-1.5">
-                      <Crown size={14} className="text-amber-600" /> KGM Değerlendirme Masası
+                      <Crown size={14} className="text-amber-600" /> Kariyer Değerlendirme
                     </span>
                     <button 
                       onClick={() => { setView?.('yonetim_konsolu'); setIsOpen(false); }}
@@ -1686,7 +1686,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   <div className="p-3 bg-blue-50/60 border-b border-blue-100 flex items-center justify-between text-xs shrink-0">
                     <span className="font-black text-blue-950 flex items-center gap-1.5">
                       <Building2 size={15} className="text-blue-700" />
-                      Kurumsal Firma İletişim Masası
+                      Kurumsal İletişim & Talepler
                     </span>
                     <span className="text-[10px] text-blue-700 font-bold bg-white px-2 py-0.5 rounded-full border border-blue-200">
                       {(adminMessages || []).filter(m => m.senderType !== 'academic' && m.type !== 'academic').length} Talep
@@ -1741,7 +1741,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   </div>
 
                   <div className="px-4 py-2.5 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
-                    <span className="font-bold">KGM Kurumsal Ortaklık Masası</span>
+                    <span className="font-bold">Kurumsal İletişim</span>
                     <button 
                       onClick={() => { setView?.('yonetim_konsolu'); setIsOpen(false); }}
                       className="font-black text-blue-800 hover:underline flex items-center gap-1 cursor-pointer"
@@ -1816,7 +1816,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   <div className="p-3 bg-purple-50/60 border-b border-purple-100 flex items-center justify-between text-xs shrink-0">
                     <span className="font-black text-purple-950 flex items-center gap-1.5">
                       <GraduationCap size={15} className="text-[#4C1D95]" />
-                      Akademik Kadro Talepleri Masası
+                      Akademik Görüşmeler & Talepler
                     </span>
                     <span className="text-[10px] text-purple-800 font-bold bg-white px-2 py-0.5 rounded-full border border-purple-200">
                       {(adminMessages || []).filter(m => m.senderType === 'academic' || m.type === 'academic').length} Talep
@@ -1965,7 +1965,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   {/* Supervisor Banner */}
                   <div className="px-3.5 py-2 bg-amber-50 border-b border-amber-200/80 flex items-center gap-2 text-[11px] text-amber-900 font-bold shrink-0">
                     <ShieldCheck size={14} className="text-amber-700 shrink-0" />
-                    <span>Süpervizör Masası: Üniversite geneli tüm mülakat ve aday görüşmeleri denetlenmektedir.</span>
+                    <span>Üniversite geneli mülakat ve aday görüşmeleri denetim kayıtları.</span>
                   </div>
 
                   {/* Candidate chats list */}
@@ -2023,7 +2023,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       onClick={() => { setView?.('company_ats'); setIsOpen(false); }}
                       className="font-black text-amber-700 hover:underline flex items-center gap-1 cursor-pointer"
                     >
-                      ATS Kanban Masasını Aç <ChevronRight size={12} />
+                      Aday Takip Panosunu Aç <ChevronRight size={12} />
                     </button>
                   </div>
                 </div>
@@ -2752,7 +2752,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
                   {/* Footer Bar */}
                   <div className="px-4 py-2.5 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
-                    <span className="font-bold">İESÜ Mezunlar Ağı Dayanışma Masası</span>
+                    <span className="font-bold">İESÜ Mezunlar İletişim Ağı</span>
                     <button 
                       onClick={() => { setView?.('alumni'); setIsOpen(false); }}
                       className="font-black hover:underline flex items-center gap-1 cursor-pointer text-[#0F766E]"
@@ -2954,7 +2954,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
                   {/* Footer Bar */}
                   <div className="px-4 py-2.5 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
-                    <span className="font-bold">İESÜ Mezun İstihdam Masası</span>
+                    <span className="font-bold">İESÜ İstihdam İletişimi</span>
                     <button 
                       onClick={() => { setView?.('jobs'); setIsOpen(false); }}
                       className="font-black hover:underline flex items-center gap-1 cursor-pointer text-[#0F766E]"
@@ -2983,7 +2983,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       <div className="p-3 bg-white border-b border-slate-100 flex items-center justify-between text-xs shrink-0">
                         <span className="font-black text-slate-800 flex items-center gap-1.5">
                           <MessageSquare size={15} className="text-[#990000]" />
-                          Akran & Mezun İletişim Masası
+                          Akran & Mezun İletişimi
                         </span>
                         <span className="text-[10px] text-slate-400 font-medium">
                           {studentPeerChats.length} Aktif Görüşme
@@ -3601,12 +3601,12 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
           onClick={() => setIsOpen(true)}
           className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full text-white shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-300 relative group cursor-pointer border-2 border-white/40 ${getLauncherGradient()}`}
           title={
-            isAdmin ? "KGM Merkezi Yönetim & Değerlendirme Masası" :
-            isCompany ? "Aday Mesajları & İşe Alım Masası" :
+            isAdmin ? "Kariyer Geliştirme İletişim Merkezi" :
+            isCompany ? "Aday Mesajları & İşe Alım" :
             isAcademic ? "Resmî Danışmanlık & Randevu Talepleri" :
             isStudent ? "Mesajlarım & Görüşmelerim (Firma & Danışman)" :
-            isAlumni ? "Mezun Kariyer & Ağ İletişim Masası" :
-            "Merkezi İletişim Masası"
+            isAlumni ? "Mezun İletişim & Ağ Merkezi" :
+            "Mesajlar"
           }
         >
           {isAdmin ? (

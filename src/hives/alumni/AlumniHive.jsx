@@ -18,6 +18,7 @@ const AlumniAssocPortal = lazy(() => import('../../components/AlumniAssocPortal'
 const BirlikAgiPortal = lazy(() => import('../../components/BirlikAgiPortal'));
 const AlumniDAO = lazy(() => import('../../components/AlumniDAO'));
 const GlobalAlumniMap = lazy(() => import('../../components/GlobalAlumniMap'));
+const AICVBuilder = lazy(() => import('../../components/AICVBuilder'));
 const JobsAndInternships = lazy(() => import('../../components/JobsAndInternships'));
 const UserProfile = lazy(() => import('../../components/UserProfile'));
 const PublicUserProfile = lazy(() => import('../../components/PublicUserProfile'));
@@ -103,6 +104,8 @@ export default function AlumniHive({ currentUser, setView }) {
         return <PublicUserProfile userId={selectedUserId} viewerHive="alumni" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
         return <ProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+      case 'cvbuilder':
+        return <AICVBuilder setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
       case 'explore':
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
       case 'network':

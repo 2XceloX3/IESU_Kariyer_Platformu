@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -288,6 +288,106 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+          {/* Hızlı Erişim: Kariyer & Gelişim Araçları (Bento Grid) */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200/80 shadow-xs">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse"></span>
+                <h3 className="text-sm font-bold text-gray-900 tracking-tight">Kariyer & Gelişim Araçları</h3>
+              </div>
+              <span className="text-xs font-medium text-gray-400">Merkezi Hizmetler</span>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button
+                onClick={() => setView('cvbuilder')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-red-50/40 to-white hover:border-red-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-red-100/70 text-[#990000] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <FileText size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-[#990000] transition-colors leading-tight">Özgeçmiş Hazırlayıcı</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Profesyonel CV</span>
+              </button>
+
+              <button
+                onClick={() => setView('interview_sim')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-orange-50/40 to-white hover:border-orange-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-orange-100/70 text-orange-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Zap size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-orange-600 transition-colors leading-tight">Mülakat Provası</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Sektörel simülasyon</span>
+              </button>
+
+              <button
+                onClick={() => setView('career_roadmap')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-blue-50/40 to-white hover:border-blue-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-100/70 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Compass size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-blue-600 transition-colors leading-tight">Kariyer Haritası</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Adım adım rota</span>
+              </button>
+
+              <button
+                onClick={() => setView('career_test')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-purple-50/40 to-white hover:border-purple-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-purple-100/70 text-purple-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Target size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-purple-600 transition-colors leading-tight">Kariyer Testi</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Yetenek & eğilim</span>
+              </button>
+
+              <button
+                onClick={() => setView('applications')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-emerald-50/40 to-white hover:border-emerald-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-emerald-100/70 text-emerald-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <ClipboardList size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-emerald-600 transition-colors leading-tight">Başvurularım</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">İş & staj takibi</span>
+              </button>
+
+              <button
+                onClick={() => setView('startup_incubator')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-amber-50/40 to-white hover:border-amber-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-amber-100/70 text-amber-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Rocket size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-amber-600 transition-colors leading-tight">Kuluçka Merkezi</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Girişim & proje</span>
+              </button>
+
+              <button
+                onClick={() => setView('club_portal')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-sky-50/40 to-white hover:border-sky-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-sky-100/70 text-sky-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Users size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-sky-600 transition-colors leading-tight">Kulüpler Portalı</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Öğrenci kulüpleri</span>
+              </button>
+
+              <button
+                onClick={() => setView('sem')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-indigo-50/40 to-white hover:border-indigo-200 hover:shadow-xs transition-all text-left"
+              >
+                <div className="w-8 h-8 rounded-lg bg-indigo-100/70 text-indigo-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Award size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-indigo-600 transition-colors leading-tight">SEM Akademi</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Sertifika & eğitim</span>
+              </button>
+            </div>
+          </div>
           {/* FEED TABS (LINKEDIN STYLE) */}
           <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2 overflow-x-auto">
             <button 

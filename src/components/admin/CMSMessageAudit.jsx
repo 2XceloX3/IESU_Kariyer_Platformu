@@ -375,7 +375,7 @@ export default function CMSMessageAudit({ currentUser, setView }) {
             <thead className="bg-slate-100/80 text-slate-600 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200/80">
               <tr>
                 <th className="px-5 py-3.5">Kullanıcı</th>
-                <th className="px-4 py-3.5">Rol / Kovan</th>
+                <th className="px-4 py-3.5">Kullanıcı Rolü</th>
                 <th className="px-4 py-3.5">Bölüm / Kurum</th>
                 <th className="px-4 py-3.5 text-center">Görüşülen Kişi</th>
                 <th className="px-4 py-3.5 text-center">Toplam Mesaj</th>

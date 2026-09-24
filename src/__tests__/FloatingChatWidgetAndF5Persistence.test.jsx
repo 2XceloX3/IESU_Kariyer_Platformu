@@ -31,7 +31,7 @@ describe('FloatingChatWidget F5 Persistence & Dock Theme Verification', () => {
 
     render(<FloatingChatWidget setView={vi.fn()} currentView="alumni" />);
 
-    const launcherBtn = screen.getByTitle(/Mezun Kariyer & Ağ İletişim Masası/i);
+    const launcherBtn = screen.getByTitle(/Mezun.*İletişim/i);
     expect(launcherBtn).toBeInTheDocument();
   });
 
@@ -59,7 +59,7 @@ describe('FloatingChatWidget F5 Persistence & Dock Theme Verification', () => {
 
     render(<FloatingChatWidget setView={vi.fn()} currentView="company" />);
 
-    const launcherBtn = screen.getByTitle(/Aday Mesajları & İşe Alım Masası/i);
+    const launcherBtn = screen.getByTitle(/Aday Mesajları/i);
     expect(launcherBtn).toBeInTheDocument();
     expect(launcherBtn.className).toContain('via-[#0A2342]');
   });
@@ -91,7 +91,7 @@ describe('FloatingChatWidget F5 Persistence & Dock Theme Verification', () => {
 
     render(<FloatingChatWidget setView={vi.fn()} currentView="alumni" />);
 
-    const launcherBtn = screen.getByTitle(/Mezun Kariyer & Ağ İletişim Masası/i);
+    const launcherBtn = screen.getByTitle(/Mezun.*İletişim/i);
     expect(launcherBtn).toBeInTheDocument();
 
     fireEvent.click(launcherBtn);
@@ -129,7 +129,7 @@ describe('FloatingChatWidget F5 Persistence & Dock Theme Verification', () => {
     render(<FloatingChatWidget setView={vi.fn()} currentView="admin" />);
 
     // In admin portal, launcher adapts to Super Admin Crown & Amber root theme
-    const launcherBtn = screen.getByTitle(/KGM Merkezi Yönetim & Değerlendirme Masası/i);
+    const launcherBtn = screen.getByTitle(/Kariyer Geliştirme İletişim Merkezi|KGM Merkezi Yönetim/i);
     expect(launcherBtn).toBeInTheDocument();
     expect(launcherBtn.className).toContain('to-amber-600');
 
@@ -159,11 +159,11 @@ describe('FloatingChatWidget F5 Persistence & Dock Theme Verification', () => {
     render(<FloatingChatWidget setView={vi.fn()} currentView="admin" />);
 
     // Open widget
-    const launcherBtn = screen.getByTitle(/KGM Merkezi Yönetim & Değerlendirme Masası/i);
+    const launcherBtn = screen.getByTitle(/Kariyer Geliştirme İletişim Merkezi|KGM Merkezi Yönetim/i);
     fireEvent.click(launcherBtn);
 
     // Click on the first evaluation request card
-    const evalButtons = screen.getAllByText(/Karar Masası/i);
+    const evalButtons = screen.getAllByText(/Talebi İncele|Karar Masası/i);
     expect(evalButtons.length).toBeGreaterThan(0);
     fireEvent.click(evalButtons[0]);
 
@@ -195,7 +195,7 @@ describe('FloatingChatWidget F5 Persistence & Dock Theme Verification', () => {
     render(<FloatingChatWidget setView={mockSetView} currentView="admin" />);
 
     // Open widget
-    const launcherBtn = screen.getByTitle(/KGM Merkezi Yönetim & Değerlendirme Masası/i);
+    const launcherBtn = screen.getByTitle(/Kariyer Geliştirme İletişim Merkezi|KGM Merkezi Yönetim/i);
     fireEvent.click(launcherBtn);
 
     // Find and click "Yönetim Konsoluna Git" button

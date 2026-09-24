@@ -50,7 +50,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
           feedback: "Pazar doğrulama (Market Validation) süreci iyi planlanmış ancak müşteri edinme maliyetleri (CAC) başlangıçta yüksek seyredebilir. B2B abonelik modeline odaklanılmasını tavsiye ediyoruz.",
           canvas: {
             problem: ["Operasyonel verimsizlik", "Yüksek operasyon maliyetleri"],
-            solution: ["Yapay zeka destekli otomasyon", "Veriye dayalı analiz"],
+            solution: ["Akıllı süreç otomasyonu", "Veriye dayalı analiz"],
             uniqueValue: "Kurumsal firmalar için uçtan uca, bulut tabanlı maliyet optimizasyonu.",
             customerSegment: ["B2B Kurumsal Şirketler", "KOBİ'ler"],
             revenueStreams: ["Yıllık Lisans (SaaS)", "Danışmanlık Hizmetleri"]
@@ -103,7 +103,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
               Girişim Fikrinizi Değerlendirelim
             </h2>
             <p className="text-gray-500 text-lg mb-12 leading-relaxed">
-              Yapay Zeka Destekli Yatırım Analiz platformumuz, projenizin pazar potansiyelini değerlendirip sizin için otomatik bir Yalın Kanvas (Lean Canvas) iş modeli oluşturur.
+              Girişimcilik ve Yatırım Analiz platformumuz, projenizin pazar potansiyelini değerlendirip sizin için otomatik bir Yalın Kanvas (Lean Canvas) iş modeli oluşturur.
             </p>
 
             <div className="w-full bg-white p-6 rounded-2xl border border-gray-200 shadow-sm transition-all focus-within:border-[#0A66C2] focus-within:ring-4 focus-within:ring-red-50">

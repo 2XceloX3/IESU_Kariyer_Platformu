@@ -129,7 +129,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
       {/* Corporate SaaS Metrics */}
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-8">
         <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-6">
-          <Zap size={20} className="text-[#990000]" /> Yapay Zekâ Mülakat Performans Metrikleri
+          <Zap size={20} className="text-[#990000]" /> Mülakat Değerlendirme & Performans Metrikleri
         </h3>
         <div className="space-y-5">
           <div>

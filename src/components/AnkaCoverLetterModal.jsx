@@ -21,7 +21,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
         }
 
         const prompt = `
-          Sen Esenyurt Üniversitesi kariyer yapay zekası Anka'sın.
+          Sen Esenyurt Üniversitesi kariyer danışmanı Anka'sın.
           Aşağıdaki ilana başvuran "${currentUser?.name}" adlı öğrenci için çok kısa (max 3 cümle), etkileyici ve doğrudan İK yöneticisine hitap eden bir ön yazı (cover letter) yaz.
           
           İlan: ${job.title} - ${job.company} (${job.type})

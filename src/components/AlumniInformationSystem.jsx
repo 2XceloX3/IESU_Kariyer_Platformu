@@ -293,7 +293,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       disabled={aiEnhancing}
                       className="text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition disabled:opacity-50"
                     >
-                      {aiEnhancing ? 'Optimize Ediliyor...' : 'Yapay Zekâ ile Özeti İyileştir'}
+                      {aiEnhancing ? 'Optimize Ediliyor...' : 'Özeti Otomatik İyileştir'}
                       <Wand2 size={14} />
                     </button>
                   </div>

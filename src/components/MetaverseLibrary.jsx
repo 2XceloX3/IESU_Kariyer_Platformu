@@ -98,7 +98,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
             </div>
             
             <h2 className="text-3xl font-black mb-4 text-red-950 tracking-tight">
-              Dijital Bilgi Ağacı
+              Dijital Bilgi & Kaynak Merkezi
             </h2>
             <p className="text-slate-500 text-base mb-8 max-w-xl leading-relaxed font-semibold">
               Kütüphanemiz binlerce akademik yayını ve kitabı sizin için saniyeler içinde tarar.

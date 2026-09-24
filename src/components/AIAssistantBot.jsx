@@ -255,7 +255,7 @@ export default function AIAssistantBot({ currentUser }) {
       try {
         aiResponse = await generateAIResponse(boundedMsg, sysInst);
       } catch (err) {
-        aiResponse = "Şu anda yapay zeka servislerimize erişimde anlık bir yoğunluk var. İESÜ Kariyer Geliştirme Merkezi ilanları, staj olanakları veya etkinlikleri hakkında sana yardımcı olmaya devam edebilirim! 😊";
+        aiResponse = "Şu anda danışma servislerimize erişimde anlık bir yoğunluk var. İESÜ Kariyer Geliştirme Merkezi ilanları, staj olanakları veya etkinlikleri hakkında sana yardımcı olmaya devam edebilirim! 😊";
       }
 
       const msgId = Date.now();

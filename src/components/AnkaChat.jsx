@@ -7,7 +7,7 @@ import { generateAIResponse } from '../lib/gemini';
 
 export default function AnkaChat({ setView, currentUser, userRole, setSelectedUserId }) {
   const [messages, setMessages] = useState([
-    { id: 1, text: `Merhaba ${currentUser?.name || 'Esenyurtli'}! Ben Anka, senin kişisel AI Kariyer Mentorunum. Hangi alanda uzmanlaşmak istiyorsun, ya da mülakat provası mı yapmak istersin?`, isBot: true }
+    { id: 1, text: `Merhaba ${currentUser?.name || 'Esenyurtli'}! Ben Anka, senin kişisel Kariyer Danışmanınım. Hangi alanda uzmanlaşmak istiyorsun, ya da mülakat provası mı yapmak istersin?`, isBot: true }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -29,7 +29,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
 
     const contextMessages = messages.map(m => `${m.isBot ? 'Anka' : 'Öğrenci'}: ${m.text}`).join('\n');
     const prompt = `
-      Sen Esenyurt Üniversitesi yapay zekası "Anka"sın. Çok akıllı, yardımsever ve motive edici bir kariyere mentorusun.
+      Sen Esenyurt Üniversitesi Kariyer Merkezi Danışmanı "Anka"sın. Çok akıllı, yardımsever ve motive edici bir kariyer mentorusun.
       Öğrencinin adı: ${currentUser?.name || 'Öğrenci'}.
       
       Sohbet Geçmişi:
@@ -44,7 +44,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
       setMessages(prev => [...prev, { id: Date.now(), text: response, isBot: true }]);
     } catch (e) {
       setTimeout(() => {
-        setMessages(prev => [...prev, { id: Date.now(), text: "Esenyurt AI Ağına şu an ulaşılamıyor, ancak kariyerin için çok güçlü bir profilin olduğunu biliyorum. Birazdan tekrar deneyebiliriz!", isBot: true }]);
+        setMessages(prev => [...prev, { id: Date.now(), text: "Kariyer danışma ağına şu an ulaşılamıyor, ancak kariyerin için çok güçlü bir profilin olduğunu biliyorum. Birazdan tekrar deneyebiliriz!", isBot: true }]);
       }, 1500);
     } finally {
       setIsTyping(false);

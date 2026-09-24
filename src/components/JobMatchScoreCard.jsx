@@ -46,8 +46,8 @@ export default function JobMatchScoreCard({ studentProfile, job }) {
             <Sparkles size={18} />
           </div>
           <div>
-            <h4 className="font-black text-sm text-white leading-tight">Handshake AI İlan Uyum Analizi</h4>
-            <p className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider">KGM Akıllı Eşleştirme Motoru</p>
+            <h4 className="font-black text-sm text-white leading-tight">İlan Uyum & Yetkinlik Analizi</h4>
+            <p className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider">Kariyer Merkezi Eşleştirme Motoru</p>
           </div>
         </div>
         <span className={`text-xs font-black px-3 py-1 rounded-full border ${matchResult.badgeColor}`}>

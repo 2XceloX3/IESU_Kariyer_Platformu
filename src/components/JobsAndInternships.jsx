@@ -744,9 +744,9 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                     type="button"
                     onClick={() => setShowAnkaModal(true)}
                     className="text-[11px] font-black text-purple-700 hover:text-purple-900 flex items-center gap-1.5 bg-purple-50 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition border border-purple-200 cursor-pointer shadow-xs"
-                    title="Yapay zeka ile kişiselleştirilmiş profesyonel ön yazı üret"
+                    title="Kişiselleştirilmiş profesyonel ön yazı taslağı oluştur"
                   >
-                    <Sparkles size={13} className="text-purple-600 animate-pulse" /> Anka AI ile Otomatik Yaz
+                    <Sparkles size={13} className="text-purple-600" /> Ön Yazı Taslağı Oluştur
                   </button>
                 </div>
                 <textarea 

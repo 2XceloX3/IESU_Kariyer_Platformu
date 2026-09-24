@@ -129,17 +129,17 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
           "🚀 Mobil & Çapraz Platform: React Native / Flutter projelerini portfolyona ekleyerek global işveren ilanlarındaki görünürlüğünü %55 artırabilirsin.",
           "🤝 Kampüs & Mezun Ağı: Profili inceleyen Kurumsal İK yöneticilerine 'İESÜ Mezun Ağı' üzerinden ortak bağlantılarla mesaj gönder.",
           "📜 YÖK Uyumlu Akreditasyon: Sistem Mimarisi puanın (78) bölüm ortalamasının (52) üzerinde! AWS veya Cloud Practitioner sertifikası yükleyerek yetkinliğini tescille.",
-          "💡 Mülakat Simülasyonu: Yapay Zekâ Mülakat Koçu ile 1 canlı teknik pratik tamamlayarak kariyer skorunu +5 puan daha yükseltebilirsin."
+          "💡 Mülakat Simülasyonu: Mülakat Simülatörü & Prova Odası ile 1 canlı teknik pratik tamamlayarak kariyer skorunu +5 puan daha yükseltebilirsin."
         ]
       });
-      if (window.toast) window.toast.success("İESÜ Yapay Zekâ Stratejik Kariyer Raporunuz Başarıyla Hazırlandı!");
+      if (window.toast) window.toast.success("İESÜ Stratejik Kariyer Raporunuz Başarıyla Hazırlandı!");
     }, 1200);
   };
 
   const handleExportReport = () => {
     if (window.toast) window.toast.info("YÖK Uyumlu Kurumsal PDF Analiz Raporu oluşturuluyor...");
     setTimeout(() => {
-      if (window.toast) window.toast.success("İESÜ_Öğrenci_Kariyer_Zekası_Raporu.pdf başarıyla indirildi.");
+      if (window.toast) window.toast.success("İESÜ_Öğrenci_Kariyer_Raporu.pdf başarıyla indirildi.");
     }, 1200);
   };
 
@@ -258,7 +258,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                       <Activity size={18} /> 2. Nasıl Kullanılır?
                     </div>
                     <p className="text-xs text-red-100 leading-relaxed font-medium">
-                      Profilinizin hangi şirketlerce görüntülendiğini takip edin, bölüm ortalamanızla teknik yeteneklerinizi kıyaslayın ve yapay zeka tavsiyeleriyle eksik sertifikalarınızı tamamlayın.
+                      Profilinizin hangi şirketlerce görüntülendiğini takip edin, bölüm ortalamanızla teknik yeteneklerinizi kıyaslayın ve kariyer merkezi tavsiyeleriyle eksik sertifikalarınızı tamamlayın.
                     </p>
                   </div>
 

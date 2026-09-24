@@ -425,7 +425,7 @@ Sunduğumuz Olanaklar:
                     title="İlan Başlığına Göre Otomatik Profesyonel Metin Oluştur"
                   >
                     <Sparkles size={13} className={isGeneratingAI ? 'animate-spin' : ''} />
-                    <span>{isGeneratingAI ? 'AI Oluşturuyor...' : 'AI ile İlan Metni Üret'}</span>
+                    <span>{isGeneratingAI ? 'Hazırlanıyor...' : 'Otomatik İlan Metni Oluştur'}</span>
                   </button>
                 </div>
                 <textarea 
@@ -433,7 +433,7 @@ Sunduğumuz Olanaklar:
                   value={formData.description} 
                   maxLength={5000} 
                   onChange={handleInputChange} 
-                  placeholder="Pozisyonun görev tanımını, adayda aranan teknik veya sosyal yetkinlikleri ve kurumsal olanakları buraya yazın veya yukarıdaki 'AI ile İlan Metni Üret' butonunu kullanın..." 
+                  placeholder="Pozisyonun görev tanımını, adayda aranan teknik veya sosyal yetkinlikleri ve kurumsal olanakları buraya yazın veya yukarıdaki 'Otomatik İlan Metni Oluştur' butonunu kullanın..." 
                   rows={8} 
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-blue-900 focus:ring-2 focus:ring-blue-900/15 transition resize-y leading-relaxed"
                 />

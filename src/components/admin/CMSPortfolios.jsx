@@ -152,7 +152,7 @@ export default function CMSPortfolios() {
             <div className="h-64 flex flex-col items-center justify-center text-center text-gray-500">
               <FileText size={40} className="text-gray-300 mb-2" />
               <p className="text-sm font-bold">Detayları İnceleyin</p>
-              <p className="text-xs text-gray-400 max-w-xs mt-1">Sol taraftaki listeden öğrenci kartına tıklayarak AI puanını ve CV analizini görüntüleyin.</p>
+              <p className="text-xs text-gray-400 max-w-xs mt-1">Sol taraftaki listeden öğrenci kartına tıklayarak yetkinlik puanını ve CV analizini görüntüleyin.</p>
             </div>
           )}
         </Card>

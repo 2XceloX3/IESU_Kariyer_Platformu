@@ -24,8 +24,8 @@ const HIVE_CELLS_CONFIG = [
   {
     key: 'student',
     role: 'student',
-    name: 'Student Hive',
-    nameTr: 'Öğrenci Kovanı',
+    name: 'Student Portal',
+    nameTr: 'Öğrenci Portalı',
     color: '#990000',
     accent: 'red',
     lightBg: 'bg-red-50/70',
@@ -39,8 +39,8 @@ const HIVE_CELLS_CONFIG = [
   {
     key: 'alumni',
     role: 'alumni',
-    name: 'Alumni Hive',
-    nameTr: 'Mezun Kovanı',
+    name: 'Alumni Portal',
+    nameTr: 'Mezun Portalı',
     color: '#059669',
     accent: 'emerald',
     lightBg: 'bg-emerald-50/70',
@@ -54,8 +54,8 @@ const HIVE_CELLS_CONFIG = [
   {
     key: 'company',
     role: 'company',
-    name: 'Company Hive',
-    nameTr: 'Kurumsal Kovan',
+    name: 'Company Portal',
+    nameTr: 'Kurumsal Portal',
     color: '#1e3a5f',
     accent: 'blue',
     lightBg: 'bg-blue-50/70',
@@ -69,8 +69,8 @@ const HIVE_CELLS_CONFIG = [
   {
     key: 'academic',
     role: 'academic',
-    name: 'Academic Hive',
-    nameTr: 'Akademik Kovan',
+    name: 'Academic Portal',
+    nameTr: 'Akademik Portal',
     color: '#7c3aed',
     accent: 'violet',
     lightBg: 'bg-violet-50/70',
@@ -188,13 +188,13 @@ export default function HiveHealthMonitor() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-black text-gray-900 tracking-tight">Beehive Mesh Monitor</h3>
+              <h3 className="text-base font-black text-gray-900 tracking-tight">Sistem & Portal İzleme Paneli</h3>
               <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 uppercase tracking-wider">
                 M1 Core
               </span>
             </div>
             <p className="text-xs text-gray-500 font-medium">
-              Merkezi EventBus & 4 Kovan Durum ve İzolasyon Takibi
+              Merkezi Veri Akışı & Portal Durum Takibi
             </p>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function HiveHealthMonitor() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
               </span>
-              <span>✓ All hives connected</span>
+              <span>✓ Tüm portallar aktif</span>
             </div>
           ) : (
             <div 
@@ -221,7 +221,7 @@ export default function HiveHealthMonitor() {
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-pulse relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
               </span>
-              <span>Bağlanıyor ({connectedCount}/4 kovan)</span>
+              <span>Bağlanıyor ({connectedCount}/4 portal)</span>
             </div>
           )}
 

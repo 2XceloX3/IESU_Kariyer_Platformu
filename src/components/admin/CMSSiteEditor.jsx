@@ -438,7 +438,7 @@ export default function CMSSiteEditor() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { key: 'aiWingman', label: 'AI Kariyer Danışmanı (Wingman)', desc: 'Öğrencilere anlık CV ve kariyer tavsiyesi veren yapay zeka motoru' },
+              { key: 'aiWingman', label: 'Kariyer Danışmanı (Wingman)', desc: 'Öğrencilere anlık CV ve kariyer tavsiyesi sunan akıllı danışman' },
               { key: 'careerRadar', label: 'Kariyer Radarı & Eşleşme', desc: 'İlan ve yetenek analizi algoritmik eşleşme paneli' },
               { key: 'virtualFair', label: 'Sanal Kariyer Fuarı (Metaverse)', desc: '3D sanal stantlar ve dijital fuar deneyimi' },
               { key: 'liveRooms', label: 'Canlı Mülakat & Yayın Odaları', desc: 'WebRTC tabanlı doğrudan işveren-öğrenci görüşme odaları' },

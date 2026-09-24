@@ -16,7 +16,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
     setIsGenerating(true);
 
     const prompt = `
-      Sen Esenyurt Üniversitesi kariyer yapay zekası Anka'sın.
+      Sen Esenyurt Üniversitesi kariyer danışmanı Anka'sın.
       Öğrenci "${currentUser?.name}" şu hedefi belirledi: "${dreamRole}".
       Bu hedefe ulaşması için 4 aşamalı (Faz 1, Faz 2, Faz 3, Faz 4) bir kariyer yol haritası (roadmap) çıkar.
       Lütfen sadece aşağıdaki JSON formatında, geçerli bir JSON objesi döndür, başka hiçbir metin (markdown backtickleri dahil) KULLANMA.

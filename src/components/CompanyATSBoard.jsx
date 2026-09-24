@@ -860,7 +860,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
                   <p className="font-black text-base text-slate-900 mt-0.5">{selectedCandidate.role}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">AI Uyum Skoru</span>
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Aday Uyum Skoru</span>
                   <p className="font-black text-lg text-emerald-700 mt-0.5">%{selectedCandidate.match}</p>
                 </div>
               </div>

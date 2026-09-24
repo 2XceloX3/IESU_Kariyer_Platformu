@@ -415,7 +415,7 @@ export default function CMSCandidatePool() {
             <h2 className="text-xl font-black text-slate-900 leading-tight mt-0.5">
               Aday Havuzu & Takip Merkezi
             </h2>
-            <p className="text-xs text-slate-500 font-medium">Anlaşmalı firma talepleri, yapay zeka uyum skorları ve aday süreç yönetimi.</p>
+            <p className="text-xs text-slate-500 font-medium">Anlaşmalı firma talepleri, aday uyum skorları ve süreç yönetimi.</p>
           </div>
         </div>
 
@@ -950,7 +950,7 @@ export default function CMSCandidatePool() {
                   <p className="text-sm font-bold text-slate-800">{selectedCandidateDetail.company}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500 font-bold uppercase text-[10px]">AI Uyum Skoru</p>
+                  <p className="text-slate-500 font-bold uppercase text-[10px]">Aday Uyum Skoru</p>
                   <p className="text-sm font-black text-emerald-600">%{selectedCandidateDetail.matchScore}</p>
                 </div>
               </div>

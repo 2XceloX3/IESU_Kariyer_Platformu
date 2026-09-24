@@ -231,10 +231,10 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
               {/* PANEL SWITCHER GRID (6 BUTONLU HIZLI PANEL GEÇİŞİ) */}
               <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Sistem Portalları Arası Geçiş</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Portallar</p>
                 <div className="grid grid-cols-2 gap-2">
                   
-                  {/* 1. Yönetici Paneli (Tam CMS Veri Kontrol Merkezi) */}
+                  {/* 1. Yönetim Paneli */}
                   <button 
                     role="menuitem" 
                     onClick={() => { 
@@ -253,10 +253,10 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
                       <LayoutDashboard size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin_cms' ? 'text-white' : 'text-slate-800'}`}>Yönetici Paneli (CMS)</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin_cms' ? 'text-white' : 'text-slate-800'}`}>Yönetim Paneli</span>
                   </button>
 
-                  {/* 2. Süper Admin Portalı (Sosyal Akış & Omni Modu) */}
+                  {/* 2. Kariyer Merkezi */}
                   <button 
                     role="menuitem" 
                     onClick={() => { 
@@ -275,7 +275,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
                       <Crown size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin' ? 'text-white' : 'text-slate-800'}`}>Süper Admin Portalı</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin' ? 'text-white' : 'text-slate-800'}`}>Kariyer Merkezi</span>
                   </button>
 
                   {/* 3. Mezun Portalı */}
@@ -396,9 +396,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 </p>
               </div>
               
-              {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> SÜPER ADMİN -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
+              {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> KARİYER MERKEZİ -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
               <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Panel Geçişi</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Portallar</p>
                 <div className="flex flex-col gap-1.5">
                   <div className="grid grid-cols-2 gap-1.5 mb-1">
                     <button 
@@ -422,7 +422,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'admin' && currentView === 'admin_cms') ? 'bg-white/20 text-white' : 'bg-red-100 text-[#990000] group-hover:bg-[#990000] group-hover:text-white'}`}>
                         <LayoutDashboard size={14} />
                       </div>
-                      <span className="text-[9px] font-black uppercase tracking-wider">CMS Editör</span>
+                      <span className="text-[9px] font-black uppercase tracking-wider">Yönetim Paneli</span>
                     </button>
 
                     <button 
@@ -446,7 +446,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'admin' && currentView === 'admin') ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
                         <Crown size={14} />
                       </div>
-                      <span className="text-[9px] font-black uppercase tracking-wider">Süper Admin</span>
+                      <span className="text-[9px] font-black uppercase tracking-wider">Kariyer Merkezi</span>
                     </button>
                   </div>
 
@@ -532,6 +532,64 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     </button>
                   </div>
                 </div>
+              </div>
+
+              <div className="py-1 border-b border-gray-50">
+                <button 
+                  role="menuitem"
+                  onClick={() => { 
+                    setIsOpen(false); 
+                    if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                    setView?.('user_profile'); 
+                  }}
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                >
+                  <User size={16} className="text-slate-500" /> Profilimi Görüntüle
+                </button>
+
+                <button 
+                  role="menuitem"
+                  onClick={() => { setIsOpen(false); setView?.('profile_update'); }}
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                >
+                  <Settings size={16} className="text-slate-500" /> Profilimi Düzenle
+                </button>
+
+                {(effectiveBranch === 'student' || userRole === 'student') && (
+                  <button 
+                    role="menuitem"
+                    onClick={() => { setIsOpen(false); setView?.('student_kgb'); }}
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-[#990000] hover:bg-red-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                  >
+                    <BookOpen size={16} className="text-[#990000]" /> KGB Kariyer Karnem
+                  </button>
+                )}
+
+                <button 
+                  role="menuitem"
+                  onClick={() => { 
+                    setIsOpen(false); 
+                    if (effectiveBranch === 'company' || userRole === 'company' || userRole === 'employer') {
+                      setView?.('company_ats');
+                    } else {
+                      setView?.('applications');
+                    }
+                  }}
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                >
+                  <Briefcase size={16} className="text-slate-500" /> 
+                  {effectiveBranch === 'company' || userRole === 'company' || userRole === 'employer' ? 'Aday Takip Panosu (ATS)' : 'Başvurularım'}
+                </button>
+
+                {(effectiveBranch === 'alumni' || userRole === 'alumni') && (
+                  <button 
+                    role="menuitem"
+                    onClick={() => { setIsOpen(false); setView?.('global_map'); }}
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 hover:bg-emerald-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                  >
+                    <Globe size={16} className="text-emerald-600" /> Küresel Mezun Haritası
+                  </button>
+                )}
               </div>
 
               <div className="py-1">

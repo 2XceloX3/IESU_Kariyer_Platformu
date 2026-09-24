@@ -333,9 +333,20 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                   </div>
                 </div>
 
-                <button onClick={() => setView('admin')} className="mt-4 w-full flex items-center justify-center gap-2 bg-[#990000] hover:bg-red-800 text-white text-[13px] font-black py-3 rounded-xl transition-all shadow-md">
-                  <LayoutDashboard size={16} /> Yönetim Panelini Aç
-                </button>
+                <div className="mt-4 flex flex-col gap-2 w-full">
+                  <button 
+                    onClick={() => setView('company_ats')} 
+                    className="w-full flex items-center justify-center gap-2 bg-[#1e3a5f] hover:bg-[#152843] text-white text-[13px] font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer"
+                  >
+                    <Briefcase size={15} /> Aday Takip Panosu (ATS)
+                  </button>
+                  <button 
+                    onClick={() => setView('create_job')} 
+                    className="w-full flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white text-[13px] font-bold py-2.5 rounded-xl transition-all shadow-xs cursor-pointer"
+                  >
+                    <Plus size={15} /> Yeni İlan Yayınla
+                  </button>
+                </div>
               </div>
             ) : (
               <>
@@ -360,12 +371,20 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     <p className="text-[10px] text-purple-600 font-medium mt-0.5">Resmî Kurumsal İletişim Portalı</p>
                   </div>
 
-                  <button 
-                    onClick={() => setView('company_ats')}
-                    className="mt-3 w-full py-2.5 bg-gradient-to-r from-red-800 to-[#990000] hover:from-red-700 hover:to-red-800 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Briefcase size={15} /> ATS Aday Takip Panosu
-                  </button>
+                  <div className="mt-3 flex flex-col gap-2 w-full">
+                    <button 
+                      onClick={() => setView('company_ats')}
+                      className="w-full py-2.5 bg-[#1e3a5f] hover:bg-[#152843] text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Briefcase size={15} /> ATS Aday Takip Panosu
+                    </button>
+                    <button 
+                      onClick={() => setView('create_job')}
+                      className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Plus size={15} /> Yeni İlan Yayınla
+                    </button>
+                  </div>
                 </div>
               </>
             )}
@@ -393,6 +412,62 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+          {/* Kurumsal Hızlı Erişim & Yönetim Araçları */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-blue-100 shadow-xs">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#1e3a5f] inline-block animate-pulse"></span>
+                <h3 className="text-sm font-bold text-gray-900 tracking-tight">Kurumsal İşe Alım & Yönetim</h3>
+              </div>
+              <span className="text-xs font-medium text-blue-600 font-semibold">İESÜ İşveren Ağı</span>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button
+                onClick={() => setView('company_ats')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-blue-50/40 to-white hover:border-blue-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-blue-100/70 text-[#1e3a5f] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Briefcase size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-[#1e3a5f] transition-colors leading-tight">ATS Panosu</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Aday & başvuru yönetimi</span>
+              </button>
+
+              <button
+                onClick={() => setView('create_job')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-emerald-50/40 to-white hover:border-emerald-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-emerald-100/70 text-emerald-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Plus size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-emerald-700 transition-colors leading-tight">Yeni İlan Yayınla</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Staj & iş ilanı oluştur</span>
+              </button>
+
+              <button
+                onClick={() => setView('jobs')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <ClipboardList size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-slate-900 transition-colors leading-tight">İlanlarım</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Yayınlanan fırsatlar</span>
+              </button>
+
+              <button
+                onClick={() => setView('network')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-purple-50/40 to-white hover:border-purple-200 hover:shadow-xs transition-all text-left cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-lg bg-purple-100/70 text-purple-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Users size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-purple-700 transition-colors leading-tight">Yetenek Havuzu</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Öğrenci & mezun ağı</span>
+              </button>
+            </div>
+          </div>
           
           {/* FEED TABS (Sadece Senin İçin) */}
           <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2">

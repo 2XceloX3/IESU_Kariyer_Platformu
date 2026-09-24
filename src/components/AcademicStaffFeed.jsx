@@ -784,7 +784,7 @@ export default function AcademicStaffFeed({
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     {[
-                      { title: 'Yapay Zeka & Veri Uzmanı', desc: 'Bölüm içi AI projelerinde üstün başarı', color: 'from-amber-500 to-orange-600' },
+                      { title: 'Veri & Analitik Uzmanı', desc: 'Bölüm içi araştırma projelerinde üstün başarı', color: 'from-amber-500 to-orange-600' },
                       { title: 'Aday Mühendislik Başarısı', desc: 'Protokollü firmada 100 tam puan staj', color: 'from-red-600 to-rose-700' },
                       { title: 'Yüksek Akademik Başarım', desc: 'Dönem 1.si ve Akademik Onur Listesi', color: 'from-indigo-600 to-blue-700' }
                     ].map((badge, idx) => (

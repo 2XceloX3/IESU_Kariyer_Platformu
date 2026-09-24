@@ -164,7 +164,7 @@ export default function SurveyIntelligenceModal({ isOpen, onClose }) {
                 <div className="bg-gradient-to-r from-red-50 via-amber-50/40 to-red-50 border border-red-200/80 p-5 rounded-2xl space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-black uppercase tracking-wider text-[#990000] flex items-center gap-1.5">
-                      <Sparkles size={16} /> Yapay Zekâ NLP Özet & Yönetimsel Aksiyon Önerileri
+                      <Sparkles size={16} /> Otomatik Anket Analizi & Yönetimsel Aksiyon Önerileri
                     </h4>
                     <span className="text-[10px] font-bold bg-[#990000] text-white px-2 py-0.5 rounded-full">CANLI ANALİZ</span>
                   </div>

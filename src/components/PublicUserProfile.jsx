@@ -866,8 +866,10 @@ export default function PublicUserProfile({
                   </div>
                 )}
                 <div>
-                  <span className="text-[11px] font-semibold text-slate-400 block">Bağlı Olduğu Dal</span>
-                  <span className="font-bold text-emerald-800 capitalize">{currentBranch} Dalı / Ağacı</span>
+                  <span className="text-[11px] font-semibold text-slate-400 block">Kullanıcı Rolü</span>
+                  <span className="font-bold text-slate-800">
+                    {user.role === 'student' ? 'Öğrenci' : user.role === 'alumni' ? 'Mezun' : user.role === 'academic' || user.role === 'academic_staff' ? 'Akademik Personel' : user.role === 'company' || user.role === 'employer' ? 'İşveren / Firma' : 'Üniversite Üyesi'}
+                  </span>
                 </div>
               </div>
             </div>
