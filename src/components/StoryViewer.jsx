@@ -200,13 +200,13 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
               window.toast && window.toast.info("İçeriğiniz analiz ediliyor ve profesyonel bir açıklama yazılıyor...");
               setTimeout(() => {
                 setNewContent("Bugün kampüsteki inovasyon merkezinde harika bir proje üzerinde çalışıyoruz! 🚀💻 #EsenyurtÜniversitesi #Yazılım #Inovasyon");
-                window.toast && window.toast.success("✅ AI Metin Üretimi: Görüntüye/içeriğe uygun hashtagli açıklama oluşturuldu.");
+                window.toast && window.toast.success("✅ Otomatik Metin: Görüntüye ve içeriğe uygun açıklama oluşturuldu.");
               }, 2500);
             }}
             className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-red-600 text-white rounded-full font-bold hover:opacity-90 transition shadow-lg shadow-red-500/30"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
-            AI Metin Yaz
+            Otomatik Metin Yaz
           </button>
 
           <button 

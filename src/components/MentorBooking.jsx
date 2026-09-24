@@ -62,7 +62,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
-                    window.toast && window.toast.info("AI: Özgeçmişiniz ve hedefleriniz analiz ediliyor...");
+                    window.toast && window.toast.info("Özgeçmişiniz ve kariyer hedefleriniz analiz ediliyor...");
                     setTimeout(() => {
                       window.toast && window.toast.success("✅ Eşleşme: Zeynep Kaya (Google) ile %94 oranında kariyer hedefi uyumu tespit edildi.");
                       setSearchQuery("Zeynep");

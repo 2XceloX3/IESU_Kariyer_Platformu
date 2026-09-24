@@ -443,7 +443,7 @@ export default function ClubAdminPanel({ currentUser, setView, userRole }) {
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
-                      window.toast && window.toast.info("AI Metin Oluşturuluyor...");
+                      window.toast && window.toast.info("Taslak Metin Oluşturuluyor...");
                       setTimeout(() => {
                         setPostTitle(prev => prev || 'Yeni Dönem Tanışma Toplantısı');
                         setPostContent('Merhaba Değerli Üyelerimiz,\n\nYeni döneme harika bir başlangıç yapmak için bir araya geliyoruz! Bu toplantıda yıllık planlarımızı konuşacak, vizyonumuzu paylaşacak ve sürpriz etkinliklerimizi duyuracağız.\n\nHerkesi bekliyoruz!');

@@ -26,7 +26,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
 
   const handleSmartRoute = () => {
     setSmartRouteActive(true);
-    window.toast && window.toast.info("📍 AI: Size en uygun sakin çalışma rotası hesaplanıyor...");
+    window.toast && window.toast.info("📍 Sistem: Size en uygun sakin çalışma rotası hesaplanıyor...");
     
     setTimeout(() => {
       setSelectedLocation(LOCATIONS.find(l => l.id === 4)); // Redirect to innovation lab
@@ -79,7 +79,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                 onClick={handleSmartRoute}
                 className="w-full py-3 bg-gradient-to-r from-orange-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white rounded-2xl text-xs font-black shadow-lg hover:shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
               >
-                <Navigation size={14} className="animate-bounce" /> AI Sakin Çalışma Rotası Çiz
+                <Navigation size={14} className="animate-bounce" /> Sakin Çalışma Rotası Çiz
               </button>
               
               <button 

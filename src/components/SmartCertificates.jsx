@@ -24,7 +24,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
     },
     {
       id: 'CERT-102',
-      title: 'Yapay Zeka Destekli CV ve Mülakat Teknikleri',
+      title: 'Modern Özgeçmiş ve Mülakat Teknikleri',
       issuer: 'Kariyer Geliştirme Merkezi',
       date: '02 Şubat 2026',
       instructor: 'Kariyer Geliştirme Merkezi Ekibi',

@@ -168,7 +168,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
         summary: "Yazılım Mühendisliği son sınıf öğrencisi olarak modern web teknolojileri, yapay zeka entegrasyonları ve bulut bilişim alanlarında teorik altyapıyı pratik projelerle birleştiren hevesli bir mühendis adayıyım. Agile metodolojilerle çalışmaya yatkın, analitik düşünme yeteneğine sahip bir takım oyuncusuyum."
       }));
       setAiEnhancing(false);
-      window.toast && window.toast.success("Özet metniniz AI tarafından optimize edildi!");
+      window.toast && window.toast.success("Özet metniniz profesyonel standartlara göre optimize edildi!");
     }, 1500);
   };
 

@@ -20,7 +20,7 @@ export default function ParticipantStudentPortalModal({ isOpen, onClose, current
     },
     {
       id: 'CERT-102',
-      title: 'Yapay Zeka Destekli CV ve Mülakat Teknikleri',
+      title: 'Modern Özgeçmiş ve Mülakat Teknikleri',
       date: '02 Şubat 2026',
       instructor: 'Kariyer Geliştirme Merkezi',
       status: 'Tamamlandı',

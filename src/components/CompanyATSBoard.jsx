@@ -784,7 +784,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
                             {stage}
                           </span>
                           <span className="block text-[10px] font-bold text-emerald-700 mt-0.5">
-                            AI Uyum: %{app.match}
+                            Aday Uyumu: %{app.match}
                           </span>
                         </div>
 

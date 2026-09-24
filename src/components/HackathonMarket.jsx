@@ -167,7 +167,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
                     e.preventDefault();
                     window.toast && window.toast.info(`Profiliniz ve "${hack.title}" teması analiz ediliyor...`);
                     setTimeout(() => {
-                      window.toast && window.toast.success("💡 AI Fikri: 'IoT tabanlı akıllı atık yönetimi sistemi'. Şansınız: Yüksek.");
+                      window.toast && window.toast.success("💡 Proje Önerisi: 'IoT tabanlı akıllı atık yönetimi sistemi'. Başarı Potansiyeli: Yüksek.");
                     }, 2500);
                   }}
                   className="w-12 h-12 bg-indigo-50 hover:bg-indigo-100 text-red-600 rounded-2xl border border-indigo-200 flex items-center justify-center transition shrink-0"

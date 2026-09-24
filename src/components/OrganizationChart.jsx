@@ -66,7 +66,7 @@ export default function OrganizationChart({ setView, userRole }) {
                   e.preventDefault();
                   window.toast && window.toast.info("Talebiniz analiz ediliyor...");
                   setTimeout(() => {
-                    window.toast && window.toast.success("✅ AI Yönlendirmesi: Sorunuz 'Kariyer Danışmanlığı' birimine yönlendirildi. Beklenen yanıt süresi: 12 dk.");
+                    window.toast && window.toast.success("✅ Talep Yönlendirildi: Sorunuz 'Kariyer Danışmanlığı' birimine iletildi. Beklenen yanıt süresi: 12 dk.");
                   }, 2500);
                 }}
                 className="bg-indigo-50 text-red-600 px-6 py-3 rounded-xl font-bold text-[15px] hover:bg-indigo-100 transition shadow-sm flex items-center justify-center gap-2"

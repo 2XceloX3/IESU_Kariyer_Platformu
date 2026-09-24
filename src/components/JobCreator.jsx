@@ -77,7 +77,7 @@ export default function JobCreator({ setView, currentUser: propsCurrentUser, add
 
     setIsGeneratingAI(true);
     if (window.toast?.info) {
-      window.toast.info("AI Career Wingman ilan metnini hazırlıyor...");
+      window.toast.info("İlan taslak metni otomatik olarak hazırlanıyor...");
     }
 
     setTimeout(() => {
@@ -108,7 +108,7 @@ Sunduğumuz Olanaklar:
       setFormData(prev => ({ ...prev, description: aiText }));
       setIsGeneratingAI(false);
       if (window.toast?.success) {
-        window.toast.success("AI İlan Metni başarıyla oluşturuldu!");
+        window.toast.success("İlan Taslak Metni başarıyla oluşturuldu!");
       }
     }, 900);
   };

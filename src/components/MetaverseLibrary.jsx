@@ -34,7 +34,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
       Ona bu konuyla ilgili 3 adet akademik makale/kitap önerisi ve kısa bir 1 paragraflık "Konu Özeti" ver.
       Sadece aşağıdaki JSON formatında bir cevap dön, markdown veya başka metin kullanma:
       {
-        "summary": "Konunun yapay zeka tarafından derlenmiş mükemmel özeti...",
+        "summary": "Konunun akademik kaynaklar ışığında derlenmiş kapsamlı özeti...",
         "resources": [
           { "title": "Kaynak 1 Adı", "author": "Yazar", "type": "Makale", "year": "2023", "abstract": "Bu çalışma ilgili konuyu derinlemesine ele alır." },
           { "title": "Kaynak 2 Adı", "author": "Yazar", "type": "Kitap", "year": "2022", "abstract": "Konunun temel teorilerini anlatan kapsamlı bir eser." },

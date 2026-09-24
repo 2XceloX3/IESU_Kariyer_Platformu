@@ -19,7 +19,7 @@ export default function OverviewPanel({ setView }) {
       {/* R7 Beehive Health Monitor */}
       <HiveHealthMonitor />
       
-      {/* AI Modülleri Banner */}
+      {/* Kariyer Gelişim Modülleri Banner */}
       <div className="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden transition-all hover:scale-[1.01] duration-500">
         <div className="absolute -top-10 -right-10 opacity-20 pointer-events-none">
           <MessageCircle size={150} />

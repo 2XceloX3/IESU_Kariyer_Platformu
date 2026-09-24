@@ -213,7 +213,7 @@ export default function ConnectionSuggestions({
             </div>
           </div>
           <span className={`${theme.badgeStyle} text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1`}>
-            <Sparkles size={10} /> AI Canlı
+            <Sparkles size={10} /> Akıllı Eşleşme
           </span>
         </div>
 

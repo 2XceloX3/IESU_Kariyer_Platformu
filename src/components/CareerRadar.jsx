@@ -50,7 +50,7 @@ export default function CareerRadar({ announcements: propAnnouncements, events: 
               e.preventDefault();
               window.toast && window.toast.info("Radar taraması başlatıldı...");
               setTimeout(() => {
-                window.toast && window.toast.success("✅ AI Sinyali: Hedefiniz olan 'Yazılım' alanında radarınıza 3 yeni staj ilanı ve 1 kulüp etkinliği takıldı.");
+                window.toast && window.toast.success("✅ Radar Eşleşmesi: Hedefiniz olan 'Yazılım' alanında 3 yeni staj ilanı ve 1 kulüp etkinliği bulundu.");
               }, 2500);
             }}
             className="flex items-center gap-1 bg-gradient-to-r from-red-600 to-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full hover:opacity-90 transition shadow-md shadow-red-500/20"

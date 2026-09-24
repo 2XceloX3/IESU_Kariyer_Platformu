@@ -82,7 +82,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
           <div className="relative z-10">
             <h2 className="text-xl font-black flex items-center gap-2 mb-1">
-              <Sparkles size={20} className="text-amber-300" /> Anka Ön Yazı Asistanı
+              <Sparkles size={20} className="text-amber-300" /> Ön Yazı Hazırlama Asistanı
             </h2>
             <p className="text-indigo-200 text-sm font-medium">
               <span className="font-bold text-white">{job.company}</span> - {job.title} başvurusu için.
@@ -103,7 +103,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
                 </div>
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-2">Ön Yazınız Üretiliyor...</h3>
-              <p className="text-gray-500 text-sm max-w-xs mx-auto">Anka, CV verilerinizi ve akademik geçmişinizi ilan gereksinimleriyle eşleştiriyor.</p>
+              <p className="text-gray-500 text-sm max-w-xs mx-auto">Sistem, CV verilerinizi ve akademik geçmişinizi ilan gereksinimleriyle eşleştiriyor.</p>
             </div>
           ) : (
             <div className="animate-fade-in">

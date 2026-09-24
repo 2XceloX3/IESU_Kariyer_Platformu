@@ -1394,7 +1394,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                     onClick={() => {
                       showToast('info', `"${activeHub.name}" bölgesindeki mezunlarla tanışma grubu başlatılıyor...`);
                       setTimeout(() => {
-                        showToast('success', "✅ AI Mesaj Taslağı Hazır: 'Merhaba, ben de İESÜ mezunuyum...' taslağı Anka Chat'e aktarıldı.");
+                        showToast('success', "✅ Mesaj Taslağı Hazır: 'Merhaba, ben de İESÜ mezunuyum...' taslağı Anka Chat'e aktarıldı.");
                       }, 1800);
                     }}
                     className="w-full bg-gradient-to-r from-blue-600 via-cyan-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-black py-3.5 rounded-xl shadow-lg shadow-cyan-500/25 transition flex items-center justify-center gap-2 text-xs group"

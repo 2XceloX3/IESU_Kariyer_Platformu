@@ -26,7 +26,7 @@ export default function SemPanel({ setView, userRole, currentUser }) {
   const combinedEgitimler = semCourses || [];
 
   const haberler = [
-    { title: "Dijital Pazarlama ve AI Eğitim Kampı", date: "28/07/2026", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/2bc4c0e60e3b47caa79942047cfbfa2c_(375_300).jpg", desc: "Yeni dönem dijital pazarlama ve yapay zeka entegrasyonu sertifika programımız için başvurular başladı." },
+    { title: "Dijital Pazarlama ve İleri Analitik Eğitim Kampı", date: "28/07/2026", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/2bc4c0e60e3b47caa79942047cfbfa2c_(375_300).jpg", desc: "Yeni dönem dijital pazarlama ve modern analitik araçları sertifika programımız için başvurular başladı." },
     { title: "Sertifikalarınız E-Devlet Onaylı Sistemde", date: "20/07/2026", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/e7a58ae4556c4fc7b8e8ece79e7dab4e_c55aa2c1fdb748f88ed58923c177ad35.jpg", desc: "Kariyer Akademimiz bünyesinde tamamladığınız sertifikalar e-Devlet kapısında doğrulanabilir barkod ile yayımlanmaktadır." },
     { title: "İş Dünyası İçin İleri Seviye Excel & Veri Analitiği", date: "15/07/2026", img: "https://panel.esenyurt.edu.tr/assets/2026/resimler/kurumsaliletisim/8722de546e4b4b5094898382e568ac94_e5a6d2495aab41beacc7391bf5d903ae.jpg", desc: "Sektör profesyonellerinin katılımıyla 4 haftalık uygulamalı Veri Analitiği atölyemiz açılıyor." }
   ];

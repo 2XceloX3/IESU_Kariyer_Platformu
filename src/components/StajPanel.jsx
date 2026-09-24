@@ -244,14 +244,14 @@ export default function StajPanel({ setView, userRole }) {
                           e.preventDefault();
                           window.toast && window.toast.info("Yüklediğiniz belge ön kontrolden geçiriliyor...");
                           setTimeout(() => {
-                            window.toast && window.toast.success("✅ AI Onayı: İmza ve tarih alanları eksiksiz. Belgeyi komisyona iletebilirsiniz.");
+                            window.toast && window.toast.success("✅ Ön Kontrol Başarılı: İmza ve tarih alanları eksiksiz. Belgeyi komisyona iletebilirsiniz.");
                           }, 2500);
                         }}
                         className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 font-bold text-xs hover:bg-red-100 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                       >
-                        <ShieldCheck size={15} /> AI Ön Kontrol
+                        <ShieldCheck size={15} /> Belge Ön Kontrolü
                       </button>
-                      <button onClick={(e) => { e.preventDefault(); downloadReportPdf('staj-basvuru-formu', 'Staj Başvuru Formu', ['İESÜ Kariyer Platformu', '', 'STAJ BAŞVURU FORMU', '', 'Ad Soyad: .................................................', 'Öğrenci No: ...................................', 'Bölüm: ..............................................', 'Sınıf: .................................................', '', 'Staj Türü: (  ) Zorunlu   (  ) Gönüllü', 'Kurum Adı: .........................................', 'Kurum Yetkilisi: .................................', 'Staj Süresi: .........................................', 'Başlangıç Tarihi: ..................................', 'Bitiş Tarihi: .......................................', 'Arama/Fakülte Onayı: ..............................', 'İmza ve Tarih: .......................................', '', 'Bu formu doldurup kuruma ilettikten sonra', 'AI Ön Kontrol ile belgenizi doğrulayabilirsiniz.']); }} className="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:border-[#990000] hover:text-[#990000] transition cursor-pointer shadow-sm">
+                      <button onClick={(e) => { e.preventDefault(); downloadReportPdf('staj-basvuru-formu', 'Staj Başvuru Formu', ['İESÜ Kariyer Platformu', '', 'STAJ BAŞVURU FORMU', '', 'Ad Soyad: .................................................', 'Öğrenci No: ...................................', 'Bölüm: ..............................................', 'Sınıf: .................................................', '', 'Staj Türü: (  ) Zorunlu   (  ) Gönüllü', 'Kurum Adı: .........................................', 'Kurum Yetkilisi: .................................', 'Staj Süresi: .........................................', 'Başlangıç Tarihi: ..................................', 'Bitiş Tarihi: .......................................', 'Arama/Fakülte Onayı: ..............................', 'İmza ve Tarih: .......................................', '', 'Bu formu doldurup kuruma ilettikten sonra', 'Belge Ön Kontrolü ile belgenizi doğrulayabilirsiniz.']); }} className="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:border-[#990000] hover:text-[#990000] transition cursor-pointer shadow-sm">
                                               Boş İndir
                                             </button>
                     </div>

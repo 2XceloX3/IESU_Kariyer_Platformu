@@ -284,9 +284,9 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                 {effectiveRole === 'admin' ? 'İlan & Staj Koordinasyonu' : effectiveRole==='employer'?'İlan Oluşturun':"CV'nizi Güncelleyin"}
               </h3>
               <p className="text-[11px] text-white/80 font-medium mb-4 leading-relaxed">
-                {effectiveRole === 'admin' ? 'Kurumsal ilanları denetleyin veya üniversite adına yeni ilan yayınlayın.' : effectiveRole==='employer'?'Üniversitenin yetenekli öğrencilerine ulaşın.':'AI destekli CV ile kariyer hedefinize ulaşın.'}
+                {effectiveRole === 'admin' ? 'Kurumsal ilanları denetleyin veya üniversite adına yeni ilan yayınlayın.' : effectiveRole==='employer'?'Üniversitenin yetenekli öğrencilerine ulaşın.':'Profesyonel özgeçmiş ve güncel profil ile kariyer hedefinize ulaşın.'}
               </p>
-              <button onClick={()=> (effectiveRole === 'admin' || effectiveRole === 'employer') ? setIsCreatingJob(true) : setView('mbs')} className="w-full py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+              <button onClick={()=> (effectiveRole === 'admin' || effectiveRole === 'employer') ? setIsCreatingJob(true) : setView(effectiveRole === 'alumni' ? 'mbs' : 'profile_update')} className="w-full py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-[12px] font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                 {(effectiveRole === 'admin' || effectiveRole === 'employer') ? 'Yeni İlan Oluştur' : 'Profili Düzenle'} <ArrowRight size={14} />
               </button>
             </div>
@@ -797,7 +797,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
           onConfirm={(generatedLetter) => {
             setAppForm(prev => ({ ...prev, coverLetter: generatedLetter }));
             setShowAnkaModal(false);
-            window.toast?.success?.("✅ Anka AI ön yazınız başvuru formuna aktarıldı.");
+            window.toast?.success?.("✅ Ön yazı taslağınız başvuru formuna aktarıldı.");
           }}
         />
       )}

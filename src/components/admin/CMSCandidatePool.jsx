@@ -263,7 +263,7 @@ export default function CMSCandidatePool() {
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
     csvContent += `İSTANBUL ESENYURT ÜNİVERSİTESİ - ADAY HAVUZU VE İK YÖNLENDİRME RAPORU\n`;
     csvContent += `Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')}\n\n`;
-    csvContent += `Aday ID;Adı Soyadı;Bölüm;Hedef / Başvurulan Firma;Mevcut Aşama;AI Uyum Skoru;Tecrübe & Beceriler;Yabancı Dil;E-posta;Telefon\n`;
+    csvContent += `Aday ID;Adı Soyadı;Bölüm;Hedef / Başvurulan Firma;Mevcut Aşama;Aday Uyum Skoru;Tecrübe & Beceriler;Yabancı Dil;E-posta;Telefon\n`;
 
     data.candidates.forEach(c => {
       csvContent += `${c.id};"${c.name}";"${c.department}";"${c.company}";"${c.stage}";"%${c.matchScore}";"${c.experience}";"${c.lang}";"${c.email}";"${c.phone}"\n`;

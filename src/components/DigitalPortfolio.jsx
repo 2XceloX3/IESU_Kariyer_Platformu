@@ -82,7 +82,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
             <div className="flex flex-wrap justify-center md:justify-start gap-2">
               <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1"><Code size={12}/> Frontend</span>
               <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1"><Database size={12}/> Backend</span>
-              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1"><Cpu size={12}/> AI Geliştirici</span>
+              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1"><Cpu size={12}/> Sistem Geliştirici</span>
             </div>
           </div>
 
@@ -90,14 +90,14 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                window.toast && window.toast.info("AI: Projeleriniz Github üzerinden analiz ediliyor...");
+                window.toast && window.toast.info("Projeleriniz sistem üzerinden analiz ediliyor...");
                 setTimeout(() => {
                   window.toast && window.toast.success("✅ Analiz Tamamlandı: Projeleriniz %92 oranında sektör trendleriyle eşleşiyor.");
                 }, 2000);
               }}
               className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-6 py-3 rounded-2xl font-black transition flex items-center justify-center gap-2 border border-indigo-200"
             >
-              <Sparkles size={18} /> AI Portfolyo Analizi
+              <Sparkles size={18} /> Portfolyo Yetkinlik Analizi
             </button>
             <button 
               onClick={() => setShowAddProjectModal(true)}
@@ -168,7 +168,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                         e.preventDefault();
                         window.toast && window.toast.info("Proje kodları analiz ediliyor...");
                         setTimeout(() => {
-                          window.toast && window.toast.success("✅ AI Kod İncelemesi: Clean code standartlarına %89 uyumlu.");
+                          window.toast && window.toast.success("✅ Kod İncelemesi: Clean code standartlarına %89 uyumlu.");
                         }, 2500);
                       }}
                       className="text-red-600 hover:text-indigo-800 flex items-center gap-1.5"
@@ -249,7 +249,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     type="text" 
                     value={newProject.title} 
                     onChange={e => setNewProject({...newProject, title: e.target.value})}
-                    placeholder="Örn: AI Destekli Chatbot"
+                    placeholder="Örn: Akıllı Sohbet Asistanı"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
                   />
                 </div>

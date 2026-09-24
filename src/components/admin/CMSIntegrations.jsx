@@ -9,14 +9,14 @@ const AGENT_SWARM = [
   { id: 'AG-03', name: 'Frontend UX/UI Agent', role: 'Component & State Consistency', status: 'Aktif / Çalışıyor' },
   { id: 'AG-04', name: 'Backend API Gateway Agent', role: 'v1 Route Orchestration & Cache', status: 'Aktif / Çalışıyor' },
   { id: 'AG-05', name: 'Database & Migration Agent', role: 'UUID Schema & FK Integrity', status: 'Aktif / Çalışıyor' },
-  { id: 'AG-06', name: 'AI Core & LLM Router Agent', role: 'Gemini / OpenAI Fallback', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-06', name: 'Çekirdek Veri Motoru & Yönlendirici', role: 'Gemini / OpenAI Fallback', status: 'Aktif / Çalışıyor' },
   { id: 'AG-07', name: 'Research OS Agent', role: 'Scopus / Lab Reservation Sync', status: 'Aktif / Çalışıyor' },
-  { id: 'AG-08', name: 'Career Radar Agent', role: 'ATS & AI Resume Matching', status: 'Aktif / Çalışıyor' },
+  { id: 'AG-08', name: 'Kariyer Radar ve Eşleştirme Motoru', role: 'ATS & Kriter Eşleştirme', status: 'Aktif / Çalışıyor' },
 ];
 
 export default function CMSIntegrations() {
   const [logs, setLogs] = useState([
-    { id: 1, time: new Date().toLocaleTimeString(), message: 'Zero-Trust Security Gateway aktif. 25 AI Swarm Ajanı hazır.', type: 'info' },
+    { id: 1, time: new Date().toLocaleTimeString(), message: 'Zero-Trust Security Gateway aktif. Sistem servisleri hazır.', type: 'info' },
     { id: 2, time: new Date().toLocaleTimeString(), message: 'Prompt Injection Shield: 0 Tehdit tespit edildi. %100 Güvenli.', type: 'success' }
   ]);
   const [obsLoading, setObsLoading] = useState(false);
@@ -65,14 +65,14 @@ export default function CMSIntegrations() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Sistem Entegrasyonları & AI Güvenlik Katmanı" sub="API Gateway, 25 Otonom Ajan Swarm ve Zero-Trust Güvenlik Kalkanı" badge="Enterprise OS 1.0" />
+      <PanelHeader title="Sistem Entegrasyonları & Güvenlik Katmanı" sub="API Gateway, Entegrasyon Servisleri ve Zero-Trust Güvenlik Kalkanı" badge="Enterprise OS 1.0" />
 
-      {/* AI Swarm & Security Stats Banner */}
+      {/* Servisler & Güvenlik Banner */}
       <div className="bg-gradient-to-r from-slate-950 via-red-950 to-indigo-950 text-white rounded-3xl p-6 border border-red-900 shadow-xl grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-1">
-          <span className="text-[10px] font-black uppercase text-indigo-400">25 AI Multi-Agent Swarm</span>
+          <span className="text-[10px] font-black uppercase text-indigo-400">25 Sistem Servis Modülü</span>
           <div className="text-xl font-black flex items-center gap-2">
-            <Bot size={20} className="text-indigo-400" /> 25/25 Ajan Aktif
+            <Bot size={20} className="text-indigo-400" /> 25/25 Servis Aktif
           </div>
           <p className="text-[11px] text-slate-400">Mimariyi koruyarak otonom evrim</p>
         </div>
@@ -97,13 +97,13 @@ export default function CMSIntegrations() {
           <span className="text-[10px] font-black uppercase text-cyan-400">Servis Sağlayıcı</span>
           <div className="flex items-center gap-2 mt-1">
             <button 
-              onClick={() => { setActiveLLM('gemini'); addLog('AI Router: Gemini 2.5 Flash aktif edildi.', 'success'); }}
+              onClick={() => { setActiveLLM('gemini'); addLog('Servis Yönlendirici: Gemini 2.5 Flash aktif edildi.', 'success'); }}
               className={`px-3 py-1 rounded-xl text-xs font-bold transition ${activeLLM === 'gemini' ? 'bg-red-600 text-white' : 'bg-red-900 text-slate-400'}`}
             >
               Gemini
             </button>
             <button 
-              onClick={() => { setActiveLLM('openai'); addLog('AI Router: OpenAI Fallback aktif edildi.', 'info'); }}
+              onClick={() => { setActiveLLM('openai'); addLog('Servis Yönlendirici: OpenAI Fallback aktif edildi.', 'info'); }}
               className={`px-3 py-1 rounded-xl text-xs font-bold transition ${activeLLM === 'openai' ? 'bg-red-600 text-white' : 'bg-red-900 text-slate-400'}`}
             >
               OpenAI

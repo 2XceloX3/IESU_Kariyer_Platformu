@@ -40,7 +40,7 @@ export default function CMSPortfolios() {
 
   return (
     <div className="animate-fade-in space-y-6">
-      <PanelHeader title="Portfolyo ve CV Yönetimi" sub="Öğrencilerin AI destekli hazırladığı özgeçmişlerin ve portfolyo onay süreçlerinin kontrolü" />
+      <PanelHeader title="Portfolyo ve CV Yönetimi" sub="Öğrencilerin hazırladığı özgeçmişlerin ve portfolyo onay süreçlerinin kontrolü" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sol Taraf: Liste ve Filtreleme */}
@@ -72,7 +72,7 @@ export default function CMSPortfolios() {
           </div>
 
           <Tbl
-            headers={['Öğrenci', 'Bölüm', 'AI Puanı', 'Son Güncelleme', 'Durum', 'İşlemler']}
+            headers={['Öğrenci', 'Bölüm', 'ATS Puanı', 'Son Güncelleme', 'Durum', 'İşlemler']}
             rows={filteredCVs.map(cv => [
               <div>
                 <p className="font-bold text-gray-900">{cv.name}</p>
@@ -118,7 +118,7 @@ export default function CMSPortfolios() {
 
                 <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-3">
                   <h4 className="text-xs font-black text-indigo-900 flex items-center gap-1.5">
-                    <Sparkles size={14} className="text-red-600 animate-pulse" /> AI ATS ve Analiz Raporu
+                    <Sparkles size={14} className="text-red-600" /> ATS ve Yetkinlik Analiz Raporu
                   </h4>
                   <div className="grid grid-cols-2 gap-2 text-center">
                     <div className="bg-white p-2.5 rounded-lg border border-indigo-100">

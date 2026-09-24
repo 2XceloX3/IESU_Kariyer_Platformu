@@ -154,7 +154,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
-                    window.toast && window.toast.info("AI Asistan: CV'niz analiz ediliyor...");
+                    window.toast && window.toast.info("Akıllı Sistem: Özgeçmişiniz analiz ediliyor...");
                     setTimeout(() => {
                       setSearchQuery('Yazılım');
                       window.toast && window.toast.success("✅ Yetkinliklerinize (React, Node.js) en uygun teknoloji firmaları filtrelendi.");
@@ -221,11 +221,11 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                         e.preventDefault();
                         window.toast && window.toast.info(`"${company.name}" şirketinin geçmiş mülakat soruları derleniyor...`);
                         setTimeout(() => {
-                          window.toast && window.toast.success("✅ AI Mülakat Simülasyonu başlatıldı. İlk soru: 'Bize biraz kendinizden bahseder misiniz?'");
+                          window.toast && window.toast.success("✅ Mülakat Provası başlatıldı. İlk soru: 'Bize biraz kendinizden bahseder misiniz?'");
                         }, 2500);
                       }}
                       className="flex-1 py-2.5 bg-[#f0f7ff] border-2 border-[#dbeafe] text-[#0A66C2] hover:bg-[#dbeafe] rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-1"
-                      title="AI Mülakat Provası"
+                      title="Mülakat Provası"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>

@@ -133,7 +133,7 @@ export default function CareerShorts({ setView, onClose }) {
               e.stopPropagation(); 
               window.toast && window.toast.info("Video analiz ediliyor...");
               setTimeout(() => {
-                window.toast && window.toast.success(`✅ AI Özeti: Bu video ${currentShort.author.name} şirket kültürünü anlatıyor. Size uygunluğu %88.`);
+                window.toast && window.toast.success(`✅ Video Özeti: Bu video ${currentShort.author.name} şirket kültürünü anlatıyor. Size uygunluğu %88.`);
               }, 2500);
             }}
           >

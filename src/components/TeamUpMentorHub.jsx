@@ -166,7 +166,7 @@ export default function TeamUpMentorHub({ currentUser }) {
                     }}
                     className="text-red-600 hover:text-indigo-800 font-bold text-sm flex items-center gap-1 px-3 py-2 rounded-xl transition-colors"
                   >
-                    <Star size={14} /> AI Uyumluluk
+                    <Star size={14} /> Profil Uyumluluğu
                   </button>
                   <button 
                                     onClick={(e) => { e.preventDefault(); setJoinReq((s) => new Set(s).add(team.id)); window.toast.success(`"${team.title}" için katılım talebiniz iletildi.`); }}

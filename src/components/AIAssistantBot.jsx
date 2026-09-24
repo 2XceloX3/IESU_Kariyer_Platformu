@@ -482,7 +482,7 @@ export default function AIAssistantBot({ currentUser }) {
                       {msg.sender === 'ai' && msg.feedbackGiven && (
                         <div className="flex items-center gap-1 mt-2 pt-2 border-t border-gray-100">
                           <span className="text-[10px] text-emerald-500 flex items-center gap-1">
-                            <Brain size={10} /> Geri bildirim kaydedildi — AI öğreniyor
+                            <Brain size={10} /> Geri bildiriminiz kaydedildi
                           </span>
                         </div>
                       )}

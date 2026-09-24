@@ -145,12 +145,12 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
         
         // Deneyim açıklamalarını "Action Verb" formatına çevir (Etki odaklı)
         if (newData.experience && newData.experience.length > 0) {
-          newData.experience[0].desc += ' [AI ATS Optimizasyonu: Performans metrikleri ve eylem fiilleri vurgulandı.]';
+          newData.experience[0].desc += ' [ATS Optimizasyonu: Performans metrikleri ve eylem fiilleri vurgulandı.]';
         }
         
         // Özeti ATS sistemleri için daha kurumsal bir yapıya büründür
         if (!newData.summary) newData.summary = '';
-        newData.summary += ' (Kariyer profiliniz, sektördeki İK sistemlerinden (ATS) en yüksek eşleşme skorunu alacak şekilde AI tarafından optimize edilmiştir.)';
+        newData.summary += ' (Kariyer profiliniz, sektördeki İK sistemlerinden (ATS) en yüksek eşleşme skorunu alacak şekilde profesyonel olarak optimize edilmiştir.)';
 
         return newData;
       });

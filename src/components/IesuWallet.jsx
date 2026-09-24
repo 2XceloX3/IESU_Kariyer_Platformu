@@ -26,7 +26,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
   const [readinessScore, setReadinessScore] = useState(80);
 
   const handleRunAnalysis = () => {
-    window.toast && window.toast.info("AI: Blockchain üzerindeki sertifikalarınız analiz ediliyor...");
+    window.toast && window.toast.info("Dijital cüzdanınızdaki sertifikalar analiz ediliyor...");
     setTimeout(() => {
       setReadinessScore(88);
       window.toast && window.toast.success("✅ Analiz Tamamlandı: Sektöre hazırlık endeksiniz %88 olarak güncellendi.");

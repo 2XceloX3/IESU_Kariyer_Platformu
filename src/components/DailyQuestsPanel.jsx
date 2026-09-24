@@ -15,7 +15,7 @@ export default function DailyQuestsPanel() {
   }, [currentUser, quests.length]);
 
   const handleCompleteQuest = (questId, bpReward) => {
-    window.toast && window.toast.info("AI: Hedef uygulanıyor ve profiliniz güncelleniyor...");
+    window.toast && window.toast.info("Hedef uygulanıyor ve profiliniz güncelleniyor...");
     setTimeout(() => {
       setQuests(prevQuests => 
         prevQuests.map(q => q.id === questId ? { ...q, isCompleted: true } : q)
@@ -91,7 +91,7 @@ export default function DailyQuestsPanel() {
                         e.preventDefault();
                         window.toast && window.toast.info("Profilinize daha uygun yeni bir mikro-görev hesaplanıyor...");
                         setTimeout(() => {
-                          window.toast && window.toast.success("✅ AI Görevi Güncellendi: 'Son haftanın teknoloji haberlerinden birini özetle.'");
+                          window.toast && window.toast.success("✅ Günün Görevi Güncellendi: 'Son haftanın teknoloji haberlerinden birini özetle.'");
                         }, 2500);
                       }}
                       className="shrink-0 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-[#0A66C2] rounded-full w-8 h-8 transition-colors"

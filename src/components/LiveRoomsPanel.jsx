@@ -13,7 +13,7 @@ const MOCK_ROOMS = [
     speakers: [
       { name: 'Dr. Ahmet Yılmaz', avatar: 'https://i.pravatar.cc/150?u=12', role: 'Host' },
       { name: 'Zeynep Kaya', avatar: 'https://i.pravatar.cc/150?u=2', role: 'Speaker' },
-      { name: 'Anka AI', avatar: '/logo.png', role: 'AI Assistant' }
+      { name: 'Kariyer Danışmanı', avatar: '/logo.png', role: 'Moderatör' }
     ],
     listenersCount: 145,
     tags: ['Yapay Zeka', 'Mülakat', 'Kariyer']
@@ -195,7 +195,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                         e.preventDefault();
                         window.toast && window.toast.info("Odanın şu ana kadarki kaydı analiz ediliyor...");
                         setTimeout(() => {
-                          window.toast && window.toast.success("✅ AI Özeti: 'Kariyer mülakatlarında stres yönetimi üzerine konuşuluyor...' (Özet Anka Chat'e gönderildi)");
+                          window.toast && window.toast.success("✅ Oda Özeti: 'Kariyer mülakatlarında stres yönetimi üzerine konuşuluyor...' (Özet mesaj kutunuza iletildi)");
                         }, 3000);
                       }}
                       className="text-red-600 font-bold text-sm px-6 py-3 rounded-full bg-red-50 hover:bg-red-100 transition flex items-center gap-2"

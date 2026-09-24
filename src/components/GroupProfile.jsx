@@ -124,7 +124,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
               <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
               <h3 className="text-sm font-black text-indigo-900 mb-2 flex items-center gap-2 relative z-10">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-600"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
-                AI Profil Analizi
+                Kulüp Uygunluk Analizi
               </h3>
               <p className="text-xs text-indigo-800 font-medium mb-4 relative z-10">Bu topluluğun aktiviteleri senin kariyer hedeflerinle uyuşuyor mu?</p>
               <button 
@@ -132,7 +132,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
                   e.preventDefault();
                   window.toast && window.toast.info("Grup etkinlik verileri ile profiliniz karşılaştırılıyor...");
                   setTimeout(() => {
-                    window.toast && window.toast.success(`✅ AI Kararı: Bu kulübün düzenlediği etkinlikler "Yazılım Mühendisliği" hedefinize %92 oranında katkı sağlayabilir.`);
+                    window.toast && window.toast.success(`✅ Danışman Değerlendirmesi: Bu kulübün düzenlediği etkinlikler "Yazılım Mühendisliği" hedefinize %92 oranında katkı sağlayabilir.`);
                   }, 3000);
                 }}
                 className="w-full bg-red-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-sm transition relative z-10 shadow-md shadow-red-600/20"

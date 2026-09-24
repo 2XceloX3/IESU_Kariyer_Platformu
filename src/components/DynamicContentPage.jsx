@@ -124,7 +124,7 @@ export default function DynamicContentPage({ contentId, setView, previousView = 
                   e.preventDefault();
                   window.toast && window.toast.info("Sayfa içeriği taranıyor ve özetleniyor...");
                   setTimeout(() => {
-                    window.toast && window.toast.success(`✅ AI Özeti: "${data.title}" sayfası genel hatlarıyla kariyer planlama süreçlerindeki resmi prosedürleri ve ofis destek birimlerini açıklamaktadır.`);
+                    window.toast && window.toast.success(`✅ Sayfa Özeti: "${data.title}" sayfası genel hatlarıyla kariyer planlama süreçlerindeki resmi prosedürleri ve ofis destek birimlerini açıklamaktadır.`);
                   }, 2500);
                 }}
                 className="w-full bg-red-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg text-sm transition relative z-10 shadow-md shadow-red-600/20"

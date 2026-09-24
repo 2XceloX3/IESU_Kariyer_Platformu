@@ -116,7 +116,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
               />
               <div className="flex justify-between items-center">
                 <span className="text-xs text-gray-500 font-bold flex items-center gap-1 bg-gray-100 px-3 py-1.5 rounded-lg">
-                  <Brain size={14} className="text-[#0A66C2]" /> AI Veri Analizi
+                  <Brain size={14} className="text-[#0A66C2]" /> Pazar & Fizibilite Analizi
                 </span>
                 <button 
                   onClick={handlePitch}
@@ -158,13 +158,13 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
                       e.preventDefault();
                       window.toast && window.toast.info("Kanvas verilerinizden yatırımcı sunumu (Pitch Deck) derleniyor...");
                       setTimeout(() => {
-                        window.toast && window.toast.success("✅ AI Sunumu Hazır: Taslak sunum e-posta adresinize PDF olarak gönderildi.");
+                        window.toast && window.toast.success("✅ Yatırımcı Sunumu Hazır: Taslak sunum e-posta adresinize PDF olarak gönderildi.");
                       }, 2500);
                     }}
                     className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold flex items-center gap-2 px-5 py-2.5 rounded-xl shadow-md transition-all"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg>
-                    AI Sunum Destesi Üret
+                    Yatırımcı Sunum Destesi Üret
                   </button>
                   <div className="text-sm font-bold text-gray-400">Gizlilik: <span className="text-[#0A66C2]">Sadece Siz</span></div>
                 </div>
