@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   MessageCircle, X, Maximize2, Send, ChevronLeft, UserCheck, Calendar, Clock, 
-  MapPin, ShieldCheck, CheckCircle2, ExternalLink, ChevronRight, User, Briefcase,
+  MapPin, ShieldCheck, CheckCircle2, ExternalLink, ChevronRight, User, Users, Briefcase,
   GraduationCap, Search, Sparkles, Building2, Award, Inbox, Layers, MessageSquare,
   Check, ArrowRight, Bell, Crown, Scale, FileText, CheckCircle, XCircle, AlertCircle,
   Filter, ShieldAlert, CheckCheck, LayoutDashboard

@@ -82,6 +82,24 @@ describe('FloatingChatWidget F5 Persistence & Dock Theme Verification', () => {
     expect(screen.getByText('Akademik Danışmanlık')).toBeInTheDocument();
   });
 
+  it('opens chat modal in Alumni portal and renders alumni network messaging without error', () => {
+    localStorage.setItem('iesu_mock_user', JSON.stringify({
+      id: 'ALU-100',
+      name: 'Mezun Kullanıcı',
+      role: 'alumni'
+    }));
+
+    render(<FloatingChatWidget setView={vi.fn()} currentView="alumni" />);
+
+    const launcherBtn = screen.getByTitle(/Mezun Kariyer & Ağ İletişim Masası/i);
+    expect(launcherBtn).toBeInTheDocument();
+
+    fireEvent.click(launcherBtn);
+
+    expect(screen.getAllByText('Mezun & Mentörlük Ağı')[0]).toBeInTheDocument();
+    expect(screen.getByText('Kurumsal İletişim')).toBeInTheDocument();
+  });
+
   it('renders emerald dock in AlumniFeed without showing red admin styles', () => {
     const mockUser = {
       id: 'ALU-100',
