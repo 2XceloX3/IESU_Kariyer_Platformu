@@ -160,6 +160,7 @@ export default function StudentHive({ currentUser, setView }) {
         return <MetaverseLibrary setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'hackathon_market':
         return <HackathonMarket setView={handleSetView} currentUser={currentUser} userRole="student" />;
+      case 'clubs':
       case 'club_portal':
         return <StudentClubPortal setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'club_admin':

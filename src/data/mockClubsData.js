@@ -451,17 +451,53 @@ export const initialClubs = [
       { id: 'STU-018', name: 'Ayşe Nur Demir', role: 'Kol Başkanı', email: 'ayse.demir@ogr.esenyurt.edu.tr' }
     ],
     boardMembers: [
-      { id: 'BM-301', name: 'Ayşe Nur Demir', role: 'Kol Başkanı', department: 'Elektrik-Elektronik Müh.', studentNo: '2023030114', email: 'ayse.demir@ogr.esenyurt.edu.tr' }
+      { id: 'BM-301', name: 'Ayşe Nur Demir', role: 'Kol Başkanı', department: 'Elektrik-Elektronik Müh. (3. Sınıf)', studentNo: '2023030114', email: 'ayse.demir@ogr.esenyurt.edu.tr' },
+      { id: 'BM-302', name: 'Prof. Dr. Kemal Vural', role: 'Akademik Danışman', department: 'Mühendislik Fakültesi', email: 'kemal.vural@esenyurt.edu.tr' },
+      { id: 'BM-303', name: 'Ozan Tekin', role: 'RAS Komite Lideri', department: 'Mekatronik Mühendisliği', studentNo: '2024010319', email: 'ozan.tekin@ogr.esenyurt.edu.tr' }
     ],
-    events: [],
-    announcements: [],
+    events: [
+      {
+        id: 'CLB-EVT-301',
+        title: 'IEEE Xplore Akademik Yayın & İnovasyon Semineri',
+        category: 'Akademik Seminer',
+        date: '19 Kasım 2026',
+        time: '14:00 - 16:30',
+        location: 'Ömer Halisdemir Konferans Salonu',
+        quota: 100,
+        registeredCount: 65,
+        status: 'Yaklaşan',
+        description: 'Uluslararası indeksli dergilerde araştırma makalesi yazımı ve patent tarama teknikleri.'
+      }
+    ],
+    announcements: [
+      { id: 'ANN-401', title: 'IEEE Global Student Congress Delegasyon Başvuruları', date: '22 Eylül 2026', isImportant: true, content: 'Bu yıl düzenlenecek uluslararası öğrenci kongresine kulübümüzü temsilen katılacak delege seçimi yapılacaktır.' }
+    ],
     budgetRequests: [],
     members: [
-      { id: 'STU-018', studentNo: '2023030114', tcKimlik: '59102938401', name: 'Ayşe Nur Demir', department: 'Elektrik-Elektronik Müh.', grade: '3. Sınıf', role: 'Kol Başkanı', joinedDate: '12.10.2023', phone: '0535 444 7722', email: 'ayse.demir@ogr.esenyurt.edu.tr', status: 'Aktif' }
+      { id: 'STU-018', studentNo: '2023030114', tcKimlik: '59102938401', name: 'Ayşe Nur Demir', department: 'Elektrik-Elektronik Müh.', grade: '3. Sınıf', role: 'Kol Başkanı', joinedDate: '12.10.2023', phone: '0535 444 7722', email: 'ayse.demir@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-019', studentNo: '2024010319', tcKimlik: '68192038491', name: 'Ozan Tekin', department: 'Mekatronik Mühendisliği', grade: '2. Sınıf', role: 'RAS Komite Lideri', joinedDate: '15.10.2023', phone: '0532 555 8899', email: 'ozan.tekin@ogr.esenyurt.edu.tr', status: 'Aktif' }
     ],
     memberApplications: [],
-    posts: [],
-    highlights: []
+    posts: [
+      {
+        id: 'POST-CLB-301',
+        author: { name: 'IEEE İESÜ Öğrenci Kolu', handle: '@iesuieee', logo: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=250&q=80', verified: true },
+        location: 'Ömer Halisdemir Konferans Salonu',
+        images: ['https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1000&q=80'],
+        filter: 'cinema',
+        music: { title: 'Global Tech Leadership', artist: 'IEEE Spectrum Beats', duration: '03:00' },
+        caption: '🌐 IEEE İESÜ olarak küresel mühendislik standartlarını kampüsümüze taşımaya devam ediyoruz! Yeni dönem komite üye alımları başladı. #IEEE #Engineering #Technology #İESÜ',
+        likes: 112,
+        isLiked: false,
+        comments: [],
+        shares: 19,
+        saved: false,
+        createdAt: '4 gün önce'
+      }
+    ],
+    highlights: [
+      { id: 'HL-31', title: 'IEEE Day', icon: '🌍', cover: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=200&q=80' }
+    ]
   },
   {
     id: 'CLUB-004',
@@ -499,16 +535,189 @@ export const initialClubs = [
     authorizedOfficers: [
       { id: 'STU-024', name: 'Caner Arslan', role: 'Kulüp Başkanı', email: 'caner.arslan@ogr.esenyurt.edu.tr' }
     ],
-    boardMembers: [],
-    events: [],
-    announcements: [],
+    boardMembers: [
+      { id: 'BM-401', name: 'Caner Arslan', role: 'Kulüp Başkanı', department: 'Psikoloji (3. Sınıf)', studentNo: '2023040188', email: 'caner.arslan@ogr.esenyurt.edu.tr' },
+      { id: 'BM-402', name: 'Dr. Öğr. Üyesi Mutlu Gülsev Yağız', role: 'Akademik Danışman', department: 'İktisadi ve İdari Bilimler', email: 'myagiz@esenyurt.edu.tr' }
+    ],
+    events: [
+      {
+        id: 'CLB-EVT-401',
+        title: 'İK Direktörleriyle Birebir Mülakat Simülasyonu',
+        category: 'Kariyer Atölyesi',
+        date: '05 Aralık 2026',
+        time: '13:30 - 17:00',
+        location: 'Merkez Kütüphane Seminer Salonu',
+        quota: 50,
+        registeredCount: 42,
+        status: 'Yaklaşan',
+        description: 'Öğrenciler kurumsal İK uzmanlarıyla canlı vaka mülakatlarına katılacak.'
+      }
+    ],
+    announcements: [
+      { id: 'ANN-402', title: 'Güz Dönemi CV & LinkedIn Danışmanlığı Randevuları Açıldı', date: '18 Eylül 2026', isImportant: false, content: 'Haftalık birebir profil inceleme oturumlarımız başlamıştır.' }
+    ],
     budgetRequests: [],
     members: [
       { id: 'STU-024', studentNo: '2023040188', tcKimlik: '38192049182', name: 'Caner Arslan', department: 'Psikoloji', grade: '3. Sınıf', role: 'Kulüp Başkanı', joinedDate: '15.11.2023', phone: '0536 888 1122', email: 'caner.arslan@ogr.esenyurt.edu.tr', status: 'Aktif' }
     ],
     memberApplications: [],
-    posts: [],
-    highlights: []
+    posts: [
+      {
+        id: 'POST-CLB-401',
+        author: { name: 'Kariyer ve Gelişim Kulübü', handle: '@iesukariyer', logo: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=250&q=80', verified: true },
+        location: 'İESÜ Kampüs Meydanı',
+        images: ['https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1000&q=80'],
+        filter: 'vibrant',
+        music: { title: 'Ambition & Success', artist: 'Campus Career Studio', duration: '02:15' },
+        caption: '🎯 Profesyonel hayata sağlam adımlarla hazırlanmak için Kariyer ve Kişisel Gelişim Kulübü yanınızda! 💼✨ #Kariyer #Liderlik #Gelişim #İESÜ',
+        likes: 85,
+        isLiked: false,
+        comments: [],
+        shares: 12,
+        saved: false,
+        createdAt: '1 hafta önce'
+      }
+    ],
+    highlights: [
+      { id: 'HL-41', title: 'Atölyeler', icon: '🎯', cover: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=200&q=80' }
+    ]
+  },
+  {
+    id: 'CLUB-005',
+    code: 'club_robotik_otomasyon',
+    name: 'İESÜ Yapay Zeka ve Robotik Topluluğu',
+    shortName: 'YAZERO',
+    category: 'Bilim, Teknoloji ve Mühendislik',
+    establishedYear: 2023,
+    status: 'Aktif',
+    memberCount: 195,
+    advisor: 'Dr. Öğr. Üyesi Deniz Demir (Mühendislik Fakültesi)',
+    advisorEmail: 'deniz.demir@esenyurt.edu.tr',
+    presidentId: 'STU-031',
+    president: {
+      id: 'STU-031',
+      name: 'Mehmet Can Vural',
+      studentNo: '2023010915',
+      tcKimlik: '29102938192',
+      department: 'Bilgisayar Mühendisliği',
+      year: '3. Sınıf',
+      email: 'mehmetcan.vural@ogr.esenyurt.edu.tr',
+      phone: '0542 333 4455'
+    },
+    budget: {
+      allocated: 40000,
+      spent: 14000,
+      remaining: 26000,
+      currency: '₺',
+      fiscalYear: '2026-2027'
+    },
+    logo: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=250&q=80',
+    coverImage: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=1200&q=80',
+    description: 'Üniversitemizi TEKNOFEST, TÜBİTAK ve uluslararası robotik yarışmalarında temsil eden; otonom araçlar, İHA aviyonikleri, derin öğrenme ve gömülü sistemler geliştiren teknik topluluktur.',
+    purpose: 'Kampüsümüzde öğrencilere yönelik uygulamalı robotik ve makine öğrenimi atölyeleri kurarak donanım ve yazılım alanında nitelikli mühendisler yetiştirmek.',
+    authorizedOfficers: [
+      { id: 'STU-031', name: 'Mehmet Can Vural', role: 'Topluluk Başkanı', email: 'mehmetcan.vural@ogr.esenyurt.edu.tr' },
+      { id: 'STU-032', name: 'Selin Aksoy', role: 'Başkan Yardımcısı', email: 'selin.aksoy@ogr.esenyurt.edu.tr' },
+      { id: 'STU-033', name: 'Eren Yılmaz', role: 'Teknik Takım Kaptanı', email: 'eren.yilmaz@ogr.esenyurt.edu.tr' }
+    ],
+    boardMembers: [
+      { id: 'BM-501', name: 'Mehmet Can Vural', role: 'Topluluk Başkanı', department: 'Bilgisayar Mühendisliği (3. Sınıf)', studentNo: '2023010915', email: 'mehmetcan.vural@ogr.esenyurt.edu.tr' },
+      { id: 'BM-502', name: 'Dr. Öğr. Üyesi Deniz Demir', role: 'Akademik Danışman', department: 'Mühendislik Fakültesi', email: 'deniz.demir@esenyurt.edu.tr' },
+      { id: 'BM-503', name: 'Selin Aksoy', role: 'Başkan Yardımcısı', department: 'Elektrik-Elektronik Müh.', studentNo: '2023030421', email: 'selin.aksoy@ogr.esenyurt.edu.tr' },
+      { id: 'BM-504', name: 'Eren Yılmaz', role: 'Teknik Takım Kaptanı', department: 'Mekatronik Müh.', studentNo: '2024010882', email: 'eren.yilmaz@ogr.esenyurt.edu.tr' }
+    ],
+    events: [
+      {
+        id: 'CLB-EVT-501',
+        title: 'TEKNOFEST 2026 İHA ve Otonom Sistemler Çalıştayı',
+        category: 'Teknik Çalıştay',
+        date: '12 Kasım 2026',
+        time: '14:00 - 18:00',
+        location: 'Ömer Halisdemir Konferans Salonu',
+        quota: 150,
+        registeredCount: 92,
+        status: 'Yaklaşan',
+        description: 'İHA mekanik tasarımı, ROS2 haberleşme mimarisi ve sensör füzyonu üzerine pratik kodlama oturumu.'
+      }
+    ],
+    announcements: [
+      { id: 'ANN-501', title: 'Robotik Atölyesi Takım Seçmeleri Başladı', date: '21 Eylül 2026', isImportant: true, content: 'İHA, Savaşan İHA ve Robotaksi takımlarımıza katılmak isteyen mühendislik öğrencileri için başvuru formu açılmıştır.' }
+    ],
+    budgetRequests: [
+      {
+        id: 'REQ-501',
+        title: 'Robotik Takım Çalışma Alanı & Laboratuvar Tahsisi',
+        requestedVenue: 'Mühendislik Lab 304 & Fuaye',
+        venue: 'Mühendislik Lab 304 & Fuaye',
+        eventDate: '15 Ekim 2026',
+        startTime: '10:00',
+        endTime: '18:00',
+        expectedAttendees: 60,
+        equipment: ['Ses Sistemi & Kürsü Mikrofonu', 'Çift Projeksiyon & HDMI Çoklayıcı', 'Kokteyl & Grup Çalışma Masaları'],
+        requestedDate: '20.09.2026',
+        requester: 'Mehmet Can Vural (Topluluk Başkanı)',
+        status: 'approved',
+        approvalNote: 'Mühendislik Fakültesi Dekanlığı ve SKS tarafından onaylanmıştır.'
+      }
+    ],
+    members: [
+      { id: 'STU-031', studentNo: '2023010915', tcKimlik: '29102938192', name: 'Mehmet Can Vural', department: 'Bilgisayar Mühendisliği', grade: '3. Sınıf', role: 'Topluluk Başkanı', joinedDate: '18.10.2023', phone: '0542 333 4455', email: 'mehmetcan.vural@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-032', studentNo: '2023030421', tcKimlik: '39201948192', name: 'Selin Aksoy', department: 'Elektrik-Elektronik Müh.', grade: '3. Sınıf', role: 'Başkan Yardımcısı', joinedDate: '22.10.2023', phone: '0533 222 9911', email: 'selin.aksoy@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-033', studentNo: '2024010882', tcKimlik: '49201948291', name: 'Eren Yılmaz', department: 'Mekatronik Mühendisliği', grade: '2. Sınıf', role: 'Teknik Takım Kaptanı', joinedDate: '05.11.2023', phone: '0535 777 4433', email: 'eren.yilmaz@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-034', studentNo: '2024010551', tcKimlik: '59201948392', name: 'Büşra Çelik', department: 'Endüstri Mühendisliği', grade: '2. Sınıf', role: 'Aktif Üye', joinedDate: '12.11.2023', phone: '0531 888 2211', email: 'busra.celik@ogr.esenyurt.edu.tr', status: 'Aktif' }
+    ],
+    memberApplications: [
+      {
+        id: 'APP-MEM-501',
+        studentId: 'STU-109',
+        studentNo: '2024010772',
+        tcKimlik: '19203948192',
+        name: 'Oğuzhan Kaya',
+        department: 'Bilgisayar Mühendisliği',
+        grade: '1. Sınıf',
+        email: 'oguzhan.kaya@ogr.esenyurt.edu.tr',
+        phone: '0541 666 3322',
+        reason: 'Gömülü sistemler ve Python ile görüntü işleme alanlarında projeler üretmek istiyorum.',
+        appliedAt: '24 Eylül 2026',
+        status: 'pending'
+      }
+    ],
+    posts: [
+      {
+        id: 'POST-CLB-501',
+        author: {
+          name: 'İESÜ Yapay Zeka ve Robotik Topluluğu',
+          handle: '@iesurobotics',
+          logo: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=250&q=80',
+          verified: true
+        },
+        location: 'İESÜ Robotik Ar-Ge Laboratuvarı',
+        images: [
+          'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=1000&q=80',
+          'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1000&q=80'
+        ],
+        filter: 'vibrant',
+        music: {
+          title: 'Autonomous Flight Horizons',
+          artist: 'İESÜ Future Sound',
+          duration: '02:45'
+        },
+        caption: '🤖 Otonom İHA aviyonik kartlarımızın ilk prototip testlerini başarıyla gerçekleştirdik! TEKNOFEST 2026 hedefimize emin adımlarla ilerliyoruz. Takımımıza katılmak için başvuruları kaçırmayın! 🚁✨ #İESÜ #Robotik #YapayZeka #TEKNOFEST #Mühendislik',
+        likes: 178,
+        isLiked: false,
+        comments: [
+          { id: 1, user: 'selin.aksoy', name: 'Selin Aksoy', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80', text: 'Tüm ekibin ellerine sağlık, test uçuşu harikaydı! 🎯🚀', time: '3 saat önce' }
+        ],
+        shares: 31,
+        saved: false,
+        createdAt: '5 saat önce'
+      }
+    ],
+    highlights: [
+      { id: 'HL-51', title: 'İHA Test', icon: '🚁', cover: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=200&q=80' },
+      { id: 'HL-52', title: 'Laboratuvar', icon: '⚡', cover: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=200&q=80' },
+      { id: 'HL-53', title: 'TEKNOFEST', icon: '🏆', cover: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=200&q=80' }
+    ]
   }
 ];
 

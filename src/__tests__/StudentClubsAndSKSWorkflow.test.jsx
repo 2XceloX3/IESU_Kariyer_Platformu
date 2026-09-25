@@ -182,4 +182,34 @@ describe('Student Clubs & SKS Governance Workflow Suite', () => {
     fireEvent.change(searchInput, { target: { value: 'Mehmet Kerem' } });
     expect(screen.getByText(/Mehmet Kerem Yılmaz/i)).toBeInTheDocument();
   });
+
+  it('hides floating bottom dock when any modal is opened to prevent collision and ensures action buttons are accessible', () => {
+    render(
+      <StudentClubPortal 
+        currentUser={mockPresident}
+        setView={vi.fn()}
+      />
+    );
+
+    // Initial state in Discovery: Floating dock is visible
+    expect(screen.getByTitle('Akış & Ana Sayfa')).toBeInTheDocument();
+
+    // Open EK-1 New Club Modal
+    const createBtn = screen.getByText(/Yeni Kulüp Kur \(EK-1\)/i);
+    fireEvent.click(createBtn);
+
+    // Floating dock must be hidden to prevent overlap
+    expect(screen.queryByTitle('Akış & Ana Sayfa')).not.toBeInTheDocument();
+
+    // Modal action buttons must be accessible in the fixed footer
+    expect(screen.getByText(/Başvuruyu İlet \(EK-1\)/i)).toBeInTheDocument();
+    const cancelBtn = screen.getByText('İptal');
+    expect(cancelBtn).toBeInTheDocument();
+
+    // Close modal
+    fireEvent.click(cancelBtn);
+
+    // Floating dock is restored
+    expect(screen.getByTitle('Akış & Ana Sayfa')).toBeInTheDocument();
+  });
 });
