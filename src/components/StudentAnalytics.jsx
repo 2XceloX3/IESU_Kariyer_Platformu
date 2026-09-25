@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 import DailyQuestsPanel from './DailyQuestsPanel';
 import { 
@@ -153,18 +154,27 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] font-sans text-gray-900 pb-20 selection:bg-red-200">
+    <div className="min-h-screen bg-[#F4F7FA] font-sans text-gray-900 pb-28 selection:bg-red-200">
       
       {/* Navbar */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50 shadow-sm">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer group" onClick={() => setView(previousView || 'student')}>
-            <Logo className="h-10 w-auto group-hover:scale-105 transition-transform duration-300" />
-            <div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest flex items-center gap-1">
-                <Sparkles size={10} className="animate-pulse" /> Kariyer Analitiği Merkezi
-              </p>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setView(previousView || 'student')} 
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-xs"
+              title="Geri Dön"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer group" onClick={() => setView(previousView || 'student')}>
+              <Logo className="h-10 w-auto group-hover:scale-105 transition-transform duration-300" />
+              <div className="hidden sm:block text-left">
+                <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest flex items-center gap-1">
+                  <Sparkles size={10} className="animate-pulse" /> Kariyer Analitiği Merkezi
+                </p>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -178,9 +188,6 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
         {/* Header Section */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div>
-            <button onClick={() => setView(previousView || 'student')} className="flex items-center gap-2 text-gray-500 hover:text-[#990000] font-bold mb-3 transition-colors text-xs uppercase tracking-wider group">
-              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Platforma Dön
-            </button>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 flex items-center gap-3 tracking-tight flex-wrap">
               Kariyer Analitiği Merkezi <span className="bg-red-100 text-[#990000] text-xs px-3 py-1 rounded-full uppercase tracking-widest font-black border border-red-200">PREMIUM ANALYTICS</span>
             </h2>
@@ -715,6 +722,14 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* FLOATING BOTTOM DOCK */}
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId}
+        userRole={userRole || 'student'}
+      />
     </div>
   );
 }

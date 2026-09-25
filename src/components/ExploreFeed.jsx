@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Compass, Heart, MessageCircle, UserPlus, UserCheck, Eye, Sparkles, Building2, GraduationCap, Award, BookOpen, X } from 'lucide-react';
+import { Search, Compass, Heart, MessageCircle, UserPlus, UserCheck, Eye, Sparkles, Building2, GraduationCap, Award, BookOpen, X, ChevronLeft } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import PostCard from './PostCard';
 import TrendingHashtags from './TrendingHashtags';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 export default function ExploreFeed({ posts: propPosts, setView, setSelectedUserId, currentUser }) {
   const storePosts = useAppStore(state => state.posts);
@@ -60,11 +61,18 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
   }, [posts, searchQuery, activeCategory]);
 
   return (
-    <div className="w-full bg-white rounded-2xl p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in min-h-[75vh]">
+    <div className="w-full bg-white rounded-2xl p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in min-h-[75vh] pb-28">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 mb-6 border-b border-gray-100 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-tr from-indigo-900 via-purple-900 to-slate-900 rounded-xl flex items-center justify-center text-white shadow-md">
+          <button 
+            onClick={() => setView && setView('student')} 
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0 shadow-xs"
+            title="Geri Dön"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <div className="w-10 h-10 bg-gradient-to-tr from-[#990000] via-[#850000] to-slate-900 rounded-xl flex items-center justify-center text-white shadow-md shrink-0">
             <Compass size={22} />
           </div>
           <div>
@@ -247,6 +255,15 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
           </div>
         </div>
       )}
+
+      {/* FLOATING BOTTOM DOCK */}
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId}
+        activeTab="explore"
+        userRole={currentUser?.role || 'student'}
+      />
     </div>
   );
 }
