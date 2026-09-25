@@ -93,8 +93,8 @@ export default function StajPanel({ setView, userRole }) {
           </div>
         </div>
 
-        {/* Google Stitch Corporate Hero Header - Ultra Premium Deep Navy to Crimson Dual Gradient */}
-        <div className="bg-gradient-to-r from-[#0F172A] via-[#1E1B4B] to-[#881337] text-white py-14 px-4 sm:px-8 relative overflow-hidden shadow-xl border-b border-indigo-950">
+        {/* Google Stitch Corporate Hero Header - Ultra Premium İESÜ Crimson Gradient */}
+        <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white py-14 px-4 sm:px-8 relative overflow-hidden shadow-xl border-b border-red-900">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
           

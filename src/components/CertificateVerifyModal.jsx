@@ -49,7 +49,7 @@ export default function CertificateVerifyModal({ isOpen, onClose }) {
   return (
     <div 
       onClick={onClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in font-sans"
+      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in font-sans"
     >
       <div 
         onClick={(e) => e.stopPropagation()}

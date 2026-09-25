@@ -469,11 +469,11 @@ export default function CMSMessageAudit({ currentUser, setView }) {
 
       {/* ─── MODAL / DRAWER: SELECTED USER DEEP-DIVE CONVERSATIONS ─── */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
           <div className="bg-white w-full max-w-5xl h-[85vh] rounded-3xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden">
             
             {/* Modal Top Header */}
-            <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950 text-white flex items-center justify-between shrink-0">
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-[#990000] to-rose-900 text-white flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <img 
                   src={selectedUser.avatar} 

@@ -186,4 +186,24 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
     expect(screen.getByText(/MedVision/i)).toBeInTheDocument();
     expect(screen.getByText(/EduChain/i)).toBeInTheDocument();
   });
+
+  it('opens Ecosystem Discovery modal when "Tümünü Keşfet (16)" is clicked and navigates to tools', () => {
+    const setView = vi.fn();
+    render(
+      <MemoryRouter>
+        <StudentFeed currentUser={mockCurrentUser} setView={setView} userRole="student" />
+      </MemoryRouter>
+    );
+
+    const discoverBtn = screen.getByText(/Tümünü Keşfet \(16\)/i);
+    expect(discoverBtn).toBeInTheDocument();
+    fireEvent.click(discoverBtn);
+
+    expect(screen.getByText('İESÜ Ekosistem Araçları & Modülleri')).toBeInTheDocument();
+    expect(screen.getByText('Akıllı CV & Özgeçmiş Tasarımcısı')).toBeInTheDocument();
+    expect(screen.getByText('3D Metaverse Kampüs Haritası')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('3D Metaverse Kampüs Haritası'));
+    expect(setView).toHaveBeenCalledWith('campus_map');
+  });
 });

@@ -77,6 +77,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
   const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
+  const [showAllToolsModal, setShowAllToolsModal] = useState(false);
 
   // Guarantee Student branch isolation
   useEffect(() => {
@@ -298,7 +299,13 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse"></span>
                 <h3 className="text-sm font-bold text-gray-900 tracking-tight">Kariyer & Gelişim Araçları</h3>
               </div>
-              <span className="text-xs font-medium text-gray-400">Merkezi Hizmetler</span>
+              <button 
+                onClick={() => setShowAllToolsModal(true)} 
+                className="text-xs font-bold text-[#990000] hover:text-red-700 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
+                title="Tüm Ekosistem Araçlarını Keşfet"
+              >
+                Tümünü Keşfet (16) →
+              </button>
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1044,6 +1051,204 @@ groups={groups}
                 Kapat
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── TÜM EKOSİSTEM ARAÇLARI KEŞİF MODALI (16 GELİŞMİŞ ARAÇ) ─── */}
+      {showAllToolsModal && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[88vh] relative animate-slide-up">
+            
+            {/* Modal Header */}
+            <div className="p-5 bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white flex items-center justify-between shrink-0 border-b border-red-900">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center font-black shadow-md shrink-0 border border-white/20">
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <h3 className="font-black text-base text-white">İESÜ Ekosistem Araçları & Modülleri</h3>
+                  <p className="text-[11px] text-red-200 font-medium">Öğrenci Kovanının Tüm Kariyer, Gelişim, Staj ve Kampüs Servisleri (16 Araç)</p>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setShowAllToolsModal(false)}
+                className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer font-bold shrink-0 ml-1"
+                title="Kapat"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body - 16 Categorized Grid Cards */}
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                {[
+                  {
+                    id: 'cvbuilder',
+                    view: 'cvbuilder',
+                    title: 'Akıllı CV & Özgeçmiş Tasarımcısı',
+                    desc: 'ATS uyumlu akıllı CV ve sektörel ön yazı tasarlayın',
+                    icon: <FileText size={18} />,
+                    bg: 'bg-blue-50 text-blue-700 border-blue-100',
+                  },
+                  {
+                    id: 'interview_sim',
+                    view: 'interview_sim',
+                    title: 'Yapay Zeka Mülakat Simülatörü',
+                    desc: 'Gerçekçi mülakat senaryolarıyla anında geri bildirim alın',
+                    icon: <Wand2 size={18} />,
+                    bg: 'bg-purple-50 text-purple-700 border-purple-100',
+                  },
+                  {
+                    id: 'applications',
+                    view: 'applications',
+                    title: 'İş & Staj Başvuru Havuzum',
+                    desc: 'İş ve staj başvurularınızın anlık süreçlerini izleyin',
+                    icon: <ClipboardList size={18} />,
+                    bg: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                  },
+                  {
+                    id: 'smart_certs',
+                    view: 'smart_certs',
+                    title: 'Doğrulanabilir Akıllı Sertifikalar',
+                    desc: 'Akredite dijital sertifikalarınızı görüntüleyin ve paylaşın',
+                    icon: <Award size={18} />,
+                    bg: 'bg-amber-50 text-amber-700 border-amber-100',
+                  },
+                  {
+                    id: 'portfolio',
+                    view: 'portfolio',
+                    title: 'Dijital Proje Portfolyosu',
+                    desc: 'Projelerinizi, kod depolarınızı ve tasarımlarınızı sergileyin',
+                    icon: <LayoutDashboard size={18} />,
+                    bg: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                  },
+                  {
+                    id: 'sem',
+                    view: 'sem',
+                    title: 'Sürekli Eğitim Merkezi (SEM)',
+                    desc: 'Sektörel sertifika programları ve mesleki uzmanlık modülleri',
+                    icon: <GraduationCap size={18} />,
+                    bg: 'bg-rose-50 text-rose-700 border-rose-100',
+                  },
+                  {
+                    id: 'staj',
+                    view: 'staj',
+                    title: 'İsteğe Bağlı Staj Paneli',
+                    desc: 'Resmî staj süreçleri, üniversite sigortası ve yönergeler',
+                    icon: <Briefcase size={18} />,
+                    bg: 'bg-teal-50 text-teal-700 border-teal-100',
+                  },
+                  {
+                    id: 'wallet',
+                    view: 'wallet',
+                    title: 'İESÜ Kampüs Cüzdan',
+                    desc: 'Kovan puanları, yemekhane bakiyesi ve indirim kuponları',
+                    icon: <CreditCard size={18} />,
+                    bg: 'bg-cyan-50 text-cyan-700 border-cyan-100',
+                  },
+                  {
+                    id: 'campus_map',
+                    view: 'campus_map',
+                    title: '3D Metaverse Kampüs Haritası',
+                    desc: 'Canlı yoğunluk haritası, amfiler ve çalışma rotaları',
+                    icon: <Compass size={18} />,
+                    bg: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+                  },
+                  {
+                    id: 'anka_chat',
+                    view: 'anka_chat',
+                    title: 'Anka Yapay Zeka Rehberi',
+                    desc: '7/24 kişiselleştirilmiş akıllı kariyer danışmanlığı',
+                    icon: <Sparkles size={18} />,
+                    bg: 'bg-red-50 text-[#990000] border-red-100',
+                  },
+                  {
+                    id: 'sksdb_lunch',
+                    view: 'sksdb_lunch',
+                    title: 'SKS Yemekhane Günlük Menü',
+                    desc: 'Günün tabldot menüsü, kalori ve besin değerleri',
+                    icon: <Clock size={18} />,
+                    bg: 'bg-amber-50 text-amber-700 border-amber-100',
+                  },
+                  {
+                    id: 'virtual_fair',
+                    view: 'virtual_fair',
+                    title: 'Sanal Kariyer Fuarı',
+                    desc: 'Lider işverenlerin dijital stantları ve canlı sunumlar',
+                    icon: <Globe size={18} />,
+                    bg: 'bg-blue-50 text-blue-700 border-blue-100',
+                  },
+                  {
+                    id: 'hackathon_market',
+                    view: 'hackathon_market',
+                    title: 'Hackathon & Proje Pazarı',
+                    desc: 'Takım kurun, yarışmalara katılın ve projelerinizi fonlayın',
+                    icon: <Zap size={18} />,
+                    bg: 'bg-violet-50 text-violet-700 border-violet-100',
+                  },
+                  {
+                    id: 'rewards',
+                    view: 'rewards',
+                    title: 'Ödül & Başarı Mağazası',
+                    desc: 'Aktivite puanlarınızla üniversite ayrıcalıklarına erişin',
+                    icon: <Star size={18} />,
+                    bg: 'bg-yellow-50 text-yellow-700 border-yellow-100',
+                  },
+                  {
+                    id: 'bidb_helpdesk',
+                    view: 'bidb_helpdesk',
+                    title: 'BİDB Teknik Destek Masası',
+                    desc: 'Kampüs Wi-Fi, e-posta ve bilgi işlem yardım talepleri',
+                    icon: <ShieldCheck size={18} />,
+                    bg: 'bg-slate-50 text-slate-700 border-slate-200',
+                  },
+                  {
+                    id: 'metaverse_library',
+                    view: 'metaverse_library',
+                    title: 'Metaverse Dijital Kütüphane',
+                    desc: 'Akademik veri tabanları, e-kitaplar ve sessiz çalışma odaları',
+                    icon: <BookOpen size={18} />,
+                    bg: 'bg-teal-50 text-teal-700 border-teal-100',
+                  }
+                ].map(tool => (
+                  <button
+                    key={tool.id}
+                    onClick={() => {
+                      setShowAllToolsModal(false);
+                      setView(tool.view);
+                    }}
+                    className="group flex flex-col items-start p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-[#990000]/40 hover:shadow-md transition-all text-left cursor-pointer"
+                  >
+                    <div className={`w-9 h-9 rounded-xl ${tool.bg} border flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs`}>
+                      {tool.icon}
+                    </div>
+                    <span className="text-xs font-bold text-slate-900 group-hover:text-[#990000] transition-colors leading-tight">
+                      {tool.title}
+                    </span>
+                    <span className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed font-medium">
+                      {tool.desc}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+              <span className="text-xs font-bold text-slate-500">
+                Toplam 16 Ekosistem Servisi Aktif
+              </span>
+              <button 
+                onClick={() => setShowAllToolsModal(false)}
+                className="px-5 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Kapat
+              </button>
+            </div>
+
           </div>
         </div>
       )}

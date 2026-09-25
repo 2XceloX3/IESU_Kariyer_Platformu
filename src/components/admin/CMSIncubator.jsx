@@ -342,7 +342,7 @@ export default function CMSIncubator() {
 
       {/* Project Detail Modal */}
       {selectedProject && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
             {/* Modal Header */}
             <div className="p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-[#990000] text-white flex items-center justify-between shrink-0">

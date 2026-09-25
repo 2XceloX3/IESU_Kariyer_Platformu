@@ -181,9 +181,9 @@ export default function CMSMentorshipPool() {
 
       {/* Detail Audit Modal */}
       {selectedReq && (
-        <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 pt-16 pb-24">
+        <div className="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 pt-16 pb-24">
           <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[85vh] relative">
-            <div className="p-5 bg-gradient-to-r from-slate-950 via-[#7A0000] to-slate-900 text-white flex items-center justify-between">
+            <div className="p-5 bg-gradient-to-r from-slate-900 via-[#990000] to-rose-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={18} className="text-amber-400" />
                 <h3 className="font-black text-sm text-white">Mentörlük Talebi Denetim Kartı</h3>

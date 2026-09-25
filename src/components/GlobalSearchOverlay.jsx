@@ -30,7 +30,7 @@ export default function GlobalSearchOverlay({ isOpen, onClose, setView }) {
   const results = INDEX_DATA.filter(item => item.title.toLowerCase().includes(query.toLowerCase()));
 
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm flex items-start justify-center pt-20 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-start justify-center pt-20 p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-100" onClick={e => e.stopPropagation()}>
         <div className="p-4 border-b border-slate-100 flex items-center gap-3">
           <Search size={20} className="text-slate-400" />

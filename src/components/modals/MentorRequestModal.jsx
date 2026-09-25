@@ -100,7 +100,7 @@ export default function MentorRequestModal({ isOpen, onClose, mentor, currentUse
   ];
 
   return (
-    <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
       <div className="bg-white rounded-3xl w-full max-w-xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white flex items-center justify-between shrink-0">

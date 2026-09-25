@@ -965,9 +965,9 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         )}
         {/* YÖNETİCİYE MESAJ GÖNDER POPUP FORM MODAL (CORPORATE MIDNIGHT SAPPHIRE THEME #0A2342) */}
         {showAdminMsgModal && (
-          <div className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
             <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-100 animate-slide-up relative">
-              <div className="bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-900 p-6 text-white relative border-b border-blue-800/60">
+              <div className="bg-gradient-to-r from-slate-900 via-[#0A2342] to-blue-900 p-6 text-white relative border-b border-blue-800/60">
                 <button onClick={() => setShowAdminMsgModal(false)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition text-white cursor-pointer"><X size={16}/></button>
                 <Crown size={32} className="mb-2 text-amber-300"/>
                 <h2 className="text-xl font-black">Kariyer Merkezi Yönetici İletişim Formu</h2>
@@ -1048,7 +1048,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 </div>
                 <div className="pt-2 flex gap-3">
                   <button type="button" onClick={() => setShowAdminMsgModal(false)} className="flex-1 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-200 transition cursor-pointer">İptal</button>
-                  <button type="submit" className="flex-[2] bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-900 hover:from-slate-900 hover:to-blue-800 text-white py-3 rounded-xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 border border-blue-800/60 cursor-pointer">
+                  <button type="submit" className="flex-[2] bg-gradient-to-r from-slate-900 via-[#0A2342] to-blue-900 hover:from-slate-800 hover:to-blue-800 text-white py-3 rounded-xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 border border-blue-800/60 cursor-pointer">
                     <Send size={16} /> Yöneticiye İlet
                   </button>
                 </div>
@@ -1101,11 +1101,11 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
       {/* ─── FİRMA İLAN BAŞVURULARI & ADAY TAKİP HAVUZU MODALI (Z-[9999]) ─── */}
       {showCompanyAppsModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
-          <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-purple-100 overflow-hidden flex flex-col max-h-[85vh] relative">
+        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh] relative">
             
             {/* Modal Header */}
-            <div className="p-5 bg-gradient-to-r from-slate-950 via-purple-950 to-indigo-950 text-white flex items-center justify-between shrink-0 border-b border-purple-800/40">
+            <div className="p-5 bg-gradient-to-r from-slate-900 via-[#0A2342] to-blue-900 text-white flex items-center justify-between shrink-0 border-b border-blue-800/40">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-white/10 text-purple-300 flex items-center justify-center font-black shadow-md shrink-0">
                   <Briefcase size={20} />
@@ -1278,11 +1278,11 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
       {/* ─── KGM AKREDİTE GERÇEK A4 DİJİTAL CV MODALI & İNDİRME / YAZDIRMA (Z-[10000]) ─── */}
       {selectedCandidateCvModal && (
-        <div className="fixed inset-0 z-[10000] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
-          <div className="bg-slate-900 rounded-3xl w-full max-w-4xl shadow-2xl border border-purple-800/40 overflow-hidden flex flex-col max-h-[94vh] relative">
+        <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
+          <div className="bg-slate-900 rounded-3xl w-full max-w-4xl shadow-2xl border border-blue-800/40 overflow-hidden flex flex-col max-h-[94vh] relative">
             
             {/* Top Toolbar (İNDİR, YAZDIR & İLETİŞİM) */}
-            <div className="p-4 bg-gradient-to-r from-slate-950 via-purple-950 to-indigo-950 text-white flex items-center justify-between shrink-0 border-b border-purple-800/40 flex-wrap gap-3">
+            <div className="p-4 bg-gradient-to-r from-slate-900 via-[#0A2342] to-blue-900 text-white flex items-center justify-between shrink-0 border-b border-blue-800/40 flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/30 text-purple-300 flex items-center justify-center font-black shadow-md shrink-0">
                   <FileText size={20} />
@@ -1504,7 +1504,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             </div>
 
             {/* Modal Footer Bar */}
-            <div className="p-4 bg-slate-950 border-t border-purple-900/40 flex items-center justify-between shrink-0">
+            <div className="p-4 bg-slate-900 border-t border-slate-700 flex items-center justify-between shrink-0">
               <span className="text-xs text-purple-200/70 font-medium">A4 Printable Format & Live PDF Exporter</span>
               <button 
                 onClick={() => setSelectedCandidateCvModal(null)}

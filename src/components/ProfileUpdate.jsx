@@ -2370,7 +2370,7 @@ export default function ProfileUpdate({
 
       {/* MODALS - Redesigned to look like macOS Dialogs */}
       {showExpModal && (
-        <div className="fixed inset-0 bg-red-950/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Yeni Deneyim</h3>
@@ -2398,7 +2398,7 @@ export default function ProfileUpdate({
       )}
 
       {showSkillModal && (
-        <div className="fixed inset-0 bg-red-950/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Yetenek Ekle</h3>
@@ -2413,7 +2413,7 @@ export default function ProfileUpdate({
       )}
 
       {showLangModal && (
-        <div className="fixed inset-0 bg-red-950/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Dil Ekle</h3>
@@ -2437,7 +2437,7 @@ export default function ProfileUpdate({
       )}
 
       {showCertModal && (
-        <div className="fixed inset-0 bg-red-950/40 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[10000] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white/90 backdrop-blur-2xl border border-white/50 rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up transform transition-all">
             <div className="px-6 py-5 flex justify-between items-center">
               <h3 className="text-lg font-black text-gray-900">Sertifika Ekle</h3>

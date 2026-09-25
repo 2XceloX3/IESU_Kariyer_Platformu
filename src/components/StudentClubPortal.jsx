@@ -1265,7 +1265,7 @@ export default function StudentClubPortal({
         {/* MODAL 1: SKS VENUE & EQUIPMENT REQUEST MODAL (NO MONEY INPUT)   */}
         {/* ============================================================== */}
         {showVenueModal && (
-          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
+          <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
             <div className="bg-white rounded-3xl max-w-xl w-full shadow-2xl flex flex-col max-h-[88vh] overflow-hidden animate-scale-up border border-slate-100">
               
               {/* Fixed Header */}
@@ -1460,7 +1460,7 @@ export default function StudentClubPortal({
         {/* MODAL 2: DETAILED MEMBERSHIP APPLICATION FORM (TC & STUDENT NO) */}
         {/* ============================================================== */}
         {showApplyMemberModal && (
-          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
+          <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
             <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl flex flex-col max-h-[88vh] overflow-hidden animate-scale-up border border-slate-100">
               
               {/* Fixed Header */}
@@ -1625,7 +1625,7 @@ export default function StudentClubPortal({
         {/* MODAL 3: UNAUTHORIZED ROLE RESTRICTION NOTICE MODAL            */}
         {/* ============================================================== */}
         {showUnauthorizedModal && (
-          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans animate-fade-in">
+          <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans animate-fade-in">
             <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate-scale-up text-center border border-slate-100">
               <div className="w-16 h-16 rounded-3xl bg-red-100 text-[#990000] flex items-center justify-center mx-auto mb-4 border border-red-200">
                 <Lock size={30} />
@@ -1653,7 +1653,7 @@ export default function StudentClubPortal({
         {/* MODAL 4: INSTAGRAM-STYLE NEW POST COMPOSER MODAL               */}
         {/* ============================================================== */}
         {showCreatePostModal && (
-          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
+          <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
             <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl flex flex-col max-h-[88vh] overflow-hidden animate-scale-up border border-slate-100">
               
               {/* Fixed Header */}
@@ -1770,7 +1770,7 @@ export default function StudentClubPortal({
         {/* MODAL 5: INSTAGRAM STORY VIEWER MODAL                          */}
         {/* ============================================================== */}
         {activeStoryModal && (
-          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 font-sans animate-fade-in">
+          <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 font-sans animate-fade-in">
             <div className="relative max-w-sm w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-white/20 aspect-9/16 flex flex-col justify-between">
               
               {/* Progress bar */}
@@ -1811,7 +1811,7 @@ export default function StudentClubPortal({
         {/* MODAL 6: ASSIGN OFFICER ROLE MODAL (PRESIDENT ONLY)            */}
         {/* ============================================================== */}
         {assignRoleModalMember && (
-          <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans animate-fade-in">
+          <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans animate-fade-in">
             <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative animate-scale-up border border-slate-100">
               <h3 className="font-bold text-gray-900 text-base mb-1">Kulüp Yetkisi Ata</h3>
               <p className="text-xs text-slate-500 mb-4">{assignRoleModalMember.name} öğrencisine atanacak resmî kurul görevini seçiniz:</p>
@@ -2078,7 +2078,7 @@ export default function StudentClubPortal({
 
       {/* CREATE NEW CLUB MODAL (EK-1) */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm font-sans animate-fade-in">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm font-sans animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[88vh] overflow-hidden animate-scale-up border border-slate-100">
             
             {/* Fixed Header */}

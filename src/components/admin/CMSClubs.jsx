@@ -907,7 +907,7 @@ export default function CMSClubs({
               </div>
 
               <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
-                <span className="font-bold text-emerald-950 block mb-2">SKS Bütçe Durumu</span>
+                <span className="font-bold text-emerald-900 block mb-2">SKS Bütçe Durumu</span>
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
                     <span className="text-[10px] text-slate-500 block">Yıllık Tahsis</span>
@@ -997,7 +997,7 @@ export default function CMSClubs({
 
               <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-emerald-950 block">SKS Tahsis Edilen Bütçe</span>
+                  <span className="font-bold text-emerald-900 block">SKS Tahsis Edilen Bütçe</span>
                   <span className="text-[11px] text-emerald-800">Birim tarafından karşılanacak resmi meblağ</span>
                 </div>
                 <span className="font-black text-emerald-700 text-base">{selectedAppForDetail.assignedBudget || selectedAppForDetail.amount || '0 TL'}</span>

@@ -42,20 +42,26 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col font-sans selection:bg-orange-500/30">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans selection:bg-red-500/20">
       
       {/* Header */}
-      <header className="h-16 bg-red-950/80 backdrop-blur-xl border-b border-red-900 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
+      <header className="h-16 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-xs flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-red-900 text-slate-300 hover:bg-slate-700 transition"
+            className="w-10 h-10 rounded-full bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-[#990000] border border-slate-200 transition flex items-center justify-center cursor-pointer shadow-xs"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-2">
-            <Map className="text-teal-400" size={24} />
-            <h1 className="font-black tracking-tight text-white">İESÜ Metaverse Kampüs</h1>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-red-50 text-[#990000] border border-red-100 flex items-center justify-center shadow-xs">
+              <Map size={20} />
+            </div>
+            <div>
+              <h1 className="font-black text-sm sm:text-base tracking-tight text-slate-900 leading-none">İESÜ Metaverse Kampüs</h1>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">İnteraktif 3D İstasyon & Yoğunluk Haritası</span>
+            </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -68,23 +74,23 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
         <div className="w-full xl:w-[350px] shrink-0 flex flex-col gap-6">
           
           {/* Header Info */}
-          <div className="bg-red-950 border border-red-900 rounded-3xl p-6 shadow-xl">
-            <h2 className="text-2xl font-black text-white mb-2 tracking-tight">Canlı Yoğunluk Haritası</h2>
-            <p className="text-slate-400 text-sm leading-relaxed">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs">
+            <h2 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Canlı Yoğunluk Haritası</h2>
+            <p className="text-slate-600 text-sm leading-relaxed">
               Kampüsteki tüm istasyonların doluluk durumunu, gürültü seviyelerini ve çalışma konforunu gerçek zamanlı izleyin.
             </p>
             
             <div className="flex flex-col gap-3 mt-5">
               <button 
                 onClick={handleSmartRoute}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white rounded-2xl text-xs font-black shadow-lg hover:shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-gradient-to-r from-red-700 via-[#990000] to-rose-700 hover:opacity-95 text-white rounded-2xl text-xs font-black shadow-md shadow-red-950/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Navigation size={14} className="animate-bounce" /> Sakin Çalışma Rotası Çiz
               </button>
               
               <button 
                 onClick={resetMap}
-                className="w-full py-2.5 bg-red-900 hover:bg-slate-700 text-slate-300 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 border border-slate-700/50"
+                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 border border-slate-200 cursor-pointer"
               >
                 <RotateCcw size={14} /> Haritayı Sıfırla
               </button>
@@ -93,12 +99,12 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
 
           {/* Density Alert Notification */}
           {showDensityAlert && (
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-3xl p-5 text-amber-200 relative overflow-hidden">
+            <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 text-amber-900 relative overflow-hidden shadow-xs">
               <div className="flex gap-3">
-                <AlertTriangle size={20} className="shrink-0 text-amber-400 mt-0.5" />
+                <AlertTriangle size={20} className="shrink-0 text-amber-600 mt-0.5" />
                 <div>
-                  <h4 className="font-bold text-xs uppercase tracking-wider mb-1">Yoğunluk Uyarısı</h4>
-                  <p className="text-xs text-amber-300/90 leading-relaxed">
+                  <h4 className="font-bold text-xs uppercase tracking-wider mb-1 text-amber-900">Yoğunluk Uyarısı</h4>
+                  <p className="text-xs text-amber-800 leading-relaxed font-medium">
                     Merkez Kütüphane şu an vize döneminden dolayı maksimum kapasiteye (%85) yaklaşmış durumda.
                   </p>
                 </div>
@@ -107,25 +113,25 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
           )}
 
           {/* List of Stations */}
-          <div className="bg-red-950 border border-red-900 rounded-3xl p-6 shadow-xl flex-grow">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex-grow">
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-              <Activity size={14} className="text-teal-400" /> İstasyon Durumları
+              <Activity size={14} className="text-[#990000]" /> İstasyon Durumları
             </h3>
             <div className="space-y-3">
               {LOCATIONS.map(loc => (
                 <div 
                   key={loc.id}
                   onClick={() => setSelectedLocation(loc)}
-                  className={`p-3.5 rounded-2xl border transition cursor-pointer flex items-center gap-3 ${selectedLocation?.id === loc.id ? 'bg-orange-500/10 border-orange-500/50 text-white' : 'bg-red-900/40 border-red-900/60 hover:bg-red-900 text-slate-300'}`}
+                  className={`p-3.5 rounded-2xl border transition cursor-pointer flex items-center gap-3 ${selectedLocation?.id === loc.id ? 'bg-red-50 border-red-300 text-slate-900 shadow-xs' : 'bg-slate-50/80 border-slate-200/80 hover:bg-slate-100/80 text-slate-700'}`}
                 >
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 ${loc.type === 'study' ? 'bg-red-500' : loc.type === 'academic' ? 'bg-red-500' : loc.type === 'social' ? 'bg-amber-500' : loc.type === 'tech' ? 'bg-rose-500' : 'bg-emerald-500'}`}>
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 shadow-xs ${loc.type === 'study' ? 'bg-red-600' : loc.type === 'academic' ? 'bg-blue-600' : loc.type === 'social' ? 'bg-amber-500' : loc.type === 'tech' ? 'bg-purple-600' : 'bg-emerald-600'}`}>
                     {loc.icon}
                   </div>
                   <div className="flex-grow min-w-0">
-                    <h4 className="font-bold text-xs truncate">{loc.name}</h4>
-                    <span className="text-[10px] font-bold text-slate-400">{loc.capacity}</span>
+                    <h4 className="font-bold text-xs truncate text-slate-900">{loc.name}</h4>
+                    <span className="text-[10px] font-bold text-slate-500">{loc.capacity}</span>
                   </div>
-                  <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded ${loc.status.includes('Yoğun') ? 'bg-red-500/10 text-red-400' : loc.status.includes('Orta') ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                  <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded ${loc.status.includes('Yoğun') ? 'bg-red-100 text-red-700' : loc.status.includes('Orta') ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
                     {loc.status}
                   </span>
                 </div>
@@ -135,41 +141,41 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
         </div>
 
         {/* Right Side: Interactive 2.5D Map */}
-        <div className="flex-grow bg-red-950 border border-red-900 rounded-3xl overflow-hidden relative flex flex-col min-h-[550px] shadow-2xl p-6">
+        <div className="flex-grow bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden relative flex flex-col min-h-[550px] shadow-2xl p-6">
           
           {/* Map Controls */}
           <div className="absolute bottom-6 left-6 z-20 flex gap-2">
             <button 
               onClick={() => setPerspectiveX(prev => Math.min(80, prev + 5))}
-              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-slate-850/90 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg cursor-pointer"
               title="Yukarı Eğ"
             >
               ▲
             </button>
             <button 
               onClick={() => setPerspectiveX(prev => Math.max(30, prev - 5))}
-              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-slate-850/90 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg cursor-pointer"
               title="Aşağı Eğ"
             >
               ▼
             </button>
             <button 
               onClick={() => setPerspectiveZ(prev => prev - 15)}
-              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-slate-850/90 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg cursor-pointer"
               title="Sola Döndür"
             >
               ◀
             </button>
             <button 
               onClick={() => setPerspectiveZ(prev => prev + 15)}
-              className="w-10 h-10 rounded-xl bg-red-900 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg"
+              className="w-10 h-10 rounded-xl bg-slate-850/90 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-xs border border-slate-700 shadow-lg cursor-pointer"
               title="Sağa Döndür"
             >
               ▶
             </button>
           </div>
 
-          <div className="absolute top-6 right-6 z-20 flex items-center gap-2 bg-red-900/80 backdrop-blur border border-slate-700 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-teal-400">
+          <div className="absolute top-6 right-6 z-20 flex items-center gap-2 bg-slate-900/80 backdrop-blur border border-slate-700 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-teal-400">
             <div className="w-2 h-2 rounded-full bg-teal-400 animate-ping"></div> Live WebGL Canvas
           </div>
 
@@ -178,7 +184,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
             
             {/* Grid base */}
             <div 
-              className="relative w-full max-w-4xl aspect-[4/3] bg-gradient-to-br from-red-900 to-slate-950 rounded-3xl border-4 border-red-900 shadow-[0_30px_60px_rgba(0,0,0,0.8)] transition-all duration-700"
+              className="relative w-full max-w-4xl aspect-[4/3] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 rounded-3xl border-4 border-slate-800 shadow-[0_30px_60px_rgba(0,0,0,0.8)] transition-all duration-700"
               style={{ 
                 transform: `rotateX(${perspectiveX}deg) rotateZ(${perspectiveZ}deg)`, 
                 transformStyle: 'preserve-3d', 
@@ -272,38 +278,38 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                 initial={{ opacity: 0, y: 30, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.95 }}
-                className="absolute top-6 left-6 right-6 lg:right-auto lg:w-96 bg-red-950/95 backdrop-blur-xl border border-red-900 p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-20"
+                className="absolute top-6 left-6 right-6 lg:right-auto lg:w-96 bg-white/95 backdrop-blur-xl border border-slate-200 p-6 rounded-3xl shadow-2xl z-20 text-slate-800"
               >
                 <div className="flex justify-between items-start gap-4 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${selectedLocation.type === 'study' ? 'bg-red-500' : selectedLocation.type === 'academic' ? 'bg-red-500' : selectedLocation.type === 'social' ? 'bg-amber-500' : selectedLocation.type === 'tech' ? 'bg-rose-500' : 'bg-emerald-500'}`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-xs ${selectedLocation.type === 'study' ? 'bg-red-600' : selectedLocation.type === 'academic' ? 'bg-blue-600' : selectedLocation.type === 'social' ? 'bg-amber-500' : selectedLocation.type === 'tech' ? 'bg-purple-600' : 'bg-emerald-600'}`}>
                       {selectedLocation.icon}
                     </div>
                     <div>
-                      <h3 className="font-black text-md text-white">{selectedLocation.name}</h3>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{selectedLocation.type}</span>
+                      <h3 className="font-black text-base text-slate-900 leading-tight">{selectedLocation.name}</h3>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{selectedLocation.type}</span>
                     </div>
                   </div>
                   <button 
                     onClick={() => setSelectedLocation(null)}
-                    className="p-1 text-slate-500 hover:text-slate-300 hover:bg-red-900 rounded-lg transition"
+                    className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition cursor-pointer"
                   >
                     ✕
                   </button>
                 </div>
 
-                <p className="text-slate-400 text-xs leading-relaxed mb-5 font-semibold">
+                <p className="text-slate-600 text-xs leading-relaxed mb-5 font-medium">
                   {selectedLocation.description}
                 </p>
 
-                <div className="grid grid-cols-2 gap-3 mb-5 text-xs font-bold text-slate-300">
-                  <div className="bg-red-900/60 p-3 rounded-2xl border border-red-900">
-                    <span className="block text-[9px] text-slate-500 uppercase tracking-widest mb-1">Doluluk Durumu</span>
-                    <span className="text-white font-extrabold">{selectedLocation.status}</span>
+                <div className="grid grid-cols-2 gap-3 mb-5 text-xs font-bold text-slate-700">
+                  <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/90 shadow-xs">
+                    <span className="block text-[9px] text-slate-400 uppercase tracking-widest mb-1">Doluluk Durumu</span>
+                    <span className="text-slate-900 font-extrabold">{selectedLocation.status}</span>
                   </div>
-                  <div className="bg-red-900/60 p-3 rounded-2xl border border-red-900">
-                    <span className="block text-[9px] text-slate-500 uppercase tracking-widest mb-1">Gürültü Düzeyi</span>
-                    <span className="text-white font-extrabold">{selectedLocation.quietLevel}</span>
+                  <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/90 shadow-xs">
+                    <span className="block text-[9px] text-slate-400 uppercase tracking-widest mb-1">Gürültü Düzeyi</span>
+                    <span className="text-slate-900 font-extrabold">{selectedLocation.quietLevel}</span>
                   </div>
                 </div>
 
@@ -311,7 +317,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                   onClick={() => {
                     window.toast && window.toast.info(`📍 ${selectedLocation.name} için sanal kapı açılıyor...`);
                   }}
-                  className="w-full py-3 bg-red-900 hover:bg-slate-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition"
+                  className="w-full py-3 bg-gradient-to-r from-red-700 via-[#990000] to-rose-700 hover:opacity-95 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-md shadow-red-950/10 cursor-pointer"
                 >
                   Metaverse Giriş Yap
                 </button>

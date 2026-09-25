@@ -665,7 +665,7 @@ export default function CMSCareerCounseling() {
 
       {/* ── CAREER TEST INSPECTION DETAIL MODAL ── */}
       {selectedTestDetail && (
-        <div className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+        <div className="fixed inset-0 z-[99999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
           <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] relative">
             
             {/* Modal Header */}
@@ -798,7 +798,7 @@ export default function CMSCareerCounseling() {
 
       {/* ── STAFF EVALUATION MODAL ── */}
       {selectedAppt && (
-        <div className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+        <div className="fixed inset-0 z-[99999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
           <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] relative">
             
             {/* Modal Header */}
