@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { 
   Building2, Users, FileText, CheckCircle, XCircle, Clock, 
   Search, Plus, Filter, Download, ArrowUpRight, ShieldCheck, 
-  Wallet, Trophy, ChevronRight, X, Eye, Edit3, Trash2, Calendar, MapPin
+  Wallet, Trophy, ChevronRight, X, Eye, Edit3, Trash2, Calendar, MapPin,
+  Check, UserCheck, Shield, Sparkles, AlertCircle
 } from 'lucide-react';
 import PanelHeader from './PanelHeader';
 import { toast } from '../shared/Toast';
@@ -15,11 +16,16 @@ export default function CMSClubs({
   setClubApplications, 
   currentUser 
 }) {
-  const [activeTab, setActiveTab] = useState('active_clubs'); // 'active_clubs' | 'new_club_apps' | 'budget_apps'
+  const [activeTab, setActiveTab] = useState('active_clubs'); // 'active_clubs' | 'new_club_apps' | 'budget_apps' | 'club_members'
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedClubForView, setSelectedClubForView] = useState(null);
   const [selectedAppForDetail, setSelectedAppForDetail] = useState(null);
+  
+  // Member monitoring filters
+  const [memberClubFilter, setMemberClubFilter] = useState('all');
+  const [memberRoleFilter, setMemberRoleFilter] = useState('all');
+  const [memberSearchQuery, setMemberSearchQuery] = useState('');
 
   // Fallback to rich sample data if store pools are empty
   const allClubs = useMemo(() => (clubs && clubs.length > 0) ? clubs : initialClubs, [clubs]);
@@ -29,15 +35,48 @@ export default function CMSClubs({
   const newClubApps = useMemo(() => allApplications.filter(a => a.type === 'new_club' || !a.type), [allApplications]);
   const budgetApps = useMemo(() => allApplications.filter(a => a.type === 'event_budget'), [allApplications]);
 
+  // Aggregated all club members for SKS inspection table
+  const allMembersFlat = useMemo(() => {
+    const list = [];
+    allClubs.forEach(club => {
+      (club.members || []).forEach(member => {
+        list.push({
+          ...member,
+          clubId: club.id,
+          clubName: club.name,
+          clubCategory: club.category,
+          clubPresident: club.president?.name || 'Belirtilmedi'
+        });
+      });
+    });
+    return list;
+  }, [allClubs]);
+
+  // Filtered members for Tab 4
+  const filteredMembers = useMemo(() => {
+    return allMembersFlat.filter(m => {
+      const matchClub = memberClubFilter === 'all' || m.clubId === memberClubFilter || m.clubName === memberClubFilter;
+      const matchRole = memberRoleFilter === 'all' || (m.role && m.role.toLowerCase().includes(memberRoleFilter.toLowerCase()));
+      const q = memberSearchQuery.toLowerCase();
+      const matchSearch = !memberSearchQuery || 
+        (m.name && m.name.toLowerCase().includes(q)) ||
+        (m.studentNo && m.studentNo.includes(q)) ||
+        (m.tcKimlik && m.tcKimlik.includes(q)) ||
+        (m.department && m.department.toLowerCase().includes(q)) ||
+        (m.email && m.email.toLowerCase().includes(q));
+      return matchClub && matchRole && matchSearch;
+    });
+  }, [allMembersFlat, memberClubFilter, memberRoleFilter, memberSearchQuery]);
+
   // Summary Metrics
   const metrics = useMemo(() => {
     const totalClubs = allClubs.length;
-    const totalMembers = allClubs.reduce((acc, c) => acc + (c.memberCount || 0), 0);
+    const totalMembers = allMembersFlat.length || allClubs.reduce((acc, c) => acc + (c.memberCount || 0), 0);
     const pendingClubApps = newClubApps.filter(a => a.status === 'pending').length;
     const pendingBudgetApps = budgetApps.filter(a => a.status === 'pending').length;
     const totalAllocatedBudget = allClubs.reduce((acc, c) => acc + (c.budget?.allocated || 0), 0);
     return { totalClubs, totalMembers, pendingClubApps, pendingBudgetApps, totalAllocatedBudget };
-  }, [allClubs, newClubApps, budgetApps]);
+  }, [allClubs, allMembersFlat, newClubApps, budgetApps]);
 
   // Categories list
   const categories = useMemo(() => {
@@ -70,9 +109,37 @@ export default function CMSClubs({
     return budgetApps.filter(a => 
       a.club?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.eventName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      a.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.venue?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [budgetApps, searchQuery]);
+
+  // ACTION: Export Members CSV
+  const handleExportMembersCSV = () => {
+    const headers = ['Ogrenci No', 'TC Kimlik No', 'Ad Soyad', 'Kulup', 'Kulup Rolu', 'Bolum', 'Sinif', 'Telefon', 'E-Posta', 'Kayit Tarihi', 'Durum'];
+    const rows = filteredMembers.map(m => [
+      m.studentNo || '',
+      m.tcKimlik || '',
+      m.name || '',
+      m.clubName || '',
+      m.role || 'Aktif Üye',
+      m.department || '',
+      m.grade || '',
+      m.phone || '',
+      m.email || '',
+      m.joinedDate || '',
+      m.status || 'Aktif'
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `IESU_SKS_Kulup_Uyeleri_Listesi_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Kulüp üye listesi resmî CSV formatında dışa aktarıldı!');
+  };
 
   // ACTION: Approve New Club Application
   const handleApproveClubApp = (app) => {
@@ -86,6 +153,8 @@ export default function CMSClubs({
       president: {
         id: app.userId || 'STU-NEW',
         name: app.applicant || 'Kurucu Öğrenci',
+        studentNo: '2024010999',
+        tcKimlik: '11111111111',
         department: 'Öğrenci',
         year: '2. Sınıf'
       },
@@ -105,13 +174,26 @@ export default function CMSClubs({
         { id: 'BM-1', name: app.applicant || 'Kurucu Başkan', role: 'Kulüp Başkanı', department: 'Öğrenci' },
         { id: 'BM-2', name: app.advisorName || 'Akademik Danışman', role: 'Danışman Öğretim Üyesi', department: 'Akademik' }
       ],
+      authorizedOfficers: [
+        { id: app.userId || 'STU-NEW', name: app.applicant || 'Kurucu Başkan', role: 'Kulüp Başkanı' }
+      ],
       events: [],
       announcements: [
         { id: 'ANN-1', title: 'Kulübümüz SKS Tarafından Resmen Onaylandı!', date: new Date().toLocaleDateString('tr-TR'), content: 'Yeni üyelerimizi aramızda görmekten mutluluk duyarız.' }
       ],
       budgetRequests: [],
       members: [
-        { id: app.userId || 'STU-NEW', name: app.applicant || 'Kurucu Öğrenci', role: 'Kurucu Başkan', joinedDate: new Date().toLocaleDateString('tr-TR') }
+        { 
+          id: app.userId || 'STU-NEW', 
+          studentNo: '2024010999', 
+          tcKimlik: '11111111111', 
+          name: app.applicant || 'Kurucu Öğrenci', 
+          department: 'Öğrenci', 
+          grade: '2. Sınıf', 
+          role: 'Kurucu Başkan', 
+          joinedDate: new Date().toLocaleDateString('tr-TR'),
+          status: 'Aktif'
+        }
       ]
     };
 
@@ -126,26 +208,41 @@ export default function CMSClubs({
 
   // ACTION: Reject New Club Application
   const handleRejectClubApp = (app) => {
+    const reason = prompt('Kulüp kurulum ret gerekçesini giriniz:', 'Yönerge şartlarına uygun tüzük veya danışman onayı eksik.');
+    if (reason === null) return;
+
     if (setClubApplications) {
-      setClubApplications(allApplications.map(a => a.id === app.id ? { ...a, status: 'rejected' } : a));
+      setClubApplications(allApplications.map(a => a.id === app.id ? { ...a, status: 'rejected', rejectionReason: reason } : a));
     }
-    toast.info(`"${app.name}" başvurusu reddedildi.`);
+    toast.error('Kulüp kurulum başvurusu reddedildi.');
   };
 
-  // ACTION: Approve Budget / Event Application
+  // ACTION: Approve Venue & Event Application (SKS unit sets formal budget allocation)
   const handleApproveBudgetApp = (app) => {
+    const targetClub = allClubs.find(c => c.name === app.club || c.id === app.clubId);
+    const suggestedAmount = prompt(
+      `"${app.eventName || app.title}" etkinliği için SKS tarafından tahsis edilecek bütçe tutarı (TL):`, 
+      app.assignedBudget ? parseInt(app.assignedBudget) : (app.amount ? parseInt(app.amount) : 10000)
+    );
+    if (suggestedAmount === null) return;
+    const finalAllocatedBudget = parseInt(suggestedAmount) || 0;
+
     if (setClubApplications) {
-      setClubApplications(allApplications.map(a => a.id === app.id ? { ...a, status: 'approved', approvalNote: 'SKS Daire Başkanlığı tarafından onaylandı.' } : a));
+      setClubApplications(allApplications.map(a => a.id === app.id ? { 
+        ...a, 
+        status: 'approved',
+        assignedBudget: `${finalAllocatedBudget.toLocaleString('tr-TR')} TL`,
+        approvalNote: `SKS tarafından salon tahsisi ve ${finalAllocatedBudget.toLocaleString('tr-TR')} TL bütçe onaylandı.`
+      } : a));
     }
     
     // Deduct / update in related club if exists
     if (setClubs && app.club) {
       setClubs(allClubs.map(c => {
         if (c.name === app.club || c.id === app.clubId) {
-          const reqAmount = parseInt(String(app.amount).replace(/[^0-9]/g, '')) || 0;
           const currentSpent = c.budget?.spent || 0;
           const currentAllocated = c.budget?.allocated || 45000;
-          const newSpent = currentSpent + reqAmount;
+          const newSpent = currentSpent + finalAllocatedBudget;
           return {
             ...c,
             budget: {
@@ -153,18 +250,22 @@ export default function CMSClubs({
               spent: newSpent,
               remaining: Math.max(0, currentAllocated - newSpent)
             },
-            budgetRequests: (c.budgetRequests || []).map(r => r.id === app.id ? { ...r, status: 'approved', approvalNote: 'SKS Onayladı' } : r)
+            budgetRequests: (c.budgetRequests || []).map(r => r.id === app.id ? { 
+              ...r, 
+              status: 'approved', 
+              approvalNote: `SKS Onayladı (${finalAllocatedBudget.toLocaleString('tr-TR')} TL tahsis)` 
+            } : r)
           };
         }
         return c;
       }));
     }
-    toast.success(`"${app.eventName || app.title || 'Etkinlik'}" için bütçe talebi onaylandı!`);
+    toast.success(`"${app.eventName || app.title || 'Etkinlik'}" için mekan tahsisi ve ${finalAllocatedBudget.toLocaleString('tr-TR')} TL bütçe onaylandı!`);
   };
 
-  // ACTION: Reject Budget Application
+  // ACTION: Reject Venue & Event Application
   const handleRejectBudgetApp = (app) => {
-    const reason = prompt('Ret gerekçesini giriniz:', 'Bütçe limitleri veya etkinlik takvimi çakışması.');
+    const reason = prompt('Ret gerekçesini giriniz:', 'Salon takvimi doluluğu veya uygunluk kriteri eksikliği.');
     if (reason === null) return;
 
     if (setClubApplications) {
@@ -181,7 +282,7 @@ export default function CMSClubs({
         return c;
       }));
     }
-    toast.error('Bütçe talebi reddedildi.');
+    toast.error('Mekan & tahsis talebi reddedildi.');
   };
 
   // ACTION: Transfer Club President
@@ -225,10 +326,10 @@ export default function CMSClubs({
   };
 
   return (
-    <div className="w-full bg-white rounded-2xl p-6 lg:p-8 border border-slate-200 shadow-xl shadow-slate-200/50 animate-fade-in relative">
+    <div className="w-full bg-white rounded-2xl p-6 lg:p-8 border border-slate-200 shadow-xl shadow-slate-200/50 animate-fade-in relative font-sans">
       <PanelHeader 
-        title="Öğrenci Kulüpleri ve Bütçe Yönetimi (SKS)" 
-        sub="Üniversitemiz bünyesindeki tüm öğrenci kulüpleri, yeni kurulum başvuruları (EK-1) ve etkinlik/bütçe onay havuzu."
+        title="Öğrenci Kulüpleri, SKS Mekan Tahsisi & Kadro İzleme" 
+        sub="Tüm aktif kulüpler, tüzükler, üye listeleri, EK-1 kurulum başvuruları ve SKS yer/bütçe onay havuzu."
       />
 
       {/* 4 SUMMARY METRIC CARDS */}
@@ -248,7 +349,7 @@ export default function CMSClubs({
             <Users className="text-emerald-600" size={20} />
           </div>
           <h3 className="text-2xl font-black text-gray-900">{metrics.totalMembers.toLocaleString('tr-TR')}</h3>
-          <p className="text-xs text-slate-500 mt-1">Aktif Öğrenci Üyeliği</p>
+          <p className="text-xs text-slate-500 mt-1">TC & No Doğrulanmış Kayıt</p>
         </div>
 
         <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
@@ -257,25 +358,25 @@ export default function CMSClubs({
             <FileText className="text-amber-500" size={20} />
           </div>
           <h3 className="text-2xl font-black text-gray-900">{metrics.pendingClubApps} Bekleyen</h3>
-          <p className="text-xs text-slate-500 mt-1">Değerlendirme Aşamasında</p>
+          <p className="text-xs text-slate-500 mt-1">EK-1 Değerlendirme Süreci</p>
         </div>
 
         <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Etkinlik & Bütçe Havuzu</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Yer & Bütçe Havuzu</span>
             <Wallet className="text-blue-600" size={20} />
           </div>
           <h3 className="text-2xl font-black text-gray-900">{metrics.pendingBudgetApps} Talep</h3>
-          <p className="text-xs text-slate-500 mt-1">Onay Bekleyen Harcama</p>
+          <p className="text-xs text-slate-500 mt-1">Mekan & Donanım Onayı</p>
         </div>
       </div>
 
-      {/* 3 MAIN TABLE TABS */}
+      {/* 4 MAIN TABLE TABS */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6 border-b border-slate-200 pb-4">
         <div className="flex space-x-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto hide-scrollbar">
           <button
             onClick={() => setActiveTab('active_clubs')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === 'active_clubs' 
                 ? 'bg-[#990000] text-white shadow-xs' 
                 : 'text-slate-600 hover:text-slate-900'
@@ -286,17 +387,29 @@ export default function CMSClubs({
           </button>
 
           <button
+            onClick={() => setActiveTab('club_members')}
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              activeTab === 'club_members' 
+                ? 'bg-[#990000] text-white shadow-xs' 
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Users size={16} />
+            <span>👥 Kulüp Kadroları & Üye İzleme ({allMembersFlat.length})</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('new_club_apps')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === 'new_club_apps' 
                 ? 'bg-[#990000] text-white shadow-xs' 
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <FileText size={16} />
-            <span>Kurulum Başvuruları (EK-1)</span>
+            <span>EK-1 Kurulum ({newClubApps.length})</span>
             {metrics.pendingClubApps > 0 && (
-              <span className="bg-amber-400 text-amber-950 text-[10px] font-black px-2 py-0.5 rounded-full">
+              <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500 text-white font-black">
                 {metrics.pendingClubApps}
               </span>
             )}
@@ -304,52 +417,41 @@ export default function CMSClubs({
 
           <button
             onClick={() => setActiveTab('budget_apps')}
-            className={`px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
               activeTab === 'budget_apps' 
                 ? 'bg-[#990000] text-white shadow-xs' 
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <Wallet size={16} />
-            <span>Etkinlik & Bütçe Onay Havuzu</span>
+            <span>SKS Mekan & Bütçe Onay ({budgetApps.length})</span>
             {metrics.pendingBudgetApps > 0 && (
-              <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+              <span className="px-2 py-0.5 rounded-full text-[10px] bg-blue-600 text-white font-black">
                 {metrics.pendingBudgetApps}
               </span>
             )}
           </button>
         </div>
 
-        {/* Search & Category Filter */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input
-              type="text"
-              placeholder="Kulüp veya yetkili ara..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#990000] w-48 sm:w-60"
-            />
+        {/* Global Search Bar */}
+        {activeTab !== 'club_members' && (
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Kulüp veya danışman ara..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:border-[#990000]"
+              />
+            </div>
           </div>
-
-          {activeTab === 'active_clubs' && (
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none"
-            >
-              <option value="all">Tüm Kategoriler</option>
-              {categories.filter(c => c !== 'all').map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          )}
-        </div>
+        )}
       </div>
 
       {/* ======================================================== */}
-      {/* TAB 1: ACTIVE CLUBS & BUDGET TABLE */}
+      {/* TAB 1: ACTIVE CLUBS & OFFICIAL SKS BUDGET MANAGEMENT     */}
       {/* ======================================================== */}
       {activeTab === 'active_clubs' && (
         <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs">
@@ -359,8 +461,8 @@ export default function CMSClubs({
                 <th className="py-3.5 px-4">Kulüp Adı & Kategori</th>
                 <th className="py-3.5 px-4">Danışman Öğretim Üyesi</th>
                 <th className="py-3.5 px-4">Kulüp Başkanı</th>
-                <th className="py-3.5 px-4 text-center">Üye Sayısı</th>
-                <th className="py-3.5 px-4">Yıllık Bütçe / Kalan</th>
+                <th className="py-3.5 px-4 text-center">Kayıtlı Üye</th>
+                <th className="py-3.5 px-4">SKS Yıllık Bütçe / Kalan</th>
                 <th className="py-3.5 px-4 text-center">Durum</th>
                 <th className="py-3.5 px-4 text-right">İşlemler</th>
               </tr>
@@ -390,7 +492,7 @@ export default function CMSClubs({
                   </td>
                   <td className="py-3.5 px-4 text-center font-black text-gray-900">
                     <span className="bg-slate-100 px-2.5 py-1 rounded-full text-xs">
-                      {club.memberCount || 0}
+                      {club.members?.length || club.memberCount || 0}
                     </span>
                   </td>
                   <td className="py-3.5 px-4">
@@ -398,7 +500,7 @@ export default function CMSClubs({
                       {(club.budget?.remaining || 25000).toLocaleString('tr-TR')} ₺ Kalan
                     </div>
                     <div className="text-[11px] text-slate-400">
-                      Toplam: {(club.budget?.allocated || 45000).toLocaleString('tr-TR')} ₺
+                      Tahsis: {(club.budget?.allocated || 45000).toLocaleString('tr-TR')} ₺ • Harcanan: {(club.budget?.spent || 0).toLocaleString('tr-TR')} ₺
                     </div>
                   </td>
                   <td className="py-3.5 px-4 text-center">
@@ -410,21 +512,21 @@ export default function CMSClubs({
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setSelectedClubForView(club)}
-                        className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition text-[11px] flex items-center gap-1"
+                        className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition text-[11px] flex items-center gap-1 cursor-pointer"
                         title="Kulüp Detaylarını İncele"
                       >
                         <Eye size={13} /> İncele
                       </button>
                       <button
                         onClick={() => handleUpdateBudget(club)}
-                        className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold rounded-xl transition text-[11px] flex items-center gap-1 border border-emerald-200"
+                        className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold rounded-xl transition text-[11px] flex items-center gap-1 border border-emerald-200 cursor-pointer"
                         title="Bütçeyi Düzenle"
                       >
-                        <Wallet size={13} /> Bütçe
+                        <Wallet size={13} /> SKS Bütçe
                       </button>
                       <button
                         onClick={() => handleTransferPresident(club)}
-                        className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded-xl transition text-[11px] flex items-center gap-1 border border-amber-200"
+                        className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold rounded-xl transition text-[11px] flex items-center gap-1 border border-amber-200 cursor-pointer"
                         title="Kulüp Başkanlığını Devret"
                       >
                         Devret
@@ -446,124 +548,41 @@ export default function CMSClubs({
       )}
 
       {/* ======================================================== */}
-      {/* TAB 2: NEW CLUB APPLICATIONS TABLE (EK-1) */}
+      {/* TAB 2: NEW CLUB APPLICATIONS TABLE (EK-1)                */}
       {/* ======================================================== */}
       {activeTab === 'new_club_apps' && (
         <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                <th className="py-3.5 px-4">Başvuru Kodu / Tarih</th>
-                <th className="py-3.5 px-4">Önerilen Kulüp Adı</th>
+                <th className="py-3.5 px-4">Kulüp Başvuru Adı</th>
                 <th className="py-3.5 px-4">Kurucu Öğrenci</th>
-                <th className="py-3.5 px-4">Danışman Öğretim Üyesi</th>
-                <th className="py-3.5 px-4">Kuruluş Amacı</th>
+                <th className="py-3.5 px-4">Önerilen Danışman</th>
+                <th className="py-3.5 px-4">Kategori & Amaç</th>
+                <th className="py-3.5 px-4">Başvuru Tarihi</th>
                 <th className="py-3.5 px-4 text-center">Durum</th>
-                <th className="py-3.5 px-4 text-right">İşlemler</th>
+                <th className="py-3.5 px-4 text-right">Karar İşlemleri</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
               {filteredNewClubApps.map(app => (
                 <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3.5 px-4">
-                    <span className="font-mono font-bold text-gray-900 block">{app.id}</span>
-                    <span className="text-[11px] text-slate-400">{app.date}</span>
-                  </td>
-                  <td className="py-3.5 px-4 font-bold text-gray-900">
-                    <div>{app.name}</div>
-                    <span className="text-[10px] text-slate-400 font-medium">{app.category || 'Bilim ve Teknoloji'}</span>
+                  <td className="py-3.5 px-4 font-bold text-gray-900 text-sm">
+                    {app.name}
                   </td>
                   <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-900">{app.applicant || 'Öğrenci'}</div>
-                    <span className="text-[11px] text-slate-400 font-mono">ID: {app.userId || '—'}</span>
+                    <div className="font-bold text-slate-900">{app.applicant}</div>
+                    <div className="text-[11px] text-slate-400">No: {app.userId || 'STU-NEW'}</div>
                   </td>
-                  <td className="py-3.5 px-4 text-slate-800 font-bold">
-                    {app.advisorName || 'Atanmadı'}
+                  <td className="py-3.5 px-4 font-bold text-slate-800">
+                    {app.advisorName || 'Belirtilmedi'}
                   </td>
                   <td className="py-3.5 px-4 max-w-xs">
-                    <p className="text-xs text-slate-600 line-clamp-2">{app.purpose || app.description || '—'}</p>
+                    <span className="font-bold text-[#990000] text-[10px] block uppercase">{app.category}</span>
+                    <p className="text-slate-500 line-clamp-2 text-[11px]">{app.purpose || app.description}</p>
                   </td>
-                  <td className="py-3.5 px-4 text-center">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                      app.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
-                      app.status === 'rejected' ? 'bg-rose-100 text-rose-800' :
-                      'bg-amber-100 text-amber-800'
-                    }`}>
-                      {app.status === 'approved' ? 'Onaylandı' : app.status === 'rejected' ? 'Reddedildi' : 'Beklemede'}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    {app.status === 'pending' ? (
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleApproveClubApp(app)}
-                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition text-[11px] flex items-center gap-1 shadow-2xs"
-                        >
-                          <CheckCircle size={13} /> Onayla
-                        </button>
-                        <button
-                          onClick={() => handleRejectClubApp(app)}
-                          className="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold rounded-xl transition text-[11px] flex items-center gap-1"
-                        >
-                          <XCircle size={13} /> Reddet
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-slate-400 italic font-normal">Tamamlandı</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {filteredNewClubApps.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400">
-                    Bekleyen kurulum başvurusu bulunmuyor.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* ======================================================== */}
-      {/* TAB 3: CLUB EVENT & BUDGET REQUEST POOL */}
-      {/* ======================================================== */}
-      {activeTab === 'budget_apps' && (
-        <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                <th className="py-3.5 px-4">Talep No / Tarih</th>
-                <th className="py-3.5 px-4">İlgili Kulüp Adı</th>
-                <th className="py-3.5 px-4">Etkinlik Adı & Konumu</th>
-                <th className="py-3.5 px-4">Talep Edilen Bütçe</th>
-                <th className="py-3.5 px-4">Açıklama / Gerekçe</th>
-                <th className="py-3.5 px-4 text-center">Durum</th>
-                <th className="py-3.5 px-4 text-right">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-              {filteredBudgetApps.map(app => (
-                <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3.5 px-4">
-                    <span className="font-mono font-bold text-gray-900 block">{app.id}</span>
-                    <span className="text-[11px] text-slate-400">{app.date}</span>
-                  </td>
-                  <td className="py-3.5 px-4 font-black text-gray-900">
-                    {app.club || 'Kulüp'}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-900">{app.eventName || app.title}</div>
-                    <span className="text-[11px] text-slate-400 flex items-center gap-1">
-                      <MapPin size={11} /> {app.location || 'Merkez Kampüs'}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 font-black text-blue-700 text-sm">
-                    {app.amount}
-                  </td>
-                  <td className="py-3.5 px-4 max-w-xs">
-                    <p className="text-xs text-slate-600 line-clamp-2">{app.description || 'Kulüp etkinliği ve organizasyon desteği.'}</p>
+                  <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap">
+                    {app.date}
                   </td>
                   <td className="py-3.5 px-4 text-center">
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
@@ -578,28 +597,28 @@ export default function CMSClubs({
                     {app.status === 'pending' ? (
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={() => handleApproveBudgetApp(app)}
-                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition text-[11px] flex items-center gap-1 shadow-2xs"
+                          onClick={() => handleApproveClubApp(app)}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition text-[11px] flex items-center gap-1 cursor-pointer"
                         >
-                          <CheckCircle size={13} /> Onayla
+                          <CheckCircle size={13} /> Onayla (EK-1)
                         </button>
                         <button
-                          onClick={() => handleRejectBudgetApp(app)}
-                          className="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold rounded-xl transition text-[11px] flex items-center gap-1"
+                          onClick={() => handleRejectClubApp(app)}
+                          className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl transition text-[11px] flex items-center gap-1 border border-rose-200 cursor-pointer"
                         >
                           <XCircle size={13} /> Reddet
                         </button>
                       </div>
                     ) : (
-                      <span className="text-xs text-slate-400 italic font-normal">İşlendi</span>
+                      <span className="text-xs text-slate-400 font-medium">Karar Verildi</span>
                     )}
                   </td>
                 </tr>
               ))}
-              {filteredBudgetApps.length === 0 && (
+              {filteredNewClubApps.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-400">
-                    Bekleyen bütçe onay talebi bulunmuyor.
+                    Bekleyen veya tamamlanmış kurulum başvurusu bulunamadı.
                   </td>
                 </tr>
               )}
@@ -609,101 +628,380 @@ export default function CMSClubs({
       )}
 
       {/* ======================================================== */}
-      {/* CLUB INSPECTION DETAIL MODAL */}
+      {/* TAB 3: SKS VENUE, EVENT & ALLOCATION APPROVAL POOL       */}
+      {/* ======================================================== */}
+      {activeTab === 'budget_apps' && (
+        <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                <th className="py-3.5 px-4">Etkinlik / Organizasyon</th>
+                <th className="py-3.5 px-4">İlgili Kulüp</th>
+                <th className="py-3.5 px-4">Talep Edilen Salon / Yer</th>
+                <th className="py-3.5 px-4">Tarih & Saat Aralığı</th>
+                <th className="py-3.5 px-4">Başvuran Yetkili</th>
+                <th className="py-3.5 px-4">SKS Tahsis Tutarı</th>
+                <th className="py-3.5 px-4 text-center">Durum</th>
+                <th className="py-3.5 px-4 text-right">Tahsis & Onay</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+              {filteredBudgetApps.map(app => (
+                <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
+                  <td className="py-3.5 px-4">
+                    <div className="font-bold text-gray-900 text-sm">{app.eventName || app.title}</div>
+                    <div className="text-[11px] text-slate-400 line-clamp-1">{app.description}</div>
+                  </td>
+                  <td className="py-3.5 px-4 font-bold text-slate-800">
+                    {app.club}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span className="px-2.5 py-1 bg-slate-100 rounded-md font-semibold text-slate-700">
+                      {app.venue || app.requestedVenue || 'Merkez Kampüs'}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap">
+                    {app.eventDate ? `${app.eventDate} (${app.startTime || '10:00'} - ${app.endTime || '17:00'})` : app.date}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <span className="font-bold text-slate-900 block">{app.requesterName || app.requester || 'Kulüp Başkanı'}</span>
+                    <span className="text-[10px] text-slate-400">{app.requesterRole || 'Yönetim Kurulu'}</span>
+                  </td>
+                  <td className="py-3.5 px-4 font-black text-emerald-700">
+                    {app.assignedBudget || app.amount || '0 TL (Tahsis)'}
+                  </td>
+                  <td className="py-3.5 px-4 text-center">
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                      app.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
+                      app.status === 'rejected' ? 'bg-rose-100 text-rose-800' :
+                      'bg-amber-100 text-amber-800'
+                    }`}>
+                      {app.status === 'approved' ? 'Tahsis Onaylandı' : app.status === 'rejected' ? 'Reddedildi' : 'İnceleniyor'}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => setSelectedAppForDetail(app)}
+                        className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition text-[11px] flex items-center gap-1 cursor-pointer"
+                        title="Donanım ve detayları incele"
+                      >
+                        <Eye size={13} />
+                      </button>
+                      {app.status === 'pending' ? (
+                        <>
+                          <button
+                            onClick={() => handleApproveBudgetApp(app)}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition text-[11px] flex items-center gap-1 cursor-pointer shadow-2xs"
+                          >
+                            <CheckCircle size={13} /> Onayla
+                          </button>
+                          <button
+                            onClick={() => handleRejectBudgetApp(app)}
+                            className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl transition text-[11px] flex items-center gap-1 border border-rose-200 cursor-pointer"
+                          >
+                            <XCircle size={13} /> Reddet
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-xs text-slate-400 font-medium">Tamamlandı</span>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {filteredBudgetApps.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-slate-400">
+                    Yer ve bütçe tahsis talebi bulunamadı.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* TAB 4: COMPREHENSIVE CLUB MEMBERS MONITORING TABLE       */}
+      {/* ======================================================== */}
+      {activeTab === 'club_members' && (
+        <div className="space-y-4">
+          
+          {/* Controls Bar: Club Dropdown, Role Filter, Search & Export */}
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Club Dropdown */}
+              <div>
+                <select
+                  value={memberClubFilter}
+                  onChange={(e) => setMemberClubFilter(e.target.value)}
+                  className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-[#990000]"
+                >
+                  <option value="all">Tüm Kulüpler ({allClubs.length})</option>
+                  {allClubs.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Role Dropdown */}
+              <div>
+                <select
+                  value={memberRoleFilter}
+                  onChange={(e) => setMemberRoleFilter(e.target.value)}
+                  className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-[#990000]"
+                >
+                  <option value="all">Tüm Roller</option>
+                  <option value="Başkan">Kulüp Başkanı</option>
+                  <option value="Başkan Yardımcısı">Başkan Yardımcısı</option>
+                  <option value="Mali Sorumlu">Mali Sorumlu</option>
+                  <option value="Genel Sekreter">Genel Sekreter</option>
+                  <option value="Aktif Üye">Aktif Üye</option>
+                </select>
+              </div>
+
+              {/* Search input */}
+              <div className="relative w-full sm:w-60">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="İsim, No veya TC ile ara..."
+                  value={memberSearchQuery}
+                  onChange={(e) => setMemberSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:border-[#990000]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-500 bg-white px-3 py-2 rounded-xl border border-slate-200">
+                {filteredMembers.length} Kayıtlı Üye
+              </span>
+              <button
+                onClick={handleExportMembersCSV}
+                className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <Download size={14} /> CSV / Excel İndir
+              </button>
+            </div>
+          </div>
+
+          {/* Members Table */}
+          <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                  <th className="py-3.5 px-4">Öğrenci No & TC</th>
+                  <th className="py-3.5 px-4">Ad Soyad</th>
+                  <th className="py-3.5 px-4">Kayıtlı Kulüp</th>
+                  <th className="py-3.5 px-4">Kulüp Rolü</th>
+                  <th className="py-3.5 px-4">Fakülte & Bölüm</th>
+                  <th className="py-3.5 px-4">Sınıf</th>
+                  <th className="py-3.5 px-4">İletişim</th>
+                  <th className="py-3.5 px-4">Katılım Tarihi</th>
+                  <th className="py-3.5 px-4 text-center">Durum</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                {filteredMembers.map((m, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3.5 px-4 font-mono">
+                      <span className="font-bold text-gray-900 block">{m.studentNo || '2023010482'}</span>
+                      <span className="text-[10px] text-slate-400">
+                        TC: {m.tcKimlik ? `${m.tcKimlik.slice(0, 3)}*****${m.tcKimlik.slice(-2)}` : '39281749102'}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 font-bold text-gray-900">
+                      {m.name}
+                    </td>
+                    <td className="py-3.5 px-4 font-semibold text-slate-800">
+                      {m.clubName}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        m.role?.includes('Başkan') ? 'bg-red-100 text-[#990000]' :
+                        m.role?.includes('Mali') ? 'bg-amber-100 text-amber-800' :
+                        m.role?.includes('Sekreter') ? 'bg-purple-100 text-purple-800' :
+                        'bg-slate-100 text-slate-700'
+                      }`}>
+                        {m.role || 'Aktif Üye'}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-600">
+                      {m.department}
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-600">
+                      {m.grade || '2. Sınıf'}
+                    </td>
+                    <td className="py-3.5 px-4 text-[11px] text-slate-500">
+                      <div>{m.email}</div>
+                      <div>{m.phone}</div>
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-400 whitespace-nowrap">
+                      {m.joinedDate || '2024'}
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                        {m.status || 'Aktif'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {filteredMembers.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="py-12 text-center text-slate-400">
+                      Filtre kriterlerine uygun kulüp üyesi bulunamadı.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL: CLUB INSPECTION DETAIL                            */}
       {/* ======================================================== */}
       {selectedClubForView && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl relative animate-scale-up">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative animate-scale-up max-h-[90vh] overflow-y-auto font-sans">
             <button
               onClick={() => setSelectedClubForView(null)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition"
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition cursor-pointer"
             >
               <X size={20} />
             </button>
 
-            {/* Club Header in Modal */}
-            <div className="flex items-start gap-5 mb-6 pb-6 border-b border-slate-200">
+            <div className="flex items-center gap-4 mb-6">
               <img 
                 src={selectedClubForView.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedClubForView.name.substring(0, 2))}&background=990000&color=fff`} 
                 alt={selectedClubForView.name} 
-                className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-sm"
+                className="w-16 h-16 rounded-2xl object-cover border border-slate-200"
               />
               <div>
-                <span className="px-2.5 py-0.5 bg-red-50 text-[#990000] text-xs font-black rounded-md uppercase tracking-wider">
-                  {selectedClubForView.category}
-                </span>
-                <h3 className="text-xl font-black text-gray-900 mt-1">{selectedClubForView.name}</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Danışman: <strong>{selectedClubForView.advisor}</strong> • Başkan: <strong>{selectedClubForView.president?.name}</strong>
-                </p>
+                <span className="text-xs font-bold text-[#990000] uppercase tracking-wider">{selectedClubForView.category}</span>
+                <h3 className="text-xl font-black text-gray-900">{selectedClubForView.name}</h3>
+                <p className="text-xs text-slate-500">Kuruluş Yılı: {selectedClubForView.establishedYear || 2021} • {selectedClubForView.members?.length || selectedClubForView.memberCount || 0} Aktif Üye</p>
               </div>
             </div>
 
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Kayıtlı Üye</span>
-                <h4 className="text-xl font-black text-gray-900 mt-1">{selectedClubForView.memberCount || 0} Öğrenci</h4>
+            <div className="space-y-4 text-xs text-slate-700">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <span className="font-bold text-gray-900 block mb-1">Kulüp Misyonu & Amacı</span>
+                <p className="leading-relaxed text-slate-600">{selectedClubForView.purpose || selectedClubForView.description}</p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tahsis Edilen Bütçe</span>
-                <h4 className="text-xl font-black text-gray-900 mt-1">{(selectedClubForView.budget?.allocated || 45000).toLocaleString('tr-TR')} ₺</h4>
-              </div>
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Kalan Harcanabilir</span>
-                <h4 className="text-xl font-black text-emerald-700 mt-1">{(selectedClubForView.budget?.remaining || 25000).toLocaleString('tr-TR')} ₺</h4>
-              </div>
-            </div>
 
-            {/* Club Events in Modal */}
-            <div className="mb-6">
-              <h4 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                <Calendar size={16} className="text-[#990000]" />
-                Planlanmış Kulüp Etkinlikleri ({(selectedClubForView.events || []).length})
-              </h4>
-              <div className="space-y-2">
-                {(selectedClubForView.events || []).map((evt, idx) => (
-                  <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="font-bold text-gray-900 block">{evt.title}</span>
-                      <span className="text-slate-400">{evt.date} • {evt.location}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                  <span className="font-bold text-gray-900 block mb-1">Akademik Danışman</span>
+                  <p>{selectedClubForView.advisor}</p>
+                  <p className="text-slate-400 mt-1">{selectedClubForView.advisorEmail}</p>
+                </div>
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                  <span className="font-bold text-gray-900 block mb-1">Kulüp Başkanı</span>
+                  <p>{selectedClubForView.president?.name}</p>
+                  <p className="text-slate-400 mt-1">{selectedClubForView.president?.email} • {selectedClubForView.president?.phone}</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                <span className="font-bold text-emerald-950 block mb-2">SKS Bütçe Durumu</span>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <span className="text-[10px] text-slate-500 block">Yıllık Tahsis</span>
+                    <span className="font-black text-sm text-gray-900">{(selectedClubForView.budget?.allocated || 45000).toLocaleString('tr-TR')} ₺</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 block">Harcanan</span>
+                    <span className="font-black text-sm text-amber-700">{(selectedClubForView.budget?.spent || 0).toLocaleString('tr-TR')} ₺</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 block">Kalan Bakiye</span>
+                    <span className="font-black text-sm text-emerald-700">{(selectedClubForView.budget?.remaining || 25000).toLocaleString('tr-TR')} ₺</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Authorized Officers */}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <span className="font-bold text-gray-900 block mb-2">SKS Yetkili Görevlileri</span>
+                <div className="space-y-1.5">
+                  {(selectedClubForView.authorizedOfficers || []).map((off, idx) => (
+                    <div key={idx} className="flex items-center justify-between text-xs bg-white p-2 rounded-lg border border-slate-100">
+                      <span className="font-bold text-slate-800">{off.name}</span>
+                      <span className="text-[10px] bg-red-50 text-[#990000] font-bold px-2 py-0.5 rounded">{off.role}</span>
                     </div>
-                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">
-                      {evt.status}
-                    </span>
-                  </div>
-                ))}
-                {(!selectedClubForView.events || selectedClubForView.events.length === 0) && (
-                  <p className="text-xs text-slate-400 italic">Etkinlik kaydı bulunmuyor.</p>
-                )}
+                  ))}
+                  {(!selectedClubForView.authorizedOfficers || selectedClubForView.authorizedOfficers.length === 0) && (
+                    <p className="text-slate-400">Atanmış yetkili temsilci bulunamadı.</p>
+                  )}
+                </div>
               </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL: SKS VENUE REQUEST INSPECTION DETAIL               */}
+      {/* ======================================================== */}
+      {selectedAppForDetail && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-scale-up max-h-[90vh] overflow-y-auto font-sans">
+            <button
+              onClick={() => setSelectedAppForDetail(null)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition cursor-pointer"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="mb-5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md inline-block mb-1">
+                SKS Salon & Donanım İncelemesi
+              </span>
+              <h3 className="text-xl font-black text-gray-900">{selectedAppForDetail.eventName || selectedAppForDetail.title}</h3>
+              <p className="text-xs text-slate-500">{selectedAppForDetail.club}</p>
             </div>
 
-            {/* Board Members in Modal */}
-            <div className="mb-6">
-              <h4 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                <Users size={16} className="text-[#990000]" />
-                Yönetim Kurulu Üyeleri ({(selectedClubForView.boardMembers || []).length})
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {(selectedClubForView.boardMembers || []).map((bm, idx) => (
-                  <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                    <span className="font-black text-[#990000] text-[10px] uppercase block">{bm.role}</span>
-                    <strong className="text-gray-900 text-sm">{bm.name}</strong>
-                    <p className="text-slate-500">{bm.department}</p>
-                  </div>
-                ))}
+            <div className="space-y-3 text-xs">
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                <span className="font-bold text-slate-500 block mb-1">Mekan & Saat</span>
+                <p className="font-bold text-gray-900 text-sm">{selectedAppForDetail.venue || selectedAppForDetail.requestedVenue || 'Merkez Kampüs'}</p>
+                <p className="text-slate-600 mt-1">{selectedAppForDetail.eventDate || selectedAppForDetail.date} ({selectedAppForDetail.startTime || '10:00'} - {selectedAppForDetail.endTime || '17:00'})</p>
+                {selectedAppForDetail.setupTime && <p className="text-slate-400">Kurulum Saati: {selectedAppForDetail.setupTime}</p>}
               </div>
-            </div>
 
-            {/* Close Button */}
-            <div className="flex justify-end pt-4 border-t border-slate-200">
-              <button
-                onClick={() => setSelectedClubForView(null)}
-                className="px-6 py-2.5 bg-slate-800 hover:bg-black text-white font-bold text-xs rounded-xl transition"
-              >
-                Kapat
-              </button>
+              {selectedAppForDetail.equipment && (
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                  <span className="font-bold text-slate-500 block mb-1.5">Talep Edilen Malzeme & Donanım</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {Array.isArray(selectedAppForDetail.equipment) ? selectedAppForDetail.equipment.map((eq, i) => (
+                      <span key={i} className="px-2 py-0.5 bg-white border border-slate-200 text-slate-700 font-semibold rounded text-[11px]">
+                        ✓ {eq}
+                      </span>
+                    )) : (
+                      <p className="text-slate-600">{selectedAppForDetail.equipment}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                <span className="font-bold text-slate-500 block mb-1">Başvuran Yetkili & Açıklama</span>
+                <p className="font-bold text-gray-900">{selectedAppForDetail.requesterName || selectedAppForDetail.requester || 'Kulüp Yetkilisi'}</p>
+                <p className="text-slate-600 mt-1 leading-relaxed">{selectedAppForDetail.description}</p>
+              </div>
+
+              <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-emerald-950 block">SKS Tahsis Edilen Bütçe</span>
+                  <span className="text-[11px] text-emerald-800">Birim tarafından karşılanacak resmi meblağ</span>
+                </div>
+                <span className="font-black text-emerald-700 text-base">{selectedAppForDetail.assignedBudget || selectedAppForDetail.amount || '0 TL'}</span>
+              </div>
             </div>
           </div>
         </div>

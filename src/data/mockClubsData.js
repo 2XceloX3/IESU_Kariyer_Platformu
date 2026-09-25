@@ -1,7 +1,7 @@
 /**
  * src/data/mockClubsData.js
- * Comprehensive initial data for Student Clubs, Club Applications (Forms & Budgets),
- * and Career & Competency Test Submissions for Istanbul Esenyurt University (İESÜ).
+ * Comprehensive initial data for Student Clubs, Club Applications (Forms, Venues & Budgets),
+ * Member Applications with TC & Student No, and Instagram-style Club Media Feeds.
  */
 
 export const initialClubs = [
@@ -20,11 +20,14 @@ export const initialClubs = [
     president: {
       id: 'STU-001',
       name: 'Mehmet Kerem Yılmaz',
+      studentNo: '2023010482',
+      tcKimlik: '39281749102',
       department: 'Bilgisayar Mühendisliği',
       year: '3. Sınıf',
       email: 'kerem.yilmaz@ogr.esenyurt.edu.tr',
       phone: '0532 999 8811'
     },
+    // SKS Managed Budget (Restricted: only visible/managed in Admin SKS Panel)
     budget: {
       allocated: 45000,
       spent: 16500,
@@ -39,6 +42,14 @@ export const initialClubs = [
     constitutionUrl: '#',
     constitutionApprovedDate: '14.10.2021 (SKS Daire Başkanlığı)',
     
+    // Authorized Officers who can request venue/equipment from SKS and manage members
+    authorizedOfficers: [
+      { id: 'STU-001', name: 'Mehmet Kerem Yılmaz', role: 'Kulüp Başkanı', email: 'kerem.yilmaz@ogr.esenyurt.edu.tr' },
+      { id: 'STU-002', name: 'Zeynep Kaya', role: 'Başkan Yardımcısı', email: 'zeynep.kaya@ogr.esenyurt.edu.tr' },
+      { id: 'STU-005', name: 'Caner Şahin', role: 'Genel Sekreter', email: 'caner.sahin@ogr.esenyurt.edu.tr' },
+      { id: 'STU-006', name: 'Elif Yıldız', role: 'Mali Sorumlu & Dış İlişkiler', email: 'elif.yildiz@ogr.esenyurt.edu.tr' }
+    ],
+
     // Management Board
     boardMembers: [
       {
@@ -46,7 +57,10 @@ export const initialClubs = [
         name: 'Mehmet Kerem Yılmaz',
         role: 'Kulüp Başkanı',
         department: 'Bilgisayar Mühendisliği (3. Sınıf)',
+        studentNo: '2023010482',
+        tcKimlik: '39281749102',
         email: 'kerem.yilmaz@ogr.esenyurt.edu.tr',
+        phone: '0532 999 8811',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
         badge: 'Kurul Başkanı'
       },
@@ -64,7 +78,10 @@ export const initialClubs = [
         name: 'Zeynep Kaya',
         role: 'Başkan Yardımcısı',
         department: 'Yazılım Mühendisliği (3. Sınıf)',
+        studentNo: '2023010499',
+        tcKimlik: '48291038291',
         email: 'zeynep.kaya@ogr.esenyurt.edu.tr',
+        phone: '0533 881 2233',
         avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
         badge: 'Operasyon'
       },
@@ -73,18 +90,24 @@ export const initialClubs = [
         name: 'Caner Şahin',
         role: 'Genel Sekreter',
         department: 'Yönetim Bilişim Sistemleri (2. Sınıf)',
+        studentNo: '2024010114',
+        tcKimlik: '29481940182',
         email: 'caner.sahin@ogr.esenyurt.edu.tr',
+        phone: '0544 555 1234',
         avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
         badge: 'İdari İşler'
       },
       {
         id: 'BM-5',
         name: 'Elif Yıldız',
-        role: 'Sponsorluk & Dış İlişkiler Sorumlusu',
+        role: 'Mali Sorumlu & Dış İlişkiler',
         department: 'Endüstri Mühendisliği (2. Sınıf)',
+        studentNo: '2024010255',
+        tcKimlik: '59281749201',
         email: 'elif.yildiz@ogr.esenyurt.edu.tr',
+        phone: '0535 777 9900',
         avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80',
-        badge: 'Kurumsal İletişim'
+        badge: 'Mali İşler'
       }
     ],
 
@@ -96,7 +119,7 @@ export const initialClubs = [
         category: 'Yarışma & Hackathon',
         date: '18-19 Ekim 2026',
         time: 'Cumartesi 09:30 - Pazar 18:00',
-        location: 'Merkez Kampüs Konferans Salonu & Fuaye',
+        location: 'Ömer Halisdemir Konferans Salonu & Fuaye',
         quota: 150,
         registeredCount: 118,
         status: 'Yaklaşan',
@@ -154,35 +177,155 @@ export const initialClubs = [
       }
     ],
 
-    // Budget & Sponsorship Requests History
+    // SKS Venue, Time & Equipment Requests (Student cannot see currency/budget, managed in Admin)
     budgetRequests: [
       {
         id: 'REQ-101',
-        title: 'İESÜ Hackathon 2026 Organizasyon & Ödül Bütçesi',
-        amount: '15.000 TL',
+        title: 'İESÜ Hackathon 2026 Organizasyon & Yer Tahsisi',
+        requestedVenue: 'Ömer Halisdemir Konferans Salonu & Fuaye',
+        eventDate: '18-19 Ekim 2026',
+        startTime: '09:00',
+        endTime: '19:00',
+        expectedAttendees: 150,
+        equipment: ['Ses Sistemi & 4 Adet Telsiz Mikrofon', 'Çift Projeksiyon & HDMI Çoklayıcı', '30 Adet Grup Çalışma Masası', 'Yaka Kartı Baskı Desteği', 'Afiş ve Roll-Up Asma İzni'],
         requestedDate: '10.09.2026',
+        requester: 'Mehmet Kerem Yılmaz (Başkan)',
         status: 'approved',
-        approvalNote: 'SKS Daire Başkanlığı ve Rektörlük Makamı tarafından onaylandı.',
-        approvedAmount: '15.000 TL'
+        approvalNote: 'SKS Daire Başkanlığı tarafından salon tahsis edildi ve teknik ekipman rezervasyonu onaylandı.',
+        assignedBudget: '15.000 TL' // Admin SKS internal
       },
       {
         id: 'REQ-102',
-        title: 'Bootcamp Sunucu & GPU Bulut Hesap Desteği',
-        amount: '8.500 TL',
+        title: 'Yapay Zeka Laboratuvarı & Sunucu Çalıştay İzni',
+        requestedVenue: 'Bilgisayar Lab 402',
+        eventDate: '26 Ekim 2026',
+        startTime: '13:00',
+        endTime: '17:30',
+        expectedAttendees: 45,
+        equipment: ['Lab Bilgisayarlarında Yönetici Erişimi', 'Projeksiyon Cihazı', 'Kürsü Ses Sistemi'],
         requestedDate: '21.09.2026',
+        requester: 'Zeynep Kaya (Başkan Yrd.)',
         status: 'pending',
-        approvalNote: 'Bütçe Dairesi değerlendirmesinde.'
+        approvalNote: 'Mühendislik Fakültesi Dekanlığı ve SKS incelemesinde.',
+        assignedBudget: '8.500 TL' // Admin SKS internal
       }
     ],
 
-    // Registered members sample
+    // Full Detailed Members List (with Student No, TC, Dept, Grade, Role)
     members: [
-      { id: 'STU-001', name: 'Mehmet Kerem Yılmaz', department: 'Bilgisayar Mühendisliği', role: 'Başkan', joinedDate: 'Ekim 2023' },
-      { id: 'STU-002', name: 'Zeynep Kaya', department: 'Yazılım Mühendisliği', role: 'Başkan Yardımcısı', joinedDate: 'Kasım 2023' },
-      { id: 'STU-003', name: 'Ahmet Kaya', department: 'Bilgisayar Mühendisliği', role: 'Aktif Üye', joinedDate: 'Şubat 2024' },
-      { id: 'STU-004', name: 'Selin Öztürk', department: 'Veri Bilimi ve Analitiği', role: 'Aktif Üye', joinedDate: 'Mart 2024' },
-      { id: 'STU-005', name: 'Caner Şahin', department: 'Yönetim Bilişim Sistemleri', role: 'Genel Sekreter', joinedDate: 'Ekim 2024' },
-      { id: 'STU-006', name: 'Elif Yıldız', department: 'Endüstri Mühendisliği', role: 'Kurul Üyesi', joinedDate: 'Kasım 2024' }
+      { id: 'STU-001', studentNo: '2023010482', tcKimlik: '39281749102', name: 'Mehmet Kerem Yılmaz', department: 'Bilgisayar Mühendisliği', grade: '3. Sınıf', role: 'Kulüp Başkanı', joinedDate: '14.10.2023', phone: '0532 999 8811', email: 'kerem.yilmaz@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-002', studentNo: '2023010499', tcKimlik: '48291038291', name: 'Zeynep Kaya', department: 'Yazılım Mühendisliği', grade: '3. Sınıf', role: 'Başkan Yardımcısı', joinedDate: '14.10.2023', phone: '0533 881 2233', email: 'zeynep.kaya@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-005', studentNo: '2024010114', tcKimlik: '29481940182', name: 'Caner Şahin', department: 'Yönetim Bilişim Sistemleri', grade: '2. Sınıf', role: 'Genel Sekreter', joinedDate: '10.02.2024', phone: '0544 555 1234', email: 'caner.sahin@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-006', studentNo: '2024010255', tcKimlik: '59281749201', name: 'Elif Yıldız', department: 'Endüstri Mühendisliği', grade: '2. Sınıf', role: 'Mali Sorumlu', joinedDate: '15.02.2024', phone: '0535 777 9900', email: 'elif.yildiz@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-003', studentNo: '2023010312', tcKimlik: '18492019482', name: 'Ahmet Kaya', department: 'Bilgisayar Mühendisliği', grade: '3. Sınıf', role: 'Aktif Üye', joinedDate: '01.03.2024', phone: '0538 444 3322', email: 'ahmet.kaya@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-004', studentNo: '2024010891', tcKimlik: '72910384918', name: 'Selin Öztürk', department: 'Veri Bilimi ve Analitiği', grade: '1. Sınıf', role: 'Aktif Üye', joinedDate: '18.03.2024', phone: '0539 222 1100', email: 'selin.ozturk@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-007', studentNo: '2022010991', tcKimlik: '61928374910', name: 'Barış Koç', department: 'Elektrik-Elektronik Mühendisliği', grade: '4. Sınıf', role: 'Donanım Takım Lideri', joinedDate: '20.10.2023', phone: '0555 666 4433', email: 'baris.koc@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-008', studentNo: '2024010332', tcKimlik: '82910482910', name: 'Duygu Arıkan', department: 'Endüstriyel Tasarım', grade: '2. Sınıf', role: 'Tasarım & UI Sorumlusu', joinedDate: '05.04.2024', phone: '0531 333 4455', email: 'duygu.arikan@ogr.esenyurt.edu.tr', status: 'Aktif' }
+    ],
+
+    // Pending Member Applications for Club President & Officers Review
+    memberApplications: [
+      {
+        id: 'APP-MEM-101',
+        studentId: 'STU-088',
+        studentNo: '2024010912',
+        tcKimlik: '43928174920',
+        name: 'Murat Can Polat',
+        department: 'Yazılım Mühendisliği',
+        grade: '1. Sınıf',
+        email: 'murat.polat@ogr.esenyurt.edu.tr',
+        phone: '0544 321 9900',
+        reason: 'Yapay zeka modelleri ve açık kaynak yazılım projelerinde yer almak, hackathon takımı kurmak istiyorum.',
+        appliedAt: '24 Eylül 2026',
+        status: 'pending'
+      },
+      {
+        id: 'APP-MEM-102',
+        studentId: 'STU-094',
+        studentNo: '2023010777',
+        tcKimlik: '10928374650',
+        name: 'Ceyda Aktaş',
+        department: 'Yönetim Bilişim Sistemleri',
+        grade: '2. Sınıf',
+        email: 'ceyda.aktas@ogr.esenyurt.edu.tr',
+        phone: '0536 789 0123',
+        reason: 'Kulübün etkinlik organizasyonlarında ve sponsorluk ekibinde aktif görev alarak yönetim tecrübesi kazanmak istiyorum.',
+        appliedAt: '25 Eylül 2026',
+        status: 'pending'
+      }
+    ],
+
+    // Instagram-style Event Media Feed Posts
+    posts: [
+      {
+        id: 'POST-CLB-101',
+        author: {
+          name: 'İESÜ Yazılım ve İnovasyon Kulübü',
+          handle: '@iesuyazilim',
+          logo: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=250&q=80',
+          verified: true
+        },
+        location: 'İESÜ Ömer Halisdemir Konferans Salonu',
+        images: [
+          'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1000&q=80',
+          'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1000&q=80',
+          'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80'
+        ],
+        filter: 'vibrant',
+        music: {
+          title: 'Campus Synthwave & Tech Beats',
+          artist: 'İESÜ Sound Studio',
+          duration: '02:30'
+        },
+        caption: '🚀 İESÜ Hackathon 2026 hazırlık maratonumuz resmen başladı! 24 saat boyunca kesintisiz kodlama, mentorluk ve 60.000 ₺ ödül havuzu sizleri bekliyor. Takımınızı kurun veya bireysel kaydınızı yapın! ✨ Link bio’da! 👨‍💻👩‍💻 #İESÜ #YazılımKulübü #Hackathon2026 #YapayZeka #Teknofest #GeleceğiKodla',
+        likes: 194,
+        isLiked: false,
+        comments: [
+          { id: 1, user: 'ahmet.kaya', name: 'Ahmet Kaya', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80', text: 'Takımımız hazır, 1.lik ödülünü almaya geliyoruz! 🔥', time: '1 saat önce' },
+          { id: 2, user: 'zeynep.dev', name: 'Zeynep Kaya', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80', text: 'Mentor ekibi ve atölye programı harika oldu, herkesi bekliyoruz 💻👏', time: '40 dk önce' }
+        ],
+        shares: 38,
+        saved: false,
+        createdAt: '2 saat önce'
+      },
+      {
+        id: 'POST-CLB-102',
+        author: {
+          name: 'İESÜ Yazılım ve İnovasyon Kulübü',
+          handle: '@iesuyazilim',
+          logo: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=250&q=80',
+          verified: true
+        },
+        location: 'Bilgisayar Lab 402',
+        images: [
+          'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1000&q=80',
+          'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1000&q=80'
+        ],
+        filter: 'cyber',
+        music: {
+          title: 'Cyberpunk Coding Lounge',
+          artist: 'Future AI Vibes',
+          duration: '03:15'
+        },
+        caption: '⚡ React 19 ve TypeScript atölyemizin 1. modülünü 45 kişilik rekor katılımla tamamladık! Katılan tüm arkadaşlarımıza teşekkürler, kod depoları GitHub sayfamızda yayında. 🌐 #React #Frontend #TypeScript #WebDev',
+        likes: 142,
+        isLiked: true,
+        comments: [
+          { id: 1, user: 'selin.ozturk', name: 'Selin Öztürk', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80', text: 'Çok faydalı bir eğitimdi, haftaya görüşmek üzere!', time: 'Dün' }
+        ],
+        shares: 22,
+        saved: true,
+        createdAt: '1 gün önce'
+      }
+    ],
+
+    // Stories / Highlights Bar
+    highlights: [
+      { id: 'HL-1', title: 'Hackathon', icon: '💻', cover: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80' },
+      { id: 'HL-2', title: 'Bootcamp', icon: '⚡', cover: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=200&q=80' },
+      { id: 'HL-3', title: 'Ödüller', icon: '🏆', cover: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=200&q=80' },
+      { id: 'HL-4', title: 'Geziler', icon: '🚌', cover: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=200&q=80' },
+      { id: 'HL-5', title: 'Yönetim', icon: '👥', cover: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80' }
     ]
   },
   {
@@ -200,6 +343,8 @@ export const initialClubs = [
     president: {
       id: 'STU-012',
       name: 'Berkant Özdemir',
+      studentNo: '2022020119',
+      tcKimlik: '28194019284',
       department: 'Uluslararası Ticaret ve Finansman',
       year: '4. Sınıf',
       email: 'berkant.ozdemir@ogr.esenyurt.edu.tr',
@@ -216,9 +361,13 @@ export const initialClubs = [
     coverImage: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
     description: 'Üniversitemiz bünyesinde girişimcilik kültürünü yaygınlaştırmak, öğrencilerin iş fikirlerini kuluçka merkezinde olgunlaştırmak ve melek yatırımcı ağlarıyla buluşturmak amacıyla kurulmuştur.',
     purpose: 'Öğrencilerimize yalın girişim metodolojisi, fon bulma, şirketleşme ve patent süreçlerinde uygulamalı bilgi sağlamak.',
+    authorizedOfficers: [
+      { id: 'STU-012', name: 'Berkant Özdemir', role: 'Kulüp Başkanı', email: 'berkant.ozdemir@ogr.esenyurt.edu.tr' },
+      { id: 'STU-015', name: 'Merve Koç', role: 'Başkan Yardımcısı', email: 'merve.koc@ogr.esenyurt.edu.tr' }
+    ],
     boardMembers: [
-      { id: 'BM-201', name: 'Berkant Özdemir', role: 'Kulüp Başkanı', department: 'Uluslararası Ticaret', email: 'berkant.o@ogr.esenyurt.edu.tr' },
-      { id: 'BM-202', name: 'Doç. Dr. Selin Doğan', role: 'Danışman', department: 'İşletme Fakültesi', email: 'selin.dogan@esenyurt.edu.tr' }
+      { id: 'BM-201', name: 'Berkant Özdemir', role: 'Kulüp Başkanı', department: 'Uluslararası Ticaret', studentNo: '2022020119', email: 'berkant.o@ogr.esenyurt.edu.tr' },
+      { id: 'BM-202', name: 'Doç. Dr. Selin Doğan', role: 'Akademik Danışman', department: 'İşletme Fakültesi', email: 'selin.dogan@esenyurt.edu.tr' }
     ],
     events: [
       {
@@ -238,7 +387,32 @@ export const initialClubs = [
       { id: 'ANN-301', title: 'Kuluçka Ön Hızlandırma Programı Başvuruları Başladı', date: '20 Eylül 2026', author: 'Yönetim Kurulu' }
     ],
     budgetRequests: [],
-    members: []
+    members: [
+      { id: 'STU-012', studentNo: '2022020119', tcKimlik: '28194019284', name: 'Berkant Özdemir', department: 'Uluslararası Ticaret', grade: '4. Sınıf', role: 'Kulüp Başkanı', joinedDate: '10.10.2022', phone: '0533 112 3344', email: 'berkant.ozdemir@ogr.esenyurt.edu.tr', status: 'Aktif' },
+      { id: 'STU-015', studentNo: '2023020412', tcKimlik: '39102938491', name: 'Merve Koç', department: 'İşletme', grade: '3. Sınıf', role: 'Başkan Yardımcısı', joinedDate: '15.10.2023', phone: '0532 111 2233', email: 'merve.koc@ogr.esenyurt.edu.tr', status: 'Aktif' }
+    ],
+    memberApplications: [],
+    posts: [
+      {
+        id: 'POST-CLB-201',
+        author: { name: 'İESÜ Girişimcilik Kulübü', handle: '@iesugirisim', logo: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=250&q=80', verified: true },
+        location: 'İESÜ Kuluçka Merkezi',
+        images: ['https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80'],
+        filter: 'vibrant',
+        music: { title: 'Elevate Business Momentum', artist: 'Campus Startup Lab', duration: '02:10' },
+        caption: '💡 Yeni nesil girişim fikirleri Kuluçka Merkezimizde canlanıyor! Erken aşama girişim desteği için başvurular devam ediyor. #Startup #Girişimcilik #MelekYatırımcı',
+        likes: 98,
+        isLiked: false,
+        comments: [],
+        shares: 14,
+        saved: false,
+        createdAt: '3 gün önce'
+      }
+    ],
+    highlights: [
+      { id: 'HL-21', title: 'Pitching', icon: '🎤', cover: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=200&q=80' },
+      { id: 'HL-22', title: 'Yatırımcılar', icon: '💼', cover: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=200&q=80' }
+    ]
   },
   {
     id: 'CLUB-003',
@@ -255,6 +429,8 @@ export const initialClubs = [
     president: {
       id: 'STU-018',
       name: 'Ayşe Nur Demir',
+      studentNo: '2023030114',
+      tcKimlik: '59102938401',
       department: 'Elektrik-Elektronik Mühendisliği',
       year: '3. Sınıf',
       email: 'ayse.demir@ogr.esenyurt.edu.tr',
@@ -269,13 +445,23 @@ export const initialClubs = [
     },
     logo: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=250&q=80',
     coverImage: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
-    description: 'Dünyanın en büyük teknik mesleki örgütü olan IEEE bünyesinde; CS (Computer Society), WIE (Women in Engineering) ve RAS (Robotics and Automation) komiteleriyle uluslararası düzeyde mühendislik etkinlikleri yürütür.',
+    description: 'Dünyanın en büyük teknik mesleki örgütü olan IEEE bünyesinde; CS, WIE ve RAS komiteleriyle uluslararası düzeyde mühendislik etkinlikleri yürütür.',
     purpose: 'Mühendislik öğrencilerinin küresel standartlarda teknik bilgi ve mesleki ağ geliştirmelerini desteklemek.',
-    boardMembers: [],
+    authorizedOfficers: [
+      { id: 'STU-018', name: 'Ayşe Nur Demir', role: 'Kol Başkanı', email: 'ayse.demir@ogr.esenyurt.edu.tr' }
+    ],
+    boardMembers: [
+      { id: 'BM-301', name: 'Ayşe Nur Demir', role: 'Kol Başkanı', department: 'Elektrik-Elektronik Müh.', studentNo: '2023030114', email: 'ayse.demir@ogr.esenyurt.edu.tr' }
+    ],
     events: [],
     announcements: [],
     budgetRequests: [],
-    members: []
+    members: [
+      { id: 'STU-018', studentNo: '2023030114', tcKimlik: '59102938401', name: 'Ayşe Nur Demir', department: 'Elektrik-Elektronik Müh.', grade: '3. Sınıf', role: 'Kol Başkanı', joinedDate: '12.10.2023', phone: '0535 444 7722', email: 'ayse.demir@ogr.esenyurt.edu.tr', status: 'Aktif' }
+    ],
+    memberApplications: [],
+    posts: [],
+    highlights: []
   },
   {
     id: 'CLUB-004',
@@ -292,6 +478,8 @@ export const initialClubs = [
     president: {
       id: 'STU-024',
       name: 'Caner Arslan',
+      studentNo: '2023040188',
+      tcKimlik: '38192049182',
       department: 'Psikoloji',
       year: '3. Sınıf',
       email: 'caner.arslan@ogr.esenyurt.edu.tr',
@@ -308,11 +496,19 @@ export const initialClubs = [
     coverImage: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80',
     description: 'Öğrencilerimizin mülakat yetkinlikleri, CV hazırlama, beden dili ve profesyonel iletişim alanlarında bireysel gelişimlerine odaklanan kariyer kulübüdür.',
     purpose: 'Üniversite-sanayi iş birliğiyle mülakat simülasyonları ve şirket gezileri düzenlemek.',
+    authorizedOfficers: [
+      { id: 'STU-024', name: 'Caner Arslan', role: 'Kulüp Başkanı', email: 'caner.arslan@ogr.esenyurt.edu.tr' }
+    ],
     boardMembers: [],
     events: [],
     announcements: [],
     budgetRequests: [],
-    members: []
+    members: [
+      { id: 'STU-024', studentNo: '2023040188', tcKimlik: '38192049182', name: 'Caner Arslan', department: 'Psikoloji', grade: '3. Sınıf', role: 'Kulüp Başkanı', joinedDate: '15.11.2023', phone: '0536 888 1122', email: 'caner.arslan@ogr.esenyurt.edu.tr', status: 'Aktif' }
+    ],
+    memberApplications: [],
+    posts: [],
+    highlights: []
   }
 ];
 
@@ -347,34 +543,55 @@ export const initialClubApplications = [
     id: 'APP-BUD-201',
     type: 'event_budget',
     club: 'İESÜ Yazılım ve İnovasyon Kulübü',
-    eventName: 'İESÜ Hackathon 2026: Yapay Zeka Çözümleri',
-    amount: '15.000 TL',
-    location: 'Merkez Kampüs Konferans Salonu',
+    eventName: 'İESÜ Hackathon 2026 Organizasyon & Yer Tahsisi',
+    venue: 'Ömer Halisdemir Konferans Salonu & Fuaye',
+    eventDate: '18-19 Ekim 2026',
+    startTime: '09:00',
+    endTime: '19:00',
+    expectedAttendees: 150,
+    equipment: ['Ses Sistemi & Kürsü', '4 Adet Kablosuz Mikrofon', 'Projeksiyon & HDMI', '30 Adet Çalışma Masası', 'Afiş Asma İzni'],
+    requesterName: 'Mehmet Kerem Yılmaz',
+    requesterRole: 'Kulüp Başkanı',
+    assignedBudget: '15.000 TL',
     status: 'approved',
     date: '10 Eylül 2026',
-    description: 'Ödüller, yemek ikramı ve konuk jüri ulaşım giderleri için talep edilen bütçe.'
+    description: 'Etkinlik yer tahsisi, kokteyl alanı ve misafir jüri konuşmacı teknik donanım talebi.'
   },
   {
     id: 'APP-BUD-202',
     type: 'event_budget',
     club: 'İESÜ Yazılım ve İnovasyon Kulübü',
     eventName: 'Bootcamp Sunucu & GPU Bulut Hesap Desteği',
-    amount: '8.500 TL',
-    location: 'Bilgisayar Lab 402',
+    venue: 'Bilgisayar Lab 402',
+    eventDate: '26 Ekim 2026',
+    startTime: '13:00',
+    endTime: '17:30',
+    expectedAttendees: 45,
+    equipment: ['Lab Bilgisayarlarında Yönetici Erişimi', 'Projeksiyon Cihazı'],
+    requesterName: 'Zeynep Kaya',
+    requesterRole: 'Başkan Yardımcısı',
+    assignedBudget: '8.500 TL',
     status: 'pending',
     date: '21 Eylül 2026',
-    description: 'Öğrencilerin derin öğrenme modellerini çalıştırabilmesi için 1 aylık AWS/Google Cloud eğitim kredisi.'
+    description: 'Öğrencilerin derin öğrenme modellerini çalıştırabilmesi için laboratuvar tahsisi.'
   },
   {
     id: 'APP-BUD-203',
     type: 'event_budget',
     club: 'İESÜ Girişimcilik ve İnovasyon Kulübü',
     eventName: 'Startup Demo Day & Yatırımcı Zirvesi',
-    amount: '12.000 TL',
-    location: 'A Blok Fuaye Alanı',
+    venue: 'A Blok Konferans Salonu',
+    eventDate: '28 Kasım 2026',
+    startTime: '13:00',
+    endTime: '17:00',
+    expectedAttendees: 120,
+    equipment: ['Sahne Kurulumu', '2 Adet Yaka Mikrofonu', 'Roll-up ve Stant Alanı'],
+    requesterName: 'Berkant Özdemir',
+    requesterRole: 'Kulüp Başkanı',
+    assignedBudget: '12.000 TL',
     status: 'pending',
     date: '23 Eylül 2026',
-    description: 'Etkinlik sahne kurulumu, tanıtım roll-up ve stant materyalleri.'
+    description: 'Etkinlik sahne kurulumu, tanıtım roll-up ve stant materyalleri için salon tahsisi.'
   }
 ];
 
