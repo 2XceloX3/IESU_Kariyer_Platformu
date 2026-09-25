@@ -368,14 +368,14 @@ export default function ClubsDirectory({
                 <div className="border border-slate-200 bg-white rounded-2xl p-4 flex items-center gap-4 hover:border-emerald-200 transition-colors">
                   <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-500"><Users size={20}/></div>
                   <div>
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Danışman</p>
+                    <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Danışman</p>
                     <p className="text-sm font-bold text-[#990000]">Dr. Öğr. Üyesi Ahmet Y.</p>
                   </div>
                 </div>
                 <div className="border border-slate-200 bg-white rounded-2xl p-4 flex items-center gap-4 hover:border-emerald-200 transition-colors">
                   <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-500"><Briefcase size={20}/></div>
                   <div>
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Başkan</p>
+                    <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Başkan</p>
                     <p className="text-sm font-bold text-[#990000]">Caner M. (Psikoloji)</p>
                   </div>
                 </div>

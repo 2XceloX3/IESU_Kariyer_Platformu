@@ -526,7 +526,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                       <span className="text-[11px] font-black uppercase tracking-wider text-[#990000] bg-red-50 px-2.5 py-0.5 rounded-full border border-red-100">
                         {q.category}
                       </span>
-                      <span className="text-xs font-bold text-slate-400">Soru {idx + 1} / {FORM_QUESTIONS.length}</span>
+                      <span className="text-xs font-bold text-slate-600">Soru {idx + 1} / {FORM_QUESTIONS.length}</span>
                     </div>
 
                     <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-4 leading-snug">

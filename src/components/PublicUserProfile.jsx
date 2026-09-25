@@ -860,23 +860,23 @@ export default function PublicUserProfile({
               </h3>
               <div className="space-y-2.5 text-xs text-slate-600">
                 <div>
-                  <span className="text-[11px] font-semibold text-slate-400 block">Kurum / Üniversite</span>
+                  <span className="text-[11px] font-semibold text-slate-600 block">Kurum / Üniversite</span>
                   <span className="font-bold text-slate-900">İstanbul Esenyurt Üniversitesi</span>
                 </div>
                 {user.department && (
                   <div>
-                    <span className="text-[11px] font-semibold text-slate-400 block">Bölüm / Koordinasyon</span>
+                    <span className="text-[11px] font-semibold text-slate-600 block">Bölüm / Koordinasyon</span>
                     <span className="font-bold text-slate-900">{user.department}</span>
                   </div>
                 )}
                 {user.email && (
                   <div>
-                    <span className="text-[11px] font-semibold text-slate-400 block">Kurumsal E-Posta</span>
+                    <span className="text-[11px] font-semibold text-slate-600 block">Kurumsal E-Posta</span>
                     <span className="font-bold text-slate-900">{user.email}</span>
                   </div>
                 )}
                 <div>
-                  <span className="text-[11px] font-semibold text-slate-400 block">Kullanıcı Rolü</span>
+                  <span className="text-[11px] font-semibold text-slate-600 block">Kullanıcı Rolü</span>
                   <span className="font-bold text-slate-800">
                     {user.role === 'student' ? 'Öğrenci' : user.role === 'alumni' ? 'Mezun' : user.role === 'academic' || user.role === 'academic_staff' ? 'Akademik Personel' : user.role === 'company' || user.role === 'employer' ? 'İşveren / Firma' : 'Üniversite Üyesi'}
                   </span>
@@ -933,15 +933,15 @@ export default function PublicUserProfile({
                 {userType === 'student' && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">AKADEMİK ORTALAMA</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">AKADEMİK ORTALAMA</p>
                       <p className="text-base font-black text-emerald-700 mt-1">{user.gpa || '3.84'} / 4.00</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">SINIF DÜZEYİ</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">SINIF DÜZEYİ</p>
                       <p className="text-base font-black text-slate-900 mt-1">{user.grade || '3. Sınıf Lisans'}</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">STAJ DURUMU</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">STAJ DURUMU</p>
                       <p className="text-base font-black text-blue-700 mt-1">Zorunlu Staj Onaylı</p>
                     </div>
                   </div>
@@ -950,15 +950,15 @@ export default function PublicUserProfile({
                 {userType === 'alumni' && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">MEZUNİYET YILI</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">MEZUNİYET YILI</p>
                       <p className="text-base font-black text-emerald-700 mt-1">{user.graduationYear || '2022'}</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">GÜNCEL FİRMA</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">GÜNCEL FİRMA</p>
                       <p className="text-base font-black text-slate-900 mt-1">{user.company || 'Ford Otosan'}</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">MENTÖRLÜK</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">MENTÖRLÜK</p>
                       <p className="text-base font-black text-teal-700 mt-1">Aktif Mentör</p>
                     </div>
                   </div>
@@ -967,15 +967,15 @@ export default function PublicUserProfile({
                 {userType === 'academic' && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">UNVAN</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">UNVAN</p>
                       <p className="text-base font-black text-purple-900 mt-1">{user.title || 'Doç. Dr.'}</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">UZMANLIK ALANI</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">UZMANLIK ALANI</p>
                       <p className="text-base font-black text-slate-900 mt-1">Otonom Sistemler & Algoritmalar</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">OFİS SAATLERİ</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">OFİS SAATLERİ</p>
                       <p className="text-base font-black text-indigo-700 mt-1">Salı & Perşembe</p>
                     </div>
                   </div>
@@ -984,15 +984,15 @@ export default function PublicUserProfile({
                 {userType === 'company' && (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">SEKTÖR</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">SEKTÖR</p>
                       <p className="text-base font-black text-blue-900 mt-1">{user.sector || 'E-Ticaret & Tech'}</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">GENEL MERKEZ</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">GENEL MERKEZ</p>
                       <p className="text-base font-black text-slate-900 mt-1">{user.location || 'İstanbul Maslak'}</p>
                     </div>
                     <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
-                      <p className="text-[11px] font-black text-slate-400 uppercase">İESÜ İŞBİRLİĞİ</p>
+                      <p className="text-[11px] font-black text-slate-600 uppercase">İESÜ İŞBİRLİĞİ</p>
                       <p className="text-base font-black text-emerald-700 mt-1">Protokollü Partner</p>
                     </div>
                   </div>

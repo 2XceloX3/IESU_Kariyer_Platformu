@@ -138,11 +138,11 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
 
             <div className="flex gap-4">
               <div className="bg-white/10 p-5 rounded-2xl border border-white/20 backdrop-blur-md text-center shrink-0 min-w-[130px]">
-                <p className="text-slate-300 font-bold text-[11px] uppercase tracking-wider mb-1">Sertifikalarım</p>
+                <p className="text-red-200 font-bold text-[11px] uppercase tracking-wider mb-1">Sertifikalarım</p>
                 <p className="text-3xl font-black text-amber-300">{mockUserCertificates.length}</p>
               </div>
               <div className="bg-white/10 p-5 rounded-2xl border border-white/20 backdrop-blur-md text-center shrink-0 min-w-[130px]">
-                <p className="text-slate-300 font-bold text-[11px] uppercase tracking-wider mb-1">Devam Eden</p>
+                <p className="text-red-200 font-bold text-[11px] uppercase tracking-wider mb-1">Devam Eden</p>
                 <p className="text-3xl font-black text-emerald-400">{mockOngoingPrograms.length}</p>
               </div>
             </div>
@@ -192,7 +192,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                       <span className="text-[10px] font-black uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                         {cert.type} • {cert.status}
                       </span>
-                      <span className="text-xs font-bold text-slate-400">{cert.date}</span>
+                      <span className="text-xs font-bold text-slate-600">{cert.date}</span>
                     </div>
 
                     <h3 className="text-lg font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug mb-2">
@@ -208,7 +208,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                   </div>
 
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-slate-400">Doğrulanmış Dijital Belge</span>
+                    <span className="text-[11px] font-bold text-slate-600">Doğrulanmış Dijital Belge</span>
                     <button 
                       onClick={() => window.toast && window.toast.success(`PDF Sertifikası ve e-Devlet Barkodu indiriliyor: ${cert.code}`)}
                       className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer"
@@ -298,7 +298,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                     <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
                       {prog.type}
                     </span>
-                    <span className="text-xs font-bold text-slate-400">Başlangıç: {prog.startDate}</span>
+                    <span className="text-xs font-bold text-slate-600">Başlangıç: {prog.startDate}</span>
                   </div>
 
                   <h3 className="text-lg font-black text-slate-900 leading-snug">{prog.title}</h3>

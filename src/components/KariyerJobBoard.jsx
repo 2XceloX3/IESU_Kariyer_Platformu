@@ -79,7 +79,7 @@ export default function KariyerJobBoard({ setView, currentUser, userRole, setSel
                 <div>
                   <div className="flex justify-between items-start mb-3">
                     <span className="text-[10px] font-black uppercase text-red-600 bg-red-50 px-2.5 py-1 rounded-md border border-red-100">{job.type}</span>
-                    <span className="text-xs font-bold text-slate-400 flex items-center gap-1"><MapPin size={12} /> {job.location}</span>
+                    <span className="text-xs font-bold text-slate-600 flex items-center gap-1"><MapPin size={12} /> {job.location}</span>
                   </div>
                   <h3 className="font-black text-gray-900 text-base mb-1">{job.title}</h3>
                   <p className="text-xs font-bold text-slate-500 mb-6 flex items-center gap-1.5"><Building size={14} /> {job.company}</p>

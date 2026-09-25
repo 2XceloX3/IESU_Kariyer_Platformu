@@ -68,7 +68,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
             </div>
             <div>
               <h1 className="font-black text-sm sm:text-base tracking-tight text-slate-900 leading-none">Anka Kariyer Danışmanı</h1>
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Yapay Zeka Destekli Kariyer Rehberi</span>
+              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Yapay Zeka Destekli Kariyer Rehberi</span>
             </div>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
               </div>
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 text-slate-700 rounded-tl-xs shadow-xs flex items-center gap-2">
                 <Loader2 size={16} className="animate-spin text-[#990000]" />
-                <span className="text-xs font-semibold text-slate-500 animate-pulse">Anka yanıt hazırlıyor...</span>
+                <span className="text-xs font-bold text-slate-700 animate-pulse">Anka yanıt hazırlıyor...</span>
               </div>
             </div>
           )}
@@ -110,7 +110,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
         <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2 focus-within:border-[#990000] focus-within:ring-2 focus-within:ring-red-100 transition-all">
           <input 
             type="text" 
-            className="flex-1 bg-transparent border-none outline-none text-slate-900 px-4 py-3 placeholder-slate-400 text-sm font-medium"
+            className="flex-1 bg-transparent border-none outline-none text-slate-900 px-4 py-3 placeholder-slate-500 text-sm font-medium"
             placeholder="Kariyerin, stajların veya mülakat hazırlığın hakkında Anka'ya danış..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -127,7 +127,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
           </button>
         </div>
         
-        <p className="text-center text-[11px] font-medium text-slate-400 mt-3 flex items-center justify-center gap-1.5">
+        <p className="text-center text-[11px] font-bold text-slate-600 mt-3 flex items-center justify-center gap-1.5">
           <Sparkles size={13} className="text-[#990000]" /> İESÜ Kariyer Geliştirme Koordinatörlüğü Akıllı Asistanı
         </p>
       </main>

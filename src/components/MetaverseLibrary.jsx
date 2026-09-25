@@ -124,7 +124,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <span className="text-xs font-bold text-slate-400 uppercase mr-1">Önerilenler:</span>
+              <span className="text-xs font-bold text-slate-600 uppercase mr-1">Önerilenler:</span>
               {MOCK_TRENDS.map((trend, idx) => (
                 <button
                   key={idx}
@@ -204,7 +204,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                         <span className="flex items-center gap-1"><Clock size={12}/> {res.year}</span>
                       </div>
                       <h4 className="text-sm font-black text-red-900 mb-2 leading-snug line-clamp-2">{res.title}</h4>
-                      <p className="text-slate-400 font-bold text-[11px] mb-6">{res.author}</p>
+                      <p className="text-slate-600 font-bold text-[11px] mb-6">{res.author}</p>
                     </div>
                     
                     <button 
@@ -246,23 +246,23 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
 
               <div className="p-6 space-y-4 text-xs font-bold text-slate-500">
                 <div>
-                  <label className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Yayın Adı</label>
+                  <label className="text-[10px] text-slate-600 uppercase font-black tracking-wider">Yayın Adı</label>
                   <h4 className="text-red-900 font-black text-sm mt-1">{selectedBook.title}</h4>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Yazar</label>
+                    <label className="text-[10px] text-slate-600 uppercase font-black tracking-wider">Yazar</label>
                     <p className="text-red-900 mt-1">{selectedBook.author}</p>
                   </div>
                   <div>
-                    <label className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Yayın Yılı</label>
+                    <label className="text-[10px] text-slate-600 uppercase font-black tracking-wider">Yayın Yılı</label>
                     <p className="text-red-900 mt-1">{selectedBook.year}</p>
                   </div>
                 </div>
 
                 <div className="border-t border-slate-100 pt-4">
-                  <label className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Özet (Abstract)</label>
+                  <label className="text-[10px] text-slate-600 uppercase font-black tracking-wider">Özet (Abstract)</label>
                   <p className="text-slate-600 mt-1.5 leading-relaxed font-semibold">{selectedBook.abstract}</p>
                 </div>
 

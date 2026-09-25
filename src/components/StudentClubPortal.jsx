@@ -663,7 +663,7 @@ export default function StudentClubPortal({
                   <p className="text-[11px] text-slate-500">
                     {selectedClub.president?.department || 'Bilgisayar Mühendisliği'} • {selectedClub.president?.year || '3. Sınıf'}
                   </p>
-                  <p className="text-[11px] text-slate-400 flex items-center gap-1 mt-1">
+                  <p className="text-[11px] text-slate-600 font-medium flex items-center gap-1 mt-1">
                     <Phone size={12} /> {selectedClub.president?.phone || '0532 999 8811'}
                   </p>
                 </div>
@@ -696,7 +696,7 @@ export default function StudentClubPortal({
                   ]).map((ann, idx) => (
                     <div key={idx} className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-[10px] font-bold text-slate-400">{ann.date}</span>
+                        <span className="text-[10px] font-bold text-slate-600">{ann.date}</span>
                         {ann.isImportant && (
                           <span className="text-[9px] font-black uppercase bg-red-100 text-[#990000] px-1.5 py-0.5 rounded">Önemli</span>
                         )}
@@ -783,12 +783,12 @@ export default function StudentClubPortal({
                                   <h4 className="font-bold text-xs text-gray-900 hover:text-[#990000] transition cursor-pointer">{post.author.name}</h4>
                                   {post.author.verified && <CheckCircle2 size={13} className="text-blue-500 fill-blue-500 text-white" />}
                                 </div>
-                                <p className="text-[10px] text-slate-400 flex items-center gap-1">
+                                <p className="text-[10px] text-slate-600 font-medium flex items-center gap-1">
                                   <MapPin size={10} className="text-[#990000]" /> {post.location} • {post.createdAt}
                                 </p>
                               </div>
                             </div>
-                            <span className="text-xs text-slate-400 font-mono">•••</span>
+                            <span className="text-xs text-slate-600 font-mono font-bold">•••</span>
                           </div>
 
                           {/* Post Media Carousel Container */}
@@ -1025,19 +1025,19 @@ export default function StudentClubPortal({
                   {/* Status Metric Cards (NO Currency - Only Status & Counts) */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Toplam Tahsis Talebi</p>
+                      <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Toplam Tahsis Talebi</p>
                       <h4 className="text-xl font-black text-gray-900">{selectedClub.budgetRequests?.length || 0} Talep</h4>
                       <span className="text-[11px] text-slate-500">2026-2027 Dönemi</span>
                     </div>
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Onaylanan Salon / Tahsis</p>
+                      <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Onaylanan Salon / Tahsis</p>
                       <h4 className="text-xl font-black text-emerald-700">
                         {(selectedClub.budgetRequests || []).filter(r => r.status === 'approved').length} Etkinlik
                       </h4>
                       <span className="text-[11px] text-emerald-600 font-medium">SKS Onaylı Rezervasyon</span>
                     </div>
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">İncelemedeki Başvurular</p>
+                      <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">İncelemedeki Başvurular</p>
                       <h4 className="text-xl font-black text-amber-700">
                         {(selectedClub.budgetRequests || []).filter(r => r.status === 'pending').length} Talep
                       </h4>
@@ -1063,7 +1063,7 @@ export default function StudentClubPortal({
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse text-xs">
                         <thead>
-                          <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider">
+                          <tr className="border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider">
                             <th className="pb-3 px-3">Etkinlik / Organizasyon</th>
                             <th className="pb-3 px-3">Talep Edilen Salon / Yer</th>
                             <th className="pb-3 px-3">Tarih & Saat Aralığı</th>
@@ -1093,7 +1093,7 @@ export default function StudentClubPortal({
                           ))}
                           {(!selectedClub.budgetRequests || selectedClub.budgetRequests.length === 0) && (
                             <tr>
-                              <td colSpan={6} className="py-8 text-center text-slate-400">Henüz iletilmiş bir mekan/tahsis talebi kaydı bulunmuyor.</td>
+                              <td colSpan={6} className="py-8 text-center text-slate-500 font-medium">Henüz iletilmiş bir mekan/tahsis talebi kaydı bulunmuyor.</td>
                             </tr>
                           )}
                         </tbody>
@@ -1183,7 +1183,7 @@ export default function StudentClubPortal({
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse text-xs">
                         <thead>
-                          <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider">
+                          <tr className="border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider">
                             <th className="pb-3 px-3">Öğrenci Bilgisi</th>
                             <th className="pb-3 px-3">Öğrenci No & TC</th>
                             <th className="pb-3 px-3">Bölüm & Sınıf</th>
@@ -1196,16 +1196,16 @@ export default function StudentClubPortal({
                           {(selectedClub.members || []).map((mem, idx) => (
                             <tr key={idx} className="hover:bg-slate-50/60">
                               <td className="py-3 px-3 font-bold text-gray-900">{mem.name}</td>
-                              <td className="py-3 px-3 text-slate-500 font-mono text-[11px]">
+                              <td className="py-3 px-3 text-slate-600 font-mono text-[11px]">
                                 {mem.studentNo || '2023010***'}
                                 {mem.tcKimlik && (
-                                  <span className="block text-[10px] text-slate-400">
+                                  <span className="block text-[10px] text-slate-600 font-medium">
                                     TC: {mem.tcKimlik.slice(0, 3)}*****{mem.tcKimlik.slice(-2)}
                                   </span>
                                 )}
                               </td>
-                              <td className="py-3 px-3 text-slate-600">
-                                {mem.department} {mem.grade && <span className="block text-[10px] text-slate-400">{mem.grade}</span>}
+                              <td className="py-3 px-3 text-slate-700">
+                                {mem.department} {mem.grade && <span className="block text-[10px] text-slate-600 font-medium">{mem.grade}</span>}
                               </td>
                               <td className="py-3 px-3">
                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -1217,7 +1217,7 @@ export default function StudentClubPortal({
                                   {mem.role || 'Aktif Üye'}
                                 </span>
                               </td>
-                              <td className="py-3 px-3 text-slate-400">{mem.joinedDate || '2024'}</td>
+                              <td className="py-3 px-3 text-slate-600 font-medium">{mem.joinedDate || '2024'}</td>
                               {authorized && (
                                 <td className="py-3 px-3 text-right">
                                   <button
@@ -1905,7 +1905,7 @@ export default function StudentClubPortal({
           <div className="animate-fade-in space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
               <div className="relative flex-1 w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
                 <input 
                   type="text" 
                   placeholder="Kulüp adı veya anahtar kelime ara..." 
@@ -1939,11 +1939,11 @@ export default function StudentClubPortal({
                     </div>
                     <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-1">{club.description || 'Öğrencilerin akademik ve sosyal gelişimlerini desteklemeyi amaçlamaktadır.'}</p>
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
-                        <Users size={14} className="text-slate-400" /> {club.memberCount || club.members?.length || 45} Üye
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                        <Users size={14} className="text-[#990000]" /> {club.memberCount || club.members?.length || 45} Üye
                       </div>
                       {isMemberOfClub(club) && <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">Üyesiniz</span>}
-                      <ChevronRight size={18} className="text-slate-300 group-hover:text-[#990000] transition-colors" />
+                      <ChevronRight size={18} className="text-slate-400 group-hover:text-[#990000] transition-colors" />
                     </div>
                   </div>
                 ))}
@@ -2028,7 +2028,7 @@ export default function StudentClubPortal({
                              <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${app.type === 'new_club' ? 'bg-violet-100 text-violet-700' : 'bg-red-100 text-[#990000]'}`}>
                                {app.type === 'new_club' ? 'Yeni Kulüp Kurma (EK-1)' : 'Mekan & Tahsis Talebi'}
                              </span>
-                             <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1"><Clock size={12} /> {app.date}</span>
+                             <span className="text-[11px] font-bold text-slate-600 flex items-center gap-1"><Clock size={12} /> {app.date}</span>
                            </div>
                            <h3 className="font-bold text-gray-900 text-base">{app.name || app.eventName}</h3>
                            <p className="text-xs font-medium text-slate-500 mt-1">

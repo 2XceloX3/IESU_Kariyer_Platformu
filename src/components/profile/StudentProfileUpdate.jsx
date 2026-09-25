@@ -342,7 +342,7 @@ export default function StudentProfileUpdate({
           <div className="lg:col-span-1 space-y-2">
             <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-xs sticky top-24">
               <div className="p-3 border-b border-slate-100 mb-1">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Kovan Sekmeleri</p>
+                <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Kovan Sekmeleri</p>
               </div>
               {TABS.map(tab => {
                 const Icon = tab.icon;

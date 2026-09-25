@@ -754,15 +754,15 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
                   <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-2xl border border-gray-100">
                     <div>
-                      <span className="block text-[10px] text-gray-400 font-bold uppercase">Süre / Kredi</span>
+                      <span className="block text-[10px] text-slate-600 font-bold uppercase">Süre / Kredi</span>
                       <span className="font-bold text-gray-800">{intern.duration} ({intern.ects})</span>
                     </div>
                     <div>
-                      <span className="block text-[10px] text-gray-400 font-bold uppercase">Değerlendirme Notu</span>
+                      <span className="block text-[10px] text-slate-600 font-bold uppercase">Değerlendirme Notu</span>
                       <span className="font-bold text-emerald-700">{intern.score}</span>
                     </div>
                     <div className="col-span-2 mt-1">
-                      <span className="block text-[10px] text-gray-400 font-bold uppercase">Staj Danışmanı</span>
+                      <span className="block text-[10px] text-slate-600 font-bold uppercase">Staj Danışmanı</span>
                       <span className="font-semibold text-gray-700">{intern.mentor}</span>
                     </div>
                   </div>
@@ -811,15 +811,15 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
                     <div className="space-y-1.5 text-xs bg-gray-50 p-3 rounded-2xl border border-gray-100 mb-3">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Veriliş:</span>
+                        <span className="text-slate-600 font-medium">Veriliş:</span>
                         <span className="font-semibold text-gray-800">{cert.issueDate}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Eğitim Süresi:</span>
+                        <span className="text-slate-600 font-medium">Eğitim Süresi:</span>
                         <span className="font-semibold text-gray-800">{cert.hours}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Akreditasyon:</span>
+                        <span className="text-slate-600 font-medium">Akreditasyon:</span>
                         <span className="font-bold text-emerald-700">{cert.accreditedBy}</span>
                       </div>
                     </div>
@@ -995,7 +995,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   <div className="w-16 h-16 border-2 border-dashed border-[#990000] rounded-full flex items-center justify-center p-1 text-[9px] font-black text-[#990000] text-center">
                     İESÜ MÜHÜR & ONAY
                   </div>
-                  <span className="text-[8px] text-gray-400 mt-1">2026 Resmî İESÜ Damgası</span>
+                  <span className="text-[8px] text-slate-600 font-bold mt-1">2026 Resmî İESÜ Damgası</span>
                 </div>
 
                 <div>

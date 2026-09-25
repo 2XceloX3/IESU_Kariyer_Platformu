@@ -1355,7 +1355,7 @@ export default function UserProfile({
                   </div>
                   <div>
                     <h3 className="font-black text-sm text-white">Mentörlük & Danışmanlık Talebi</h3>
-                    <p className="text-[11px] text-slate-300 font-medium">KGM Denetimli Resmi Başvuru Formu</p>
+                    <p className="text-[11px] text-red-200 font-medium">KGM Denetimli Resmi Başvuru Formu</p>
                   </div>
                 </div>
 
@@ -1738,7 +1738,7 @@ export default function UserProfile({
 
             {/* ŞİRKET KÜLTÜRÜ & YAN HAKLAR (PERKS) */}
             <div className="mt-4 pt-3 border-t border-slate-200/80">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Çalışan Kültürü & Şirket Avantajları</span>
+              <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest block mb-2">Çalışan Kültürü & Şirket Avantajları</span>
               <div className="flex flex-wrap gap-2">
                 {[
                   '💻 Hibrit & Esnek Çalışma', 
@@ -2194,13 +2194,13 @@ export default function UserProfile({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <p className="text-[11px] font-black text-slate-400 uppercase">E-POSTA ADRESİ</p>
+                <p className="text-[11px] font-black text-slate-600 uppercase">E-POSTA ADRESİ</p>
                 <p className="text-xs font-bold text-slate-900 mt-1 flex items-center gap-1.5">
                   <Mail size={14} className="text-emerald-700" /> {academicData.officeHours?.email || user?.email || 'akademisyen@esenyurt.edu.tr'}
                 </p>
               </div>
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                <p className="text-[11px] font-black text-slate-400 uppercase">OFİS KONUMU</p>
+                <p className="text-[11px] font-black text-slate-600 uppercase">OFİS KONUMU</p>
                 <p className="text-xs font-bold text-slate-900 mt-1 flex items-center gap-1.5">
 <Clock size={14} className="text-emerald-700" /> {academicData.officeHours?.hours || 'Salı & Perşembe 13:00 - 16:00'}
                 </p>

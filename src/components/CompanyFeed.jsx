@@ -321,7 +321,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 <p className="text-[12px] font-bold text-orange-600 mt-1 uppercase tracking-wider">SÜPER YÖNETİCİ</p>
                 
                 <div className="mt-4 flex flex-col gap-2 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Firma İlan & Aday Yetkileri</p>
+                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-wider mb-1">Firma İlan & Aday Yetkileri</p>
                   <div className="flex items-center gap-2 text-[12px] font-bold text-slate-700">
                     <CheckCircle2 size={14} className="text-emerald-500" /> Kurumsal İlan Yayınlama
                   </div>
@@ -584,7 +584,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             <div className="space-y-2 pt-1 relative z-10">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black text-blue-200 uppercase tracking-wider">Son Başvuran Adaylar</span>
-                <span className="text-[9px] text-slate-400 font-bold">Anlık Canlı</span>
+                <span className="text-[9px] text-blue-200 font-bold">Anlık Canlı</span>
               </div>
 
               {/* SAĞ PANEL İÇİ ANLIK ADAY LİSTESİ AKIŞI (TEMİZ TEMPORARY BOX LAYOUT) */}

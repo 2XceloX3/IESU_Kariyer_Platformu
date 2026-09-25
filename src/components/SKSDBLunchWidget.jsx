@@ -212,8 +212,8 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
             <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Vücut Kitle İndeksiniz (BMI)</span>
-                  <h3 className="text-4xl font-black text-gray-900 mt-1">{bmi} <span className="text-sm font-bold text-slate-400">kg/m²</span></h3>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-600">Vücut Kitle İndeksiniz (BMI)</span>
+                  <h3 className="text-4xl font-black text-gray-900 mt-1">{bmi} <span className="text-sm font-bold text-slate-600">kg/m²</span></h3>
                 </div>
                 <div className={`px-4 py-2 rounded-2xl border font-black text-xs ${bmiStatus.color}`}>
                   {bmiStatus.label}
@@ -228,19 +228,19 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
               <div className="grid grid-cols-3 gap-3 pt-2">
                 <div className="bg-rose-50/60 p-4 rounded-2xl border border-rose-100 text-center">
                   <Flame className="text-red-600 mx-auto mb-1" size={20} />
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">Günlük İdeal Kalori</span>
+                  <span className="text-[10px] font-bold text-slate-700 uppercase block">Günlük İdeal Kalori</span>
                   <h4 className="font-black text-gray-900 text-base">{dailyCalories} <span className="text-[10px]">kcal</span></h4>
                 </div>
 
                 <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 text-center">
                   <Droplets className="text-emerald-600 mx-auto mb-1" size={20} />
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">Su İhtiyacı</span>
+                  <span className="text-[10px] font-bold text-slate-700 uppercase block">Su İhtiyacı</span>
                   <h4 className="font-black text-gray-900 text-base">{idealWater} <span className="text-[10px]">Litre</span></h4>
                 </div>
 
                 <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-100 text-center">
                   <Dumbbell className="text-amber-600 mx-auto mb-1" size={20} />
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">Protein Hedefi</span>
+                  <span className="text-[10px] font-bold text-slate-700 uppercase block">Protein Hedefi</span>
                   <h4 className="font-black text-gray-900 text-base">{idealProtein} <span className="text-[10px]">Gram</span></h4>
                 </div>
               </div>

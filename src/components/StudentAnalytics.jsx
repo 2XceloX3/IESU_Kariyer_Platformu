@@ -657,7 +657,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               </button>
 
               {/* Sektörden anonim karşılaştırma profilleri */}
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Sektörünüzdeki Diğer Kariyer Profilleri</p>
+              <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-2">Sektörünüzdeki Diğer Kariyer Profilleri</p>
               <div className="space-y-2">
                 {topCompetitors.map((comp, idx) => (
                   <div key={idx} className="flex items-center gap-3 p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm">
@@ -670,7 +670,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                     </div>
                     <div className="text-right">
                       <span className="block text-[11px] font-black text-gray-900">{comp.certifications ?? comp.ssp}</span>
-                      <span className="block text-[9px] font-bold text-gray-400 uppercase">Sertifika</span>
+                      <span className="block text-[9px] font-bold text-slate-600 uppercase">Sertifika</span>
                     </div>
                   </div>
                 ))}
@@ -712,7 +712,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                       <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mt-0.5">{comp.sector}</p>
                     </div>
                     <div className="text-right flex flex-col items-end gap-1">
-                      <span className="text-[10px] text-gray-400 font-black bg-gray-100 px-2 py-0.5 rounded">{comp.time}</span>
+                      <span className="text-[10px] text-slate-700 font-black bg-slate-100 px-2 py-0.5 rounded">{comp.time}</span>
                       <button onClick={() => { setShowVisitorsModal(false); setView('jobs'); }} className="text-[10px] font-black text-[#990000] hover:text-red-800 uppercase tracking-wider">İlanları Gör</button>
                     </div>
                   </div>

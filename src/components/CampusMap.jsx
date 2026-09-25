@@ -114,7 +114,7 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
 
           {/* List of Stations */}
           <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs flex-grow">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest mb-4 flex items-center gap-2">
               <Activity size={14} className="text-[#990000]" /> İstasyon Durumları
             </h3>
             <div className="space-y-3">
@@ -287,28 +287,28 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
                     </div>
                     <div>
                       <h3 className="font-black text-base text-slate-900 leading-tight">{selectedLocation.name}</h3>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{selectedLocation.type}</span>
+                      <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">{selectedLocation.type}</span>
                     </div>
                   </div>
                   <button 
                     onClick={() => setSelectedLocation(null)}
-                    className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition cursor-pointer"
+                    className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition cursor-pointer"
                   >
                     ✕
                   </button>
                 </div>
 
-                <p className="text-slate-600 text-xs leading-relaxed mb-5 font-medium">
+                <p className="text-slate-700 text-xs leading-relaxed mb-5 font-medium">
                   {selectedLocation.description}
                 </p>
 
                 <div className="grid grid-cols-2 gap-3 mb-5 text-xs font-bold text-slate-700">
                   <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/90 shadow-xs">
-                    <span className="block text-[9px] text-slate-400 uppercase tracking-widest mb-1">Doluluk Durumu</span>
+                    <span className="block text-[9px] text-slate-600 uppercase tracking-widest mb-1 font-bold">Doluluk Durumu</span>
                     <span className="text-slate-900 font-extrabold">{selectedLocation.status}</span>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/90 shadow-xs">
-                    <span className="block text-[9px] text-slate-400 uppercase tracking-widest mb-1">Gürültü Düzeyi</span>
+                    <span className="block text-[9px] text-slate-600 uppercase tracking-widest mb-1 font-bold">Gürültü Düzeyi</span>
                     <span className="text-slate-900 font-extrabold">{selectedLocation.quietLevel}</span>
                   </div>
                 </div>

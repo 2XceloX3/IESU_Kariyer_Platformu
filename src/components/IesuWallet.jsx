@@ -103,7 +103,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
                     </div>
                     <div>
                       <h4 className="font-bold text-red-900 text-xs sm:text-sm mb-1 group-hover:text-red-600 transition">{cert.name}</h4>
-                      <p className="text-[10px] text-slate-400 font-bold flex items-center gap-1">
+                      <p className="text-[10px] text-slate-600 font-bold flex items-center gap-1">
                         <CheckCircle2 size={12} className="text-emerald-500" /> {cert.issuer}
                       </p>
                     </div>
@@ -124,7 +124,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-4 border border-slate-200/50">
                 <motion.div initial={{ width: 0 }} animate={{ width: `${readinessScore}%` }} className="h-full bg-[#990000]" />
               </div>
-              <p className="text-[11px] text-slate-400 font-bold leading-relaxed">Bu skoru artırmak için Sürekli Eğitim Merkezi'ndeki (SEM) açık eğitimleri inceleyebilirsiniz.</p>
+              <p className="text-[11px] text-slate-600 font-bold leading-relaxed">Bu skoru artırmak için Sürekli Eğitim Merkezi'ndeki (SEM) açık eğitimleri inceleyebilirsiniz.</p>
             </div>
           </div>
 
@@ -144,7 +144,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
                       </div>
                       <div>
                         <h4 className="text-xs font-black text-red-900 leading-tight mb-1">{trx.desc}</h4>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{trx.date}</p>
+                        <p className="text-[9px] text-slate-600 font-bold uppercase tracking-wider">{trx.date}</p>
                       </div>
                     </div>
                   </div>
@@ -178,7 +178,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
               <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div>
                   <h3 className="font-black text-slate-950 text-sm">Özgeçmişe Aktar</h3>
-                  <span className="text-[10px] text-slate-400 font-bold">Doğrulanmış Bilgilerinizi Çıkarın</span>
+                  <span className="text-[10px] text-slate-600 font-bold">Doğrulanmış Bilgilerinizi Çıkarın</span>
                 </div>
                 <button onClick={() => setShowExportModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 transition">
                   <X size={16} />

@@ -73,7 +73,7 @@ export default function SKSDBClubsDirectory({ setView, currentUser, userRole, se
                 <div>
                   <div className="flex justify-between items-start mb-3">
                     <span className="text-[10px] font-black uppercase text-red-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">{club.category}</span>
-                    <span className="text-xs font-bold text-slate-400">{club.members} Üye</span>
+                    <span className="text-xs font-bold text-slate-600">{club.members} Üye</span>
                   </div>
                   <h3 className="font-black text-gray-900 text-base mb-1">{club.name}</h3>
                   <p className="text-xs font-semibold text-slate-500 mb-6">Başkan: {club.lead}</p>
