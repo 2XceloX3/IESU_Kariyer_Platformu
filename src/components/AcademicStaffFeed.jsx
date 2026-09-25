@@ -443,11 +443,11 @@ export default function AcademicStaffFeed({
                           <div>
                             <div className="flex items-center gap-2">
                               <h4 className="font-bold text-gray-900 text-sm">{item.name}</h4>
-                              <span className="text-[10px] font-bold text-gray-400">({item.no})</span>
+                              <span className="text-[10px] font-bold text-slate-600">({item.no})</span>
                             </div>
                             <p className="text-xs font-medium text-gray-600 mt-0.5">{item.company} • <span className="font-bold text-[#990000]">{item.type}</span></p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] text-gray-400">Talep Tarihi: {item.date}</span>
+                              <span className="text-[10px] text-slate-600 font-medium">Talep Tarihi: {item.date}</span>
                               <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${item.status === 'Onaylandı' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : item.status === 'Reddedildi' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
                                 {item.status}
                               </span>
@@ -519,7 +519,7 @@ export default function AcademicStaffFeed({
                   {/* Filter & Search Bar */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-xs">
                     <div className="relative w-full sm:w-72">
-                      <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                       <input 
                         type="text" 
                         value={counselingSearch}
@@ -602,12 +602,12 @@ export default function AcademicStaffFeed({
                                   >
                                     {req.studentName}
                                   </h4>
-                                  <span className="text-[10px] font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                                  <span className="text-[10px] font-mono text-slate-700 font-bold bg-slate-100 px-2 py-0.5 rounded-full">
                                     {req.studentId}
                                   </span>
                                 </div>
                                 <p className="text-xs font-bold text-purple-900 mt-0.5">{req.studentDept}</p>
-                                <p className="text-[10px] text-slate-400">{req.studentEmail} • Başvuru: {req.date || req.requestDate}</p>
+                                <p className="text-[10px] text-slate-600 font-medium">{req.studentEmail} • Başvuru: {req.date || req.requestDate}</p>
                               </div>
                             </div>
 
@@ -636,7 +636,7 @@ export default function AcademicStaffFeed({
                             <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center gap-2">
                               <Calendar size={16} className="text-indigo-600 shrink-0" />
                               <div>
-                                <span className="text-[9px] font-bold text-slate-400 uppercase block">Tarih & Saat</span>
+                                <span className="text-[9px] font-bold text-slate-700 uppercase block">Tarih & Saat</span>
                                 <span className="font-black text-gray-900 block">{req.preferredDate} • {req.preferredTimeSlot}</span>
                               </div>
                             </div>
@@ -644,7 +644,7 @@ export default function AcademicStaffFeed({
                             <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center gap-2">
                               <MapPin size={16} className="text-emerald-600 shrink-0" />
                               <div className="min-w-0">
-                                <span className="text-[9px] font-bold text-slate-400 uppercase block">Görüşme Şekli</span>
+                                <span className="text-[9px] font-bold text-slate-700 uppercase block">Görüşme Şekli</span>
                                 <span className="font-black text-gray-900 truncate block">{req.platform || req.mode}</span>
                               </div>
                             </div>
@@ -740,7 +740,7 @@ export default function AcademicStaffFeed({
                       <Radar size={18} className="text-[#990000]" /> Bölüm Öğrencileri Canlı Staj Radarı
                     </h3>
                     <div className="relative">
-                      <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                       <input 
                         type="text" 
                         placeholder="Öğrenci veya firma ara..." 
@@ -770,7 +770,7 @@ export default function AcademicStaffFeed({
                           <tr key={idx} className="hover:bg-slate-50/80 transition">
                             <td className="p-3.5 font-bold text-gray-900">
                               {row.name}
-                              <span className="block text-[10px] text-gray-400 font-normal">{row.no}</span>
+                              <span className="block text-[10px] text-slate-600 font-bold">{row.no}</span>
                             </td>
                             <td className="p-3.5 font-semibold text-gray-700">{row.company}</td>
                             <td className="p-3.5 text-gray-600">{row.type}</td>
@@ -1195,7 +1195,7 @@ export default function AcademicStaffFeed({
                               {item.priority}
                             </span>
                           </div>
-                          <span className="text-[10px] text-gray-400 font-medium block mt-0.5">{item.date}</span>
+                          <span className="text-[10px] text-slate-600 font-bold block mt-0.5">{item.date}</span>
                         </div>
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                           item.status === 'Yanıtlandı' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
@@ -1269,21 +1269,21 @@ export default function AcademicStaffFeed({
               {/* Student Specs & Company Info */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
-                  <span className="text-[10px] font-black uppercase text-slate-400">Öğrenci Bilgisi</span>
+                  <span className="text-[10px] font-black uppercase text-slate-700">Öğrenci Bilgisi</span>
                   <p className="font-black text-slate-900 text-sm mt-1">{selectedDocModal.name}</p>
                   <p className="text-xs text-slate-500 font-medium">No: {selectedDocModal.no}</p>
                   <p className="text-[11px] font-bold text-[#990000] mt-1">Bilgisayar Mühendisliği (İÖ)</p>
                 </div>
 
                 <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
-                  <span className="text-[10px] font-black uppercase text-slate-400">Firma & Kurum</span>
+                  <span className="text-[10px] font-black uppercase text-slate-700">Firma & Kurum</span>
                   <p className="font-black text-slate-900 text-sm mt-1">{selectedDocModal.company}</p>
                   <p className="text-xs text-slate-500 font-medium">Ar-Ge & Yazılım Bölümü</p>
                   <p className="text-[11px] font-bold text-emerald-600 mt-1">✓ Şirket İK Onaylı</p>
                 </div>
 
                 <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
-                  <span className="text-[10px] font-black uppercase text-slate-400">SGK & Protokol Durumu</span>
+                  <span className="text-[10px] font-black uppercase text-slate-700">SGK & Protokol Durumu</span>
                   <p className="font-black text-slate-900 text-sm mt-1">e-Devlet SGK Barkodlu</p>
                   <p className="text-xs text-slate-500 font-medium">Süre: 30 İş Günü</p>
                   <p className="text-[11px] font-bold text-blue-600 mt-1">✓ Müstahaklık Doğrulandı</p>
@@ -1452,7 +1452,7 @@ export default function AcademicStaffFeed({
                   <div>
                     <h4 className="font-black text-sm text-gray-900">{selectedCounselingModal.studentName}</h4>
                     <p className="text-xs text-purple-900 font-bold">{selectedCounselingModal.studentDept}</p>
-                    <p className="text-[10px] text-gray-400">{selectedCounselingModal.studentEmail}</p>
+                    <p className="text-[10px] text-slate-600 font-medium">{selectedCounselingModal.studentEmail}</p>
                   </div>
                 </div>
 
@@ -1472,11 +1472,11 @@ export default function AcademicStaffFeed({
               {/* Specs */}
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Talep Konusu</span>
+                  <span className="text-[10px] font-bold text-slate-700 uppercase block">Talep Konusu</span>
                   <span className="font-bold text-slate-900 block mt-0.5">{selectedCounselingModal.topic || selectedCounselingModal.subject}</span>
                 </div>
                 <div className="p-3 bg-white rounded-xl border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Randevu Zamanı</span>
+                  <span className="text-[10px] font-bold text-slate-700 uppercase block">Randevu Zamanı</span>
                   <span className="font-bold text-slate-900 block mt-0.5">{selectedCounselingModal.preferredDate} • {selectedCounselingModal.preferredTimeSlot}</span>
                 </div>
               </div>

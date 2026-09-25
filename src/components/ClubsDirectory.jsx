@@ -258,7 +258,7 @@ export default function ClubsDirectory({
                     <p className="text-[11px] text-slate-500">{post.time}</p>
                   </div>
                 </div>
-                <button className="text-slate-400 hover:text-emerald-600 p-2 rounded-full hover:bg-emerald-50 transition-colors"><Plus size={20}/></button>
+                <button className="text-slate-600 hover:text-emerald-600 p-2 rounded-full hover:bg-emerald-50 transition-colors"><Plus size={20}/></button>
               </div>
               
               <div className="px-4 pb-3">
@@ -355,12 +355,12 @@ export default function ClubsDirectory({
                 <h2 className="text-3xl font-black text-gray-900 leading-tight">{selectedClub.name}</h2>
                 <div className="flex items-center gap-3 mt-2">
                   <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">{selectedClub.category}</span>
-                  <span className="text-sm font-bold text-slate-500 flex items-center gap-1"><Users size={16}/> {selectedClub.memberCount} Üye</span>
+                  <span className="text-sm font-bold text-slate-700 flex items-center gap-1"><Users size={16}/> {selectedClub.memberCount} Üye</span>
                 </div>
               </div>
 
               <div className="mt-8">
-                <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2"><Info size={18} className="text-slate-400"/> Hakkımızda</h3>
+                <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2"><Info size={18} className="text-slate-600"/> Hakkımızda</h3>
                 <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-5 rounded-2xl border border-slate-100">{selectedClub.description}</p>
               </div>
               

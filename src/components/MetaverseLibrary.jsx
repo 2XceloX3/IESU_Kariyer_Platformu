@@ -105,7 +105,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
             </p>
 
             <div className="w-full bg-white p-3 rounded-3xl shadow-xl flex items-center gap-4 border border-slate-200/80 focus-within:ring-4 focus-within:ring-indigo-100 focus-within:border-indigo-400 transition-all mb-6">
-              <Search className="text-slate-400 ml-4" size={22} />
+              <Search className="text-slate-500 ml-4" size={22} />
               <input 
                 type="text" 
                 className="flex-1 bg-transparent border-none outline-none text-sm font-semibold text-red-900 placeholder-slate-400"

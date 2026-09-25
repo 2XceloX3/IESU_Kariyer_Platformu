@@ -252,7 +252,7 @@ export default function StudentProfileUpdate({
             >
               <Logo className="h-8 w-auto text-[#990000]" />
               <div className="border-l-2 border-slate-200 pl-3">
-                <span className="text-xs font-black text-[#990000] uppercase tracking-wider block">Öğrenci Kovanı</span>
+                <span className="text-xs font-black text-[#990000] uppercase tracking-wider block">Öğrenci Portalı</span>
                 <h1 className="text-base font-black text-gray-900 leading-none">Öğrenci Bilgilerini Düzenle</h1>
               </div>
             </div>
@@ -342,7 +342,7 @@ export default function StudentProfileUpdate({
           <div className="lg:col-span-1 space-y-2">
             <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-xs sticky top-24">
               <div className="p-3 border-b border-slate-100 mb-1">
-                <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Kovan Sekmeleri</p>
+                <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Profil Sekmeleri</p>
               </div>
               {TABS.map(tab => {
                 const Icon = tab.icon;
@@ -358,10 +358,10 @@ export default function StudentProfileUpdate({
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon size={18} className={isActive ? 'text-white' : 'text-slate-400'} />
+                      <Icon size={18} className={isActive ? 'text-white' : 'text-slate-600'} />
                       <span>{tab.label}</span>
                     </div>
-                    <ChevronRight size={16} className={isActive ? 'text-white' : 'text-slate-300'} />
+                    <ChevronRight size={16} className={isActive ? 'text-white' : 'text-slate-400'} />
                   </button>
                 );
               })}
@@ -785,11 +785,11 @@ export default function StudentProfileUpdate({
                       {formData.languages.map((lang, idx) => (
                         <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
                           <div className="flex items-center gap-3">
-                            <Globe size={18} className="text-slate-400" />
+                            <Globe size={18} className="text-slate-600" />
                             <span className="font-bold text-sm text-gray-900">{lang.name}</span>
-                            <span className="text-xs text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-md font-medium">{lang.level}</span>
+                            <span className="text-xs text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md font-bold">{lang.level}</span>
                           </div>
-                          <button onClick={() => handleRemoveLanguage(idx)} className="text-slate-400 hover:text-red-600 transition">
+                          <button onClick={() => handleRemoveLanguage(idx)} className="text-slate-500 hover:text-red-600 transition">
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -807,7 +807,7 @@ export default function StudentProfileUpdate({
                       <Layers className="text-[#990000]" size={22} />
                       Kulüp & Öğrenci Toplulukları
                     </h3>
-                    <p className="text-sm text-slate-500">Üniversitemiz bünyesinde aktif üye veya yönetiminde olduğunuz kulüpler.</p>
+                    <p className="text-sm text-slate-600 font-medium">Üniversitemiz bünyesinde aktif üye veya yönetiminde olduğunuz kulüpler.</p>
                   </div>
 
                   <div className="space-y-3">

@@ -304,7 +304,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                 <div>
                   <div className="flex items-baseline gap-1">
                     <h3 className="text-5xl font-black text-gray-900">{calculatedMetrics.score}</h3>
-                    <span className="text-lg font-bold text-gray-400">/ 100</span>
+                    <span className="text-lg font-bold text-slate-600">/ 100</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2 mt-4 overflow-hidden">
                     <div className="bg-gradient-to-r from-emerald-500 to-[#990000] h-full rounded-full" style={{ width: `${calculatedMetrics.score}%` }}></div>
@@ -537,7 +537,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-[10px] font-black text-red-600 uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded border border-red-100">{sk.category}</span>
-                      <span className="text-[10px] font-bold text-gray-400">{sk.level}</span>
+                      <span className="text-[10px] font-bold text-slate-600">{sk.level}</span>
                     </div>
                     <h4 className="font-black text-gray-900 text-base mb-1">{sk.skill}</h4>
                     <p className="text-xs text-gray-500 font-medium">İş ilanlarında talep oranı: <strong className="text-gray-700">{sk.demand}</strong></p>
@@ -571,7 +571,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
                       <h4 className="font-black text-gray-900 text-sm truncate">{comp.name}</h4>
                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{comp.sector}</p>
                     </div>
-                    <span className="text-[10px] text-gray-400 font-black shrink-0 bg-gray-100 px-2 py-1 rounded">{comp.time}</span>
+                    <span className="text-[10px] text-slate-600 font-black shrink-0 bg-slate-100 px-2 py-1 rounded">{comp.time}</span>
                   </div>
                 ))}
               </div>

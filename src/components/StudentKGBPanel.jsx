@@ -678,7 +678,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{ev.type}</span>
                           </div>
                           <p className="text-xs text-gray-500 mt-0.5">{ev.desc}</p>
-                          <span className="text-[10px] text-gray-400 font-semibold">{ev.date}</span>
+                          <span className="text-[10px] text-slate-600 font-bold">{ev.date}</span>
                         </div>
                       </div>
                     ))}
@@ -1012,13 +1012,13 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
       {/* ── YENİ BELGE / FAALİYET EKLEME MODALI ─────────────────── */}
       {showRequestModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-gray-100 space-y-4">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="text-base font-black text-gray-900 flex items-center gap-2">
                 <Award size={18} className="text-[#990000]" /> Yeni Faaliyet / Belge Onayı İste
               </h3>
-              <button onClick={() => setShowRequestModal(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowRequestModal(false)} className="text-slate-500 hover:text-slate-800 font-bold">
                 ✕
               </button>
             </div>

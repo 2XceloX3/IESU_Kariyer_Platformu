@@ -198,12 +198,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   
                   <div className="flex justify-center gap-6 border-y border-gray-100 py-3 mb-4">
                     <div className="text-center cursor-pointer group">
-                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-wider mb-0.5">Mezun Ağı</p>
+                      <p className="text-slate-600 text-[10px] font-black uppercase tracking-wider mb-0.5">Mezun Ağı</p>
                       <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">120 Bağlantı</p>
                     </div>
                     <div className="w-px bg-gray-100"></div>
                     <div className="text-center cursor-pointer group">
-                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-wider mb-0.5">Paylaşım</p>
+                      <p className="text-slate-600 text-[10px] font-black uppercase tracking-wider mb-0.5">Paylaşım</p>
                       <p className="text-[15px] font-black text-gray-900 group-hover:text-emerald-700 transition">15 Gönderi</p>
                     </div>
                   </div>
@@ -248,15 +248,15 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             <div className="grid grid-cols-3 gap-2 py-2.5 border-y border-white/10 mb-3 text-center">
               <div className="bg-white/5 rounded-xl p-2">
                 <span className="block text-base font-black text-emerald-300">{currentUser?.mentoringSessions ?? 8}</span>
-                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Mentörlük</span>
+                <span className="block text-[8px] font-bold text-emerald-200 uppercase tracking-wider">Mentörlük</span>
               </div>
               <div className="bg-white/5 rounded-xl p-2">
                 <span className="block text-base font-black text-teal-300">{currentUser?.jobsShared ?? 15}</span>
-                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">İş İlanı</span>
+                <span className="block text-[8px] font-bold text-teal-200 uppercase tracking-wider">İş İlanı</span>
               </div>
               <div className="bg-white/5 rounded-xl p-2">
                 <span className="block text-base font-black text-cyan-300">{currentUser?.eventsAttended ?? 4}</span>
-                <span className="block text-[8px] font-bold text-gray-300 uppercase tracking-wider">Etkinlik</span>
+                <span className="block text-[8px] font-bold text-cyan-200 uppercase tracking-wider">Etkinlik</span>
               </div>
             </div>
 

@@ -68,7 +68,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
             </div>
             <div>
               <h1 className="font-black text-sm sm:text-base tracking-tight text-slate-900 leading-none">Anka Kariyer Danışmanı</h1>
-              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Yapay Zeka Destekli Kariyer Rehberi</span>
+              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Kariyer Geliştirme ve Rehberlik Asistanı</span>
             </div>
           </div>
         </div>

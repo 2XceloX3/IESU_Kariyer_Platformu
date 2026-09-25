@@ -1162,7 +1162,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                 title={
                   isAdmin ? "KGM Yönetim Paneline Git" :
                   isCompany ? "ATS Aday Havuzunu Aç" :
-                  isAcademic ? "Tüm Randevuları Akademik Masada Aç" :
+                  isAcademic ? "Tüm Randevuları Akademik Portalda Aç" :
                   "Kariyer Portalını Aç"
                 }
               >
@@ -1450,7 +1450,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
                     {/* Search Bar */}
                     <div className="relative mt-2">
-                      <Search size={13} className="absolute left-2.5 top-2 text-slate-400" />
+                      <Search size={13} className="absolute left-2.5 top-2 text-slate-600 font-bold" />
                       <input 
                         type="text"
                         value={evalSearchQuery}
@@ -1531,7 +1531,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                             </div>
                           )}
 
-                          <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                          <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                             <span>{item.date}</span>
                             <span className="font-black text-amber-700 hover:text-amber-900 flex items-center gap-0.5">
                               Talebi İncele <ChevronRight size={12} />
@@ -1577,7 +1577,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       <div>
                         <h4 className="font-black text-sm text-slate-900">{selectedEvalItem.senderName}</h4>
                         <p className="text-xs text-slate-600 font-medium">{selectedEvalItem.senderSub}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{selectedEvalItem.date}</p>
+                        <p className="text-[10px] text-slate-600 font-bold mt-0.5">{selectedEvalItem.date}</p>
                       </div>
 
                       {selectedEvalItem.studentId && (
@@ -1707,7 +1707,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               <h4 className="font-black text-xs text-slate-900 group-hover:text-blue-900 truncate">
                                 {msg.companyName || msg.senderName || 'Kurumsal Firma'}
                               </h4>
-                              <p className="text-[10px] text-slate-400 font-medium truncate">{msg.email || msg.phone || 'Kurumsal İK'}</p>
+                              <p className="text-[10px] text-slate-600 font-bold truncate">{msg.email || msg.phone || 'Kurumsal İK'}</p>
                             </div>
                             <span className={`text-[9px] font-black px-2 py-0.5 rounded-full shrink-0 border ${
                               msg.status === 'Onaylandı' || msg.status === 'Yanıtlandı' || msg.status === 'Çözüldü'
@@ -1730,7 +1730,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                             </div>
                           )}
 
-                          <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                          <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                             <span>{msg.date || 'Tarih belirtilmedi'}</span>
                             <span className="font-black text-blue-800 flex items-center gap-0.5">
                               İncele & Yanıtla <ChevronRight size={12} />
@@ -1764,7 +1764,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       <div className="text-xs text-slate-600 space-y-0.5">
                         <p>📧 {selectedAdminCompanyMsg.email || 'Belirtilmedi'}</p>
                         <p>📞 {selectedAdminCompanyMsg.phone || 'Belirtilmedi'}</p>
-                        <p className="text-[10px] text-slate-400">Tarih: {selectedAdminCompanyMsg.date}</p>
+                        <p className="text-[10px] text-slate-600 font-bold">Tarih: {selectedAdminCompanyMsg.date}</p>
                       </div>
                     </div>
 
@@ -1837,7 +1837,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               <h4 className="font-black text-xs text-slate-900 group-hover:text-purple-900 truncate">
                                 {msg.senderName || 'Öğretim Görevlisi'}
                               </h4>
-                              <p className="text-[10px] text-slate-400 font-medium truncate">{msg.department || 'Fakülte Danışmanı'}</p>
+                              <p className="text-[10px] text-slate-600 font-bold truncate">{msg.department || 'Fakülte Danışmanı'}</p>
                             </div>
                             <div className="flex items-center gap-1">
                               {msg.priority && (
@@ -1865,7 +1865,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                             </div>
                           )}
 
-                          <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                          <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                             <span>{msg.date || 'Bugün'}</span>
                             <span className="font-black text-[#4C1D95] flex items-center gap-0.5">
                               Değerlendir <ChevronRight size={12} />
@@ -1899,7 +1899,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       <div className="text-xs text-slate-600 space-y-0.5">
                         <p>🏛️ {selectedAdminAcademicMsg.department || 'Mühendislik Fakültesi'}</p>
                         <p>⚡ Öncelik: {selectedAdminAcademicMsg.priority || 'Normal'}</p>
-                        <p className="text-[10px] text-slate-400">Tarih: {selectedAdminAcademicMsg.date}</p>
+                        <p className="text-[10px] text-slate-600 font-bold">Tarih: {selectedAdminAcademicMsg.date}</p>
                       </div>
                     </div>
 
@@ -1951,7 +1951,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   {/* Search */}
                   <div className="p-3 bg-white border-b border-slate-100 shrink-0">
                     <div className="relative">
-                      <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+                      <Search size={14} className="absolute left-3 top-2.5 text-slate-600 font-bold" />
                       <input 
                         type="text" 
                         value={candidateSearchQuery}
@@ -1996,7 +1996,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                   <p className="text-[10px] text-blue-700 font-bold truncate">{chat.candidateRole} • {chat.companyName}</p>
                                 </div>
                               </div>
-                              <span className="text-[9px] text-slate-400 font-medium shrink-0">{chat.lastActive}</span>
+                              <span className="text-[9px] text-slate-600 font-bold shrink-0">{chat.lastActive}</span>
                             </div>
 
                             {lastMsg && (
@@ -2007,7 +2007,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                             )}
 
                             <div className="flex items-center justify-between pt-1 border-t border-slate-100 pl-11 text-[10px]">
-                              <span className="text-slate-400 truncate">{chat.candidateDept}</span>
+                              <span className="text-slate-600 font-bold truncate">{chat.candidateDept}</span>
                               <span className="font-bold text-amber-700 hover:underline flex items-center gap-0.5">
                                 Görüşmeyi Denetle <ChevronRight size={12} />
                               </span>
@@ -2062,7 +2062,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       const isCompanySender = msg.sender === 'company' || msg.sender === 'admin';
                       return (
                         <div key={msg.id} className={`flex flex-col ${isCompanySender ? 'items-end' : 'items-start'}`}>
-                          <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                          <span className="text-[9px] text-slate-600 font-bold px-1 mb-0.5">
                             {msg.senderName}
                           </span>
                           <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
@@ -2072,7 +2072,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           }`}>
                             {msg.text}
                           </div>
-                          <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                          <span className="text-[9px] text-slate-600 font-bold mt-0.5 px-1">{msg.time}</span>
                         </div>
                       );
                     })}
@@ -2160,7 +2160,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   {/* Search Bar */}
                   <div className="p-3 bg-white border-b border-slate-100 shrink-0">
                     <div className="relative">
-                      <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+                      <Search size={14} className="absolute left-3 top-2.5 text-slate-600 font-bold" />
                       <input 
                         type="text" 
                         value={candidateSearchQuery}
@@ -2198,7 +2198,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                   <p className="text-[10px] text-blue-700 font-bold truncate">{chat.candidateRole}</p>
                                 </div>
                               </div>
-                              <span className="text-[9px] text-slate-400 font-medium shrink-0">{chat.lastActive}</span>
+                              <span className="text-[9px] text-slate-600 font-bold shrink-0">{chat.lastActive}</span>
                             </div>
 
                             {lastMsg && (
@@ -2209,7 +2209,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                             )}
 
                             <div className="flex items-center justify-between pt-1 border-t border-slate-100 pl-11 text-[10px]">
-                              <span className="text-slate-400 truncate">{chat.candidateDept}</span>
+                              <span className="text-slate-600 font-bold truncate">{chat.candidateDept}</span>
                               <span className="font-bold text-blue-900 hover:underline flex items-center gap-0.5">
                                 Görüş <ChevronRight size={12} />
                               </span>
@@ -2249,7 +2249,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       const isMe = msg.sender === 'company';
                       return (
                         <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                          <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                          <span className="text-[9px] text-slate-600 font-bold px-1 mb-0.5">
                             {msg.senderName || (isMe ? 'Kurumsal İK' : selectedCandidateChat.candidateName)}
                           </span>
                           <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
@@ -2259,7 +2259,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           }`}>
                             {msg.text}
                           </div>
-                          <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                          <span className="text-[9px] text-slate-600 font-bold mt-0.5 px-1">{msg.time}</span>
                         </div>
                       );
                     })}
@@ -2491,7 +2491,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                 <span className={isAcademicSender ? 'text-purple-800' : 'text-slate-600'}>
                                   {isAcademicSender ? '✓ Danışman Yanıtı' : `Öğrenci Notu (${rep.senderName || 'Öğrenci'})`}
                                 </span>
-                                <span className="text-slate-400">{rep.date}</span>
+                                <span className="text-slate-600 font-bold">{rep.date}</span>
                               </div>
                               <p>{rep.text}</p>
                             </div>
@@ -2565,7 +2565,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           <Users size={15} className="text-[#0F766E]" />
                           Mezun & Mentörlük Ağı
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-600 font-bold">
                           {alumniNetworkChats.length} Aktif Görüşme
                         </span>
                       </div>
@@ -2618,7 +2618,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                 </p>
                               )}
 
-                              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                              <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                                 <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
                                 <span className="font-black flex items-center gap-0.5 text-[#0F766E]">
                                   Sohbeti Aç <ChevronRight size={12} />
@@ -2685,7 +2685,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           const senderDisplay = isSelfMsg ? 'Siz' : (msg.senderName || selectedCandidateChat.candidateName || 'Muhatap');
                           return (
                             <div key={msg.id} className={`flex flex-col ${isSelfMsg ? 'items-end' : 'items-start'}`}>
-                              <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                              <span className="text-[9px] text-slate-600 font-bold px-1 mb-0.5">
                                 {senderDisplay}
                               </span>
                               <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
@@ -2695,7 +2695,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               }`}>
                                 {msg.text}
                               </div>
-                              <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                              <span className="text-[9px] text-slate-600 font-bold mt-0.5 px-1">{msg.time}</span>
                             </div>
                           );
                         })}
@@ -2774,7 +2774,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           <Building2 size={15} className="text-[#0F766E]" />
                           Kurumsal İletişim Kutusu
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-600 font-bold">
                           {alumniCompanyChats.length} Kurumsal Görüşme
                         </span>
                       </div>
@@ -2826,7 +2826,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                 </p>
                               )}
 
-                              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                              <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                                 <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
                                 <span className="font-black flex items-center gap-0.5 text-[#0F766E]">
                                   Mesajı Yanıtla <ChevronRight size={12} />
@@ -2893,7 +2893,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           const senderDisplay = isSelfMsg ? 'Siz' : (msg.senderName || selectedCandidateChat.companyName || 'Firma İK');
                           return (
                             <div key={msg.id} className={`flex flex-col ${isSelfMsg ? 'items-end' : 'items-start'}`}>
-                              <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                              <span className="text-[9px] text-slate-600 font-bold px-1 mb-0.5">
                                 {senderDisplay}
                               </span>
                               <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
@@ -2903,7 +2903,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               }`}>
                                 {msg.text}
                               </div>
-                              <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                              <span className="text-[9px] text-slate-600 font-bold mt-0.5 px-1">{msg.time}</span>
                             </div>
                           );
                         })}
@@ -2985,7 +2985,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           <MessageSquare size={15} className="text-[#990000]" />
                           Akran & Mezun İletişimi
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-600 font-bold">
                           {studentPeerChats.length} Aktif Görüşme
                         </span>
                       </div>
@@ -3038,7 +3038,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                 </p>
                               )}
 
-                              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                              <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                                 <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
                                 <span className="font-black flex items-center gap-0.5 text-[#990000]">
                                   Sohbeti Aç <ChevronRight size={12} />
@@ -3105,7 +3105,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           const senderDisplay = isSelfMsg ? 'Siz' : (msg.senderName || selectedCandidateChat.candidateName || 'Muhatap');
                           return (
                             <div key={msg.id} className={`flex flex-col ${isSelfMsg ? 'items-end' : 'items-start'}`}>
-                              <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                              <span className="text-[9px] text-slate-600 font-bold px-1 mb-0.5">
                                 {senderDisplay}
                               </span>
                               <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
@@ -3115,7 +3115,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               }`}>
                                 {msg.text}
                               </div>
-                              <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                              <span className="text-[9px] text-slate-600 font-bold mt-0.5 px-1">{msg.time}</span>
                             </div>
                           );
                         })}
@@ -3194,7 +3194,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           <Building2 size={15} className="text-[#990000]" />
                           İşveren & Staj İletişim Kutusu
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-600 font-bold">
                           {studentCompanyChats.length} Aktif Görüşme
                         </span>
                       </div>
@@ -3246,7 +3246,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                 </p>
                               )}
 
-                              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                              <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                                 <span className="flex items-center gap-1"><Clock size={11} /> {chat.lastActive}</span>
                                 <span className="font-black flex items-center gap-0.5 text-[#990000]">
                                   Mesajı Yanıtla <ChevronRight size={12} />
@@ -3313,7 +3313,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           const senderDisplay = isStudentMsg ? 'Siz' : (msg.senderName || selectedCandidateChat.candidateName || selectedCandidateChat.companyName || 'Muhatap');
                           return (
                             <div key={msg.id} className={`flex flex-col ${isStudentMsg ? 'items-end' : 'items-start'}`}>
-                              <span className="text-[9px] text-slate-400 font-bold px-1 mb-0.5">
+                              <span className="text-[9px] text-slate-600 font-bold px-1 mb-0.5">
                                 {senderDisplay}
                               </span>
                               <div className={`max-w-[84%] p-3 rounded-2xl text-xs leading-relaxed shadow-2xs ${
@@ -3323,7 +3323,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               }`}>
                                 {msg.text}
                               </div>
-                              <span className="text-[9px] text-slate-400 font-medium mt-0.5 px-1">{msg.time}</span>
+                              <span className="text-[9px] text-slate-600 font-bold mt-0.5 px-1">{msg.time}</span>
                             </div>
                           );
                         })}
@@ -3396,7 +3396,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           <GraduationCap size={15} className="text-[#4C1D95]" />
                           Danışmanlık Taleplerim & Randevular
                         </span>
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className="text-[10px] text-slate-600 font-bold">
                           {displayStudentRequests.length} Talep
                         </span>
                       </div>
@@ -3443,7 +3443,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                            <div className="flex items-center justify-between text-[10px] text-slate-600 font-bold pt-1 border-t border-slate-100">
                               <span className="truncate">{req.platform || req.mode}</span>
                               <span className="font-bold text-[#4C1D95] flex items-center gap-0.5">
                                 Detay & Yanıt <ChevronRight size={12} />
@@ -3491,13 +3491,13 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                         <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2 text-xs">
                           <div className="grid grid-cols-2 gap-2 text-[11px]">
                             <div>
-                              <span className="text-[9px] text-slate-400 font-bold uppercase block">Tarih</span>
+                              <span className="text-[9px] text-slate-600 font-bold uppercase block">Tarih</span>
                               <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
                                 <Calendar size={12} className="text-[#4C1D95]" /> {activeReq.preferredDate}
                               </span>
                             </div>
                             <div>
-                              <span className="text-[9px] text-slate-400 font-bold uppercase block">Saat</span>
+                              <span className="text-[9px] text-slate-600 font-bold uppercase block">Saat</span>
                               <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
                                 <Clock size={12} className="text-[#4C1D95]" /> {activeReq.preferredTimeSlot}
                               </span>
@@ -3505,7 +3505,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           </div>
 
                           <div className="pt-2 border-t border-slate-200">
-                            <span className="text-[9px] text-slate-400 font-bold uppercase block">Yerleşke / Kanal</span>
+                            <span className="text-[9px] text-slate-600 font-bold uppercase block">Yerleşke / Kanal</span>
                             <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
                               <MapPin size={12} className="text-[#4C1D95]" /> {activeReq.platform || activeReq.mode}
                             </span>
@@ -3513,7 +3513,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
                           {activeReq.note && (
                             <div className="pt-2 border-t border-slate-200">
-                              <span className="text-[9px] text-slate-400 font-bold uppercase block">Gönderdiğiniz Talep Notu</span>
+                              <span className="text-[9px] text-slate-600 font-bold uppercase block">Gönderdiğiniz Talep Notu</span>
                               <p className="text-[11px] text-slate-600 mt-0.5 italic">"{activeReq.note}"</p>
                             </div>
                           )}
@@ -3521,7 +3521,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
                         {/* Replies Thread */}
                         <div className="space-y-2">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Danışman Görüşme Akışı</span>
+                          <span className="text-[10px] font-black uppercase text-slate-600 font-bold tracking-wider">Danışman Görüşme Akışı</span>
                           
                           {(!activeReq.replies || activeReq.replies.length === 0) ? (
                             <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
@@ -3543,7 +3543,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                                     <span className={isHoca ? 'text-purple-800' : 'text-slate-600'}>
                                       {isHoca ? '✓ Danışman Hocanın Notu' : 'Sizin Notunuz'}
                                     </span>
-                                    <span className="text-slate-400">{rep.date}</span>
+                                    <span className="text-slate-600 font-bold">{rep.date}</span>
                                   </div>
                                   <p className="leading-relaxed">{rep.text}</p>
                                 </div>

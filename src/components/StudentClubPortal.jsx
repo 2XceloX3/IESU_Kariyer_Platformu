@@ -633,7 +633,7 @@ export default function StudentClubPortal({
                 </p>
                 {(selectedClub.purpose || selectedClub.misyon) && (
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-2">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Misyon & Amaç</p>
+                    <p className="text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">Misyon & Amaç</p>
                     <p className="text-xs text-slate-700 leading-relaxed">{selectedClub.purpose || selectedClub.misyon}</p>
                   </div>
                 )}
@@ -656,7 +656,7 @@ export default function StudentClubPortal({
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Kulüp Başkanı</span>
+                  <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wider block">Kulüp Başkanı</span>
                   <p className="text-xs font-bold text-gray-900 mt-0.5">
                     {selectedClub.president?.name || selectedClub.applicant || 'Mehmet Kerem Yılmaz'}
                   </p>
@@ -910,7 +910,7 @@ export default function StudentClubPortal({
                                   <div key={i} className="text-xs flex items-baseline gap-1.5 text-slate-700">
                                     <span className="font-bold text-gray-900">{c.name || c.user}:</span>
                                     <span className="text-slate-600">{c.text}</span>
-                                    <span className="text-[10px] text-slate-400 ml-auto">{c.time}</span>
+                                    <span className="text-[10px] text-slate-600 font-bold ml-auto">{c.time}</span>
                                   </div>
                                 ))}
                               </div>
@@ -942,7 +942,7 @@ export default function StudentClubPortal({
                     {clubPosts.length === 0 && (
                       <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-8 text-center">
                         <Camera size={36} className="mx-auto text-slate-300 mb-2" />
-                        <p className="text-xs text-slate-500 font-medium">Bu kulübe ait henüz fotoğraf ve medya gönderisi paylaşılmamış.</p>
+                        <p className="text-xs text-slate-700 font-medium">Bu kulübe ait henüz fotoğraf ve medya gönderisi paylaşılmamış.</p>
                       </div>
                     )}
                   </div>
@@ -972,10 +972,10 @@ export default function StudentClubPortal({
                           <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${event.status === 'Tamamlandı' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-800'}`}>
                             {event.status}
                           </span>
-                          <span className="text-xs font-bold text-slate-400">{event.category}</span>
+                          <span className="text-xs font-bold text-slate-700">{event.category}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
-                          <Users size={14} className="text-slate-400" />
+                          <Users size={14} className="text-slate-600" />
                           <span>{event.registeredCount} / {event.quota} Katılımcı</span>
                         </div>
                       </div>
@@ -983,7 +983,7 @@ export default function StudentClubPortal({
                       <h4 className="text-lg font-black text-gray-900 mb-2">{event.title}</h4>
                       <p className="text-xs text-slate-600 leading-relaxed mb-4">{event.description}</p>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-500 border-t border-slate-100 pt-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium border-t border-slate-100 pt-3">
                         <div className="flex items-center gap-1.5"><Calendar size={14} className="text-[#990000]" /> {event.date} • {event.time}</div>
                         <div className="flex items-center gap-1.5"><MapPin size={14} className="text-[#990000]" /> {event.location}</div>
                       </div>
@@ -993,7 +993,7 @@ export default function StudentClubPortal({
                   {(!selectedClub.events || selectedClub.events.length === 0) && (
                     <div className="bg-white rounded-2xl p-10 border border-dashed border-slate-200 text-center">
                       <Calendar size={40} className="mx-auto text-slate-300 mb-2" />
-                      <p className="text-xs text-slate-500 font-medium">Planlanmış bir etkinlik bulunmuyor.</p>
+                      <p className="text-xs text-slate-700 font-medium">Planlanmış bir etkinlik bulunmuyor.</p>
                     </div>
                   )}
                 </div>
@@ -1010,7 +1010,7 @@ export default function StudentClubPortal({
                           <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider block">{member.role}</span>
                           <h4 className="font-bold text-gray-900 text-sm">{member.name}</h4>
                           <p className="text-xs text-slate-500">{member.department}</p>
-                          {member.studentNo && <span className="text-[10px] text-slate-400 font-mono">No: {member.studentNo}</span>}
+                          {member.studentNo && <span className="text-[10px] text-slate-700 font-mono font-bold">No: {member.studentNo}</span>}
                         </div>
                       </div>
                     ))}
@@ -1275,7 +1275,7 @@ export default function StudentClubPortal({
                     SKS Daire Başkanlığı Mekan & Donanım Formu
                   </span>
                   <h3 className="text-xl font-black text-gray-900">Etkinlik & Yer Tahsis Talebi</h3>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-600 font-medium mt-1">
                     {selectedClub.name} adına üniversite kampüsündeki salon, ses/ışık sistemi ve lojistik donanım talebinizi oluşturun.
                   </p>
                 </div>
@@ -1470,7 +1470,7 @@ export default function StudentClubPortal({
                     Resmî Kulüp Üyelik Formu
                   </span>
                   <h3 className="text-xl font-black text-gray-900">{selectedClub.name} Başvurusu</h3>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-600 font-medium mt-1">
                     Kulüp yönetmeliği gereği T.C. Kimlik ve Öğrenci No bilgileriniz kulüp başkanlığı ve SKS tarafından doğrulanacaktır.
                   </p>
                 </div>
@@ -1663,7 +1663,7 @@ export default function StudentClubPortal({
                     Instagram Modeli Gönderi Paylaşımı
                   </span>
                   <h3 className="text-xl font-black text-gray-900">Kulüp Etkinlik Medyası</h3>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-slate-600 font-medium mt-1">
                     Fotoğraf galerisi, görsel filtre efekti ve arka plan müzik ambiyansı ekleyin.
                   </p>
                 </div>
@@ -1884,13 +1884,13 @@ export default function StudentClubPortal({
           <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} currentView="club_portal" />
         </div>
         <div className="max-w-7xl mx-auto px-6 flex gap-6">
-          <button onClick={() => setActiveTab('discover')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors cursor-pointer ${activeTab === 'discover' ? 'border-[#990000] text-[#990000]' : 'border-transparent text-slate-500 hover:text-[#990000]'}`}>Keşfet</button>
-          <button onClick={() => setActiveTab('my_clubs')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors cursor-pointer ${activeTab === 'my_clubs' ? 'border-[#990000] text-[#990000]' : 'border-transparent text-slate-500 hover:text-[#990000]'}`}>
+          <button onClick={() => setActiveTab('discover')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors cursor-pointer ${activeTab === 'discover' ? 'border-[#990000] text-[#990000]' : 'border-transparent text-slate-700 font-bold hover:text-[#990000]'}`}>Keşfet</button>
+          <button onClick={() => setActiveTab('my_clubs')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors cursor-pointer ${activeTab === 'my_clubs' ? 'border-[#990000] text-[#990000]' : 'border-transparent text-slate-700 font-bold hover:text-[#990000]'}`}>
             Kulüplerim
             {myJoinedClubs.length > 0 && <span className="ml-1.5 bg-red-100 text-[#990000] text-[10px] font-black px-1.5 py-0.5 rounded-full">{myJoinedClubs.length}</span>}
           </button>
           {(isAdmin || isDean) && (
-            <button onClick={() => setActiveTab('admin')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors cursor-pointer ${activeTab === 'admin' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-500 hover:text-[#990000]'}`}>
+            <button onClick={() => setActiveTab('admin')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors cursor-pointer ${activeTab === 'admin' ? 'border-amber-500 text-amber-600' : 'border-transparent text-slate-700 font-bold hover:text-[#990000]'}`}>
               Dekanlık Onayları
               {applications.filter(a => a.status === 'pending').length > 0 && (
                 <span className="ml-1.5 bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">{applications.filter(a => a.status === 'pending').length}</span>
@@ -1922,7 +1922,7 @@ export default function StudentClubPortal({
             {filteredClubs.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
                 <Building2 size={48} className="mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500 font-medium">Aramanıza uygun kulüp bulunamadı.</p>
+                <p className="text-slate-700 font-medium">Aramanıza uygun kulüp bulunamadı.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1934,7 +1934,7 @@ export default function StudentClubPortal({
                       </div>
                       <div>
                         <h3 className="font-black text-gray-900 leading-tight mb-1 group-hover:text-[#990000] transition-colors">{club.name}</h3>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{club.category || 'Genel'}</p>
+                        <p className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">{club.category || 'Genel'}</p>
                       </div>
                     </div>
                     <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-1">{club.description || 'Öğrencilerin akademik ve sosyal gelişimlerini desteklemeyi amaçlamaktadır.'}</p>
@@ -1943,7 +1943,7 @@ export default function StudentClubPortal({
                         <Users size={14} className="text-[#990000]" /> {club.memberCount || club.members?.length || 45} Üye
                       </div>
                       {isMemberOfClub(club) && <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">Üyesiniz</span>}
-                      <ChevronRight size={18} className="text-slate-400 group-hover:text-[#990000] transition-colors" />
+                      <ChevronRight size={18} className="text-slate-600 group-hover:text-[#990000] transition-colors" />
                     </div>
                   </div>
                 ))}
@@ -1991,14 +1991,14 @@ export default function StudentClubPortal({
                         <p className="text-xs text-slate-500">{club.category || 'Genel'}</p>
                       </div>
                     </div>
-                    <ChevronRight size={18} className="text-slate-300 group-hover:text-[#990000]" />
+                    <ChevronRight size={18} className="text-slate-500 group-hover:text-[#990000]" />
                   </div>
                 ))}
               </div>
             ) : (
               <div className="col-span-full bg-white p-8 rounded-xl border border-dashed border-slate-200 text-center">
                  <Bell size={40} className="mx-auto text-slate-300 mb-4" />
-                 <p className="text-slate-500 mb-4 font-medium">Henüz hiçbir kulübe üye değilsiniz.</p>
+                 <p className="text-slate-700 mb-4 font-medium">Henüz hiçbir kulübe üye değilsiniz.</p>
                  <button onClick={() => setActiveTab('discover')} className="px-6 py-2.5 bg-[#990000] text-white font-bold rounded-xl hover:bg-red-800 transition-colors cursor-pointer">Kulüpleri Keşfet</button>
               </div>
             )}
@@ -2013,7 +2013,7 @@ export default function StudentClubPortal({
                {applications.length === 0 ? (
                  <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                    <CheckCircle2 size={40} className="mx-auto text-slate-300 mb-3" />
-                   <p className="text-slate-500 font-medium">Bekleyen başvuru yok!</p>
+                   <p className="text-slate-700 font-medium">Bekleyen başvuru yok!</p>
                  </div>
                ) : (
                  <div className="space-y-4">
@@ -2088,7 +2088,7 @@ export default function StudentClubPortal({
                   EK-1 Resmî Başvuru Formu
                 </span>
                 <h2 className="text-xl font-black text-gray-900">Yeni Öğrenci Kulübü Kurma</h2>
-                <p className="text-xs text-slate-500 mt-1">SKS Daire Başkanlığı Kulüp Kuruluş ve İşleyiş Yönergesi başvuru protokolü.</p>
+                <p className="text-xs text-slate-600 font-medium mt-1">SKS Daire Başkanlığı Kulüp Kuruluş ve İşleyiş Yönergesi başvuru protokolü.</p>
               </div>
               <button 
                 onClick={() => setShowCreateModal(false)}

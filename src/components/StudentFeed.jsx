@@ -1068,7 +1068,7 @@ groups={groups}
                 </div>
                 <div>
                   <h3 className="font-black text-base text-white">İESÜ Ekosistem Araçları & Modülleri</h3>
-                  <p className="text-[11px] text-red-200 font-medium">Öğrenci Kovanının Tüm Kariyer, Gelişim, Staj ve Kampüs Servisleri (16 Araç)</p>
+                  <p className="text-[11px] text-red-200 font-medium">Öğrenci Portalının Tüm Kariyer, Gelişim, Staj ve Kampüs Servisleri (16 Araç)</p>
                 </div>
               </div>
 
@@ -1096,7 +1096,7 @@ groups={groups}
                   {
                     id: 'interview_sim',
                     view: 'interview_sim',
-                    title: 'Yapay Zeka Mülakat Simülatörü',
+                    title: 'Mülakat Simülatörü & Prova Odası',
                     desc: 'Gerçekçi mülakat senaryolarıyla anında geri bildirim alın',
                     icon: <Wand2 size={18} />,
                     bg: 'bg-purple-50 text-purple-700 border-purple-100',
@@ -1145,7 +1145,7 @@ groups={groups}
                     id: 'wallet',
                     view: 'wallet',
                     title: 'İESÜ Kampüs Cüzdan',
-                    desc: 'Kovan puanları, yemekhane bakiyesi ve indirim kuponları',
+                    desc: 'Başarı puanları (BP), yemekhane bakiyesi ve indirim kuponları',
                     icon: <CreditCard size={18} />,
                     bg: 'bg-cyan-50 text-cyan-700 border-cyan-100',
                   },
@@ -1160,8 +1160,8 @@ groups={groups}
                   {
                     id: 'anka_chat',
                     view: 'anka_chat',
-                    title: 'Anka Yapay Zeka Rehberi',
-                    desc: '7/24 kişiselleştirilmiş akıllı kariyer danışmanlığı',
+                    title: 'Anka Kariyer Danışmanı',
+                    desc: '7/24 kişiselleştirilmiş akıllı kariyer rehberliği',
                     icon: <Sparkles size={18} />,
                     bg: 'bg-red-50 text-[#990000] border-red-100',
                   },

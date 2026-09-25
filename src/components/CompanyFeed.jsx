@@ -746,7 +746,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
           </div>
 
           {/* PROFESSIONAL RIGHT SIDEBAR FOOTER */}
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-6 text-[11px] text-slate-400 font-medium px-4 text-center">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-6 text-[11px] text-slate-600 font-bold px-4 text-center">
             <button onClick={() => setFooterModal('privacy')} className="hover:text-[#990000] transition-colors cursor-pointer">Kurumsal Sözleşme & KVKK</button>
             <button onClick={() => setFooterModal('help')} className="hover:text-[#990000] transition-colors cursor-pointer">Destek & İletişim</button>
             <button onClick={() => setFooterModal('about')} className="hover:text-[#990000] transition-colors cursor-pointer">Hakkımızda</button>
