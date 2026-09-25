@@ -7,12 +7,18 @@ import {
 } from 'lucide-react';
 import { Card, Badge, Tbl } from './AdminShared';
 import useAppStore from '../../store/useAppStore';
+import { useAdminStore } from '../../brain/useAdminStore';
+import { initialCareerTestSubmissions } from '../../data/mockClubsData';
 
 export default function CMSCareerCounseling() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAppt, setSelectedAppt] = useState(null);
+  const [selectedTestDetail, setSelectedTestDetail] = useState(null);
   const [statusFilter, setStatusFilter] = useState('HEPSİ');
-  const [activeSubTab, setActiveSubTab] = useState('appointments'); // 'appointments' | 'evaluations' | 'counselors'
+  const [activeSubTab, setActiveSubTab] = useState('appointments'); // 'appointments' | 'evaluations' | 'counselors' | 'career_tests'
+
+  const storeSubmissions = useAdminStore(state => state.careerTestSubmissions);
+  const testSubmissions = (storeSubmissions && storeSubmissions.length > 0) ? storeSubmissions : initialCareerTestSubmissions;
 
   const [evaluationForm, setEvaluationForm] = useState({
     rating: 5,
@@ -225,6 +231,12 @@ export default function CMSCareerCounseling() {
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${activeSubTab === 'counselors' ? 'bg-white text-slate-900 shadow-md font-black' : 'text-white/80 hover:text-white'}`}
             >
               👥 Uzmanlar
+            </button>
+            <button 
+              onClick={() => setActiveSubTab('career_tests')}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${activeSubTab === 'career_tests' ? 'bg-white text-slate-900 shadow-md font-black' : 'text-white/80 hover:text-white'}`}
+            >
+              🎯 Kariyer Testleri ({testSubmissions.length})
             </button>
           </div>
         </div>
@@ -556,6 +568,231 @@ export default function CMSCareerCounseling() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ── TAB 4: CAREER & COMPETENCY TEST SUBMISSIONS ── */}
+      {activeSubTab === 'career_tests' && (
+        <div className="space-y-6 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#990000] bg-red-50 px-2.5 py-1 rounded-md inline-block mb-1">
+                Yetkinlik & Kariyer Analiz Havuzu
+              </span>
+              <h3 className="text-xl font-black text-gray-900">Öğrenci Kariyer Testi Değerlendirme Sonuçları</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Öğrencilerin 8 kategorili Kariyer & Kişilik Testi yanıtları, analitik/yaratıcı eğilimleri ve kariyer danışmanlığı eşleşmeleri.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="px-3.5 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold">
+                {testSubmissions.length} Tamamlanan Test
+              </span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                  <th className="py-3.5 px-4">Öğrenci Bilgisi</th>
+                  <th className="py-3.5 px-4">Bölüm</th>
+                  <th className="py-3.5 px-4">Belirlenen Persona</th>
+                  <th className="py-3.5 px-4">Yetkinlik Dağılımı</th>
+                  <th className="py-3.5 px-4">Önerilen Patikalar</th>
+                  <th className="py-3.5 px-4">Test Tarihi</th>
+                  <th className="py-3.5 px-4 text-right">İşlem</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                {testSubmissions.map(sub => {
+                  const percent = sub.scores?.percent || { logic: 25, creative: 25, social: 25, practical: 25 };
+                  return (
+                    <tr key={sub.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="font-bold text-gray-900 text-sm">{sub.studentName}</div>
+                        <div className="text-[11px] text-slate-400 font-mono">No: {sub.studentId} • {sub.studentEmail}</div>
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-slate-800">
+                        {sub.studentDept}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="font-bold text-gray-900 block text-xs">{sub.personaTitle}</span>
+                        <span className="inline-block mt-0.5 px-2 py-0.5 bg-rose-50 text-[#990000] text-[10px] font-bold rounded-md">
+                          {sub.personaBadge}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-1.5 flex-wrap max-w-xs">
+                          <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold" title="Analitik / Mantık">
+                            Analitik: %{percent.logic || 0}
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-700 text-[10px] font-bold" title="Yaratıcı / Tasarım">
+                            Yaratıcı: %{percent.creative || 0}
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold" title="Sosyal / İletişim">
+                            Sosyal: %{percent.social || 0}
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px] font-bold" title="Saha / Uygulama">
+                            Pratik: %{percent.practical || 0}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 max-w-xs">
+                        <div className="text-[11px] text-slate-600 line-clamp-2">
+                          {(sub.recommendedPaths || []).join(', ')}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap">
+                        {new Date(sub.submittedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <button
+                          onClick={() => setSelectedTestDetail(sub)}
+                          className="px-3.5 py-1.5 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl transition text-[11px] flex items-center gap-1 ml-auto shadow-2xs"
+                        >
+                          <Eye size={13} /> İncele & Danış
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── CAREER TEST INSPECTION DETAIL MODAL ── */}
+      {selectedTestDetail && (
+        <div className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] relative">
+            
+            {/* Modal Header */}
+            <div className="p-6 bg-gradient-to-r from-[#990000] via-rose-900 to-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md text-amber-300 flex items-center justify-center font-bold border border-white/20">
+                  <Award size={24} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2 py-0.5 bg-white/20 text-white text-[10px] font-black uppercase rounded">
+                      Kariyer & Yetkinlik Analiz Raporu
+                    </span>
+                    <span className="text-xs text-rose-200 font-mono">ID: {selectedTestDetail.id}</span>
+                  </div>
+                  <h3 className="font-black text-xl text-white">
+                    {selectedTestDetail.studentName} ({selectedTestDetail.studentDept})
+                  </h3>
+                  <p className="text-xs text-rose-200">
+                    Öğrenci No: {selectedTestDetail.studentId} • {selectedTestDetail.studentEmail}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedTestDetail(null)}
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-6">
+              
+              {/* Persona Showcase */}
+              <div className="p-5 bg-gradient-to-r from-red-50 to-amber-50 rounded-2xl border border-red-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <span className="text-xs font-bold text-amber-800 uppercase tracking-wider block">Belirlenen Kariyer Profili</span>
+                  <h4 className="text-lg font-black text-red-950 mt-0.5">{selectedTestDetail.personaTitle}</h4>
+                  <p className="text-xs text-red-900 font-medium mt-1">{selectedTestDetail.personaBadge}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-slate-500 font-medium">Test Tarihi</span>
+                  <div className="text-sm font-black text-gray-900">
+                    {new Date(selectedTestDetail.submittedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Score Breakdown Cards */}
+              <div>
+                <h5 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-3">4 Temel Yetkinlik Dağılımı</h5>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-xl text-center">
+                    <span className="text-[11px] font-bold text-blue-700 block">Analitik / Mantık</span>
+                    <strong className="text-xl font-black text-blue-900">%{selectedTestDetail.scores?.percent?.logic || 0}</strong>
+                  </div>
+                  <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-center">
+                    <span className="text-[11px] font-bold text-amber-700 block">Yaratıcı / Vizyoner</span>
+                    <strong className="text-xl font-black text-amber-900">%{selectedTestDetail.scores?.percent?.creative || 0}</strong>
+                  </div>
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl text-center">
+                    <span className="text-[11px] font-bold text-emerald-700 block">Sosyal / İletişim</span>
+                    <strong className="text-xl font-black text-emerald-900">%{selectedTestDetail.scores?.percent?.social || 0}</strong>
+                  </div>
+                  <div className="p-3 bg-purple-50/70 border border-purple-200 rounded-xl text-center">
+                    <span className="text-[11px] font-bold text-purple-700 block">Saha / Uygulama</span>
+                    <strong className="text-xl font-black text-purple-900">%{selectedTestDetail.scores?.percent?.practical || 0}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recommended Career Paths */}
+              <div>
+                <h5 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Önerilen Kariyer Patikaları</h5>
+                <div className="flex flex-wrap gap-2">
+                  {(selectedTestDetail.recommendedPaths || []).map((path, idx) => (
+                    <span key={idx} className="px-3 py-1.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-xl border border-slate-200">
+                      🎯 {path}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recommended Clubs & Mentors */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <h5 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Eşleşen Öğrenci Kulüpleri</h5>
+                  <div className="space-y-1 text-xs text-slate-700">
+                    {(selectedTestDetail.recommendedClubs || ['İESÜ Yazılım ve İnovasyon Kulübü']).map((clb, idx) => (
+                      <div key={idx} className="flex items-center gap-1.5 font-bold">
+                        <CheckCircle size={13} className="text-emerald-600" /> {clb}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                  <h5 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Danışman Değerlendirme Notu</h5>
+                  <p className="text-xs text-slate-600 italic">
+                    {selectedTestDetail.counselorNotes || 'Öğrencinin yetkinlik analizi tamamlanmış olup KGM bire bir danışmanlık randevusuna uygundur.'}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+              <button
+                onClick={() => setSelectedTestDetail(null)}
+                className="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition"
+              >
+                Kapat
+              </button>
+              <button
+                onClick={() => {
+                  toast.success(`${selectedTestDetail.studentName} için KGM Bire Bir Danışmanlık Randevusu oluşturuldu.`);
+                  setSelectedTestDetail(null);
+                }}
+                className="px-5 py-2 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+              >
+                <Calendar size={14} /> Bire Bir Randevu Ata
+              </button>
+            </div>
+
+          </div>
         </div>
       )}
 

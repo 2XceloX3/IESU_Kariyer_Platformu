@@ -20,6 +20,11 @@ import {
   initialAcademicCatalog,
   initialAcademicApprovals
 } from '../utils/mockData';
+import {
+  initialClubs,
+  initialClubApplications,
+  initialCareerTestSubmissions
+} from '../data/mockClubsData';
 
 // Initial data pools
 const initialApplications = [
@@ -261,7 +266,8 @@ export const getInitialAdminState = () => ({
   newsletterSubscribers: [],
   bmiRecords: [],
   helpdeskTickets: [],
-  clubApplications: [],
+  clubApplications: Array.isArray(initialClubApplications) ? [...initialClubApplications] : [],
+  careerTestSubmissions: Array.isArray(initialCareerTestSubmissions) ? [...initialCareerTestSubmissions] : [],
   alumniCardApplications: [],
   alumniCardForms: [],
   alumniAssocBoard: [],
@@ -280,7 +286,7 @@ export const getInitialAdminState = () => ({
   showInstitutionalStats: false,
   groups: Array.isArray(initialGroups) ? [...initialGroups] : [],
   mentorships: Array.isArray(initialMentorships) ? [...initialMentorships] : [],
-  clubs: [],
+  clubs: Array.isArray(initialClubs) ? [...initialClubs] : [],
   academicCatalog: Array.isArray(initialAcademicCatalog) ? [...initialAcademicCatalog] : [],
   academicApprovals: Array.isArray(initialAcademicApprovals) ? [...initialAcademicApprovals] : [],
   eventRegistrations: [],
@@ -549,6 +555,9 @@ export const useAdminStore = create(
         setClubApplications: setter('clubApplications'),
         addClubApplication: (app) => set((s) => ({ clubApplications: [app, ...(s.clubApplications || [])] })),
 
+        setCareerTestSubmissions: setter('careerTestSubmissions'),
+        addCareerTestSubmission: (sub) => set((s) => ({ careerTestSubmissions: [sub, ...(s.careerTestSubmissions || [])] })),
+
         setAlumniCardApplications: setter('alumniCardApplications'),
         setAlumniCardForms: setter('alumniCardForms'),
         setAlumniAssocBoard: setter('alumniAssocBoard'),
@@ -636,7 +645,9 @@ export const useAdminStore = create(
         newsletterSubscribers: state.newsletterSubscribers,
         bmiRecords: state.bmiRecords,
         helpdeskTickets: state.helpdeskTickets,
+        clubs: state.clubs,
         clubApplications: state.clubApplications,
+        careerTestSubmissions: state.careerTestSubmissions,
         alumniCardApplications: state.alumniCardApplications,
         alumniCardForms: state.alumniCardForms,
         alumniAssocBoard: state.alumniAssocBoard,

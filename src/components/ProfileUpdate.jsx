@@ -161,6 +161,11 @@ export default function ProfileUpdate({
 
   // Compute effective branch strictly adhering to user's active portal location
   const effectiveBranch = useMemo(() => {
+    // 0. Explicit userRole prop has top priority
+    if (userRole && ['alumni', 'student', 'academic', 'company', 'admin'].includes(userRole)) {
+      return userRole;
+    }
+
     // 1. If activePortalBranch is set and valid, prioritize it:
     if (activePortalBranch && ['alumni', 'student', 'academic', 'company', 'admin'].includes(activePortalBranch)) {
       return activePortalBranch;

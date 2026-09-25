@@ -15,6 +15,7 @@ const StudentFeed = lazy(() => import('../../components/StudentFeed'));
 const JobsAndInternships = lazy(() => import('../../components/JobsAndInternships'));
 const UserProfile = lazy(() => import('../../components/UserProfile'));
 const PublicUserProfile = lazy(() => import('../../components/PublicUserProfile'));
+const StudentProfileUpdate = lazy(() => import('../../components/profile/StudentProfileUpdate'));
 const ProfileUpdate = lazy(() => import('../../components/ProfileUpdate'));
 const StudentKGBPanel = lazy(() => import('../../components/StudentKGBPanel'));
 const StudentAnalytics = lazy(() => import('../../components/StudentAnalytics'));
@@ -129,7 +130,7 @@ export default function StudentHive({ currentUser, setView }) {
       case 'public_profile':
         return <PublicUserProfile userId={selectedUserId} viewerHive="student" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
-        return <ProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <StudentProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'student_kgb':
         return <StudentKGBPanel setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="student" />;
       case 'student_analytics':

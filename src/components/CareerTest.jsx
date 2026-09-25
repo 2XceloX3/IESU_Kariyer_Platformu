@@ -10,6 +10,7 @@ import Logo from './Logo';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
+import { useAdminStore } from '../brain/useAdminStore';
 
 const FORM_QUESTIONS = [
   {
@@ -234,12 +235,45 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
     setTimeout(() => {
       setIsAnalyzing(false);
       setIsSubmitted(true);
+
+      const calculatedPersona = getPersona();
+      const calculatedScores = calculateScores();
+
+      const newSubmission = {
+        id: 'TEST-' + Date.now().toString(),
+        studentId: currentUser?.id || 'STU-001',
+        studentName: currentUser?.name || 'Öğrenci',
+        studentDept: currentUser?.department || 'Bilgisayar Mühendisliği',
+        studentEmail: currentUser?.email || 'ogrenci@ogr.esenyurt.edu.tr',
+        personaTitle: calculatedPersona.title,
+        personaBadge: calculatedPersona.badge,
+        scores: calculatedScores,
+        recommendedPaths: calculatedPersona.paths,
+        recommendedClubs: calculatedPersona.recommendedClubs,
+        status: 'Değerlendirildi',
+        submittedAt: new Date().toISOString(),
+        answers
+      };
+
       try {
         localStorage.setItem('iesu_career_test_result_v2', JSON.stringify({
           answers,
           submittedAt: new Date().toISOString()
         }));
       } catch (e) {}
+
+      // Save into global submissions pool in useAdminStore
+      try {
+        const adminStore = useAdminStore.getState();
+        if (adminStore.addCareerTestSubmission) {
+          adminStore.addCareerTestSubmission(newSubmission);
+        } else if (adminStore.setCareerTestSubmissions) {
+          adminStore.setCareerTestSubmissions([newSubmission, ...(adminStore.careerTestSubmissions || [])]);
+        }
+      } catch (err) {
+        console.warn('Sync career test error:', err);
+      }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 1500);
   };

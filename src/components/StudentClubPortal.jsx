@@ -3,17 +3,20 @@ import {
   Users, Trophy, FileText, ChevronRight, CheckCircle2, 
   XCircle, Clock, Plus, Search, Building2, Calendar, 
   Wallet, ShieldCheck, MapPin, Activity, ArrowLeft, X, Bell,
-  Zap, Heart, MessageCircle, Share2, Play
+  Zap, Heart, MessageCircle, Share2, Play, Download, Sparkles,
+  Filter, ExternalLink, Mail, Phone, Check, Award
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { toast } from './shared/Toast';
 import useAppStore from '../store/useAppStore';
+import { initialClubs, initialClubApplications } from '../data/mockClubsData';
 
 export default function StudentClubPortal({ currentUser, setView, previousView, setSelectedUserId, userRole = 'student' }) {
   const { clubs, setClubs, clubApplications, setClubApplications } = useAppStore();
   const [activeTab, setActiveTab] = useState('discover');
+  const [clubDetailTab, setClubDetailTab] = useState('overview'); // 'overview' | 'events' | 'board' | 'budget' | 'members'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClub, setSelectedClub] = useState(null);
   
@@ -25,12 +28,13 @@ export default function StudentClubPortal({ currentUser, setView, previousView, 
   const isAdmin = currentUser?.role === 'admin';
   const isDean = currentUser?.title?.toLowerCase().includes('dekan');
   
-  // Use global clubApplications from props, fall back to local sample data
-  const applications = clubApplications || [];
+  // Use global clubs & clubApplications, fall back to rich sample clubs
+  const clubList = useMemo(() => (clubs && clubs.length > 0) ? clubs : initialClubs, [clubs]);
+  const applications = useMemo(() => (clubApplications && clubApplications.length > 0) ? clubApplications : initialClubApplications, [clubApplications]);
 
-  const myManagedClubs = useMemo(() => (clubs || []).filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id)), [clubs, currentUser]);
-  const myJoinedClubs = useMemo(() => (clubs || []).filter(c => (c.members || []).some(m => m.id === currentUser?.id)), [clubs, currentUser]);
-  const filteredClubs = useMemo(() => (clubs || []).filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.description?.toLowerCase().includes(searchQuery.toLowerCase())), [clubs, searchQuery]);
+  const myManagedClubs = useMemo(() => (clubList || []).filter(c => c.presidentId === currentUser?.id || (c.admins || []).includes(currentUser?.id)), [clubList, currentUser]);
+  const myJoinedClubs = useMemo(() => (clubList || []).filter(c => (c.members || []).some(m => m.id === currentUser?.id)), [clubList, currentUser]);
+  const filteredClubs = useMemo(() => (clubList || []).filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.description?.toLowerCase().includes(searchQuery.toLowerCase()) || c.category?.toLowerCase().includes(searchQuery.toLowerCase())), [clubList, searchQuery]);
 
   const isMemberOfClub = (club) => (club.members || []).some(m => m.id === currentUser?.id);
   const hasPendingRequest = (club) => (club.memberRequests || []).some(r => r.userId === currentUser?.id && r.status === 'pending');
@@ -87,22 +91,34 @@ export default function StudentClubPortal({ currentUser, setView, previousView, 
   const handleEventSubmit = (e) => {
     e.preventDefault();
     const newApp = {
-      id: Date.now().toString(),
+      id: 'REQ-' + Date.now().toString(),
       type: 'event_budget',
+      title: eventForm.name,
       eventName: eventForm.name,
       club: selectedClub?.name || 'Kulübüm',
       amount: eventForm.budget ? `${eventForm.budget} TL` : 'Bütçe İstenmiyor',
-      location: eventForm.location,
+      location: eventForm.location || 'Merkez Kampüs',
       status: 'pending',
-      date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+      date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+      description: eventForm.description || ''
     };
     const updatedApps = [newApp, ...(clubApplications || [])];
     if (setClubApplications) {
       setClubApplications(updatedApps);
     }
+    if (selectedClub) {
+      const updatedClub = {
+        ...selectedClub,
+        budgetRequests: [newApp, ...(selectedClub.budgetRequests || [])]
+      };
+      setSelectedClub(updatedClub);
+      if (setClubs) {
+        setClubs(prev => (prev || []).map(c => c.id === selectedClub.id ? updatedClub : c));
+      }
+    }
     setShowEventModal(false);
     setEventForm({ name: '', date: '', location: '', budget: '', description: '' });
-    toast.success('Etkinlik başvurunuz Dekanlığa iletildi!');
+    toast.success('Etkinlik & Bütçe başvurunuz SKS Daire Başkanlığına iletildi!');
   };
 
   const handleApproveApplication = (appId) => {
@@ -204,51 +220,97 @@ export default function StudentClubPortal({ currentUser, setView, previousView, 
             </div>
           </div>
 
+          {/* CLUB DETAIL SUB-TABS */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-2 mb-6 shadow-xs flex gap-2 overflow-x-auto hide-scrollbar">
+            {[
+              { id: 'overview', label: 'Genel Bakış & Duyurular', icon: Activity },
+              { id: 'events', label: `Etkinlikler (${selectedClub.events?.length || 0})`, icon: Calendar },
+              { id: 'board', label: `Yönetim Kurulu (${selectedClub.boardMembers?.length || 0})`, icon: Users },
+              { id: 'budget', label: 'Bütçe & SKS Talepleri', icon: Wallet },
+              { id: 'members', label: `Üyeler & Tüzük (${selectedClub.memberCount || 0})`, icon: FileText }
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = clubDetailTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setClubDetailTab(tab.id)}
+                  className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                    isActive 
+                      ? 'bg-[#990000] text-white shadow-xs' 
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
+                >
+                  <Icon size={16} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* LEFT COLUMN: About & Info */}
+            {/* LEFT COLUMN: About & Quick Stats */}
             <div className="lg:col-span-1 space-y-6">
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h3 className="font-bold text-red-950 mb-3 flex items-center gap-2">Hakkımızda</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{selectedClub.description || 'Bu kulüp için henüz bir açıklama girilmemiştir.'}</p>
+                <h3 className="font-bold text-red-950 mb-3 flex items-center gap-2">Kulüp Hakkında</h3>
+                <p className="text-sm text-slate-600 leading-relaxed mb-3">{selectedClub.description || 'Bu kulüp için henüz bir açıklama girilmemiştir.'}</p>
+                {selectedClub.purpose && (
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 mt-2">
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Misyon & Amaç</p>
+                    <p className="text-xs text-slate-700 leading-relaxed">{selectedClub.purpose}</p>
+                  </div>
+                )}
                 
                 <div className="mt-6 pt-6 border-t border-slate-100 space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500"><Users size={18}/></div>
                     <div>
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Danışman</p>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Danışman Öğretim Üyesi</p>
                       <p className="text-sm font-bold text-red-900">{selectedClub.advisor || 'Atanmadı'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500"><Trophy size={18}/></div>
                     <div>
-                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Başkan</p>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Kulüp Başkanı</p>
                       <p className="text-sm font-bold text-red-900">{selectedClub.president?.name || 'Belirtilmedi'}</p>
                     </div>
                   </div>
+                  {selectedClub.budget && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600"><Wallet size={18}/></div>
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Kalan Kullanılabilir Bütçe</p>
+                        <p className="text-sm font-black text-emerald-700">{selectedClub.budget.remaining?.toLocaleString('tr-TR')} ₺ <span className="text-xs text-slate-400 font-normal">/ {selectedClub.budget.allocated?.toLocaleString('tr-TR')} ₺</span></p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Broadcast Channel Preview (Instagram Feature) */}
+              {/* Broadcast Channel Preview */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-violet-500 to-fuchsia-600 p-4 text-white flex items-center justify-between">
+                <div className="bg-gradient-to-r from-red-900 to-[#990000] p-4 text-white flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Activity size={18} />
-                    <span className="font-bold text-sm">Yayın Kanalı</span>
+                    <span className="font-bold text-sm">Resmî Duyuru & Yayın Kanalı</span>
                   </div>
-                  <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-bold">142 Üye</span>
+                  <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-bold">{selectedClub.memberCount || 142} Üye</span>
                 </div>
-                <div className="p-4 space-y-4">
+                <div className="p-4 space-y-3">
                   <div className="bg-slate-50 p-3 rounded-xl rounded-tl-none border border-slate-100 w-11/12">
-                    <p className="text-xs text-red-900">Yarınki tanışma toplantımız saat 14:00'te A Blok Konferans Salonunda. Bekliyoruz! 🎉</p>
-                    <span className="text-[10px] text-slate-400 mt-1 block">10:45 AM</span>
+                    <p className="text-xs text-red-900 font-medium">Bahar dönemi etkinlik takvimimiz ve sponsorluk görüşmelerimiz onaylanmıştır! Detaylar duyurular sekmesinde. 🚀</p>
+                    <span className="text-[10px] text-slate-400 mt-1 block">Bugün, 11:20</span>
                   </div>
                   {userIsMember ? (
-                    <button className="w-full py-2 bg-red-950 hover:bg-red-900 text-white text-xs font-bold rounded-lg transition-colors">
-                      Kanala Git
+                    <button className="w-full py-2 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-lg transition-colors">
+                      Kanala Katıl
                     </button>
                   ) : (
-                    <button className="w-full py-2 bg-slate-100 text-slate-400 text-xs font-bold rounded-lg cursor-not-allowed">
+                    <button 
+                      onClick={() => handleMembershipRequest(selectedClub)}
+                      className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg transition"
+                    >
                       Kanala Katılmak İçin Üye Olun
                     </button>
                   )}
@@ -256,60 +318,442 @@ export default function StudentClubPortal({ currentUser, setView, previousView, 
               </div>
             </div>
             
-            {/* RIGHT COLUMN: Feed & Missions */}
+            {/* RIGHT COLUMN: Tab Contents */}
             <div className="lg:col-span-2 space-y-6">
               
-              {/* Write Post Box (Only for members) */}
-              {userIsMember && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex gap-3 items-center hover:border-slate-300 transition-colors cursor-pointer">
-                  <div className="w-10 h-10 bg-emerald-100 rounded-full flex shrink-0 items-center justify-center text-emerald-600 font-bold border border-emerald-200">
-                    {currentUser?.name?.charAt(0) || 'Ö'}
+              {/* TAB 1: OVERVIEW & ANNOUNCEMENTS */}
+              {clubDetailTab === 'overview' && (
+                <div className="space-y-6 animate-fade-in">
+                  {/* ANNOUNCEMENTS PANEL */}
+                  {selectedClub.announcements && selectedClub.announcements.length > 0 && (
+                    <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                      <h3 className="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                        <Bell size={18} className="text-[#990000]" />
+                        Güncel Kulüp Duyuruları
+                      </h3>
+                      <div className="space-y-3">
+                        {selectedClub.announcements.map((ann, idx) => (
+                          <div key={idx} className={`p-4 rounded-xl border ${ann.isImportant ? 'bg-amber-50/50 border-amber-200' : 'bg-slate-50/60 border-slate-200'}`}>
+                            <div className="flex items-center justify-between mb-1.5">
+                              <span className="font-bold text-sm text-gray-900">{ann.title}</span>
+                              <span className="text-[11px] font-bold text-slate-400">{ann.date}</span>
+                            </div>
+                            <p className="text-xs text-slate-600 leading-relaxed">{ann.content}</p>
+                            {ann.author && <p className="text-[10px] text-slate-400 font-bold mt-2">— {ann.author}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Write Post Box (Only for members) */}
+                  {userIsMember && (
+                    <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex gap-3 items-center hover:border-slate-300 transition-colors cursor-pointer">
+                      <div className="w-10 h-10 bg-red-100 rounded-full flex shrink-0 items-center justify-center text-[#990000] font-bold border border-red-200">
+                        {currentUser?.name?.charAt(0) || 'Ö'}
+                      </div>
+                      <div className="flex-1 text-left px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-sm text-slate-500 font-medium transition-colors hover:bg-slate-100">
+                        Kulüp üyeleriyle bir şey paylaş...
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Feed Posts */}
+                  {clubFeedPosts.map(post => (
+                    <div key={post.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:border-slate-300 transition-colors">
+                      <div className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3 cursor-pointer group">
+                          <img src={post.author.logo} alt={post.author.name} className="w-10 h-10 rounded-xl border border-slate-100 shadow-sm" />
+                          <div>
+                            <h4 className="font-bold text-sm text-red-950 group-hover:text-[#990000] transition-colors">{post.author.name}</h4>
+                            <p className="text-[11px] text-slate-500">{post.time}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="px-4 pb-3">
+                        <p className="text-sm text-slate-700 leading-relaxed">{post.content}</p>
+                      </div>
+
+                      {post.image && (
+                        <div className="w-full h-64 bg-slate-100">
+                          <img src={post.image} alt="Post cover" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+
+                      <div className="p-3 border-t border-slate-100 flex items-center justify-between px-6">
+                        <button className="flex items-center gap-1.5 text-slate-500 hover:text-rose-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-rose-50">
+                          <Heart size={18} /> {post.likes}
+                        </button>
+                        <button className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
+                          <MessageCircle size={18} /> {post.comments}
+                        </button>
+                        <button className="flex items-center gap-1.5 text-slate-500 hover:text-[#990000] transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
+                          <Share2 size={18} /> Paylaş
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* TAB 2: EVENTS & CALENDAR */}
+              {clubDetailTab === 'events' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-base">Kulüp Etkinlik Takvimi</h3>
+                      <p className="text-xs text-slate-500">Yaklaşan hackathon, konferans ve atölye programları.</p>
+                    </div>
+                    <button
+                      onClick={() => setShowEventModal(true)}
+                      className="px-4 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                    >
+                      <Plus size={16} /> Yeni Etkinlik Başvurusu
+                    </button>
                   </div>
-                  <div className="flex-1 text-left px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-sm text-slate-500 font-medium transition-colors hover:bg-slate-100">
-                    Kulüp üyeleriyle bir şey paylaş...
+
+                  <div className="space-y-4">
+                    {(selectedClub.events || []).map((evt, idx) => (
+                      <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:border-red-200 transition">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="px-2.5 py-1 bg-red-50 text-[#990000] font-bold text-[11px] rounded-lg uppercase tracking-wider">
+                              {evt.category || 'Etkinlik'}
+                            </span>
+                            <span className={`px-2 py-0.5 text-[11px] font-bold rounded-md ${evt.status === 'Yaklaşan' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
+                              {evt.status}
+                            </span>
+                          </div>
+                          <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+                            <Calendar size={14} /> {evt.date} • {evt.time || '14:00'}
+                          </span>
+                        </div>
+
+                        <h4 className="text-base font-black text-gray-900 mb-2">{evt.title}</h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">{evt.description}</p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl text-xs mb-4">
+                          <div className="flex items-center gap-2 text-slate-600">
+                            <MapPin size={15} className="text-[#990000] shrink-0" />
+                            <span><strong>Konum:</strong> {evt.location}</span>
+                          </div>
+                          {evt.speaker && (
+                            <div className="flex items-center gap-2 text-slate-600">
+                              <Award size={15} className="text-amber-600 shrink-0" />
+                              <span><strong>Konuk:</strong> {evt.speaker}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="text-xs text-slate-500 font-medium">
+                            Kontenjan: <strong className="text-gray-900">{evt.registeredCount || 0} / {evt.quota || 100}</strong>
+                          </div>
+                          <button 
+                            onClick={() => toast.success(`"${evt.title}" etkinliğine kaydınız başarıyla alındı!`)}
+                            className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                          >
+                            Katıl / Bilet Al
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {(!selectedClub.events || selectedClub.events.length === 0) && (
+                      <div className="text-center py-12 bg-white rounded-2xl border border-slate-200">
+                        <Calendar size={40} className="mx-auto text-slate-300 mb-2" />
+                        <h4 className="font-bold text-gray-800">Planlanmış Etkinlik Bulunmuyor</h4>
+                        <p className="text-xs text-slate-500">Kulüp yöneticileri yeni bir etkinlik başvurusu oluşturabilir.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
 
-              {/* Feed Posts */}
-              {clubFeedPosts.map(post => (
-                <div key={post.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:border-slate-300 transition-colors">
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3 cursor-pointer group">
-                      <img src={post.author.logo} alt={post.author.name} className="w-10 h-10 rounded-xl border border-slate-100 shadow-sm" />
-                      <div>
-                        <h4 className="font-bold text-sm text-red-950 group-hover:text-emerald-600 transition-colors">{post.author.name}</h4>
-                        <p className="text-[11px] text-slate-500">{post.time}</p>
+              {/* TAB 3: MANAGEMENT BOARD */}
+              {clubDetailTab === 'board' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 className="font-bold text-gray-900 text-base">Yönetim Kurulu & Akademik Danışmanlık</h3>
+                    <p className="text-xs text-slate-500">Kulübün resmî temsilcileri ve akademik danışman kadrosu.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {(selectedClub.boardMembers || []).map((m, idx) => (
+                      <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-red-200 transition flex items-start gap-4">
+                        <img 
+                          src={m.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=990000&color=fff`} 
+                          alt={m.name} 
+                          className="w-14 h-14 rounded-2xl object-cover border-2 border-red-100 shadow-xs shrink-0" 
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-[#990000] bg-red-50 px-2 py-0.5 rounded-md inline-block mb-1">
+                            {m.role}
+                          </span>
+                          <h4 className="font-black text-sm text-gray-900 truncate">{m.name}</h4>
+                          <p className="text-xs text-slate-500 truncate mb-2">{m.department}</p>
+                          {m.email && (
+                            <a href={`mailto:${m.email}`} className="text-xs text-slate-600 hover:text-[#990000] flex items-center gap-1 font-medium transition">
+                              <Mail size={12} /> {m.email}
+                            </a>
+                          )}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: BUDGET & SKS REQUESTS */}
+              {clubDetailTab === 'budget' && (
+                <div className="space-y-6 animate-fade-in">
+                  {/* Budget Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tahsis Edilen Yıllık Bütçe</p>
+                      <h4 className="text-xl font-black text-gray-900">{selectedClub.budget?.allocated?.toLocaleString('tr-TR') || '45.000'} ₺</h4>
+                      <span className="text-[11px] text-slate-500">2026-2027 SKS Bütçesi</span>
+                    </div>
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Harcanan Bütçe</p>
+                      <h4 className="text-xl font-black text-amber-700">{selectedClub.budget?.spent?.toLocaleString('tr-TR') || '16.500'} ₺</h4>
+                      <span className="text-[11px] text-amber-600 font-medium">Onaylı Faturalar</span>
+                    </div>
+                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Kalan Kullanılabilir Bütçe</p>
+                      <h4 className="text-xl font-black text-emerald-700">{selectedClub.budget?.remaining?.toLocaleString('tr-TR') || '28.500'} ₺</h4>
+                      <span className="text-[11px] text-emerald-600 font-bold">Harcanabilir Bakiye</span>
                     </div>
                   </div>
-                  
-                  <div className="px-4 pb-3">
-                    <p className="text-sm text-slate-700 leading-relaxed">{post.content}</p>
+
+                  {/* SKS Budget Request Pool */}
+                  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-5">
+                      <div>
+                        <h3 className="font-bold text-gray-900 text-base">SKS Bütçe & Etkinlik Talepleri</h3>
+                        <p className="text-xs text-slate-500">Kulüp adına Dekanlığa iletilen resmî bütçe onay başvuruları.</p>
+                      </div>
+                      <button
+                        onClick={() => setShowEventModal(true)}
+                        className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                      >
+                        <Plus size={16} /> Yeni Bütçe Talebi
+                      </button>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider">
+                            <th className="pb-3 px-3">Etkinlik / Talep Adı</th>
+                            <th className="pb-3 px-3">Talep Tutarı</th>
+                            <th className="pb-3 px-3">Tarih</th>
+                            <th className="pb-3 px-3">Durum</th>
+                            <th className="pb-3 px-3">SKS Karar Notu</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium">
+                          {(selectedClub.budgetRequests || []).map((req, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50/60">
+                              <td className="py-3 px-3 font-bold text-gray-900">{req.title || req.eventName}</td>
+                              <td className="py-3 px-3 font-bold text-slate-700">{req.amount}</td>
+                              <td className="py-3 px-3 text-slate-500">{req.requestedDate || req.date}</td>
+                              <td className="py-3 px-3">
+                                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                                  req.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
+                                  req.status === 'rejected' ? 'bg-rose-100 text-rose-800' :
+                                  'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {req.status === 'approved' ? 'Onaylandı' : req.status === 'rejected' ? 'Reddedildi' : 'İnceleniyor'}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-slate-500">{req.approvalNote || 'Değerlendirme aşamasında.'}</td>
+                            </tr>
+                          ))}
+                          {(!selectedClub.budgetRequests || selectedClub.budgetRequests.length === 0) && (
+                            <tr>
+                              <td colSpan={5} className="py-8 text-center text-slate-400">Henüz bir bütçe talebi kaydı bulunmuyor.</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: MEMBERS & CONSTITUTION */}
+              {clubDetailTab === 'members' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-base">Kayıtlı Üyeler ({selectedClub.memberCount || 248})</h3>
+                      <p className="text-xs text-slate-500">İstanbul Esenyurt Üniversitesi aktif öğrenci üyeleri.</p>
+                    </div>
+                    {userIsMember ? (
+                      <span className="px-3 py-1.5 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-xl border border-emerald-200 flex items-center gap-1.5">
+                        <Check size={14} /> Bu kulübün üyesisiniz
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleMembershipRequest(selectedClub)}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                      >
+                        Kulübe Katıl
+                      </button>
+                    )}
                   </div>
 
-                  {post.image && (
-                    <div className="w-full h-64 bg-slate-100">
-                      <img src={post.image} alt="Post cover" className="w-full h-full object-cover" />
+                  {/* Registered members table */}
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider">
+                            <th className="pb-3 px-3">Öğrenci Adı</th>
+                            <th className="pb-3 px-3">Bölüm</th>
+                            <th className="pb-3 px-3">Kulüp Rolü</th>
+                            <th className="pb-3 px-3">Katılım Tarihi</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium">
+                          {(selectedClub.members || []).map((mem, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50/60">
+                              <td className="py-3 px-3 font-bold text-gray-900">{mem.name}</td>
+                              <td className="py-3 px-3 text-slate-600">{mem.department || 'Mühendislik'}</td>
+                              <td className="py-3 px-3">
+                                <span className="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold rounded text-[10px]">
+                                  {mem.role || 'Aktif Üye'}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-slate-400">{mem.joinedDate || '2024'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                  )}
+                  </div>
 
-                  <div className="p-3 border-t border-slate-100 flex items-center justify-between px-6">
-                    <button className="flex items-center gap-1.5 text-slate-500 hover:text-rose-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-rose-50">
-                      <Heart size={18} /> {post.likes}
-                    </button>
-                    <button className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
-                      <MessageCircle size={18} /> {post.comments}
-                    </button>
-                    <button className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-emerald-50">
-                      <Share2 size={18} /> Paylaş
+                  {/* Club Constitution Box */}
+                  <div className="bg-red-50/50 rounded-2xl border border-red-200 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+                        <FileText size={18} className="text-[#990000]" />
+                        İESÜ SKS Onaylı Resmî Kulüp Tüzüğü
+                      </h4>
+                      <p className="text-xs text-slate-600 mt-1">
+                        Bu kulüp Sağlık Kültür ve Spor Daire Başkanlığı Kulüp Kuruluş ve İşleyiş Yönergesi doğrultusunda {selectedClub.constitutionApprovedDate || '2021'} tarihinde akredite edilmiştir.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => toast.success('Kulüp tüzüğü PDF olarak indirildi. (Mock)')}
+                      className="px-4 py-2 bg-white border border-red-200 hover:bg-red-50 text-[#990000] font-bold text-xs rounded-xl shadow-2xs transition flex items-center gap-1.5 shrink-0"
+                    >
+                      <Download size={15} /> Tüzük İndir (PDF)
                     </button>
                   </div>
                 </div>
-              ))}
+              )}
+
             </div>
           </div>
         </div>
+
+        {/* EVENT & BUDGET REQUEST MODAL */}
+        {showEventModal && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-scale-up">
+              <button 
+                onClick={() => setShowEventModal(false)}
+                className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="mb-6">
+                <span className="text-xs font-black text-[#990000] uppercase tracking-wider">SKS Daire Başkanlığı</span>
+                <h3 className="text-xl font-black text-gray-900">Etkinlik & Bütçe Onay Başvurusu</h3>
+                <p className="text-xs text-slate-500 mt-1">{selectedClub.name} adına resmî talep oluşturun.</p>
+              </div>
+
+              <form onSubmit={handleEventSubmit} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Etkinlik Başlığı *</label>
+                  <input
+                    type="text"
+                    required
+                    value={eventForm.name}
+                    onChange={(e) => setEventForm({ ...eventForm, name: e.target.value })}
+                    placeholder="Örn: Yapay Zeka Hackathonu 2026"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Tarih *</label>
+                    <input
+                      type="date"
+                      required
+                      value={eventForm.date}
+                      onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Talep Edilen Bütçe (₺)</label>
+                    <input
+                      type="number"
+                      value={eventForm.budget}
+                      onChange={(e) => setEventForm({ ...eventForm, budget: e.target.value })}
+                      placeholder="Örn: 15000"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Etkinlik Konumu</label>
+                  <input
+                    type="text"
+                    value={eventForm.location}
+                    onChange={(e) => setEventForm({ ...eventForm, location: e.target.value })}
+                    placeholder="Örn: Merkez Kampüs Konferans Salonu"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Açıklama & Gerekçe</label>
+                  <textarea
+                    rows={3}
+                    value={eventForm.description}
+                    onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                    placeholder="Etkinlik amacı, konuşmacılar ve bütçenin nerede kullanılacağı..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-gray-800 outline-none focus:border-[#990000] resize-none"
+                  />
+                </div>
+
+                <div className="pt-3 flex gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowEventModal(false)}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5"
+                  >
+                    <CheckCircle2 size={16} /> Talebi İlet
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* FLOATING BOTTOM DOCK */}
         <SubPanelFloatingDock 
@@ -394,7 +838,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView, 
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{club.category || 'Genel'}</p>
                       </div>
                     </div>
-                    <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-1">{club.description || 'Öğrencilerin akademik ve sosyal esenyurtlerini desteklemeyi amaçlamaktadır.'}</p>
+                    <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-1">{club.description || 'Öğrencilerin akademik ve sosyal gelişimlerini desteklemeyi amaçlamaktadır.'}</p>
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                       <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
                         <Users size={14} className="text-slate-400" /> {club.memberCount || 45} Üye
