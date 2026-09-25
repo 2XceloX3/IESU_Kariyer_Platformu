@@ -1,72 +1,417 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Map, MapPin, Target, Sparkles, ChevronLeft, ArrowRight, Zap, CheckCircle2, CircleDashed, Rocket, Code, Award, Users, CalendarClock } from 'lucide-react';
+import { 
+  Target, Sparkles, ChevronLeft, ArrowRight, Zap, CheckCircle2, 
+  CircleDashed, Rocket, Code, Award, Users, CalendarClock,
+  Compass, CheckSquare, Square, RefreshCw, BookOpen, Briefcase
+} from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { generateAIResponse } from '../lib/gemini';
-import useAppStore from '../store/useAppStore';
+
+const PRESET_SECTORS = [
+  { id: 'swe', name: 'Yazılım & Bilişim', role: 'Full Stack Web & Mobil Geliştirici', icon: <Code size={16} /> },
+  { id: 'data', name: 'Veri & Analitik', role: 'Veri Bilimi ve İş Zekası Uzmanı', icon: <Target size={16} /> },
+  { id: 'fin', name: 'Finans & Bankacılık', role: 'Kurumsal Finans & Yatırım Danışmanı', icon: <Briefcase size={16} /> },
+  { id: 'mkt', name: 'Pazarlama & Tasarım', role: 'Dijital Büyüme & UI/UX Ürün Yöneticisi', icon: <Sparkles size={16} /> },
+  { id: 'eng', name: 'Mühendislik & Üretim', role: 'Endüstri & Operasyonel Mükemmellik Mühendisi', icon: <Rocket size={16} /> },
+];
+
+const DEFAULT_ROADMAPS = {
+  swe: {
+    title: 'Full Stack Web & Mobil Geliştirici Yol Haritası',
+    phases: [
+      { 
+        id: 1, 
+        title: 'Temeller ve Kodlama Altyapısı', 
+        timeframe: '0 - 6 Ay', 
+        desc: 'Programlama temelleri, algoritma mantığı, Git versiyon kontrolü ve modern web standartları.',
+        tasks: [
+          'HTML5, Modern CSS, Responsive Design ve Tailwind temellerini öğren',
+          'JavaScript (ES6+) ve TypeScript temel syntax pratiklerini bitir',
+          'GitHub profili aç, temel komutları öğren ve ilk 3 açık kaynak depoyu yayınla',
+          'Üniversite Yazılım Kulübü teknik etkinliklerine ve hackathonlara katıl'
+        ] 
+      },
+      { 
+        id: 2, 
+        title: 'Mimari ve İleri Frameworkler', 
+        timeframe: '6 - 12 Ay', 
+        desc: 'React / Next.js, Node.js REST API geliştirme, veritabanı modelleme ve güvenli kimlik doğrulama.',
+        tasks: [
+          'React ile component lifecycle, state yönetimi ve custom hook mimarisi kur',
+          'Node.js & Express veya Python FastApi ile tam teşekküllü bir CRUD API yaz',
+          'PostgreSQL veya MongoDB ile ilişkisel / doküman tabanlı veri tabanı tasarla',
+          'İESÜ mezun ağından kıdemli bir yazılımcı mentor ile ilk görüşmeyi gerçekleştir'
+        ] 
+      },
+      { 
+        id: 3, 
+        title: 'Saha Deneyimi & Staj', 
+        timeframe: '1 - 2 Yıl', 
+        desc: 'Kurumsal staj programlarına dahil olma, CI/CD pipeline, Docker ve takım içi Agile/Scrum süreçleri.',
+        tasks: [
+          'Platform üzerinden teknoloji firmalarına yaz dönemi staj başvurularını yap',
+          'Docker ile containerize edilmiş bir mikroservis projesini buluta (AWS/Vercel) deploy et',
+          'Birim ve entegrasyon testleri (Vitest/Jest) yazarak kod kapsamını %80 üzerine çıkar',
+          'Sektörel simülasyon mülakatı yaparak teknik soru repertuarını geliştir'
+        ] 
+      },
+      { 
+        id: 4, 
+        title: 'Zirve, Uzmanlaşma & Kariyer Başlangıcı', 
+        timeframe: '2+ Yıl', 
+        desc: 'Junior / Mid-level pozisyonlara resmi iş başvuruları, profesyonel portfolyo sunumu ve müzakere.',
+        tasks: [
+          'Teknik projelerini içeren canlı demo linkli kişisel portfolyo web siteni yayına al',
+          'Sektördeki İK liderleri ve Engineering Manager\'lar ile profesyonel ağ kur',
+          'Sistem tasarımı (System Design) mülakatlarına yönelik pratikleri tamamla',
+          'Kariyer Geliştirme Merkezi koordinasyonunda resmi iş tekliflerini değerlendir'
+        ] 
+      },
+    ]
+  },
+  data: {
+    title: 'Veri Bilimi ve İş Zekası Uzmanı Yol Haritası',
+    phases: [
+      {
+        id: 1,
+        title: 'Matematiksel Temeller & Python',
+        timeframe: '0 - 6 Ay',
+        desc: 'İstatistik, olasılık kuramı, doğrusal cebir ve Python ile veri manipülasyonu.',
+        tasks: [
+          'Python, NumPy, Pandas ve Matplotlib kütüphanelerini pratik veri setleriyle öğren',
+          'İleri seviye SQL sorguları yazma (JOIN, Window Functions, Group By) becerisi kazan',
+          'Kaggle platformunda temel seviye yarışmalara katılarak ilk notebooklarını yayınla',
+          'Bölüm danışman hocasıyla akademik veri analitiği çalışmalarında yer al'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Makine Öğrenmesi & Veri Görselleştirme',
+        timeframe: '6 - 12 Ay',
+        desc: 'Scikit-learn, denetimli/denetimsiz öğrenme, Power BI ve Tableau iş zekası panoları.',
+        tasks: [
+          'Regresyon, sınıflandırma ve kümeleme algoritmalarını gerçek dünya verisinde uygula',
+          'Power BI veya Tableau ile kurumsal KPI gösterge paneli (dashboard) tasarla',
+          'Model performans metriklerini (RMSE, F1-Score, AUC-ROC) karşılaştırmalı analiz et',
+          'Doğrulanmış İESÜ mentör rehberinden veri bilimi mentoru ile eşleş'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Büyük Veri & Pipeline Entegrasyonu',
+        timeframe: '1 - 2 Yıl',
+        desc: 'Apache Spark, bulut veri ambarları (Snowflake/BigQuery) ve kurumsal staj.',
+        tasks: [
+          'Büyük veri mimarilerini ve ETL/ELT pipeline akışlarını incele',
+          'Finans veya e-ticaret alanında veri analisti staj başvurularını tamamla',
+          'A/B testleri kurgulayarak ürün optimizasyon denemeleri yap',
+          'İş zekası sertifikasyon sınavlarına (Microsoft Power BI / Google Data Analytics) gir'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Stratejik Karar Vericilik & Profesyonel Pozisyon',
+        timeframe: '2+ Yıl',
+        desc: 'Üst yönetime veri sunumu yapabilme kabiliyeti ve kurumsal veri bilimci rolü.',
+        tasks: [
+          'Veri hikayeleştirme (Data Storytelling) ve yönetici sunum tekniklerini pekiştir',
+          'Kişisel veri portfolyonu GitHub ve Medium makaleleri ile belgele',
+          'Platform iş ilanlarındaki Senior veri analistleriyle mülakat pratikleri yap',
+          'Resmi mezuniyet sonrası tam zamanlı teklif sürecini yönet'
+        ]
+      }
+    ]
+  },
+  fin: {
+    title: 'Kurumsal Finans & Yatırım Danışmanı Yol Haritası',
+    phases: [
+      {
+        id: 1,
+        title: 'Mali Tablolar & Finansal Muhasebe',
+        timeframe: '0 - 6 Ay',
+        desc: 'Bilanço, gelir tablosu analizi, nakit akışı ve finansal modelleme temelleri.',
+        tasks: [
+          'Mali analiz yöntemleri ve oran (rasyo) analizlerini detaylı öğren',
+          'İleri Excel (VLOOKUP, INDEX/MATCH, Pivot Table, Finansal Formüller) uzmanlığı kazan',
+          'Borsa İstanbul ve küresel sermaye piyasası dinamiklerini takip et',
+          'Finans Kulübü etkinliklerine ve vaka analizi yarışmalarına katıl'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Sermaye Piyasaları & Lisanslama Hazırlığı',
+        timeframe: '6 - 12 Ay',
+        desc: 'SPL Lisanslama sınavları, şirket değerleme modelleri (DCF, Çarpan Analizi).',
+        tasks: [
+          'SPL Düzey 1 ve Düzey 2 sınav hazırlık modüllerini tamamla',
+          'İndirgenmiş Nakit Akımları (DCF) yöntemiyle halka açık bir şirketin değerlemesini yap',
+          'Makroekonomik göstergelerin (faiz, enflasyon, kur) sektörel etkilerini modelle',
+          'Bankacılık ve denetim alanındaki mezun mentörlerle temas kur'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Denetim, Banka & Fon Stajları',
+        timeframe: '1 - 2 Yıl',
+        desc: 'Big 4 denetim şirketleri veya aracı kurumlarda staj deneyimi ve risk yönetimi.',
+        tasks: [
+          'Platform üzerinden bankacılık ve finans sektörü staj ilanlarına başvur',
+          'Kredi derecelendirme ve finansal risk senaryoları simülasyonunu çalış',
+          'Bloomberg Terminal veya kurumsal finans yazılımları hakkında ön bilgi edin',
+          'Sektörel vaka mülakatlarına (case interview) hazırlan'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Yatırım Bankacılığı & Portföy Yönetimi',
+        timeframe: '2+ Yıl',
+        desc: 'Birleşme ve devralmalar (M&A), portföy optimizasyonu ve analist pozisyonu.',
+        tasks: [
+          'Yatırım fizibilite raporu hazırlama kabiliyetini portfolyoya dönüştür',
+          'CFA veya SPK lisanslarını portfolyona ekle',
+          'Hedef finans kuruluşlarının kurumsal İK birimleriyle temas kur',
+          'Kariyer Geliştirme Koordinatörlüğü ile ilk sözleşme sürecini yönet'
+        ]
+      }
+    ]
+  },
+  mkt: {
+    title: 'Dijital Büyüme & UI/UX Ürün Yöneticisi Yol Haritası',
+    phases: [
+      {
+        id: 1,
+        title: 'Kullanıcı Deneyimi & Tasarım Temelleri',
+        timeframe: '0 - 6 Ay',
+        desc: 'Tasarım odaklı düşünme, kullanıcı araştırması ve Figma ile tel çerçeve (wireframe).',
+        tasks: [
+          'Figma ile UI component, auto-layout ve tasarım sistemi kurmayı öğren',
+          'Kullanıcı persona ve yolculuk haritaları (User Journey) çıkarma pratikleri yap',
+          'Google Analytics ve dijital pazarlama metriklerinin (CAC, LTV, ROAS) temellerini öğren',
+          'Behance ve Dribbble profili oluşturup ilk 2 konsept çalışmanı yükle'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Büyüme Pazarlaması & Veriye Dayalı Tasarım',
+        timeframe: '6 - 12 Ay',
+        desc: 'Dönüşüm oranı optimizasyonu (CRO), A/B testi ve performans pazarlama araçları.',
+        tasks: [
+          'Meta Ads, Google Ads ve SEO teknik denetim temellerini öğren',
+          'Kullanılabilirlik testleri (Usability Testing) uygulayarak geri bildirim topla',
+          'Mikro etkileşimler ve prototipleme animasyonları geliştir',
+          'Üniversite tasarım ve iletişim kulüplerinde proje yöneticiliği üstlen'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Ajans & E-Ticaret Saha Stajı',
+        timeframe: '1 - 2 Yıl',
+        desc: 'Canlı kampanyalar yönetme, ürün yol haritası (Product Roadmap) ve büyüme deneyleri.',
+        tasks: [
+          'Dijital ajans veya teknoloji şirketi ürün stajına kabul al',
+          'Çok kanallı (Omnichannel) kampanya stratejisini baştan sona planla',
+          'Yazılım ekibiyle ortak Scrum sprint süreçlerine katıl',
+          'Öne çıkan vaka analizi çalışmalarını PDF sunum formatında hazırla'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Kıdemli Ürün & Pazarlama Stratejisi',
+        timeframe: '2+ Yıl',
+        desc: 'Ürün yaşam döngüsü yönetimi, gelir optimizasyonu ve tam zamanlı istihdam.',
+        tasks: [
+          'Uçtan uca başarıya ulaşmış bir vaka portfolyosu ile mülakatlara gir',
+          'Ürün liderleri ve CMO seviyesi sektör profesyonelleriyle ağ kur',
+          'Kariyer Geliştirme Merkezi destekli maaş ve pozisyon tekliflerini değerlendir',
+          'Mezuniyet sonrası genç öğrencilere tecrübe aktaracak mentorluk adımlarını planla'
+        ]
+      }
+    ]
+  },
+  eng: {
+    title: 'Endüstri & Operasyonel Mükemmellik Mühendisi Yol Haritası',
+    phases: [
+      {
+        id: 1,
+        title: 'Mühendislik Temelleri & Süreç Analizi',
+        timeframe: '0 - 6 Ay',
+        desc: 'İş etüdü, zaman ölçümü, süreç akış şemaları ve temel mühendislik istatistiği.',
+        tasks: [
+          'Süreç haritalama ve akış diyagramı (Process Mapping) yazılımlarını öğren',
+          'Yalın Üretim felsefesi, 5S ve Kaizen metodolojisi eğitimlerini tamamla',
+          'Excel ve Minitab ile temel istatistiksel kalite kontrol araçlarını kavra',
+          'TMMOB ve mühendislik kulübü fabrika teknik gezilerine düzenli katıl'
+        ]
+      },
+      {
+        id: 2,
+        title: 'Yalın Altı Sigma & ERP Sistemleri',
+        timeframe: '6 - 12 Ay',
+        desc: 'SAP/ERP modülleri, tedarik zinciri modelleme ve Altı Sigma Sarı/Yeşil Kuşak.',
+        tasks: [
+          'Yalın Altı Sigma DMAIC döngüsünü örnek bir vaka üzerinden projelendir',
+          'ERP sistemlerinde (SAP, IFS veya Logo) üretim planlama ve stok mantığını öğren',
+          'Tedarik zinciri optimizasyonu ve lojistik maliyet hesaplamalarını çalış',
+          'Fabrika yöneticisi İESÜ mezun mentöründen üretim hattı mentorluğu al'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Fabrika & Saha Üretim Stajı',
+        timeframe: '1 - 2 Yıl',
+        desc: 'Endüstriyel tesislerde zorunlu/gönüllü staj, darboğaz analizi ve hat dengeleme.',
+        tasks: [
+          'Otomotiv, beyaz eşya veya FMCG fabrikasında üretim planlama stajı yap',
+          'Gerçek bir üretim hattında SMED (hızlı kalıp değişimi) projesi yürüt',
+          'OEE (Toplam Ekipman Etkinliği) metriklerini ölç ve raporla',
+          'İş sağlığı ve güvenliği kurumsal protokollerini sahada uygula'
+        ]
+      },
+      {
+        id: 4,
+        title: 'Operasyon Liderliği & Süreç Mühendisliği',
+        timeframe: '2+ Yıl',
+        desc: 'Sürekli iyileştirme uzmanlığı, proje yönetimi ve endüstri mühendisi kadrosu.',
+        tasks: [
+          'Bitirme projesini sanayi ortaklı (TÜBİTAK 2209-B) olarak tamamla',
+          'PMP temelleri ve Agile operasyon yönetimi yetkinliklerini CV\'ne ekle',
+          'Büyük sanayi kuruluşlarının MT (Management Trainee) programlarına başvur',
+          'Kariyer Merkezi ile profesyonel iş hayatına resmi adımını at'
+        ]
+      }
+    ]
+  }
+};
 
 export default function CareerRoadmap({ setView, currentUser, userRole, setSelectedUserId }) {
+  const [selectedSectorId, setSelectedSectorId] = useState('swe');
   const [dreamRole, setDreamRole] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [roadmap, setRoadmap] = useState(null);
+  const [roadmap, setRoadmap] = useState(DEFAULT_ROADMAPS.swe);
+  const [completedTasks, setCompletedTasks] = useState({});
 
-  const handleGenerate = async () => {
+  // Local storage synchronization
+  useEffect(() => {
+    try {
+      const savedTasks = localStorage.getItem('iesu_career_roadmap_completed_tasks_v2');
+      if (savedTasks) {
+        setCompletedTasks(JSON.parse(savedTasks));
+      }
+      const savedSector = localStorage.getItem('iesu_career_roadmap_active_sector_v2');
+      if (savedSector && DEFAULT_ROADMAPS[savedSector]) {
+        setSelectedSectorId(savedSector);
+        setRoadmap(DEFAULT_ROADMAPS[savedSector]);
+      }
+    } catch (e) {}
+  }, []);
+
+  const handleSelectSector = (sectorId) => {
+    setSelectedSectorId(sectorId);
+    setRoadmap(DEFAULT_ROADMAPS[sectorId]);
+    setDreamRole('');
+    try {
+      localStorage.setItem('iesu_career_roadmap_active_sector_v2', sectorId);
+    } catch (e) {}
+  };
+
+  const toggleTask = (taskKey) => {
+    setCompletedTasks(prev => {
+      const next = { ...prev, [taskKey]: !prev[taskKey] };
+      try {
+        localStorage.setItem('iesu_career_roadmap_completed_tasks_v2', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  const handleCustomGenerate = async () => {
     if (!dreamRole.trim()) return;
     setIsGenerating(true);
 
     const prompt = `
-      Sen Esenyurt Üniversitesi kariyer danışmanı Anka'sın.
-      Öğrenci "${currentUser?.name}" şu hedefi belirledi: "${dreamRole}".
+      Sen İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi Danışmanısın.
+      Öğrenci "${currentUser?.name || 'Öğrenci'}" şu hedefi belirledi: "${dreamRole}".
       Bu hedefe ulaşması için 4 aşamalı (Faz 1, Faz 2, Faz 3, Faz 4) bir kariyer yol haritası (roadmap) çıkar.
-      Lütfen sadece aşağıdaki JSON formatında, geçerli bir JSON objesi döndür, başka hiçbir metin (markdown backtickleri dahil) KULLANMA.
+      Lütfen sadece aşağıdaki JSON formatında, geçerli bir JSON objesi döndür, başka hiçbir metin veya markdown KULLANMA.
       JSON Formatı:
       {
-        "title": "Hedef Başlığı (Örn: Google Frontend Developer Yol Haritası)",
+        "title": "${dreamRole} Kariyer Yol Haritası",
         "phases": [
           {
             "id": 1,
-            "title": "Temelleri Atmak",
-            "timeframe": "1. - 2. Yıl",
+            "title": "Temeller ve Akademik Hazırlık",
+            "timeframe": "0 - 6 Ay",
             "desc": "Kısa açıklama",
-            "tasks": ["Görev 1", "Görev 2", "Görev 3"]
+            "tasks": ["Görev 1", "Görev 2", "Görev 3", "Görev 4"]
           },
-          ... (toplam 4 faz olacak)
+          {
+            "id": 2,
+            "title": "Yetkinlik Geliştirme & Sertifikasyon",
+            "timeframe": "6 - 12 Ay",
+            "desc": "Kısa açıklama",
+            "tasks": ["Görev 1", "Görev 2", "Görev 3", "Görev 4"]
+          },
+          {
+            "id": 3,
+            "title": "Saha Deneyimi & Staj",
+            "timeframe": "1 - 2 Yıl",
+            "desc": "Kısa açıklama",
+            "tasks": ["Görev 1", "Görev 2", "Görev 3", "Görev 4"]
+          },
+          {
+            "id": 4,
+            "title": "Zirve, Uzmanlaşma & İşe Giriş",
+            "timeframe": "2+ Yıl",
+            "desc": "Kısa açıklama",
+            "tasks": ["Görev 1", "Görev 2", "Görev 3", "Görev 4"]
+          }
         ]
       }
     `;
 
-    setTimeout(async () => {
-      try {
-        const response = await generateAIResponse(prompt, "Sadece JSON dön");
-        // Clean markdown backticks if AI still returns them
-        let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
-        const data = JSON.parse(cleanJson);
-        setRoadmap(data);
-        setIsGenerating(false);
-      } catch (e) {
-        // Fallback mock if JSON parsing fails
-        setRoadmap({
-          title: `${dreamRole} Yol Haritası`,
-          phases: [
-            { id: 1, title: 'Temeller ve İlk Adımlar', timeframe: '0-6 Ay', desc: 'Sektörün temellerini öğrenmek ve ilk portfolyoyu oluşturmak.', tasks: ['İlgili temel eğitimleri tamamla', 'GitHub/Behance profili aç', 'İlk küçük projeni yayınla'] },
-            { id: 2, title: 'Gelişim ve Derinleşme', timeframe: '6-12 Ay', desc: 'İleri düzey kavramları öğrenmek ve mentor bulmak.', tasks: ['İleri seviye kurslara katıl', 'Mezun ağından bir mentor bul', 'Gönüllü staj başvuruları yap'] },
-            { id: 3, title: 'Saha Deneyimi', timeframe: '1-2 Yıl', desc: 'Gerçek dünya projelerinde yer almak ve sektörle tanışmak.', tasks: ['Kariyer Fuarında staj ayarla', 'Freelance / Açık kaynak projelere katkı yap', 'Mülakat simülasyonları ile pratik yap'] },
-            { id: 4, title: 'Zirve ve Hedef', timeframe: '2+ Yıl', desc: 'Açık pozisyonlara başvuru ve profesyonel kariyerin başlangıcı.', tasks: ['CV ve Portfolyoyu son haline getir', 'Şirketlerin Senior İK çalışanları ile bağlantı kur', 'Hedef rol için resmi başvurulara başla'] },
-          ]
-        });
-        setIsGenerating(false);
-      }
-    }, 2000);
+    try {
+      const response = await generateAIResponse(prompt, "Sadece geçerli JSON dön");
+      let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
+      const data = JSON.parse(cleanJson);
+      setRoadmap(data);
+      setSelectedSectorId('custom');
+      setIsGenerating(false);
+    } catch (e) {
+      // Fallback
+      setRoadmap({
+        title: `${dreamRole} Yol Haritası`,
+        phases: [
+          { id: 1, title: 'Temeller ve İlk Adımlar', timeframe: '0 - 6 Ay', desc: 'Sektörün temellerini öğrenmek ve ilk portfolyoyu oluşturmak.', tasks: ['İlgili temel eğitimleri tamamla', 'Profesyonel platformlarda profil aç', 'İlk küçük projeni yayınla', 'Üniversite kulüplerine dahil ol'] },
+          { id: 2, title: 'Gelişim ve Derinleşme', timeframe: '6 - 12 Ay', desc: 'İleri düzey kavramları öğrenmek ve mentor bulmak.', tasks: ['İleri seviye kurslara katıl', 'Mezun ağından bir mentor bul', 'Gönüllü staj başvuruları yap', 'Teknik sertifikasyonları tamamla'] },
+          { id: 3, title: 'Saha Deneyimi', timeframe: '1 - 2 Yıl', desc: 'Gerçek dünya projelerinde yer almak ve sektörle tanışmak.', tasks: ['Kariyer Fuarında staj ayarla', 'Freelance / Açık kaynak projelere katkı yap', 'Mülakat simülasyonları ile pratik yap', 'Sektör ağını genişlet'] },
+          { id: 4, title: 'Zirve ve Hedef', timeframe: '2+ Yıl', desc: 'Açık pozisyonlara başvuru ve profesyonel kariyerin başlangıcı.', tasks: ['CV ve Portfolyoyu son haline getir', 'Şirketlerin Senior İK çalışanları ile bağlantı kur', 'Hedef rol için resmi başvurulara başla', 'Kariyer merkezinden teklif danışmanlığı al'] },
+        ]
+      });
+      setSelectedSectorId('custom');
+      setIsGenerating(false);
+    }
   };
 
+  // Metrics
+  const totalTasks = (roadmap?.phases || []).reduce((acc, p) => acc + (p.tasks?.length || 0), 0);
+  const completedCount = (roadmap?.phases || []).reduce((acc, p, pIdx) => {
+    return acc + (p.tasks || []).filter((_, tIdx) => completedTasks[`${roadmap.title}_${pIdx}_${tIdx}`]).length;
+  }, 0);
+  const percent = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
+
+  const backTarget = userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student';
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      <header className="h-16 bg-white border-b border-gray-200/80 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-28">
+      {/* Header */}
+      <header className="h-16 bg-white border-b border-gray-200/80 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+            onClick={() => setView(backTarget)} 
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-red-50 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shadow-xs"
             title="Geri Dön"
           >
             <ChevronLeft size={20} />
@@ -75,153 +420,233 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
             <Logo className="h-8 w-auto text-[#990000]" />
             <div>
               <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Kariyer Haritası</h1>
-              <p className="text-[11px] font-bold text-gray-500">Adım Adım Gelişim Rotası</p>
+              <p className="text-[11px] font-bold text-gray-500">Adım Adım Gelişim Rotası & Görev Takibi</p>
             </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
       </header>
 
-      <main className="flex-1 w-full max-w-4xl mx-auto p-4 lg:p-8">
+      <main className="flex-1 w-full max-w-5xl mx-auto p-4 lg:p-8">
         
-        {!roadmap && !isGenerating && (
-          <div className="text-center py-20 px-4">
-            <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600 shadow-inner">
-              <Target size={48} />
+        {/* TOP HERO & SECTOR SELECTOR */}
+        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200/80 shadow-xs mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 pb-5 border-b border-gray-100">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-[#990000] border border-red-100 rounded-full text-xs font-black uppercase tracking-wider mb-2">
+                <Compass size={14} /> Sektörel Rehber
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                Kariyer Hedefinizi Seçin veya Belirleyin
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                Hedef sektörünüze göre hazırlanmış 4 aşamalı resmi müfredat ile görevlerinizi tamamlayın.
+              </p>
             </div>
-            <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">Hayalindeki Rolü Söyle</h2>
-            <p className="text-lg text-gray-600 mb-10 max-w-xl mx-auto leading-relaxed">
-              Hedefine giden en kısa ve verimli yolu hesaplayarak sana özel, adım adım bir kariyer haritası çıkarsın.
-            </p>
-            
-            <div className="max-w-md mx-auto bg-white p-2 rounded-2xl shadow-xl shadow-red-900/5 flex items-center border border-gray-100 focus-within:border-red-400 focus-within:ring-4 focus-within:ring-red-100 transition-all">
+
+            {/* Custom Input */}
+            <div className="w-full md:w-80 flex items-center bg-slate-50 border border-slate-200 rounded-xl p-1.5 focus-within:border-[#990000] focus-within:ring-2 focus-within:ring-red-100 transition-all">
               <input 
-                type="text" 
-                className="flex-1 bg-transparent border-none outline-none px-4 text-gray-700 placeholder-gray-400 font-medium"
-                placeholder="Örn: Trendyol'da Veri Analisti..."
+                type="text"
+                placeholder="Farklı bir hedef yazın..."
                 value={dreamRole}
                 onChange={(e) => setDreamRole(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+                onKeyDown={(e) => e.key === 'Enter' && handleCustomGenerate()}
+                className="flex-1 bg-transparent px-3 text-xs sm:text-sm text-gray-800 outline-none placeholder-gray-400 font-medium"
               />
               <button 
-                onClick={handleGenerate}
-                disabled={!dreamRole.trim()}
-                className="bg-[#990000] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-red-700 transition disabled:opacity-50"
+                onClick={handleCustomGenerate}
+                disabled={!dreamRole.trim() || isGenerating}
+                className="bg-[#990000] hover:bg-red-800 disabled:opacity-50 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer shrink-0"
               >
-                Rota Oluştur <Sparkles size={18} />
+                {isGenerating ? <RefreshCw size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                <span>Oluştur</span>
               </button>
             </div>
-            
-            <div className="mt-8 flex flex-wrap justify-center gap-2 max-w-md mx-auto">
-              <span className="text-xs font-bold text-gray-400 uppercase w-full mb-1">Popüler Hedefler</span>
-              {['Google Yazılım Mühendisi', 'THY Kabin Memuru', 'Aselsan Siber Güvenlik Uzmanı', 'Akbank Finansal Analist'].map(r => (
-                <button key={r} onClick={() => setDreamRole(r)} className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 transition">
-                  {r}
-                </button>
-              ))}
-            </div>
           </div>
-        )}
 
-        {isGenerating && (
-          <div className="flex flex-col items-center justify-center py-32 text-center">
-            <div className="relative w-24 h-24 mb-6">
-              <div className="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-50" />
-              <div className="relative bg-white rounded-full p-6 border-4 border-red-50 shadow-sm flex items-center justify-center h-full">
-                <Zap size={40} className="text-red-600 animate-pulse" />
-              </div>
-            </div>
-            <h3 className="text-2xl font-black text-gray-900 mb-2">Kariyer Rotası Hesaplanıyor...</h3>
-            <p className="text-gray-500 max-w-sm mx-auto">Anka, sektör verilerini ve binlerce mezunun geçmişini analiz ederek en güvenli yolu çiziyor.</p>
-          </div>
-        )}
-
-        {roadmap && !isGenerating && (
-          <AnimatePresence>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="py-8"
-            >
-              <div className="flex justify-between items-end mb-12">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-black uppercase tracking-wider mb-4 border border-red-100">
-                    <MapPin size={14} /> Hedef Kilitlendi
-                  </div>
-                  <h2 className="text-3xl lg:text-2xl font-black text-gray-900 leading-tight">
-                    {roadmap.title}
-                  </h2>
-                </div>
-                <button 
-                  onClick={() => { setRoadmap(null); setDreamRole(''); }}
-                  className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-200 transition"
+          {/* Sector Buttons */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            {PRESET_SECTORS.map((sec) => {
+              const isSelected = selectedSectorId === sec.id;
+              return (
+                <button
+                  key={sec.id}
+                  onClick={() => handleSelectSector(sec.id)}
+                  className={`flex flex-col items-start p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    isSelected 
+                      ? 'bg-red-50/70 border-[#990000] text-gray-900 shadow-xs' 
+                      : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50/70 text-gray-700'
+                  }`}
                 >
-                  Yeni Rota
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${
+                    isSelected ? 'bg-[#990000] text-white' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {sec.icon}
+                  </div>
+                  <span className="text-xs font-bold leading-tight">{sec.name}</span>
+                  <span className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{sec.role}</span>
                 </button>
-              </div>
+              );
+            })}
+          </div>
+        </div>
 
-              {/* Vertical Timeline */}
-              <div className="relative border-l-4 border-red-100 ml-6 md:ml-10 space-y-12">
-                {roadmap.phases.map((phase, idx) => (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.2 }}
-                    key={phase.id} 
-                    className="relative pl-8 md:pl-12"
-                  >
-                    {/* Node marker */}
-                    <div className="absolute -left-[22px] top-0 w-10 h-10 bg-white border-4 border-red-500 rounded-full flex items-center justify-center shadow-sm z-10">
-                      <span className="text-red-600 font-black text-sm">{phase.id}</span>
-                    </div>
+        {/* PROGRESS CARD */}
+        <div className="bg-linear-to-r from-[#990000] via-[#850000] to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-md mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-xs font-bold text-red-200 uppercase tracking-wider">Hedef İlerlemesi</span>
+            <h3 className="text-lg sm:text-xl font-black">{roadmap?.title}</h3>
+            <p className="text-xs text-red-100">
+              Tamamlanan: <span className="font-bold text-white">{completedCount} / {totalTasks} Görev</span> (%{percent})
+            </p>
+          </div>
 
-                    <div className="bg-white rounded-xl p-6 md:p-8 shadow-xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden group hover:border-red-200 transition-colors">
-                      {/* Decorative Background */}
-                      <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-5 transition-opacity pointer-events-none">
-                        {idx === 0 ? <Code size={150} /> : idx === 1 ? <Users size={150} /> : idx === 2 ? <Rocket size={150} /> : <Award size={150} />}
-                      </div>
+          <div className="w-full sm:w-60 flex flex-col gap-2">
+            <div className="w-full bg-white/20 h-3 rounded-full overflow-hidden p-0.5">
+              <div 
+                className="bg-white h-full rounded-full transition-all duration-500"
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center text-[11px] text-red-200 font-semibold">
+              <span>Başlangıç</span>
+              <span>Hedefe Ulaşma</span>
+            </div>
+          </div>
+        </div>
 
-                      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-                        <h3 className="text-2xl font-black text-gray-900">{phase.title}</h3>
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm font-bold mt-2 md:mt-0 w-max">
-                          <CalendarClock size={16} /> {phase.timeframe}
-                        </span>
-                      </div>
-                      
-                      <p className="text-gray-600 text-lg mb-6">{phase.desc}</p>
-                      
-                      <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-                        <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                          <Target size={18} className="text-red-500"/> Hedef Görevler
-                        </h4>
-                        <ul className="space-y-3">
-                          {phase.tasks.map((task, tIdx) => (
-                            <li key={tIdx} className="flex items-start gap-3">
-                              <CircleDashed size={20} className="text-gray-300 shrink-0 mt-0.5" />
-                              <span className="text-gray-700 font-medium">{task}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              
-              <div className="mt-16 text-center">
-                 <div className="inline-flex items-center justify-center w-16 h-16 bg-[#990000] rounded-full text-white shadow-sm mb-4">
-                   <CheckCircle2 size={32} />
-                 </div>
-                 <h3 className="text-2xl font-black text-[#990000]">Kariyer Hedefine Ulaşıldı</h3>
-                 <p className="text-gray-500 mt-2">Bu adımları izlediğinizde hedefinize ulaşmak için gerekli kurumsal yetkinlikleri kazanmış olacaksınız. Kariyer Geliştirme Merkezi tüm bu süreçte yanınızda.</p>
-              </div>
-
-            </motion.div>
-          </AnimatePresence>
+        {/* LOADING STATE */}
+        {isGenerating && (
+          <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl border border-gray-200/80 p-8 shadow-xs">
+            <div className="w-16 h-16 bg-red-50 text-[#990000] rounded-2xl flex items-center justify-center mb-4 animate-pulse">
+              <Zap size={32} />
+            </div>
+            <h3 className="text-xl font-black text-gray-900 mb-1">Kariyer Rotanız Hazırlanıyor...</h3>
+            <p className="text-sm text-gray-500 max-w-md">
+              Sektörel yetkinlik gereksinimleri ve mezun başarı verileri harmanlanarak 4 aşamalı gelişim planınız oluşturuluyor.
+            </p>
+          </div>
         )}
+
+        {/* ROADMAP TIMELINE */}
+        {!isGenerating && roadmap && (
+          <div className="space-y-6">
+            {roadmap.phases.map((phase, pIdx) => {
+              const phaseTasks = phase.tasks || [];
+              const phaseCompletedCount = phaseTasks.filter((_, tIdx) => completedTasks[`${roadmap.title}_${pIdx}_${tIdx}`]).length;
+              const isPhaseDone = phaseTasks.length > 0 && phaseCompletedCount === phaseTasks.length;
+
+              return (
+                <div 
+                  key={phase.id}
+                  className={`bg-white rounded-2xl border transition-all p-5 sm:p-7 shadow-xs ${
+                    isPhaseDone ? 'border-emerald-200 bg-emerald-50/10' : 'border-gray-200/80 hover:border-gray-300'
+                  }`}
+                >
+                  {/* Phase Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shrink-0 ${
+                        isPhaseDone ? 'bg-emerald-600 text-white' : 'bg-[#990000] text-white shadow-xs'
+                      }`}>
+                        {isPhaseDone ? <CheckCircle2 size={20} /> : `Faz ${phase.id}`}
+                      </div>
+                      <div>
+                        <h4 className="text-base sm:text-lg font-black text-gray-900 leading-tight">
+                          {phase.title}
+                        </h4>
+                        <p className="text-xs text-gray-500 mt-0.5">{phase.desc}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-start sm:self-center">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold">
+                        <CalendarClock size={13} className="text-slate-500" /> {phase.timeframe}
+                      </span>
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${
+                        isPhaseDone ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {phaseCompletedCount} / {phaseTasks.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Task List (Interactive Checkboxes) */}
+                  <div className="space-y-2.5">
+                    {phaseTasks.map((task, tIdx) => {
+                      const taskKey = `${roadmap.title}_${pIdx}_${tIdx}`;
+                      const isChecked = Boolean(completedTasks[taskKey]);
+
+                      return (
+                        <div
+                          key={tIdx}
+                          onClick={() => toggleTask(taskKey)}
+                          className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
+                            isChecked 
+                              ? 'bg-emerald-50/60 border-emerald-200 text-emerald-950' 
+                              : 'bg-slate-50/60 border-slate-200/80 hover:bg-white hover:border-gray-300 text-gray-800'
+                          }`}
+                        >
+                          <button 
+                            type="button" 
+                            className="mt-0.5 shrink-0 text-gray-400 hover:text-[#990000] transition"
+                          >
+                            {isChecked ? (
+                              <CheckSquare size={18} className="text-emerald-600" />
+                            ) : (
+                              <Square size={18} className="text-gray-400" />
+                            )}
+                          </button>
+                          <span className={`text-xs sm:text-sm font-medium leading-relaxed select-none ${
+                            isChecked ? 'line-through text-gray-500' : 'text-gray-800'
+                          }`}>
+                            {task}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* BOTTOM COMPLETION CALLOUT */}
+        <div className="mt-8 text-center p-6 bg-white rounded-2xl border border-gray-200/80 shadow-xs">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-red-50 text-[#990000] rounded-xl mb-3 shadow-xs">
+            <Award size={24} />
+          </div>
+          <h4 className="text-base font-bold text-gray-900">Kariyer Danışmanlığı & Doğrulama</h4>
+          <p className="text-xs sm:text-sm text-gray-500 max-w-lg mx-auto mt-1 leading-relaxed">
+            Tamamladığınız adımlar KGB (Kariyer Gelişim Belgesi) karnenize yansır. Resmi staj ve iş başvurularında bu adımlar portfolyonuzun temelini oluşturur.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            <button 
+              onClick={() => setView('jobs')} 
+              className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+            >
+              Staj & İş Fırsatlarını İncele
+            </button>
+            <button 
+              onClick={() => setView('student_kgb')} 
+              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer"
+            >
+              KGB Karnemi Görüntüle
+            </button>
+          </div>
+        </div>
 
       </main>
+
+      {/* FLOATING BOTTOM DOCK */}
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId}
+        userRole={userRole}
+      />
     </div>
   );
 }
-

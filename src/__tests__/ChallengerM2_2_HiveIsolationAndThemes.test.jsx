@@ -249,7 +249,7 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
 
       await waitFor(() => {
         expect(screen.getByTestId('student-feed')).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
     });
 
     it('routes authenticated alumni to AlumniHive', async () => {

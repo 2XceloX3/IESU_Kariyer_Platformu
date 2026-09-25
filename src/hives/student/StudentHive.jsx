@@ -160,7 +160,7 @@ export default function StudentHive({ currentUser, setView }) {
       case 'hackathon_market':
         return <HackathonMarket setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'club_portal':
-        return <StudentClubPortal setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" />;
+        return <StudentClubPortal setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'club_admin':
         return <ClubAdminPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'sem':

@@ -24,7 +24,7 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
     vi.clearAllMocks();
   });
 
-  it('renders all 8 Bento Grid tools in StudentFeed with valid labels', () => {
+  it('renders all 4 active Bento Grid tools in StudentFeed and does NOT render removed tools (SEM, CV, Sim, Applications)', () => {
     const setView = vi.fn();
     render(
       <MemoryRouter>
@@ -32,22 +32,17 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
       </MemoryRouter>
     );
 
-    // 1. Özgeçmiş Hazırlayıcı
-    expect(screen.getByText('Özgeçmiş Hazırlayıcı')).toBeInTheDocument();
-    // 2. Mülakat Provası
-    expect(screen.getByText('Mülakat Provası')).toBeInTheDocument();
-    // 3. Kariyer Haritası
+    // Active 4 tools:
     expect(screen.getByText('Kariyer Haritası')).toBeInTheDocument();
-    // 4. Kariyer Testi
     expect(screen.getByText('Kariyer Testi')).toBeInTheDocument();
-    // 5. Başvurularım
-    expect(screen.getByText('Başvurularım')).toBeInTheDocument();
-    // 6. Kuluçka Merkezi
     expect(screen.getByText('Kuluçka Merkezi')).toBeInTheDocument();
-    // 7. Kulüpler Portalı
     expect(screen.getByText('Kulüpler Portalı')).toBeInTheDocument();
-    // 8. SEM Akademi
-    expect(screen.getByText('SEM Akademi')).toBeInTheDocument();
+
+    // Removed 4 tools must NOT be present in Bento Grid:
+    expect(screen.queryByText('SEM Akademi')).not.toBeInTheDocument();
+    expect(screen.queryByText('Özgeçmiş Hazırlayıcı')).not.toBeInTheDocument();
+    expect(screen.queryByText('Mülakat Provası')).not.toBeInTheDocument();
+    expect(screen.queryByText('Başvurularım')).not.toBeInTheDocument();
   });
 
   it('triggers setView with correct view keys when bento grid buttons are clicked', () => {
@@ -58,29 +53,17 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByText('Özgeçmiş Hazırlayıcı'));
-    expect(setView).toHaveBeenCalledWith('cvbuilder');
-
-    fireEvent.click(screen.getByText('Mülakat Provası'));
-    expect(setView).toHaveBeenCalledWith('interview_sim');
-
     fireEvent.click(screen.getByText('Kariyer Haritası'));
     expect(setView).toHaveBeenCalledWith('career_roadmap');
 
     fireEvent.click(screen.getByText('Kariyer Testi'));
     expect(setView).toHaveBeenCalledWith('career_test');
 
-    fireEvent.click(screen.getByText('Başvurularım'));
-    expect(setView).toHaveBeenCalledWith('applications');
-
     fireEvent.click(screen.getByText('Kuluçka Merkezi'));
     expect(setView).toHaveBeenCalledWith('startup_incubator');
 
     fireEvent.click(screen.getByText('Kulüpler Portalı'));
     expect(setView).toHaveBeenCalledWith('club_portal');
-
-    fireEvent.click(screen.getByText('SEM Akademi'));
-    expect(setView).toHaveBeenCalledWith('sem');
   });
 
   it('opens Verified Mentors Guide modal and lists all verified mentors with clickable profiles', async () => {

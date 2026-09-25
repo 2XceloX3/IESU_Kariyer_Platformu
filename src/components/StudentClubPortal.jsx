@@ -6,10 +6,12 @@ import {
   Zap, Heart, MessageCircle, Share2, Play
 } from 'lucide-react';
 import Logo from './Logo';
+import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { toast } from './shared/Toast';
 import useAppStore from '../store/useAppStore';
 
-export default function StudentClubPortal({ currentUser, setView, previousView }) {
+export default function StudentClubPortal({ currentUser, setView, previousView, setSelectedUserId, userRole = 'student' }) {
   const { clubs, setClubs, clubApplications, setClubApplications } = useAppStore();
   const [activeTab, setActiveTab] = useState('discover');
   const [searchQuery, setSearchQuery] = useState('');
@@ -154,7 +156,7 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
     const userHasPending = hasPendingRequest(selectedClub);
 
     return (
-      <div className="min-h-screen bg-slate-50 font-sans pb-20 animate-fade-in">
+      <div className="min-h-screen bg-slate-50 font-sans pb-28 animate-fade-in">
         
         {/* NEW PROFESSIONAL CLUB PROFILE HEADER (LinkedIn Style) */}
         <div className="h-64 relative bg-red-950 border-b border-slate-200">
@@ -308,12 +310,20 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
             </div>
           </div>
         </div>
+
+        {/* FLOATING BOTTOM DOCK */}
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole}
+        />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans pb-28">
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -325,10 +335,11 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
               <ArrowLeft size={18} />
             </button>
             <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView || 'student')}>
-              <Logo className="h-8 w-auto text-red-950" />
-              <h1 className="text-lg font-black text-red-950 border-l-2 border-slate-200 pl-3">Öğrenci Kulüpleri Havuzu</h1>
+              <Logo className="h-8 w-auto text-[#990000]" />
+              <h1 className="text-lg font-black text-gray-900 border-l-2 border-slate-200 pl-3">Öğrenci Kulüpleri Portalı</h1>
             </div>
           </div>
+          <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
         </div>
         <div className="max-w-7xl mx-auto px-6 flex gap-6">
           <button onClick={() => setActiveTab('discover')} className={`pb-4 px-2 font-bold text-sm border-b-2 transition-colors ${activeTab === 'discover' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-slate-500 hover:text-red-950'}`}>Keşfet</button>
@@ -680,6 +691,14 @@ export default function StudentClubPortal({ currentUser, setView, previousView }
           </div>
         </div>
       )}
+
+      {/* FLOATING BOTTOM DOCK */}
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId}
+        userRole={userRole}
+      />
     </div>
   );
 }
