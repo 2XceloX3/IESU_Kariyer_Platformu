@@ -349,7 +349,7 @@ export default function SemPanel({ setView, userRole, currentUser }) {
 
       {/* Item Detail Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[85vh] overflow-y-auto relative z-10 border border-slate-100">
             <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
               <span className="text-xs font-black uppercase tracking-wider text-amber-300 bg-white/10 px-3 py-1 rounded-full border border-white/20">

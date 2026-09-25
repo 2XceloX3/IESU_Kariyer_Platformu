@@ -21,7 +21,7 @@ export default function OfficeInfo() {
             <Building size={24} />
           </div>
           <div>
-            <h2 className="text-xl md:text-2xl font-black text-red-950 leading-tight" data-testid="office-title">
+            <h2 className="text-xl md:text-2xl font-black text-gray-900 leading-tight" data-testid="office-title">
               {title}
             </h2>
             <p className="text-xs text-slate-500 font-semibold mt-0.5">Resmi İletişim & Koordinatörlük Bilgileri</p>
@@ -35,7 +35,7 @@ export default function OfficeInfo() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column: Contact Details */}
           <div className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
-            <h3 className="text-sm font-black text-red-950 uppercase tracking-wider mb-4">İletişim Detayları</h3>
+            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4">İletişim Detayları</h3>
 
             <div className="flex items-start gap-3 text-xs" data-testid="office-address">
               <MapPin size={18} className="text-[#A80016] shrink-0 mt-0.5" />
@@ -72,7 +72,7 @@ export default function OfficeInfo() {
 
           {/* Right Column: Coordinators */}
           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100" data-testid="coordinators-list">
-            <h3 className="text-sm font-black text-red-950 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
               <UserCheck size={16} className="text-[#A80016]" /> Ofis Koordinatörleri
             </h3>
 
@@ -84,7 +84,7 @@ export default function OfficeInfo() {
                   className="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between"
                 >
                   <div>
-                    <h4 className="text-sm font-black text-red-950" data-testid="coordinator-name">
+                    <h4 className="text-sm font-black text-gray-900" data-testid="coordinator-name">
                       {coord.name}
                     </h4>
                     <p className="text-xs text-red-700 font-bold" data-testid="coordinator-role">

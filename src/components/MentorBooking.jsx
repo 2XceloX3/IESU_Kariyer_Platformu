@@ -61,7 +61,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <h3 className="text-xl font-bold text-red-950">Öne Çıkan Mentorlar</h3>
+              <h3 className="text-xl font-bold text-gray-900">Öne Çıkan Mentorlar</h3>
               <div className="flex items-center gap-2 w-full md:w-auto">
                 <button 
                   onClick={(e) => {
@@ -72,7 +72,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                       setSearchQuery("Zeynep");
                     }, 2500);
                   }}
-                  className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 border border-indigo-200 transition-colors shrink-0"
+                  className="bg-red-50 text-[#990000] hover:bg-red-100 px-4 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 border border-red-200 transition-colors shrink-0 cursor-pointer"
                 >
                   <Star size={16} /> Eşleş
                 </button>
@@ -95,7 +95,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                   <div className="flex items-start gap-4 mb-4">
                     <img src={mentor.avatar} alt={mentor.name} className="w-16 h-16 rounded-full object-cover shadow-sm" />
                     <div>
-                      <h4 className="font-bold text-red-950 leading-tight">{mentor.name}</h4>
+                      <h4 className="font-bold text-gray-900 leading-tight">{mentor.name}</h4>
                       <p className="text-xs text-red-600 font-bold mb-1">{mentor.role}</p>
                       <p className="text-xs text-slate-500 font-medium">{mentor.company}</p>
                     </div>
@@ -129,38 +129,38 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
               <div className="flex items-center gap-4 mb-8 pb-8 border-b border-slate-100">
                 <img src={selectedMentor.avatar} alt={selectedMentor.name} className="w-20 h-20 rounded-full object-cover shadow-sm" />
                 <div>
-                  <h2 className="text-2xl font-black text-red-950">{selectedMentor.name}</h2>
+                  <h2 className="text-2xl font-black text-gray-900">{selectedMentor.name}</h2>
                   <p className="text-red-600 font-medium">{selectedMentor.role} @ {selectedMentor.company}</p>
                 </div>
               </div>
 
-              <h3 className="text-lg font-bold text-red-950 mb-4 flex items-center gap-2"><CalendarIcon size={18} className="text-slate-400"/> Uygun Tarihler</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><CalendarIcon size={18} className="text-slate-400"/> Uygun Tarihler</h3>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                 {['12 Eki Salı', '13 Eki Çar', '15 Eki Cuma'].map((day, i) => (
-                  <div key={i} className={`p-3 rounded-xl border-2 text-center cursor-pointer transition-colors ${i === 0 ? 'border-red-600 bg-indigo-50 text-indigo-700 font-bold' : 'border-slate-100 hover:border-indigo-200 text-slate-600'}`}>
+                  <div key={i} className={`p-3 rounded-xl border-2 text-center cursor-pointer transition-colors ${i === 0 ? 'border-[#990000] bg-red-50 text-[#990000] font-bold' : 'border-slate-100 hover:border-red-200 text-slate-600'}`}>
                     <span className="block text-xs uppercase tracking-wider mb-1 opacity-70">{day.split(' ')[2]}</span>
                     <span className="block text-lg">{day.split(' ')[0]} {day.split(' ')[1]}</span>
                   </div>
                 ))}
               </div>
 
-              <h3 className="text-lg font-bold text-red-950 mb-4 flex items-center gap-2"><Clock size={18} className="text-slate-400"/> Saat Seçimi</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"><Clock size={18} className="text-slate-400"/> Saat Seçimi</h3>
               
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-8">
                 {['10:00', '11:30', '14:00', '16:30'].map((time, i) => (
-                  <div key={i} className={`py-2 rounded-lg border text-center cursor-pointer font-bold transition-colors ${i === 2 ? 'bg-red-600 text-white border-red-600 shadow-md' : 'border-slate-200 text-slate-600 hover:border-indigo-300'}`}>
+                  <div key={i} className={`py-2 rounded-lg border text-center cursor-pointer font-bold transition-colors ${i === 2 ? 'bg-[#990000] text-white border-[#990000] shadow-md' : 'border-slate-200 text-slate-600 hover:border-red-200'}`}>
                     {time}
                   </div>
                 ))}
               </div>
 
               <div className="mb-8">
-                <h3 className="text-sm font-bold text-red-950 mb-2">Mentorluk Beklentiniz (Opsiyonel)</h3>
+                <h3 className="text-sm font-bold text-gray-900 mb-2">Mentorluk Beklentiniz (Opsiyonel)</h3>
                 <textarea rows="3" placeholder="Örn: Özgeçmiş incelemesi, mülakat taktikleri..." className="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none resize-none"></textarea>
               </div>
 
-              <button onClick={handleBookSession} className="w-full py-4 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-black text-lg transition-colors flex items-center justify-center gap-2">
+              <button onClick={handleBookSession} className="w-full py-4 bg-[#990000] hover:bg-red-800 text-white rounded-xl font-black text-lg transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-md">
                 Randevuyu Onayla (1 Saat)
               </button>
             </div>
@@ -172,7 +172,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
             <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-500 mb-6 shadow-sm">
               <CheckCircle2 size={48} />
             </div>
-            <h2 className="text-3xl font-black text-red-950 mb-2">Randevu Onaylandı!</h2>
+            <h2 className="text-3xl font-black text-gray-900 mb-2">Randevu Onaylandı!</h2>
             <p className="text-slate-600 mb-8 leading-relaxed">
               <strong>{selectedMentor.name}</strong> ile 12 Ekim Salı, 14:00'da olan mentorluk görüşmen takvimine eklendi. Bağlantı linki e-posta adresine gönderildi.
             </p>

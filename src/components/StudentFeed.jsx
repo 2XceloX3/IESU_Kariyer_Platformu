@@ -464,7 +464,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
           {/* ─── IN-APP MENTORS REHBERİ MODALI (Z-300 ABSOLUTE OVERLAY & ZERO HEADER BLEED) ─── */}
           {showMentorsModal && (
-            <div className="fixed inset-0 bg-slate-950/95 backdrop-blur-2xl z-[9999] flex items-center justify-center p-4 animate-fade-in">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4 animate-fade-in">
               <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[75vh]">
                 
                 {/* Modal Header */}
@@ -687,7 +687,7 @@ groups={groups}
         {showAllNewsModal && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 pb-24 animate-fade-in">
             {/* Premium Blurred Backdrop */}
-            <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-md" onClick={() => setShowAllNewsModal(false)}></div>
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setShowAllNewsModal(false)}></div>
             
             <div className="bg-white w-full max-w-4xl max-h-[80vh] rounded-[32px] shadow-2xl relative z-10 flex flex-col overflow-hidden border border-slate-100/50 transform transition-all">
               {/* Header */}
@@ -748,7 +748,7 @@ groups={groups}
         {/* Stitch News Detail Modal Overlay */}
         {selectedNewsItem && (
           <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 sm:p-6 pb-24 animate-fade-in">
-            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" onClick={() => setSelectedNewsItem(null)}></div>
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setSelectedNewsItem(null)}></div>
             <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl relative z-10 flex flex-col max-h-[80vh] border border-slate-100">
               
               <div className="relative overflow-hidden">
@@ -994,10 +994,10 @@ groups={groups}
       
       {/* KGM HABERLERİ POP-UP MODAL (Google Stitch Ultra Design) */}
       {selectedNewsItem && (
-        <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
+        <div className="fixed inset-0 z-[99999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
           <div className="bg-white rounded-3xl max-w-xl w-full max-h-[85vh] overflow-hidden shadow-2xl flex flex-col border border-slate-100 animate-slide-up relative">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-[#990000] via-[#7A0000] to-slate-900 p-6 text-white shrink-0 relative">
+            <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 p-6 text-white shrink-0 relative">
               <button 
                 onClick={() => setSelectedNewsItem(null)} 
                 className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition text-white cursor-pointer"

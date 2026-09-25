@@ -14,7 +14,7 @@ export default function KgmNewsSection({ onSelectAnnouncement, limit }) {
             <span className="text-[11px] font-black uppercase tracking-widest text-[#A80016] bg-red-50 px-3.5 py-1.5 rounded-full border border-red-100">
               esenyurt.edu.tr Güncel İçerik
             </span>
-            <h2 className="text-2xl md:text-3xl font-black text-red-950 mt-2 tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mt-2 tracking-tight">
               Kariyer Ofisi Duyuruları & Haberler
             </h2>
           </div>
@@ -43,7 +43,7 @@ export default function KgmNewsSection({ onSelectAnnouncement, limit }) {
                   <span className="text-red-700 font-bold">{ann.category || 'Duyuru'}</span>
                 </div>
 
-                <h3 className="text-lg font-black text-red-950 leading-snug mb-3 hover:text-[#A80016] transition-colors" data-testid="announcement-title">
+                <h3 className="text-lg font-black text-gray-900 leading-snug mb-3 hover:text-[#A80016] transition-colors" data-testid="announcement-title">
                   {ann.title}
                 </h3>
 

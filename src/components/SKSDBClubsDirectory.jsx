@@ -33,7 +33,7 @@ export default function SKSDBClubsDirectory({ setView, currentUser, userRole, se
           </button>
           <div className="flex items-center gap-2">
             <Users className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">SKSDB Öğrenci Kulüpleri</h1>
+            <h1 className="font-black text-gray-900 tracking-tight">SKSDB Öğrenci Kulüpleri</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -75,7 +75,7 @@ export default function SKSDBClubsDirectory({ setView, currentUser, userRole, se
                     <span className="text-[10px] font-black uppercase text-red-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">{club.category}</span>
                     <span className="text-xs font-bold text-slate-400">{club.members} Üye</span>
                   </div>
-                  <h3 className="font-black text-red-950 text-base mb-1">{club.name}</h3>
+                  <h3 className="font-black text-gray-900 text-base mb-1">{club.name}</h3>
                   <p className="text-xs font-semibold text-slate-500 mb-6">Başkan: {club.lead}</p>
                 </div>
 

@@ -234,7 +234,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               exit={{ height: 0, opacity: 0 }}
               className="mb-8 overflow-hidden"
             >
-              <div className="bg-gradient-to-r from-red-900 via-[#990000] to-red-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-red-800 relative">
+              <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-red-800 relative">
                 <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4 mb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-red-200 shrink-0 backdrop-blur-md">
@@ -352,7 +352,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             </motion.div>
 
             {/* Card 4: Ranking */}
-            <motion.div variants={itemVars} className="bg-gradient-to-br from-[#990000] via-red-900 to-red-950 rounded-3xl border border-red-800 p-6 shadow-lg relative overflow-hidden group text-white">
+            <motion.div variants={itemVars} className="bg-gradient-to-br from-red-800 via-[#990000] to-rose-900 rounded-3xl border border-red-800 p-6 shadow-lg relative overflow-hidden group text-white">
               <div className="absolute -right-8 -top-8 text-white/10 group-hover:rotate-12 transition-transform duration-700">
                 <Award size={150} />
               </div>

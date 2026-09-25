@@ -47,7 +47,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
           </button>
           <div className="flex items-center gap-2">
             <Wallet className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">Yetkinlik Cüzdanı</h1>
+            <h1 className="font-black text-gray-900 tracking-tight">Yetkinlik Cüzdanı</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -56,17 +56,17 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
       <main className="flex-1 w-full max-w-[1200px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
         {/* Wallet Balance Hero */}
-        <div className="bg-slate-950 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden text-white flex flex-col md:flex-row items-center justify-between gap-8 border border-red-900">
-          <div className="absolute right-0 top-0 w-1/2 h-full bg-red-600/10 skew-x-12 transform origin-bottom pointer-events-none"></div>
+        <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden text-white flex flex-col md:flex-row items-center justify-between gap-8 border border-red-700/50">
+          <div className="absolute right-0 top-0 w-1/2 h-full bg-white/5 skew-x-12 transform origin-bottom pointer-events-none"></div>
           
           <div className="relative z-10 text-center md:text-left max-w-xl">
-            <p className="text-indigo-400 font-bold uppercase tracking-widest text-xs mb-3 flex items-center justify-center md:justify-start gap-2 bg-indigo-950/50 w-fit px-3 py-1.5 rounded-full border border-indigo-900/30">
+            <p className="text-white font-bold uppercase tracking-widest text-xs mb-3 flex items-center justify-center md:justify-start gap-2 bg-white/15 w-fit px-3 py-1.5 rounded-full border border-white/20">
               <ShieldCheck size={14} /> Doğrulanmış Profil Analizi
             </p>
             <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-4 leading-tight">
-              Kariyer Yolculuğunuz <br/><span className="text-indigo-400">Tek Bir Yerde.</span>
+              Kariyer Yolculuğunuz <br/><span className="text-amber-300">Tek Bir Yerde.</span>
             </h2>
-            <p className="text-slate-400 text-sm md:text-base leading-relaxed font-semibold">
+            <p className="text-red-100 text-sm md:text-base leading-relaxed font-semibold">
               Katıldığınız etkinlikler, aldığınız eğitimler ve sertifikalar blockchain altyapısıyla doğrulanarak dijital portfolyonuza eklenir. İşe alım uzmanlarına kanıtlanmış yetkinliklerinizi sunun.
             </p>
           </div>
@@ -74,13 +74,13 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
           <div className="relative z-10 flex flex-col gap-3 w-full md:w-auto">
             <button 
               onClick={handleRunAnalysis}
-              className="bg-red-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition shadow-lg w-full min-w-[220px]"
+              className="bg-white hover:bg-red-50 text-[#990000] px-8 py-4 rounded-2xl font-black uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition shadow-lg w-full min-w-[220px] cursor-pointer active:scale-95"
             >
               <Zap size={16} /> İstihdam Analizi
             </button>
             <button 
               onClick={() => setShowExportModal(true)}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/15 px-8 py-4 rounded-2xl font-black uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition w-full min-w-[220px] backdrop-blur-md"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-2xl font-black uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition w-full min-w-[220px] backdrop-blur-md cursor-pointer active:scale-95"
             >
               <FileSignature size={16} /> Özgeçmişe Aktar
             </button>
@@ -92,7 +92,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
           {/* Left Column: Certificates */}
           <div className="lg:col-span-2 space-y-8">
             <div>
-              <h3 className="text-lg font-black text-red-950 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
                 <Award className="text-red-600" size={22} /> Doğrulanmış Sertifikalar
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -114,15 +114,15 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
 
             {/* Progress / Career Readiness */}
             <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/85 shadow-sm">
-              <h3 className="text-lg font-black text-red-950 mb-6 flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
                 <TrendingUp className="text-red-600" size={22}/> İstihdam Edilebilirlik Skoru
               </h3>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-black text-slate-600 text-xs uppercase">Sektöre Hazırlık Endeksi</span>
-                <span className="font-black text-xs text-red-600 bg-indigo-50 border border-indigo-150 px-2 py-0.5 rounded">%{readinessScore}</span>
+                <span className="font-black text-xs text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded">%{readinessScore}</span>
               </div>
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-4 border border-slate-200/50">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${readinessScore}%` }} className="h-full bg-red-600" />
+                <motion.div initial={{ width: 0 }} animate={{ width: `${readinessScore}%` }} className="h-full bg-[#990000]" />
               </div>
               <p className="text-[11px] text-slate-400 font-bold leading-relaxed">Bu skoru artırmak için Sürekli Eğitim Merkezi'ndeki (SEM) açık eğitimleri inceleyebilirsiniz.</p>
             </div>
@@ -130,7 +130,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
 
           {/* Right Column: Transaction History -> Professional Activities */}
           <div className="space-y-6">
-            <h3 className="text-lg font-black text-red-950 mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
               <History className="text-red-600" size={22} /> Kayıtlı Aktiviteler
             </h3>
             

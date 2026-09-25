@@ -120,18 +120,18 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
       <main className="flex-1 w-full max-w-6xl mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
         {/* Banner Hero Section */}
-        <div className="bg-gradient-to-r from-slate-950 via-[#7A0000] to-[#990000] rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden text-white border border-red-900">
+        <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden text-white border border-red-700/50">
           <div className="absolute right-0 top-0 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="max-w-xl text-center md:text-left">
-              <span className="text-[10px] font-black uppercase tracking-widest bg-amber-400 text-slate-950 px-3 py-1 rounded-full inline-block mb-3">
+              <span className="text-[10px] font-black uppercase tracking-widest bg-white/15 text-white border border-white/20 px-3 py-1 rounded-full inline-block mb-3">
                 RESMÎ e-DEVLET OTOMASYONU
               </span>
               <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight leading-tight">
                 Sertifika & Belge Yönetim Merkezi
               </h2>
-              <p className="text-slate-200 text-sm md:text-base leading-relaxed font-medium">
+              <p className="text-red-100 text-sm md:text-base leading-relaxed font-medium">
                 Katıldığınız tüm kariyer atölyelerinin sertifikalarına buradan ulaşabilir, e-Devlet barkodlu doğrulamaları yapabilir veya sertifika sorgulayabilirsiniz.
               </p>
             </div>

@@ -124,7 +124,7 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
   return (
     <div 
       onClick={onClose}
-      className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans"
+      className="fixed inset-0 z-[99999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans"
     >
       <div 
         onClick={(e) => e.stopPropagation()}
@@ -132,7 +132,7 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
       >
         
         {/* Modal Header */}
-        <div className="p-6 bg-gradient-to-r from-red-950 via-[#7A0000] to-slate-900 text-white flex items-center justify-between shrink-0">
+        <div className="p-6 bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-white/10 text-amber-300 flex items-center justify-center font-black border border-white/20">
               <FileText size={24} />
@@ -355,7 +355,7 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-gradient-to-r from-red-900 to-[#990000] hover:from-red-800 hover:to-red-950 text-white rounded-xl text-xs font-black shadow-lg shadow-red-900/30 transition flex items-center gap-2 cursor-pointer"
+                className="px-6 py-2.5 bg-gradient-to-r from-red-900 to-[#990000] hover:from-red-800 hover:to-red-700 text-white rounded-xl text-xs font-black shadow-lg shadow-red-900/30 transition flex items-center gap-2 cursor-pointer"
               >
                 <CheckCircle2 size={16} /> {uploadedCount} Evrakı Gönder
               </button>

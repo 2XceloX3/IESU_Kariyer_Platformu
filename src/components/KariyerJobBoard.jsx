@@ -39,7 +39,7 @@ export default function KariyerJobBoard({ setView, currentUser, userRole, setSel
           </button>
           <div className="flex items-center gap-2">
             <Briefcase className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">Kariyer İş & Staj İlanları</h1>
+            <h1 className="font-black text-gray-900 tracking-tight">Kariyer İş & Staj İlanları</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -63,7 +63,7 @@ export default function KariyerJobBoard({ setView, currentUser, userRole, setSel
               <button 
                 key={t}
                 onClick={() => setFilter(t)}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition ${filter === t ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer ${filter === t ? 'bg-[#990000] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
               >
                 {t}
               </button>
@@ -78,16 +78,16 @@ export default function KariyerJobBoard({ setView, currentUser, userRole, setSel
               <div key={job.id} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-[10px] font-black uppercase text-red-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">{job.type}</span>
+                    <span className="text-[10px] font-black uppercase text-red-600 bg-red-50 px-2.5 py-1 rounded-md border border-red-100">{job.type}</span>
                     <span className="text-xs font-bold text-slate-400 flex items-center gap-1"><MapPin size={12} /> {job.location}</span>
                   </div>
-                  <h3 className="font-black text-red-950 text-base mb-1">{job.title}</h3>
+                  <h3 className="font-black text-gray-900 text-base mb-1">{job.title}</h3>
                   <p className="text-xs font-bold text-slate-500 mb-6 flex items-center gap-1.5"><Building size={14} /> {job.company}</p>
                 </div>
 
                 <button 
                   onClick={() => handleApply(job.id, job.title)}
-                  className={`w-full py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 ${isApplied ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-red-600 hover:bg-indigo-700 text-white'}`}
+                  className={`w-full py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${isApplied ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-[#990000] hover:bg-red-800 text-white shadow-xs'}`}
                 >
                   {isApplied ? <CheckCircle2 size={16} /> : <ArrowRight size={16} />}
                   {isApplied ? 'Başvuru Gönderildi' : '1-Tıkla CV Gönder'}

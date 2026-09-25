@@ -277,7 +277,7 @@ export default function StudentProfileUpdate({
 
       {/* HERO BANNER & PROFILE PROGRESS */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
-        <div className="bg-gradient-to-r from-red-950 via-[#990000] to-red-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
           <div className="absolute right-0 top-0 bottom-0 w-96 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent)] pointer-events-none" />
           
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
@@ -293,7 +293,7 @@ export default function StudentProfileUpdate({
                     const url = prompt('Yeni profil fotoğrafı URL\'si giriniz:', formData.avatar);
                     if (url !== null) handleChange('avatar', url);
                   }}
-                  className="absolute -bottom-2 -right-2 p-1.5 bg-white text-red-950 rounded-xl shadow-md hover:bg-red-50 transition"
+                  className="absolute -bottom-2 -right-2 p-1.5 bg-white text-[#990000] rounded-xl shadow-md hover:bg-red-50 transition"
                   title="Fotoğrafı Değiştir"
                 >
                   <Camera size={14} />
@@ -744,7 +744,7 @@ export default function StudentProfileUpdate({
                           className="bg-red-50 text-[#990000] border border-red-200 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs"
                         >
                           {skill}
-                          <button onClick={() => handleRemoveSkill(skill)} className="hover:text-red-950 transition">
+                          <button onClick={() => handleRemoveSkill(skill)} className="hover:text-red-800 transition cursor-pointer">
                             <X size={14} />
                           </button>
                         </span>

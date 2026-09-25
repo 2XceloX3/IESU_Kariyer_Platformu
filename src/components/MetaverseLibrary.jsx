@@ -79,7 +79,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
           </button>
           <div className="flex items-center gap-2">
             <Library className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">Dijital Kütüphane</h1>
+            <h1 className="font-black text-gray-900 tracking-tight">Dijital Kütüphane</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -93,11 +93,11 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-3xl mx-auto py-12 flex flex-col items-center text-center"
           >
-            <div className="w-24 h-24 bg-indigo-50 text-red-600 rounded-3xl flex items-center justify-center shadow-lg border border-indigo-100 mb-8 relative">
+            <div className="w-24 h-24 bg-red-50 text-red-600 rounded-3xl flex items-center justify-center shadow-lg border border-red-100 mb-8 relative">
               <BookOpen size={48} />
             </div>
             
-            <h2 className="text-3xl font-black mb-4 text-red-950 tracking-tight">
+            <h2 className="text-3xl font-black mb-4 text-gray-900 tracking-tight">
               Dijital Bilgi & Kaynak Merkezi
             </h2>
             <p className="text-slate-500 text-base mb-8 max-w-xl leading-relaxed font-semibold">
@@ -141,7 +141,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
         {isSearching && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mb-6"></div>
-            <h3 className="text-2xl font-black text-red-950 mb-2">Tarama Yapılıyor...</h3>
+            <h3 className="text-2xl font-black text-gray-900 mb-2">Tarama Yapılıyor...</h3>
             <p className="text-slate-500 max-w-sm font-semibold">Binlerce akademik kaynak, tez ve makale taranarak sizin için özetleniyor.</p>
           </div>
         )}
@@ -184,14 +184,14 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                 <h3 className="text-xs font-black text-red-600 mb-3 uppercase tracking-widest flex items-center gap-1.5">
                   <Sparkles size={14}/> Konu Analizi
                 </h3>
-                <h2 className="text-2xl font-black text-red-950 mb-4">"{query}"</h2>
+                <h2 className="text-2xl font-black text-gray-900 mb-4">"{query}"</h2>
                 <p className="text-slate-600 text-sm md:text-base leading-relaxed font-semibold">
                   {results.summary}
                 </p>
               </div>
 
               {/* Resources list */}
-              <h3 className="text-lg font-black text-red-950 flex items-center gap-2 pt-4">
+              <h3 className="text-lg font-black text-gray-900 flex items-center gap-2 pt-4">
                 <GraduationCap className="text-red-600"/> Akademik Kaynak Önerileri
               </h3>
               
@@ -209,7 +209,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                     
                     <button 
                       onClick={() => setSelectedBook(res)}
-                      className="w-full py-2.5 bg-red-950 hover:bg-red-900 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition"
+                      className="w-full py-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition cursor-pointer active:scale-95 shadow-xs"
                     >
                       İncele
                     </button>

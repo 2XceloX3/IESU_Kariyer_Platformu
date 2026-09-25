@@ -760,13 +760,13 @@ export default function UserProfile({
                   <>
                     <button 
                       onClick={() => setView('profile_update')} 
-                      className="flex-1 md:flex-none bg-gradient-to-r from-red-900 via-[#990000] to-red-800 hover:from-red-800 hover:to-red-700 text-white text-xs font-black px-5 py-3 rounded-2xl transition shadow-md shadow-red-950/20 border border-red-700/50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
+                      className="flex-1 md:flex-none bg-gradient-to-r from-red-900 via-[#990000] to-red-800 hover:from-red-800 hover:to-red-700 text-white text-xs font-black px-5 py-3 rounded-2xl transition shadow-md shadow-red-900/20 border border-red-700/50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
                     >
                       <Settings size={15} /> Profili Düzenle
                     </button>
                     <button 
                       onClick={() => setView('cvbuilder')} 
-                      className="flex-1 md:flex-none bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-black px-5 py-3 rounded-2xl transition shadow-md shadow-emerald-950/20 border border-emerald-500/50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
+                      className="flex-1 md:flex-none bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-black px-5 py-3 rounded-2xl transition shadow-md shadow-emerald-900/20 border border-emerald-500/50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
                     >
                       <FileText size={15} /> CV & Portfolyo
                     </button>
@@ -1344,11 +1344,11 @@ export default function UserProfile({
 
         {/* ─── MENTÖRLÜK & DANIŞMANLIK İSTEĞİ FORM MODALI (Z-200 OVERLAY) ─── */}
         {showMentorshipRequestModal && (
-          <div className="fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-4 animate-fade-in">
+          <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[85vh] relative">
               
               {/* Modal Header */}
-              <div className="p-5 bg-gradient-to-r from-slate-950 via-[#7A0000] to-slate-900 text-white flex items-center justify-between">
+              <div className="p-5 bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-10 h-10 rounded-2xl bg-white/10 text-amber-300 flex items-center justify-center font-black">
                     <UserCheck size={20} />
@@ -2006,7 +2006,7 @@ export default function UserProfile({
 
                     <button 
                       onClick={() => setShowMentorshipRequestModal(true)} 
-                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-950 via-[#990000] to-rose-800 hover:from-red-900 hover:to-red-700 text-white rounded-2xl font-black text-xs shadow-md transition cursor-pointer border border-red-500/40"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-800 via-[#990000] to-rose-800 hover:from-red-900 hover:to-red-700 text-white rounded-2xl font-black text-xs shadow-md transition cursor-pointer border border-red-500/40"
                     >
                       <Mail size={16} /> Resmî Danışmanlık & Randevu Talebi İlet
                     </button>
@@ -2979,11 +2979,11 @@ export default function UserProfile({
 
       {/* ─── AKADEMİK BİLGİ DÜZENLEME VE YÖNETİM MODALI (Z-[9999]) ─── */}
       {showAcademicEditModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] relative">
             
             {/* Modal Header */}
-            <div className="p-5 bg-gradient-to-r from-red-950 via-[#7A0000] to-slate-900 text-white flex items-center justify-between shrink-0">
+            <div className="p-5 bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-white/10 text-amber-300 flex items-center justify-center font-black">
                   <GraduationCap size={22} />

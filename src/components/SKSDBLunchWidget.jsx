@@ -89,7 +89,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
           </button>
           <div className="flex items-center gap-2">
             <Activity className="text-emerald-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">SKSDB Öğrenci Sağlık & Vücut İndeksi (BMI) Merkezi</h1>
+            <h1 className="font-black text-gray-900 tracking-tight">SKSDB Öğrenci Sağlık & Vücut İndeksi (BMI) Merkezi</h1>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -98,15 +98,15 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
       <main className="flex-1 w-full max-w-[1150px] mx-auto p-4 lg:p-8 flex flex-col gap-8">
         
         {/* Top Hero Banner */}
-        <div className="bg-gradient-to-r from-slate-950 via-red-950 to-indigo-950 text-white rounded-3xl p-8 md:p-10 shadow-xl border border-red-900 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white rounded-3xl p-8 md:p-10 shadow-xl border border-red-700/50 relative overflow-hidden">
           <div className="max-w-2xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-950/60 px-3.5 py-1.5 rounded-full border border-emerald-900/40">
+            <span className="text-[10px] font-black uppercase tracking-widest text-white bg-white/15 px-3.5 py-1.5 rounded-full border border-white/20">
               SKSDB Mediko-Sosyal Sağlık Rehberi
             </span>
             <h2 className="text-2xl md:text-3xl font-black mt-3 mb-3 tracking-tight">
               Öğrenci Vücut Kitle İndeksi (BMI) & İdeal Kilo Analizi
             </h2>
-            <p className="text-slate-300 text-xs md:text-sm font-semibold leading-relaxed">
+            <p className="text-red-100 text-xs md:text-sm font-semibold leading-relaxed">
               Boy ve kilonuzu girin, vücut kitle indeksinizi, ideal kilo aralığınızı, günlük metabolizma kalori ihtiyacınızı ve Mediko-Sosyal sağlık tavsiyelerini objektif verilerle görüntüleyin.
             </p>
           </div>
@@ -118,10 +118,10 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
           {/* Left: Interactive Calculator Form (5 cols) */}
           <div className="lg:col-span-5 bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 className="text-lg font-black text-red-950 flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
                 <Scale className="text-red-600" size={20} /> Ölçüm Formu
               </h3>
-              <span className="text-[10px] font-black uppercase text-red-600 bg-indigo-50 px-2.5 py-1 rounded-md">Anlık Analiz</span>
+              <span className="text-[10px] font-black uppercase text-red-600 bg-red-50 px-2.5 py-1 rounded-md">Anlık Analiz</span>
             </div>
 
             {/* Gender Toggle */}
@@ -213,7 +213,7 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Vücut Kitle İndeksiniz (BMI)</span>
-                  <h3 className="text-4xl font-black text-red-950 mt-1">{bmi} <span className="text-sm font-bold text-slate-400">kg/m²</span></h3>
+                  <h3 className="text-4xl font-black text-gray-900 mt-1">{bmi} <span className="text-sm font-bold text-slate-400">kg/m²</span></h3>
                 </div>
                 <div className={`px-4 py-2 rounded-2xl border font-black text-xs ${bmiStatus.color}`}>
                   {bmiStatus.label}
@@ -226,48 +226,48 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
 
               {/* Metrics Grid */}
               <div className="grid grid-cols-3 gap-3 pt-2">
-                <div className="bg-indigo-50/60 p-4 rounded-2xl border border-indigo-100 text-center">
+                <div className="bg-rose-50/60 p-4 rounded-2xl border border-rose-100 text-center">
                   <Flame className="text-red-600 mx-auto mb-1" size={20} />
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">Günlük İdeal Kalori</span>
-                  <h4 className="font-black text-red-950 text-base">{dailyCalories} <span className="text-[10px]">kcal</span></h4>
+                  <h4 className="font-black text-gray-900 text-base">{dailyCalories} <span className="text-[10px]">kcal</span></h4>
                 </div>
 
                 <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100 text-center">
                   <Droplets className="text-emerald-600 mx-auto mb-1" size={20} />
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">Su İhtiyacı</span>
-                  <h4 className="font-black text-red-950 text-base">{idealWater} <span className="text-[10px]">Litre</span></h4>
+                  <h4 className="font-black text-gray-900 text-base">{idealWater} <span className="text-[10px]">Litre</span></h4>
                 </div>
 
                 <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-100 text-center">
                   <Dumbbell className="text-amber-600 mx-auto mb-1" size={20} />
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">Protein Hedefi</span>
-                  <h4 className="font-black text-red-950 text-base">{idealProtein} <span className="text-[10px]">Gram</span></h4>
+                  <h4 className="font-black text-gray-900 text-base">{idealProtein} <span className="text-[10px]">Gram</span></h4>
                 </div>
               </div>
             </div>
 
-            {/* Ideal Weight Goal & Mediko-Sosyal Dietitian Appointment Panel (Replaced Cafeteria Menu Box) */}
-            <div className="bg-slate-950 text-white p-6 md:p-8 rounded-3xl border border-red-900 shadow-xl flex flex-col justify-between">
+            {/* Ideal Weight Goal & Mediko-Sosyal Dietitian Appointment Panel */}
+            <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <span className="text-[10px] font-black uppercase text-emerald-400 bg-emerald-950/70 px-3 py-1 rounded-full border border-emerald-900/50">İdeal Kilo & Hedef Analizi</span>
-                    <h4 className="text-xl font-black mt-2 text-slate-100 flex items-center gap-2">
-                      <Award size={20} className="text-amber-400" /> İdeal Kilo Aralığınız: {minIdeal} - {maxIdeal} kg
+                    <span className="text-[10px] font-black uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">İdeal Kilo & Hedef Analizi</span>
+                    <h4 className="text-xl font-black mt-2 text-gray-900 flex items-center gap-2">
+                      <Award size={20} className="text-amber-500" /> İdeal Kilo Aralığınız: {minIdeal} - {maxIdeal} kg
                     </h4>
                   </div>
-                  <span className={`text-xs font-black px-3 py-1.5 rounded-xl border border-red-900 bg-red-950 ${weightDeltaColor}`}>
+                  <span className={`text-xs font-black px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 ${weightDeltaColor}`}>
                     {weightDeltaText}
                   </span>
                 </div>
 
-                <div className="bg-red-950/80 p-4 rounded-2xl border border-red-900 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                    <HeartPulse className="text-emerald-400 shrink-0" size={16} /> 
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                    <HeartPulse className="text-emerald-600 shrink-0" size={16} /> 
                     <span>SKSDB Mediko-Sosyal birimi öğrencilerimize ücretsiz beslenme danışmanlığı sağlamaktadır.</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-                    <UserCheck className="text-indigo-400 shrink-0" size={16} /> 
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                    <UserCheck className="text-red-700 shrink-0" size={16} /> 
                     <span>Uzman diyetisyenlerimizle birebir yüz yüze görüşmek için randevu talebi oluşturun.</span>
                   </div>
                 </div>
