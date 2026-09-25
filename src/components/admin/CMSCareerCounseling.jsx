@@ -393,7 +393,7 @@ export default function CMSCareerCounseling() {
                         className="font-black text-[#990000] text-sm hover:text-rose-700 cursor-pointer transition flex items-center gap-1.5"
                       >
                         {a.studentName}
-                        <span className="text-[10px] font-mono text-slate-400 font-normal">({a.studentId})</span>
+                        <span className="text-[10px] font-mono text-slate-600 font-bold">({a.studentId})</span>
                       </h4>
                       <span className="px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[11px] font-bold border border-purple-200/60">
                         {a.type}
@@ -527,7 +527,7 @@ export default function CMSCareerCounseling() {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-3 border-t border-slate-100">
+                <div className="flex items-center justify-between text-[11px] text-slate-600 font-bold pt-3 border-t border-slate-100">
                   <span>Danışman: <strong>{a.evaluation.counselorName}</strong></span>
                   <span>{a.evaluation.evaluatedAt}</span>
                 </div>
@@ -551,15 +551,15 @@ export default function CMSCareerCounseling() {
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black">AKTER C-CERT</span>
                 </div>
                 <p className="text-xs font-medium text-slate-500">{c.title}</p>
-                <p className="text-xs text-slate-400">{c.email}</p>
+                <p className="text-xs text-slate-600 font-bold">{c.email}</p>
 
                 <div className="flex items-center gap-4 pt-3 mt-3 border-t border-slate-100">
                   <div>
-                    <span className="text-[10px] text-slate-400 block font-bold">Toplam Görüşme</span>
+                    <span className="text-[10px] text-slate-600 block font-bold">Toplam Görüşme</span>
                     <span className="text-sm font-black text-slate-900">{c.totalAppts} Randevu</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 block font-bold">Ortalama Puan</span>
+                    <span className="text-[10px] text-slate-600 block font-bold">Ortalama Puan</span>
                     <span className="text-sm font-black text-amber-600 flex items-center gap-1">
                       <Star size={14} className="fill-amber-500 text-amber-500" /> {c.rating}
                     </span>
@@ -611,7 +611,7 @@ export default function CMSCareerCounseling() {
                     <tr key={sub.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-gray-900 text-sm">{sub.studentName}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">No: {sub.studentId} • {sub.studentEmail}</div>
+                        <div className="text-[11px] text-slate-600 font-mono font-bold">No: {sub.studentId} • {sub.studentEmail}</div>
                       </td>
                       <td className="py-3.5 px-4 font-bold text-slate-800">
                         {sub.studentDept}

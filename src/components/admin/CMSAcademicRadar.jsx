@@ -1167,11 +1167,11 @@ export default function CMSAcademicRadar() {
             <div className="p-6 overflow-y-auto space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <span className="font-bold text-slate-400 uppercase text-[10px]">Öğrenci Numarası</span>
+                  <span className="font-bold text-slate-600 uppercase text-[10px]">Öğrenci Numarası</span>
                   <p className="font-bold text-slate-900 mt-0.5">{selectedApprovalModal.studentId}</p>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <span className="font-bold text-slate-400 uppercase text-[10px]">Fakülte / Bölüm</span>
+                  <span className="font-bold text-slate-600 uppercase text-[10px]">Fakülte / Bölüm</span>
                   <p className="font-bold text-slate-900 mt-0.5">{selectedApprovalModal.dept}</p>
                 </div>
               </div>
@@ -1183,12 +1183,12 @@ export default function CMSAcademicRadar() {
               </div>
 
               <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                <span className="font-bold text-slate-400 uppercase text-[10px] block mb-1">Öğrenci Açıklama Notu:</span>
+                <span className="font-bold text-slate-600 uppercase text-[10px] block mb-1">Öğrenci Açıklama Notu:</span>
                 <p className="text-slate-700 font-medium leading-relaxed">{selectedApprovalModal.note}</p>
               </div>
 
               <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                <span className="font-bold text-slate-400 uppercase text-[10px]">Atanmış Akademik Danışman:</span>
+                <span className="font-bold text-slate-600 uppercase text-[10px]">Atanmış Akademik Danışman:</span>
                 <p className="font-bold text-slate-900 mt-0.5">{selectedApprovalModal.advisor}</p>
               </div>
             </div>
@@ -1245,17 +1245,17 @@ export default function CMSAcademicRadar() {
               </div>
 
               <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                <span className="font-bold text-slate-400 uppercase text-[10px] block">Talep Detayları:</span>
+                <span className="font-bold text-slate-600 uppercase text-[10px] block">Talep Detayları:</span>
                 <p className="text-slate-800 font-medium leading-relaxed">{selectedMentorshipModal.details}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <span className="font-bold text-slate-400 uppercase text-[10px]">Öğrenci & Bölüm</span>
+                  <span className="font-bold text-slate-600 uppercase text-[10px]">Öğrenci & Bölüm</span>
                   <p className="font-bold text-slate-900 mt-0.5">{selectedMentorshipModal.studentName} • {selectedMentorshipModal.dept}</p>
                 </div>
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <span className="font-bold text-slate-400 uppercase text-[10px]">Danışman Akademisyen</span>
+                  <span className="font-bold text-slate-600 uppercase text-[10px]">Danışman Akademisyen</span>
                   <p className="font-bold text-slate-900 mt-0.5">{selectedMentorshipModal.advisor}</p>
                 </div>
               </div>
@@ -1372,24 +1372,24 @@ export default function CMSAcademicRadar() {
                       {isExpanded && (
                         <div className="mt-3 pt-3 border-t border-slate-200/80 grid grid-cols-2 sm:grid-cols-4 gap-2 animate-in fade-in duration-200">
                           <div className="bg-white p-2.5 rounded-xl border border-slate-200 text-center">
-                            <span className="text-[9px] font-bold text-slate-400 uppercase block">1. Sınıf Stajyer</span>
+                            <span className="text-[9px] font-bold text-slate-600 uppercase block">1. Sınıf Stajyer</span>
                             <span className="text-xs font-black text-slate-800">{g1} Öğrenci</span>
                           </div>
 
                           <div className="bg-white p-2.5 rounded-xl border border-slate-200 text-center">
-                            <span className="text-[9px] font-bold text-slate-400 uppercase block">2. Sınıf Stajyer</span>
+                            <span className="text-[9px] font-bold text-slate-600 uppercase block">2. Sınıf Stajyer</span>
                             <span className="text-xs font-black text-slate-800">{g2} Öğrenci</span>
                           </div>
 
                           {!isMYO && (
                             <>
                               <div className="bg-white p-2.5 rounded-xl border border-slate-200 text-center">
-                                <span className="text-[9px] font-bold text-slate-400 uppercase block">3. Sınıf Stajyer</span>
+                                <span className="text-[9px] font-bold text-slate-600 uppercase block">3. Sınıf Stajyer</span>
                                 <span className="text-xs font-black text-slate-800">{g3} Öğrenci</span>
                               </div>
 
                               <div className="bg-white p-2.5 rounded-xl border border-slate-200 text-center">
-                                <span className="text-[9px] font-bold text-slate-400 uppercase block">4. Sınıf Stajyer</span>
+                                <span className="text-[9px] font-bold text-slate-600 uppercase block">4. Sınıf Stajyer</span>
                                 <span className="text-xs font-black text-slate-800">{g4} Öğrenci</span>
                               </div>
                             </>
@@ -1443,12 +1443,12 @@ export default function CMSAcademicRadar() {
             <div className="p-6 overflow-y-auto space-y-5 text-xs font-sans">
               <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex justify-between items-center">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Öğrenci & Bölüm</span>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block">Öğrenci & Bölüm</span>
                   <p className="font-black text-slate-900 text-sm mt-0.5">{selectedDocModal.studentName}</p>
                   <p className="text-slate-500 font-semibold">{selectedDocModal.dept}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Son Güncelleme</span>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block">Son Güncelleme</span>
                   <span className="font-mono font-bold text-slate-700">{selectedDocModal.lastUpdate}</span>
                 </div>
               </div>

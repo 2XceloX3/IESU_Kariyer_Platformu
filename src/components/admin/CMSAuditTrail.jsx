@@ -676,7 +676,7 @@ export default function CMSAuditTrail() {
           <div className="mt-4">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Toplam Aksiyon</p>
             <h3 className="text-3xl font-black text-slate-900 mt-1">{stats.total}</h3>
-            <p className="text-[11px] text-slate-400 mt-1">Sistem kaydındaki toplam işlem</p>
+            <p className="text-[11px] text-slate-600 font-medium mt-1">Sistem kaydındaki toplam işlem</p>
           </div>
         </div>
 
@@ -694,7 +694,7 @@ export default function CMSAuditTrail() {
           <div className="mt-4">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bugünkü İşlem</p>
             <h3 className="text-3xl font-black text-slate-900 mt-1">{stats.today}</h3>
-            <p className="text-[11px] text-slate-400 mt-1">Son 24 saat içinde gerçekleşen</p>
+            <p className="text-[11px] text-slate-600 font-medium mt-1">Son 24 saat içinde gerçekleşen</p>
           </div>
         </div>
 
@@ -712,7 +712,7 @@ export default function CMSAuditTrail() {
           <div className="mt-4">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Aktif Personel</p>
             <h3 className="text-3xl font-black text-slate-900 mt-1">{stats.activeStaff}</h3>
-            <p className="text-[11px] text-slate-400 mt-1">İşlem yapan yönetici/editör</p>
+            <p className="text-[11px] text-slate-600 font-medium mt-1">İşlem yapan yönetici/editör</p>
           </div>
         </div>
 
@@ -730,7 +730,7 @@ export default function CMSAuditTrail() {
           <div className="mt-4">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kritik İşlem</p>
             <h3 className="text-3xl font-black text-amber-600 mt-1">{stats.critical}</h3>
-            <p className="text-[11px] text-slate-400 mt-1">Yetki ve sistem ayarı değişimleri</p>
+            <p className="text-[11px] text-slate-600 font-medium mt-1">Yetki ve sistem ayarı değişimleri</p>
           </div>
         </div>
       </div>

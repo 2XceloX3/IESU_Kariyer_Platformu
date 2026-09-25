@@ -161,7 +161,7 @@ export default function CMSApplicationsPool({
           onClick={() => setStatusFilter('Tümü')} 
           className={`p-4 bg-white rounded-2xl border transition-all cursor-pointer shadow-sm hover:shadow-md ${statusFilter === 'Tümü' ? 'border-gray-900 ring-2 ring-gray-900/10' : 'border-gray-100'}`}
         >
-          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Toplam Başvuru</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-600">Toplam Başvuru</p>
           <p className="text-2xl font-black text-gray-900 mt-1">{stats.total}</p>
         </div>
 
@@ -456,22 +456,22 @@ export default function CMSApplicationsPool({
 
               {/* Candidate Info */}
               <div className="p-4 bg-gray-50 border border-gray-200 rounded-2xl space-y-2.5">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Aday Kimlik & İletişim</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600">Aday Kimlik & İletişim</p>
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-gray-400 font-medium block">Ad Soyad</span>
+                    <span className="text-slate-600 font-bold block">Ad Soyad</span>
                     <span className="font-bold text-gray-900">{selectedAppModal.applicantName}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 font-medium block">Bölüm</span>
+                    <span className="text-slate-600 font-bold block">Bölüm</span>
                     <span className="font-bold text-gray-900">{selectedAppModal.applicantDept || 'Belirtilmedi'}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 font-medium block">Telefon</span>
+                    <span className="text-slate-600 font-bold block">Telefon</span>
                     <span className="font-bold text-gray-900">{selectedAppModal.applicantPhone || 'Yok'}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 font-medium block">E-Posta</span>
+                    <span className="text-slate-600 font-bold block">E-Posta</span>
                     <span className="font-bold text-gray-900">{selectedAppModal.applicantEmail || 'Yok'}</span>
                   </div>
                 </div>

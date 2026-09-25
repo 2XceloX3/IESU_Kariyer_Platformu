@@ -211,7 +211,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-[11px] font-semibold text-slate-400">{request.submittedDate}</span>
+                    <span className="text-[11px] font-bold text-slate-600">{request.submittedDate}</span>
                     <Badge status={request.status} />
                   </div>
                 </div>
@@ -221,7 +221,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
                 <div className="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                   <ShieldCheck className="text-slate-400 mx-auto mb-2" size={32} />
                   <h4 className="text-sm font-bold text-slate-700">Kayıt Bulunamadı</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">Seçilen filtrelere uygun akademik onay talebi bulunmuyor.</p>
+                  <p className="text-xs text-slate-600 font-medium mt-0.5">Seçilen filtrelere uygun akademik onay talebi bulunmuyor.</p>
                 </div>
               )}
             </div>
@@ -245,7 +245,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
             {selectedRequest ? (
               <div className="space-y-4">
                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kullanıcı Bilgisi</span>
+                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Kullanıcı Bilgisi</span>
                   <p className="text-sm font-black text-slate-900">{selectedRequest.userName}</p>
                   <p className="text-xs font-semibold text-slate-500">{selectedRequest.userType === 'student' ? 'Aktif Öğrenci' : 'Mezun Kullanıcı'}</p>
                 </div>
@@ -297,7 +297,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
                     <p className="text-xs font-bold text-slate-700 flex items-center justify-center gap-2">
                       İşlem Durumu: <Badge status={selectedRequest.status} />
                     </p>
-                    <p className="text-[11px] text-slate-400 mt-1">Bu talep idari kayıtlar tarafından sonuçlandırılmıştır.</p>
+                    <p className="text-[11px] text-slate-600 font-medium mt-1">Bu talep idari kayıtlar tarafından sonuçlandırılmıştır.</p>
                   </div>
                 )}
               </div>
@@ -307,7 +307,7 @@ export default function CMSAcademicApprovals({ academicApprovals, setAcademicApp
                   <ShieldCheck size={24} />
                 </div>
                 <h4 className="text-xs font-bold text-slate-800 mb-1">Talep Seçilmedi</h4>
-                <p className="text-[11px] text-slate-400">İncelemek ve onay vermek için sol taraftaki listeden bir talep seçin.</p>
+                <p className="text-[11px] text-slate-600 font-medium">İncelemek ve onay vermek için sol taraftaki listeden bir talep seçin.</p>
               </div>
             )}
 
