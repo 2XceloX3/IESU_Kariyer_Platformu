@@ -13,6 +13,7 @@ import SafeAvatar from '../shared/SafeAvatar';
 import SubPanelFloatingDock from '../SubPanelFloatingDock';
 import AICVBuilder from '../AICVBuilder';
 import { toast } from '../shared/Toast';
+import eventBus from '../../brain/eventBus';
 
 export default function StudentProfileUpdate({ 
   setView, 
@@ -215,6 +216,15 @@ export default function StudentProfileUpdate({
     } catch (err) {
       console.warn('Admin student sync note:', err);
     }
+
+    try {
+      eventBus.emit('audit:logged', {
+        action: 'Öğrenci Profil Bilgileri Güncellendi',
+        user: updatedUser.name || 'Öğrenci',
+        module: 'Profil',
+        role: 'student'
+      });
+    } catch (_) {}
 
     setHasChanges(false);
     toast.success('Öğrenci profil bilgileriniz başarıyla kaydedildi ve senkronize edildi.');

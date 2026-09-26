@@ -13,6 +13,7 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { toast } from './shared/Toast';
 import useAppStore from '../store/useAppStore';
 import { initialClubs, initialClubApplications } from '../data/mockClubsData';
+import eventBus from '../brain/eventBus';
 
 export default function StudentClubPortal({ 
   currentUser, 
@@ -195,6 +196,16 @@ export default function StudentClubPortal({
     if (setClubs) {
       setClubs(prev => (prev || []).map(c => c.id === selectedClub.id ? updatedClub : c));
     }
+
+    try {
+      eventBus.emit('application:status', {
+        type: 'club_membership_applied',
+        clubId: selectedClub.id,
+        clubName: selectedClub.name,
+        studentName: applyMemberForm.name,
+        studentNo: applyMemberForm.studentNo
+      });
+    } catch (_) {}
 
     setShowApplyMemberModal(false);
     toast.success(`"${selectedClub.name}" kulübüne üyelik başvurunuz T.C. ve Öğrenci No ile kulüp başkanlığına iletildi!`);
