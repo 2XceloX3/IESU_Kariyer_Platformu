@@ -43,14 +43,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const companies = useAppStore(state => state.companies);
   const featuredOpportunities = useAppStore(state => state.featuredOpportunities);
   const mentorships = useAppStore(state => state.mentorships);
-  const voluntaryInternships = useAppStore(state => state.voluntaryInternships);
   const applications = useAppStore(state => state.applications);
   const setApplications = useAppStore(state => state.setApplications);
   const jobs = useAppStore(state => state.jobs);
   const academicStaff = useAppStore(state => state.academicStaff);
   const announcements = useAppStore(state => state.announcements);
   const groups = useAppStore(state => state.groups);
-  const featureAlumniAssocToggle = useAppStore(state => state.featureAlumniAssocToggle);
   const setGroups = useAppStore(state => state.setGroups);
   const featureClubsShowcase = useAppStore(state => state.featureClubsShowcase);
   const featureClubApplications = useAppStore(state => state.featureClubApplications);
@@ -533,18 +531,16 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               <Sparkles size={13} className="text-amber-300" /> Hızlı Erişim
             </p>
             <h3 className="font-black text-xl leading-tight mb-2 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-              {userRole === 'alumni' ? 'Mezun Bilgi Sistemi' : 'Bilgilerimi Düzenle'}
+              Öğrenci Profilim & CV
             </h3>
             <p className="text-xs text-white font-bold mb-5 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-              {userRole === 'alumni' 
-                ? "Kariyer Check-up, Mezun Kartı ve profil güncellemeleriniz için MBS'yi ziyaret edin." 
-                : "Akademik geçmişinizi, yeteneklerinizi ve CV tercihlerinizi profil alanından güncelleyin."}
+              Akademik geçmişinizi, stajlarınızı, sertifikalarınızı ve kariyer hedeflerinizi profil alanından güncelleyin.
             </p>
             <button 
-              onClick={() => setView(userRole === 'alumni' ? 'mbs' : 'profile_update')} 
+              onClick={() => setView('profile_update')} 
               className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
             >
-              {userRole === 'alumni' ? "Mezun Bilgi Sistemi'ne Git" : "Bilgilerimi Düzenle"} <ArrowRight size={16} />
+              Bilgilerimi Düzenle <ArrowRight size={16} />
             </button>
           </div>
 
@@ -624,7 +620,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                   applications={applications} 
                   setApplications={setApplications} 
                   jobs={jobs} 
-                  currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
+                  currentUser={currentUser || { id: 'STU-001', name: 'Öğrenci', avatar: '/iesu-logo.svg' }} 
                   userRole="student" 
                 />
               </div>

@@ -12,6 +12,7 @@ export default {
           secondary: '#D32F2F', // Esenyurt Red
           accent: '#FF6F61', // Nar Çiçeği (Coral)
           blue: '#243f6e', // Kept for contrast in dark sections
+          navy: '#1e3a5f', // Kurumsal Lacivert
           red: '#D32F2F',
           darkRed: '#B71C1C',
           coral: '#FF6F61',

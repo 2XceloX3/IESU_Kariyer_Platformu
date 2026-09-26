@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const HACKATHONS = [
   { id: 1, title: 'Akıllı Kampüs İnovasyon Maratonu', company: 'Esenyurt Teknopark', prize: '₺50.000 Hibe Desteği', deadline: '2 Gün Kaldı', type: 'Sürdürülebilirlik', participants: 142, status: 'active', color: 'blue' },
@@ -67,7 +68,8 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
@@ -259,7 +261,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
 
                 <button 
                   type="submit"
-                  className="w-full py-3.5 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4"
+                  className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg mt-4 cursor-pointer"
                 >
                   Kayıt Yap ve Katıl
                 </button>
@@ -268,6 +270,17 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="hackathon"
+        />
+      )}
     </div>
   );
 }

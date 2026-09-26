@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const MOCK_PROJECTS = [
   { id: 1, title: 'AI Tabanlı Mülakat Botu', category: 'Yapay Zeka', tech: ['React', 'Python', 'OpenAI'], views: 1240, stars: 45, image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800', isCertified: true },
@@ -53,7 +54,8 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
@@ -281,7 +283,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
 
                 <button 
                   onClick={handleAddProject}
-                  className="w-full py-3 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg"
+                  className="w-full py-3 bg-[#990000] hover:bg-red-800 text-white font-black rounded-xl text-xs uppercase tracking-widest transition shadow-lg cursor-pointer"
                 >
                   Proje Ekle
                 </button>
@@ -290,6 +292,17 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="portfolio"
+        />
+      )}
     </div>
   );
 }

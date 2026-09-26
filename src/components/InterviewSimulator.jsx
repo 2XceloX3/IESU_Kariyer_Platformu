@@ -251,7 +251,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                       setActiveScenario(scenario);
                       setCurrentQuestionIndex(0);
                     }}
-                    className="bg-white rounded-xl p-8 text-left border border-gray-100 hover:border-iesu-navy/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group"
+                    className="bg-white rounded-xl p-8 text-left border border-gray-100 hover:border-[#990000]/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group"
                   >
                     <div className="text-3xl mb-6">{scenario.icon}</div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#990000] transition-colors">{scenario.title}</h3>
@@ -361,7 +361,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
                   animate={{ opacity: 1 }}
                   className="flex flex-col items-center justify-center text-center"
                 >
-                  <div className="w-24 h-24 border-4 border-gray-200 border-t-iesu-navy rounded-full animate-spin mb-8" />
+                  <div className="w-24 h-24 border-4 border-gray-200 border-t-[#990000] rounded-full animate-spin mb-8" />
                   <h3 className="text-2xl font-black text-gray-900 mb-2">Cevabınız Analiz Ediliyor...</h3>
                   <p className="text-gray-500">Ses tonunuz, kullandığınız kelimeler ve içerik kalitesi değerlendiriliyor.</p>
                 </motion.div>

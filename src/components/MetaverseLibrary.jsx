@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { generateAIResponse } from '../lib/gemini';
 
 const MOCK_TRENDS = [
@@ -73,7 +74,8 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
@@ -275,7 +277,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                         window.toast && window.toast.success("✅ Yayın başarıyla doğrulandı ve cihazınıza indirildi!");
                       }, 2000);
                     }}
-                    className="flex-1 py-3 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-black uppercase tracking-widest text-center"
+                    className="flex-1 py-3 bg-[#990000] hover:bg-red-800 text-white rounded-xl font-black uppercase tracking-widest text-center cursor-pointer transition"
                   >
                     PDF Olarak İndir
                   </button>
@@ -285,6 +287,17 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="library"
+        />
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Award, ShieldCheck, CheckCircle2, Download, QrCode, Search, FileCheck, Lock, ChevronLeft, ArrowRight, AlertCircle, Building, Sparkles, MonitorPlay } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 export default function SmartCertificates({ setView, currentUser, userRole, setSelectedUserId }) {
   const [activeTab, setActiveTab] = useState('dogrulama'); // dogrulama, sertifikalarim, devam_edenler
@@ -90,9 +91,10 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                 setView(target);
               }
             }} 
-            className="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-[#990000] hover:text-white transition flex items-center gap-2 font-bold text-xs cursor-pointer"
+            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+            title="Geri Dön"
           >
-            <ChevronLeft size={18} /> <span className="hidden sm:inline">Geri Dön</span>
+            <ChevronLeft size={20} />
           </button>
           <div className="h-5 w-px bg-slate-200 hidden sm:block"></div>
           <div className="flex items-center gap-2">
@@ -321,6 +323,17 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
         </div>
 
       </main>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="certs"
+        />
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
   const getClasses = () => {
@@ -212,7 +213,10 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
                 
                 {effectiveRole === 'student' && (
                   <div className="pt-4 mt-2 border-t border-gray-100 flex justify-end">
-                    <button className="text-sm font-bold text-red-600 hover:text-red-800 flex items-center gap-1 transition">
+                    <button 
+                      onClick={() => setView('jobs')} 
+                      className="text-sm font-bold text-red-600 hover:text-red-800 flex items-center gap-1 transition cursor-pointer"
+                    >
                       İlan Detayı <ChevronRight size={16} />
                     </button>
                   </div>
@@ -225,9 +229,17 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
       </div>
       </main>
 
-      {/* Admin Omni Dock */}
-      {effectiveRole === 'admin' && (
+      {/* Floating Dock */}
+      {effectiveRole === 'admin' ? (
         <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="applications" />
+      ) : (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={effectiveRole || 'student'}
+          activeTab="jobs"
+        />
       )}
     </div>
   );

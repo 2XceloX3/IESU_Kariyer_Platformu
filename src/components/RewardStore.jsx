@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Coffee, Zap, UserCheck, Shield, Sparkles, Check, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Coffee, Zap, UserCheck, Shield, Sparkles, Check, AlertCircle, ChevronLeft } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import Confetti from 'react-confetti';
+import Logo from './Logo';
+import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
-export default function RewardStore() {
+export default function RewardStore({ setView, currentUser, userRole, setSelectedUserId }) {
   const { userBP, purchaseItem, purchasedItems } = useAppStore();
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
@@ -83,8 +86,30 @@ export default function RewardStore() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 md:p-6 animate-fade-in relative pb-safe">
-      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={200} />}
+    <div className="min-h-screen bg-[#F8FAFC] pb-28">
+      {setView && (
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40 shadow-xs mb-6">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setView('feed')} 
+              className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+              title="Geri Dön"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="flex items-center gap-3">
+              <Logo className="h-8 w-auto text-[#990000]" />
+              <div>
+                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Esenyurt Ödül Mağazası</h1>
+                <p className="text-[11px] font-bold text-gray-500">Kariyer Başarı Puanı (BP) Merkezi</p>
+              </div>
+            </div>
+          </div>
+          <TopProfileMenu currentUser={currentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
+        </header>
+      )}
+      <div className="w-full max-w-5xl mx-auto p-4 md:p-6 animate-fade-in relative">
+        {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={200} />}
       
       <div className="mb-8 p-6 bg-gradient-to-r from-[#990000] to-[#163B65] rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
@@ -158,6 +183,15 @@ export default function RewardStore() {
           );
         })}
       </div>
+      </div>
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

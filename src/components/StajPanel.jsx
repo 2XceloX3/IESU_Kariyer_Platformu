@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { downloadReportPdf } from '../utils/downloadPdf';
-import { FileText, CheckCircle, Clock, Download, Briefcase, FileSignature, ArrowRight, ShieldCheck, HelpCircle, LogIn, Search } from 'lucide-react';
+import { FileText, CheckCircle, Clock, Download, Briefcase, FileSignature, ArrowRight, ShieldCheck, HelpCircle, LogIn, Search, ChevronLeft } from 'lucide-react';
 import Logo from './Logo';
 import SubPanelFooter from './SubPanelFooter';
+import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SEO from './SEO';
 
-export default function StajPanel({ setView, userRole }) {
+export default function StajPanel({ setView, userRole = 'student', currentUser, previousView, setSelectedUserId }) {
   const [activeTab, setActiveTab] = useState('surec');
 
   const adimlar = [
@@ -48,18 +50,27 @@ export default function StajPanel({ setView, userRole }) {
       <div>
         {/* Top Sticky Header Bar - Crimson Red with Pure White Logo Left & Nav Links Right */}
         <div className="sticky top-0 z-40 bg-gradient-to-r from-[#990000] via-[#800000] to-[#660000] text-white px-4 sm:px-8 py-3.5 shadow-xl flex items-center justify-between border-b border-red-800 gap-4">
-          {/* Left: Pure White Logo + University Name */}
-          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView('landing')}>
-            <div className="brightness-0 invert flex-shrink-0">
-              <Logo className="h-10 w-auto" />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+          {/* Left: Back Button + Pure White Logo + University Name */}
+          <div className="flex items-center gap-3 shrink-0">
+            <button 
+              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
+              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition cursor-pointer shrink-0"
+              title="Geri Dön"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}>
+              <div className="brightness-0 invert flex-shrink-0">
+                <Logo className="h-10 w-auto" />
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+              </div>
             </div>
           </div>
 
-          {/* Right Group: Search Bar + Nav Links + Giriş Yap Button */}
+          {/* Right Group: Search Bar + Nav Links + Giriş Yap / Profile */}
           <div className="flex items-center gap-4 md:gap-6 overflow-x-auto py-1">
             {/* Live Search Bar */}
             <div className="relative hidden md:block w-44 lg:w-56 flex-shrink-0">
@@ -77,19 +88,21 @@ export default function StajPanel({ setView, userRole }) {
             </div>
 
             <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
-              <button onClick={() => setView('landing')} className="hover:text-white hover:underline transition">Ana Sayfa</button>
-              <button onClick={() => setView('about_us')} className="hover:text-white hover:underline transition">Hakkımızda</button>
-              <button onClick={() => setView('services')} className="hover:text-white hover:underline transition">Hizmetlerimiz</button>
-              <button onClick={() => setView('events_list')} className="hover:text-white hover:underline transition">Etkinliklerimiz</button>
-              <button onClick={() => setView('contact_us')} className="hover:text-white hover:underline transition">İletişim</button>
+              <button onClick={() => setView('feed')} className="hover:text-white hover:underline transition">Akış</button>
+              <button onClick={() => setView('jobs')} className="hover:text-white hover:underline transition">İş & Staj</button>
+              <button onClick={() => setView('student_kgb')} className="hover:text-white hover:underline transition">KGB Karnesi</button>
             </div>
 
-            <button 
-              onClick={() => setView('login')}
-              className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg whitespace-nowrap flex-shrink-0 cursor-pointer"
-            >
-              <LogIn size={15} /> Giriş Yap
-            </button>
+            {currentUser ? (
+              <TopProfileMenu currentUser={currentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
+            ) : (
+              <button 
+                onClick={() => setView('login')}
+                className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg whitespace-nowrap flex-shrink-0 cursor-pointer"
+              >
+                <LogIn size={15} /> Giriş Yap
+              </button>
+            )}
           </div>
         </div>
 
@@ -266,6 +279,17 @@ export default function StajPanel({ setView, userRole }) {
 
       {/* Full Width SubPanelFooter */}
       <SubPanelFooter setView={setView} />
+
+      {/* Floating Bottom Dock */}
+      {currentUser && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="jobs"
+        />
+      )}
     </div>
   );
 }
