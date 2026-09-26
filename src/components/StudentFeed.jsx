@@ -587,7 +587,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                   <div key={feat.id} className="group cursor-pointer">
                     <div className="h-24 bg-gray-200 rounded-xl overflow-hidden mb-3 relative">
                       {feat.banner ? <img src={feat.banner} className="w-full h-full object-cover group-hover:scale-105 transition" /> : <div className="w-full h-full bg-gradient-to-r from-red-600 to-red-800"></div>}
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:opacity-90 transition"></div>
                       <div className="absolute bottom-2 left-2 right-2">
                         <p className="text-white text-[12px] font-black truncate">{feat.title}</p>
                         <p className="text-white/80 text-[10px] font-medium truncate">{feat.organization}</p>

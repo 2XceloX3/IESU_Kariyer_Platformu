@@ -524,9 +524,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               <Briefcase size={22} />
             </div>
             <div>
-              <p className="text-2xl font-black text-gray-900">{studentData.internshipsCount}</p>
-              <p className="text-xs font-bold text-gray-500">Onaylı Staj</p>
-              <span className="text-[10px] text-emerald-600 font-bold">{studentData.internshipsCount * 25} İş Günü Tamam</span>
+              <p className="text-2xl font-black text-slate-900">{studentData.internshipsCount}</p>
+              <p className="text-xs font-bold text-slate-700">Onaylı Staj</p>
+              <span className="text-[10px] text-emerald-700 font-bold">{studentData.internshipsCount * 25} İş Günü Tamam</span>
             </div>
           </div>
 
@@ -535,9 +535,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               <Award size={22} />
             </div>
             <div>
-              <p className="text-2xl font-black text-gray-900">{studentData.certificationsCount}</p>
-              <p className="text-xs font-bold text-gray-500">Akredite Sertifika</p>
-              <span className="text-[10px] text-amber-600 font-bold">{studentData.certificationsCount * 36} Saat Eğitim</span>
+              <p className="text-2xl font-black text-slate-900">{studentData.certificationsCount}</p>
+              <p className="text-xs font-bold text-slate-700">Akredite Sertifika</p>
+              <span className="text-[10px] text-amber-700 font-bold">{studentData.certificationsCount * 36} Saat Eğitim</span>
             </div>
           </div>
 
@@ -546,9 +546,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               <Calendar size={22} />
             </div>
             <div>
-              <p className="text-2xl font-black text-gray-900">{studentData.workshopsCount}</p>
-              <p className="text-xs font-bold text-gray-500">Workshop & Atölye</p>
-              <span className="text-[10px] text-blue-600 font-bold">{studentData.workshopsCount * 4} Saat Katılım</span>
+              <p className="text-2xl font-black text-slate-900">{studentData.workshopsCount}</p>
+              <p className="text-xs font-bold text-slate-700">Workshop & Atölye</p>
+              <span className="text-[10px] text-blue-700 font-bold">{studentData.workshopsCount * 4} Saat Katılım</span>
             </div>
           </div>
 
@@ -557,9 +557,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               <Users size={22} />
             </div>
             <div>
-              <p className="text-2xl font-black text-gray-900">{studentData.mentorMeetingsCount}</p>
-              <p className="text-xs font-bold text-gray-500">Mentor Seansı</p>
-              <span className="text-[10px] text-purple-600 font-bold">{studentData.mentorMeetingsCount * 2} Saat Bire Bir Danışmanlık</span>
+              <p className="text-2xl font-black text-slate-900">{studentData.mentorMeetingsCount}</p>
+              <p className="text-xs font-bold text-slate-700">Mentor Seansı</p>
+              <span className="text-[10px] text-purple-700 font-bold">{studentData.mentorMeetingsCount * 2} Saat Bire Bir Danışmanlık</span>
             </div>
           </div>
         </section>
@@ -622,11 +622,11 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-base font-black text-gray-900 flex items-center gap-2">
+                      <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                         <BarChart3 size={18} className="text-[#990000]" />
                         Temel Kariyer Yetkinlikleri Dökümü
                       </h3>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-xs text-slate-600 font-medium mt-0.5">
                         Üniversite akademik kurulu ve sektör danışmanları tarafından değerlendirilen yetkinlik karnesi.
                       </p>
                     </div>
@@ -645,10 +645,10 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                     ].map(sk => (
                       <div key={sk.name}>
                         <div className="flex items-center justify-between text-xs font-bold mb-1">
-                          <span className="text-gray-800">{sk.name}</span>
-                          <span className="text-gray-500">{sk.level} • <strong>%{sk.val}</strong></span>
+                          <span className="text-slate-800">{sk.name}</span>
+                          <span className="text-slate-600 font-semibold">{sk.level} • <strong>%{sk.val}</strong></span>
                         </div>
-                        <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                           <div className={`h-full ${sk.color} rounded-full`} style={{ width: `${sk.val}%` }} />
                         </div>
                       </div>
@@ -658,12 +658,12 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
                 {/* Zaman Çizelgesi */}
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs">
-                  <h3 className="text-base font-black text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-base font-black text-slate-900 mb-4 flex items-center gap-2">
                     <Clock size={18} className="text-[#990000]" />
                     Kariyer Gelişim Kronolojisi
                   </h3>
 
-                  <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200">
+                  <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
                     {[
                       { title: 'Aselsan A.Ş. Ar-Ge Stajı Başarıyla Tamamlandı', date: 'Mart 2026', type: 'Staj', desc: '30 iş günü savunma sanayii yazılım stajı 95/100 notuyla tamamlandı.' },
                       { title: 'AWS Cloud Practitioner Sertifikasyonu Kazanıldı', date: 'Ocak 2026', type: 'Sertifika', desc: 'Amazon Web Services küresel akreditasyon sınavı başarıyla geçildi.' },
@@ -674,10 +674,10 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                         <div className="absolute -left-6 top-1 w-3 h-3 rounded-full bg-[#990000] border-2 border-white shadow-xs"></div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-black text-gray-900">{ev.title}</span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{ev.type}</span>
+                            <span className="text-xs font-black text-slate-900">{ev.title}</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">{ev.type}</span>
                           </div>
-                          <p className="text-xs text-gray-500 mt-0.5">{ev.desc}</p>
+                          <p className="text-xs text-slate-600 font-medium mt-0.5">{ev.desc}</p>
                           <span className="text-[10px] text-slate-600 font-bold">{ev.date}</span>
                         </div>
                       </div>
@@ -698,18 +698,18 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                       {studentData.advisorName.split(' ').map(n => n[0]).filter(Boolean).slice(-2).join('')}
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-gray-900">{studentData.advisorName}</h4>
-                      <p className="text-[10px] text-gray-500">Akademik & Kariyer Danışmanı</p>
+                      <h4 className="text-xs font-black text-slate-900">{studentData.advisorName}</h4>
+                      <p className="text-[10px] text-slate-600 font-bold">Akademik & Kariyer Danışmanı</p>
                     </div>
                   </div>
 
-                  <blockquote className="text-xs text-gray-600 italic bg-gray-50 p-3.5 rounded-2xl border border-gray-100 mb-3 leading-relaxed">
+                  <blockquote className="text-xs text-slate-700 font-medium italic bg-slate-50 p-3.5 rounded-2xl border border-slate-200 mb-3 leading-relaxed">
                     "Öğrencimiz {studentData.name}, {studentData.department} alanındaki akademik ve uygulamalı çalışmalarında gösterdiği üstün performans ile bölüm standartlarının üzerinde bir kariyer hazırlığına ulaşmıştır."
                   </blockquote>
 
-                  <div className="flex items-center justify-between text-[11px] text-gray-500 font-semibold">
+                  <div className="flex items-center justify-between text-[11px] text-slate-600 font-semibold">
                     <span>Son Onay Tarihi:</span>
-                    <span className="font-bold text-gray-800">18 Mart 2026</span>
+                    <span className="font-bold text-slate-900">18 Mart 2026</span>
                   </div>
                 </div>
               </div>
@@ -720,12 +720,12 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         {/* SEKME 2: STAJ VE İŞ DENEYİMLERİ */}
         {activeTab === 'stajlar' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 flex items-center justify-between">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-black text-gray-900">Kayıtlı ve Onaylı Staj Deneyimleri</h3>
-                <p className="text-xs text-gray-500">Kariyer Koordinatörlüğü ve Bölüm Başkanlığı tarafından tescil edilen stajlar.</p>
+                <h3 className="text-base font-black text-slate-900">Kayıtlı ve Onaylı Staj Deneyimleri</h3>
+                <p className="text-xs text-slate-600 font-medium">Kariyer Koordinatörlüğü ve Bölüm Başkanlığı tarafından tescil edilen stajlar.</p>
               </div>
-              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-black">
+              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-black">
                 Toplam: {studentData.internshipsCount * 25} İş Günü
               </span>
             </div>
@@ -833,7 +833,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400 font-mono">
+                  <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-600 font-mono font-semibold">
                     <span>Kod: {cert.code}</span>
                     <button onClick={() => toast.success('Sertifika Doğrulandı: ' + cert.code)} className="text-[#990000] font-bold hover:underline cursor-pointer">
                       Doğrula
@@ -848,34 +848,34 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         {/* SEKME 4: WORKSHOP VE ETKİNLİK KATILIMLARI */}
         {activeTab === 'etkinlikler' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 flex items-center justify-between">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-black text-gray-900">Workshop, Atölye ve Seminer Katılımları</h3>
-                <p className="text-xs text-gray-500">Üniversite bünyesinde ve sektör iş birlikleriyle tamamlanan mesleki gelişim faaliyetleri.</p>
+                <h3 className="text-base font-black text-slate-900">Workshop, Atölye ve Seminer Katılımları</h3>
+                <p className="text-xs text-slate-600 font-medium">Üniversite bünyesinde ve sektör iş birlikleriyle tamamlanan mesleki gelişim faaliyetleri.</p>
               </div>
               <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-black">
                 34 Saat Yetkinlik
               </span>
             </div>
 
-            <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-xs">
-              <div className="divide-y divide-gray-100">
+            <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
+              <div className="divide-y divide-slate-100">
                 {workshops.map((w, idx) => (
-                  <div key={w.id} className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-gray-50/70 transition">
+                  <div key={w.id} className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/80 transition">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center font-bold text-xs shrink-0">
                         {idx + 1}
                       </div>
                       <div>
-                        <h4 className="text-xs sm:text-sm font-black text-gray-900">{w.title}</h4>
-                        <p className="text-[11px] text-gray-500">
-                          Eğitmen / Konuşmacı: <strong className="text-gray-700">{w.speaker}</strong> • {w.date}
+                        <h4 className="text-xs sm:text-sm font-black text-slate-900">{w.title}</h4>
+                        <p className="text-[11px] text-slate-600 font-medium">
+                          Eğitmen / Konuşmacı: <strong className="text-slate-900 font-bold">{w.speaker}</strong> • {w.date}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="hidden sm:inline-block px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-[10px] font-bold">
+                      <span className="hidden sm:inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
                         {w.category}
                       </span>
                       <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-black">
@@ -892,10 +892,10 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         {/* SEKME 5: RESMİ TRANSKRİPT ÖNİZLEMESİ */}
         {activeTab === 'transkript' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl p-5 border border-gray-100 flex items-center justify-between">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-black text-gray-900">Resmi Kariyer Gelişim Belgesi (KGB Transkripti)</h3>
-                <p className="text-xs text-gray-500">Mezuniyette diplomanın yanında verilecek YÖK uyumlu kariyer eki formatı.</p>
+                <h3 className="text-base font-black text-slate-900">Resmi Kariyer Gelişim Belgesi (KGB Transkripti)</h3>
+                <p className="text-xs text-slate-600 font-medium">Mezuniyette diplomanın yanında verilecek YÖK uyumlu kariyer eki formatı.</p>
               </div>
               <button
                 onClick={handleExportPDF}
@@ -913,7 +913,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <div className="flex items-center justify-center gap-3">
                   <Logo className="w-12 h-12 text-[#990000]" />
                   <div className="text-center">
-                    <h2 className="text-base sm:text-lg font-black tracking-tight text-gray-900 uppercase">
+                    <h2 className="text-base sm:text-lg font-black tracking-tight text-slate-900 uppercase">
                       T.C. İSTANBUL ESENYURT ÜNİVERSİTESİ REKTÖRLÜĞÜ
                     </h2>
                     <p className="text-xs font-bold text-[#990000] tracking-wider uppercase">
@@ -921,7 +921,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                     </p>
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight pt-2">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight pt-2">
                   RESMİ KARİYER GELİŞİM BELGESİ (KGB) VE YETENEK KARNESİ
                 </h3>
                 <p className="text-[11px] text-slate-600 font-mono font-semibold">
@@ -930,65 +930,65 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               </div>
 
               {/* Öğrenci Resmi Bilgileri */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs bg-gray-50 p-4 rounded-2xl border border-gray-200">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <div>
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Adı Soyadı</span>
-                  <span className="font-black text-gray-900">{studentData.name}</span>
+                  <span className="block text-[10px] text-slate-700 font-bold uppercase">Adı Soyadı</span>
+                  <span className="font-black text-slate-900">{studentData.name}</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Öğrenci Numarası</span>
-                  <span className="font-black text-gray-900">{studentData.studentNo}</span>
+                  <span className="block text-[10px] text-slate-700 font-bold uppercase">Öğrenci Numarası</span>
+                  <span className="font-black text-slate-900">{studentData.studentNo}</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Fakülte / Bölüm</span>
-                  <span className="font-black text-gray-900">{studentData.faculty} / {studentData.department}</span>
+                  <span className="block text-[10px] text-slate-700 font-bold uppercase">Fakülte / Bölüm</span>
+                  <span className="font-black text-slate-900">{studentData.faculty} / {studentData.department}</span>
                 </div>
                 <div>
-                  <span className="block text-[10px] text-slate-500 font-bold uppercase">Genel Başarı Seviyesi</span>
-                  <span className="font-black text-emerald-700">{studentData.accreditationScore >= 88 ? 'A+' : 'A'} (%{studentData.accreditationScore} Pekiyi)</span>
+                  <span className="block text-[10px] text-slate-700 font-bold uppercase">Genel Başarı Seviyesi</span>
+                  <span className="font-black text-emerald-800">{studentData.accreditationScore >= 88 ? 'A+' : 'A'} (%{studentData.accreditationScore} Pekiyi)</span>
                 </div>
               </div>
 
               {/* Özet Faaliyet Listesi */}
               <div className="space-y-4 text-xs">
-                <h4 className="font-black text-gray-900 text-sm border-b border-gray-200 pb-1">
+                <h4 className="font-black text-slate-900 text-sm border-b border-slate-200 pb-1">
                   1. Tamamlanan Kurumsal ve Ar-Ge Stajları
                 </h4>
                 <div className="space-y-2">
                   {internships.map((int, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1 border-b border-gray-100">
-                      <span>• <strong>{int.company}</strong> — {int.position} ({int.duration})</span>
-                      <span className="font-bold text-emerald-700">{int.score}</span>
+                    <div key={idx} className="flex justify-between items-center py-1 border-b border-slate-100 text-slate-700 font-medium">
+                      <span>• <strong className="text-slate-900 font-bold">{int.company}</strong> — {int.position} ({int.duration})</span>
+                      <span className="font-bold text-emerald-800">{int.score}</span>
                     </div>
                   ))}
                 </div>
 
-                <h4 className="font-black text-gray-900 text-sm border-b border-gray-200 pb-1 pt-2">
+                <h4 className="font-black text-slate-900 text-sm border-b border-slate-200 pb-1 pt-2">
                   2. Kazanılan Akredite Mesleki Sertifikalar
                 </h4>
                 <div className="space-y-2">
                   {certifications.map((crt, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1 border-b border-gray-100">
-                      <span>• <strong>{crt.title}</strong> ({crt.issuer})</span>
-                      <span className="font-mono text-slate-600 font-semibold">{crt.hours} • Onaylı</span>
+                    <div key={idx} className="flex justify-between items-center py-1 border-b border-slate-100 text-slate-700 font-medium">
+                      <span>• <strong className="text-slate-900 font-bold">{crt.title}</strong> ({crt.issuer})</span>
+                      <span className="font-mono text-slate-700 font-semibold">{crt.hours} • Onaylı</span>
                     </div>
                   ))}
                 </div>
 
-                <h4 className="font-black text-gray-900 text-sm border-b border-gray-200 pb-1 pt-2">
+                <h4 className="font-black text-slate-900 text-sm border-b border-slate-200 pb-1 pt-2">
                   3. Mesleki Atölye, Seminer ve Vaka Çalışmaları
                 </h4>
-                <p className="text-gray-600">
-                  Öğrenci eğitim süresince toplam <strong>{studentData.workshopsCount} adet</strong> resmi atölye ve seminer programına katılmış, <strong>{studentData.workshopsCount * 4} saatlik</strong> mesleki yetkinlik kazanımını tamamlamıştır.
+                <p className="text-slate-700 font-medium leading-relaxed">
+                  Öğrenci eğitim süresince toplam <strong className="text-slate-900 font-bold">{studentData.workshopsCount} adet</strong> resmi atölye ve seminer programına katılmış, <strong className="text-slate-900 font-bold">{studentData.workshopsCount * 4} saatlik</strong> mesleki yetkinlik kazanımını tamamlamıştır.
                 </p>
               </div>
 
               {/* İmza ve Mühür Alanı */}
               <div className="pt-8 border-t-2 border-red-900/30 flex flex-col sm:flex-row items-center justify-between gap-6 text-center">
                 <div>
-                  <p className="text-xs font-black text-gray-900">{studentData.advisorName}</p>
-                  <p className="text-[10px] text-gray-500">Kariyer Danışmanı & Bölüm Temsilcisi</p>
-                  <p className="text-[9px] text-emerald-600 font-bold mt-1">✓ E-İmzalanmıştır</p>
+                  <p className="text-xs font-black text-slate-900">{studentData.advisorName}</p>
+                  <p className="text-[10px] text-slate-600 font-bold">Kariyer Danışmanı & Bölüm Temsilcisi</p>
+                  <p className="text-[9px] text-emerald-700 font-bold mt-1">✓ E-İmzalanmıştır</p>
                 </div>
 
                 <div className="flex flex-col items-center">
@@ -999,9 +999,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 </div>
 
                 <div>
-                  <p className="text-xs font-black text-gray-900">Kariyer Geliştirme Koordinatörlüğü</p>
-                  <p className="text-[10px] text-gray-500">İstanbul Esenyurt Üniversitesi Rektörlüğü</p>
-                  <p className="text-[9px] text-emerald-600 font-bold mt-1">✓ Resmi Belge Olarak Tescillidir</p>
+                  <p className="text-xs font-black text-slate-900">Kariyer Geliştirme Koordinatörlüğü</p>
+                  <p className="text-[10px] text-slate-600 font-bold">İstanbul Esenyurt Üniversitesi Rektörlüğü</p>
+                  <p className="text-[9px] text-emerald-700 font-bold mt-1">✓ Resmi Belge Olarak Tescillidir</p>
                 </div>
               </div>
             </div>
@@ -1013,9 +1013,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       {/* ── YENİ BELGE / FAALİYET EKLEME MODALI ─────────────────── */}
       {showRequestModal && (
         <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="text-base font-black text-gray-900 flex items-center gap-2">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
                 <Award size={18} className="text-[#990000]" /> Yeni Faaliyet / Belge Onayı İste
               </h3>
               <button onClick={() => setShowRequestModal(false)} className="text-slate-500 hover:text-slate-800 font-bold">
@@ -1025,11 +1025,11 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
             <form onSubmit={handleSubmitRequest} className="space-y-3 text-xs">
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Faaliyet Türü</label>
+                <label className="block font-bold text-slate-800 mb-1">Faaliyet Türü</label>
                 <select
                   value={newRequestType}
                   onChange={e => setNewRequestType(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-gray-200 font-semibold outline-none focus:border-[#990000]"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 font-semibold outline-none focus:border-[#990000] text-slate-900 bg-slate-50 focus:bg-white transition"
                 >
                   <option value="staj">Staj & İş Deneyimi</option>
                   <option value="sertifika">Mesleki Sertifika</option>
@@ -1039,36 +1039,36 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Faaliyet / Belge Başlığı</label>
+                <label className="block font-bold text-slate-800 mb-1">Faaliyet / Belge Başlığı</label>
                 <input
                   type="text"
                   placeholder="Örn: Yapay Zekâ Eğitimi, Gönüllü Staj..."
                   value={newRequestTitle}
                   onChange={e => setNewRequestTitle(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-gray-200 font-semibold outline-none focus:border-[#990000]"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 font-semibold outline-none focus:border-[#990000] text-slate-900 placeholder:text-slate-400 bg-slate-50 focus:bg-white transition"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Kurum / Organizasyon Adı</label>
+                <label className="block font-bold text-slate-800 mb-1">Kurum / Organizasyon Adı</label>
                 <input
                   type="text"
                   placeholder="Örn: Havelsan, Google, Coursera..."
                   value={newRequestOrg}
                   onChange={e => setNewRequestOrg(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-gray-200 font-semibold outline-none focus:border-[#990000]"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 font-semibold outline-none focus:border-[#990000] text-slate-900 placeholder:text-slate-400 bg-slate-50 focus:bg-white transition"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Eğitim Saati veya Staj Gün Sayısı</label>
+                <label className="block font-bold text-slate-800 mb-1">Eğitim Saati veya Staj Gün Sayısı</label>
                 <input
                   type="text"
                   placeholder="Örn: 30 Saat veya 20 İş Günü"
                   value={newRequestHours}
                   onChange={e => setNewRequestHours(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-gray-200 font-semibold outline-none focus:border-[#990000]"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 font-semibold outline-none focus:border-[#990000] text-slate-900 placeholder:text-slate-400 bg-slate-50 focus:bg-white transition"
                 />
               </div>
 
@@ -1076,7 +1076,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <button
                   type="button"
                   onClick={() => setShowRequestModal(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold text-gray-700 transition"
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 transition"
                 >
                   Vazgeç
                 </button>

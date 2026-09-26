@@ -1248,8 +1248,8 @@ export default function PublicUserProfile({
 
       {/* ─── AKADEMİSYEN RANDEVU & DANIŞMANLIK MODALI ─── */}
       {showAppointmentModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+        <div className="fixed inset-0 z-[10000] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="font-black text-slate-900 text-base flex items-center gap-2">
                 <Calendar size={18} className="text-purple-700" /> Resmî Danışmanlık & Randevu
@@ -1262,37 +1262,38 @@ export default function PublicUserProfile({
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-xs text-slate-600 font-medium leading-relaxed">
               <b>{user.name}</b> ile akademik veya kariyer planlama görüşmesi talep etmek için bilgileri doldurunuz.
             </p>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Görüşme Konusu</label>
+                <label className="font-bold text-slate-800 block mb-1">Görüşme Konusu</label>
                 <input 
                   type="text" 
                   value={appointmentForm.subject} 
                   onChange={(e) => setAppointmentForm({ ...appointmentForm, subject: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-600 font-semibold"
+                  placeholder="Görüşme başlığı veya amacı..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-900 placeholder:text-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:border-purple-600 font-semibold transition"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Tarih</label>
+                  <label className="font-bold text-slate-800 block mb-1">Tarih</label>
                   <input 
                     type="date" 
                     value={appointmentForm.date} 
                     onChange={(e) => setAppointmentForm({ ...appointmentForm, date: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-600 font-semibold"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-purple-600 font-semibold transition"
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Saat Dilimi</label>
+                  <label className="font-bold text-slate-800 block mb-1">Saat Dilimi</label>
                   <select 
                     value={appointmentForm.slot} 
                     onChange={(e) => setAppointmentForm({ ...appointmentForm, slot: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-600 font-semibold bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-purple-600 font-semibold transition"
                   >
                     <option value="10:00 - 10:30">10:00 - 10:30</option>
                     <option value="11:30 - 12:00">11:30 - 12:00</option>
@@ -1303,13 +1304,13 @@ export default function PublicUserProfile({
               </div>
 
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Kısa Açıklama / Not</label>
+                <label className="font-bold text-slate-800 block mb-1">Kısa Açıklama / Not</label>
                 <textarea 
                   rows={3} 
                   value={appointmentForm.notes} 
                   onChange={(e) => setAppointmentForm({ ...appointmentForm, notes: e.target.value })}
                   placeholder="Görüşmek istediğiniz konu veya tez/proje detaylarını belirtiniz..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-600 font-semibold resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-900 placeholder:text-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:border-purple-600 font-semibold resize-none transition"
                 />
               </div>
             </div>
@@ -1317,7 +1318,7 @@ export default function PublicUserProfile({
             <div className="flex items-center justify-end gap-2.5 pt-2">
               <button 
                 onClick={() => setShowAppointmentModal(false)}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer"
               >
                 Vazgeç
               </button>

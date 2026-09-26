@@ -781,7 +781,7 @@ export default function StudentClubPortal({
                               <div>
                                 <div className="flex items-center gap-1">
                                   <h4 className="font-bold text-xs text-gray-900 hover:text-[#990000] transition cursor-pointer">{post.author.name}</h4>
-                                  {post.author.verified && <CheckCircle2 size={13} className="text-blue-500 fill-blue-500 text-white" />}
+                                  {post.author.verified && <CheckCircle2 size={13} className="text-white fill-blue-500" />}
                                 </div>
                                 <p className="text-[10px] text-slate-600 font-medium flex items-center gap-1">
                                   <MapPin size={10} className="text-[#990000]" /> {post.location} • {post.createdAt}

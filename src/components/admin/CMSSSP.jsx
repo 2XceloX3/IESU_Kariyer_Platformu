@@ -190,23 +190,23 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
               <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
                 <div>
                   <h3 className="font-black text-gray-900 text-lg">Öğrenci Kariyer Gelişim Dosyaları</h3>
-                  <p className="text-xs text-gray-500">Öğrencilerin doğrulanmış staj, sertifika, workshop ve mentörlük karneleri.</p>
+                  <p className="text-xs text-slate-600 font-medium">Öğrencilerin doğrulanmış staj, sertifika, workshop ve mentörlük karneleri.</p>
                 </div>
                 <div className="flex flex-wrap gap-3 items-center">
                   <div className="relative">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                       type="text"
                       placeholder="Öğrenci ara..."
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
-                      className="pl-8 pr-3 py-2 border border-gray-200 rounded-lg text-xs font-bold focus:outline-none focus:border-red-500"
+                      className="pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 placeholder:text-slate-400 bg-slate-50 focus:bg-white focus:outline-none focus:border-red-500"
                     />
                   </div>
                   <select 
                     value={deptFilter} 
                     onChange={e => setDeptFilter(e.target.value)}
-                    className="border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold focus:outline-none focus:border-red-500 bg-white"
+                    className="border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 bg-white"
                   >
                     {departments.map(d => <option key={d}>{d}</option>)}
                   </select>
@@ -225,7 +225,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   <thead>
                     <tr className="border-b border-gray-100">
                       {['Öğrenci Ad Soyad','Bölüm','Staj','Sertifika','Workshop','Mentörlük','CV Doluluğu','Son İşlem','KGB Belgesi'].map(h => (
-                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">{h}</th>
+                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-slate-700 uppercase tracking-widest whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -271,7 +271,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
             <Card className="p-6">
               <div className="mb-6">
                 <h3 className="font-black text-gray-900 text-lg">Mezun Kariyer Katkı & Mentörlük Karnesi</h3>
-                <p className="text-xs text-gray-500">Üniversite mezunlarının öğrenci istihdamına ve ekosisteme sağladığı sektörel destekler.</p>
+                <p className="text-xs text-slate-600 font-medium">Üniversite mezunlarının öğrenci istihdamına ve ekosisteme sağladığı sektörel destekler.</p>
               </div>
 
               <div className="overflow-x-auto">
@@ -279,7 +279,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   <thead>
                     <tr className="border-b border-gray-100">
                       {['Mezun Adı','Mezuniyet','Bölüm','Mevcut Görev','Şirket','Mentörlük','İş İlanı','Etkinlik','Mentee','Mezun Kartı','Ağ Etki Seviyesi'].map(h => (
-                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">{h}</th>
+                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-slate-700 uppercase tracking-widest whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -301,7 +301,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                               <CheckCircle2 size={16} /> Aktif
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-gray-400 font-bold text-xs">
+                            <span className="inline-flex items-center gap-1 text-slate-500 font-bold text-xs">
                               <AlertCircle size={16} /> Yok
                             </span>
                           )}
@@ -323,7 +323,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
               <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
                 <div>
                   <h3 className="font-black text-gray-900 text-lg">KGB Kredili Etkinlik & Workshop Havuzu</h3>
-                  <p className="text-xs text-gray-500">Öğrencilerin kariyer gelişim karnesine doğrudan işlenen akredite etkinlikler.</p>
+                  <p className="text-xs text-slate-600 font-medium">Öğrencilerin kariyer gelişim karnesine doğrudan işlenen akredite etkinlikler.</p>
                 </div>
                 <button
                   type="button"
@@ -337,49 +337,49 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
               {showEvtForm && (
                 <div className="mb-6 p-5 bg-red-50/60 border border-red-200 rounded-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-gray-700 block mb-1">Etkinlik Başlığı</label>
+                    <label className="text-xs font-bold text-slate-800 block mb-1">Etkinlik Başlığı</label>
                     <input 
                       type="text" 
                       value={evtTitle} 
                       onChange={e=>setEvtTitle(e.target.value)} 
                       placeholder="Örn: Python ile Veri Analizi"
-                      className="w-full border border-gray-300 rounded-xl p-2.5 text-sm bg-white" 
+                      className="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-white text-slate-900 placeholder:text-slate-400 font-semibold focus:border-red-600 focus:outline-none" 
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-gray-700 block mb-1">Tarih</label>
+                    <label className="text-xs font-bold text-slate-800 block mb-1">Tarih</label>
                     <input 
                       type="date" 
                       value={evtDate} 
                       onChange={e=>setEvtDate(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-xl p-2.5 text-sm bg-white" 
+                      className="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-white text-slate-900 font-semibold focus:border-red-600 focus:outline-none" 
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-gray-700 block mb-1">KGB Yetkinlik Kategorisi</label>
+                    <label className="text-xs font-bold text-slate-800 block mb-1">KGB Yetkinlik Kategorisi</label>
                     <select 
                       value={evtCat} 
                       onChange={e=>setEvtCat(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-xl p-2.5 text-sm bg-white font-bold"
+                      className="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-white text-slate-900 font-bold focus:border-red-600 focus:outline-none"
                     >
                       {['Mesleki Gelişim','Ağ Kurma','Teknik Beceri','Liderlik'].map(c=><option key={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-gray-700 block mb-1">Kontenjan</label>
+                    <label className="text-xs font-bold text-slate-800 block mb-1">Kontenjan</label>
                     <input 
                       type="number" 
                       value={evtQuota} 
                       onChange={e=>setEvtQuota(Number(e.target.value))} 
-                      className="w-full border border-gray-300 rounded-xl p-2.5 text-sm bg-white font-bold" 
+                      className="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-white text-slate-900 font-bold focus:border-red-600 focus:outline-none" 
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-gray-700 block mb-1">Etkinlik Türü</label>
+                    <label className="text-xs font-bold text-slate-800 block mb-1">Etkinlik Türü</label>
                     <select 
                       value={evtType} 
                       onChange={e=>setEvtType(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-xl p-2.5 text-sm bg-white font-bold"
+                      className="w-full border border-slate-300 rounded-xl p-2.5 text-sm bg-white text-slate-900 font-bold focus:border-red-600 focus:outline-none"
                     >
                       {['Workshop','Panel','Kariyer Günü','Staj Fuarı'].map(t=><option key={t}>{t}</option>)}
                     </select>
@@ -406,14 +406,14 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   <thead>
                     <tr className="border-b border-gray-100">
                       {['Kod','Etkinlik Adı','Tarih','KGB Kategorisi','Format','Kontenjan','Durum'].map(h=>(
-                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-gray-500 uppercase tracking-widest">{h}</th>
+                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-slate-700 uppercase tracking-widest">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {events.map(e => (
                       <tr key={e.id} className="hover:bg-gray-50">
-                        <td className="py-3 px-3 text-xs font-bold text-gray-400">{e.id}</td>
+                        <td className="py-3 px-3 text-xs font-bold text-slate-500">{e.id}</td>
                         <td className="py-3 px-3 font-black text-gray-900">{e.title}</td>
                         <td className="py-3 px-3 text-gray-600 text-xs">{e.date}</td>
                         <td className="py-3 px-3">
@@ -470,7 +470,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   <thead>
                     <tr className="border-b border-gray-100">
                       {['Bölüm','Öğrenci Sayısı','Toplam Staj Deneyimi','Kazanılan Sertifika','Ort. CV Doluluğu'].map(h=>(
-                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-gray-500 uppercase tracking-widest">{h}</th>
+                        <th key={h} className="text-left py-3 px-3 text-[11px] font-black text-slate-700 uppercase tracking-widest">{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -501,7 +501,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
               <h3 className="font-black text-gray-900 text-lg mb-1 flex items-center gap-2">
                 <GraduationCap size={20} className="text-red-600"/> Öğrenci Mezuniyet & Kariyer Kriterleri
               </h3>
-              <p className="text-xs text-gray-500 mb-6">KGB Resmi Kariyer Belgesi hak edişi için asgari öğrenci hedefleri.</p>
+              <p className="text-xs text-slate-600 font-medium mb-6">KGB Resmi Kariyer Belgesi hak edişi için asgari öğrenci hedefleri.</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {[
@@ -510,18 +510,18 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   { label: 'Asgari Workshop',      value: minWorkshop,   setter: setMinWorkshop },
                 ].map(({label,value,setter}) => (
                   <div key={label}>
-                    <label className="text-sm font-bold text-gray-700 block mb-2">{label}</label>
+                    <label className="text-sm font-bold text-slate-800 block mb-2">{label}</label>
                     <input 
                       type="number" 
                       min={0} 
                       value={value} 
                       onChange={e=>setter(Number(e.target.value))}
-                      className="w-full border border-gray-300 rounded-xl p-3 font-bold focus:outline-none focus:border-red-500 bg-white" 
+                      className="w-full border border-slate-300 rounded-xl p-3 font-bold text-slate-900 focus:outline-none focus:border-red-500 bg-white" 
                     />
                   </div>
                 ))}
                 <div>
-                  <label className="text-sm font-bold text-gray-700 block mb-2">
+                  <label className="text-sm font-bold text-slate-800 block mb-2">
                     Asgari CV Doluluğu: <span className="text-red-600 font-black">{minCv}%</span>
                   </label>
                   <input 
@@ -540,7 +540,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
               <h3 className="font-black text-gray-900 text-lg mb-1 flex items-center gap-2">
                 <Building2 size={20} className="text-teal-600"/> Mezun Katkı Beklentileri
               </h3>
-              <p className="text-xs text-gray-500 mb-6">Aktif Mezun Mentör Kartı için tavsiye edilen yıllık asgari katkılar.</p>
+              <p className="text-xs text-slate-600 font-medium mb-6">Aktif Mezun Mentör Kartı için tavsiye edilen yıllık asgari katkılar.</p>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {[
@@ -548,13 +548,13 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                   { label: 'Yıllık Min. Etkinlik Katılımı', value: minEventsAlumni,   setter: setMinEventsAlumni },
                 ].map(({label,value,setter}) => (
                   <div key={label}>
-                    <label className="text-sm font-bold text-gray-700 block mb-2">{label}</label>
+                    <label className="text-sm font-bold text-slate-800 block mb-2">{label}</label>
                     <input 
                       type="number" 
                       min={0} 
                       value={value} 
                       onChange={e=>setter(Number(e.target.value))}
-                      className="w-full border border-gray-300 rounded-xl p-3 font-bold focus:outline-none focus:border-teal-500 bg-white" 
+                      className="w-full border border-slate-300 rounded-xl p-3 font-bold text-slate-900 focus:outline-none focus:border-teal-500 bg-white" 
                     />
                   </div>
                 ))}
