@@ -3,6 +3,7 @@ import { Mic, Play, Square, CheckCircle, AlertCircle, Award, ChevronLeft, Volume
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const INTERVIEW_SCENARIOS = [
   {
@@ -202,7 +203,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
   );
 
   return (
-    <div className="min-h-[100dvh] bg-[#f8fafc] flex flex-col font-sans">
+    <div className="min-h-[100dvh] bg-[#f8fafc] flex flex-col font-sans pb-24">
       <header className="h-20 bg-white border-b border-gray-200/50 flex items-center justify-between px-6 lg:px-12 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-6">
           <button 
@@ -372,6 +373,16 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
           )}
         </AnimatePresence>
       </main>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

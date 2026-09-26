@@ -3,6 +3,7 @@ import { Mic, Headphones, Users, ChevronLeft, Plus, Play, MoreHorizontal, Messag
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const MOCK_ROOMS = [
   {
@@ -60,7 +61,8 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 transition"
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
@@ -83,7 +85,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                 <h2 className="text-2xl font-black text-gray-900 mb-2">Keşfet</h2>
                 <p className="text-gray-500 text-sm">Şu an aktif olan sesli odalara katıl veya kendi odanı oluştur.</p>
               </div>
-              <button className="bg-red-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-indigo-700 transition flex items-center gap-2 shadow-lg shadow-red-500/20">
+              <button className="bg-[#990000] text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-red-800 transition flex items-center gap-2 shadow-lg shadow-red-500/20 cursor-pointer">
                 <Plus size={18} /> Oda Kur
               </button>
             </div>
@@ -93,13 +95,13 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                 <button
                   key={room.id}
                   onClick={() => joinRoom(room)}
-                  className="bg-white rounded-xl p-6 text-left border border-gray-100 hover:border-indigo-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group"
+                  className="bg-white rounded-xl p-6 text-left border border-gray-100 hover:border-red-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group cursor-pointer"
                 >
                   {/* Background decoration */}
                   <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-10 transition-transform group-hover:scale-110 ${room.type === 'official' ? 'bg-red-500' : room.type === 'club' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
 
                   <div className="flex items-center justify-between mb-4">
-                    <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md ${room.type === 'official' ? 'bg-indigo-50 text-indigo-700' : room.type === 'club' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                    <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md ${room.type === 'official' ? 'bg-red-50 text-[#990000]' : room.type === 'club' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
                       {room.host}
                     </span>
                     <div className="flex items-center gap-1 text-xs font-bold text-red-500 animate-pulse">
@@ -136,8 +138,8 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
             >
               <div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden relative">
                 {/* Gradient Header */}
-                <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-[#990000] p-8 lg:p-12 text-white relative">
-                  <button onClick={leaveRoom} className="absolute top-6 left-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition">
+                <div className="bg-gradient-to-br from-red-950 via-[#990000] to-rose-900 p-8 lg:p-12 text-white relative">
+                  <button onClick={leaveRoom} className="absolute top-6 left-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition cursor-pointer">
                     <ChevronLeft size={24} />
                   </button>
                   <div className="text-center mt-6">
@@ -145,7 +147,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                       <span className="w-1.5 h-1.5 rounded-full bg-white" /> CANLI
                     </span>
                     <h2 className="text-3xl lg:text-2xl font-black mb-4">{activeRoom.title}</h2>
-                    <p className="text-indigo-200">{activeRoom.host}</p>
+                    <p className="text-red-100">{activeRoom.host}</p>
                   </div>
                 </div>
 
@@ -187,7 +189,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                 {/* Bottom Controls */}
                 <div className="bg-gray-50 border-t border-gray-100 p-6 flex justify-between items-center">
                   <div className="flex gap-2">
-                    <button onClick={leaveRoom} className="text-red-500 font-bold text-sm px-6 py-3 rounded-full hover:bg-red-50 transition">
+                    <button onClick={leaveRoom} className="text-red-500 font-bold text-sm px-6 py-3 rounded-full hover:bg-red-50 transition cursor-pointer">
                       Sessizce Ayrıl
                     </button>
                     <button 
@@ -198,17 +200,17 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                           window.toast && window.toast.success("✅ Oda Özeti: 'Kariyer mülakatlarında stres yönetimi üzerine konuşuluyor...' (Özet mesaj kutunuza iletildi)");
                         }, 3000);
                       }}
-                      className="text-red-600 font-bold text-sm px-6 py-3 rounded-full bg-red-50 hover:bg-red-100 transition flex items-center gap-2"
+                      className="text-[#990000] font-bold text-sm px-6 py-3 rounded-full bg-red-50 hover:bg-red-100 transition flex items-center gap-2 cursor-pointer border border-red-200"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M13 8H7"></path><path d="M17 12H7"></path></svg>
                       Kaçırdıklarımı Özetle
                     </button>
                   </div>
                   <div className="flex gap-4">
-                    <button className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 shadow-sm transition">
+                    <button className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 shadow-sm transition cursor-pointer">
                       <Plus size={20} />
                     </button>
-                    <button className="px-6 py-3 rounded-full bg-[#990000] text-white font-bold text-sm shadow-xl shadow-indigo-900/20 hover:scale-105 transition flex items-center gap-2">
+                    <button className="px-6 py-3 rounded-full bg-[#990000] hover:bg-red-800 text-white font-bold text-sm shadow-xl shadow-red-900/20 hover:scale-105 transition flex items-center gap-2 cursor-pointer">
                       <Hand size={18} /> Söz İste
                     </button>
                   </div>
@@ -218,6 +220,16 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
           </AnimatePresence>
         )}
       </main>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

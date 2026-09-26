@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const VERIFIED_SKILLS = [
   { id: 1, type: 'course', amount: 'Tamamlandı', desc: 'İleri Seviye Veri Analizi Eğitimi', date: 'Bugün, 14:30', icon: <BookOpen size={16}/> },
@@ -15,10 +16,10 @@ const VERIFIED_SKILLS = [
 ];
 
 const CERTIFICATES = [
-  { id: 1, name: 'Google Proje Yönetimi', issuer: 'Google (Coursera)', icon: 'G', color: 'bg-indigo-50 text-red-600 border-indigo-100' },
+  { id: 1, name: 'Google Proje Yönetimi', issuer: 'Google (Coursera)', icon: 'G', color: 'bg-red-50 text-[#990000] border-red-100' },
   { id: 2, name: 'AWS Cloud Practitioner', issuer: 'Amazon Web Services', icon: 'AWS', color: 'bg-orange-50 text-orange-500 border-orange-100' },
   { id: 3, name: 'Agile Metodolojileri', issuer: 'İESÜ SEM', icon: 'SEM', color: 'bg-red-950 text-white border-red-900' },
-  { id: 4, name: 'Liderlik ve Yönetim', issuer: 'LinkedIn Learning', icon: 'in', color: 'bg-sky-50 text-red-600 border-sky-100' },
+  { id: 4, name: 'Liderlik ve Yönetim', issuer: 'LinkedIn Learning', icon: 'in', color: 'bg-sky-50 text-sky-700 border-sky-100' },
 ];
 
 export default function IesuWallet({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -37,17 +38,21 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
     <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
       
       {/* Header */}
-      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
+      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-2">
-            <Wallet className="text-red-600" size={24} />
-            <h1 className="font-black text-gray-900 tracking-tight">Yetkinlik Cüzdanı</h1>
+          <div className="flex items-center gap-3">
+            <Logo className="h-8 w-auto text-[#990000]" />
+            <div>
+              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Yetkinlik Cüzdanı</h1>
+              <p className="text-[11px] font-bold text-gray-500">Doğrulanmış Dijital Başarılar & Sertifikalar</p>
+            </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -139,7 +144,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
                 {VERIFIED_SKILLS.map((trx, idx) => (
                   <div key={trx.id} className={`p-5 flex items-center justify-between hover:bg-slate-50 transition ${idx !== VERIFIED_SKILLS.length - 1 ? 'border-b border-slate-100' : ''}`}>
                     <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border shadow-sm ${trx.type === 'certificate' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-indigo-50 text-red-600 border-indigo-100'}`}>
+                      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border shadow-sm ${trx.type === 'certificate' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-[#990000] border-red-100'}`}>
                         {trx.icon}
                       </div>
                       <div>
@@ -152,7 +157,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
               </div>
               <button 
                 onClick={() => window.toast && window.toast.info("Tüm aktiviteleriniz listeleniyor...")}
-                className="w-full py-4 text-xs font-black uppercase tracking-wider text-red-600 hover:bg-indigo-50 transition border-t border-slate-100 flex items-center justify-center gap-2"
+                className="w-full py-4 text-xs font-black uppercase tracking-wider text-[#990000] hover:bg-red-50 transition border-t border-slate-100 flex items-center justify-center gap-2 cursor-pointer"
               >
                 Tüm Aktiviteleri Görüntüle
               </button>
@@ -194,7 +199,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
                     setShowExportModal(false);
                     window.toast && window.toast.success("✅ Verileriniz başarıyla Özgeçmiş Paneline aktarıldı!");
                   }}
-                  className="w-full py-3.5 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition"
+                  className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-black rounded-xl text-xs uppercase tracking-widest transition cursor-pointer"
                 >
                   CV Oluşturucuya Aktar
                 </button>
@@ -203,6 +208,16 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Users, Search, Plus, ShieldCheck, MapPin, Calendar, Home, Compass, Briefcase } from 'lucide-react';
+import { Users, Search, Plus, ShieldCheck, MapPin, Calendar, Home, Compass, Briefcase, ChevronLeft } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
@@ -80,11 +81,20 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
     <div className="min-h-screen bg-gray-50 pb-20">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
-            <div className="hidden lg:block">
-              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+              title="Geri"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+              <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
+              <div className="hidden lg:block">
+                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+              </div>
             </div>
           </div>
           
@@ -114,7 +124,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
             <input 
               type="text" 
               placeholder="Topluluk ara..." 
-              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-iesu-navy outline-none shadow-sm"
+              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#990000] outline-none shadow-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -190,7 +200,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
                 <input 
                   type="text" 
                   required
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-iesu-navy outline-none"
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#990000] outline-none"
                   value={newGroup.name}
                   onChange={e => setNewGroup({...newGroup, name: e.target.value})}
                 />
@@ -198,7 +208,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Topluluk Türü</label>
                 <select 
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-iesu-navy outline-none"
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#990000] outline-none"
                   value={newGroup.type}
                   onChange={e => setNewGroup({...newGroup, type: e.target.value})}
                 >
@@ -213,7 +223,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
                 <textarea 
                   required
                   rows="3"
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-iesu-navy outline-none resize-none"
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#990000] outline-none resize-none"
                   value={newGroup.description}
                   onChange={e => setNewGroup({...newGroup, description: e.target.value})}
                 ></textarea>
@@ -231,6 +241,9 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
       {/* Admin Omni Dock */}
       {effectiveRole === 'admin' && (
         <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="groups" />
+      )}
+      {effectiveRole === 'student' && (
+        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole="student" />
       )}
     </div>
   );

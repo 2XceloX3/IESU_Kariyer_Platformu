@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Users, MapPin, Search, ChevronLeft, ArrowRight, Video, Briefcase, CalendarClock, MessageSquare, Target, Star, ExternalLink, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const MOCK_COMPANIES = [
   {
@@ -67,21 +68,20 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
   );
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5] font-sans flex flex-col">
+    <div className="min-h-screen bg-[#F0F2F5] font-sans flex flex-col pb-24">
       {/* Professional Corporate Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-xs">
         <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-              className="p-2 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition"
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
+              title="Geri Dön"
             >
               <ChevronLeft size={20} />
             </button>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#990000] rounded-lg flex items-center justify-center shadow-sm">
-                <Building2 className="text-white" size={16} />
-              </div>
+              <Logo className="h-8 w-auto text-[#990000]" />
               <div className="hidden sm:block">
                 <h1 className="font-black text-gray-900 leading-tight">Dijital Kariyer Zirvesi 2026</h1>
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Kariyer Geliştirme Merkezi</p>
@@ -108,9 +108,9 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`py-3 text-sm font-bold border-b-2 transition-all \${
+              className={`py-3 text-sm font-bold border-b-2 transition-all cursor-pointer ${
                 activeTab === tab.id 
-                  ? 'border-[#0A66C2] text-[#0A66C2]' 
+                  ? 'border-[#990000] text-[#990000]' 
                   : 'border-transparent text-gray-500 hover:text-gray-900'
               }`}
             >
@@ -172,24 +172,24 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                   placeholder="Firma veya sektör ara..." 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#0A66C2] focus:border-transparent outline-none transition-all shadow-sm"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#990000] focus:border-transparent outline-none transition-all shadow-xs"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCompanies.map(company => (
-                <div key={company.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full group">
+                <div key={company.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs hover:shadow-md transition-shadow p-6 flex flex-col h-full group">
                   <div className="flex items-start justify-between mb-4">
-                    <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl border border-gray-100 shadow-sm" />
+                    <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl border border-gray-100 shadow-xs" />
                     {company.isHiring && (
-                      <span className="bg-green-50 text-green-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-green-200 flex items-center gap-1">
+                      <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
                         <Briefcase size={12} /> Aktif İşe Alım
                       </span>
                     )}
                   </div>
                   
-                  <h4 className="text-lg font-black text-gray-900 mb-1 group-hover:text-[#0A66C2] transition-colors">{company.name}</h4>
+                  <h4 className="text-lg font-black text-gray-900 mb-1 group-hover:text-[#990000] transition-colors">{company.name}</h4>
                   <p className="text-sm font-medium text-gray-500 mb-4">{company.sector}</p>
                   
                   <p className="text-sm text-gray-600 line-clamp-2 mb-4 flex-1">
@@ -210,7 +210,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                       <div className="text-[10px] font-bold text-gray-500 uppercase">Pozisyon</div>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                      <div className="text-sm font-black text-[#0A66C2] mb-0.5">{company.availableSlots}</div>
+                      <div className="text-sm font-black text-[#990000] mb-0.5">{company.availableSlots}</div>
                       <div className="text-[10px] font-bold text-gray-500 uppercase">Boş Randevu</div>
                     </div>
                   </div>
@@ -224,14 +224,14 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                           window.toast && window.toast.success("✅ Mülakat Provası başlatıldı. İlk soru: 'Bize biraz kendinizden bahseder misiniz?'");
                         }, 2500);
                       }}
-                      className="flex-1 py-2.5 bg-[#f0f7ff] border-2 border-[#dbeafe] text-[#0A66C2] hover:bg-[#dbeafe] rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 py-2.5 bg-red-50 border-2 border-red-100 text-[#990000] hover:bg-red-100 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer"
                       title="Mülakat Provası"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     </button>
                     <button 
                       onClick={() => setSelectedCompany(company)}
-                      className="flex-[3] py-2.5 bg-[#0A66C2] text-white hover:bg-red-800 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                      className="flex-[3] py-2.5 bg-[#990000] text-white hover:bg-red-800 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                     >
                       Standı Ziyaret Et <ArrowRight size={16} />
                     </button>
@@ -332,29 +332,29 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                 {/* Actions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button 
-                                      onClick={() => {
-                                        const slot = { id: Date.now(), company: selectedCompany?.name, date: 'Yaklaşan Fuvar Günü', time: '14:30', status: 'Onaylandı' };
-                                        setMyAppointments(prev => [...prev, slot]);
-                                        setSelectedCompany(null);
-                                        setActiveTab('appointments');
-                                        window.toast && window.toast.success(`"${selectedCompany?.name}" İK temsilcisiyle randevunuz oluşturuldu.`);
-                                      }}
-                                      className="flex items-center justify-center gap-2 p-4 border-2 border-[#0A66C2] bg-[#0A66C2] text-white rounded-xl font-bold hover:bg-red-700 transition cursor-pointer"
-                                    >
-                                      <CalendarClock size={20} /> 
-                                      Birebir Görüşme Randevusu Al
-                                    </button>
-                                    <button onClick={() => {
-                                      if (selectedCompany) window.toast && window.toast.success(`Mesajınız "${selectedCompany.name}" İK temsilcisine iletildi.`);
-                                    }} className="flex items-center justify-center gap-2 p-4 border-2 border-gray-200 bg-white text-gray-700 rounded-xl font-bold hover:border-gray-300 hover:bg-gray-50 transition cursor-pointer">
-                                      <MessageSquare size={20} />
-                                      İK Temsilcisine Mesaj Gönder
-                                    </button>
+                    onClick={() => {
+                      const slot = { id: Date.now(), company: selectedCompany?.name, date: 'Yaklaşan Fuar Günü', time: '14:30', status: 'Onaylandı' };
+                      setMyAppointments(prev => [...prev, slot]);
+                      setSelectedCompany(null);
+                      setActiveTab('appointments');
+                      window.toast && window.toast.success(`"${selectedCompany?.name}" İK temsilcisiyle randevunuz oluşturuldu.`);
+                    }}
+                    className="flex items-center justify-center gap-2 p-4 border-2 border-[#990000] bg-[#990000] text-white rounded-xl font-bold hover:bg-red-800 transition cursor-pointer shadow-xs"
+                  >
+                    <CalendarClock size={20} /> 
+                    Birebir Görüşme Randevusu Al
+                  </button>
+                  <button onClick={() => {
+                    if (selectedCompany) window.toast && window.toast.success(`Mesajınız "${selectedCompany.name}" İK temsilcisine iletildi.`);
+                  }} className="flex items-center justify-center gap-2 p-4 border-2 border-gray-200 bg-white text-gray-700 rounded-xl font-bold hover:border-gray-300 hover:bg-gray-50 transition cursor-pointer">
+                    <MessageSquare size={20} />
+                    İK Temsilcisine Mesaj Gönder
+                  </button>
                 </div>
 
                 {/* Openings */}
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"><Briefcase size={18} className="text-[#0A66C2]"/> Açık Pozisyonlar & İlanlar</h4>
+                  <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2"><Briefcase size={18} className="text-[#990000]"/> Açık Pozisyonlar & İlanlar</h4>
                   <div className="space-y-3">
                     {[1,2,3].map(i => (
                       <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:shadow-md transition">
@@ -365,7 +365,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                             <span className="flex items-center gap-1"><Clock size={12} /> 2 gün önce</span>
                           </div>
                         </div>
-                        <button className="mt-3 sm:mt-0 text-sm font-bold text-[#0A66C2] hover:underline flex items-center gap-1">
+                        <button className="mt-3 sm:mt-0 text-sm font-bold text-[#990000] hover:underline flex items-center gap-1 cursor-pointer">
                           İncele & Başvur <ExternalLink size={14} />
                         </button>
                       </div>
@@ -377,6 +377,16 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
           </div>
         )}
       </AnimatePresence>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

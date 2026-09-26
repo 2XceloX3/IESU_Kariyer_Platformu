@@ -5,6 +5,7 @@ import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 import SafeAvatar from './shared/SafeAvatar';
 import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function NotificationsPanel({ previousView, userRole, currentUser, setView, setSelectedUserId }) {
@@ -111,6 +112,16 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
           
           {/* LEFT: Logo & Brand */}
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                if (userRole === 'admin' || previousView === 'admin') setView('admin');
+                else setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : (isCompany ? 'company' : 'student'));
+              }}
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+              title="Geri"
+            >
+              <ArrowLeft size={18} />
+            </button>
             <div 
               role="button" 
               tabIndex={0} 
@@ -270,6 +281,8 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
       {/* FLOATING DOCK (ADMIN OMNIDOCK OR FIRMA DOCK) */}
       {effectiveRole === 'admin' ? (
         <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="notifications" />
+      ) : effectiveRole === 'student' ? (
+        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole="student" />
       ) : (
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[320px]">
           <div className="bg-white/95 backdrop-blur-2xl border-2 border-purple-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(30,41,59,0.15)] flex items-center justify-around px-4">

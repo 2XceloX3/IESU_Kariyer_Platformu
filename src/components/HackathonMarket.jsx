@@ -74,11 +74,10 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-sm">
-              <Rocket className="text-white" size={16} />
-            </div>
+            <Logo className="h-8 w-auto text-[#990000]" />
             <div>
-              <h1 className="font-black text-red-950 leading-tight">İnovasyon & Proje Pazarı</h1>
+              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">İnovasyon & Hackathon Pazarı</h1>
+              <p className="text-[11px] font-bold text-gray-500">Yarışmalar, Maratonlar & Takım Eşleşmesi</p>
             </div>
           </div>
         </div>
@@ -88,17 +87,17 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
       <main className="flex-1 max-w-[1200px] mx-auto w-full p-4 lg:p-8 flex flex-col">
         
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-red-950 via-indigo-950 to-red-950 rounded-3xl p-8 md:p-12 shadow-xl mb-8 relative overflow-hidden flex flex-col md:flex-row items-center gap-8 text-white">
-          <div className="absolute right-0 top-0 w-1/2 h-full bg-red-500/5 skew-x-12 transform origin-bottom pointer-events-none"></div>
+        <div className="bg-gradient-to-br from-red-950 via-[#990000] to-rose-950 rounded-3xl p-8 md:p-12 shadow-xl mb-8 relative overflow-hidden flex flex-col md:flex-row items-center gap-8 text-white">
+          <div className="absolute right-0 top-0 w-1/2 h-full bg-white/5 skew-x-12 transform origin-bottom pointer-events-none"></div>
           
           <div className="flex-1 relative z-10 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-indigo-200 rounded-full text-[10px] font-black uppercase tracking-wider mb-6 border border-white/20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 text-red-100 rounded-full text-[10px] font-black uppercase tracking-wider mb-6 border border-white/20">
               <Target size={14} /> Fikrini Projeye Dönüştür
             </div>
             <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight leading-tight">
-              Sektör Liderleriyle <br/><span className="text-indigo-400">Geleceği Kodla.</span>
+              Sektör Liderleriyle <br/><span className="text-amber-300">Geleceği Kodla.</span>
             </h2>
-            <p className="text-slate-300 text-sm md:text-base mb-8 max-w-xl leading-relaxed">
+            <p className="text-red-100 text-sm md:text-base mb-8 max-w-xl leading-relaxed">
               Öncü şirketlerin düzenlediği kurumsal hackathonlara katılın, gerçek dünya problemlerini çözün ve doğrudan iş/staj teklifleri kazanın.
             </p>
             <div className="flex flex-wrap gap-4 justify-center md:justify-start">

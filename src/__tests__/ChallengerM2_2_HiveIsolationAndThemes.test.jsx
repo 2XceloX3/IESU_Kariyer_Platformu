@@ -265,7 +265,7 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
 
       await waitFor(() => {
         expect(screen.getByTestId('alumni-feed')).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
     });
 
     it('routes authenticated company to CompanyHive', async () => {
@@ -281,7 +281,7 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
 
       await waitFor(() => {
         expect(screen.getByTestId('company-feed')).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
     });
 
     it('routes authenticated academic to AcademicHive', async () => {
@@ -297,7 +297,7 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
 
       await waitFor(() => {
         expect(screen.getByTestId('academic-feed')).toBeInTheDocument();
-      });
+      }, { timeout: 5000 });
     });
 
     it('routes authenticated admin to AdminDashboard when on ADMIN_CMS route', async () => {

@@ -111,7 +111,7 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
       <div className="w-full max-w-5xl mx-auto p-4 md:p-6 animate-fade-in relative">
         {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={200} />}
       
-      <div className="mb-8 p-6 bg-gradient-to-r from-[#990000] to-[#163B65] rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+      <div className="mb-8 p-6 bg-gradient-to-r from-red-950 via-[#990000] to-rose-900 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-red-500/20 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
         
@@ -168,7 +168,7 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
                   ${isPurchased 
                     ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed' 
                     : canAfford 
-                      ? 'bg-[#990000] hover:bg-[#163B65] text-white shadow-md hover:shadow-xl hover:-translate-y-0.5' 
+                      ? 'bg-[#990000] hover:bg-red-800 text-white shadow-md hover:shadow-xl hover:-translate-y-0.5' 
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
               >
                 {isPurchased ? (

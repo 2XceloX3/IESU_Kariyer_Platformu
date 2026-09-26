@@ -155,27 +155,27 @@ export default function StudentHive({ currentUser, setView }) {
       case 'startup_incubator':
         return <StartupIncubator setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'smart_certs':
-        return <SmartCertificates setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <SmartCertificates setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'skills':
       case 'skill_tree':
-        return <SkillTree setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <SkillTree setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'digital_portfolio':
-        return <DigitalPortfolio setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <DigitalPortfolio setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'reward_store':
-        return <RewardStore setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <RewardStore setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'metaverse_library':
-        return <MetaverseLibrary setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <MetaverseLibrary setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'hackathon_market':
-        return <HackathonMarket setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <HackathonMarket setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'clubs':
       case 'club_portal':
         return <StudentClubPortal setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'club_admin':
         return <ClubAdminPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'sem':
-        return <SemPanel setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" />;
+        return <SemPanel setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'staj':
-        return <StajPanel setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" />;
+        return <StajPanel setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'explore':
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
       case 'network':
@@ -191,17 +191,17 @@ export default function StudentHive({ currentUser, setView }) {
       case 'messaging':
         return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'leaderboard':
-        return <LeaderboardPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <LeaderboardPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'live_rooms':
-        return <LiveRoomsPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <LiveRoomsPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'mentor_match':
-        return <MentorMatch setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <MentorMatch setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'mentor_booking':
-        return <MentorBooking setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <MentorBooking setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'virtual_fair':
-        return <VirtualCareerFair setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <VirtualCareerFair setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'wallet':
-        return <IesuWallet setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <IesuWallet setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'campus_map':
         return <CampusMap setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'anka_chat':
@@ -217,7 +217,7 @@ export default function StudentHive({ currentUser, setView }) {
       case 'bidb_helpdesk':
         return <BIDBHelpdeskModal setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'kariyer_board':
-        return <KariyerJobBoard setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <KariyerJobBoard setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'knowledge_portal':
         return <KnowledgePortal setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'idari_portal':

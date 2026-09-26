@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Calendar as CalendarIcon, Clock, Users, Star, Video, MessageSquare, ChevronLeft, CalendarCheck, CheckCircle2, Search } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const MENTORS = [
   { id: 1, name: 'Dr. Zeynep Kaya', role: 'Veri Bilimi ve Sistem Mimarı', company: 'Google', rating: 4.9, sessions: 124, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80', availability: 'Bugün, 14:00' },
@@ -56,7 +57,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
               <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
               <div className="relative z-10 max-w-xl">
                 <h2 className="text-3xl md:text-3xl font-black mb-4">Birebir Mentorluk<br/>Randevusu Al</h2>
-                <p className="text-indigo-100 text-lg">Sektörün önde gelen profesyonellerinden kariyerin için 1'e 1 canlı mentorluk al.</p>
+                <p className="text-red-100 text-lg">Sektörün önde gelen profesyonellerinden kariyerin için 1'e 1 canlı mentorluk al.</p>
               </div>
             </div>
 
@@ -177,10 +178,13 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
               <strong>{selectedMentor.name}</strong> ile 12 Ekim Salı, 14:00'da olan mentorluk görüşmen takvimine eklendi. Bağlantı linki e-posta adresine gönderildi.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <button onClick={() => setView('landing')} className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors">
-                Ana Sayfaya Dön
+              <button 
+                onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors cursor-pointer"
+              >
+                Portala Dön
               </button>
-              <button onClick={() => {setBookingStep(1); setSelectedMentor(null);}} className="flex-1 py-3 bg-red-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-colors">
+              <button onClick={() => {setBookingStep(1); setSelectedMentor(null);}} className="flex-1 py-3 bg-[#990000] hover:bg-red-800 text-white rounded-xl font-bold transition-colors cursor-pointer">
                 Yeni Randevu Al
               </button>
             </div>
@@ -188,6 +192,15 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
         )}
 
       </main>
+
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

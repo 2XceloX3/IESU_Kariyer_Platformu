@@ -4,8 +4,9 @@ import { toast } from './shared/Toast';
 import useAppStore from '../store/useAppStore';
 import CertificateVerifyModal from './CertificateVerifyModal';
 import ParticipantStudentPortalModal from './ParticipantStudentPortalModal';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
-export default function SemPanel({ setView, userRole, currentUser }) {
+export default function SemPanel({ setView, userRole, currentUser, setSelectedUserId }) {
   const { semCourses } = useAppStore();
   const [activeTab, setActiveTab] = useState('egitimler');
   const [selectedItem, setSelectedItem] = useState(null);
@@ -392,6 +393,16 @@ export default function SemPanel({ setView, userRole, currentUser }) {
         onClose={() => setShowStudentPortalModal(false)} 
         currentUser={currentUser} 
       />
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

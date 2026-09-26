@@ -4,6 +4,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function CalendarView({ currentUser, setView, userRole, setSelectedUserId, academicRole }) {
@@ -92,11 +93,20 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
         <div className="w-full max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
           
           {/* LEFT: Logo & Brand */}
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
-            <div className="hidden sm:block text-left">
-              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-gray-900'}`}>İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Ajandası' : 'Kariyer Takvimi & Etkinlik Planlayıcı'}</p>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+              title="Geri"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+              <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
+              <div className="hidden sm:block text-left">
+                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Ajandası' : 'Kariyer Takvimi & Etkinlik Planlayıcı'}</p>
+              </div>
             </div>
           </div>
           
@@ -297,11 +307,11 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Tarih</label>
-                <input required type="date" value={newPersonalEvent.date} onChange={e => setNewPersonalEvent({...newPersonalEvent, date: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-navy focus:ring-1 focus:ring-iesu-navy" />
+                <input required type="date" value={newPersonalEvent.date} onChange={e => setNewPersonalEvent({...newPersonalEvent, date: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#990000] focus:ring-1 focus:ring-[#990000]" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1">Kategori</label>
-                <select value={newPersonalEvent.type} onChange={e => setNewPersonalEvent({...newPersonalEvent, type: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-iesu-navy focus:ring-1 focus:ring-iesu-navy">
+                <select value={newPersonalEvent.type} onChange={e => setNewPersonalEvent({...newPersonalEvent, type: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#990000] focus:ring-1 focus:ring-[#990000]">
                   <option value="Kişisel">Kişisel</option>
                   <option value="Sınav">Sınav</option>
                   <option value="Mülakat">Mülakat</option>
@@ -327,6 +337,9 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
       {/* Admin Omni Dock */}
       {effectiveRole === 'admin' && (
         <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="calendar" />
+      )}
+      {effectiveRole === 'student' && (
+        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole="student" />
       )}
     </div>
   );

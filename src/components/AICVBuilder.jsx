@@ -4,6 +4,7 @@ import {  FileText, Wand2, Plus, Trash2, Download, Printer, User, Briefcase, Gra
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import NavIcon from './shared/NavIcon';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { generateAIResponse } from '../lib/gemini';
 import { exportPDF } from '../lib/pdfExporter';
 
@@ -327,7 +328,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   }, []);
 
   return (
-    <div className="w-full bg-slate-50 min-h-screen">
+    <div className="w-full bg-slate-50 min-h-screen pb-24">
       {setView && (
         <header className="h-16 bg-white border-b border-gray-200/80 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between shadow-xs hide-on-print">
           <div className="flex items-center gap-4">
@@ -546,6 +547,18 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
       `}
       </style>
       </main>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <div className="hide-on-print">
+          <SubPanelFloatingDock 
+            currentUser={currentUser} 
+            setView={setView} 
+            setSelectedUserId={setSelectedUserId}
+            userRole={userRole || 'student'}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -555,8 +568,8 @@ function SectionBtn({ id, icon, label, active, set }) {
   return (
     <button 
       onClick={() => set(id)}
-      className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-bold transition whitespace-nowrap
-        ${active === id ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+      className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-bold transition whitespace-nowrap cursor-pointer
+        ${active === id ? 'bg-white text-[#990000] shadow-xs' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
     >
       {icon} {label}
     </button>
@@ -573,7 +586,7 @@ function Input({ label, value, onChange, placeholder, id }) {
         type="text" 
         value={value || ''} 
         onChange={e => onChange(e.target.value)} 
-        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-indigo-400 transition hover:border-indigo-300"
+        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] transition hover:border-red-300"
         placeholder={placeholder}
       />
     </div>

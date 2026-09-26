@@ -3,7 +3,7 @@ import {
   GraduationCap, Award, Briefcase, Calendar, CheckCircle2,
   Download, ExternalLink, FileText, Share2, Sparkles, Star, Users,
   Building2, ShieldCheck, Check, Clock, QrCode, BookOpen, AlertCircle,
-  Copy, Printer, ChevronRight, BarChart3, Layers, Compass, Plus,
+  Copy, Printer, ChevronRight, ChevronLeft, BarChart3, Layers, Compass, Plus,
   Search, Filter, CheckCircle, Info, FileCheck, Bookmark, Home, User
 } from 'lucide-react';
 import Logo from './Logo';
@@ -386,21 +386,30 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-4 sm:px-8 py-3 shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
-          {/* Sol: Üniversite Logosu ve Kurumsal Başlık (Tıklanınca Ana Akışa Dönüş) */}
-          <div 
-            onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
-            className="flex items-center gap-3 cursor-pointer group"
-            title={isAdmin ? "Yönetim Paneline Dön" : "Öğrenci Portalına Dön"}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setView(previousView || (userRole === 'admin' ? 'admin' : 'student')); } }}
-          >
-            <Logo className="w-8 h-8 text-[#990000] group-hover:scale-105 transition-transform shrink-0" />
-            <div>
-              <h1 className="text-sm font-black text-gray-900 leading-tight group-hover:text-[#990000] transition-colors">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] text-[#990000] font-bold uppercase tracking-wider flex items-center gap-1">
-                <Sparkles size={10} className="animate-pulse" /> Kariyer Gelişim Belgesi & Yetenek Karnesi
-              </p>
+          {/* Sol: Geri Dönüş ve Üniversite Logosu */}
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0"
+              title="Geri Dön"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div 
+              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
+              className="flex items-center gap-3 cursor-pointer group"
+              title={isAdmin ? "Yönetim Paneline Dön" : "Öğrenci Portalına Dön"}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setView(previousView || (userRole === 'admin' ? 'admin' : 'student')); } }}
+            >
+              <Logo className="w-8 h-8 text-[#990000] group-hover:scale-105 transition-transform shrink-0" />
+              <div>
+                <h1 className="text-sm font-black text-gray-900 leading-tight group-hover:text-[#990000] transition-colors">İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] text-[#990000] font-bold uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles size={10} className="animate-pulse" /> Kariyer Gelişim Belgesi & Yetenek Karnesi
+                </p>
+              </div>
             </div>
           </div>
 

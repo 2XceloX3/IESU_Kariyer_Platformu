@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { User, ChevronLeft, MapPin, Building2, Briefcase, Award, Star, MessageCircle, CheckCircle2, Search, Filter, CalendarCheck } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import AIMatchmaker from './AIMatchmaker';
 import MentorRequestModal from './modals/MentorRequestModal';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
@@ -94,13 +95,13 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
   };
 
   return (
-    <div className="min-h-screen bg-[#f3f2ef] flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-24">
       {/* Header */}
-      <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
+      <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4 w-full max-w-[1200px] mx-auto">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
-            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >
             <ChevronLeft size={20} />
@@ -127,7 +128,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
           currentUser={currentUser} 
         />
         
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between shadow-xs">
           <div className="flex flex-col sm:flex-row w-full gap-4 items-center">
             <div className="relative w-full md:w-96 shrink-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -136,7 +137,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                 placeholder="Mentor, unvan veya şirket ara..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-md focus:bg-white focus:ring-2 focus:ring-[#0A66C2] focus:border-[#0A66C2] outline-none transition text-sm font-medium"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#990000] focus:border-[#990000] outline-none transition text-sm font-medium"
               />
             </div>
             
@@ -148,7 +149,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                   window.toast && window.toast.success("✅ Eşleşme: Kariyer hedeflerinize %95 uyumlu 2 mentör bulundu.");
                 }, 2500);
               }}
-              className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-600 hover:from-red-700 hover:to-indigo-700 text-white px-4 py-2 rounded-md font-bold text-sm shadow-md transition-all shrink-0"
+              className="hidden sm:flex items-center gap-2 bg-[#990000] hover:bg-red-800 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-xs transition-all shrink-0 cursor-pointer"
             >
               <Star size={16} className="fill-white/50" /> Eşleş
             </button>
@@ -160,7 +161,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
               <button 
                 key={tag}
                 onClick={() => setSelectedTag(tag)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${selectedTag === tag ? 'bg-[#0A66C2] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${selectedTag === tag ? 'bg-[#990000] text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
                 {tag}
               </button>
@@ -175,12 +176,12 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               key={mentor.id} 
-              className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col"
+              className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col"
             >
               {/* Cover & Avatar */}
-              <div className="h-24 bg-gradient-to-r from-[#990000] to-[#0A66C2] relative">
+              <div className="h-24 bg-gradient-to-r from-[#990000] to-rose-700 relative">
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm border border-white/20">
-                  <span className="text-[10px] font-black text-[#0A66C2] uppercase tracking-wide">Uyum Skoru</span>
+                  <span className="text-[10px] font-black text-[#990000] uppercase tracking-wide">Uyum Skoru</span>
                   <span className="text-xs font-black text-emerald-600">%{(mentor.id.length * 15 + mentor.name.length * 3) % 15 + 85}</span>
                 </div>
                 <div className="absolute -bottom-10 left-6 p-1 bg-white rounded-full">
@@ -247,6 +248,16 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
         mentor={selectedMentorForModal}
         currentUser={currentUser}
       />
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+        />
+      )}
     </div>
   );
 }

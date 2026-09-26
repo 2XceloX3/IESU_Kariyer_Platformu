@@ -71,20 +71,20 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
         
         {/* Profile Header */}
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-8 flex flex-col md:flex-row items-center md:items-start gap-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2" />
           
           <img src={currentUser?.avatar || "https://i.pravatar.cc/150?img=11"} alt="Profile" className="w-32 h-32 rounded-3xl object-cover shadow-xl border border-slate-100" />
           
           <div className="flex-1 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
               <h2 className="text-3xl font-black text-red-950">{currentUser?.name || 'Öğrenci Adı'}</h2>
-              <CheckCircle2 size={24} className="text-red-500" />
+              <CheckCircle2 size={24} className="text-[#990000]" />
             </div>
             <p className="text-slate-500 font-medium mb-4">{currentUser?.department || 'Yazılım Mühendisliği'} • {currentUser?.year || '4. Sınıf'}</p>
             <div className="flex flex-wrap justify-center md:justify-start gap-2">
-              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1"><Code size={12}/> Frontend</span>
-              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1"><Database size={12}/> Backend</span>
-              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1"><Cpu size={12}/> Sistem Geliştirici</span>
+              <span className="px-3 py-1 bg-red-50 text-[#990000] rounded-xl text-xs font-bold flex items-center gap-1 border border-red-100"><Code size={12}/> Frontend</span>
+              <span className="px-3 py-1 bg-red-50 text-[#990000] rounded-xl text-xs font-bold flex items-center gap-1 border border-red-100"><Database size={12}/> Backend</span>
+              <span className="px-3 py-1 bg-red-50 text-[#990000] rounded-xl text-xs font-bold flex items-center gap-1 border border-red-100"><Cpu size={12}/> Sistem Geliştirici</span>
             </div>
           </div>
 
@@ -97,13 +97,13 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                   window.toast && window.toast.success("✅ Analiz Tamamlandı: Projeleriniz %92 oranında sektör trendleriyle eşleşiyor.");
                 }, 2000);
               }}
-              className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-6 py-3 rounded-2xl font-black transition flex items-center justify-center gap-2 border border-indigo-200"
+              className="bg-red-50 hover:bg-red-100 text-[#990000] px-6 py-3 rounded-2xl font-black transition flex items-center justify-center gap-2 border border-red-200 cursor-pointer"
             >
               <Sparkles size={18} /> Portfolyo Yetkinlik Analizi
             </button>
             <button 
               onClick={() => setShowAddProjectModal(true)}
-              className="bg-red-950 hover:bg-red-900 text-white px-6 py-3 rounded-2xl font-black transition shadow-lg flex items-center justify-center gap-2"
+              className="bg-[#990000] hover:bg-red-800 text-white px-6 py-3 rounded-2xl font-black transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
               <Plus size={18} /> Yeni Proje Ekle
             </button>
@@ -173,7 +173,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                           window.toast && window.toast.success("✅ Kod İncelemesi: Clean code standartlarına %89 uyumlu.");
                         }, 2500);
                       }}
-                      className="text-red-600 hover:text-indigo-800 flex items-center gap-1.5"
+                      className="text-[#990000] hover:text-red-800 flex items-center gap-1.5 font-bold cursor-pointer"
                     >
                        <Sparkles size={14} /> Analiz Et
                     </button>
@@ -190,7 +190,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               {MOCK_CERTS.map(cert => (
-                <div key={cert.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:border-indigo-200 transition-all duration-300 flex items-center gap-6 group">
+                <div key={cert.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:border-red-200 transition-all duration-300 flex items-center gap-6 group">
                   <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                     {cert.icon}
                   </div>
@@ -199,14 +199,14 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     <p className="text-slate-500 font-medium text-xs mb-2">{cert.issuer}</p>
                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-wider">{cert.date}</p>
                   </div>
-                  <a href={cert.verifyUrl} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-red-600 transition shrink-0">
+                  <a href={cert.verifyUrl} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-[#990000] transition shrink-0">
                     <ExternalLink size={16} />
                   </a>
                 </div>
               ))}
               
               {/* Blockchain Badge */}
-              <div className="col-span-1 md:col-span-2 bg-gradient-to-r from-red-950 to-indigo-950 rounded-3xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+              <div className="col-span-1 md:col-span-2 bg-gradient-to-r from-red-950 via-[#990000] to-rose-950 rounded-3xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
                   <Award size={150} />
                 </div>
@@ -277,7 +277,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     value={newProject.tech} 
                     onChange={e => setNewProject({...newProject, tech: e.target.value})}
                     placeholder="Örn: React, Node.js, Web3.js"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-indigo-400"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-[#990000]"
                   />
                 </div>
 

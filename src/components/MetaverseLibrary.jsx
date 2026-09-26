@@ -67,10 +67,10 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-gray-900 flex flex-col font-sans pb-24">
       
       {/* Header */}
-      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
+      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
@@ -79,9 +79,12 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-2">
-            <Library className="text-red-600" size={24} />
-            <h1 className="font-black text-gray-900 tracking-tight">Dijital Kütüphane</h1>
+          <div className="flex items-center gap-3">
+            <Logo className="h-8 w-auto text-[#990000]" />
+            <div>
+              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Dijital Kütüphane & Kaynak Merkezi</h1>
+              <p className="text-[11px] font-bold text-gray-500">Akademik Yayınlar, Tezler ve Kaynak Taraması</p>
+            </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -106,11 +109,11 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               Kütüphanemiz binlerce akademik yayını ve kitabı sizin için saniyeler içinde tarar.
             </p>
 
-            <div className="w-full bg-white p-3 rounded-3xl shadow-xl flex items-center gap-4 border border-slate-200/80 focus-within:ring-4 focus-within:ring-indigo-100 focus-within:border-indigo-400 transition-all mb-6">
+            <div className="w-full bg-white p-3 rounded-3xl shadow-xl flex items-center gap-4 border border-slate-200/80 focus-within:ring-4 focus-within:ring-red-100 focus-within:border-[#990000] transition-all mb-6">
               <Search className="text-slate-500 ml-4" size={22} />
               <input 
                 type="text" 
-                className="flex-1 bg-transparent border-none outline-none text-sm font-semibold text-red-900 placeholder-slate-400"
+                className="flex-1 bg-transparent border-none outline-none text-sm font-semibold text-gray-900 placeholder-slate-400"
                 placeholder="Örn: Kuantum Hesaplama, Blokzincir, Derin Öğrenme..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -119,7 +122,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               <button 
                 onClick={() => handleSearch()}
                 disabled={!query.trim()}
-                className="bg-red-600 hover:bg-indigo-700 disabled:opacity-50 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider transition shadow-md"
+                className="bg-[#990000] hover:bg-red-800 disabled:opacity-50 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider transition shadow-md cursor-pointer"
               >
                 Ara
               </button>
@@ -131,7 +134,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                 <button
                   key={idx}
                   onClick={() => handleSearch(trend)}
-                  className="bg-slate-100 hover:bg-indigo-50 hover:text-red-600 text-slate-600 font-bold px-3.5 py-1.5 rounded-xl text-xs transition border border-slate-200/40"
+                  className="bg-slate-100 hover:bg-red-50 hover:text-[#990000] text-slate-600 font-bold px-3.5 py-1.5 rounded-xl text-xs transition border border-slate-200/40 cursor-pointer"
                 >
                   {trend}
                 </button>
@@ -142,7 +145,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
 
         {isSearching && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 border-4 border-slate-200 border-t-red-600 rounded-full animate-spin mb-6"></div>
+            <div className="w-16 h-16 border-4 border-slate-200 border-t-[#990000] rounded-full animate-spin mb-6"></div>
             <h3 className="text-2xl font-black text-gray-900 mb-2">Tarama Yapılıyor...</h3>
             <p className="text-slate-500 max-w-sm font-semibold">Binlerce akademik kaynak, tez ve makale taranarak sizin için özetleniyor.</p>
           </div>
@@ -158,7 +161,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                 <button 
                   onClick={() => { setResults(null); setQuery(''); }}
-                  className="text-slate-500 hover:text-red-900 font-bold flex items-center gap-2 transition bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-xs"
+                  className="text-slate-600 hover:text-[#990000] font-bold flex items-center gap-2 transition bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-sm text-xs cursor-pointer"
                 >
                   <ChevronLeft size={16} /> Yeni Araştırma
                 </button>
@@ -170,7 +173,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
                       window.toast && window.toast.success("✅ Öğrenme Rotası başarıyla Kariyer Yol Haritanıza eklendi.");
                     }}
                     disabled={learningPathStatus}
-                    className={`px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-md transition flex items-center gap-1.5 ${learningPathStatus ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-600 text-white hover:bg-indigo-700'}`}
+                    className={`px-5 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-md transition flex items-center gap-1.5 cursor-pointer ${learningPathStatus ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-[#990000] text-white hover:bg-red-800'}`}
                   >
                     {learningPathStatus ? <Check size={14}/> : <BrainCircuit size={14} />}
                     {learningPathStatus ? 'Rotaya Eklendi' : 'Öğrenme Rotası Çıkar'}
