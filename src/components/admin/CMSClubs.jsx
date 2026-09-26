@@ -808,7 +808,7 @@ export default function CMSClubs({
                   <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
                     <td className="py-3.5 px-4 font-mono">
                       <span className="font-bold text-gray-900 block">{m.studentNo || '2023010482'}</span>
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-slate-600 font-medium">
                         TC: {m.tcKimlik ? `${m.tcKimlik.slice(0, 3)}*****${m.tcKimlik.slice(-2)}` : '39281749102'}
                       </span>
                     </td>
@@ -828,17 +828,17 @@ export default function CMSClubs({
                         {m.role || 'Aktif Üye'}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-slate-600">
+                    <td className="py-3.5 px-4 text-slate-700 font-medium">
                       {m.department}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-600">
+                    <td className="py-3.5 px-4 text-slate-700 font-medium">
                       {m.grade || '2. Sınıf'}
                     </td>
-                    <td className="py-3.5 px-4 text-[11px] text-slate-500">
+                    <td className="py-3.5 px-4 text-[11px] text-slate-700 font-medium">
                       <div>{m.email}</div>
                       <div>{m.phone}</div>
                     </td>
-                    <td className="py-3.5 px-4 text-slate-400 whitespace-nowrap">
+                    <td className="py-3.5 px-4 text-slate-700 font-medium whitespace-nowrap">
                       {m.joinedDate || '2024'}
                     </td>
                     <td className="py-3.5 px-4 text-center">
@@ -850,7 +850,7 @@ export default function CMSClubs({
                 ))}
                 {filteredMembers.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-slate-400">
+                    <td colSpan={9} className="py-12 text-center text-slate-600 font-medium">
                       Filtre kriterlerine uygun kulüp üyesi bulunamadı.
                     </td>
                   </tr>

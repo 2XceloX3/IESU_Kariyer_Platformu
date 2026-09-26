@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Users, Search, ChevronLeft, Plus, CheckCircle, X } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const CLUBS_DATA = [
   { id: 1, name: "Yazılım ve Bilişim Kulübü", category: "Teknoloji", members: 342, lead: "Zeynep Kaya", active: true },
@@ -39,7 +40,7 @@ export default function SKSDBClubsDirectory({ setView, currentUser, userRole, se
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
       </header>
 
-      <main className="flex-1 w-full max-w-[1100px] mx-auto p-4 lg:p-8 flex flex-col gap-6">
+      <main className="flex-1 w-full max-w-[1100px] mx-auto p-4 lg:p-8 flex flex-col gap-6 pb-28">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-3xl border border-slate-200 shadow-2xs">
           <div className="w-full sm:w-80 bg-slate-50 border border-slate-200 rounded-2xl flex items-center px-4 py-2.5">
             <Search size={18} className="text-slate-400 mr-2 shrink-0" />
@@ -96,6 +97,13 @@ export default function SKSDBClubsDirectory({ setView, currentUser, userRole, se
           })}
         </div>
       </main>
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId}
+        userRole={userRole}
+      />
     </div>
   );
 }

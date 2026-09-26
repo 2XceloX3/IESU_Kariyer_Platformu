@@ -191,24 +191,24 @@ export default function CMSMessages({ messages, setMessages }) {
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase block mb-0.5">İletişim E-Posta</span>
+                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                        <span className="text-[10px] font-bold text-slate-600 uppercase block mb-0.5">İletişim E-Posta</span>
                         <a href={`mailto:${currentMsg.email}`} className="text-xs font-bold text-red-600 hover:underline">{currentMsg.email}</a>
                       </div>
-                      <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-100">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase block mb-0.5">İletişim Telefonu</span>
-                        <a href={`tel:${currentMsg.phone}`} className="text-xs font-bold text-gray-900">{currentMsg.phone}</a>
+                      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                        <span className="text-[10px] font-bold text-slate-600 uppercase block mb-0.5">İletişim Telefonu</span>
+                        <a href={`tel:${currentMsg.phone}`} className="text-xs font-bold text-slate-900">{currentMsg.phone}</a>
                       </div>
                     </div>
 
                     <div className="p-4 bg-red-50/50 rounded-xl border border-red-100">
                       <span className="text-[11px] font-black text-red-700 uppercase tracking-wider block mb-1">Konu Başlığı</span>
-                      <h3 className="text-base font-black text-gray-900">{currentMsg.subject}</h3>
+                      <h3 className="text-base font-black text-slate-900">{currentMsg.subject}</h3>
                     </div>
 
                     <div>
-                      <span className="text-[11px] font-black text-gray-400 uppercase tracking-wider block mb-2">Mesaj & Talep İçeriği</span>
-                      <div className="p-5 bg-white rounded-2xl border border-gray-200 text-sm text-gray-800 leading-relaxed whitespace-pre-wrap shadow-sm">
+                      <span className="text-[11px] font-black text-slate-700 uppercase tracking-wider block mb-2">Mesaj & Talep İçeriği</span>
+                      <div className="p-5 bg-white rounded-2xl border border-slate-200 text-sm text-slate-800 leading-relaxed whitespace-pre-wrap shadow-sm font-medium">
                         {currentMsg.message}
                       </div>
                     </div>

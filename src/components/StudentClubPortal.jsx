@@ -891,7 +891,7 @@ export default function StudentClubPortal({
                               </div>
                               <button 
                                 onClick={() => toast.success('Gönderi kaydedilenlere eklendi!')}
-                                className="text-slate-400 hover:text-amber-600 transition cursor-pointer"
+                                className="text-slate-600 hover:text-amber-600 transition cursor-pointer"
                               >
                                 <Bookmark size={19} />
                               </button>

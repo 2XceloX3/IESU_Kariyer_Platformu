@@ -130,7 +130,7 @@ export default function ClubsDirectory({
             <h2 className="text-2xl font-black text-red-900 tracking-tight flex items-center gap-2">
               Öğrenci Kulüpleri & Topluluklar
             </h2>
-            <p className="text-sm text-slate-500 font-medium mt-1">Kulüpler, topluluklar ve senin için fırsatlar.</p>
+            <p className="text-sm text-slate-600 font-medium mt-1">Kulüpler, topluluklar ve senin için fırsatlar.</p>
           </div>
           <div className="flex gap-2">
             <button 
@@ -193,17 +193,17 @@ export default function ClubsDirectory({
             </div>
             <div className="pt-8 pb-4 text-center px-4">
               <h3 className="font-bold text-gray-900">{currentUser?.name || 'Öğrenci'}</h3>
-              <p className="text-xs text-slate-500 mb-4">{currentUser?.department || 'Bilgisayar Mühendisliği'}</p>
+              <p className="text-xs text-slate-600 font-medium mb-4">{currentUser?.department || 'Bilgisayar Mühendisliği'}</p>
               
               <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold flex items-center gap-1">
-                  <Star size={12} className="fill-current" /> 450 Birlik Puanı
+                <div className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold flex items-center gap-1">
+                  <Star size={12} className="fill-current" /> 450 Kariyer Gelişim Puanı (KGP)
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-3 flex justify-between text-xs font-medium text-slate-500 px-2">
-                <span className="flex flex-col items-center"><strong className="text-red-900 text-sm">2</strong> Üye Olunan</span>
-                <span className="flex flex-col items-center"><strong className="text-red-900 text-sm">5</strong> Görevler</span>
+              <div className="border-t border-slate-100 pt-3 flex justify-between text-xs font-semibold text-slate-600 px-2">
+                <span className="flex flex-col items-center"><strong className="text-red-900 text-sm font-black">2</strong> Üye Olunan</span>
+                <span className="flex flex-col items-center"><strong className="text-red-900 text-sm font-black">5</strong> Görevler</span>
               </div>
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function ClubsDirectory({
             <h3 className="font-bold text-red-900 mb-1 flex items-center gap-2">
               <Zap size={16} className="text-amber-500 fill-amber-500" /> Görev Havuzu
             </h3>
-            <p className="text-xs text-slate-500 mb-4">Kulüplere destek ol, puan kazan.</p>
+            <p className="text-xs text-slate-600 font-medium mb-4">Kulüplere destek ol, puan kazan.</p>
             
             <div className="space-y-3">
               {missions.map(m => (
@@ -221,11 +221,11 @@ export default function ClubsDirectory({
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-bold text-sm text-red-900 group-hover:text-emerald-700 transition-colors">{m.title}</h4>
-                      <p className="text-[11px] text-slate-500">{m.club}</p>
+                      <p className="text-[11px] text-slate-600 font-medium">{m.club}</p>
                     </div>
-                    <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">+{m.points}p</span>
+                    <span className="text-xs font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">+{m.points}p</span>
                   </div>
-                  <button onClick={() => takeMission(m)} className="w-full py-1.5 bg-white border border-slate-200 group-hover:border-emerald-300 group-hover:text-emerald-700 group-hover:bg-emerald-50 rounded-lg text-xs font-bold text-slate-600 transition-colors">
+                  <button onClick={() => takeMission(m)} className="w-full py-1.5 bg-white border border-slate-200 group-hover:border-emerald-300 group-hover:text-emerald-700 group-hover:bg-emerald-50 rounded-lg text-xs font-bold text-slate-700 transition-colors">
                     Görevi Al
                   </button>
                 </div>
@@ -242,7 +242,7 @@ export default function ClubsDirectory({
             <div className="w-10 h-10 bg-emerald-100 rounded-full flex shrink-0 items-center justify-center text-emerald-600 font-bold border border-emerald-200">
               {currentUser?.name?.charAt(0) || 'Ö'}
             </div>
-            <div className="flex-1 text-left px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-sm text-slate-500 font-medium transition-colors hover:bg-slate-100">
+            <div className="flex-1 text-left px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-full text-sm text-slate-600 font-medium transition-colors hover:bg-slate-100">
               Kulüplerle bir fikir paylaş...
             </div>
           </div>
@@ -255,14 +255,14 @@ export default function ClubsDirectory({
                   <img src={post.author.logo} alt={post.author.name} className="w-10 h-10 rounded-xl border border-slate-100 shadow-sm group-hover:scale-105 transition-transform" />
                   <div>
                     <h4 className="font-bold text-sm text-gray-900 group-hover:text-emerald-600 transition-colors">{post.author.name}</h4>
-                    <p className="text-[11px] text-slate-500">{post.time}</p>
+                    <p className="text-[11px] text-slate-600 font-medium">{post.time}</p>
                   </div>
                 </div>
                 <button className="text-slate-600 hover:text-emerald-600 p-2 rounded-full hover:bg-emerald-50 transition-colors"><Plus size={20}/></button>
               </div>
               
               <div className="px-4 pb-3">
-                <p className="text-sm text-slate-700 leading-relaxed">{post.content}</p>
+                <p className="text-sm text-slate-800 leading-relaxed font-medium">{post.content}</p>
               </div>
 
               {post.image && (
@@ -272,15 +272,15 @@ export default function ClubsDirectory({
               )}
 
               <div className="p-3 border-t border-slate-100 flex items-center justify-between px-6">
-                <button onClick={() => togglePostLike(post.id)} className={`flex items-center gap-1.5 ${likedPosts.has(post.id) ? 'text-rose-500' : 'text-slate-500 hover:text-rose-500'} transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-rose-50`}>
-                                  <Heart size={18} className={likedPosts.has(post.id) ? 'fill-rose-500' : ''} /> {postLikes[post.id] || 0}
-                                </button>
-                                <button onClick={() => { setPostComments((o) => ({ ...o, [post.id]: (o[post.id] || 0) + 1 })); toast.success('Yorum paylaşıldı.'); }} className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-red-50">
-                                  <MessageCircle size={18} /> {postComments[post.id] || 0}
-                                </button>
-                                <button onClick={() => toast.success('Gönderi paylaşım bağlantısı kopyalandı.')} className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-500 transition-colors text-sm font-medium py-1 px-2 rounded-lg hover:bg-emerald-50">
-                                  <Share2 size={18} /> Paylaş
-                                </button>
+                <button onClick={() => togglePostLike(post.id)} className={`flex items-center gap-1.5 ${likedPosts.has(post.id) ? 'text-rose-500' : 'text-slate-600 hover:text-rose-500'} transition-colors text-sm font-semibold py-1 px-2 rounded-lg hover:bg-rose-50`}>
+                  <Heart size={18} className={likedPosts.has(post.id) ? 'fill-rose-500' : ''} /> {postLikes[post.id] || 0}
+                </button>
+                <button onClick={() => { setPostComments((o) => ({ ...o, [post.id]: (o[post.id] || 0) + 1 })); toast.success('Yorum paylaşıldı.'); }} className="flex items-center gap-1.5 text-slate-600 hover:text-red-500 transition-colors text-sm font-semibold py-1 px-2 rounded-lg hover:bg-red-50">
+                  <MessageCircle size={18} /> {postComments[post.id] || 0}
+                </button>
+                <button onClick={() => toast.success('Gönderi paylaşım bağlantısı kopyalandı.')} className="flex items-center gap-1.5 text-slate-600 hover:text-emerald-500 transition-colors text-sm font-semibold py-1 px-2 rounded-lg hover:bg-emerald-50">
+                  <Share2 size={18} /> Paylaş
+                </button>
               </div>
             </div>
           ))}
@@ -307,14 +307,14 @@ export default function ClubsDirectory({
 
             <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
               {filteredClubs.length === 0 ? (
-                <div className="text-center py-6 text-slate-500 text-sm">Kulüp bulunamadı.</div>
+                <div className="text-center py-6 text-slate-600 font-medium text-sm">Kulüp bulunamadı.</div>
               ) : (
                 filteredClubs.map(club => (
                   <div key={club.id} onClick={() => setSelectedClub(club)} className="flex gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 cursor-pointer transition-all group">
                     <img src={club.logo} alt={club.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-sm" />
                     <div className="flex-1">
                       <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#990000] transition-colors">{club.name}</h4>
-                      <p className="text-[11px] text-slate-500 mb-1">{club.category}</p>
+                      <p className="text-[11px] text-slate-600 font-medium mb-1">{club.category}</p>
                       <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 w-fit px-1.5 py-0.5 rounded">
                         <Users size={10} /> {club.memberCount} Üye
                       </div>
@@ -366,14 +366,14 @@ export default function ClubsDirectory({
               
               <div className="grid grid-cols-2 gap-4 mt-6">
                 <div className="border border-slate-200 bg-white rounded-2xl p-4 flex items-center gap-4 hover:border-emerald-200 transition-colors">
-                  <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-500"><Users size={20}/></div>
+                  <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-700"><Users size={20}/></div>
                   <div>
                     <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Danışman</p>
                     <p className="text-sm font-bold text-[#990000]">Dr. Öğr. Üyesi Ahmet Y.</p>
                   </div>
                 </div>
                 <div className="border border-slate-200 bg-white rounded-2xl p-4 flex items-center gap-4 hover:border-emerald-200 transition-colors">
-                  <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-500"><Briefcase size={20}/></div>
+                  <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-700"><Briefcase size={20}/></div>
                   <div>
                     <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Başkan</p>
                     <p className="text-sm font-bold text-[#990000]">Caner M. (Psikoloji)</p>
