@@ -650,7 +650,7 @@ export default function StudentClubPortal({
                   <p className="text-xs font-bold text-gray-900 mt-0.5">
                     {selectedClub.advisor || selectedClub.advisorName || 'Doç. Dr. Selin Kaya (Mühendislik Fakültesi)'}
                   </p>
-                  <a href={`mailto:${selectedClub.advisorEmail || 'danisman@esenyurt.edu.tr'}`} className="text-[11px] text-slate-500 hover:text-[#990000] flex items-center gap-1 mt-1 transition">
+                  <a href={`mailto:${selectedClub.advisorEmail || 'danisman@esenyurt.edu.tr'}`} className="text-[11px] text-slate-700 font-bold hover:text-[#990000] flex items-center gap-1 mt-1 transition">
                     <Mail size={12} /> {selectedClub.advisorEmail || 'danisman@esenyurt.edu.tr'}
                   </a>
                 </div>
@@ -660,7 +660,7 @@ export default function StudentClubPortal({
                   <p className="text-xs font-bold text-gray-900 mt-0.5">
                     {selectedClub.president?.name || selectedClub.applicant || 'Mehmet Kerem Yılmaz'}
                   </p>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-700 font-semibold">
                     {selectedClub.president?.department || 'Bilgisayar Mühendisliği'} • {selectedClub.president?.year || '3. Sınıf'}
                   </p>
                   <p className="text-[11px] text-slate-600 font-medium flex items-center gap-1 mt-1">
@@ -747,7 +747,7 @@ export default function StudentClubPortal({
                       <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
                         <Camera size={18} className="text-[#990000]" /> Kulüp Medya & Etkinlik Akışı
                       </h3>
-                      <p className="text-[11px] text-slate-500">Instagram tarzı çoklu fotoğraf, müzik ambiyansı ve hikayeler.</p>
+                      <p className="text-[11px] text-slate-600 font-medium">Instagram tarzı çoklu fotoğraf, müzik ambiyansı ve hikayeler.</p>
                     </div>
                     {authorized && (
                       <button
@@ -919,31 +919,33 @@ export default function StudentClubPortal({
                             {/* Add Inline Comment */}
                             <div className="pt-2 flex items-center gap-2">
                               <input 
-                                type="text"
-                                placeholder="Kulüp etkinliğine yorum yap..."
-                                value={newCommentText[post.id] || ''}
-                                onChange={(e) => setNewCommentText({ ...newCommentText, [post.id]: e.target.value })}
-                                onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(post.id); }}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-[#990000] font-medium"
-                              />
-                              <button
-                                onClick={() => handleAddComment(post.id)}
-                                className="p-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl transition cursor-pointer shadow-xs shrink-0"
-                              >
-                                <Send size={13} />
-                              </button>
-                            </div>
+                                type="text" 
+                                placeholder="Kulüp etkinliğine yorum yap..." 
+                                value={newCommentText[post.id] || ''} 
+                                onChange={(e) => setNewCommentText({ ...newCommentText, [post.id]: e.target.value })} 
+                                onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(post.id); }} 
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs outline-none focus:border-[#990000] focus:bg-white text-slate-900 font-semibold placeholder:text-slate-400" 
+                              /> 
+                              <button 
+                                onClick={() => handleAddComment(post.id)} 
+                                className="p-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl transition cursor-pointer shadow-xs shrink-0" 
+                              > 
+                                <Send size={13} /> 
+                              </button> 
+                            </div> 
 
-                          </div>
-                        </div>
-                      );
-                    })}
+                          </div> 
+                        </div> 
+                      ); 
+                    })} 
 
-                    {clubPosts.length === 0 && (
-                      <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-8 text-center">
-                        <Camera size={36} className="mx-auto text-slate-300 mb-2" />
-                        <p className="text-xs text-slate-700 font-medium">Bu kulübe ait henüz fotoğraf ve medya gönderisi paylaşılmamış.</p>
-                      </div>
+                    {clubPosts.length === 0 && ( 
+                      <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-8 text-center"> 
+                        <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mx-auto mb-2 shadow-2xs"> 
+                          <Camera size={24} /> 
+                        </div> 
+                        <p className="text-xs text-slate-700 font-medium">Bu kulübe ait henüz fotoğraf ve medya gönderisi paylaşılmamış.</p> 
+                      </div> 
                     )}
                   </div>
 
@@ -992,7 +994,9 @@ export default function StudentClubPortal({
 
                   {(!selectedClub.events || selectedClub.events.length === 0) && (
                     <div className="bg-white rounded-2xl p-10 border border-dashed border-slate-200 text-center">
-                      <Calendar size={40} className="mx-auto text-slate-300 mb-2" />
+                      <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-2 shadow-2xs">
+                        <Calendar size={24} />
+                      </div>
                       <p className="text-xs text-slate-700 font-medium">Planlanmış bir etkinlik bulunmuyor.</p>
                     </div>
                   )}
@@ -1009,7 +1013,7 @@ export default function StudentClubPortal({
                         <div>
                           <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider block">{member.role}</span>
                           <h4 className="font-bold text-gray-900 text-sm">{member.name}</h4>
-                          <p className="text-xs text-slate-500">{member.department}</p>
+                          <p className="text-xs text-slate-600 font-medium">{member.department}</p>
                           {member.studentNo && <span className="text-[10px] text-slate-700 font-mono font-bold">No: {member.studentNo}</span>}
                         </div>
                       </div>
@@ -1027,21 +1031,21 @@ export default function StudentClubPortal({
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                       <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Toplam Tahsis Talebi</p>
                       <h4 className="text-xl font-black text-gray-900">{selectedClub.budgetRequests?.length || 0} Talep</h4>
-                      <span className="text-[11px] text-slate-500">2026-2027 Dönemi</span>
+                      <span className="text-[11px] text-slate-600 font-bold">2026-2027 Dönemi</span>
                     </div>
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                       <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Onaylanan Salon / Tahsis</p>
                       <h4 className="text-xl font-black text-emerald-700">
                         {(selectedClub.budgetRequests || []).filter(r => r.status === 'approved').length} Etkinlik
                       </h4>
-                      <span className="text-[11px] text-emerald-600 font-medium">SKS Onaylı Rezervasyon</span>
+                      <span className="text-[11px] text-emerald-700 font-bold">SKS Onaylı Rezervasyon</span>
                     </div>
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                       <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">İncelemedeki Başvurular</p>
                       <h4 className="text-xl font-black text-amber-700">
                         {(selectedClub.budgetRequests || []).filter(r => r.status === 'pending').length} Talep
                       </h4>
-                      <span className="text-[11px] text-amber-600 font-bold">Komisyon Değerlendirmesi</span>
+                      <span className="text-[11px] text-amber-700 font-bold">Komisyon Değerlendirmesi</span>
                     </div>
                   </div>
 
@@ -1050,7 +1054,7 @@ export default function StudentClubPortal({
                     <div className="flex items-center justify-between mb-5">
                       <div>
                         <h3 className="font-bold text-gray-900 text-base">SKS Etkinlik & Yer Tahsis Başvuruları</h3>
-                        <p className="text-xs text-slate-500">Öğrenci Dekanlığı ve SKS Daire Başkanlığına iletilen resmî mekan ve teknik altyapı talepleri.</p>
+                        <p className="text-xs text-slate-600 font-medium">Öğrenci Dekanlığı ve SKS Daire Başkanlığına iletilen resmî mekan ve teknik altyapı talepleri.</p>
                       </div>
                       <button
                         onClick={handleOpenVenueModal}
@@ -1077,8 +1081,8 @@ export default function StudentClubPortal({
                             <tr key={idx} className="hover:bg-slate-50/60">
                               <td className="py-3 px-3 font-bold text-gray-900">{req.title || req.eventName}</td>
                               <td className="py-3 px-3 font-semibold text-slate-700">{req.venue || req.requestedVenue || req.location || 'Merkez Kampüs'}</td>
-                              <td className="py-3 px-3 text-slate-500">{req.eventDate ? `${req.eventDate} (${req.startTime || '10:00'} - ${req.endTime || '17:00'})` : (req.requestedDate || req.date)}</td>
-                              <td className="py-3 px-3 text-slate-600 font-medium">{req.requester || req.requesterName || 'Kulüp Başkanı'}</td>
+                              <td className="py-3 px-3 text-slate-700 font-medium">{req.eventDate ? `${req.eventDate} (${req.startTime || '10:00'} - ${req.endTime || '17:00'})` : (req.requestedDate || req.date)}</td>
+                              <td className="py-3 px-3 text-slate-700 font-medium">{req.requester || req.requesterName || 'Kulüp Başkanı'}</td>
                               <td className="py-3 px-3">
                                 <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                                   req.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
@@ -1088,12 +1092,12 @@ export default function StudentClubPortal({
                                   {req.status === 'approved' ? 'Tahsis Onaylandı' : req.status === 'rejected' ? 'Reddedildi' : 'İnceleniyor'}
                                 </span>
                               </td>
-                              <td className="py-3 px-3 text-slate-500">{req.approvalNote || 'SKS salon inceleme sürecinde.'}</td>
+                              <td className="py-3 px-3 text-slate-700 font-medium">{req.approvalNote || 'SKS salon inceleme sürecinde.'}</td>
                             </tr>
                           ))}
                           {(!selectedClub.budgetRequests || selectedClub.budgetRequests.length === 0) && (
                             <tr>
-                              <td colSpan={6} className="py-8 text-center text-slate-500 font-medium">Henüz iletilmiş bir mekan/tahsis talebi kaydı bulunmuyor.</td>
+                              <td colSpan={6} className="py-8 text-center text-slate-600 font-bold">Henüz iletilmiş bir mekan/tahsis talebi kaydı bulunmuyor.</td>
                             </tr>
                           )}
                         </tbody>
@@ -1128,16 +1132,16 @@ export default function StudentClubPortal({
                             <div>
                               <div className="flex items-center gap-2 mb-1">
                                 <h5 className="font-bold text-gray-900 text-sm">{app.name}</h5>
-                                <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] font-mono text-slate-700 font-bold bg-slate-100 px-1.5 py-0.5 rounded">
                                   No: {app.studentNo}
                                 </span>
-                                <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] font-mono text-slate-700 font-bold bg-slate-100 px-1.5 py-0.5 rounded">
                                   TC: {app.tcKimlik ? `${app.tcKimlik.slice(0, 4)}*****${app.tcKimlik.slice(-2)}` : '11 Haneli'}
                                 </span>
                               </div>
                               <p className="text-xs text-slate-600">{app.department} • {app.grade} • {app.email}</p>
                               {app.reason && (
-                                <p className="text-xs text-slate-500 italic mt-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                <p className="text-xs text-slate-700 font-medium italic mt-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
                                   "{app.reason}"
                                 </p>
                               )}
@@ -1168,7 +1172,7 @@ export default function StudentClubPortal({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div>
                         <h3 className="font-bold text-gray-900 text-base">Kayıtlı Kulüp Üyeleri ({selectedClub.members?.length || selectedClub.memberCount || 0})</h3>
-                        <p className="text-xs text-slate-500">T.C. Kimlik, Öğrenci No ve bölüm bazında onaylanmış resmi kulüp üyeleri.</p>
+                        <p className="text-xs text-slate-600 font-medium">T.C. Kimlik, Öğrenci No ve bölüm bazında onaylanmış resmi kulüp üyeleri.</p>
                       </div>
                       {!userIsMember && (
                         <button
@@ -1299,7 +1303,7 @@ export default function StudentClubPortal({
                       value={venueForm.title} 
                       onChange={(e) => setVenueForm({ ...venueForm, title: e.target.value })} 
                       placeholder="Örn: Yapay Zeka Zirvesi & Panel" 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                     />
                   </div>
 
@@ -1309,7 +1313,7 @@ export default function StudentClubPortal({
                     <select
                       value={venueForm.venue}
                       onChange={(e) => setVenueForm({ ...venueForm, venue: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
                     >
                       <option>Ömer Halisdemir Konferans Salonu & Fuaye</option>
                       <option>A Blok Konferans Salonu</option>
@@ -1330,7 +1334,7 @@ export default function StudentClubPortal({
                         value={venueForm.customVenue} 
                         onChange={(e) => setVenueForm({ ...venueForm, customVenue: e.target.value })} 
                         placeholder="Örn: Spor Salonu Tribün Arkası veya B Blok Giriş" 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                       />
                     </div>
                   )}
@@ -1344,7 +1348,7 @@ export default function StudentClubPortal({
                         required 
                         value={venueForm.eventDate} 
                         onChange={(e) => setVenueForm({ ...venueForm, eventDate: e.target.value })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white" 
                       />
                     </div>
                     <div>
@@ -1354,7 +1358,7 @@ export default function StudentClubPortal({
                         required 
                         value={venueForm.startTime} 
                         onChange={(e) => setVenueForm({ ...venueForm, startTime: e.target.value })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white" 
                       />
                     </div>
                     <div>
@@ -1364,7 +1368,7 @@ export default function StudentClubPortal({
                         required 
                         value={venueForm.endTime} 
                         onChange={(e) => setVenueForm({ ...venueForm, endTime: e.target.value })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white" 
                       />
                     </div>
                   </div>
@@ -1377,7 +1381,7 @@ export default function StudentClubPortal({
                       required 
                       value={venueForm.expectedAttendees} 
                       onChange={(e) => setVenueForm({ ...venueForm, expectedAttendees: parseInt(e.target.value) || 50 })} 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white" 
                     />
                   </div>
 
@@ -1413,7 +1417,7 @@ export default function StudentClubPortal({
                       value={venueForm.customEquipment} 
                       onChange={(e) => setVenueForm({ ...venueForm, customEquipment: e.target.value })} 
                       placeholder="Örn: 2 adet uzatma kablosu, 40 adet plastik sandalye..." 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                     />
                   </div>
 
@@ -1425,7 +1429,7 @@ export default function StudentClubPortal({
                       value={venueForm.description} 
                       onChange={(e) => setVenueForm({ ...venueForm, description: e.target.value })} 
                       placeholder="Etkinliğin öğrencilere katkısı, program akışı ve konuk bilgileri..." 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000] resize-none" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white resize-none" 
                     />
                   </div>
 
@@ -1493,7 +1497,8 @@ export default function StudentClubPortal({
                       required 
                       value={applyMemberForm.name} 
                       onChange={(e) => setApplyMemberForm({ ...applyMemberForm, name: e.target.value })} 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                      placeholder="Ad Soyad"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                     />
                   </div>
 
@@ -1506,7 +1511,7 @@ export default function StudentClubPortal({
                         placeholder="Örn: 2023010482" 
                         value={applyMemberForm.studentNo} 
                         onChange={(e) => setApplyMemberForm({ ...applyMemberForm, studentNo: e.target.value })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000] font-mono" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white font-mono" 
                       />
                     </div>
                     <div>
@@ -1518,7 +1523,7 @@ export default function StudentClubPortal({
                         placeholder="11 haneli kimlik no" 
                         value={applyMemberForm.tcKimlik} 
                         onChange={(e) => setApplyMemberForm({ ...applyMemberForm, tcKimlik: e.target.value.replace(/[^0-9]/g, '') })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000] font-mono" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white font-mono" 
                       />
                     </div>
                   </div>
@@ -1532,7 +1537,7 @@ export default function StudentClubPortal({
                         placeholder="Örn: Bilgisayar Mühendisliği" 
                         value={applyMemberForm.department} 
                         onChange={(e) => setApplyMemberForm({ ...applyMemberForm, department: e.target.value })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                       />
                     </div>
                     <div>
@@ -1540,7 +1545,7 @@ export default function StudentClubPortal({
                       <select
                         value={applyMemberForm.grade}
                         onChange={(e) => setApplyMemberForm({ ...applyMemberForm, grade: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
                       >
                         <option>Hazırlık Sınıfı</option>
                         <option>1. Sınıf</option>
@@ -1558,9 +1563,10 @@ export default function StudentClubPortal({
                       <input 
                         type="tel" 
                         required 
+                        placeholder="05XX XXX XX XX"
                         value={applyMemberForm.phone} 
                         onChange={(e) => setApplyMemberForm({ ...applyMemberForm, phone: e.target.value })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                       />
                     </div>
                     <div>
@@ -1568,9 +1574,10 @@ export default function StudentClubPortal({
                       <input 
                         type="email" 
                         required 
+                        placeholder="ogrenci@ogr.esenyurt.edu.tr"
                         value={applyMemberForm.email} 
                         onChange={(e) => setApplyMemberForm({ ...applyMemberForm, email: e.target.value })} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                       />
                     </div>
                   </div>
@@ -1582,7 +1589,7 @@ export default function StudentClubPortal({
                       value={applyMemberForm.reason} 
                       onChange={(e) => setApplyMemberForm({ ...applyMemberForm, reason: e.target.value })} 
                       placeholder="Kulüp bünyesinde hangi komisyonlarda veya projelerde yer almak istiyorsunuz?" 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000] resize-none" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white resize-none" 
                     />
                   </div>
 
@@ -1687,7 +1694,7 @@ export default function StudentClubPortal({
                       value={postForm.images[0]} 
                       onChange={(e) => setPostForm({ ...postForm, images: [e.target.value] })} 
                       placeholder="https://images.unsplash.com/..." 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                     />
                   </div>
 
@@ -1697,7 +1704,7 @@ export default function StudentClubPortal({
                       <select
                         value={postForm.filter}
                         onChange={(e) => setPostForm({ ...postForm, filter: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
                       >
                         <option value="normal">Normal (Orijinal)</option>
                         <option value="vibrant">Canlı & Parlak (Vibrant)</option>
@@ -1711,7 +1718,7 @@ export default function StudentClubPortal({
                       <select
                         value={postForm.musicTitle}
                         onChange={(e) => setPostForm({ ...postForm, musicTitle: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
                       >
                         <option>Campus Synthwave & Tech Beats</option>
                         <option>Cyberpunk Coding Lounge</option>
@@ -1728,7 +1735,7 @@ export default function StudentClubPortal({
                       value={postForm.location} 
                       onChange={(e) => setPostForm({ ...postForm, location: e.target.value })} 
                       placeholder="Örn: İESÜ Ömer Halisdemir Konferans Salonu" 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
                     />
                   </div>
 
@@ -1740,7 +1747,7 @@ export default function StudentClubPortal({
                       value={postForm.caption} 
                       onChange={(e) => setPostForm({ ...postForm, caption: e.target.value })} 
                       placeholder="Etkinlik hakkında heyecan verici bir yazı yazın... #İESÜ #YazılımKulübü #Hackathon2026" 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000] resize-none" 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white resize-none" 
                     />
                   </div>
                 </div>
@@ -1814,12 +1821,12 @@ export default function StudentClubPortal({
           <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans animate-fade-in">
             <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative animate-scale-up border border-slate-100">
               <h3 className="font-bold text-gray-900 text-base mb-1">Kulüp Yetkisi Ata</h3>
-              <p className="text-xs text-slate-500 mb-4">{assignRoleModalMember.name} öğrencisine atanacak resmî kurul görevini seçiniz:</p>
+              <p className="text-xs text-slate-600 font-medium mb-4">{assignRoleModalMember.name} öğrencisine atanacak resmî kurul görevini seçiniz:</p>
               
               <select
                 value={newAssignedRole}
                 onChange={(e) => setNewAssignedRole(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-gray-800 outline-none focus:border-[#990000] mb-5"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-900 outline-none focus:border-[#990000] focus:bg-white mb-5"
               >
                 <option>Mali Sorumlu</option>
                 <option>Başkan Yardımcısı</option>
@@ -1909,9 +1916,9 @@ export default function StudentClubPortal({
                 <input 
                   type="text" 
                   placeholder="Kulüp adı veya anahtar kelime ara..." 
-                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none transition font-medium"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-semibold placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none transition" 
+                  value={searchQuery} 
+                  onChange={(e) => setSearchQuery(e.target.value)} 
                 />
               </div>
               <button onClick={() => setShowCreateModal(true)} className="w-full md:w-auto px-6 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer">
@@ -1921,7 +1928,9 @@ export default function StudentClubPortal({
 
             {filteredClubs.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
-                <Building2 size={48} className="mx-auto text-slate-300 mb-4" />
+                <div className="w-16 h-16 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mx-auto mb-3 shadow-2xs">
+                  <Building2 size={32} />
+                </div>
                 <p className="text-slate-700 font-medium">Aramanıza uygun kulüp bulunamadı.</p>
               </div>
             ) : (
@@ -1930,7 +1939,7 @@ export default function StudentClubPortal({
                   <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={club.id} onClick={() => setSelectedClub(club)} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-pointer group flex flex-col h-full">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="w-16 h-16 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-white overflow-hidden">
-                        {club.logo ? <img src={club.logo} alt={club.name} className="w-full h-full object-cover" /> : <Building2 size={28} className="text-slate-300" />}
+                        {club.logo ? <img src={club.logo} alt={club.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 text-slate-500 flex items-center justify-center"><Building2 size={24} /></div>}
                       </div>
                       <div>
                         <h3 className="font-black text-gray-900 leading-tight mb-1 group-hover:text-[#990000] transition-colors">{club.name}</h3>
@@ -1966,7 +1975,7 @@ export default function StudentClubPortal({
                         <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center text-[#990000] border border-red-100"><Trophy size={24} /></div>
                         <div>
                           <h3 className="font-black text-lg text-gray-900">{club.name}</h3>
-                          <p className="text-sm text-slate-500">{(club.memberApplications || []).filter(r => r.status === 'pending').length} Yeni Üyelik Başvurusu</p>
+                          <p className="text-sm text-slate-700 font-bold">{(club.memberApplications || []).filter(r => r.status === 'pending').length} Yeni Üyelik Başvurusu</p>
                         </div>
                       </div>
                       <div className="flex gap-3">
@@ -1988,16 +1997,18 @@ export default function StudentClubPortal({
                       <img src={club.logo} alt={club.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
                       <div>
                         <h3 className="font-black text-gray-900 group-hover:text-[#990000] transition-colors">{club.name}</h3>
-                        <p className="text-xs text-slate-500">{club.category || 'Genel'}</p>
+                        <p className="text-xs text-slate-700 font-semibold">{club.category || 'Genel'}</p>
                       </div>
                     </div>
-                    <ChevronRight size={18} className="text-slate-500 group-hover:text-[#990000]" />
+                    <ChevronRight size={18} className="text-slate-600 group-hover:text-[#990000]" />
                   </div>
                 ))}
               </div>
             ) : (
               <div className="col-span-full bg-white p-8 rounded-xl border border-dashed border-slate-200 text-center">
-                 <Bell size={40} className="mx-auto text-slate-300 mb-4" />
+                 <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mx-auto mb-3 shadow-2xs">
+                   <Bell size={28} />
+                 </div>
                  <p className="text-slate-700 mb-4 font-medium">Henüz hiçbir kulübe üye değilsiniz.</p>
                  <button onClick={() => setActiveTab('discover')} className="px-6 py-2.5 bg-[#990000] text-white font-bold rounded-xl hover:bg-red-800 transition-colors cursor-pointer">Kulüpleri Keşfet</button>
               </div>
@@ -2012,7 +2023,9 @@ export default function StudentClubPortal({
                <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2"><ShieldCheck className="text-amber-500"/> SKS & Dekanlık Onay Bekleyenler</h2>
                {applications.length === 0 ? (
                  <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                   <CheckCircle2 size={40} className="mx-auto text-slate-300 mb-3" />
+                   <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-2xs">
+                     <CheckCircle2 size={28} />
+                   </div>
                    <p className="text-slate-700 font-medium">Bekleyen başvuru yok!</p>
                  </div>
                ) : (
@@ -2031,7 +2044,7 @@ export default function StudentClubPortal({
                              <span className="text-[11px] font-bold text-slate-600 flex items-center gap-1"><Clock size={12} /> {app.date}</span>
                            </div>
                            <h3 className="font-bold text-gray-900 text-base">{app.name || app.eventName}</h3>
-                           <p className="text-xs font-medium text-slate-500 mt-1">
+                           <p className="text-xs font-medium text-slate-700 mt-1">
                              {app.applicant ? `Kurucu: ${app.applicant}` : `Kulüp: ${app.club}`} 
                              {app.venue && ` • Salon: ${app.venue}`}
                            </p>
@@ -2131,7 +2144,7 @@ export default function StudentClubPortal({
                     value={createForm.name} 
                     onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
                     placeholder="Örn: Yapay Zeka ve Siber Güvenlik Kulübü" 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white"
                   />
                 </div>
 
@@ -2141,7 +2154,7 @@ export default function StudentClubPortal({
                     <select 
                       value={createForm.category} 
                       onChange={(e) => setCreateForm({ ...createForm, category: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
                     >
                       <option>Bilim ve Teknoloji</option>
                       <option>Kültür ve Sanat</option>
@@ -2158,7 +2171,7 @@ export default function StudentClubPortal({
                       value={createForm.advisor} 
                       onChange={(e) => setCreateForm({ ...createForm, advisor: e.target.value })}
                       placeholder="Örn: Dr. Öğr. Üyesi Ahmet Yılmaz" 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000]"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white"
                     />
                   </div>
                 </div>
@@ -2171,7 +2184,7 @@ export default function StudentClubPortal({
                     value={createForm.purpose} 
                     onChange={(e) => setCreateForm({ ...createForm, purpose: e.target.value })}
                     placeholder="Kulübün üniversitemize ve öğrencilere sağlayacağı vizyonu açıklayınız..." 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000] resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white resize-none"
                   />
                 </div>
 
@@ -2183,7 +2196,7 @@ export default function StudentClubPortal({
                     value={createForm.description} 
                     onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
                     placeholder="Kulüp rehberinde öğrencilerin göreceği özet tanıtım metni..." 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium text-gray-800 outline-none focus:border-[#990000] resize-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white resize-none"
                   />
                 </div>
               </div>

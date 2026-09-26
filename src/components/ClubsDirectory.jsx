@@ -112,7 +112,7 @@ export default function ClubsDirectory({
   };
 
   const takeMission = (mission) => {
-    toast.success(`Tebrikler! "${mission.title}" görevini üstlendiniz. Tamamlandığında +${mission.points} Birlik Puanı kazanacaksınız.`);
+    toast.success(`Tebrikler! "${mission.title}" görevini üstlendiniz. Tamamlandığında +${mission.points} Kariyer Gelişim Puanı kazanacaksınız.`);
   };
 
   const filteredClubs = (clubs || []).filter(c => 
@@ -294,13 +294,13 @@ export default function ClubsDirectory({
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-red-900 text-lg">Keşfet</h3>
               <div className="relative group w-40 sm:w-48">
-                <Search className="absolute left-3 top-2.5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={14} />
+                <Search className="absolute left-3 top-2.5 text-slate-400 group-focus-within:text-[#990000] transition-colors" size={14} />
                 <input 
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Kulüp ara..." 
-                  className="bg-slate-50 pl-8 pr-3 py-2 rounded-xl text-xs w-full focus:outline-none focus:ring-1 focus:ring-emerald-500 border border-slate-200 transition-colors" 
+                  className="bg-slate-50 pl-8 pr-3 py-2 rounded-xl text-xs w-full font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-red-500/20 focus:border-[#990000] focus:bg-white border border-slate-200 transition-colors" 
                 />
               </div>
             </div>
@@ -330,7 +330,7 @@ export default function ClubsDirectory({
 
       {/* Selected Club Modal (Modern College Showcase) */}
       {selectedClub && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[10000] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-up relative border border-slate-100">
             <button onClick={() => setSelectedClub(null)} className="absolute top-4 right-4 z-20 p-2 bg-black/30 hover:bg-black/50 text-white rounded-full transition-colors backdrop-blur-md cursor-pointer"><X size={18}/></button>
             
@@ -387,7 +387,7 @@ export default function ClubsDirectory({
 
       {/* Join Request Modal (Skills Based) */}
       {showJoinModal && selectedClub && (
-        <div className="fixed inset-0 z-[110] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[10000] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-up relative border border-slate-100">
             <div className="bg-gradient-to-r from-emerald-600 to-teal-700 p-6 text-white flex justify-between items-start">
               <div>
@@ -403,7 +403,7 @@ export default function ClubsDirectory({
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Bölüm / Program</label>
                 <input 
                   required value={joinForm.department} onChange={e => setJoinForm({...joinForm, department: e.target.value})} 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all" 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white text-sm font-semibold text-slate-900 placeholder:text-slate-400 transition-all" 
                   placeholder="Örn: Yazılım Mühendisliği" 
                 />
               </div>
@@ -412,17 +412,17 @@ export default function ClubsDirectory({
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Hangi Yetenekleri Katabilirsin?</label>
                 <input 
                   value={joinForm.skills} onChange={e => setJoinForm({...joinForm, skills: e.target.value})} 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all" 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white text-sm font-semibold text-slate-900 placeholder:text-slate-400 transition-all" 
                   placeholder="Örn: Tasarım, Fotoğrafçılık, Organizasyon" 
                 />
-                <p className="text-[11px] text-slate-500 mt-1.5">Yeteneklerini belirterek kulüp projelerinde "Görev Havuzuna" dahil olabilirsin.</p>
+                <p className="text-[11px] text-slate-600 font-medium mt-1.5">Yeteneklerini belirterek kulüp projelerinde "Görev Havuzuna" dahil olabilirsin.</p>
               </div>
 
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Katılım Motivasyonunuz</label>
                 <textarea 
                   required rows={3} value={joinForm.motivation} onChange={e => setJoinForm({...joinForm, motivation: e.target.value})} 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm resize-none transition-all" 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white text-sm font-semibold text-slate-900 placeholder:text-slate-400 resize-none transition-all" 
                   placeholder="Bu kulübe neden katılmak istiyorsunuz?" 
                 />
               </div>
@@ -439,7 +439,7 @@ export default function ClubsDirectory({
 
       {/* New Application Modal (EK-1) */}
       {showApplicationModal && (
-        <div className="fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[10000] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl animate-scale-up relative border border-slate-100">
             <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 p-6 text-white flex justify-between items-start">
               <div>
@@ -453,15 +453,15 @@ export default function ClubsDirectory({
             <form onSubmit={handleApplyClub} className="p-6 space-y-5">
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Planlanan Kulüp Adı</label>
-                <input required value={applicationForm.name} onChange={e => setApplicationForm({...applicationForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] text-sm transition-all" placeholder="Örn: Teknoloji Kulübü" />
+                <input required value={applicationForm.name} onChange={e => setApplicationForm({...applicationForm, name: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] focus:bg-white text-sm font-semibold text-slate-900 placeholder:text-slate-400 transition-all" placeholder="Örn: Teknoloji Kulübü" />
               </div>
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Kulübün Amacı</label>
-                <textarea required rows={4} value={applicationForm.purpose} onChange={e => setApplicationForm({...applicationForm, purpose: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] text-sm resize-none transition-all" placeholder="Kurulum amacı ve hedefleri detaylıca açıklayınız..." />
+                <textarea required rows={4} value={applicationForm.purpose} onChange={e => setApplicationForm({...applicationForm, purpose: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] focus:bg-white text-sm font-semibold text-slate-900 placeholder:text-slate-400 resize-none transition-all" placeholder="Kurulum amacı ve hedefleri detaylıca açıklayınız..." />
               </div>
               <div>
                 <label className="block text-[12px] font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Planlanan Danışman</label>
-                <input required value={applicationForm.advisorName} onChange={e => setApplicationForm({...applicationForm, advisorName: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] text-sm transition-all" placeholder="Örn: Prof. Dr. Ahmet Yılmaz" />
+                <input required value={applicationForm.advisorName} onChange={e => setApplicationForm({...applicationForm, advisorName: e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] focus:bg-white text-sm font-semibold text-slate-900 placeholder:text-slate-400 transition-all" placeholder="Örn: Prof. Dr. Ahmet Yılmaz" />
               </div>
               <div className="pt-3">
                 <button type="submit" className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-sm font-bold transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-95">

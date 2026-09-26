@@ -15,7 +15,7 @@ export default function SubPanelFloatingDock({
   activeTab = '', 
   userRole = 'student' 
 }) {
-  const store = useAppStore.getState();
+  const store = useAppStore?.getState ? useAppStore.getState() : {};
   const userName = currentUser?.name || 'Öğrenci';
   const userAvatar = currentUser?.avatar || '/iesu-logo.svg';
   const userId = currentUser?.id || 'STU-001';

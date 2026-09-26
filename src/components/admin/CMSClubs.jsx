@@ -334,40 +334,40 @@ export default function CMSClubs({
 
       {/* 4 SUMMARY METRIC CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl shadow-2xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Aktif Kulüpler</span>
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Aktif Kulüpler</span>
             <Building2 className="text-[#990000]" size={20} />
           </div>
-          <h3 className="text-2xl font-black text-gray-900">{metrics.totalClubs} Kulüp</h3>
-          <p className="text-xs text-slate-500 mt-1">SKS Onaylı Resmî Topluluk</p>
+          <h3 className="text-2xl font-black text-slate-900">{metrics.totalClubs} Kulüp</h3>
+          <p className="text-xs text-slate-600 font-medium mt-1">SKS Onaylı Resmî Topluluk</p>
         </div>
 
-        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl shadow-2xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Kayıtlı Öğrenci Üye</span>
-            <Users className="text-emerald-600" size={20} />
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Kayıtlı Öğrenci Üye</span>
+            <Users className="text-emerald-700" size={20} />
           </div>
-          <h3 className="text-2xl font-black text-gray-900">{metrics.totalMembers.toLocaleString('tr-TR')}</h3>
-          <p className="text-xs text-slate-500 mt-1">TC & No Doğrulanmış Kayıt</p>
+          <h3 className="text-2xl font-black text-slate-900">{metrics.totalMembers.toLocaleString('tr-TR')}</h3>
+          <p className="text-xs text-slate-600 font-medium mt-1">TC & No Doğrulanmış Kayıt</p>
         </div>
 
-        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl shadow-2xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Kurulum Başvuruları</span>
-            <FileText className="text-amber-500" size={20} />
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Kurulum Başvuruları</span>
+            <FileText className="text-amber-600" size={20} />
           </div>
-          <h3 className="text-2xl font-black text-gray-900">{metrics.pendingClubApps} Bekleyen</h3>
-          <p className="text-xs text-slate-500 mt-1">EK-1 Değerlendirme Süreci</p>
+          <h3 className="text-2xl font-black text-slate-900">{metrics.pendingClubApps} Bekleyen</h3>
+          <p className="text-xs text-slate-600 font-medium mt-1">EK-1 Değerlendirme Süreci</p>
         </div>
 
-        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
+        <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl shadow-2xs">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Yer & Bütçe Havuzu</span>
-            <Wallet className="text-blue-600" size={20} />
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Yer & Bütçe Havuzu</span>
+            <Wallet className="text-blue-700" size={20} />
           </div>
-          <h3 className="text-2xl font-black text-gray-900">{metrics.pendingBudgetApps} Talep</h3>
-          <p className="text-xs text-slate-500 mt-1">Mekan & Donanım Onayı</p>
+          <h3 className="text-2xl font-black text-slate-900">{metrics.pendingBudgetApps} Talep</h3>
+          <p className="text-xs text-slate-600 font-medium mt-1">Mekan & Donanım Onayı</p>
         </div>
       </div>
 
@@ -443,7 +443,7 @@ export default function CMSClubs({
                 placeholder="Kulüp veya danışman ara..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:border-[#990000]"
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white"
               />
             </div>
           </div>
@@ -736,7 +736,7 @@ export default function CMSClubs({
                 <select
                   value={memberClubFilter}
                   onChange={(e) => setMemberClubFilter(e.target.value)}
-                  className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-[#990000]"
+                  className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-[#990000] focus:ring-1 focus:ring-red-500/20"
                 >
                   <option value="all">Tüm Kulüpler ({allClubs.length})</option>
                   {allClubs.map(c => (
@@ -750,7 +750,7 @@ export default function CMSClubs({
                 <select
                   value={memberRoleFilter}
                   onChange={(e) => setMemberRoleFilter(e.target.value)}
-                  className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-[#990000]"
+                  className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-[#990000] focus:ring-1 focus:ring-red-500/20"
                 >
                   <option value="all">Tüm Roller</option>
                   <option value="Başkan">Kulüp Başkanı</option>
@@ -769,7 +769,7 @@ export default function CMSClubs({
                   placeholder="İsim, No veya TC ile ara..."
                   value={memberSearchQuery}
                   onChange={(e) => setMemberSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:border-[#990000]"
+                  className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:ring-1 focus:ring-red-500/20"
                 />
               </div>
             </div>
@@ -865,11 +865,11 @@ export default function CMSClubs({
       {/* MODAL: CLUB INSPECTION DETAIL                            */}
       {/* ======================================================== */}
       {selectedClubForView && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative animate-scale-up max-h-[90vh] overflow-y-auto font-sans">
             <button
               onClick={() => setSelectedClubForView(null)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition cursor-pointer"
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-600 transition cursor-pointer"
             >
               <X size={20} />
             </button>
@@ -878,31 +878,31 @@ export default function CMSClubs({
               <img 
                 src={selectedClubForView.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedClubForView.name.substring(0, 2))}&background=990000&color=fff`} 
                 alt={selectedClubForView.name} 
-                className="w-16 h-16 rounded-2xl object-cover border border-slate-200"
+                className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-2xs"
               />
               <div>
-                <span className="text-xs font-bold text-[#990000] uppercase tracking-wider">{selectedClubForView.category}</span>
-                <h3 className="text-xl font-black text-gray-900">{selectedClubForView.name}</h3>
-                <p className="text-xs text-slate-500">Kuruluş Yılı: {selectedClubForView.establishedYear || 2021} • {selectedClubForView.members?.length || selectedClubForView.memberCount || 0} Aktif Üye</p>
+                <span className="text-xs font-black text-[#990000] uppercase tracking-wider">{selectedClubForView.category}</span>
+                <h3 className="text-xl font-black text-slate-900">{selectedClubForView.name}</h3>
+                <p className="text-xs text-slate-700 font-semibold">Kuruluş Yılı: {selectedClubForView.establishedYear || 2021} • {selectedClubForView.members?.length || selectedClubForView.memberCount || 0} Aktif Üye</p>
               </div>
             </div>
 
             <div className="space-y-4 text-xs text-slate-700">
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <span className="font-bold text-gray-900 block mb-1">Kulüp Misyonu & Amacı</span>
-                <p className="leading-relaxed text-slate-600">{selectedClubForView.purpose || selectedClubForView.description}</p>
+                <span className="font-bold text-slate-900 block mb-1">Kulüp Misyonu & Amacı</span>
+                <p className="leading-relaxed text-slate-700 font-medium">{selectedClubForView.purpose || selectedClubForView.description}</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                  <span className="font-bold text-gray-900 block mb-1">Akademik Danışman</span>
-                  <p>{selectedClubForView.advisor}</p>
-                  <p className="text-slate-400 mt-1">{selectedClubForView.advisorEmail}</p>
+                  <span className="font-bold text-slate-900 block mb-1">Akademik Danışman</span>
+                  <p className="font-bold text-slate-800">{selectedClubForView.advisor}</p>
+                  <p className="text-slate-600 font-medium mt-1">{selectedClubForView.advisorEmail}</p>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                  <span className="font-bold text-gray-900 block mb-1">Kulüp Başkanı</span>
-                  <p>{selectedClubForView.president?.name}</p>
-                  <p className="text-slate-400 mt-1">{selectedClubForView.president?.email} • {selectedClubForView.president?.phone}</p>
+                  <span className="font-bold text-slate-900 block mb-1">Kulüp Başkanı</span>
+                  <p className="font-bold text-slate-800">{selectedClubForView.president?.name}</p>
+                  <p className="text-slate-600 font-medium mt-1">{selectedClubForView.president?.email} • {selectedClubForView.president?.phone}</p>
                 </div>
               </div>
 
@@ -910,32 +910,32 @@ export default function CMSClubs({
                 <span className="font-bold text-emerald-900 block mb-2">SKS Bütçe Durumu</span>
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <span className="text-[10px] text-slate-500 block">Yıllık Tahsis</span>
-                    <span className="font-black text-sm text-gray-900">{(selectedClubForView.budget?.allocated || 45000).toLocaleString('tr-TR')} ₺</span>
+                    <span className="text-[10px] text-slate-700 font-bold block">Yıllık Tahsis</span>
+                    <span className="font-black text-sm text-slate-900">{(selectedClubForView.budget?.allocated || 45000).toLocaleString('tr-TR')} ₺</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 block">Harcanan</span>
-                    <span className="font-black text-sm text-amber-700">{(selectedClubForView.budget?.spent || 0).toLocaleString('tr-TR')} ₺</span>
+                    <span className="text-[10px] text-amber-800 font-bold block">Harcanan</span>
+                    <span className="font-black text-sm text-amber-800">{(selectedClubForView.budget?.spent || 0).toLocaleString('tr-TR')} ₺</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 block">Kalan Bakiye</span>
-                    <span className="font-black text-sm text-emerald-700">{(selectedClubForView.budget?.remaining || 25000).toLocaleString('tr-TR')} ₺</span>
+                    <span className="text-[10px] text-emerald-800 font-bold block">Kalan Bakiye</span>
+                    <span className="font-black text-sm text-emerald-800">{(selectedClubForView.budget?.remaining || 25000).toLocaleString('tr-TR')} ₺</span>
                   </div>
                 </div>
               </div>
 
               {/* Authorized Officers */}
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <span className="font-bold text-gray-900 block mb-2">SKS Yetkili Görevlileri</span>
+                <span className="font-bold text-slate-900 block mb-2">SKS Yetkili Görevlileri</span>
                 <div className="space-y-1.5">
                   {(selectedClubForView.authorizedOfficers || []).map((off, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-xs bg-white p-2 rounded-lg border border-slate-100">
-                      <span className="font-bold text-slate-800">{off.name}</span>
-                      <span className="text-[10px] bg-red-50 text-[#990000] font-bold px-2 py-0.5 rounded">{off.role}</span>
+                    <div key={idx} className="flex items-center justify-between text-xs bg-white p-2.5 rounded-xl border border-slate-200">
+                      <span className="font-bold text-slate-900">{off.name}</span>
+                      <span className="text-[10px] bg-red-50 text-[#990000] font-bold px-2 py-0.5 rounded border border-red-100">{off.role}</span>
                     </div>
                   ))}
                   {(!selectedClubForView.authorizedOfficers || selectedClubForView.authorizedOfficers.length === 0) && (
-                    <p className="text-slate-400">Atanmış yetkili temsilci bulunamadı.</p>
+                    <p className="text-slate-600 font-medium">Atanmış yetkili temsilci bulunamadı.</p>
                   )}
                 </div>
               </div>
@@ -949,58 +949,58 @@ export default function CMSClubs({
       {/* MODAL: SKS VENUE REQUEST INSPECTION DETAIL               */}
       {/* ======================================================== */}
       {selectedAppForDetail && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative animate-scale-up max-h-[90vh] overflow-y-auto font-sans">
             <button
               onClick={() => setSelectedAppForDetail(null)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-500 transition cursor-pointer"
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-600 transition cursor-pointer"
             >
               <X size={20} />
             </button>
 
             <div className="mb-5">
-              <span className="text-[10px] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md inline-block mb-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-blue-800 bg-blue-50 px-2.5 py-1 rounded-md inline-block mb-1 border border-blue-100">
                 SKS Salon & Donanım İncelemesi
               </span>
-              <h3 className="text-xl font-black text-gray-900">{selectedAppForDetail.eventName || selectedAppForDetail.title}</h3>
-              <p className="text-xs text-slate-500">{selectedAppForDetail.club}</p>
+              <h3 className="text-xl font-black text-slate-900">{selectedAppForDetail.eventName || selectedAppForDetail.title}</h3>
+              <p className="text-xs text-slate-700 font-bold">{selectedAppForDetail.club}</p>
             </div>
 
             <div className="space-y-3 text-xs">
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="font-bold text-slate-500 block mb-1">Mekan & Saat</span>
-                <p className="font-bold text-gray-900 text-sm">{selectedAppForDetail.venue || selectedAppForDetail.requestedVenue || 'Merkez Kampüs'}</p>
-                <p className="text-slate-600 mt-1">{selectedAppForDetail.eventDate || selectedAppForDetail.date} ({selectedAppForDetail.startTime || '10:00'} - {selectedAppForDetail.endTime || '17:00'})</p>
-                {selectedAppForDetail.setupTime && <p className="text-slate-400">Kurulum Saati: {selectedAppForDetail.setupTime}</p>}
+                <span className="font-bold text-slate-700 block mb-1">Mekan & Saat</span>
+                <p className="font-black text-slate-900 text-sm">{selectedAppForDetail.venue || selectedAppForDetail.requestedVenue || 'Merkez Kampüs'}</p>
+                <p className="text-slate-700 font-medium mt-1">{selectedAppForDetail.eventDate || selectedAppForDetail.date} ({selectedAppForDetail.startTime || '10:00'} - {selectedAppForDetail.endTime || '17:00'})</p>
+                {selectedAppForDetail.setupTime && <p className="text-slate-600 font-medium mt-0.5">Kurulum Saati: {selectedAppForDetail.setupTime}</p>}
               </div>
 
               {selectedAppForDetail.equipment && (
                 <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                  <span className="font-bold text-slate-500 block mb-1.5">Talep Edilen Malzeme & Donanım</span>
+                  <span className="font-bold text-slate-700 block mb-1.5">Talep Edilen Malzeme & Donanım</span>
                   <div className="flex flex-wrap gap-1.5">
                     {Array.isArray(selectedAppForDetail.equipment) ? selectedAppForDetail.equipment.map((eq, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-white border border-slate-200 text-slate-700 font-semibold rounded text-[11px]">
+                      <span key={i} className="px-2.5 py-1 bg-white border border-slate-200 text-slate-800 font-bold rounded-lg text-[11px] shadow-2xs">
                         ✓ {eq}
                       </span>
                     )) : (
-                      <p className="text-slate-600">{selectedAppForDetail.equipment}</p>
+                      <p className="text-slate-700 font-medium">{selectedAppForDetail.equipment}</p>
                     )}
                   </div>
                 </div>
               )}
 
               <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="font-bold text-slate-500 block mb-1">Başvuran Yetkili & Açıklama</span>
-                <p className="font-bold text-gray-900">{selectedAppForDetail.requesterName || selectedAppForDetail.requester || 'Kulüp Yetkilisi'}</p>
-                <p className="text-slate-600 mt-1 leading-relaxed">{selectedAppForDetail.description}</p>
+                <span className="font-bold text-slate-700 block mb-1">Başvuran Yetkili & Açıklama</span>
+                <p className="font-bold text-slate-900">{selectedAppForDetail.requesterName || selectedAppForDetail.requester || 'Kulüp Yetkilisi'}</p>
+                <p className="text-slate-700 font-medium mt-1 leading-relaxed">{selectedAppForDetail.description}</p>
               </div>
 
               <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-emerald-900 block">SKS Tahsis Edilen Bütçe</span>
-                  <span className="text-[11px] text-emerald-800">Birim tarafından karşılanacak resmi meblağ</span>
+                  <span className="font-bold text-emerald-950 block">SKS Tahsis Edilen Bütçe</span>
+                  <span className="text-[11px] text-emerald-850 font-medium">Birim tarafından karşılanacak resmi meblağ</span>
                 </div>
-                <span className="font-black text-emerald-700 text-base">{selectedAppForDetail.assignedBudget || selectedAppForDetail.amount || '0 TL'}</span>
+                <span className="font-black text-emerald-800 text-base">{selectedAppForDetail.assignedBudget || selectedAppForDetail.amount || '0 TL'}</span>
               </div>
             </div>
           </div>
