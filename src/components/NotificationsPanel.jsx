@@ -307,7 +307,11 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
 
             {/* PROFILE AVATAR */}
             <button 
-              onClick={() => setView('user_profile')} 
+              onClick={() => {
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'self';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                setView('user_profile');
+              }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-purple-400/60 shadow-xs hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Profilim"
             >

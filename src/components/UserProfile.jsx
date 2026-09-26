@@ -95,7 +95,7 @@ export default function UserProfile({
     }
 
     // 4. Öğrenci dalında oturum açmış öğrencinin varsayılan profil kimliği
-    if (isStudentBranch && (currentUser?.role === 'student' || !currentUser?.role || currentUser?.role === 'admin')) {
+    if (isStudentBranch) {
       if (userId === 'STU-001' || user?.id === 'STU-001') {
         return true;
       }

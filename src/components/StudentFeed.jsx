@@ -81,7 +81,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const studentName = currentUser?.name || 'Öğrenci';
   const studentDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (currentUser?.department || 'Yazılım Mühendisliği');
   const studentAvatar = currentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde');
-  const studentId = (currentUser?.role === 'student' && currentUser?.id && currentUser.id !== 'admin_1513') ? currentUser.id : 'STU-001';
+  const studentId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
 
   // Removed mock stories and defaultPosts
   

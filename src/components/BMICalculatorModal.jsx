@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { X, Activity, Scale, Info, Sparkles, CheckCircle2, RotateCcw, ArrowDown, HeartPulse, Stethoscope } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 
-export default function BMICalculatorModal({ isOpen, onClose }) {
+export default function BMICalculatorModal({ isOpen = true, onClose, setView }) {
   const addBmiRecord = useAppStore(state => state.addBmiRecord);
   const currentUser = useAppStore(state => state.currentUser) || {};
   const [height, setHeight] = useState(170);
@@ -13,10 +13,18 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
   const [activityLevel, setActivityLevel] = useState('1.375'); // Default: Hafif Hareketli (Haftada 1-3 gün spor)
   const [result, setResult] = useState(null);
 
+  const handleClose = () => {
+    if (typeof onClose === 'function') {
+      onClose();
+    } else if (typeof setView === 'function') {
+      setView('feed');
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        onClose?.();
+        handleClose();
       }
     };
     if (isOpen) {
@@ -155,7 +163,7 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
 
   const modalJSX = (
     <div 
-      onClick={onClose}
+      onClick={handleClose}
       className="fixed inset-0 z-[999999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fade-in"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}
     >
@@ -167,7 +175,7 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
         <div className="bg-gradient-to-r from-[#990000] via-[#7A0000] to-[#5C0000] p-5 sm:p-6 text-white relative overflow-hidden shadow-md shrink-0">
           <div className="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
           <button 
-            onClick={onClose} 
+            onClick={handleClose} 
             className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition text-white cursor-pointer z-10"
             title="Kapat"
           >
@@ -405,7 +413,7 @@ export default function BMICalculatorModal({ isOpen, onClose }) {
                 </button>
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="flex-1 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-2xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                 >
                   <CheckCircle2 size={14} /> Tamam

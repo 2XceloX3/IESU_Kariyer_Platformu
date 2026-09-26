@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { HelpCircle, Send, ChevronLeft, CheckCircle } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
-
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -30,18 +30,24 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
-      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans pb-32">
+      <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView(currentUser ? (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student') : 'landing')} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs shrink-0"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-2">
-            <HelpCircle className="text-red-600" size={24} />
-            <h1 className="font-black text-red-950 tracking-tight">BİDB Teknik Destek (Helpdesk)</h1>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-red-50 text-[#990000] border border-red-100 flex items-center justify-center shadow-xs">
+              <HelpCircle size={22} />
+            </div>
+            <div>
+              <h1 className="font-black text-sm sm:text-base tracking-tight text-slate-900 leading-none">BİDB Teknik Destek (Helpdesk)</h1>
+              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Öğrenci ve Akademik Bilişim Masası</span>
+            </div>
           </div>
         </div>
         <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} />
@@ -52,7 +58,7 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <h2 className="text-xl font-black text-red-950 mb-1">Destek Talebi Oluştur</h2>
+                <h2 className="text-xl font-black text-slate-900 mb-1">Destek Talebi Oluştur</h2>
                 <p className="text-xs font-semibold text-slate-500">Siteden ayrılmadan şifre sıfırlama veya bilişim destek biletinizi iletin.</p>
               </div>
 
@@ -61,7 +67,7 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
                 <select 
                   value={form.subject}
                   onChange={e => setForm({...form, subject: e.target.value})}
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-red-500"
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-[#990000]"
                 >
                   <option>E-Posta / Wi-Fi Şifre Sıfırlama</option>
                   <option>LMS Ders Erişim Sorunu</option>
@@ -76,7 +82,7 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
                   type="email" 
                   value={form.email}
                   onChange={e => setForm({...form, email: e.target.value})}
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-red-500"
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-[#990000]"
                   required
                 />
               </div>
@@ -88,14 +94,14 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
                   value={form.details}
                   onChange={e => setForm({...form, details: e.target.value})}
                   placeholder="Lütfen karşılaştığınız sorunu detaylıca açıklayın..."
-                  className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-red-500 resize-none"
+                  className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-medium focus:outline-none focus:border-[#990000] resize-none"
                   required
                 ></textarea>
               </div>
 
               <button 
-                type="submit"
-                className="w-full py-4 bg-red-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg"
+                type="submit" 
+                className="w-full py-4 bg-[#990000] hover:bg-red-800 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg cursor-pointer"
               >
                 <Send size={16} /> Destek Biletini Gönder
               </button>
@@ -105,14 +111,14 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
               <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-100">
                 <CheckCircle size={32} />
               </div>
-              <h3 className="text-xl font-black text-red-950">Destek Biletiniz Oluşturuldu</h3>
+              <h3 className="text-xl font-black text-slate-900">Destek Biletiniz Oluşturuldu</h3>
               <p className="text-xs font-semibold text-slate-500 max-w-sm mx-auto">
-                Bilet Numarası: <span className="font-mono text-red-600 font-bold">#BIDB-2026-849</span><br/>
+                Bilet Numarası: <span className="font-mono text-[#990000] font-bold">#BIDB-2026-849</span><br/>
                 Yanıtınız en geç 2 saat içinde kayıtlı e-posta adresinize iletilecektir.
               </p>
               <button 
                 onClick={() => setIsSubmitted(false)}
-                className="px-6 py-2.5 bg-red-950 text-white rounded-xl text-xs font-black uppercase tracking-wider"
+                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black uppercase tracking-wider transition cursor-pointer"
               >
                 Yeni Bilet Oluştur
               </button>
@@ -120,6 +126,17 @@ export default function BIDBHelpdeskModal({ setView, currentUser, userRole, setS
           )}
         </div>
       </main>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="bidb"
+        />
+      )}
     </div>
   );
 }

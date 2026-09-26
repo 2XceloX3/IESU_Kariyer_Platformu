@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, Bot, User, ChevronLeft, Sparkles, Brain, Loader2 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { generateAIResponse } from '../lib/gemini';
 
 export default function AnkaChat({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -131,6 +132,17 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
           <Sparkles size={13} className="text-[#990000]" /> İESÜ Kariyer Geliştirme Koordinatörlüğü Akıllı Asistanı
         </p>
       </main>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="anka"
+        />
+      )}
 
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }

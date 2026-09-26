@@ -239,7 +239,7 @@ export default function StudentHive({ currentUser, setView }) {
       case 'anka_chat':
         return <AnkaChat setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'bmi_calculator':
-        return <BMICalculatorModal setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+        return <BMICalculatorModal isOpen={true} onClose={() => handleSetView('feed')} setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'sksdb_lunch':
         return <SKSDBLunchWidget setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'sksdb_clubs':

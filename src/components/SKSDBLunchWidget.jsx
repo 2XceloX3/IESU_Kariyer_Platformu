@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Activity, Flame, ChevronLeft, Droplets, Dumbbell, Scale, Sparkles, AlertCircle, CheckCircle2, HeartPulse, CalendarCheck, ArrowUpRight, Award, UserCheck } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
-
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -78,12 +78,13 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-red-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans pb-32">
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setView((currentUser && currentUser.id) ? (userRole === 'employer' ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : userRole === 'admin' ? 'admin' : 'student') : 'landing')} 
-            className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs shrink-0"
+            title="Geri Dön"
           >
             <ChevronLeft size={20} />
           </button>
@@ -278,6 +279,17 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole, setSe
 
         </div>
       </main>
+
+      {/* Floating Bottom Dock */}
+      {setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          userRole={userRole || 'student'}
+          activeTab="health"
+        />
+      )}
     </div>
   );
 }

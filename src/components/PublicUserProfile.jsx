@@ -71,8 +71,8 @@ export default function PublicUserProfile({
       if (currentUser.email && (effectiveTargetId === currentUser.email || user.email === currentUser.email)) return true;
       if (currentUser.name && user.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
     }
-    if ((viewerHive === 'student' || activePortalBranch === 'student') && (currentUser?.role === 'student' || !currentUser?.role)) {
-      if (effectiveTargetId === 'STU-001' && (!currentUser?.id || currentUser?.id === 'STU-001' || currentUser?.role === 'student')) {
+    if (viewerHive === 'student' || activePortalBranch === 'student') {
+      if (effectiveTargetId === 'STU-001' || user.id === 'STU-001') {
         return true;
       }
     }
