@@ -1,8 +1,10 @@
 import React, { Suspense, lazy, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { HiveProvider } from './HiveContext';
 import useStudentStore from './store/useStudentStore';
 import useAppStore from '../../store/useAppStore';
+import SubPanelFloatingDock from '../../components/SubPanelFloatingDock';
 
 const PORTAL_ROUTES = new Set([
   'student', 'alumni', 'company', 'academic', 'admin', 'admin_cms', 
@@ -182,20 +184,42 @@ export default function StudentHive({ currentUser, setView }) {
       case 'staj':
         return <StajPanel setView={handleSetView} currentUser={currentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'explore':
-        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
+        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return (
+          <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 pb-32 font-sans">
+            <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between">
+              <button 
+                onClick={() => handleSetView('feed')} 
+                className="w-10 h-10 rounded-full bg-white border border-gray-200 hover:bg-red-50 text-gray-700 hover:text-[#990000] flex items-center justify-center shadow-xs transition cursor-pointer"
+                title="Geri Dön"
+              >
+                <ArrowLeft size={18} />
+              </button>
+              <h1 className="text-xl font-black text-[#990000] tracking-tight">Akademik & Katılımcı Protokol Ağı</h1>
+            </div>
+            <div className="max-w-5xl mx-auto">
+              <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />
+            </div>
+            <SubPanelFloatingDock 
+              currentUser={currentUser} 
+              setView={handleSetView} 
+              setSelectedUserId={setSelectedUserId} 
+              userRole="student" 
+            />
+          </div>
+        );
       case 'groups':
-        return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'group_profile':
-        return <GroupProfile setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <GroupProfile setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <CalendarView setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'leaderboard':
         return <LeaderboardPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'live_rooms':
@@ -211,44 +235,44 @@ export default function StudentHive({ currentUser, setView }) {
       case 'iesu_wallet':
         return <IesuWallet setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'campus_map':
-        return <CampusMap setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <CampusMap setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'anka_chat':
-        return <AnkaChat setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <AnkaChat setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'bmi_calculator':
-        return <BMICalculatorModal setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <BMICalculatorModal setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'sksdb_lunch':
-        return <SKSDBLunchWidget setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <SKSDBLunchWidget setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'sksdb_clubs':
-        return <SKSDBClubsDirectory setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <SKSDBClubsDirectory setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'bidb_status':
-        return <BIDBSystemStatusCard setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <BIDBSystemStatusCard setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'bidb_helpdesk':
-        return <BIDBHelpdeskModal setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <BIDBHelpdeskModal setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'kariyer_board':
         return <KariyerJobBoard setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'knowledge_portal':
-        return <KnowledgePortal setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <KnowledgePortal setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'idari_portal':
-        return <IdariPortal setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <IdariPortal setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'organization':
-        return <OrganizationChart setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <OrganizationChart setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'news':
       case 'haberler':
-        return <NewsEvents setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <NewsEvents setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'events':
       case 'events_list':
       case 'etkinlikler':
-        return <EventsPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <EventsPage setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'contact':
       case 'contact_us':
-        return <ContactPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <ContactPage setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'about_us':
-        return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'services':
-        return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="student" />;
+        return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
-          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="student" />;
+          return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="student" currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
         }
         return (
           <StudentFeed

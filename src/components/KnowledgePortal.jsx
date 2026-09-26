@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import MainHeader from './MainHeader';
 import MainFooter from './MainFooter';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { searchKnowledgeBase, getIndexStats, getSearchIndex } from '../utils/searchIndex';
 
 // JSON data imports
@@ -226,7 +227,7 @@ function ItemDetail({ item, onClose }) {
   );
 }
 
-export default function KnowledgePortal({ setView, currentUser, userRole }) {
+export default function KnowledgePortal({ setView, currentUser, userRole, setSelectedUserId }) {
   const [activeSection, setActiveSection] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
@@ -338,6 +339,13 @@ export default function KnowledgePortal({ setView, currentUser, userRole }) {
       {selectedItem && <ItemDetail item={selectedItem} onClose={() => setSelectedItem(null)} />}
 
       <MainFooter setView={setView} />
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={userRole || 'student'} 
+      />
     </div>
   );
 }

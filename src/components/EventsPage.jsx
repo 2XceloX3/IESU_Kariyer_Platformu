@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, MapPin, Clock, ExternalLink, Search, Sparkles, Filter, Building2, Tag, ChevronRight, X, ArrowUpRight, Eye } from 'lucide-react';
 import MainHeader from './MainHeader';
 import SubPanelFooter from './SubPanelFooter';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function EventsPage({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -650,6 +651,13 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
       )}
 
       <SubPanelFooter setView={setView} />
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={userRole || 'student'} 
+      />
     </div>
   );
 }

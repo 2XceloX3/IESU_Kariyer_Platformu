@@ -77,17 +77,43 @@ export default function UserProfile({
   const isAdminBranch = currentBranch === 'admin';
 
   const isProfileSelf = (profileType) => {
-    // 1. userId belirtilmediyse veya 'self' ise kullanıcının kendi profilidir
-    if (!userId || userId === 'self') return true;
+    // 1. userId belirtilmediyse veya 'self' / 'me' ise kullanıcının kendi profilidir
+    if (!userId || userId === 'self' || userId === 'me') return true;
 
-    // 2. userId oturum açan kullanıcının kendi ID'sine eşitse kendi profilidir
-    if (currentUser?.id && (userId === currentUser.id || user?.id === currentUser.id)) {
-      return true;
+    // 2. userId oturum açan kullanıcının kimlikleriyle eşleşiyorsa (id, uid, studentNo, email, name)
+    if (currentUser) {
+      if (currentUser.id && (userId === currentUser.id || user?.id === currentUser.id)) return true;
+      if (currentUser.uid && (userId === currentUser.uid || user?.uid === currentUser.uid)) return true;
+      if (currentUser.studentNo && (userId === currentUser.studentNo || user?.studentNo === currentUser.studentNo)) return true;
+      if (currentUser.email && (userId === currentUser.email || user?.email === currentUser.email)) return true;
+      if (currentUser.name && user?.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
     }
 
     // 3. Admin portalında admin kimlikleri kendi profilidir
     if (isAdminBranch && (userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513')) {
       return true;
+    }
+
+    // 4. Öğrenci dalında oturum açmış öğrencinin varsayılan profil kimliği
+    if (isStudentBranch && (currentUser?.role === 'student' || !currentUser?.role || currentUser?.role === 'admin')) {
+      if (userId === 'STU-001' || user?.id === 'STU-001') {
+        return true;
+      }
+    }
+
+    // 5. Mezun dalında mezun kimliği
+    if (isAlumniBranch && currentUser?.role === 'alumni') {
+      if (userId === 'ALU-001' || user?.id === 'ALU-001') return true;
+    }
+
+    // 6. Akademik dalında akademik kimliği
+    if (isAcademicBranch && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff')) {
+      if (userId === 'ACAD-001' || user?.id === 'ACAD-001') return true;
+    }
+
+    // 7. Firma dalında kurumsal kimlik
+    if (isCompanyBranch && (currentUser?.role === 'company' || currentUser?.role === 'employer')) {
+      if (userId === 'CMP-001' || user?.id === 'CMP-001') return true;
     }
 
     // Aksi takdirde (ör. Caner'e veya Seda'ya veya başka birine tıklandığında) bu bir ZİYARETÇİ profildir!
@@ -351,12 +377,15 @@ export default function UserProfile({
           found = allStudents.find(s => s.id === targetUserId);
         }
         const isSelfStudent = isStudentBranch && (
-          (currentUser?.id && targetUserId === currentUser?.id) || 
-          (!targetUserId && currentUser?.role === 'student')
+          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
+          (!targetUserId && (currentUser?.role === 'student' || !currentUser?.role)) ||
+          (targetUserId === 'STU-001' && (currentUser?.role === 'student' || !currentUser?.role || currentUser?.id === 'STU-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
+          (currentUser?.studentNo && (targetUserId === currentUser.studentNo)) ||
+          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const studentData = isSelfStudent ? {
           id: currentUser?.id || targetUserId || 'STU-001',
-          name: currentUser?.name || found?.name || 'Alperen Yılmaz',
+          name: currentUser?.name || found?.name || 'Öğrenci',
           role: 'student',
           department: currentUser?.department || found?.department || 'Yazılım Mühendisliği',
           grade: currentUser?.grade || currentUser?.year || found?.grade || found?.year || '3. Sınıf',
@@ -388,8 +417,9 @@ export default function UserProfile({
           found = allAlumni.find(a => a.id === targetUserId);
         }
         const isSelfAlumni = isAlumniBranch && (
-          (currentUser?.id && targetUserId === currentUser?.id) || 
-          (!targetUserId && currentUser?.role === 'alumni')
+          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
+          (!targetUserId && currentUser?.role === 'alumni') ||
+          (targetUserId === 'ALU-001' && (currentUser?.role === 'alumni' || currentUser?.role === 'admin'))
         );
         const alumniData = isSelfAlumni ? {
           id: currentUser?.id || targetUserId || 'ALU-001',
@@ -453,8 +483,9 @@ export default function UserProfile({
           found = allStaff.find(a => a.id === targetUserId);
         }
         const isSelfAcademic = isAcademicBranch && (
-          (currentUser?.id && targetUserId === currentUser?.id) || 
-          (!targetUserId && currentUser?.role === 'academic')
+          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
+          (!targetUserId && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff')) ||
+          (targetUserId === 'ACAD-001' && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff' || currentUser?.role === 'admin'))
         );
         const academicData = isSelfAcademic ? {
           id: currentUser?.id || targetUserId || 'ACAD-001',
@@ -638,7 +669,7 @@ export default function UserProfile({
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-10 h-10 border-4 border-iesu-navy border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-[#990000] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }

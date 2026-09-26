@@ -650,8 +650,12 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               })()}
 
               <button
-                onClick={() => setView('user_profile')}
-                className="w-full py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition mb-4 flex items-center justify-center gap-1.5"
+                onClick={() => {
+                  const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                  if (setSelectedUserId) setSelectedUserId(selfId);
+                  setView('user_profile');
+                }}
+                className="w-full py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition mb-4 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <BookOpen size={13}/> KGB Belgemi Görüntüle
               </button>

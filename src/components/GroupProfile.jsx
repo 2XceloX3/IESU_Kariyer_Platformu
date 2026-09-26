@@ -5,6 +5,7 @@ import PostCard from './PostCard';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
@@ -187,8 +188,15 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
         </div>
       </div>
 
-      {effectiveRole === 'admin' && (
+      {effectiveRole === 'admin' ? (
         <AdminOmniDock currentUser={currentUser} setView={setView} theme="amber" />
+      ) : (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          userRole={effectiveRole} 
+        />
       )}
     </div>
   );

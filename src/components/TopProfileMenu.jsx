@@ -539,7 +539,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   role="menuitem"
                   onClick={() => { 
                     setIsOpen(false); 
-                    if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                    const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || (effectiveBranch === 'alumni' ? 'ALU-001' : effectiveBranch === 'academic' ? 'ACAD-001' : effectiveBranch === 'company' ? 'CMP-001' : effectiveBranch === 'admin' ? 'admin_1513' : 'STU-001');
+                    if (setSelectedUserId) setSelectedUserId(selfId);
+                    else if (store?.setSelectedUserId) store.setSelectedUserId(selfId);
                     setView?.('user_profile'); 
                   }}
                   className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"

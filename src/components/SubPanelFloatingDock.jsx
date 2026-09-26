@@ -18,10 +18,11 @@ export default function SubPanelFloatingDock({
   const store = useAppStore?.getState ? useAppStore.getState() : {};
   const userName = currentUser?.name || 'Öğrenci';
   const userAvatar = currentUser?.avatar || '/iesu-logo.svg';
-  const userId = currentUser?.id || 'STU-001';
 
   const isAlumni = userRole === 'alumni';
   const isAdmin = userRole === 'admin';
+
+  const userId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || (isAlumni ? 'ALU-001' : isAdmin ? 'admin_1513' : 'STU-001');
 
   const homeView = isAdmin ? 'admin' : isAlumni ? 'alumni' : 'student';
 

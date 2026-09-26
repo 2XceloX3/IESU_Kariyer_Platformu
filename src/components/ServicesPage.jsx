@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import MainHeader from './MainHeader';
 import SubPanelFooter from './SubPanelFooter';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function ServicesPage({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -341,6 +342,13 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
       )}
 
       <SubPanelFooter setView={setView} />
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={userRole || 'student'} 
+      />
     </div>
   );
 }

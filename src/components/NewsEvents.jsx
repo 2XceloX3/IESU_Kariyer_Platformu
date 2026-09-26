@@ -398,7 +398,11 @@ export default function NewsEvents({ setView, currentUser, userRole, setSelected
           
           {/* PROFILE AVATAR */}
           <button 
-            onClick={() => setView('user_profile')} 
+            onClick={() => {
+              const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+              if (setSelectedUserId) setSelectedUserId(selfId);
+              setView('user_profile');
+            }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-110 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
             title="Profilim"
           >

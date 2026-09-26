@@ -59,10 +59,30 @@ export default function PublicUserProfile({
     }
   });
 
+  const effectiveTargetId = userId || storeSelectedUserId;
+
+  const isProfileSelf = useMemo(() => {
+    if (!user) return false;
+    if (userId === 'self' || effectiveTargetId === 'self') return true;
+    if (currentUser) {
+      if (currentUser.id && (effectiveTargetId === currentUser.id || user.id === currentUser.id)) return true;
+      if (currentUser.uid && (effectiveTargetId === currentUser.uid || user.uid === currentUser.uid)) return true;
+      if (currentUser.studentNo && (effectiveTargetId === currentUser.studentNo || user.studentNo === currentUser.studentNo)) return true;
+      if (currentUser.email && (effectiveTargetId === currentUser.email || user.email === currentUser.email)) return true;
+      if (currentUser.name && user.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
+    }
+    if ((viewerHive === 'student' || activePortalBranch === 'student') && (currentUser?.role === 'student' || !currentUser?.role)) {
+      if (effectiveTargetId === 'STU-001' && (!currentUser?.id || currentUser?.id === 'STU-001' || currentUser?.role === 'student')) {
+        return true;
+      }
+    }
+    return false;
+  }, [user, userId, effectiveTargetId, currentUser, viewerHive, activePortalBranch]);
+
   // ─── 1. HEDEF KULLANICIYI ÇÖZÜMLE (VERİ TABANI & MOCK POOL) ───
   useEffect(() => {
     setIsLoading(true);
-    const targetId = userId || storeSelectedUserId;
+    const targetId = effectiveTargetId;
 
     if (!targetId) {
       setIsLoading(false);
@@ -672,58 +692,77 @@ export default function PublicUserProfile({
                 />
               </div>
 
-              {/* Dala ve Role Uygun Ziyaretçi Aksiyon Butonları */}
+              {/* Dala ve Role Uygun Ziyaretçi / Kendi Profil Aksiyon Butonları */}
               <div className="flex items-center gap-2.5 flex-wrap">
-                <button
-                  onClick={handleToggleFollow}
-                  className={`px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition shadow-md cursor-pointer ${
-                    isFollowing
-                      ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
-                      : branchTheme.actionBtn
-                  }`}
-                >
-                  {isFollowing ? (
-                    <> <UserCheck size={16} /> Takipte </>
-                  ) : (
-                    <> <UserPlus size={16} /> Takip Et </>
-                  )}
-                </button>
+                {isProfileSelf ? (
+                  <>
+                    <button
+                      onClick={() => setView('profile_update')}
+                      className="px-5 py-2.5 rounded-2xl text-xs font-black bg-gradient-to-r from-red-900 via-[#990000] to-red-800 hover:from-red-800 hover:to-red-700 text-white flex items-center gap-2 transition shadow-md cursor-pointer hover:scale-[1.02] active:scale-95"
+                    >
+                      <UserCheck size={16} /> Profili Düzenle
+                    </button>
+                    <button
+                      onClick={() => setView('user_profile')}
+                      className="px-5 py-2.5 rounded-2xl text-xs font-black bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 transition shadow-md cursor-pointer hover:scale-[1.02] active:scale-95"
+                    >
+                      <FileText size={15} /> Kendi Profilim
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleToggleFollow}
+                      className={`px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition shadow-md cursor-pointer ${
+                        isFollowing
+                          ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
+                          : branchTheme.actionBtn
+                      }`}
+                    >
+                      {isFollowing ? (
+                        <> <UserCheck size={16} /> Takipte </>
+                      ) : (
+                        <> <UserPlus size={16} /> Takip Et </>
+                      )}
+                    </button>
 
-                <button
-                  onClick={handleSendMessage}
-                  className="px-5 py-2.5 rounded-2xl text-xs font-black bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
-                >
-                  <Send size={15} /> Mesaj Gönder
-                </button>
+                    <button
+                      onClick={handleSendMessage}
+                      className="px-5 py-2.5 rounded-2xl text-xs font-black bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
+                    >
+                      <Send size={15} /> Mesaj Gönder
+                    </button>
 
-                {/* Role-Specific Visitor Triggers */}
-                {(userType === 'academic' || user?.role === 'academic') && (
-                  <button
-                    onClick={() => setShowAppointmentModal(true)}
-                    className="px-5 py-2.5 rounded-2xl text-xs font-black bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
-                  >
-                    <Calendar size={15} /> Danışmanlık & Randevu İste
-                  </button>
-                )}
+                    {/* Role-Specific Visitor Triggers */}
+                    {(userType === 'academic' || user?.role === 'academic') && (
+                      <button
+                        onClick={() => setShowAppointmentModal(true)}
+                        className="px-5 py-2.5 rounded-2xl text-xs font-black bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
+                      >
+                        <Calendar size={15} /> Danışmanlık & Randevu İste
+                      </button>
+                    )}
 
-                {(userType === 'alumni' || user?.isMentor || user?.role === 'academic' || user?.badges?.includes('mentor')) && (
-                  <button
-                    onClick={() => setShowMentorRequestModal(true)}
-                    className="px-5 py-2.5 rounded-2xl text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
-                  >
-                    <Sparkles size={15} /> Mentörlük İste
-                  </button>
-                )}
+                    {(userType === 'alumni' || user?.isMentor || user?.role === 'academic' || user?.badges?.includes('mentor')) && (
+                      <button
+                        onClick={() => setShowMentorRequestModal(true)}
+                        className="px-5 py-2.5 rounded-2xl text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 transition shadow-md cursor-pointer"
+                      >
+                        <Sparkles size={15} /> Mentörlük İste
+                      </button>
+                    )}
 
-                {userType === 'company' && (
-                  <button
-                    onClick={() => {
-                      setActiveTab('jobs');
-                    }}
-                    className="px-5 py-2.5 rounded-2xl text-xs font-black bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 flex items-center gap-2 transition cursor-pointer"
-                  >
-                    <Briefcase size={15} /> Açık İlanları İncele
-                  </button>
+                    {userType === 'company' && (
+                      <button
+                        onClick={() => {
+                          setActiveTab('jobs');
+                        }}
+                        className="px-5 py-2.5 rounded-2xl text-xs font-black bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 flex items-center gap-2 transition cursor-pointer"
+                      >
+                        <Briefcase size={15} /> Açık İlanları İncele
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

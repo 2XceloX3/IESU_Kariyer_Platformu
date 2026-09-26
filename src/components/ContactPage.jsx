@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 import MainHeader from './MainHeader';
 import SubPanelFooter from './SubPanelFooter';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 
 export default function ContactPage({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -143,6 +144,13 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
       </main>
 
       <SubPanelFooter setView={setView} />
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={userRole || 'student'} 
+      />
     </div>
   );
 }

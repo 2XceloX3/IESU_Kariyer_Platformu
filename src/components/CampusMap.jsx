@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const LOCATIONS = [
   { id: 1, name: 'Merkez Kütüphane', type: 'study', top: '22%', left: '32%', icon: <Book size={20}/>, status: 'Yoğun (%85)', capacity: '850/1000 Kişi', description: 'Sessiz çalışma alanları ve bireysel çalışma odaları dolmak üzere.', quietLevel: 'Düşük' },
@@ -326,6 +327,13 @@ export default function CampusMap({ setView, currentUser, userRole, setSelectedU
           </AnimatePresence>
         </div>
       </main>
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={userRole || 'student'} 
+      />
     </div>
   );
 }

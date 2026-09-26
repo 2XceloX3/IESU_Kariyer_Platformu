@@ -19,7 +19,12 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     const targetUserId = post?.authorId || post?.author?.id || post?.userId || post?.authorName || (typeof post?.author === 'string' ? post.author : post?.author?.name);
     if (targetUserId && activeSetSelectedUserId && activeSetView) {
       activeSetSelectedUserId(targetUserId);
-      const isSelf = targetUserId === currentUser?.id || targetUserId === 'self';
+      const isSelf = targetUserId === 'self' || (currentUser && (
+        targetUserId === currentUser.id ||
+        targetUserId === currentUser.uid ||
+        targetUserId === currentUser.studentNo ||
+        (currentUser.name && String(targetUserId).trim().toLowerCase() === currentUser.name.trim().toLowerCase())
+      ));
       activeSetView(isSelf ? 'user_profile' : 'public_profile');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

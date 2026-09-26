@@ -4,6 +4,7 @@ import {
   MapPin, ShieldAlert, ArrowLeft, ArrowRight, Download 
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const MOCK_ANNOUNCEMENTS = [
   {
@@ -83,7 +84,7 @@ const MOCK_STAFF = [
   }
 ];
 
-export default function IdariPortal({ setView, previousView }) {
+export default function IdariPortal({ setView, previousView, currentUser, userRole, setSelectedUserId }) {
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
   const logAction = useAppStore(state => state.logAction);
 
@@ -110,16 +111,17 @@ export default function IdariPortal({ setView, previousView }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-red-900 p-4 sm:p-6 lg:p-8 pb-24">
+    <div className="min-h-screen bg-slate-50 text-red-900 p-4 sm:p-6 lg:p-8 pb-32">
       <div className="max-w-6xl mx-auto">
         
         {/* Top bar */}
         <div className="flex items-center justify-between mb-8">
           <button 
-            onClick={() => setView(previousView || 'landing')} 
-            className="flex items-center gap-2 text-sm font-bold text-[#990000] hover:text-red-700 bg-white px-4 py-2.5 rounded-full shadow-sm border border-slate-200 transition"
+            onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))} 
+            className="w-10 h-10 rounded-full bg-white border border-gray-200 hover:bg-red-50 text-gray-700 hover:text-[#990000] flex items-center justify-center shadow-xs transition cursor-pointer"
+            title="Geri Dön"
           >
-            <ArrowLeft size={16} /> Geri Dön
+            <ArrowLeft size={18} />
           </button>
           <div className="flex items-center gap-2">
             <Building2 size={24} className="text-[#990000]" />
@@ -261,6 +263,13 @@ export default function IdariPortal({ setView, previousView }) {
         </div>
 
       </div>
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={userRole || 'student'} 
+      />
     </div>
   );
 }

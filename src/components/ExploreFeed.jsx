@@ -30,7 +30,12 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
   const handleViewProfile = (userId) => {
     if (setSelectedUserId && setView) {
       setSelectedUserId(userId);
-      const isSelf = userId === currentUser?.id || userId === 'self';
+      const isSelf = !userId || userId === 'self' || (currentUser && (
+        userId === currentUser.id || 
+        userId === currentUser.uid || 
+        userId === currentUser.studentNo || 
+        (currentUser.name && userId === currentUser.name)
+      ));
       setView(isSelf ? 'user_profile' : 'public_profile');
     }
   };

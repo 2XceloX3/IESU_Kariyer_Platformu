@@ -3,6 +3,7 @@ import { Award, Globe, Users, ShieldCheck, HeartHandshake, CheckCircle2, Buildin
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import MainHeader from './MainHeader';
 import SubPanelFooter from './SubPanelFooter';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function AboutUsPage({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -293,6 +294,13 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
       </main>
 
       <SubPanelFooter setView={setView} />
+
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={userRole || 'student'} 
+      />
     </div>
   );
 }

@@ -1147,7 +1147,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
           {/* Profil */}
           <button 
             onClick={() => {
-              if (setSelectedUserId) setSelectedUserId(studentData.id);
+              const selfId = studentData?.id || currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+              if (setSelectedUserId) setSelectedUserId(selfId);
+              else useAppStore.getState().setSelectedUserId?.(selfId);
               setView('user_profile');
             }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
