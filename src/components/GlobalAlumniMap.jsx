@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import * as RSM from "react-simple-maps";
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
 import useAppStore from '../store/useAppStore';
@@ -1410,6 +1411,15 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
         </div>
 
       </main>
+
+      {/* Floating Bottom Dock */}
+      <SubPanelFloatingDock 
+        currentUser={currentUser}
+        userRole={userRole || 'alumni'}
+        activeTab="global_map"
+        setView={setView}
+        setSelectedUserId={setSelectedUserId}
+      />
     </div>
   );
 }

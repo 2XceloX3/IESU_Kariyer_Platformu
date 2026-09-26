@@ -1385,7 +1385,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
 
                       <button
                         onClick={() => setCardAppStatus('form')}
-                        className="text-xs font-black text-slate-500 hover:text-red-900 transition uppercase tracking-wider"
+                        className="text-xs font-black text-slate-500 hover:text-[#059669] transition uppercase tracking-wider"
                       >
                         Yeni Başvuru Yap
                       </button>
@@ -1579,61 +1579,64 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                 </div>
               )}
 
-              {/* TAB 9: Kulüp Başvurusu */}
-              {activeTab === 'kulup_basvuru' && (
+              {/* TAB 9: İESÜMED Mezun Komisyon & Çalışma Grupları */}
+              {(activeTab === 'kulup_basvuru' || activeTab === 'mezun_komisyon') && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">Aktif Kulüp Başvuruları</h3>
+                    <h3 className="text-lg font-black text-slate-900">🏛️ İESÜMED Mezun Çalışma Grupları & İhtisas Masaları</h3>
+                    <p className="text-xs text-slate-500 font-medium mt-1">
+                      Mezunlar Derneği bünyesindeki aktif çalışma komisyonlarına katılarak üniversitemize, mezun ağımıza ve genç mezunlara katkı sunabilirsiniz.
+                    </p>
                   </div>
 
                   <div className="space-y-3">
-                    {profileData.clubApplications.map(app => (
+                    {profileData.clubApplications?.map(app => (
                       <div key={app.id} className="p-4 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-between">
                         <div>
-                          <h4 className="font-bold text-xs text-red-900">{app.name}</h4>
-                          <span className="text-[9px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-black uppercase tracking-wider inline-block mt-1">Başvuru {app.status}</span>
+                          <h4 className="font-bold text-xs text-slate-900">{app.name}</h4>
+                          <span className="text-[9px] text-[#059669] bg-emerald-50 px-2 py-0.5 rounded font-black uppercase tracking-wider inline-block mt-1">Katılım Talebi: {app.status}</span>
                         </div>
-                        <button className="text-slate-400 hover:text-red-500 transition"><Trash2 size={16}/></button>
+                        <button className="text-slate-400 hover:text-rose-500 transition cursor-pointer"><Trash2 size={16}/></button>
                       </div>
                     ))}
                   </div>
 
                   <div className="mt-8">
-                    <h4 className="font-black text-sm text-red-900 mb-4">Başvurabileceğin Popüler Kulüpler</h4>
+                    <h4 className="font-black text-sm text-slate-900 mb-4">Açık Çalışma Komisyonları</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center">
+                      <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center bg-white shadow-2xs hover:border-emerald-200 transition">
                         <div>
-                          <h5 className="font-bold text-xs text-red-900">Girişimcilik ve İnovasyon Kulübü</h5>
-                          <p className="text-[10px] text-slate-400 mt-0.5">142 Üye • Aktif</p>
+                          <h5 className="font-bold text-xs text-slate-900">Girişimcilik ve Melek Yatırım Masası</h5>
+                          <p className="text-[10px] text-slate-500 mt-0.5 font-medium">142 Aktif Mezun • İESÜMED Fonu</p>
                         </div>
                         <button 
                           onClick={() => {
                             setProfileData(prev => ({
                               ...prev,
-                              clubApplications: [...prev.clubApplications, { id: Date.now(), name: "Girişimcilik ve İnovasyon Kulübü", status: "İnceleniyor" }]
+                              clubApplications: [...(prev.clubApplications || []), { id: Date.now(), name: "Girişimcilik ve Melek Yatırım Masası", status: "İnceleniyor" }]
                             }));
-                            window.toast && window.toast.success("Kulüp başvurunuz iletildi!");
+                            window.toast && window.toast.success("Komisyon katılım başvurunuz İESÜMED'e iletildi!");
                           }}
-                          className="bg-red-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
+                          className="bg-[#059669] hover:bg-emerald-700 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider cursor-pointer shadow-xs transition"
                         >
                           Katıl
                         </button>
                       </div>
 
-                      <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center">
+                      <div className="p-4 rounded-2xl border border-slate-200 flex justify-between items-center bg-white shadow-2xs hover:border-emerald-200 transition">
                         <div>
-                          <h5 className="font-bold text-xs text-red-900">Blockchain Araştırmaları Topluluğu</h5>
-                          <p className="text-[10px] text-slate-400 mt-0.5">85 Üye • Aktif</p>
+                          <h5 className="font-bold text-xs text-slate-900">Global Diaspora & Uluslararası Mezunlar Ağı</h5>
+                          <p className="text-[10px] text-slate-500 mt-0.5 font-medium">85 Aktif Mezun • Avrupa & ABD Masası</p>
                         </div>
                         <button 
                           onClick={() => {
                             setProfileData(prev => ({
                               ...prev,
-                              clubApplications: [...prev.clubApplications, { id: Date.now(), name: "Blockchain Araştırmaları Topluluğu", status: "İnceleniyor" }]
+                              clubApplications: [...(prev.clubApplications || []), { id: Date.now(), name: "Global Diaspora & Uluslararası Mezunlar Ağı", status: "İnceleniyor" }]
                             }));
-                            window.toast && window.toast.success("Kulüp başvurunuz iletildi!");
+                            window.toast && window.toast.success("Komisyon katılım başvurunuz İESÜMED'e iletildi!");
                           }}
-                          className="bg-red-600 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider"
+                          className="bg-[#059669] hover:bg-emerald-700 text-white font-black px-3.5 py-1.5 rounded-xl text-[10px] uppercase tracking-wider cursor-pointer shadow-xs transition"
                         >
                           Katıl
                         </button>
@@ -1655,7 +1658,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                   {!surveyCompleted ? (
                     <div className="space-y-4">
                       <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
-                        <h4 className="font-black text-xs text-emerald-600 uppercase tracking-wider mb-2">Aktif Anket: 2026 İstihdam ve Memnuniyet Anketi</h4>
+                        <h4 className="font-black text-xs text-[#059669] uppercase tracking-wider mb-2">Aktif Anket: 2026 İstihdam ve Memnuniyet Anketi</h4>
                         <p className="text-xs text-slate-500 font-bold mb-4">Mezunlarımızın iş bulma süreleri ve aldıkları eğitimin sektörel geçerliliği ölçülmektedir.</p>
                         
                         <div className="space-y-4 pt-2">
@@ -1667,7 +1670,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                   key={star} 
                                   type="button"
                                   onClick={() => setSurveyAnswers({...surveyAnswers, q1: star})}
-                                  className={`w-10 h-10 rounded-xl font-black text-xs border transition ${surveyAnswers.q1 === star ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                  className={`w-10 h-10 rounded-xl font-black text-xs border transition cursor-pointer ${surveyAnswers.q1 === star ? 'bg-[#059669] border-[#059669] text-white shadow-xs' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                                 >
                                   {star} ★
                                 </button>
@@ -1683,7 +1686,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                                   key={opt}
                                   type="button"
                                   onClick={() => setSurveyAnswers({...surveyAnswers, q2: opt})}
-                                  className={`px-4 py-2 rounded-xl font-bold text-xs border transition ${surveyAnswers.q2 === opt ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                  className={`px-4 py-2 rounded-xl font-bold text-xs border transition cursor-pointer ${surveyAnswers.q2 === opt ? 'bg-[#059669] border-[#059669] text-white shadow-xs' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                                 >
                                   {opt}
                                 </button>
@@ -1702,15 +1705,15 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           setSurveyCompleted(true);
                           window.toast && window.toast.success("📝 Anket geri bildiriminiz başarıyla kaydedildi. Katkınız için teşekkür ederiz!");
                         }}
-                        className="px-6 py-3 bg-red-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition"
+                        className="px-6 py-3 bg-[#059669] hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition cursor-pointer shadow-md"
                       >
                         Yanıtları Gönder
                       </button>
                     </div>
                   ) : (
                     <div className="py-12 text-center bg-slate-50 border border-slate-200 rounded-3xl p-6">
-                      <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100"><CheckCircle size={28}/></div>
-                      <h4 className="font-black text-red-900 mb-2">Katılımınız İçin Teşekkürler</h4>
+                      <div className="w-16 h-16 bg-emerald-50 text-[#059669] rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100"><CheckCircle size={28}/></div>
+                      <h4 className="font-black text-slate-900 mb-2">Katılımınız İçin Teşekkürler</h4>
                       <p className="text-slate-500 text-xs font-bold max-w-sm mx-auto leading-relaxed">
                         Anket yanıtlarınız kalite geliştirme koordinatörlüğüne iletilmiştir.
                       </p>

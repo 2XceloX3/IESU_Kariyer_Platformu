@@ -90,33 +90,31 @@ export default function UserProfile({
     }
 
     // 3. Admin portalında admin kimlikleri kendi profilidir
-    if (isAdminBranch && (userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513')) {
+    if (isAdminBranch && (userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513' || user?.id === 'admin')) {
       return true;
     }
 
-    // 4. Öğrenci dalında oturum açmış öğrencinin varsayılan profil kimliği
-    if (isStudentBranch) {
-      if (userId === 'STU-001' || user?.id === 'STU-001') {
-        return true;
-      }
+    // 4. Öğrenci dalında öğrencinin varsayılan profil kimliği
+    if (isStudentBranch && (userId === 'STU-001' || user?.id === 'STU-001')) {
+      return true;
     }
 
     // 5. Mezun dalında mezun kimliği
-    if (isAlumniBranch && currentUser?.role === 'alumni') {
-      if (userId === 'ALU-001' || user?.id === 'ALU-001') return true;
+    if (isAlumniBranch && (userId === 'ALU-001' || user?.id === 'ALU-001')) {
+      return true;
     }
 
     // 6. Akademik dalında akademik kimliği
-    if (isAcademicBranch && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff')) {
-      if (userId === 'ACAD-001' || user?.id === 'ACAD-001') return true;
+    if (isAcademicBranch && (userId === 'ACAD-001' || user?.id === 'ACAD-001')) {
+      return true;
     }
 
     // 7. Firma dalında kurumsal kimlik
-    if (isCompanyBranch && (currentUser?.role === 'company' || currentUser?.role === 'employer')) {
-      if (userId === 'CMP-001' || user?.id === 'CMP-001') return true;
+    if (isCompanyBranch && (userId === 'CMP-001' || user?.id === 'CMP-001')) {
+      return true;
     }
 
-    // Aksi takdirde (ör. Caner'e veya Seda'ya veya başka birine tıklandığında) bu bir ZİYARETÇİ profildir!
+    // Aksi takdirde (ör. başka bir öğrenciye, mezuna veya hocaya tıklandığında) bu bir ZİYARETÇİ profildir!
     return false;
   };
 
@@ -340,6 +338,14 @@ export default function UserProfile({
   useEffect(() => {
     setIsLoading(true);
     let targetUserId = userId;
+
+    if (!targetUserId || targetUserId === 'self' || targetUserId === 'me') {
+      if (currentBranch === 'alumni') targetUserId = currentUser?.role === 'alumni' && currentUser?.id ? currentUser.id : 'ALU-001';
+      else if (currentBranch === 'academic') targetUserId = (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff') && currentUser?.id ? currentUser.id : 'ACAD-001';
+      else if (currentBranch === 'company') targetUserId = currentUser?.role === 'company' && currentUser?.id ? currentUser.id : 'CMP-001';
+      else if (currentBranch === 'admin') targetUserId = currentUser?.id || 'admin_1513';
+      else targetUserId = currentUser?.role === 'student' && currentUser?.id ? currentUser.id : 'STU-001';
+    }
 
     // ─── DAL EGEMENLİĞİ & YABANCI ADMIN ID FİLTRESİ ───
     // Eğer öğrenci, mezun, akademik veya firma dalındaysak ama targetUserId 'admin_1513' veya 'admin' geldiyse,
@@ -3440,7 +3446,8 @@ export default function UserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('alumni');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'ALU-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-600 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
@@ -3488,7 +3495,8 @@ export default function UserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('student');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 

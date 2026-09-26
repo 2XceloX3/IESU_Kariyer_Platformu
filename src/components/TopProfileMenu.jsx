@@ -521,11 +521,11 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
                         effectiveBranch === 'company' 
-                          ? 'bg-purple-600 text-white font-black border-purple-700 shadow-purple-900/20' 
-                          : 'bg-white hover:bg-purple-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-purple-200'
+                          ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white font-black border-blue-800 shadow-blue-950/20' 
+                          : 'bg-white hover:bg-blue-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'company' ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'company' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-900 group-hover:bg-[#0A2342] group-hover:text-white'}`}>
                         <Building2 size={16} />
                       </div>
                       <span className={`text-[10px] font-bold ${effectiveBranch === 'company' ? 'text-white' : 'text-gray-700'}`}>Firma</span>

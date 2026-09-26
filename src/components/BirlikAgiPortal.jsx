@@ -126,11 +126,11 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-emerald-50 text-[#059669]`} title="Bildirimler">
               <div className="relative">
-                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#059669]/10" />
                 {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
@@ -457,7 +457,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               <p className="text-xs font-medium text-slate-200 leading-relaxed">{selectedStory.caption}</p>
               <button 
                 onClick={() => { setActiveModal(null); setActiveTab('apply'); }}
-                className="w-full py-3 bg-[#990000] text-white font-bold text-xs rounded-xl"
+                className="w-full py-3 bg-[#059669] hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition cursor-pointer shadow-md"
               >
                 Başvuru Formuna Git
               </button>

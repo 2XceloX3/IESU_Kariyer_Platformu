@@ -63,7 +63,7 @@ export default function PublicUserProfile({
 
   const isProfileSelf = useMemo(() => {
     if (!user) return false;
-    if (userId === 'self' || effectiveTargetId === 'self') return true;
+    if (!effectiveTargetId || userId === 'self' || effectiveTargetId === 'self' || userId === 'me' || effectiveTargetId === 'me') return true;
     if (currentUser) {
       if (currentUser.id && (effectiveTargetId === currentUser.id || user.id === currentUser.id)) return true;
       if (currentUser.uid && (effectiveTargetId === currentUser.uid || user.uid === currentUser.uid)) return true;
@@ -71,10 +71,20 @@ export default function PublicUserProfile({
       if (currentUser.email && (effectiveTargetId === currentUser.email || user.email === currentUser.email)) return true;
       if (currentUser.name && user.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
     }
+    if (viewerHive === 'admin' || activePortalBranch === 'admin') {
+      if (effectiveTargetId === 'admin_1513' || user.id === 'admin_1513' || effectiveTargetId === 'admin') return true;
+    }
     if (viewerHive === 'student' || activePortalBranch === 'student') {
-      if (effectiveTargetId === 'STU-001' || user.id === 'STU-001') {
-        return true;
-      }
+      if (effectiveTargetId === 'STU-001' || user.id === 'STU-001') return true;
+    }
+    if (viewerHive === 'alumni' || activePortalBranch === 'alumni') {
+      if (effectiveTargetId === 'ALU-001' || user.id === 'ALU-001') return true;
+    }
+    if (viewerHive === 'academic' || activePortalBranch === 'academic') {
+      if (effectiveTargetId === 'ACAD-001' || user.id === 'ACAD-001') return true;
+    }
+    if (viewerHive === 'company' || activePortalBranch === 'company') {
+      if (effectiveTargetId === 'CMP-001' || user.id === 'CMP-001') return true;
     }
     return false;
   }, [user, userId, effectiveTargetId, currentUser, viewerHive, activePortalBranch]);
@@ -83,8 +93,33 @@ export default function PublicUserProfile({
   useEffect(() => {
     setIsLoading(true);
     const targetId = effectiveTargetId;
-
     if (!targetId) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    // 0. Kendi Profilim (Self / Me) veya Hedef Kullanıcı Oturum Açan Kullanıcı ise
+    if (targetId === 'self' || targetId === 'me' || (currentUser && (targetId === currentUser.id || targetId === currentUser.uid))) {
+      const selfRole = currentUser?.role || activePortalBranch || viewerHive || 'student';
+      const selfId = currentUser?.id || currentUser?.uid || (selfRole === 'alumni' ? 'ALU-001' : selfRole === 'academic' ? 'ACAD-001' : selfRole === 'company' ? 'CMP-001' : selfRole === 'admin' ? 'admin_1513' : 'STU-001');
+      setUser({
+        id: selfId,
+        name: currentUser?.name || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'İESÜ Üyesi'),
+        role: selfRole,
+        title: currentUser?.title || (selfRole === 'academic' ? 'Öğretim Üyesi' : selfRole === 'alumni' ? 'Mezun' : selfRole === 'admin' ? 'Süper Yönetici & Koordinatör' : ''),
+        department: currentUser?.department || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Yazılım Mühendisliği'),
+        company: currentUser?.company || '',
+        sector: currentUser?.sector || '',
+        grade: currentUser?.grade || currentUser?.year || '3. Sınıf',
+        graduationYear: currentUser?.graduationYear || currentUser?.gradYear || '2023',
+        gpa: currentUser?.gpa || '3.84',
+        email: currentUser?.email || 'kullanici@esenyurt.edu.tr',
+        avatar: currentUser?.avatar || (selfRole === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
+        badges: currentUser?.badges || ['verified', 'top_voice'],
+        bio: currentUser?.bio || currentUser?.about || 'İstanbul Esenyurt Üniversitesi Kariyer Ekosistemi Doğrulanmış Profili.'
+      });
+      setUserType(selfRole);
       setIsLoading(false);
       return;
     }
@@ -698,7 +733,7 @@ export default function PublicUserProfile({
                   <>
                     <button
                       onClick={() => setView('profile_update')}
-                      className="px-5 py-2.5 rounded-2xl text-xs font-black bg-gradient-to-r from-red-900 via-[#990000] to-red-800 hover:from-red-800 hover:to-red-700 text-white flex items-center gap-2 transition shadow-md cursor-pointer hover:scale-[1.02] active:scale-95"
+                      className={`px-5 py-2.5 rounded-2xl text-xs font-black ${branchTheme.actionBtn} flex items-center gap-2 transition shadow-md cursor-pointer hover:scale-[1.02] active:scale-95`}
                     >
                       <UserCheck size={16} /> Profili Düzenle
                     </button>
@@ -1417,7 +1452,8 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('alumni');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'ALU-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-600 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
@@ -1465,7 +1501,8 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('academic');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.academicId || 'ACAD-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
@@ -1513,7 +1550,8 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('company');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.companyId || 'CMP-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
@@ -1561,7 +1599,8 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('student');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
