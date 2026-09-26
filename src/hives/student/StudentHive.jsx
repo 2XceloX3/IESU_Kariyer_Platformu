@@ -16,7 +16,6 @@ const JobsAndInternships = lazy(() => import('../../components/JobsAndInternship
 const UserProfile = lazy(() => import('../../components/UserProfile'));
 const PublicUserProfile = lazy(() => import('../../components/PublicUserProfile'));
 const StudentProfileUpdate = lazy(() => import('../../components/profile/StudentProfileUpdate'));
-const ProfileUpdate = lazy(() => import('../../components/ProfileUpdate'));
 const StudentKGBPanel = lazy(() => import('../../components/StudentKGBPanel'));
 const StudentAnalytics = lazy(() => import('../../components/StudentAnalytics'));
 const AICVBuilder = lazy(() => import('../../components/AICVBuilder'));
@@ -89,10 +88,18 @@ export default function StudentHive({ currentUser, setView }) {
       const clean = v.replace(/^\//, '');
       if (PORTAL_ROUTES.has(clean) && clean !== 'student') {
         const store = useAppStore.getState();
-        if (['alumni', 'company', 'academic'].includes(clean)) {
+        const isUserAdmin = currentUser?.role === 'admin' || store.userRole === 'admin';
+        if (['alumni', 'company', 'academic'].includes(clean) && isUserAdmin) {
           store.setActivePortalBranch?.(clean);
-        } else if (clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') {
+        } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && isUserAdmin) {
           store.setActivePortalBranch?.('admin');
+        } else if (clean === 'login' || clean === 'register' || clean === 'landing' || clean === 'forgot_password') {
+          // allow public auth routes
+        } else if (!isUserAdmin) {
+          window.toast?.info?.('Öğrenci Portalı aktif kalmaktadır.');
+          setActiveView('feed');
+          navigate('/student');
+          return;
         }
         setActiveView('feed');
         if (setView) setView(clean);

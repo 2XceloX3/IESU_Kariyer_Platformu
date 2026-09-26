@@ -16,7 +16,7 @@ import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import ApplicationsPanel from './ApplicationsPanel';
 import NavIcon from './shared/NavIcon';
-import AlumniSurveys from './AlumniSurveys';
+import StudentSurveys from './StudentSurveys';
 import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
 import TeamUpMentorHub from './TeamUpMentorHub';
@@ -61,10 +61,6 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const messages = useAppStore(state => state.messages);
   const setMessages = useAppStore(state => state.setMessages);
   const featureSurveys = useAppStore(state => state.featureSurveys);
-  const featureAlumniCard = useAppStore(state => state.featureAlumniCard);
-  const alumniCardApplications = useAppStore(state => state.alumniCardApplications);
-  const setAlumniCardApplications = useAppStore(state => state.setAlumniCardApplications);
-  const alumniCardForms = useAppStore(state => state.alumniCardForms);
   const [activeTab, setActiveTab] = useState('feed');
   const [feedFilter, setFeedFilter] = useState('for_you'); // for_you, following // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
@@ -72,8 +68,6 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [showMentorshipModal, setShowMentorshipModal] = useState(false);
   const [showMentorsModal, setShowMentorsModal] = useState(false);
   const [mentorshipForm, setMentorshipForm] = useState({ title: '', hours: '', mode: 'Online', motivation: '' });
-  const [showCardModal, setShowCardModal] = useState(false);
-  const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
   const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
@@ -90,28 +84,6 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const studentDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (currentUser?.department || 'Yazılım Mühendisliği');
   const studentAvatar = currentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde');
   const studentId = (currentUser?.role === 'student' && currentUser?.id && currentUser.id !== 'admin_1513') ? currentUser.id : 'STU-001';
-
-  const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
-  const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
-
-  const handleCardSubmit = (e) => {
-    e.preventDefault();
-    const newApp = {
-      id: `KART-${Date.now()}`,
-      name: currentUser?.name || 'Mezun',
-      tc: cardForm.tc,
-      department: currentUser?.department || 'Mezun',
-      gradYear: currentUser?.graduationYear || '2023',
-      email: currentUser?.email || 'mezun@esenyurt.edu.tr',
-      phone: cardForm.phone,
-      date: new Date().toLocaleDateString('tr-TR'),
-      status: 'Bekliyor'
-    };
-    if (setAlumniCardApplications) {
-      setAlumniCardApplications([newApp, ...(alumniCardApplications || [])]);
-    }
-    setShowCardModal(false);
-  };
 
   // Removed mock stories and defaultPosts
   
@@ -408,7 +380,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         {/* SURVEYS TAB */}
         {featureSurveys && activeTab === 'surveys' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <AlumniSurveys surveys={surveys} currentUser={currentUser} />
+            <StudentSurveys surveys={surveys} currentUser={currentUser} />
           </div>
         )}
 
@@ -847,57 +819,7 @@ groups={groups}
           </div>
         )}
 
-        {/* Mezun Kartı Modal */}
-        {showCardModal && (
-          <div className="fixed inset-0 z-[100] bg-gray-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in">
-              <div className="bg-gradient-to-r from-iesu-navy to-iesu-navy p-6 text-white relative">
-                <button onClick={() => setShowCardModal(false)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition"><X size={16}/></button>
-                <CreditCard size={32} className="mb-3 opacity-90"/>
-                <h2 className="text-xl font-black">Mezun Kartı Başvurusu</h2>
-                <p className="text-red-100 text-sm mt-1">Kartınızı almak için bilgilerinizi doğrulayın.</p>
-              </div>
-              <form onSubmit={handleCardSubmit} className="p-6 space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Ad Soyad</label>
-                  <input type="text" disabled value={currentUser?.name || 'Mezun'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Bölüm & Mezuniyet Yılı</label>
-                  <input type="text" disabled value={`${currentUser?.department || 'Mezun'} - ${currentUser?.graduationYear || '2023'}`} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">E-posta Adresi</label>
-                  <input type="email" disabled value={currentUser?.email || 'mezun@esenyurt.edu.tr'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">TC Kimlik No (Zorunlu)</label>
-                  <input type="text" required maxLength="11" pattern="\d{11}" value={cardForm.tc} onChange={e => setCardForm({...cardForm, tc: e.target.value.replace(/\D/g,'')})} placeholder="11 Haneli TC Kimlik No" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-300 outline-none" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Telefon Numarası</label>
-                  <input type="tel" required value={cardForm.phone} onChange={e => setCardForm({...cardForm, phone: e.target.value})} placeholder="05XX XXX XX XX" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-300 outline-none" />
-                </div>
-                
-                <div className="pt-2">
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <div className="relative flex items-start pt-1">
-                      <input type="checkbox" required className="w-4 h-4 border-gray-300 rounded text-red-600 focus:ring-red-500 cursor-pointer" />
-                    </div>
-                    <span className="text-xs text-gray-500 font-medium leading-relaxed group-hover:text-gray-700 transition">
-                      Kişisel verilerimin Mezun Kartı basımı ve işlemleri amacıyla işlenmesine dair <button type="button" className="text-red-600 font-bold hover:underline">KVKK Aydınlatma Metni'ni</button> okudum ve onaylıyorum.
-                    </span>
-                  </label>
-                </div>
-                
-                <div className="pt-4 mt-4 border-t border-gray-100 flex gap-3">
-                  <button type="button" onClick={() => setShowCardModal(false)} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition">İptal</button>
-                  <button type="submit" className="flex-[2] bg-[#990000] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-700 transition shadow-sm">Başvuruyu Tamamla</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+
 
         {/* Mentorship Application Modal */}
         {showMentorshipModal && (

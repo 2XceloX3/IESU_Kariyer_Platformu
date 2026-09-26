@@ -40,7 +40,7 @@ export default function App() {
   const { userRole, setUserRole, siteConfig, activePortalBranch, setActivePortalBranch } = useAppStore();
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
-  const isAdmin = !import.meta.env.DEV ? (Boolean(authenticatedUserId && (currentUser?.role === 'admin' || userRole === 'admin')) || currentUser?.id === 'admin_1513') : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
+  const isAdmin = !import.meta.env.DEV ? (Boolean(authenticatedUserId && (currentUser?.role === 'admin' || userRole === 'admin')) || (currentUser?.id === 'admin_1513' && currentUser?.role === 'admin')) : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
 
   const setView = useCallback((v) => {
@@ -105,10 +105,10 @@ export default function App() {
       return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
     }
     if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : <StudentHive currentUser={currentUser} setView={setView} />;
-    if (ALUMNI_ROUTES.has(pathView)) return <AlumniHive currentUser={currentUser} setView={setView} />;
+    if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AlumniHive currentUser={currentUser} setView={setView} />;
     if (STUDENT_ROUTES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
-    if (ACADEMIC_ROUTES.has(pathView)) return <AcademicHive currentUser={currentUser} setView={setView} />;
-    if (COMPANY_ROUTES.has(pathView)) return <CompanyHive currentUser={currentUser} setView={setView} />;
+    if (ACADEMIC_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AcademicHive currentUser={currentUser} setView={setView} />;
+    if (COMPANY_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <CompanyHive currentUser={currentUser} setView={setView} />;
     if (currentBranch === 'alumni') return <AlumniHive currentUser={currentUser} setView={setView} />;
     if (currentBranch === 'company') return <CompanyHive currentUser={currentUser} setView={setView} />;
     if (currentBranch === 'academic') return <AcademicHive currentUser={currentUser} setView={setView} />;

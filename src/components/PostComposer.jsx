@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image as ImageIcon, FileText, Video, Send, X, Plus, Calendar, Smile, BarChart2 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import DOMPurify from 'dompurify';
+import eventBus from '../brain/eventBus';
 
 export default function PostComposer({ currentUser, userRole, posts, setPosts, asClub }) {
   const logAction = useAppStore(state => state.logAction);
@@ -43,6 +44,9 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
       status: 'Beklemede'
     };
     setPosts([newPost, ...(posts || [])]);
+    try {
+      eventBus.emit('event:announced', { event: newPost });
+    } catch (_) {}
     setEventMode(false); setEvTitle(''); setEvDate(''); setEvLocation(''); setEvDesc('');
     setMedia(null); setMediaType(null);
     if (logAction) {
@@ -93,6 +97,9 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     };
 
     setPosts([newPost, ...(posts || [])]);
+    try {
+      eventBus.emit('post:created', { post: newPost });
+    } catch (_) {}
     setContent('');
     setMedia(null);
     setMediaType(null);

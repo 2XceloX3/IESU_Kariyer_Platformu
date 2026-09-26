@@ -11,6 +11,7 @@ import SafeAvatar from './shared/SafeAvatar';
 import TopProfileMenu from './TopProfileMenu';
 import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';
+import eventBus from '../brain/eventBus';
 
 export default function StudentKGBPanel({ setView, currentUser, userRole, previousView }) {
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
@@ -354,6 +355,15 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
     }
     setShowRequestModal(false);
     toast.success('KGB Belge Onay Talebiniz Kariyer Ofisi Koordinatörlüğü\'ne İletildi.');
+    try {
+      eventBus.emit('application:status', {
+        type: 'kgb_document_request',
+        studentId: studentData.id,
+        studentName: studentData.name,
+        title: newRequestTitle,
+        organization: newRequestOrg
+      });
+    } catch (_) {}
     if (addNotification) {
       addNotification({
         id: 'NOTIF-' + Date.now(),

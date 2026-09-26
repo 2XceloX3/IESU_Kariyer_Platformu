@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, FileText, Upload, CheckCircle2, ShieldCheck, Building2, Calendar, Sparkles, AlertCircle } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import eventBus from '../brain/eventBus';
 
 export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUser }) {
   const internships = useAppStore(state => state.internships) || [];
@@ -108,6 +109,15 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
       };
       setApplications([unifiedApp, ...applications]);
     }
+
+    try {
+      eventBus.emit('application:status', { 
+        type: 'internship_document_submitted',
+        application: newApp,
+        student: currentUser?.name || newApp.name,
+        company: form.company
+      });
+    } catch (_) {}
 
     if (addNotification) {
       addNotification({

@@ -10,6 +10,7 @@ import AdminOmniDock from './AdminOmniDock';
 import JobMatchScoreCard from './JobMatchScoreCard';
 import SafeAvatar from './shared/SafeAvatar';
 import AnkaCoverLetterModal from './AnkaCoverLetterModal';
+import eventBus from '../brain/eventBus';
 
 export default function JobsAndInternships({ userRole, setView, currentUser, jobs: propsJobs }) {
   const previousView = useAppStore(state => state.previousView);
@@ -115,6 +116,15 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     };
     
     setApplications(prev => [...(prev || []), newApp]);
+    try {
+      eventBus.emit('application:status', { 
+        type: 'applied', 
+        application: newApp,
+        role: effectiveRole,
+        jobTitle: applyModalJob.title,
+        applicant: branchName
+      });
+    } catch (_) {}
     window.toast?.success("İş & Staj başvurunuz KGM ve Firma Havuzuna başarıyla iletildi!");
     addNotification({ id:'N-'+Date.now(), userId:branchTargetId, text:`${applyModalJob.title} ilanına başvurunuz iletildi.`, read:false, time:'Az önce' });
     setApplyModalJob(null);

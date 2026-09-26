@@ -70,12 +70,12 @@ export const useSharedStore = create(
         ...getInitialSharedState(),
 
         setPosts: setter('posts'),
-        addPost: (post) => set((s) => ({ posts: [post, ...(s.posts || [])] })),
+        addPost: (post) => set((s) => ({ posts: [post, ...(s.posts || []).filter(p => p?.id !== post?.id)] })),
 
         setStories: setter('stories'),
 
         setJobs: setter('jobs'),
-        addJob: (job) => set((s) => ({ jobs: [job, ...(s.jobs || [])] })),
+        addJob: (job) => set((s) => ({ jobs: [job, ...(s.jobs || []).filter(j => j?.id !== job?.id)] })),
 
         setSwipedJobs: setter('swipedJobs'),
 
@@ -84,12 +84,12 @@ export const useSharedStore = create(
         setVoluntaryInternships: setter('voluntaryInternships'),
 
         setEvents: setter('events'),
-        addEvent: (evt) => set((s) => ({ events: [evt, ...(s.events || [])] })),
+        addEvent: (evt) => set((s) => ({ events: [evt, ...(s.events || []).filter(e => e?.id !== evt?.id)] })),
 
         setNews: setter('news'),
 
         setAnnouncements: setter('announcements'),
-        addAnnouncement: (ann) => set((s) => ({ announcements: [ann, ...(s.announcements || [])] })),
+        addAnnouncement: (ann) => set((s) => ({ announcements: [ann, ...(s.announcements || []).filter(a => a?.id !== ann?.id)] })),
 
         setGeneralEvents: setter('generalEvents'),
 
