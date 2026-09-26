@@ -143,8 +143,10 @@ export default function StudentHive({ currentUser, setView }) {
       case 'student_analytics':
         return <StudentAnalytics setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'cvbuilder':
+      case 'cv_builder':
         return <AICVBuilder setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'interview_sim':
+      case 'interview_simulator':
         return <InterviewSimulator setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'applications':
         return <ApplicationsPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" />;
@@ -155,13 +157,16 @@ export default function StudentHive({ currentUser, setView }) {
       case 'startup_incubator':
         return <StartupIncubator setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'smart_certs':
+      case 'certificates':
         return <SmartCertificates setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'skills':
       case 'skill_tree':
         return <SkillTree setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'digital_portfolio':
+      case 'portfolio':
         return <DigitalPortfolio setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'reward_store':
+      case 'rewards':
         return <RewardStore setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'metaverse_library':
         return <MetaverseLibrary setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
@@ -179,6 +184,7 @@ export default function StudentHive({ currentUser, setView }) {
       case 'explore':
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
       case 'network':
+      case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="student" />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="student" />;
@@ -199,8 +205,10 @@ export default function StudentHive({ currentUser, setView }) {
       case 'mentor_booking':
         return <MentorBooking setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'virtual_fair':
+      case 'virtual_career_fair':
         return <VirtualCareerFair setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'wallet':
+      case 'iesu_wallet':
         return <IesuWallet setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'campus_map':
         return <CampusMap setView={handleSetView} currentUser={currentUser} userRole="student" />;
