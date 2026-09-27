@@ -82,11 +82,12 @@ export default function UserProfile({
 
     // 2. userId oturum açan kullanıcının kimlikleriyle eşleşiyorsa (id, uid, studentNo, email, name)
     if (currentUser) {
-      if (currentUser.id && (userId === currentUser.id || user?.id === currentUser.id)) return true;
-      if (currentUser.uid && (userId === currentUser.uid || user?.uid === currentUser.uid)) return true;
-      if (currentUser.studentNo && (userId === currentUser.studentNo || user?.studentNo === currentUser.studentNo)) return true;
-      if (currentUser.email && (userId === currentUser.email || user?.email === currentUser.email)) return true;
+      if (currentUser.id && (String(userId) === String(currentUser.id) || (user?.id && String(user.id) === String(currentUser.id)))) return true;
+      if (currentUser.uid && (String(userId) === String(currentUser.uid) || (user?.uid && String(user.uid) === String(currentUser.uid)))) return true;
+      if (currentUser.studentNo && (String(userId) === String(currentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(currentUser.studentNo)))) return true;
+      if (currentUser.email && (String(userId) === String(currentUser.email) || (user?.email && String(user.email) === String(currentUser.email)))) return true;
       if (currentUser.name && user?.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
+      if (currentUser.name && (String(userId).trim().toLowerCase() === currentUser.name.trim().toLowerCase())) return true;
     }
 
     // 3. Admin portalında admin kimlikleri kendi profilidir
@@ -95,26 +96,34 @@ export default function UserProfile({
     }
 
     // 4. Öğrenci dalında öğrencinin varsayılan profil kimliği
-    if (isStudentBranch && (userId === 'STU-001' || user?.id === 'STU-001')) {
-      return true;
+    if (isStudentBranch && (userId === 'STU-001' || userId === 'STU-01' || user?.id === 'STU-001' || user?.id === 'STU-01')) {
+      if (!currentUser?.id || currentUser.id === 'STU-001' || currentUser.id === 'STU-01' || currentUser.role === 'admin') {
+        return true;
+      }
     }
 
     // 5. Mezun dalında mezun kimliği
-    if (isAlumniBranch && (userId === 'ALU-001' || user?.id === 'ALU-001')) {
-      return true;
+    if (isAlumniBranch && (userId === 'ALU-001' || userId === 'ALU-01' || user?.id === 'ALU-001' || user?.id === 'ALU-01')) {
+      if (!currentUser?.id || currentUser.id === 'ALU-001' || currentUser.id === 'ALU-01' || currentUser.role === 'admin') {
+        return true;
+      }
     }
 
     // 6. Akademik dalında akademik kimliği
-    if (isAcademicBranch && (userId === 'ACAD-001' || user?.id === 'ACAD-001')) {
-      return true;
+    if (isAcademicBranch && (userId === 'ACAD-001' || userId === 'ACAD-01' || user?.id === 'ACAD-001' || user?.id === 'ACAD-01')) {
+      if (!currentUser?.id || currentUser.id === 'ACAD-001' || currentUser.id === 'ACAD-01' || currentUser.role === 'admin') {
+        return true;
+      }
     }
 
     // 7. Firma dalında kurumsal kimlik
-    if (isCompanyBranch && (userId === 'CMP-001' || user?.id === 'CMP-001')) {
-      return true;
+    if (isCompanyBranch && (userId === 'CMP-001' || userId === 'CMP-01' || user?.id === 'CMP-001' || user?.id === 'CMP-01')) {
+      if (!currentUser?.id || currentUser.id === 'CMP-001' || currentUser.id === 'CMP-01' || currentUser.role === 'admin') {
+        return true;
+      }
     }
 
-    // Aksi takdirde (ör. başka bir öğrenciye, mezuna veya hocaya tıklandığında) bu bir ZİYARETÇİ profildir!
+    // Aksi takdirde (ör. başka bir öğrenciye, mezuna, akademisyene veya firmaya tıklandığında) bu bir ZİYARETÇİ profildir!
     return false;
   };
 
@@ -675,6 +684,8 @@ export default function UserProfile({
     setIsLoading(false);
   }, [userId, students, alumni, companies, academicStaff, currentUser, userRole, activePortalBranch, previousView]);
 
+
+
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -809,6 +820,12 @@ export default function UserProfile({
                       className="flex-1 md:flex-none bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-600 text-white text-xs font-black px-5 py-3 rounded-2xl transition shadow-md shadow-emerald-900/20 border border-emerald-500/50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
                     >
                       <FileText size={15} /> CV & Portfolyo
+                    </button>
+                    <button 
+                      onClick={() => setView('student_kgb')} 
+                      className="flex-1 md:flex-none bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 hover:bg-slate-800 text-white text-xs font-black px-5 py-3 rounded-2xl transition shadow-md shadow-slate-900/20 border border-slate-700/50 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-95"
+                    >
+                      <GraduationCap size={15} /> KGB Karnesi
                     </button>
                   </>
                 ) : (
@@ -1039,9 +1056,8 @@ export default function UserProfile({
   };
 
   const renderAlumniProfile = () => {
-    const activeUser = user || currentUser || { name: currentUser?.name || 'Caner Öztürk', title: 'FRONTEND DEVELOPER', department: 'Yazılım Mühendisliği', gradYear: '2022' };
-    // Ziyaretçi/Kendi profil kontrolü: dal bazlı isProfileSelf kullanılır
     const isSelf = isProfileSelf('alumni');
+    const activeUser = user || currentUser || { name: currentUser?.name || 'Caner Öztürk', title: 'FRONTEND DEVELOPER', department: 'Yazılım Mühendisliği', gradYear: '2022' };
     const initials = (activeUser?.name || 'Caner Öztürk').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
     return (
@@ -1103,7 +1119,8 @@ export default function UserProfile({
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              {/* Action Buttons - Kendi Profil Yönetim vs Ziyaretçi Aksiyonları */}
+              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
                 {isSelf ? (
                   <>
                     <button 
@@ -1121,42 +1138,43 @@ export default function UserProfile({
                     </button>
                   </>
                 ) : (
-                  <div className="flex flex-wrap items-center gap-2">
+                  <>
                     <button
                       type="button"
                       onClick={() => handleOpenDirectChat(activeUser)}
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 hover:from-blue-600 hover:to-indigo-800 text-white shadow-blue-900/20 hover:scale-105 active:scale-95"
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 hover:from-blue-600 hover:to-indigo-800 text-white shadow-blue-900/20 hover:scale-[1.02] active:scale-95"
                     >
                       <MessageSquare size={15} /> Mesaj Gönder
                     </button>
                     <button
+                      type="button"
                       onClick={() => {
-                        const aluId = activeUser?.id || 'ALU-001';
-                        const isFollowingAlu = followedAlumniIds.includes(aluId);
+                        const aluId = activeUser?.id || userId || 'ALU-001';
+                        const isConn = followedAlumniIds.includes(aluId);
                         let updated;
-                        if (isFollowingAlu) {
+                        if (isConn) {
                           updated = followedAlumniIds.filter(id => id !== aluId);
-                          window.toast?.info(`${activeUser?.name || 'Mezun'} takipten çıkarıldı.`);
+                          window.toast?.info?.(`${activeUser?.name || 'Mezun'} bağlantılardan çıkarıldı.`);
                         } else {
                           updated = [...followedAlumniIds, aluId];
-                          window.toast?.success(`${activeUser?.name || 'Mezun'} mezun ağı listenize eklendi! Paylaşımları akışınızda görünecektir.`);
+                          window.toast?.success?.(`${activeUser?.name || 'Mezun'} ile bağlantı kuruldu ve takibe alındı!`);
                         }
                         setFollowedAlumniIds(updated);
                         try { localStorage.setItem('iesu_followed_alumni_v1', JSON.stringify(updated)); } catch(e) {}
                       }}
-                      className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-black transition shadow-sm cursor-pointer hover:scale-105 ${
-                        followedAlumniIds.includes(activeUser?.id || 'ALU-001')
-                          ? 'bg-slate-100 text-slate-800 border border-slate-300'
-                          : getViewerActionBtnClass()
+                      className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition shadow-sm cursor-pointer border ${
+                        followedAlumniIds.includes(activeUser?.id || userId || 'ALU-001')
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                          : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white border-transparent hover:from-emerald-700 hover:to-teal-800'
                       }`}
                     >
-                      {followedAlumniIds.includes(activeUser?.id || 'ALU-001') ? (
-                        <><UserCheck size={16} /> Mezun Ağında</>
+                      {followedAlumniIds.includes(activeUser?.id || userId || 'ALU-001') ? (
+                        <><UserCheck size={16} /> Bağlantıdasınız & Takiptesin</>
                       ) : (
                         <><UserPlus size={16} /> Bağlantı Kur & Takip Et</>
                       )}
                     </button>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -1512,6 +1530,7 @@ export default function UserProfile({
           hiringConversion: '%84',
           internshipDuration: '20 İş Günü (1 Ay)'
         });
+    // Ziyaretçi vs Kendi Profil kontrolü
     const isOwnProfile = isProfileSelf('company');
     const isVisitor = !isOwnProfile;
 
@@ -1653,10 +1672,10 @@ export default function UserProfile({
                 )}
               </div>
 
-              {/* Butonlar - Rich Corporate Sapphire Styling */}
+              {/* Butonlar - Kendi Kurumsal Profil vs Ziyaretçi Aksiyonları */}
               <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                 {isOwnProfile ? (
-                  <div className="flex flex-wrap items-center gap-2.5">
+                  <>
                     <button
                       onClick={() => setView('profile_update')}
                       className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 hover:from-slate-900 hover:to-blue-900 text-white rounded-2xl font-black text-xs transition shadow-lg shadow-blue-950/30 border border-blue-800/60 cursor-pointer hover:scale-[1.02] active:scale-95"
@@ -1669,15 +1688,15 @@ export default function UserProfile({
                     >
                       <Briefcase size={15} /> Yeni İlan Yayınla
                     </button>
-                  </div>
+                  </>
                 ) : (
                   <div className="flex flex-wrap items-center gap-2.5">
                     <button
                       type="button"
                       onClick={() => handleOpenDirectChat(activeCompanyUser)}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md cursor-pointer hover:scale-105 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 text-white shadow-blue-900/20 active:scale-95"
+                      className="flex items-center gap-2 px-5 py-3 rounded-2xl font-black text-xs transition shadow-md cursor-pointer hover:scale-105 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-900 text-white shadow-blue-900/20 active:scale-95"
                     >
-                      <MessageSquare size={16} /> Mesaj Gönder
+                      <MessageSquare size={15} /> Mesaj Gönder
                     </button>
                     <button
                       type="button"
@@ -1687,18 +1706,18 @@ export default function UserProfile({
                         let updated;
                         if (isFollowing) {
                           updated = followedCompanyIds.filter(id => id !== compId);
-                          window.toast?.info(`${activeCompanyUser?.name || 'Firma'} takipten çıkarıldı.`);
+                          window.toast?.info?.(`${activeCompanyUser?.name || 'Firma'} takipten çıkarıldı.`);
                         } else {
                           updated = [...followedCompanyIds, compId];
-                          window.toast?.success(`${activeCompanyUser?.name || 'Firma'} başarıyla takip edilmeye başlandı! İlan güncellemeleri bildirim akışınıza düşecektir.`);
+                          window.toast?.success?.(`${activeCompanyUser?.name || 'Firma'} başarıyla takip edilmeye başlandı! İlan güncellemeleri bildirim akışınıza düşecektir.`);
                         }
                         setFollowedCompanyIds(updated);
                         try { localStorage.setItem('iesu_followed_companies_v1', JSON.stringify(updated)); } catch(e) {}
                       }}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-md cursor-pointer hover:scale-105 ${
+                      className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-xs transition shadow-md cursor-pointer hover:scale-105 border ${
                         followedCompanyIds.includes(activeCompanyUser?.id || 'CMP-001')
-                          ? 'bg-slate-100 text-slate-800 border border-slate-300'
-                          : getViewerActionBtnClass()
+                          ? 'bg-blue-50 text-blue-900 border-blue-300'
+                          : `${getViewerActionBtnClass()} border-transparent`
                       }`}
                     >
                       {followedCompanyIds.includes(activeCompanyUser?.id || 'CMP-001') ? (
@@ -1919,6 +1938,7 @@ export default function UserProfile({
   };
 
   const renderAcademicProfile = () => {
+    const isSelf = isProfileSelf('academic');
     const activeUser = user || currentUser || { 
       id: 'ACAD-001', 
       name: currentUser?.name || 'Prof. Dr. Ahmet Yılmaz', 
@@ -1926,9 +1946,6 @@ export default function UserProfile({
       department: currentUser?.department || 'Bilgisayar Mühendisliği',
       avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150')
     };
-    
-    // Ziyaretçi/Kendi profil kontrolü: dal bazlı isProfileSelf kullanılır
-    const isSelf = isProfileSelf('academic');
 
     return (
       <div className="space-y-6">
@@ -2007,15 +2024,29 @@ export default function UserProfile({
                 </p>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons - Kendi Akademik Profil vs Ziyaretçi Aksiyonları */}
               <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
                 {isSelf ? (
-                  <button 
-                    onClick={() => setView('profile_update')} 
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-950 via-[#4C1D95] to-indigo-900 hover:from-purple-900 hover:to-indigo-800 text-white rounded-xl font-bold text-xs shadow-md transition cursor-pointer border border-purple-500/40"
-                  >
-                    <Settings size={15} /> Profili Düzenle
-                  </button>
+                  <>
+                    <button 
+                      onClick={() => setView('profile_update')} 
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-950 via-[#4C1D95] to-indigo-900 hover:from-purple-900 hover:to-indigo-800 text-white rounded-xl font-bold text-xs shadow-md transition cursor-pointer border border-purple-500/40"
+                    >
+                      <Settings size={15} /> Profili Düzenle
+                    </button>
+                    <button 
+                      onClick={() => setView('research_hub')} 
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 hover:from-indigo-800 hover:to-purple-800 text-white rounded-xl font-bold text-xs shadow-md transition cursor-pointer border border-indigo-400/40"
+                    >
+                      <BookOpen size={15} /> Araştırma OS & Yayınlar
+                    </button>
+                    <button 
+                      onClick={() => setView('calendar')} 
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-md transition cursor-pointer border border-slate-700/40"
+                    >
+                      <Calendar size={15} /> Danışmanlık Takvimi
+                    </button>
+                  </>
                 ) : (
                   <>
                     <button
@@ -2026,14 +2057,28 @@ export default function UserProfile({
                       <MessageSquare size={15} /> Mesaj Gönder
                     </button>
                     <button
-                      onClick={() => setIsFollowing(!isFollowing)}
+                      type="button"
+                      onClick={() => {
+                        const acadId = activeUser?.id || userId || 'ACAD-001';
+                        const isFollow = followedAcademicIds.includes(acadId);
+                        let updated;
+                        if (isFollow) {
+                          updated = followedAcademicIds.filter(id => id !== acadId);
+                          window.toast?.info?.(`${activeUser?.name || 'Hoca'} takipten çıkarıldı.`);
+                        } else {
+                          updated = [...followedAcademicIds, acadId];
+                          window.toast?.success?.(`${activeUser?.name || 'Hoca'} takibe alındı!`);
+                        }
+                        setFollowedAcademicIds(updated);
+                        try { localStorage.setItem('iesu_followed_academics_v1', JSON.stringify(updated)); } catch(e) {}
+                      }}
                       className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold transition shadow-sm border ${
-                        isFollowing
-                          ? 'bg-slate-100 text-slate-800 border-slate-300'
+                        followedAcademicIds.includes(activeUser?.id || userId || 'ACAD-001')
+                          ? 'bg-purple-50 text-purple-900 border-purple-300'
                           : `${getViewerActionBtnClass()} border-transparent`
                       }`}
                     >
-                      {isFollowing ? (
+                      {followedAcademicIds.includes(activeUser?.id || userId || 'ACAD-001') ? (
                         <>
                           <UserCheck size={16} /> Takip Ediliyor
                         </>
@@ -2045,6 +2090,7 @@ export default function UserProfile({
                     </button>
 
                     <button 
+                      type="button"
                       onClick={() => setShowMentorshipRequestModal(true)} 
                       className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-800 via-[#990000] to-rose-800 hover:from-red-900 hover:to-red-700 text-white rounded-2xl font-black text-xs shadow-md transition cursor-pointer border border-red-500/40"
                     >

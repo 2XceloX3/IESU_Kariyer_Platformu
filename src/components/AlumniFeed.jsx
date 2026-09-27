@@ -571,7 +571,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   setApplications={setApplications} 
                   jobs={jobs} 
                   currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
-                  userRole="student" 
+                  userRole={userRole || "alumni"} 
                 />
               </div>
             </div>

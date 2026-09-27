@@ -9,6 +9,8 @@ import {
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import TopProfileMenu from './TopProfileMenu';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
+import AdminOmniDock from './AdminOmniDock';
 import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';
 import eventBus from '../brain/eventBus';
@@ -1111,54 +1113,64 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         </div>
       )}
       {/* ── 5. FLOATING DOCK (KURUMSAL ÖĞRENCİ DOCK'U) ─────────────── */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
-          
-          {/* Akış */}
-          <button 
-            onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))} 
-            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
-            title="Akış"
-          >
-            <Home size={22} strokeWidth={2.2} />
-          </button>
-          
-          {/* KGB Karnesi - ACTIVE */}
-          <button 
-            onClick={() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-              setActiveTab('ozet');
-            }}
-            className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center mx-1 shrink-0 border border-red-300/40 cursor-pointer" 
-            title="KGB Karnesi"
-          >
-            <GraduationCap size={22} strokeWidth={2.5} />
-          </button>
+      {isAdmin ? (
+        <AdminOmniDock 
+          theme="amber" 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          activeTab="student_kgb" 
+        />
+      ) : (
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
+          <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
+            
+            {/* Akış */}
+            <button 
+              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))} 
+              className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
+              title="Akış"
+            >
+              <Home size={22} strokeWidth={2.2} />
+            </button>
+            
+            {/* KGB Karnesi - ACTIVE */}
+            <button 
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setActiveTab('ozet');
+              }} 
+              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center mx-1 shrink-0 border border-red-300/40 cursor-pointer" 
+              title="KGB Karnesi"
+            >
+              <GraduationCap size={22} strokeWidth={2.5} />
+            </button>
 
-          {/* Kariyer Fırsatları */}
-          <button 
-            onClick={() => setView('jobs')} 
-            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
-            title="Kariyer Fırsatları"
-          >
-            <Briefcase size={22} strokeWidth={2.2} />
-          </button>
-          
-          {/* Profil */}
-          <button 
-            onClick={() => {
-              const selfId = studentData?.id || currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
-              if (setSelectedUserId) setSelectedUserId(selfId);
-              else useAppStore.getState().setSelectedUserId?.(selfId);
-              setView('user_profile');
-            }} 
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-            title="Profilim"
-          >
-            <SafeAvatar src={studentData.avatar || currentUser?.avatar} name={studentData.name} size="xs" alt="Profile" />
-          </button>
+            {/* Kariyer Fırsatları */}
+            <button 
+              onClick={() => setView('jobs')} 
+              className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
+              title="Kariyer Fırsatları"
+            >
+              <Briefcase size={22} strokeWidth={2.2} />
+            </button>
+            
+            {/* Profil */}
+            <button 
+              onClick={() => {
+                const selfId = studentData?.id || currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                else useAppStore.getState().setSelectedUserId?.(selfId);
+                setView('user_profile');
+              }} 
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
+              title="Profilim"
+            >
+              <SafeAvatar src={studentData.avatar || currentUser?.avatar} name={studentData.name} size="xs" alt="Profile" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );

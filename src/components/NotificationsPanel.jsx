@@ -10,7 +10,11 @@ import useAppStore from '../store/useAppStore';
 
 export default function NotificationsPanel({ previousView, userRole, currentUser, setView, setSelectedUserId }) {
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
-  const effectiveRole = (activePortalBranch === 'student' || previousView === 'student') ? 'student' : (activePortalBranch === 'alumni' || previousView === 'alumni') ? 'alumni' : (userRole || 'student');
+  const effectiveRole = (
+    userRole && userRole !== 'student' ? userRole :
+    currentUser?.role && currentUser.role !== 'student' ? currentUser.role :
+    activePortalBranch || userRole || currentUser?.role || 'student'
+  );
   const notifications = useAppStore(state => state.notifications);
   const setNotifications = useAppStore(state => state.setNotifications);
 
@@ -278,48 +282,11 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
         </div>
       </main>
 
-      {/* FLOATING DOCK (ADMIN OMNIDOCK OR FIRMA DOCK) */}
+      {/* FLOATING DOCK (ADMIN OMNIDOCK OR SUBPANEL FLOATING DOCK) */}
       {effectiveRole === 'admin' ? (
         <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="notifications" />
-      ) : effectiveRole === 'student' ? (
-        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole="student" />
       ) : (
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[320px]">
-          <div className="bg-white/95 backdrop-blur-2xl border-2 border-purple-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(30,41,59,0.15)] flex items-center justify-around px-4">
-            
-            {/* HOME / FEED */}
-            <button 
-              onClick={() => setView(isCompany ? 'company' : (previousView === 'alumni' ? 'alumni' : 'student'))} 
-              className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-purple-600 hover:bg-purple-50" 
-              title="Akış"
-            >
-              <Home size={24} strokeWidth={2.2} />
-            </button>
-
-            {/* SEARCH (CENTER GRADIENT ICON) */}
-            <button 
-              onClick={() => setView(isCompany ? 'company' : (previousView === 'alumni' ? 'alumni' : 'student'))} 
-              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/40" 
-              title="Ara"
-            >
-              <Search size={22} strokeWidth={2.8} />
-            </button>
-
-            {/* PROFILE AVATAR */}
-            <button 
-              onClick={() => {
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'self';
-                if (setSelectedUserId) setSelectedUserId(selfId);
-                setView('user_profile');
-              }} 
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-purple-400/60 shadow-xs hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-              title="Profilim"
-            >
-              <SafeAvatar src={currentUser?.avatar} name={currentUser?.name || 'Kullanıcı'} size="xs" alt="Profile" />
-            </button>
-
-          </div>
-        </div>
+        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={effectiveRole} activeTab="notifications" />
       )}
     </div>
   );

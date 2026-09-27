@@ -11,6 +11,7 @@ import AICVBuilder from './AICVBuilder';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { SUPPORTED_COUNTRIES, geocodeLocation } from '../utils/alumniGeoData';
 
 export const BRANCH_CONFIGS = {
@@ -2456,6 +2457,25 @@ export default function ProfileUpdate({
             </div>
           </div>
         </div>
+      )}
+
+      {/* FLOATING BOTTOM DOCK */}
+      {effectiveBranch === 'admin' ? (
+        <AdminOmniDock 
+          theme="amber" 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          activeTab="profile" 
+        />
+      ) : (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          userRole={effectiveBranch} 
+          activeTab="profile" 
+        />
       )}
 
     </div>

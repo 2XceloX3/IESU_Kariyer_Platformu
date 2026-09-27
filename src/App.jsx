@@ -17,7 +17,19 @@ const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserPr
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
 const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao', 'global_map']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
-const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']), STUDENT_ROUTES = new Set(['student', 'feed', 'student_kgb', 'student_analytics', 'cvbuilder', 'interview_sim', 'career_test', 'career_roadmap', 'startup_incubator', 'applications', 'smart_certs', 'digital_portfolio', 'reward_store', 'metaverse_library', 'hackathon_market', 'clubs', 'club_portal', 'club_admin', 'sem', 'staj', 'explore', 'network', 'groups', 'group_profile', 'notifications', 'calendar', 'messaging', 'leaderboard', 'live_rooms', 'mentor_match', 'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'anka_chat', 'skills', 'skill_tree', 'profile_update', 'user_profile', 'public_profile', 'knowledge_portal']);
+const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
+const STUDENT_EXCLUSIVE_ROUTES = new Set([
+  'student', 'feed', 'student_kgb', 'student_analytics', 'career_test', 
+  'career_roadmap', 'startup_incubator', 'smart_certs', 'digital_portfolio', 
+  'reward_store', 'metaverse_library', 'hackathon_market', 'clubs', 'club_portal', 
+  'club_admin', 'sem', 'staj', 'anka_chat', 'skills', 'skill_tree', 'mentor_match', 'knowledge_portal'
+]);
+const SHARED_ROUTES = new Set([
+  'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 
+  'calendar', 'groups', 'group_profile', 'network', 'career_network', 'live_rooms', 
+  'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard',
+  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'contact', 'about_us', 'services'
+]);
 
 const Spinner = () => (<div className="flex items-center justify-center min-h-screen bg-[#f8f9fc]"><div className="w-12 h-12 border-4 border-[#990000] border-t-transparent rounded-full animate-spin shadow-lg" /></div>);
 
@@ -68,7 +80,7 @@ export default function App() {
     else if (COMPANY_ROUTES.has(pathView)) setActivePortalBranch?.('company');
     else if (ALUMNI_ROUTES.has(pathView)) setActivePortalBranch?.('alumni');
     else if ((ADMIN_CMS.has(pathView) || pathView === 'admin') && isAdmin) setActivePortalBranch?.('admin');
-    else if (STUDENT_ROUTES.has(pathView) && !isAdmin) setActivePortalBranch?.('student');
+    else if (STUDENT_EXCLUSIVE_ROUTES.has(pathView) && !isAdmin) setActivePortalBranch?.('student');
   }, [pathView, setActivePortalBranch, isAdmin]);
 
   useEffect(() => {
@@ -96,6 +108,15 @@ export default function App() {
   const renderHive = () => {
     const s = useAppStore.getState();
     if (ADMIN_CMS.has(pathView)) return isAdmin ? <AdminDashboard setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" /> : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={s.students} alumni={s.alumni} companies={s.companies} academicStaff={s.academicStaff} />;
+    
+    // Dedicated branch routes take precedence
+    if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : <StudentHive currentUser={currentUser} setView={setView} />;
+    if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AlumniHive currentUser={currentUser} setView={setView} />;
+    if (ACADEMIC_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AcademicHive currentUser={currentUser} setView={setView} />;
+    if (COMPANY_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <CompanyHive currentUser={currentUser} setView={setView} />;
+    if (STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
+
+    // Admin branch handling for shared / other views
     if (currentBranch === 'admin' && isAdmin) {
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" />;
       if (pathView === 'user_profile') return <UserProfile userId={s.selectedUserId || currentUser?.id} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
@@ -104,11 +125,8 @@ export default function App() {
       if (BENTO_MODULES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
       return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
     }
-    if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : <StudentHive currentUser={currentUser} setView={setView} />;
-    if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AlumniHive currentUser={currentUser} setView={setView} />;
-    if (STUDENT_ROUTES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
-    if (ACADEMIC_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AcademicHive currentUser={currentUser} setView={setView} />;
-    if (COMPANY_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <CompanyHive currentUser={currentUser} setView={setView} />;
+
+    // Active hive branch continuity for all shared routes (messaging, user_profile, public_profile, calendar, groups, etc.)
     if (currentBranch === 'alumni') return <AlumniHive currentUser={currentUser} setView={setView} />;
     if (currentBranch === 'company') return <CompanyHive currentUser={currentUser} setView={setView} />;
     if (currentBranch === 'academic') return <AcademicHive currentUser={currentUser} setView={setView} />;

@@ -31,7 +31,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole = 'alu
             <Logo color="emerald" className="h-8 w-auto text-[#059669]" />
             <div className="hidden sm:block">
               <h1 className="font-black text-[#059669] leading-tight">Dijital Mezun Kartı</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Mezunlar Derneği</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Mezunlar Portalı</p>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole = 'alu
               <div className="flex justify-between items-start relative z-10">
                 <div>
                   <Logo color="emerald" className="h-8 text-white filter brightness-0 invert opacity-95 mb-1" />
-                  <p className="text-[8px] tracking-[0.25em] font-black text-emerald-200 uppercase">İESÜ MEZUNLAR DERNEĞİ</p>
+                  <p className="text-[8px] tracking-[0.25em] font-black text-emerald-200 uppercase">İESÜ MEZUNLAR PORTALI</p>
                 </div>
                 <div className="bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-xl border border-white/20 flex items-center gap-1.5 shadow-sm">
                   <ShieldCheck size={16} className="text-emerald-300" />

@@ -9,7 +9,11 @@ import useAppStore from '../store/useAppStore';
 
 export default function CalendarView({ currentUser, setView, userRole, setSelectedUserId, academicRole }) {
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
-  const effectiveRole = (activePortalBranch === 'student') ? 'student' : (activePortalBranch === 'alumni' ? 'alumni' : (userRole || 'student'));
+  const effectiveRole = (
+    userRole && userRole !== 'student' ? userRole :
+    currentUser?.role && currentUser.role !== 'student' ? currentUser.role :
+    activePortalBranch || userRole || currentUser?.role || 'student'
+  );
   const events = useAppStore(state => state.events);
   const setEvents = useAppStore(state => state.setEvents);
   const mentorships = useAppStore(state => state.mentorships);
@@ -334,12 +338,11 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
         </div>
       )}
 
-      {/* Admin Omni Dock */}
-      {effectiveRole === 'admin' && (
+      {/* Dock navigation */}
+      {effectiveRole === 'admin' ? (
         <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="calendar" />
-      )}
-      {effectiveRole === 'student' && (
-        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole="student" />
+      ) : (
+        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={effectiveRole} activeTab="calendar" />
       )}
     </div>
   );

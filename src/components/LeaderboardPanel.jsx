@@ -4,14 +4,15 @@ import { motion } from 'framer-motion';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
 
 const MOCK_LEADERS = [
-  { id: 1, name: "Ali Yılmaz", department: "Bilgisayar Mühendisliği", company: "Trendyol Group", role: "Software Engineer", endorsements: 145, avatar: "https://i.pravatar.cc/150?u=1", skills: ["React", "Microservices", "System Design"], topRank: true },
-  { id: 2, name: "Zeynep Kaya", department: "Mimarlık", company: "Tabanlıoğlu Mimarlık", role: "Architectural Designer", endorsements: 123, avatar: "https://i.pravatar.cc/150?u=2", skills: ["AutoCAD", "BIM", "Sustainability"], topRank: true },
-  { id: 3, name: "Burak Demir", department: "İşletme", company: "Unilever", role: "Brand Manager", endorsements: 98, avatar: "https://i.pravatar.cc/150?u=3", skills: ["Marketing Strategy", "FMCG", "Data Analytics"], topRank: true },
-  { id: 4, name: "Ayşe Çelik", department: "Psikoloji", company: "Koç Üniversitesi", role: "Araştırma Görevlisi", endorsements: 84, avatar: "https://i.pravatar.cc/150?u=4", skills: ["Clinical Research", "Data Analysis", "SPSS"] },
-  { id: 5, name: "Kaan Yılmaz", department: "Siber Güvenlik", company: "ASELSAN", role: "Security Analyst", endorsements: 72, avatar: "https://i.pravatar.cc/150?u=5", skills: ["Penetration Testing", "Network Security", "Cryptography"] },
-  { id: 6, name: "Selin Çetin", department: "Grafik Tasarım", company: "TBWA\\Istanbul", role: "Art Director", endorsements: 65, avatar: "https://i.pravatar.cc/150?u=6", skills: ["UI/UX", "Brand Identity", "Figma"] },
+  { id: 1, name: "Ali Yılmaz", department: "Bilgisayar Mühendisliği", company: "Trendyol Group", role: "Software Engineer", endorsements: 145, avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", skills: ["React", "Microservices", "System Design"], topRank: true },
+  { id: 2, name: "Zeynep Kaya", department: "Mimarlık", company: "Tabanlıoğlu Mimarlık", role: "Architectural Designer", endorsements: 123, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150", skills: ["AutoCAD", "BIM", "Sustainability"], topRank: true },
+  { id: 3, name: "Burak Demir", department: "İşletme", company: "Unilever", role: "Brand Manager", endorsements: 98, avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150", skills: ["Marketing Strategy", "FMCG", "Data Analytics"], topRank: true },
+  { id: 4, name: "Ayşe Çelik", department: "Psikoloji", company: "Koç Üniversitesi", role: "Araştırma Görevlisi", endorsements: 84, avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150", skills: ["Clinical Research", "Data Analysis", "SPSS"] },
+  { id: 5, name: "Kaan Yılmaz", department: "Siber Güvenlik", company: "ASELSAN", role: "Security Analyst", endorsements: 72, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150", skills: ["Penetration Testing", "Network Security", "Cryptography"] },
+  { id: 6, name: "Selin Çetin", department: "Grafik Tasarım", company: "TBWA\\Istanbul", role: "Art Director", endorsements: 65, avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150", skills: ["UI/UX", "Brand Identity", "Figma"] },
 ];
 
 export default function LeaderboardPanel({ setView, currentUser, userRole, setSelectedUserId }) {
@@ -83,7 +84,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                  <ShieldCheck className="text-[#990000]" size={24} />
               </div>
               <div className="flex items-center gap-4 mb-4">
-                <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full border border-gray-200 shadow-sm object-cover" />
+                <SafeAvatar src={user.avatar} name={user.name} size="md" className="w-16 h-16 rounded-full border border-gray-200 shadow-sm" />
                 <div>
                   <h3 className="font-black text-lg text-gray-900 leading-tight group-hover:text-[#990000] transition-colors">{user.name}</h3>
                   <p className="text-sm font-medium text-gray-500">{user.department}</p>
@@ -127,7 +128,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                   <button 
                     onClick={() => {
                       if (setSelectedUserId) setSelectedUserId(user.id);
-                      if (setView) setView('user_profile');
+                      if (setView) setView('public_profile');
                     }}
                     className="flex-1 sm:flex-none text-sm font-bold text-gray-600 hover:text-[#990000] bg-gray-50 hover:bg-red-50 px-4 py-2 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
                   >
@@ -150,7 +151,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
             {MOCK_LEADERS.filter(l => !l.topRank).map((user) => (
               <div key={user.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 hover:bg-gray-50 transition-colors gap-4">
                 <div className="flex items-center gap-4 w-full sm:w-auto">
-                  <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full border border-gray-200 shadow-xs object-cover" />
+                  <SafeAvatar src={user.avatar} name={user.name} size="md" className="w-12 h-12 rounded-full border border-gray-200 shadow-xs" />
                   <div>
                     <h3 className="font-bold text-gray-900 text-[15px]">{user.name}</h3>
                     <p className="text-xs text-gray-500 font-medium">{user.role} @ {user.company}</p>
@@ -172,7 +173,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                   <button 
                     onClick={() => {
                       if (setSelectedUserId) setSelectedUserId(user.id);
-                      if (setView) setView('user_profile');
+                      if (setView) setView('public_profile');
                     }}
                     className="p-2 text-gray-400 hover:text-[#990000] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                     title="Profili Gör"

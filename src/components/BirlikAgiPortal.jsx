@@ -117,11 +117,11 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
             </div>
           </div>
 
-          {/* CENTER: Mezunlar Derneği Portalı Emerald Badge */}
+          {/* CENTER: Mezunlar Portalı Emerald Badge */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center pointer-events-none z-20">
             <span className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 shadow-md shadow-emerald-600/30 border border-emerald-300/60 flex items-center gap-2 whitespace-nowrap shrink-0">
               <span className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0"></span>
-              🎓 MEZUNLAR DERNEĞİ PORTALI
+              🎓 İESÜ MEZUNLAR PORTALI
             </span>
           </div>
 
@@ -148,7 +148,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           <div className="max-w-3xl space-y-4 z-10">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-amber-300 bg-amber-950/80 px-4 py-1.5 rounded-full border border-amber-500/40 flex items-center gap-1.5">
-                <Crown size={12} className="text-amber-400" /> İESÜ MEZUNLAR DERNEĞİ RESMÎ PORTALI
+                <Crown size={12} className="text-amber-400" /> İESÜ MEZUNLAR PORTALI
               </span>
               <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/70 px-3 py-1 rounded-full border border-emerald-500/30">
                 Resmî Kuruluş

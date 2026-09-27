@@ -153,7 +153,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
                   { title: 'Sayman', name: 'Can Özkan', role: 'Öğrenci' },
                   { title: 'Sekreter', name: 'Zeynep Çelik', role: 'Öğrenci' }
                 ].map((boardMember, idx) => (
-                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={idx} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition cursor-pointer" onClick={() => { setSelectedUserId('USR-3'); setView('user_profile'); }}>
+                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={idx} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition cursor-pointer" onClick={() => { if (setSelectedUserId) setSelectedUserId('USR-3'); if (setView) setView('public_profile'); }}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0">
                         <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(boardMember.name)}&background=0A2342&color=fff`} className="w-full h-full object-cover" alt="" />

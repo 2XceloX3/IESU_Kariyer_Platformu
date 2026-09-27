@@ -4,6 +4,8 @@ import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, Arr
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
+import AdminOmniDock from './AdminOmniDock';
 
 // Audio Synth for Call Cues using Web Audio API
 class WebAudioCallSynth {
@@ -1752,6 +1754,15 @@ export default function MessagingInterface({ previousView, currentUser, userRole
         </div>
       )}
       </div>
+
+      {/* Floating Bottom Dock (when not rendered as an overlay) */}
+      {!isOverlay && (
+        userRole === 'admin' ? (
+          <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="messaging" />
+        ) : (
+          <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={userRole || currentUser?.role || 'student'} activeTab="messaging" />
+        )
+      )}
     </div>
   );
 }

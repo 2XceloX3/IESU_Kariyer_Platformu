@@ -67,10 +67,15 @@ export default function CommandPalette({ isOpen, setIsOpen, setView, currentUser
     { id: 'news', title: 'Haberler ve Resmi Duyurular', category: 'Duyuru & Medya', icon: <FileText size={18} className="text-red-600" />, action: () => setView('haberler') },
     { id: 'organization', title: 'Akademik Birimler & Fakülteler', category: 'Üniversite', icon: <GraduationCap size={18} className="text-indigo-600" />, action: () => setView('organization') },
     { id: 'sem', title: 'SEM Sürekli Eğitim Merkezi Sertifikaları', category: 'Eğitim', icon: <BookOpen size={18} className="text-teal-600" />, action: () => setView('sem') },
-    { id: 'profile', title: 'Profilimi Görüntüle', category: 'Hesap', icon: <User size={18} className="text-gray-700" />, action: () => setView('user_profile') },
+    { id: 'profile', title: 'Profilimi Görüntüle', category: 'Hesap', icon: <User size={18} className="text-gray-700" />, action: () => {
+      const store = useAppStore.getState();
+      const selfId = currentUser?.id || 'self';
+      if (store.setSelectedUserId) store.setSelectedUserId(selfId);
+      setView('user_profile');
+    }},
     { id: 'messages', title: 'Doğrudan Mesajlar', category: 'İletişim', icon: <MessageCircle size={18} className="text-sky-600" />, action: () => setView('messaging') },
     { id: 'settings', title: 'Hesap & Güvenlik Ayarları', category: 'Hesap', icon: <Settings size={18} className="text-slate-600" />, action: () => setView('profile_update') },
-  ], [role, isAdmin, setView]);
+  ], [role, isAdmin, setView, currentUser]);
 
   // Combined Results: Base Actions + Portals + Knowledge Base Search
   const results = useMemo(() => {

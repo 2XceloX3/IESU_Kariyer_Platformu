@@ -32,7 +32,11 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
 export default function GroupsPanel({ previousView, currentUser, userRole, setView, setSelectedGroupId, setSelectedUserId }) {
   const { groups, setGroups } = useAppStore();
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
-  const effectiveRole = (activePortalBranch === 'student' || previousView === 'student') ? 'student' : (activePortalBranch === 'alumni' || previousView === 'alumni') ? 'alumni' : (userRole || 'student');
+  const effectiveRole = (
+    userRole && userRole !== 'student' ? userRole :
+    currentUser?.role && currentUser.role !== 'student' ? currentUser.role :
+    activePortalBranch || userRole || currentUser?.role || 'student'
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newGroup, setNewGroup] = useState({
@@ -238,12 +242,11 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
         </div>
       )}
 
-      {/* Admin Omni Dock */}
-      {effectiveRole === 'admin' && (
+      {/* Dock navigation */}
+      {effectiveRole === 'admin' ? (
         <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="groups" />
-      )}
-      {effectiveRole === 'student' && (
-        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole="student" />
+      ) : (
+        <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={effectiveRole} activeTab="groups" />
       )}
     </div>
   );

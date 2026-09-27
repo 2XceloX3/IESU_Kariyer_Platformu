@@ -4,17 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
 
 const MOCK_ROOMS = [
   {
     id: 'room_1',
     title: 'Mülakat Stratejileri',
-    host: 'Kariyer Geliştirme Merkezi',
+    host: 'Kariyer Geliştirme Koordinatörlüğü',
     type: 'official', // official, club, student
     speakers: [
-      { name: 'Dr. Ahmet Yılmaz', avatar: 'https://i.pravatar.cc/150?u=12', role: 'Host' },
-      { name: 'Zeynep Kaya', avatar: 'https://i.pravatar.cc/150?u=2', role: 'Speaker' },
-      { name: 'Kariyer Danışmanı', avatar: '/logo.png', role: 'Moderatör' }
+      { name: 'Dr. Ahmet Yılmaz', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150', role: 'Host' },
+      { name: 'Zeynep Kaya', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', role: 'Speaker' },
+      { name: 'Kariyer Danışmanı', avatar: '/iesu-logo.svg', role: 'Moderatör' }
     ],
     listenersCount: 145,
     tags: ['Yapay Zeka', 'Mülakat', 'Kariyer']
@@ -25,8 +26,8 @@ const MOCK_ROOMS = [
     host: 'Yazılım Kulübü',
     type: 'club',
     speakers: [
-      { name: 'Can Özkan', avatar: 'https://i.pravatar.cc/150?u=44', role: 'Host' },
-      { name: 'Elif Demir', avatar: 'https://i.pravatar.cc/150?u=15', role: 'Speaker' }
+      { name: 'Can Özkan', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', role: 'Host' },
+      { name: 'Elif Demir', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150', role: 'Speaker' }
     ],
     listenersCount: 89,
     tags: ['Yurtdışı', 'Staj', 'Yazılım']
@@ -37,7 +38,7 @@ const MOCK_ROOMS = [
     host: 'Açık Sohbet',
     type: 'student',
     speakers: [
-      { name: 'Burak', avatar: 'https://i.pravatar.cc/150?u=3', role: 'Host' }
+      { name: 'Burak Demir', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150', role: 'Host' }
     ],
     listenersCount: 34,
     tags: ['Sohbet', 'Üniversite']
@@ -116,7 +117,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                   <div className="flex items-end justify-between">
                     <div className="flex -space-x-2">
                       {room.speakers.map((s, i) => (
-                        <img key={i} src={s.avatar} alt={s.name} className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" />
+                        <SafeAvatar key={i} src={s.avatar} name={s.name} size="sm" className="w-10 h-10 rounded-full border-2 border-white shadow-sm" />
                       ))}
                     </div>
                     <div className="flex items-center gap-4 text-gray-400 text-sm font-bold">
@@ -162,7 +163,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                           {speaker.role === 'Host' && (
                             <div className="absolute inset-0 rounded-full border-2 border-red-500 animate-ping opacity-30" />
                           )}
-                          <img src={speaker.avatar} alt={speaker.name} className={`w-24 h-24 rounded-full object-cover border-4 ${speaker.role === 'Host' ? 'border-red-500' : 'border-gray-100'}`} />
+                          <SafeAvatar src={speaker.avatar} name={speaker.name} size="lg" className={`w-24 h-24 rounded-full border-4 ${speaker.role === 'Host' ? 'border-red-500' : 'border-gray-100'}`} />
                           <div className="absolute -bottom-2 right-0 bg-white p-1.5 rounded-full shadow-md text-gray-400">
                             <Mic size={14} />
                           </div>
@@ -178,7 +179,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                   <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 border-t border-gray-100 pt-8">Dinleyiciler ({activeRoom.listenersCount})</h3>
                   <div className="flex flex-wrap gap-4">
                     {[...Array(12)].map((_, i) => (
-                      <img key={i} src={`https://i.pravatar.cc/150?u=${i+50}`} className="w-12 h-12 rounded-full border-2 border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition" alt="listener" />
+                      <SafeAvatar key={i} name={`Dinleyici ${i+1}`} size="sm" className="w-12 h-12 rounded-full border-2 border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition" />
                     ))}
                     <div className="w-12 h-12 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs font-bold">
                       +{activeRoom.listenersCount - 12}

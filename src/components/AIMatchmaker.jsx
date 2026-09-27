@@ -30,7 +30,7 @@ export default function AIMatchmaker({ alumniList = [], setView, setSelectedUser
     }
     if (setSelectedUserId && match.id) {
       setSelectedUserId(match.id);
-      if (setView) setView('user_profile');
+      if (setView) setView('public_profile');
       return;
     }
     if (window.toast?.success) {

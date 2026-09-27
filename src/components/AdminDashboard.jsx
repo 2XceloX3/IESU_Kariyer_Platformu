@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
 import HiveHealthMonitor from '../brain/HiveHealthMonitor';
+import AdminOmniDock from './AdminOmniDock';
 
 import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
@@ -456,7 +457,7 @@ export default function AdminDashboard({
     { id: 'anket', icon: <ClipboardList size={14}/>, label: 'Anketler' },
     { id: 'analytics', icon: <BarChart3 size={14}/>, label: 'Analitik & Raporlar' },
     { id: 'entegrasyon', icon: <Radio size={14}/>, label: 'Entegrasyonlar' },
-    { id: 'mezun_dernek', icon: <Users size={14}/>, label: 'Mezunlar Derneği' },
+    { id: 'mezun_dernek', icon: <Users size={14}/>, label: 'Mezunlar Portalı' },
     { id: 'kart', icon: <CreditCard size={14}/>, label: 'Mezun Kartı' },
     { id: 'cms_ssp', icon: <BookOpenKgb size={14}/>, label: 'KGB Sistemi' },
     { id: 'platform_ayarlari', icon: <Settings size={14}/>, label: 'Platform Ayarları', superAdminOnly: true },
@@ -593,6 +594,15 @@ export default function AdminDashboard({
           {renderPanel()}
         </main>
       </div>
+
+      {/* Admin Floating Omni Dock */}
+      <AdminOmniDock 
+        theme="amber" 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        activeTab="admin_cms" 
+      />
     </div>
   );
 }

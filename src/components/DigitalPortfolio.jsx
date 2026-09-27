@@ -8,6 +8,7 @@ import {
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
 
 const MOCK_PROJECTS = [
   { id: 1, title: 'AI Tabanlı Mülakat Botu', category: 'Yapay Zeka', tech: ['React', 'Python', 'OpenAI'], views: 1240, stars: 45, image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800', isCertified: true },
@@ -73,7 +74,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-8 flex flex-col md:flex-row items-center md:items-start gap-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2" />
           
-          <img src={currentUser?.avatar || "https://i.pravatar.cc/150?img=11"} alt="Profile" className="w-32 h-32 rounded-3xl object-cover shadow-xl border border-slate-100" />
+          <SafeAvatar src={currentUser?.avatar} name={currentUser?.name || 'Öğrenci'} size="xl" className="w-32 h-32 rounded-3xl object-cover shadow-xl border border-slate-100" />
           
           <div className="flex-1 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-2">

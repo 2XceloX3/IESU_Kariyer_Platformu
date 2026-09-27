@@ -587,7 +587,7 @@ export default function AcademicStaffFeed({
                                 className="w-12 h-12 rounded-full object-cover border-2 border-purple-100 shadow-xs shrink-0 cursor-pointer"
                                 onClick={() => {
                                   if (setSelectedUserId) setSelectedUserId(req.studentId);
-                                  setView('user_profile');
+                                  setView('public_profile');
                                 }}
                               />
                               <div>
@@ -595,7 +595,7 @@ export default function AcademicStaffFeed({
                                   <h4 
                                     onClick={() => {
                                       if (setSelectedUserId) setSelectedUserId(req.studentId);
-                                      setView('user_profile');
+                                      setView('public_profile');
                                     }}
                                     className="font-black text-sm text-gray-900 hover:text-[#4C1D95] transition cursor-pointer"
                                     title="Öğrencinin Profilini İncele"
@@ -676,7 +676,7 @@ export default function AcademicStaffFeed({
                               type="button"
                               onClick={() => {
                                 if (setSelectedUserId) setSelectedUserId(req.studentId);
-                                setView('user_profile');
+                                setView('public_profile');
                               }}
                               className="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-[#4C1D95] rounded-xl text-xs font-black transition flex items-center gap-1.5 border border-purple-200 cursor-pointer"
                             >
@@ -1460,7 +1460,7 @@ export default function AcademicStaffFeed({
                   type="button"
                   onClick={() => {
                     if (setSelectedUserId) setSelectedUserId(selectedCounselingModal.studentId);
-                    setView('user_profile');
+                    setView('public_profile');
                     setSelectedCounselingModal(null);
                   }}
                   className="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-[#4C1D95] rounded-xl text-xs font-black transition border border-purple-200 flex items-center gap-1.5 cursor-pointer"

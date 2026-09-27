@@ -62,29 +62,30 @@ export default function PublicUserProfile({
   const effectiveTargetId = userId || storeSelectedUserId;
 
   const isProfileSelf = useMemo(() => {
-    if (!user) return false;
-    if (!effectiveTargetId || userId === 'self' || effectiveTargetId === 'self' || userId === 'me' || effectiveTargetId === 'me') return true;
+    if (!effectiveTargetId || effectiveTargetId === 'self' || effectiveTargetId === 'me' || userId === 'self' || userId === 'me') return true;
     if (currentUser) {
-      if (currentUser.id && (effectiveTargetId === currentUser.id || user.id === currentUser.id)) return true;
-      if (currentUser.uid && (effectiveTargetId === currentUser.uid || user.uid === currentUser.uid)) return true;
-      if (currentUser.studentNo && (effectiveTargetId === currentUser.studentNo || user.studentNo === currentUser.studentNo)) return true;
-      if (currentUser.email && (effectiveTargetId === currentUser.email || user.email === currentUser.email)) return true;
-      if (currentUser.name && user.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
+      if (currentUser.id && (String(effectiveTargetId) === String(currentUser.id) || (user?.id && String(user.id) === String(currentUser.id)))) return true;
+      if (currentUser.uid && (String(effectiveTargetId) === String(currentUser.uid) || (user?.uid && String(user.uid) === String(currentUser.uid)))) return true;
+      if (currentUser.studentNo && (String(effectiveTargetId) === String(currentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(currentUser.studentNo)))) return true;
+      if (currentUser.email && (String(effectiveTargetId) === String(currentUser.email) || (user?.email && String(user.email) === String(currentUser.email)))) return true;
+      if (currentUser.name && user?.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
+      if (currentUser.name && String(effectiveTargetId).trim().toLowerCase() === currentUser.name.trim().toLowerCase()) return true;
     }
-    if (viewerHive === 'admin' || activePortalBranch === 'admin') {
-      if (effectiveTargetId === 'admin_1513' || user.id === 'admin_1513' || effectiveTargetId === 'admin') return true;
+    const currentBranch = viewerHive || activePortalBranch || currentUser?.role || 'student';
+    if (currentBranch === 'admin') {
+      if (effectiveTargetId === 'admin_1513' || user?.id === 'admin_1513' || effectiveTargetId === 'admin') return true;
     }
-    if (viewerHive === 'student' || activePortalBranch === 'student') {
-      if (effectiveTargetId === 'STU-001' || user.id === 'STU-001') return true;
+    if (currentBranch === 'student') {
+      if (effectiveTargetId === 'STU-001' || effectiveTargetId === 'STU-01' || user?.id === 'STU-001' || user?.id === 'STU-01' || (currentUser?.role === 'student' && !currentUser?.id)) return true;
     }
-    if (viewerHive === 'alumni' || activePortalBranch === 'alumni') {
-      if (effectiveTargetId === 'ALU-001' || user.id === 'ALU-001') return true;
+    if (currentBranch === 'alumni') {
+      if (effectiveTargetId === 'ALU-001' || effectiveTargetId === 'ALU-01' || user?.id === 'ALU-001' || user?.id === 'ALU-01' || (currentUser?.role === 'alumni' && !currentUser?.id)) return true;
     }
-    if (viewerHive === 'academic' || activePortalBranch === 'academic') {
-      if (effectiveTargetId === 'ACAD-001' || user.id === 'ACAD-001') return true;
+    if (currentBranch === 'academic') {
+      if (effectiveTargetId === 'ACAD-001' || user?.id === 'ACAD-001' || ((currentUser?.role === 'academic' || currentUser?.role === 'academic_staff') && !currentUser?.id)) return true;
     }
-    if (viewerHive === 'company' || activePortalBranch === 'company') {
-      if (effectiveTargetId === 'CMP-001' || user.id === 'CMP-001') return true;
+    if (currentBranch === 'company') {
+      if (effectiveTargetId === 'CMP-001' || user?.id === 'CMP-001' || ((currentUser?.role === 'company' || currentUser?.role === 'employer') && !currentUser?.id)) return true;
     }
     return false;
   }, [user, userId, effectiveTargetId, currentUser, viewerHive, activePortalBranch]);

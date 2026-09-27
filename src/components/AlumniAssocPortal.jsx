@@ -204,7 +204,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
               ÖZEL YÖNETİM & AKIŞ KONTROL PORTALI
             </span>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
-              İstanbul Esenyurt Üniversitesi Mezunlar Derneği
+              İstanbul Esenyurt Üniversitesi Mezunlar Portalı
             </h1>
             <p className="text-emerald-100 text-sm font-medium">
               Yetkili Yönetici: <strong>{currentUser?.name || 'Yönetim Kurulu Üyesi'}</strong> — Duyuru, etkinlik yayınlama ve üyelik havuzu yönetimi.

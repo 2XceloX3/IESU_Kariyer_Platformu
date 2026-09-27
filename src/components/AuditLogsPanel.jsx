@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Search, ArrowLeft, RefreshCw, Layers } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import AdminOmniDock from './AdminOmniDock';
 
-export default function AuditLogsPanel({ setView, previousView }) {
+export default function AuditLogsPanel({ setView, previousView, currentUser, setSelectedUserId }) {
   const auditLogs = useAppStore(state => state.auditLogs) || [];
   const [filterModule, setFilterModule] = useState('Tümü');
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,8 +36,8 @@ export default function AuditLogsPanel({ setView, previousView }) {
         {/* Top bar */}
         <div className="flex items-center justify-between mb-8">
           <button 
-            onClick={() => setView(previousView || 'landing')} 
-            className="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white bg-red-950 hover:bg-red-900 px-4 py-2.5 rounded-full border border-red-900 transition"
+            onClick={() => setView(previousView && previousView !== 'landing' ? previousView : 'admin_cms')} 
+            className="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white bg-red-950 hover:bg-red-900 px-4 py-2.5 rounded-full border border-red-900 transition cursor-pointer"
           >
             <ArrowLeft size={16} /> Geri Dön
           </button>
@@ -142,6 +143,15 @@ export default function AuditLogsPanel({ setView, previousView }) {
         </div>
 
       </div>
+
+      {/* Floating Bottom Omni Dock */}
+      <AdminOmniDock 
+        theme="amber" 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        activeTab="audit_logs" 
+      />
     </div>
   );
 }

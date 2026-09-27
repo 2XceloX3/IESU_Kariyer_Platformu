@@ -8,7 +8,7 @@ import { generateAIResponse } from '../lib/gemini';
 
 export default function AnkaChat({ setView, currentUser, userRole, setSelectedUserId }) {
   const [messages, setMessages] = useState([
-    { id: 1, text: `Merhaba ${currentUser?.name || 'Esenyurtli'}! Ben Anka, senin kişisel Kariyer Danışmanınım. Hangi alanda uzmanlaşmak istiyorsun, ya da mülakat provası mı yapmak istersin?`, isBot: true }
+    { id: 1, text: `Merhaba ${currentUser?.name || 'Esenyurtlu'}! Ben Anka, senin kişisel Kariyer Danışmanınım. Hangi alanda uzmanlaşmak istiyorsun, ya da mülakat provası mı yapmak istersin?`, isBot: true }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -30,7 +30,7 @@ export default function AnkaChat({ setView, currentUser, userRole, setSelectedUs
 
     const contextMessages = messages.map(m => `${m.isBot ? 'Anka' : 'Öğrenci'}: ${m.text}`).join('\n');
     const prompt = `
-      Sen Esenyurt Üniversitesi Kariyer Merkezi Danışmanı "Anka"sın. Çok akıllı, yardımsever ve motive edici bir kariyer mentorusun.
+      Sen İstanbul Esenyurt Üniversitesi (İESÜ) Kariyer Geliştirme Koordinatörlüğü Danışmanı "Anka"sın. Çok akıllı, yardımsever ve motive edici bir kariyer mentorusun.
       Öğrencinin adı: ${currentUser?.name || 'Öğrenci'}.
       
       Sohbet Geçmişi:
