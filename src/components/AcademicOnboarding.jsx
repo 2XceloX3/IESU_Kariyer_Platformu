@@ -111,7 +111,24 @@ export default function AcademicOnboarding({ onComplete, currentUser }) {
             </div>
           )}
 
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex items-center justify-between">
+            {step === 2 ? (
+              <button 
+                type="button"
+                onClick={() => setStep(1)}
+                className="text-slate-500 hover:text-slate-800 text-xs font-bold transition cursor-pointer"
+              >
+                Geri Dön
+              </button>
+            ) : (
+              <button 
+                type="button"
+                onClick={() => onComplete?.({ onboardingCompleted: true })}
+                className="text-slate-500 hover:text-purple-700 text-xs font-bold transition cursor-pointer"
+              >
+                Atla & Akışa Git
+              </button>
+            )}
             <button 
               onClick={handleNext}
               disabled={(step === 1 && !formData.title) || (step === 2 && !formData.department)}
