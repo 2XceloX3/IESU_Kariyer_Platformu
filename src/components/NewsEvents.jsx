@@ -10,18 +10,85 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import SafeAvatar from './shared/SafeAvatar';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
-export default function NewsEvents({ setView, currentUser, userRole, setSelectedUserId }) {
-  const news = useAppStore(state => state.news) || [];
-  const announcements = useAppStore(state => state.announcements) || [];
-  const events = useAppStore(state => state.events) || [];
+export default function NewsEvents({ 
+  setView, 
+  currentUser, 
+  userRole = 'student', 
+  setSelectedUserId, 
+  category, 
+  news: propNews, 
+  announcements: propAnnouncements, 
+  events: propEvents 
+}) {
+  const storeNews = useAppStore(state => state.news) || [];
+  const storeAnnouncements = useAppStore(state => state.announcements) || [];
+  const storeEvents = useAppStore(state => state.events) || [];
+  const news = propNews !== undefined ? propNews : storeNews;
+  const announcements = propAnnouncements !== undefined ? propAnnouncements : storeAnnouncements;
+  const events = propEvents !== undefined ? propEvents : storeEvents;
   const students = useAppStore(state => state.students) || [];
   const alumni = useAppStore(state => state.alumni) || [];
   const companies = useAppStore(state => state.companies) || [];
   const academicStaff = useAppStore(state => state.academicStaff) || [];
   const posts = useAppStore(state => state.posts) || [];
 
-  const [activeCategory, setActiveCategory] = useState('all'); // all, news, announcement, event
+  const effectiveRole = userRole || currentUser?.role || 'student';
+  const isAlumni = effectiveRole === 'alumni';
+  const isAcademic = effectiveRole === 'academic' || effectiveRole === 'academic_staff';
+  const isCompany = effectiveRole === 'company' || effectiveRole === 'employer';
+  const isAdmin = effectiveRole === 'admin';
+  const isStudent = !isAlumni && !isAcademic && !isCompany && !isAdmin;
+
+  const homeView = isAdmin ? 'admin' : isAlumni ? 'alumni' : isAcademic ? 'academic' : isCompany ? 'company' : 'student';
+
+  const activeCategoryClass = 
+    isAlumni ? 'bg-emerald-50 text-[#059669] border border-emerald-100 shadow-xs' :
+    isAcademic ? 'bg-purple-50 text-[#7c3aed] border border-purple-100 shadow-xs' :
+    isCompany ? 'bg-blue-50 text-[#1e3a5f] border border-blue-100 shadow-xs' :
+    isAdmin ? 'bg-amber-50 text-[#b45309] border border-amber-100 shadow-xs' :
+    'bg-red-50 text-[#990000] border border-red-100 shadow-xs';
+
+  const activeBadgeClass = 
+    isAlumni ? 'bg-[#059669] text-white' :
+    isAcademic ? 'bg-[#7c3aed] text-white' :
+    isCompany ? 'bg-[#1e3a5f] text-white' :
+    isAdmin ? 'bg-[#b45309] text-white' :
+    'bg-[#990000] text-white';
+
+  const activeIconColor = 
+    isAlumni ? 'text-[#059669]' :
+    isAcademic ? 'text-[#7c3aed]' :
+    isCompany ? 'text-[#1e3a5f]' :
+    isAdmin ? 'text-[#b45309]' :
+    'text-[#990000]';
+
+  const bannerGradient = 
+    isAlumni ? 'bg-gradient-to-r from-slate-950 via-[#065F46] to-slate-900 border-emerald-900' :
+    isAcademic ? 'bg-gradient-to-r from-slate-950 via-[#4C1D95] to-slate-900 border-purple-900' :
+    isCompany ? 'bg-gradient-to-r from-slate-950 via-[#1e3a5f] to-slate-900 border-blue-900' :
+    isAdmin ? 'bg-gradient-to-r from-slate-950 via-[#78350F] to-slate-900 border-amber-900' :
+    'bg-gradient-to-r from-slate-950 via-[#7A0000] to-slate-900 border-red-900';
+
+  const primaryBtnClass = 
+    isAlumni ? 'bg-[#059669] hover:bg-emerald-700' :
+    isAcademic ? 'bg-[#7c3aed] hover:bg-purple-700' :
+    isCompany ? 'bg-[#1e3a5f] hover:bg-slate-800' :
+    isAdmin ? 'bg-[#b45309] hover:bg-amber-700' :
+    'bg-[#990000] hover:bg-red-800';
+
+  const userSubtitle = 
+    currentUser?.department || (
+      isAlumni ? 'İESÜ Mezunu' :
+      isAcademic ? 'Akademik Personel' :
+      isCompany ? 'Kurumsal İşveren' :
+      isAdmin ? 'Kariyer Yöneticisi' :
+      'İESÜ Öğrencisi'
+    );
+
+  const initialCat = category === 'haberler' ? 'news' : category === 'duyurular' ? 'announcement' : category === 'etkinlikler' ? 'event' : (category || 'all');
+  const [activeCategory, setActiveCategory] = useState(initialCat); // all, news, announcement, event
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [likedNews, setLikedNews] = useState({});
@@ -103,12 +170,19 @@ export default function NewsEvents({ setView, currentUser, userRole, setSelected
       
       {/* ─── 1. TOP HEADER BAR (SOL LOGO & ÜNİVERSİTE İSMİ, ORTA ARAMA, SAĞ PROFİL) ─── */}
       <header className="bg-white/90 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-40 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
-        {/* SOL: LOGO & ÜNİVERSİTE İSMİ */}
+        {/* SOL: GERİ DÖNÜŞ, LOGO & ÜNİVERSİTE İSMİ */}
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setView ? setView(homeView) : null}
+            className="w-10 h-10 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center shadow-xs transition cursor-pointer shrink-0"
+            title="Geri Dön"
+          >
+            <ArrowLeft size={18} />
+          </button>
           <Logo size="sm" />
           <div className="hidden sm:flex flex-col border-l border-slate-200 pl-3">
             <span className="font-black text-slate-900 text-xs tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</span>
-            <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">Kariyer Geliştirme Merkezi</span>
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${activeIconColor}`}>Kariyer Geliştirme Merkezi</span>
           </div>
         </div>
 
@@ -149,9 +223,9 @@ export default function NewsEvents({ setView, currentUser, userRole, setSelected
               />
               <div className="min-w-0">
                 <h4 className="font-bold text-slate-900 text-sm truncate flex items-center gap-1">
-                  {currentUser?.name || 'Kullanıcı'} <ShieldCheck size={14} className="text-[#990000]" />
+                  {currentUser?.name || 'Kullanıcı'} <ShieldCheck size={14} className={activeIconColor} />
                 </h4>
-                <p className="text-[11px] font-semibold text-slate-500 truncate">{currentUser?.department || 'İESÜ Öğrencisi'}</p>
+                <p className="text-[11px] font-semibold text-slate-500 truncate">{userSubtitle}</p>
               </div>
             </div>
           </div>
@@ -174,15 +248,15 @@ export default function NewsEvents({ setView, currentUser, userRole, setSelected
                     onClick={() => setActiveCategory(cat.id)}
                     className={`w-full p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-between cursor-pointer ${
                       isActive 
-                        ? 'bg-red-50 text-[#990000] border border-red-100 shadow-xs' 
+                        ? activeCategoryClass 
                         : 'text-slate-600 hover:bg-slate-50'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <Icon size={15} className={isActive ? 'text-[#990000]' : 'text-slate-400'} />
+                      <Icon size={15} className={isActive ? activeIconColor : 'text-slate-400'} />
                       <span>{cat.label}</span>
                     </div>
-                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isActive ? 'bg-[#990000] text-white' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isActive ? activeBadgeClass : 'bg-slate-100 text-slate-500'}`}>
                       {cat.count}
                     </span>
                   </button>
@@ -196,7 +270,7 @@ export default function NewsEvents({ setView, currentUser, userRole, setSelected
         <div className="w-full max-w-[620px] shrink-0 space-y-6">
           
           {/* Header Card Banner */}
-          <div className="bg-gradient-to-r from-slate-950 via-[#7A0000] to-slate-900 text-white rounded-3xl p-6 shadow-xl border border-red-900 relative overflow-hidden">
+          <div className={`text-white rounded-3xl p-6 shadow-xl relative overflow-hidden ${bannerGradient}`}>
             <div className="flex items-center justify-between mb-2">
               <span className="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
                 <Sparkles size={11} /> KGM Basın & Duyuru Portalı
@@ -347,7 +421,7 @@ export default function NewsEvents({ setView, currentUser, userRole, setSelected
             <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">
               <button 
                 onClick={() => setSelectedNewsItem(null)}
-                className="px-5 py-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                className={`px-5 py-2 text-white rounded-xl text-xs font-bold transition cursor-pointer ${primaryBtnClass}`}
               >
                 Kapat
               </button>
@@ -356,65 +430,14 @@ export default function NewsEvents({ setView, currentUser, userRole, setSelected
         </div>
       )}
 
-      {/* ─── 3. FLOATING DOCK BAR (ALWAYS VISIBLE Z-150 & GEÇİŞ PANELİ) ─── */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[150] w-[95%] max-w-[420px] pointer-events-auto">
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-[#990000]/30 p-2 sm:p-2.5 rounded-full shadow-[0_20px_50px_rgba(153,0,0,0.25)] flex items-center justify-between px-4 text-slate-800">
-          
-          {/* HOME / ANA AKIŞ - RED */}
-          <button 
-            onClick={() => setView(userRole === 'alumni' ? 'alumni' : 'student')} 
-            className="p-2.5 rounded-full transition-all flex items-center justify-center bg-[#990000] text-white shadow-md shadow-red-500/40 hover:scale-110 active:scale-95 cursor-pointer" 
-            title="Ana Akışa Dön"
-          >
-            <Home size={24} strokeWidth={2.2} />
-          </button>
-          
-          {/* JOBS - PURPLE */}
-          <button 
-            onClick={() => setView('jobs')} 
-            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-purple-600 hover:bg-purple-50 hover:scale-110 cursor-pointer" 
-            title="İş İlanları"
-          >
-            <Building2 size={22} strokeWidth={2} />
-          </button>
-          
-          {/* CENTER: SEARCH ICON */}
-          <button 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
-            className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#7A0000] via-[#990000] to-rose-600 text-white shadow-lg shadow-red-600/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer" 
-            title="Sayfa Başına Git"
-          >
-            <Search size={22} strokeWidth={2.8} />
-          </button>
-          
-          {/* MESSAGES */}
-          <button 
-            onClick={() => setView('messaging')} 
-            className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 hover:scale-110 cursor-pointer" 
-            title="Mesajlar"
-          >
-            <MessageCircle size={22} strokeWidth={2} />
-          </button>
-          
-          {/* PROFILE AVATAR */}
-          <button 
-            onClick={() => {
-              const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
-              if (setSelectedUserId) setSelectedUserId(selfId);
-              setView('user_profile');
-            }} 
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-110 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-            title="Profilim"
-          >
-            <SafeAvatar 
-              src={currentUser?.avatar} 
-              name={currentUser?.name || 'Kullanıcı'} 
-              size="xs" 
-              alt="Profile" 
-            />
-          </button>
-        </div>
-      </div>
+      {/* ─── 3. SUBPANEL FLOATING DOCK (KURUMSAL STANDART ALTI DOCK) ─── */}
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={effectiveRole} 
+        activeTab="news" 
+      />
 
     </div>
   );

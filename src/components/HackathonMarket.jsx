@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Code2, Terminal, Users, Trophy, ChevronLeft, Rocket, Zap, 
+  Code2, Terminal, Users, Trophy, ArrowLeft, Rocket, Zap, 
   ArrowRight, Star, Building2, Calendar, Target, Plus, X, 
   CheckCircle, Sparkles, UserPlus, Info
 } from 'lucide-react';
@@ -71,7 +71,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
             title="Geri Dön"
           >
-            <ChevronLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
           <div className="flex items-center gap-3">
             <Logo className="h-8 w-auto text-[#990000]" />

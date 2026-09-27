@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Rocket, Target, Zap, ChevronLeft, Building2, CheckCircle2, 
+  Rocket, Target, Zap, ArrowLeft, Building2, CheckCircle2, 
   Flame, PieChart, Users, ArrowRight, Lightbulb, LineChart, 
   Download, Send, FileText, ShieldCheck, Sparkles, ExternalLink,
   Award, TrendingUp, HelpCircle
@@ -252,7 +252,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
               className="w-10 h-10 rounded-full bg-gray-50 hover:bg-red-50 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shadow-xs"
               title="Geri Dön"
             >
-              <ChevronLeft size={20} />
+              <ArrowLeft size={18} />
             </button>
             <div className="flex items-center gap-3">
               <Logo className="h-8 w-auto text-[#990000]" />

@@ -3,7 +3,7 @@ import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import SubPanelFooter from './SubPanelFooter';
-import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import { 
   Users, Megaphone, Calendar, ShieldCheck, Plus, CheckCircle2, XCircle, 
@@ -649,7 +649,13 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
       </main>
 
       {/* Floating Bottom Navigation Dock for easy return to main feed (Emerald Theme) */}
-      <AdminOmniDock setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} currentUser={currentUser} setSelectedUserId={setSelectedUserId} theme="emerald" />
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole="alumni" 
+        activeTab={activeTab} 
+      />
 
       <SubPanelFooter setView={setView} />
     </div>

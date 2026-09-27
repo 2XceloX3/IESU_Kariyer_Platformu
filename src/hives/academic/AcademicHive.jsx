@@ -92,7 +92,8 @@ export default function AcademicHive({ currentUser, setView }) {
       case 'messaging':
         return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="academic" />;
       case 'network':
-        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+      case 'career_network':
+        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="academic" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="academic" />;
       case 'group_profile':

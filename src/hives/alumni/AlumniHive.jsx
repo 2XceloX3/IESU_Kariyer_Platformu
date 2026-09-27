@@ -109,7 +109,8 @@ export default function AlumniHive({ currentUser, setView }) {
       case 'explore':
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
       case 'network':
-        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+      case 'career_network':
+        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
       case 'group_profile':

@@ -5,7 +5,7 @@ import Logo from './Logo';
 import ProfileUpdate from './ProfileUpdate';
 import TopProfileMenu from './TopProfileMenu';
 import SafeAvatar from './shared/SafeAvatar';
-import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import AICVBuilder from './AICVBuilder';
 import { exportPDF } from '../lib/pdfExporter';
 import {
@@ -1726,13 +1726,13 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
         </div>
       </main>
 
-      {/* Floating Bottom OmniDock */}
-      <AdminOmniDock 
-        setView={setView} 
-        activeTab="alumni_info_system" 
+      {/* Floating Bottom SubPanelFloatingDock */}
+      <SubPanelFloatingDock 
         currentUser={currentUser} 
+        setView={setView} 
         setSelectedUserId={setSelectedUserId} 
-        theme={useAppStore.getState().activePortalBranch === 'admin' ? 'amber' : 'emerald'} 
+        userRole={useAppStore.getState().activePortalBranch === 'admin' ? 'admin' : 'alumni'} 
+        activeTab="mbs" 
       />
     </div>
   );

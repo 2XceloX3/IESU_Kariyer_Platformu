@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Target, Sparkles, ChevronLeft, ArrowRight, Zap, CheckCircle2, 
+  Target, Sparkles, ArrowLeft, ArrowRight, Zap, CheckCircle2, 
   CircleDashed, Rocket, Code, Award, Users, CalendarClock,
   Compass, CheckSquare, Square, RefreshCw, BookOpen, Briefcase
 } from 'lucide-react';
@@ -414,7 +414,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-red-50 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shadow-xs"
             title="Geri Dön"
           >
-            <ChevronLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
           <div className="flex items-center gap-3">
             <Logo className="h-8 w-auto text-[#990000]" />

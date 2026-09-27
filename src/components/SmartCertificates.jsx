@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Award, ShieldCheck, CheckCircle2, Download, QrCode, Search, FileCheck, Lock, ChevronLeft, ArrowRight, AlertCircle, Building, Sparkles, MonitorPlay } from 'lucide-react';
+import { Award, ShieldCheck, CheckCircle2, Download, QrCode, Search, FileCheck, Lock, ArrowLeft, ArrowRight, AlertCircle, Building, Sparkles, MonitorPlay } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
@@ -94,7 +94,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
             title="Geri Dön"
           >
-            <ChevronLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
           <div className="h-5 w-px bg-slate-200 hidden sm:block"></div>
           <div className="flex items-center gap-2">

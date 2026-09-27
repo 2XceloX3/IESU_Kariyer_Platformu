@@ -100,7 +100,8 @@ export default function CompanyHive({ currentUser, setView }) {
       case 'messaging':
         return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'network':
-        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="company" />;
+      case 'career_network':
+        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="company" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="company" />;
       case 'group_profile':

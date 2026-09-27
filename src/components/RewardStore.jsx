@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Coffee, Zap, UserCheck, Shield, Sparkles, Check, AlertCircle, ChevronLeft } from 'lucide-react';
+import { ShoppingBag, Coffee, Zap, UserCheck, Shield, Sparkles, Check, AlertCircle, ArrowLeft } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import Confetti from 'react-confetti';
 import Logo from './Logo';
@@ -95,7 +95,7 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
               className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
               title="Geri Dön"
             >
-              <ChevronLeft size={20} />
+              <ArrowLeft size={18} />
             </button>
             <div className="flex items-center gap-3">
               <Logo className="h-8 w-auto text-[#990000]" />

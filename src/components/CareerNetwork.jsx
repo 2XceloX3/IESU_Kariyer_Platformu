@@ -1,11 +1,81 @@
 import React, { useState } from 'react';
-import { Building2, Calendar, Users, Briefcase, ExternalLink, ShieldCheck, ChevronRight, BookOpen, X, Search, CheckCircle2, MapPin, Sparkles } from 'lucide-react';
+import { Building2, Calendar, Users, Briefcase, ExternalLink, ShieldCheck, ChevronRight, BookOpen, X, Search, CheckCircle2, MapPin, Sparkles, ArrowLeft } from 'lucide-react';
 import SafeAvatar from './shared/SafeAvatar';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
-export default function CareerNetwork({ companies = [], academicStaff = [], setView, setSelectedUserId, currentUser }) {
+export default function CareerNetwork({ 
+  companies = [], 
+  academicStaff = [], 
+  setView, 
+  setSelectedUserId, 
+  currentUser, 
+  userRole = 'student', 
+  previousView, 
+  embedded = false 
+}) {
   const [activeModal, setActiveModal] = useState(null); // 'companies', 'participants', 'internships'
   const [showAllAcademics, setShowAllAcademics] = useState(false);
   const [modalSearch, setModalSearch] = useState('');
+
+  const store = useAppStore?.getState ? useAppStore.getState() : {};
+  const effectiveRole = userRole || currentUser?.role || store.userRole || store.activePortalBranch || 'student';
+  const isAlumni = effectiveRole === 'alumni';
+  const isAcademic = effectiveRole === 'academic' || effectiveRole === 'academic_staff';
+  const isCompany = effectiveRole === 'company' || effectiveRole === 'employer';
+  const isAdmin = effectiveRole === 'admin';
+  const isStudent = !isAlumni && !isAcademic && !isCompany && !isAdmin;
+
+  const homeView = previousView || (isAdmin ? 'admin' : isAlumni ? 'alumni' : isAcademic ? 'academic' : isCompany ? 'company' : 'student');
+
+  const bannerGradient = 
+    isAlumni ? 'bg-gradient-to-br from-[#065F46] via-[#059669] to-[#047857] border-emerald-900' :
+    isAcademic ? 'bg-gradient-to-br from-[#4C1D95] via-[#7c3aed] to-[#5B21B6] border-purple-900' :
+    isCompany ? 'bg-gradient-to-br from-[#0F172A] via-[#1e3a5f] to-[#1E293B] border-blue-900' :
+    isAdmin ? 'bg-gradient-to-br from-[#78350F] via-[#b45309] to-[#92400E] border-amber-900' :
+    'bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] border-red-900';
+
+  const backBtnHoverClass = 
+    isAlumni ? 'hover:bg-emerald-50 text-gray-700 hover:text-[#059669]' :
+    isAcademic ? 'hover:bg-purple-50 text-gray-700 hover:text-[#7c3aed]' :
+    isCompany ? 'hover:bg-blue-50 text-gray-700 hover:text-[#1e3a5f]' :
+    isAdmin ? 'hover:bg-amber-50 text-gray-700 hover:text-[#b45309]' :
+    'hover:bg-red-50 text-gray-700 hover:text-[#990000]';
+
+  const titleColor = 
+    isAlumni ? 'text-[#059669]' :
+    isAcademic ? 'text-[#7c3aed]' :
+    isCompany ? 'text-[#1e3a5f]' :
+    isAdmin ? 'text-[#b45309]' :
+    'text-[#990000]';
+
+  const actionBtnTextClass = 
+    isAlumni ? 'text-[#059669]' :
+    isAcademic ? 'text-[#7c3aed]' :
+    isCompany ? 'text-[#1e3a5f]' :
+    isAdmin ? 'text-[#b45309]' :
+    'text-[#990000]';
+
+  const primaryBtnClass = 
+    isAlumni ? 'bg-[#059669] hover:bg-emerald-700' :
+    isAcademic ? 'bg-[#7c3aed] hover:bg-purple-700' :
+    isCompany ? 'bg-[#1e3a5f] hover:bg-slate-800' :
+    isAdmin ? 'bg-[#b45309] hover:bg-amber-700' :
+    'bg-[#990000] hover:bg-red-800';
+
+  const cardIconBg = 
+    isAlumni ? 'bg-emerald-50 text-[#059669]' :
+    isAcademic ? 'bg-purple-50 text-[#7c3aed]' :
+    isCompany ? 'bg-blue-50 text-[#1e3a5f]' :
+    isAdmin ? 'bg-amber-50 text-[#b45309]' :
+    'bg-red-50 text-[#990000]';
+
+  const cardHoverBorder = 
+    isAlumni ? 'hover:border-emerald-200' :
+    isAcademic ? 'hover:border-purple-200' :
+    isCompany ? 'hover:border-blue-200' :
+    isAdmin ? 'hover:border-amber-200' :
+    'hover:border-red-100';
 
   // Sadece onaylı gerçek firmalar (demolar hariç)
   const networkCompanies = (companies || []).filter(c => (c.status === 'Onaylı' || c.status?.toLowerCase().includes('onay')) && c.source !== 'demo_seed');
@@ -33,11 +103,11 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
     { id: 'int_p_3', title: 'İktisadi ve İdari Bilimler Kurumsal Stajı', company: 'ESİDER Üye Firmaları', quota: '60 Öğrenci', deadline: '01 Haziran 2026', type: 'Kurumsal Staj' }
   ];
 
-  return (
+  const content = (
     <div className="w-full flex flex-col gap-6 animate-fade-in font-sans">
       
       {/* PROFESSIONAL COMPACT CARD (REDESIGN) */}
-      <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-2xl text-white relative overflow-hidden border border-red-900">
+      <div className={`rounded-2xl p-6 shadow-2xl text-white relative overflow-hidden ${bannerGradient}`}>
         <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/20 rounded-full blur-2xl pointer-events-none"></div>
         
@@ -58,7 +128,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
           <div className="grid grid-cols-1 gap-2.5 mb-1">
             <button 
               onClick={() => { setModalSearch(''); setActiveModal('participants'); }}
-              className="flex items-center justify-between bg-white text-[#990000] hover:bg-slate-100 p-3 rounded-xl transition-all text-xs font-black uppercase tracking-wider w-full shadow-md border border-white cursor-pointer group"
+              className={`flex items-center justify-between bg-white ${actionBtnTextClass} hover:bg-slate-100 p-3 rounded-xl transition-all text-xs font-black uppercase tracking-wider w-full shadow-md border border-white cursor-pointer group`}
             >
               <span className="flex items-center gap-2.5"><Calendar size={16} /> Katılımcılar & Kurullar</span>
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -78,14 +148,14 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between px-1">
           <h3 className="font-black text-gray-900 text-sm">Resmi Kurul & Katılımcılar ({defaultParticipants.length})</h3>
-          <button onClick={() => { setModalSearch(''); setActiveModal('participants'); }} className="text-xs font-bold text-[#990000] hover:underline cursor-pointer">Tümünü Gör</button>
+          <button onClick={() => { setModalSearch(''); setActiveModal('participants'); }} className={`text-xs font-bold ${actionBtnTextClass} hover:underline cursor-pointer`}>Tümünü Gör</button>
         </div>
 
         <div className="space-y-3">
           {defaultParticipants.map(participant => (
-            <div key={participant.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:border-red-100 transition-all group">
+            <div key={participant.id} className={`bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md ${cardHoverBorder} transition-all group`}>
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-red-50 text-[#990000] rounded-xl flex items-center justify-center shrink-0 font-black text-sm">
+                <div className={`w-10 h-10 ${cardIconBg} rounded-xl flex items-center justify-center shrink-0 font-black text-sm`}>
                   <ShieldCheck size={20} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -108,7 +178,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
       <div className="flex flex-col gap-4 mt-2">
         <div className="flex items-center justify-between px-1">
           <h3 className="font-black text-gray-900 text-sm">Akademik Kadro ({networkAcademics.length})</h3>
-          {networkAcademics.length > 0 && <button onClick={() => setShowAllAcademics((v) => !v)} className="text-xs font-bold text-[#990000] hover:underline cursor-pointer">{showAllAcademics ? 'Daralt' : 'Tümünü Gör'}</button>}
+          {networkAcademics.length > 0 && <button onClick={() => setShowAllAcademics((v) => !v)} className={`text-xs font-bold ${actionBtnTextClass} hover:underline cursor-pointer`}>{showAllAcademics ? 'Daralt' : 'Tümünü Gör'}</button>}
         </div>
 
         {networkAcademics.length === 0 ? (
@@ -121,7 +191,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
         ) : (
           <div className="space-y-3">
             {networkAcademics.slice(0, showAllAcademics ? networkAcademics.length : 5).map(academic => (
-              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={academic.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:border-red-100 transition-all group cursor-pointer" onClick={() => {
+              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={academic.id} className={`bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md ${cardHoverBorder} transition-all group cursor-pointer`} onClick={() => {
                 if (setSelectedUserId) setSelectedUserId(academic.id);
                 if (setView) setView('public_profile');
               }}>
@@ -135,7 +205,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                     className="w-12 h-12 shrink-0" 
                   />
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-black text-gray-900 text-sm truncate group-hover:text-[#990000] transition-colors">{academic.name}</h4>
+                    <h4 className="font-black text-gray-900 text-sm truncate transition-colors">{academic.name}</h4>
                     <p className="text-[11px] font-bold text-gray-500 truncate mb-1">{academic.title || 'Akademisyen'} / {academic.department}</p>
                     <div className="flex items-center gap-2">
                       <span className="text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-100">
@@ -143,7 +213,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                       </span>
                     </div>
                   </div>
-                  <button className="w-8 h-8 rounded-full bg-red-50 text-[#990000] flex items-center justify-center hover:bg-[#990000] hover:text-white transition-colors" title="Mesaj Gönder" onClick={(e) => {
+                  <button className={`w-8 h-8 rounded-full ${cardIconBg} flex items-center justify-center hover:${primaryBtnClass} hover:text-white transition-colors`} title="Mesaj Gönder" onClick={(e) => {
                     e.stopPropagation();
                     if (setSelectedUserId) setSelectedUserId(academic.id);
                     if (setView) setView('messaging');
@@ -208,7 +278,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                   .map(p => (
                     <div key={p.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-red-100 text-[#990000] font-black rounded-xl flex items-center justify-center text-sm">
+                        <div className={`w-10 h-10 ${cardIconBg} font-black rounded-xl flex items-center justify-center text-sm`}>
                           {p.name.charAt(0)}
                         </div>
                         <div>
@@ -216,7 +286,7 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                           <p className="text-xs text-slate-500 font-medium">{p.title} · {p.unit}</p>
                         </div>
                       </div>
-                      <span className="text-[11px] font-black text-red-700 bg-red-50 px-3 py-1 rounded-full border border-red-200">
+                      <span className={`text-[11px] font-black ${actionBtnTextClass} bg-slate-100 px-3 py-1 rounded-full border border-slate-200`}>
                         {p.status}
                       </span>
                     </div>
@@ -240,14 +310,14 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
                       <h4 className="font-black text-sm text-slate-900">{i.title}</h4>
                       <p className="text-xs text-slate-600 font-medium flex items-center justify-between">
                         <span>Anlaşmalı Firmalar: <strong>{i.company}</strong></span>
-                        <span className="text-[#990000] font-black">Kontenjan: {i.quota}</span>
+                        <span className={`${titleColor} font-black`}>Kontenjan: {i.quota}</span>
                       </p>
                       <button 
                         onClick={() => {
                           setActiveModal(null);
                           if (setView) setView('staj');
                         }}
-                        className="w-full mt-2 py-2 bg-[#990000] text-white text-xs font-bold rounded-xl hover:bg-red-800 transition cursor-pointer flex items-center justify-center gap-1.5"
+                        className={`w-full mt-2 py-2 ${primaryBtnClass} text-white text-xs font-bold rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5`}
                       >
                         <Sparkles size={14} /> Yetenek Kapısı Üzerinden Başvur
                       </button>
@@ -270,6 +340,35 @@ export default function CareerNetwork({ companies = [], academicStaff = [], setV
         </div>
       )}
 
+    </div>
+  );
+
+  if (embedded) {
+    return content;
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 pb-32 font-sans">
+      <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between">
+        <button 
+          onClick={() => setView ? setView(homeView) : null} 
+          className={`w-10 h-10 rounded-full bg-white border border-gray-200 ${backBtnHoverClass} flex items-center justify-center shadow-xs transition cursor-pointer`}
+          title="Geri Dön"
+        >
+          <ArrowLeft size={18} />
+        </button>
+        <h1 className={`text-xl font-black ${titleColor} tracking-tight`}>Akademik & Katılımcı Protokol Ağı</h1>
+      </div>
+      <div className="max-w-5xl mx-auto">
+        {content}
+      </div>
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={effectiveRole} 
+        activeTab="network"
+      />
     </div>
   );
 }

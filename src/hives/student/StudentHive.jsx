@@ -187,29 +187,7 @@ export default function StudentHive({ currentUser, setView }) {
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
       case 'network':
       case 'career_network':
-        return (
-          <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 pb-32 font-sans">
-            <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between">
-              <button 
-                onClick={() => handleSetView('feed')} 
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 hover:bg-red-50 text-gray-700 hover:text-[#990000] flex items-center justify-center shadow-xs transition cursor-pointer"
-                title="Geri Dön"
-              >
-                <ArrowLeft size={18} />
-              </button>
-              <h1 className="text-xl font-black text-[#990000] tracking-tight">Akademik & Katılımcı Protokol Ağı</h1>
-            </div>
-            <div className="max-w-5xl mx-auto">
-              <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />
-            </div>
-            <SubPanelFloatingDock 
-              currentUser={currentUser} 
-              setView={handleSetView} 
-              setSelectedUserId={setSelectedUserId} 
-              userRole="student" 
-            />
-          </div>
-        );
+        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'group_profile':

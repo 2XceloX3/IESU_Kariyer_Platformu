@@ -12,7 +12,7 @@ import SubPanelFooter from './SubPanelFooter';
 import useAppStore from '../store/useAppStore';
 import { combineFeedItems } from '../utils/feedCombiner';
 import PostCard from './PostCard';
-import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 export default function BirlikAgiPortal({ currentUser, setView, previousView, setSelectedGroupId, setSelectedUserId, userRole, academicRole }) {
   const posts = useAppStore(state => state.posts);
@@ -467,7 +467,13 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
       )}
 
       {/* Floating Bottom Navigation Dock for easy return to main feed */}
-      <AdminOmniDock setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} currentUser={currentUser} setSelectedUserId={setSelectedUserId} theme="emerald" />
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole="alumni" 
+        activeTab={activeTab} 
+      />
 
       <SubPanelFooter setView={setView} theme="emerald" />
     </div>

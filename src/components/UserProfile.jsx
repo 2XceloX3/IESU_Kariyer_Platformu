@@ -424,8 +424,9 @@ export default function UserProfile({
         }
         const isSelfAlumni = isAlumniBranch && (
           (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
-          (!targetUserId && currentUser?.role === 'alumni') ||
-          (targetUserId === 'ALU-001' && (currentUser?.role === 'alumni' || currentUser?.role === 'admin'))
+          (!targetUserId && (currentUser?.role === 'alumni' || !currentUser?.role)) ||
+          (targetUserId === 'ALU-001' && (currentUser?.role === 'alumni' || !currentUser?.role || currentUser?.id === 'ALU-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
+          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const alumniData = isSelfAlumni ? {
           id: currentUser?.id || targetUserId || 'ALU-001',
@@ -490,8 +491,9 @@ export default function UserProfile({
         }
         const isSelfAcademic = isAcademicBranch && (
           (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
-          (!targetUserId && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff')) ||
-          (targetUserId === 'ACAD-001' && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff' || currentUser?.role === 'admin'))
+          (!targetUserId && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff' || !currentUser?.role)) ||
+          (targetUserId === 'ACAD-001' && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff' || !currentUser?.role || currentUser?.id === 'ACAD-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
+          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const academicData = isSelfAcademic ? {
           id: currentUser?.id || targetUserId || 'ACAD-001',
@@ -521,11 +523,12 @@ export default function UserProfile({
       if (targetUserId.startsWith('CMP-') || targetUserId === 'trendyol') {
         let found = (companies || []).find(c => c.id === targetUserId || (typeof c.name === 'string' && c.name.toLowerCase().includes('trendyol')));
         const isSelfCompany = isCompanyBranch && (
-          targetUserId === 'CMP-001' || 
-          targetUserId === currentUser?.id || 
+          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
+          (!targetUserId && (currentUser?.role === 'company' || currentUser?.role === 'employer' || !currentUser?.role)) ||
+          (targetUserId === 'CMP-001' && (currentUser?.role === 'company' || currentUser?.role === 'employer' || !currentUser?.role || currentUser?.id === 'CMP-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
           targetUserId === 'admin_1513' || 
           targetUserId === 'admin' ||
-          !targetUserId
+          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const companyData = isSelfCompany ? {
           id: currentUser?.id || targetUserId || 'CMP-001',

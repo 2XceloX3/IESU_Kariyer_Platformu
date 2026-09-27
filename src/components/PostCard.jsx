@@ -17,14 +17,16 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   const handleProfileClick = (e) => {
     e.stopPropagation();
     const targetUserId = post?.authorId || post?.author?.id || post?.userId || post?.authorName || (typeof post?.author === 'string' ? post.author : post?.author?.name);
+    const authorName = post?.authorName || (typeof post?.author === 'object' ? post.author?.name : (typeof post?.author === 'string' ? post.author : ''));
     if (targetUserId && activeSetSelectedUserId && activeSetView) {
-      activeSetSelectedUserId(targetUserId);
       const isSelf = targetUserId === 'self' || (currentUser && (
         targetUserId === currentUser.id ||
         targetUserId === currentUser.uid ||
         targetUserId === currentUser.studentNo ||
-        (currentUser.name && String(targetUserId).trim().toLowerCase() === currentUser.name.trim().toLowerCase())
+        (currentUser.name && String(targetUserId).trim().toLowerCase() === currentUser.name.trim().toLowerCase()) ||
+        (currentUser.name && authorName && currentUser.name.trim().toLowerCase() === String(authorName).trim().toLowerCase())
       ));
+      activeSetSelectedUserId(isSelf ? (currentUser?.id || targetUserId) : targetUserId);
       activeSetView(isSelf ? 'user_profile' : 'public_profile');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

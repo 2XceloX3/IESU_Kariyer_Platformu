@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { downloadReportPdf } from '../utils/downloadPdf';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FolderGit2, FileCheck2, ChevronLeft, ExternalLink, Award, Sparkles, 
+  FolderGit2, FileCheck2, ArrowLeft, ExternalLink, Award, Sparkles, 
   CheckCircle2, Star, Eye, Plus, ShieldCheck, Cpu, Code, Database, X, Compass
 } from 'lucide-react';
 import Logo from './Logo';
@@ -57,7 +57,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
             title="Geri Dön"
           >
-            <ChevronLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
           <div className="flex items-center gap-2">
             <FolderGit2 className="text-red-600" size={24} />
