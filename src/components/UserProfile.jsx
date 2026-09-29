@@ -20,6 +20,8 @@ export default function UserProfile({
   setDirectMessageUser,
   viewerHive 
 }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const userRole = useAppStore(state => state.userRole);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const students = useAppStore(state => state.students);
@@ -49,8 +51,8 @@ export default function UserProfile({
     (previousView === 'academic' || previousView === 'research_hub' || activePortalBranch === 'academic') ? 'academic' :
     (previousView === 'company' || previousView === 'company_ats' || previousView === 'create_job' || activePortalBranch === 'company') ? 'company' :
     (previousView === 'admin' || previousView === 'admin_cms' || previousView === 'yonetim_konsolu' || activePortalBranch === 'admin') ? 'admin' :
-    (currentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(currentUser.hive) ? currentUser.hive :
-    (currentUser?.role && ['academic', 'alumni', 'student', 'company', 'admin', 'employer'].includes(currentUser.role) ? (currentUser.role === 'employer' ? 'company' : currentUser.role) :
+    (effectiveCurrentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(effectiveCurrentUser.hive) ? effectiveCurrentUser.hive :
+    (effectiveCurrentUser?.role && ['academic', 'alumni', 'student', 'company', 'admin', 'employer'].includes(effectiveCurrentUser.role) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
     (['academic', 'alumni', 'student', 'company', 'admin'].includes(userRole) ? userRole : 'student')));
 
   const getViewerActionBtnClass = () => {
@@ -77,50 +79,68 @@ export default function UserProfile({
   const isAdminBranch = currentBranch === 'admin';
 
   const isProfileSelf = (profileType) => {
+    // 0. user objesinde isSelf bayrağı varsa kesinlikle kendi profilidir
+    if (user?.isSelf === true) return true;
+
     // 1. userId belirtilmediyse veya 'self' / 'me' ise kullanıcının kendi profilidir
     if (!userId || userId === 'self' || userId === 'me') return true;
 
-    // 2. userId oturum açan kullanıcının kimlikleriyle eşleşiyorsa (id, uid, studentNo, email, name)
-    if (currentUser) {
-      if (currentUser.id && (String(userId) === String(currentUser.id) || (user?.id && String(user.id) === String(currentUser.id)))) return true;
-      if (currentUser.uid && (String(userId) === String(currentUser.uid) || (user?.uid && String(user.uid) === String(currentUser.uid)))) return true;
-      if (currentUser.studentNo && (String(userId) === String(currentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(currentUser.studentNo)))) return true;
-      if (currentUser.email && (String(userId) === String(currentUser.email) || (user?.email && String(user.email) === String(currentUser.email)))) return true;
-      if (currentUser.name && user?.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
-      if (currentUser.name && (String(userId).trim().toLowerCase() === currentUser.name.trim().toLowerCase())) return true;
+    // 2. userId oturum açan kullanıcının kimlikleriyle eşleşiyorsa (id, uid, studentId, studentNo, email, username, name)
+    if (effectiveCurrentUser) {
+      if (effectiveCurrentUser.id && (String(userId) === String(effectiveCurrentUser.id) || (user?.id && String(user.id) === String(effectiveCurrentUser.id)))) return true;
+      if (effectiveCurrentUser.uid && (String(userId) === String(effectiveCurrentUser.uid) || (user?.uid && String(user.uid) === String(effectiveCurrentUser.uid)))) return true;
+      if (effectiveCurrentUser.studentId && (String(userId) === String(effectiveCurrentUser.studentId) || (user?.studentId && String(user.studentId) === String(effectiveCurrentUser.studentId)))) return true;
+      if (effectiveCurrentUser.studentNo && (String(userId) === String(effectiveCurrentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(effectiveCurrentUser.studentNo)))) return true;
+      if (effectiveCurrentUser.email && (String(userId).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase() || (user?.email && String(user.email).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase()))) return true;
+      if (effectiveCurrentUser.username && (String(userId).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase() || (user?.username && String(user.username).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase()))) return true;
+      if (effectiveCurrentUser.name && user?.name && effectiveCurrentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
+      if (effectiveCurrentUser.name && (String(userId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase())) return true;
     }
 
     // 3. Admin portalında admin kimlikleri kendi profilidir
-    if (isAdminBranch && (userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513' || user?.id === 'admin')) {
+    if (isAdminBranch && (!userId || userId === 'self' || userId === 'me' || userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513' || user?.id === 'admin')) {
       return true;
     }
 
     // 4. Öğrenci dalında öğrencinin varsayılan profil kimliği
-    if (isStudentBranch && (userId === 'STU-001' || userId === 'STU-01' || user?.id === 'STU-001' || user?.id === 'STU-01')) {
-      if (!currentUser?.id || currentUser.id === 'STU-001' || currentUser.id === 'STU-01' || currentUser.role === 'admin') {
-        return true;
-      }
+    const targetStr = String(userId || '').trim().toLowerCase();
+    const userStr = String(user?.id || '').trim().toLowerCase();
+
+    if ((isStudentBranch || effectiveCurrentUser?.role === 'student' || (!effectiveCurrentUser?.role && profileType === 'student')) && (
+      !userId || userId === 'self' || userId === 'me' ||
+      ((['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(targetStr) || ['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'student' || !effectiveCurrentUser?.role)) ||
+      targetStr.startsWith('mock_stu') || userStr.startsWith('mock_stu')
+    )) {
+      return true;
     }
 
     // 5. Mezun dalında mezun kimliği
-    if (isAlumniBranch && (userId === 'ALU-001' || userId === 'ALU-01' || user?.id === 'ALU-001' || user?.id === 'ALU-01')) {
-      if (!currentUser?.id || currentUser.id === 'ALU-001' || currentUser.id === 'ALU-01' || currentUser.role === 'admin') {
-        return true;
-      }
+    if ((isAlumniBranch || effectiveCurrentUser?.role === 'alumni' || (!effectiveCurrentUser?.role && profileType === 'alumni')) && (
+      !userId || userId === 'self' || userId === 'me' ||
+      ((['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(targetStr) || ['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(userStr)) && (!effectiveCurrentUser?.id || ['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'alumni' || !effectiveCurrentUser?.role))
+    )) {
+      return true;
     }
 
     // 6. Akademik dalında akademik kimliği
-    if (isAcademicBranch && (userId === 'ACAD-001' || userId === 'ACAD-01' || user?.id === 'ACAD-001' || user?.id === 'ACAD-01')) {
-      if (!currentUser?.id || currentUser.id === 'ACAD-001' || currentUser.id === 'ACAD-01' || currentUser.role === 'admin') {
-        return true;
-      }
+    if ((isAcademicBranch || effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || (!effectiveCurrentUser?.role && profileType === 'academic')) && (
+      !userId || userId === 'self' || userId === 'me' ||
+      ((['acad-001', 'acad-01', 'acad-1'].includes(targetStr) || ['acad-001', 'acad-01', 'acad-1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['acad-001', 'acad-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || !effectiveCurrentUser?.role))
+    )) {
+      return true;
     }
 
     // 7. Firma dalında kurumsal kimlik
-    if (isCompanyBranch && (userId === 'CMP-001' || userId === 'CMP-01' || user?.id === 'CMP-001' || user?.id === 'CMP-01')) {
-      if (!currentUser?.id || currentUser.id === 'CMP-001' || currentUser.id === 'CMP-01' || currentUser.role === 'admin') {
-        return true;
-      }
+    if ((isCompanyBranch || effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || (!effectiveCurrentUser?.role && profileType === 'company')) && (
+      !userId || userId === 'self' || userId === 'me' ||
+      ((['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(targetStr) || ['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(userStr)) && (!effectiveCurrentUser?.id || ['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || !effectiveCurrentUser?.role))
+    )) {
+      return true;
+    }
+
+    // 8. Eğer viewerHive belirtilmişse ve userId 'self' veya tanımsız ise
+    if (viewerHive && (!userId || userId === 'self' || userId === 'me')) {
+      return true;
     }
 
     // Aksi takdirde (ör. başka bir öğrenciye, mezuna, akademisyene veya firmaya tıklandığında) bu bir ZİYARETÇİ profildir!
@@ -349,11 +369,11 @@ export default function UserProfile({
     let targetUserId = userId;
 
     if (!targetUserId || targetUserId === 'self' || targetUserId === 'me') {
-      if (currentBranch === 'alumni') targetUserId = currentUser?.role === 'alumni' && currentUser?.id ? currentUser.id : 'ALU-001';
-      else if (currentBranch === 'academic') targetUserId = (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff') && currentUser?.id ? currentUser.id : 'ACAD-001';
-      else if (currentBranch === 'company') targetUserId = currentUser?.role === 'company' && currentUser?.id ? currentUser.id : 'CMP-001';
-      else if (currentBranch === 'admin') targetUserId = currentUser?.id || 'admin_1513';
-      else targetUserId = currentUser?.role === 'student' && currentUser?.id ? currentUser.id : 'STU-001';
+      if (currentBranch === 'alumni') targetUserId = effectiveCurrentUser?.role === 'alumni' && effectiveCurrentUser?.id ? effectiveCurrentUser.id : 'ALU-001';
+      else if (currentBranch === 'academic') targetUserId = (effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff') && effectiveCurrentUser?.id ? effectiveCurrentUser.id : 'ACAD-001';
+      else if (currentBranch === 'company') targetUserId = effectiveCurrentUser?.role === 'company' && effectiveCurrentUser?.id ? effectiveCurrentUser.id : 'CMP-001';
+      else if (currentBranch === 'admin') targetUserId = effectiveCurrentUser?.id || 'admin_1513';
+      else targetUserId = effectiveCurrentUser?.role === 'student' && effectiveCurrentUser?.id ? effectiveCurrentUser.id : 'STU-001';
     }
 
     // ─── DAL EGEMENLİĞİ & YABANCI ADMIN ID FİLTRESİ ───
@@ -370,13 +390,14 @@ export default function UserProfile({
     if (targetUserId === 'admin_1513' || targetUserId === 'admin') {
       setUser({
         id: 'admin_1513',
-        name: (currentUser?.name && currentUser.name !== 'Mezun' && currentUser.name !== 'Öğrenci') ? currentUser.name : 'Kariyer Geliştirme Merkezi',
+        name: (effectiveCurrentUser?.name && effectiveCurrentUser.name !== 'Mezun' && effectiveCurrentUser.name !== 'Öğrenci') ? effectiveCurrentUser.name : 'Kariyer Geliştirme Merkezi',
         role: 'admin',
         title: 'Süper Yönetici & Koordinatör',
         department: 'Kariyer Geliştirme Merkezi (KGM)',
         email: 'kgm@esenyurt.edu.tr',
         avatar: '/iesu-logo.svg',
-        badges: ['verified', 'top_voice']
+        badges: ['verified', 'top_voice'],
+        isSelf: true
       });
       setUserType('admin');
       setIsLoading(false);
@@ -391,23 +412,28 @@ export default function UserProfile({
           const allStudents = generateStudents ? generateStudents() : [];
           found = allStudents.find(s => s.id === targetUserId);
         }
-        const isSelfStudent = isStudentBranch && (
-          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
-          (!targetUserId && (currentUser?.role === 'student' || !currentUser?.role)) ||
-          (targetUserId === 'STU-001' && (currentUser?.role === 'student' || !currentUser?.role || currentUser?.id === 'STU-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
-          (currentUser?.studentNo && (targetUserId === currentUser.studentNo)) ||
-          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+        const isSelfStudent = (isStudentBranch || effectiveCurrentUser?.role === 'student' || (!effectiveCurrentUser?.role && !isAlumniBranch && !isAcademicBranch && !isCompanyBranch)) && (
+          (!userId || userId === 'self' || userId === 'me') ||
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
+          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
+          (effectiveCurrentUser?.studentId && (targetUserId === effectiveCurrentUser.studentId || found?.studentId === effectiveCurrentUser.studentId)) ||
+          (effectiveCurrentUser?.studentNo && (targetUserId === effectiveCurrentUser.studentNo || found?.studentNo === effectiveCurrentUser.studentNo)) ||
+          (!targetUserId && (effectiveCurrentUser?.role === 'student' || !effectiveCurrentUser?.role)) ||
+          (targetUserId === 'STU-001' && (effectiveCurrentUser?.role === 'student' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'STU-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
+          (effectiveCurrentUser?.email && found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()) ||
+          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const studentData = isSelfStudent ? {
-          id: currentUser?.id || targetUserId || 'STU-001',
-          name: currentUser?.name || found?.name || 'Öğrenci',
+          id: effectiveCurrentUser?.id || targetUserId || 'STU-001',
+          name: effectiveCurrentUser?.name || found?.name || 'Öğrenci',
           role: 'student',
-          department: currentUser?.department || found?.department || 'Yazılım Mühendisliği',
-          grade: currentUser?.grade || currentUser?.year || found?.grade || found?.year || '3. Sınıf',
-          gpa: currentUser?.gpa || found?.gpa || '3.84',
-          avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150')),
-          email: currentUser?.email || found?.email || 'ogrenci@esenyurt.edu.tr',
-          badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified']))
+          department: effectiveCurrentUser?.department || found?.department || 'Yazılım Mühendisliği',
+          grade: effectiveCurrentUser?.grade || effectiveCurrentUser?.year || found?.grade || found?.year || '3. Sınıf',
+          gpa: effectiveCurrentUser?.gpa || found?.gpa || '3.84',
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150')),
+          email: effectiveCurrentUser?.email || found?.email || 'ogrenci@esenyurt.edu.tr',
+          badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
+          isSelf: true
         } : (found || {
           id: targetUserId || 'STU-001',
           name: 'Alperen Yılmaz',
@@ -431,24 +457,29 @@ export default function UserProfile({
           const allAlumni = generateAlumni ? generateAlumni() : [];
           found = allAlumni.find(a => a.id === targetUserId);
         }
-        const isSelfAlumni = isAlumniBranch && (
-          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
-          (!targetUserId && (currentUser?.role === 'alumni' || !currentUser?.role)) ||
-          (targetUserId === 'ALU-001' && (currentUser?.role === 'alumni' || !currentUser?.role || currentUser?.id === 'ALU-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
-          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+        const isSelfAlumni = (isAlumniBranch || effectiveCurrentUser?.role === 'alumni') && (
+          (!userId || userId === 'self' || userId === 'me') ||
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
+          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
+          (effectiveCurrentUser?.studentId && (targetUserId === effectiveCurrentUser.studentId || found?.studentId === effectiveCurrentUser.studentId)) ||
+          (!targetUserId && (effectiveCurrentUser?.role === 'alumni' || !effectiveCurrentUser?.role)) ||
+          (targetUserId === 'ALU-001' && (effectiveCurrentUser?.role === 'alumni' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'ALU-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
+          (effectiveCurrentUser?.email && found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()) ||
+          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const alumniData = isSelfAlumni ? {
-          id: currentUser?.id || targetUserId || 'ALU-001',
-          name: currentUser?.name || found?.name || 'Caner Öztürk',
+          id: effectiveCurrentUser?.id || targetUserId || 'ALU-001',
+          name: effectiveCurrentUser?.name || found?.name || 'Caner Öztürk',
           role: 'alumni',
-          department: currentUser?.department || found?.department || 'Yazılım Mühendisliği',
-          graduationYear: currentUser?.graduationYear || currentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
-          gradYear: currentUser?.graduationYear || currentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
-          title: currentUser?.title || found?.title || 'Frontend Developer',
-          company: currentUser?.company || (currentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : (found?.company || 'Trendyol')),
-          avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff')),
-          email: currentUser?.email || found?.email || 'caner@mezun.esenyurt.edu.tr',
-          badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified']))
+          department: effectiveCurrentUser?.department || found?.department || 'Yazılım Mühendisliği',
+          graduationYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
+          gradYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
+          title: effectiveCurrentUser?.title || found?.title || 'Frontend Developer',
+          company: effectiveCurrentUser?.company || (effectiveCurrentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : (found?.company || 'Trendyol')),
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff')),
+          email: effectiveCurrentUser?.email || found?.email || 'caner@mezun.esenyurt.edu.tr',
+          badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
+          isSelf: true
         } : (found ? found : (targetUserId === 'ALU-001' ? {
           id: 'ALU-001',
           name: 'Caner Öztürk',
@@ -498,21 +529,25 @@ export default function UserProfile({
           const allStaff = generateAcademicStaff ? generateAcademicStaff() : [];
           found = allStaff.find(a => a.id === targetUserId);
         }
-        const isSelfAcademic = isAcademicBranch && (
-          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
-          (!targetUserId && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff' || !currentUser?.role)) ||
-          (targetUserId === 'ACAD-001' && (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff' || !currentUser?.role || currentUser?.id === 'ACAD-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
-          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+        const isSelfAcademic = (isAcademicBranch || effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff') && (
+          (!userId || userId === 'self' || userId === 'me') ||
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
+          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
+          (effectiveCurrentUser?.email && (targetUserId === effectiveCurrentUser.email || (found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()))) ||
+          (!targetUserId && (effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || !effectiveCurrentUser?.role)) ||
+          (targetUserId === 'ACAD-001' && (effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'ACAD-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
+          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const academicData = isSelfAcademic ? {
-          id: currentUser?.id || targetUserId || 'ACAD-001',
-          name: currentUser?.name || found?.name || 'Prof. Dr. Ahmet Yılmaz',
+          id: effectiveCurrentUser?.id || targetUserId || 'ACAD-001',
+          name: effectiveCurrentUser?.name || found?.name || 'Prof. Dr. Ahmet Yılmaz',
           role: 'academic',
-          title: currentUser?.title || found?.title || 'Bölüm Başkanı & Profesör',
-          department: currentUser?.department || (currentUser?.role === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : (found?.department || 'Bilgisayar Mühendisliği')),
-          email: currentUser?.email || found?.email || 'ahmet.yilmaz@esenyurt.edu.tr',
-          avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150')),
-          badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified']))
+          title: effectiveCurrentUser?.title || found?.title || 'Bölüm Başkanı & Profesör',
+          department: effectiveCurrentUser?.department || (effectiveCurrentUser?.role === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : (found?.department || 'Bilgisayar Mühendisliği')),
+          email: effectiveCurrentUser?.email || found?.email || 'ahmet.yilmaz@esenyurt.edu.tr',
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150')),
+          badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
+          isSelf: true
         } : (found || {
           id: targetUserId || 'ACAD-001',
           name: 'Prof. Dr. Ahmet Yılmaz',
@@ -531,27 +566,32 @@ export default function UserProfile({
 
       if (targetUserId.startsWith('CMP-') || targetUserId === 'trendyol') {
         let found = (companies || []).find(c => c.id === targetUserId || (typeof c.name === 'string' && c.name.toLowerCase().includes('trendyol')));
-        const isSelfCompany = isCompanyBranch && (
-          (currentUser?.id && (targetUserId === currentUser?.id || targetUserId === 'self')) || 
-          (!targetUserId && (currentUser?.role === 'company' || currentUser?.role === 'employer' || !currentUser?.role)) ||
-          (targetUserId === 'CMP-001' && (currentUser?.role === 'company' || currentUser?.role === 'employer' || !currentUser?.role || currentUser?.id === 'CMP-001' || !currentUser?.id || currentUser?.role === 'admin')) ||
+        const isSelfCompany = (isCompanyBranch || effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer') && (
+          (!userId || userId === 'self' || userId === 'me') ||
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
+          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
+          (effectiveCurrentUser?.username && (targetUserId === effectiveCurrentUser.username || found?.username === effectiveCurrentUser.username)) ||
+          (effectiveCurrentUser?.email && (targetUserId === effectiveCurrentUser.email || (found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()))) ||
+          (!targetUserId && (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || !effectiveCurrentUser?.role)) ||
+          (targetUserId === 'CMP-001' && (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'CMP-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
           targetUserId === 'admin_1513' || 
           targetUserId === 'admin' ||
-          (currentUser?.name && found?.name && currentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const companyData = isSelfCompany ? {
-          id: currentUser?.id || targetUserId || 'CMP-001',
-          name: currentUser?.name || found?.name || 'Trendyol',
+          id: effectiveCurrentUser?.id || targetUserId || 'CMP-001',
+          name: effectiveCurrentUser?.name || found?.name || 'Trendyol',
           role: 'company',
-          sector: currentUser?.sector || (currentUser?.role === 'admin' ? 'Kurumsal Yönetim & Kariyer Koordinasyonu' : (found?.sector || 'E-Ticaret & Teknoloji Ortaklığı')),
-          location: currentUser?.location || found?.location || 'İstanbul Maslak Kampüsü',
+          sector: effectiveCurrentUser?.sector || (effectiveCurrentUser?.role === 'admin' ? 'Kurumsal Yönetim & Kariyer Koordinasyonu' : (found?.sector || 'E-Ticaret & Teknoloji Ortaklığı')),
+          location: effectiveCurrentUser?.location || found?.location || 'İstanbul Maslak Kampüsü',
           foundingYear: found?.foundingYear || '2010',
-          description: currentUser?.description || found?.description || 'Türkiye\'nin önde gelen e-ticaret ve teknoloji ekosistemi. İESÜ Kariyer Geliştirme Merkezi akredite sanayi ve staj partneri.',
+          description: effectiveCurrentUser?.description || found?.description || 'Türkiye\'nin önde gelen e-ticaret ve teknoloji ekosistemi. İESÜ Kariyer Geliştirme Merkezi akredite sanayi ve staj partneri.',
           alumniCount: found?.alumniCount || '42',
           hiringConversion: found?.hiringConversion || '%84',
           internshipDuration: found?.internshipDuration || '20 İş Günü (1 Ay)',
-          avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150')),
-          badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified']))
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150')),
+          badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
+          isSelf: true
         } : (found || {
           id: 'CMP-001',
           name: 'Trendyol',
@@ -573,39 +613,97 @@ export default function UserProfile({
     }
 
     // 3. Koleksiyonlarda Arama (Eğer başka bir spesifik kullanıcı aranıyorsa)
-    if (targetUserId && targetUserId !== currentUser?.id && targetUserId !== 'admin_1513') {
+    if (targetUserId && targetUserId !== effectiveCurrentUser?.id && targetUserId !== 'admin_1513') {
       let found = (companies || []).find(c => 
         c.id === targetUserId || 
         c.username === targetUserId || 
         (c.name && c.name.toLowerCase() === targetUserId.toLowerCase()) || 
         c.id === parseInt(targetUserId)
       );
-      if (found) { setUser(found); setUserType('company'); setIsLoading(false); return; }
+      if (found) { 
+        const isMatchedSelf = Boolean(
+          (effectiveCurrentUser && (
+            found.id === effectiveCurrentUser.id ||
+            (found.username && effectiveCurrentUser.username && found.username.toLowerCase() === effectiveCurrentUser.username.toLowerCase()) ||
+            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
+          )) ||
+          (isCompanyBranch && (userId === 'self' || !userId || found.id === 'CMP-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+        );
+        setUser({ ...found, isSelf: Boolean(isMatchedSelf) }); 
+        setUserType('company'); 
+        setIsLoading(false); 
+        return; 
+      }
 
       found = (academicStaff || []).find(a => a.id === targetUserId || a.id === parseInt(targetUserId));
-      if (found) { setUser(found); setUserType('academic'); setIsLoading(false); return; }
+      if (found) { 
+        const isMatchedSelf = Boolean(
+          (effectiveCurrentUser && (
+            found.id === effectiveCurrentUser.id ||
+            (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
+            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
+          )) ||
+          (isAcademicBranch && (userId === 'self' || !userId || found.id === 'ACAD-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+        );
+        setUser({ ...found, isSelf: Boolean(isMatchedSelf) }); 
+        setUserType('academic'); 
+        setIsLoading(false); 
+        return; 
+      }
 
       found = (alumni || []).find(a => a.id === targetUserId || a.id === parseInt(targetUserId));
-      if (found) { setUser(found); setUserType('alumni'); setIsLoading(false); return; }
+      if (found) { 
+        const isMatchedSelf = Boolean(
+          (effectiveCurrentUser && (
+            found.id === effectiveCurrentUser.id ||
+            (effectiveCurrentUser.uid && found.id === effectiveCurrentUser.uid) ||
+            (found.studentId && effectiveCurrentUser.studentId && found.studentId === effectiveCurrentUser.studentId) ||
+            (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
+            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
+          )) ||
+          (isAlumniBranch && (userId === 'self' || !userId || found.id === 'ALU-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+        );
+        setUser({ ...found, isSelf: Boolean(isMatchedSelf) }); 
+        setUserType('alumni'); 
+        setIsLoading(false); 
+        return; 
+      }
 
       found = (students || []).find(s => s.id === targetUserId || s.id === parseInt(targetUserId));
-      if (found) { setUser(found); setUserType('student'); setIsLoading(false); return; }
+      if (found) { 
+        const isMatchedSelf = Boolean(
+          (effectiveCurrentUser && (
+            found.id === effectiveCurrentUser.id ||
+            (effectiveCurrentUser.uid && found.id === effectiveCurrentUser.uid) ||
+            (found.studentId && effectiveCurrentUser.studentId && found.studentId === effectiveCurrentUser.studentId) ||
+            (found.studentNo && effectiveCurrentUser.studentNo && found.studentNo === effectiveCurrentUser.studentNo) ||
+            (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
+            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
+          )) ||
+          (isStudentBranch && (userId === 'self' || !userId || found.id === 'STU-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+        );
+        setUser({ ...found, isSelf: isMatchedSelf }); 
+        setUserType('student'); 
+        setIsLoading(false); 
+        return; 
+      }
     }
 
     // 4. KENDİ PROFİLİM (SELF PROFILE) — HANGİ DALIN İÇİNDEYSEK O DALIN KENDİNE HAS PROFİLİ AÇILIR!
     if (currentBranch === 'alumni') {
       const aluData = {
-        id: currentUser?.id || 'ALU-001',
-        name: currentUser?.name || 'Caner Öztürk',
+        id: effectiveCurrentUser?.id || 'ALU-001',
+        name: effectiveCurrentUser?.name || 'Caner Öztürk',
         role: 'alumni',
-        department: currentUser?.department || 'Yazılım Mühendisliği',
-        graduationYear: currentUser?.graduationYear || currentUser?.gradYear || '2023',
-        gradYear: currentUser?.graduationYear || currentUser?.gradYear || '2023',
-        title: currentUser?.title || 'Frontend Developer',
-        company: currentUser?.company || (currentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : 'Trendyol'),
-        avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'),
-        email: currentUser?.email || 'caner@mezun.esenyurt.edu.tr',
-        badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified'])
+        department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
+        graduationYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || '2023',
+        gradYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || '2023',
+        title: effectiveCurrentUser?.title || 'Frontend Developer',
+        company: effectiveCurrentUser?.company || (effectiveCurrentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : 'Trendyol'),
+        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'),
+        email: effectiveCurrentUser?.email || 'caner@mezun.esenyurt.edu.tr',
+        badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
+        isSelf: true
       };
       setUser(aluData);
       setUserType('alumni');
@@ -615,14 +713,15 @@ export default function UserProfile({
 
     if (currentBranch === 'academic') {
       const acadData = {
-        id: currentUser?.id || 'ACAD-001',
-        name: currentUser?.name || 'Prof. Dr. Ahmet Yılmaz',
+        id: effectiveCurrentUser?.id || 'ACAD-001',
+        name: effectiveCurrentUser?.name || 'Prof. Dr. Ahmet Yılmaz',
         role: 'academic',
-        title: currentUser?.title || 'Bölüm Başkanı & Profesör',
-        department: currentUser?.department || (currentUser?.role === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Bilgisayar Mühendisliği'),
-        email: currentUser?.email || 'ahmet.yilmaz@esenyurt.edu.tr',
-        avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'),
-        badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified'])
+        title: effectiveCurrentUser?.title || 'Bölüm Başkanı & Profesör',
+        department: effectiveCurrentUser?.department || (effectiveCurrentUser?.role === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Bilgisayar Mühendisliği'),
+        email: effectiveCurrentUser?.email || 'ahmet.yilmaz@esenyurt.edu.tr',
+        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'),
+        badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
+        isSelf: true
       };
       setUser(acadData);
       setUserType('academic');
@@ -632,18 +731,19 @@ export default function UserProfile({
 
     if (currentBranch === 'company') {
       const compData = {
-        id: currentUser?.id || 'CMP-001',
-        name: currentUser?.name || 'Trendyol',
+        id: effectiveCurrentUser?.id || 'CMP-001',
+        name: effectiveCurrentUser?.name || 'Trendyol',
         role: 'company',
-        sector: currentUser?.sector || (currentUser?.role === 'admin' ? 'Kurumsal Yönetim & Kariyer Koordinasyonu' : 'E-Ticaret & Teknoloji Ortaklığı'),
+        sector: effectiveCurrentUser?.sector || (effectiveCurrentUser?.role === 'admin' ? 'Kurumsal Yönetim & Kariyer Koordinasyonu' : 'E-Ticaret & Teknoloji Ortaklığı'),
         location: 'İstanbul Maslak Kampüsü',
         foundingYear: '2010',
         description: 'Türkiye\'nin önde gelen e-ticaret ve teknoloji ekosistemi. İESÜ Kariyer Geliştirme Merkezi akredite sanayi ve staj partneri.',
         alumniCount: '42',
         hiringConversion: '%84',
         internshipDuration: '20 İş Günü (1 Ay)',
-        avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150'),
-        badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified'])
+        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150'),
+        badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
+        isSelf: true
       };
       setUser(compData);
       setUserType('company');
@@ -653,14 +753,15 @@ export default function UserProfile({
 
     if (currentBranch === 'admin') {
       setUser({
-        id: currentUser?.id || 'admin_1513',
-        name: (currentUser?.name && currentUser.name !== 'Mezun' && currentUser.name !== 'Öğrenci') ? currentUser.name : 'Kariyer Geliştirme Merkezi',
+        id: effectiveCurrentUser?.id || 'admin_1513',
+        name: (effectiveCurrentUser?.name && effectiveCurrentUser.name !== 'Mezun' && effectiveCurrentUser.name !== 'Öğrenci') ? effectiveCurrentUser.name : 'Kariyer Geliştirme Merkezi',
         role: 'admin',
         title: 'Süper Yönetici & Koordinatör',
         department: 'Kariyer Geliştirme Merkezi (KGM)',
-        email: currentUser?.email || 'kgm@esenyurt.edu.tr',
-        avatar: currentUser?.avatar || '/iesu-logo.svg',
-        badges: currentUser?.badges || ['verified', 'top_voice']
+        email: effectiveCurrentUser?.email || 'kgm@esenyurt.edu.tr',
+        avatar: effectiveCurrentUser?.avatar || '/iesu-logo.svg',
+        badges: effectiveCurrentUser?.badges || ['verified', 'top_voice'],
+        isSelf: true
       });
       setUserType('admin');
       setIsLoading(false);
@@ -669,20 +770,36 @@ export default function UserProfile({
 
     // Varsayılan Dal: Öğrenci Portalı (Student)
     const stuData = {
-      id: currentUser?.id || 'STU-001',
-      name: currentUser?.name || 'Alperen Yılmaz',
+      id: effectiveCurrentUser?.id || 'STU-001',
+      name: effectiveCurrentUser?.name || 'Alperen Yılmaz',
       role: 'student',
-      department: currentUser?.department || 'Yazılım Mühendisliği',
-      grade: currentUser?.grade || currentUser?.year || '3. Sınıf',
-      gpa: currentUser?.gpa || '3.84',
-      avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
-      email: currentUser?.email || 'ogrenci@esenyurt.edu.tr',
-      badges: currentUser?.badges || (currentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified'])
+      department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
+      grade: effectiveCurrentUser?.grade || effectiveCurrentUser?.year || '3. Sınıf',
+      gpa: effectiveCurrentUser?.gpa || '3.84',
+      avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
+      email: effectiveCurrentUser?.email || 'ogrenci@esenyurt.edu.tr',
+      badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
+      isSelf: true
     };
     setUser(stuData);
     setUserType('student');
     setIsLoading(false);
-  }, [userId, students, alumni, companies, academicStaff, currentUser, userRole, activePortalBranch, previousView]);
+  }, [userId, students, alumni, companies, academicStaff, effectiveCurrentUser, userRole, activePortalBranch, previousView]);
+
+  useEffect(() => {
+    const handleProfileUpdate = (e) => {
+      const updatedData = e?.detail;
+      if (updatedData) {
+        setUser(prev => ({
+          ...prev,
+          ...updatedData,
+          isSelf: true
+        }));
+      }
+    };
+    window.addEventListener('iesu_user_profile_updated', handleProfileUpdate);
+    return () => window.removeEventListener('iesu_user_profile_updated', handleProfileUpdate);
+  }, []);
 
 
 
@@ -701,8 +818,7 @@ export default function UserProfile({
           <UserCircle2 size={40} className="text-gray-500" />
         </div>
         <h2 className="text-2xl font-black text-gray-900 mb-2">Kullanıcı Bulunamadı</h2>
-        <p className="text-gray-500 mb-6">Aradığınız profil silinmiş veya mevcut olmayabilir.</p>
-        <button onClick={() => setView(userRole === 'admin' ? 'admin' : (previousView === 'user_profile' ? (userRole || 'landing') : (previousView || 'landing')))} className="flex items-center gap-2 bg-[#990000] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-red-700 transition">
+        <button onClick={() => setView(currentBranch || (previousView === 'user_profile' ? 'student' : (previousView || 'student')))} className="flex items-center gap-2 bg-[#990000] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-red-700 transition">
           <ArrowLeft size={18} /> Geri Dön
         </button>
       </div>
@@ -2315,7 +2431,12 @@ export default function UserProfile({
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1700px] mx-auto px-4 h-16 flex items-center justify-between">
           
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : (userRole === 'employer' || userRole === 'company') ? 'company' : 'student')}>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
+            const target = (previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView))
+              ? previousView
+              : currentBranch || (userRole === 'admin' ? 'admin' : userRole === 'academic' ? 'academic' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student');
+            setView(target);
+          }}>
             <Logo 
               color={currentBranch === 'alumni' ? 'emerald' : currentBranch === 'academic' ? 'indigo' : currentBranch === 'company' ? 'blue' : currentBranch === 'admin' ? 'amber' : 'red'} 
               className="h-10 w-auto hover:scale-105 transition-transform shrink-0" 
@@ -2837,9 +2958,16 @@ export default function UserProfile({
                       key={idx} 
                       className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-2xl border border-transparent hover:border-slate-100 transition cursor-pointer group"
                       onClick={() => {
-                        if (setSelectedUserId && u.id) setSelectedUserId(u.id);
+                        const isSelf = u.id === 'self' || (effectiveCurrentUser && (
+                          String(u.id) === String(effectiveCurrentUser.id) ||
+                          String(u.id) === String(effectiveCurrentUser.uid) ||
+                          (effectiveCurrentUser.name && u.name && effectiveCurrentUser.name.trim().toLowerCase() === u.name.trim().toLowerCase())
+                        ));
+                        const targetId = isSelf ? (effectiveCurrentUser?.id || u.id) : (u.id || u.uid || 'STU-001');
+                        if (setSelectedUserId) setSelectedUserId(targetId);
+                        useAppStore.getState().setSelectedUserId?.(targetId);
                         setFollowersModal({isOpen: false, title: '', users: []});
-                        setView('user_profile');
+                        setView(isSelf ? 'user_profile' : 'public_profile');
                       }}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -3395,13 +3523,17 @@ export default function UserProfile({
             {/* 4. Akademik Profilim */}
             <button 
               onClick={() => {
-                if (setSelectedUserId) setSelectedUserId(currentUser?.id || 'ACAD-001');
+                const store = useAppStore.getState();
+                if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
+                const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 if (setView) setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Akademik Profilim"
             >
-              <SafeAvatar src={currentUser?.avatar} name={currentUser?.name || 'Akademik'} size="xs" alt="Akademisyen" />
+              <SafeAvatar src={effectiveCurrentUser?.avatar} name={effectiveCurrentUser?.name || 'Akademik'} size="xs" alt="Akademisyen" />
             </button>
           </div>
         </div>
@@ -3452,13 +3584,17 @@ export default function UserProfile({
             {/* 4. Firma Profilim */}
             <button 
               onClick={() => {
-                if (setSelectedUserId) setSelectedUserId(currentUser?.id || 'CMP-001');
+                const store = useAppStore.getState();
+                if (store.setActivePortalBranch) store.setActivePortalBranch('company');
+                const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 if (setView) setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Kurumsal Firma Profilim"
             >
-              <SafeAvatar src={currentUser?.avatar || currentUser?.logo} name={currentUser?.name || 'Firma'} size="xs" alt="Firma" />
+              <SafeAvatar src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.logo} name={effectiveCurrentUser?.name || 'Firma'} size="xs" alt="Firma" />
             </button>
           </div>
         </div>
@@ -3495,16 +3631,17 @@ export default function UserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('alumni');
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'ALU-001';
+                const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
                 if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-600 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Mezun Profilim"
             >
               <SafeAvatar 
-                src={currentUser?.avatar || currentUser?.profileImage} 
-                name={currentUser?.name || 'Mezun'} 
+                src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage} 
+                name={effectiveCurrentUser?.name || 'Mezun'} 
                 size="xs" 
                 alt="Profile" 
               />
@@ -3544,16 +3681,17 @@ export default function UserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('student');
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
                 if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Öğrenci Profilim"
             >
               <SafeAvatar 
-                src={currentUser?.avatar || currentUser?.profileImage} 
-                name={currentUser?.name || 'Öğrenci'} 
+                src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage} 
+                name={effectiveCurrentUser?.name || 'Öğrenci'} 
                 size="xs" 
                 alt="Profile" 
               />

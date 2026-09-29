@@ -1,3 +1,4 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState } from 'react';
 import useAppStore from '../../store/useAppStore';
 import { Users, Plus, Edit2, Trash2, Phone, Mail, ExternalLink, ShieldCheck, Image, Save, X } from 'lucide-react';

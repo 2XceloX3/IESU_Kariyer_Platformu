@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Search, ArrowLeft, RefreshCw, Layers } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import AdminOmniDock from './AdminOmniDock';
 
 export default function AuditLogsPanel({ setView, previousView, currentUser, setSelectedUserId }) {
   const auditLogs = useAppStore(state => state.auditLogs) || [];
@@ -143,15 +142,6 @@ export default function AuditLogsPanel({ setView, previousView, currentUser, set
         </div>
 
       </div>
-
-      {/* Floating Bottom Omni Dock */}
-      <AdminOmniDock 
-        theme="amber" 
-        currentUser={currentUser} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId} 
-        activeTab="audit_logs" 
-      />
     </div>
   );
 }

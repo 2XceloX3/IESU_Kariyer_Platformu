@@ -78,6 +78,8 @@ export default function ConnectionSuggestions({
   maxSuggestions = 4,
   branch
 }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const storeActiveBranch = useAppStore(state => state.activePortalBranch);
   const [followedIds, setFollowedIds] = useState([]);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
@@ -97,13 +99,13 @@ export default function ConnectionSuggestions({
   const effectiveBranch = useMemo(() => {
     if (branch) return branch;
     if (storeActiveBranch) return storeActiveBranch;
-    const role = currentUser?.role;
+    const role = effectiveCurrentUser?.role;
     if (role === 'alumni') return 'alumni';
     if (role === 'academic') return 'academic';
     if (role === 'employer' || role === 'company') return 'company';
     if (role === 'admin') return 'admin';
     return 'student';
-  }, [branch, storeActiveBranch, currentUser]);
+  }, [branch, storeActiveBranch, effectiveCurrentUser]);
 
   const theme = BRANCH_THEMES[effectiveBranch] || BRANCH_THEMES.student;
 
@@ -117,10 +119,10 @@ export default function ConnectionSuggestions({
   }, [students, alumni, academicStaff, companies]);
 
   const suggestions = useMemo(() => {
-    if (!currentUser && allNetworkUsers.length === 0) return [];
+    if (!effectiveCurrentUser && allNetworkUsers.length === 0) return [];
 
-    const currentId = currentUser?.id;
-    const currentEmail = currentUser?.email;
+    const currentId = effectiveCurrentUser?.id;
+    const currentEmail = effectiveCurrentUser?.email;
     const others = allNetworkUsers.filter(u => u.id !== currentId && (!currentEmail || u.email !== currentEmail));
 
     if (others.length === 0) return [];
@@ -128,11 +130,11 @@ export default function ConnectionSuggestions({
     const scored = others.map(u => {
       let score = 0;
       const uDept = (u?.department || '').toLowerCase();
-      const cDept = (currentUser?.department || '').toLowerCase();
+      const cDept = (effectiveCurrentUser?.department || '').toLowerCase();
       const sameDept = uDept && cDept && (uDept.includes(cDept) || cDept.includes(uDept));
 
       if (sameDept) score += 10;
-      if (u.faculty && currentUser?.faculty && u.faculty === currentUser.faculty) score += 5;
+      if (u.faculty && effectiveCurrentUser?.faculty && u.faculty === effectiveCurrentUser.faculty) score += 5;
 
       if (effectiveBranch === 'alumni') {
         if (u._type === 'alumni') score += 12;
@@ -158,11 +160,19 @@ export default function ConnectionSuggestions({
     });
 
     return scored.sort((a, b) => b.score - a.score).slice(0, maxSuggestions);
-  }, [currentUser, allNetworkUsers, effectiveBranch, maxSuggestions]);
+  }, [effectiveCurrentUser, allNetworkUsers, effectiveBranch, maxSuggestions]);
 
   const handleViewProfile = (userId) => {
-    if (setSelectedUserId) setSelectedUserId(userId);
-    if (setView) setView('public_profile');
+    const isSelf = !userId || userId === 'self' || userId === 'me' || (effectiveCurrentUser && (
+      String(userId) === String(effectiveCurrentUser.id) ||
+      String(userId) === String(effectiveCurrentUser.uid) ||
+      String(userId) === String(effectiveCurrentUser.studentNo) ||
+      (effectiveCurrentUser.name && String(userId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase())
+    ));
+    const targetId = isSelf ? (effectiveCurrentUser?.id || userId) : userId;
+    if (setSelectedUserId) setSelectedUserId(targetId);
+    useAppStore.getState().setSelectedUserId?.(targetId);
+    if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
   };
 
   const handleToggleFollow = (e, userId) => {

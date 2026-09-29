@@ -4,9 +4,11 @@ import { User, ChevronLeft, MapPin, Building2, Briefcase, Award, Star, MessageCi
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
 import AIMatchmaker from './AIMatchmaker';
 import MentorRequestModal from './modals/MentorRequestModal';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
+import useAppStore from '../store/useAppStore';
 
 const MOCK_MENTORS = [
   {
@@ -59,10 +61,19 @@ const MOCK_MENTORS = [
   }
 ];
 
-export default function MentorMatch({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function MentorMatch({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState('Tümü');
   const [selectedMentorForModal, setSelectedMentorForModal] = useState(null);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const combinedMentors = useMemo(() => {
     const verifiedFormatted = VERIFIED_MENTORS.map(vm => ({
@@ -100,7 +111,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
       <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4 w-full max-w-[1200px] mx-auto">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >
@@ -185,7 +196,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
                   <span className="text-xs font-black text-emerald-600">%{(mentor.id.length * 15 + mentor.name.length * 3) % 15 + 85}</span>
                 </div>
                 <div className="absolute -bottom-10 left-6 p-1 bg-white rounded-full">
-                  <img src={mentor.avatar} alt={mentor.name} className="w-20 h-20 rounded-full object-cover border-2 border-white" />
+                  <SafeAvatar src={mentor.avatar} name={mentor.name} size="lg" className="w-20 h-20 rounded-full object-cover border-2 border-white" />
                 </div>
               </div>
               

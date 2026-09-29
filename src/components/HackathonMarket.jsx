@@ -8,6 +8,7 @@ import {
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
 const HACKATHONS = [
   { id: 1, title: 'Akıllı Kampüs İnovasyon Maratonu', company: 'Esenyurt Teknopark', prize: '₺50.000 Hibe Desteği', deadline: '2 Gün Kaldı', type: 'Sürdürülebilirlik', participants: 142, status: 'active', color: 'blue' },
@@ -21,11 +22,20 @@ const MOCK_TEAMMATES = [
   { id: 3, name: 'Selin Yıldız', dept: 'Yönetim Bilişim', role: 'UI/UX Designer', compatibility: 88 },
 ];
 
-export default function HackathonMarket({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function HackathonMarket({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [hackathonsList, setHackathonsList] = useState(HACKATHONS);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [selectedHackathon, setSelectedHackathon] = useState(null);
   const [teamForm, setTeamForm] = useState({ teamName: '', projectName: '', members: [] });
+
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const handleOpenTeamModal = (hack) => {
     setSelectedHackathon(hack);
@@ -67,7 +77,7 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
             title="Geri Dön"
           >

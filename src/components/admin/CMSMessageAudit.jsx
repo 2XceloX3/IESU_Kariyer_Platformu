@@ -1,3 +1,4 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState, useMemo, useEffect } from 'react';
 import { 
   MessageSquare, ShieldCheck, ShieldAlert, Search, Filter, Users, User, Building2, 

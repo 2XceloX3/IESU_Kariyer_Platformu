@@ -1,3 +1,4 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState } from 'react';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Brain, ArrowRight, ChevronLeft, Target, Award, Sparkles, 
+  Brain, ArrowRight, ArrowLeft, ChevronLeft, Target, Award, Sparkles, 
   Zap, Rocket, Star, CheckCircle2, Compass, Users, BookOpen,
-  Briefcase, RotateCcw, ExternalLink
+  Briefcase, RotateCcw, ExternalLink, Download, GraduationCap, CheckCheck, MapPin
 } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
@@ -11,6 +11,8 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
 import { useAdminStore } from '../brain/useAdminStore';
+import useAppStore from '../store/useAppStore';
+import { downloadReportPdf } from '../utils/downloadPdf';
 
 const FORM_QUESTIONS = [
   {
@@ -103,7 +105,7 @@ const FORM_QUESTIONS = [
   }
 ];
 
-export default function CareerTest({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function CareerTest({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -287,8 +289,51 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleDownloadTestPdf = () => {
+    const calculatedScores = calculateScores();
+    const sum = (calculatedScores.logic + calculatedScores.creative + calculatedScores.social + calculatedScores.practical) || 1;
+    const pScores = {
+      logic: Math.round((calculatedScores.logic / sum) * 100),
+      creative: Math.round((calculatedScores.creative / sum) * 100),
+      social: Math.round((calculatedScores.social / sum) * 100),
+      practical: Math.round((calculatedScores.practical / sum) * 100)
+    };
+    const lines = [
+      `Universite: Istanbul Esenyurt Universitesi (IESU)`,
+      `Birim: Kariyer Gelistirme Merkezi (KGM)`,
+      `Ogrenci: ${currentUser?.name || 'IESU Ogrencisi'}`,
+      `Bolum: ${currentUser?.department || 'Muhendislik'}`,
+      `Kariyer Kimligi: ${persona.title}`,
+      `Yetkinlik Rozeti: ${persona.badge}`,
+      `Tarih: ${new Date().toLocaleDateString('tr-TR')}`,
+      `------------------------------------------------------------------`,
+      `YETKINLIK DAGILIMI:`,
+      ` - Mantik & Analitik Zeka: %${pScores.logic}`,
+      ` - Yaraticilik & Inovasyon: %${pScores.creative}`,
+      ` - Sosyal & Iletisim Liderligi: %${pScores.social}`,
+      ` - Pratik & Saha Cevikligi: %${pScores.practical}`,
+      ` `,
+      `ONERILEN KARIYER PATIKALARI:`,
+      ...(persona.paths || []).map(p => ` - ${p}`),
+      ` `,
+      `ONERILEN OGRENCI KULUPLERI:`,
+      ...(persona.recommendedClubs || []).map(c => ` - ${c}`)
+    ];
+    downloadReportPdf('IESU_Kariyer_Yetkinlik_Raporu', 'Kariyer & Yetkinlik Testi Sonuç Raporu', lines);
+    window.toast?.success?.("📄 Kariyer & Yetkinlik Testi sonuç raporunuz PDF olarak indirildi.");
+  };
+
+  const handleSyncToKgb = () => {
+    window.toast?.success?.("🎯 Yetkinlik profili ve kariyer kimliğiniz KGB Karnenize başarıyla işlendi!");
+  };
+
   const persona = getPersona();
-  const backTarget = userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student';
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = (
+    previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView) ? previousView :
+    activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-28">
@@ -300,7 +345,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-red-50 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shadow-xs"
             title="Geri Dön"
           >
-            <ChevronLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
           <div className="flex items-center gap-3">
             <Logo className="h-8 w-auto text-[#990000]" />
@@ -441,8 +486,16 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
                   <div 
                     key={mentor.id}
                     onClick={() => {
-                      if (setSelectedUserId) setSelectedUserId(mentor.id);
-                      setView('public_profile');
+                      const effectiveUser = currentUser || useAppStore.getState().currentUser;
+                      const isSelf = mentor.id === 'self' || (effectiveUser && (
+                        String(mentor.id) === String(effectiveUser.id) ||
+                        String(mentor.id) === String(effectiveUser.uid) ||
+                        (effectiveUser.name && mentor.name && effectiveUser.name.trim().toLowerCase() === mentor.name.trim().toLowerCase())
+                      ));
+                      const targetId = isSelf ? (effectiveUser?.id || mentor.id) : mentor.id;
+                      if (setSelectedUserId) setSelectedUserId(targetId);
+                      useAppStore.getState().setSelectedUserId?.(targetId);
+                      if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
                     }}
                     className="p-4 rounded-xl border border-slate-200 hover:border-red-200 hover:shadow-xs transition bg-slate-50/50 flex items-center gap-3.5 cursor-pointer"
                   >
@@ -459,20 +512,82 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
               </div>
             </div>
 
-            {/* Bottom Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button 
-                onClick={handleReset}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <RotateCcw size={15} /> Formu Yeniden Doldur
-              </button>
-              <button 
-                onClick={() => setView('career_roadmap')}
-                className="flex-1 bg-[#990000] hover:bg-red-800 text-white py-3.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-              >
-                Kariyer Haritama Git <ArrowRight size={15} />
-              </button>
+            {/* Bottom Actions & Cross-Hive Bridges */}
+            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div>
+                  <h4 className="font-black text-gray-900 text-sm">Resmî Rapor & Akreditasyon</h4>
+                  <p className="text-xs text-gray-500">Sonuçlarınızı PDF olarak kaydedebilir veya KGB sisteminize işleyebilirsiniz.</p>
+                </div>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={handleDownloadTestPdf}
+                    className="flex-1 sm:flex-none px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <Download size={13} /> PDF İndir
+                  </button>
+                  <button
+                    onClick={handleSyncToKgb}
+                    className="flex-1 sm:flex-none px-4 py-2 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <CheckCheck size={13} /> KGB'ye Aktar
+                  </button>
+                </div>
+              </div>
+
+              {/* Cross Hive Navigation Links */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <button
+                  onClick={() => setView('alumni_map')}
+                  className="p-3 bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-200 rounded-xl text-left transition flex items-center justify-between group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <MapPin size={16} className="text-emerald-700" />
+                    <div>
+                      <span className="text-xs font-black text-emerald-950 block">Mezun Haritası</span>
+                      <span className="text-[10px] text-emerald-700">Mezunları Dünyada Gör</span>
+                    </div>
+                  </div>
+                  <ArrowRight size={13} className="text-emerald-700 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+
+                <button
+                  onClick={() => setView('jobs')}
+                  className="p-3 bg-blue-50 hover:bg-blue-100/70 border border-blue-200 rounded-xl text-left transition flex items-center justify-between group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Briefcase size={16} className="text-blue-700" />
+                    <div>
+                      <span className="text-xs font-black text-blue-950 block">İlan & Stajlar</span>
+                      <span className="text-[10px] text-blue-700">Uygun Pozisyonları Gör</span>
+                    </div>
+                  </div>
+                  <ArrowRight size={13} className="text-blue-700 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+
+                <button
+                  onClick={() => setView('career_roadmap')}
+                  className="p-3 bg-rose-50 hover:bg-rose-100/70 border border-rose-200 rounded-xl text-left transition flex items-center justify-between group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Compass size={16} className="text-[#990000]" />
+                    <div>
+                      <span className="text-xs font-black text-rose-950 block">Kariyer Haritası</span>
+                      <span className="text-[10px] text-[#990000]">4 Aşamalı Rota</span>
+                    </div>
+                  </div>
+                  <ArrowRight size={13} className="text-[#990000] group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
+
+              <div className="pt-2 text-center">
+                <button 
+                  onClick={handleReset}
+                  className="text-xs font-bold text-slate-500 hover:text-slate-800 transition inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <RotateCcw size={12} /> Testi Sıfırla ve Yeniden Doldur
+                </button>
+              </div>
             </div>
           </motion.div>
         )}

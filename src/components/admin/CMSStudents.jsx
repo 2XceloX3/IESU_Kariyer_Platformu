@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SafeAvatar from '../shared/SafeAvatar';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
@@ -261,7 +262,7 @@ export default function CMSStudents({ students = [], setStudents }) {
 
               <div className="flex items-center gap-4 pl-2">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-900 to-rose-950 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-md border border-white/20 overflow-hidden">
-                  {s.avatar ? <img src={s.avatar} className="w-full h-full object-cover" /> : s.name.split(' ').map(n=>n[0]).join('')}
+                  {s.avatar ? <SafeAvatar src={s.avatar} name={s.name} size={40} className="w-full h-full object-cover" /> : s.name.split(' ').map(n=>n[0]).join('')}
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">

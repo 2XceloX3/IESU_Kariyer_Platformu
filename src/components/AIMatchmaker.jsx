@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wand2, UserCheck } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
 
 export default function AIMatchmaker({ alumniList = [], setView, setSelectedUserId, currentUser, onSelectMentor }) {
   const [isMatching, setIsMatching] = useState(false);
@@ -28,9 +29,17 @@ export default function AIMatchmaker({ alumniList = [], setView, setSelectedUser
       onSelectMentor(match);
       return;
     }
-    if (setSelectedUserId && match.id) {
-      setSelectedUserId(match.id);
-      if (setView) setView('public_profile');
+    if (match.id) {
+      const storeUser = useAppStore.getState().currentUser;
+      const isSelf = match.id === 'self' || (storeUser && (
+        String(match.id) === String(storeUser.id) ||
+        String(match.id) === String(storeUser.uid) ||
+        (storeUser.name && match.name && storeUser.name.trim().toLowerCase() === match.name.trim().toLowerCase())
+      ));
+      const targetId = isSelf ? (storeUser?.id || match.id) : match.id;
+      if (setSelectedUserId) setSelectedUserId(targetId);
+      useAppStore.getState().setSelectedUserId?.(targetId);
+      if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
       return;
     }
     if (window.toast?.success) {

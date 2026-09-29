@@ -10,18 +10,27 @@ import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
-import AdminOmniDock from './AdminOmniDock';
 import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';
 import eventBus from '../brain/eventBus';
 
 export default function StudentKGBPanel({ setView, currentUser, userRole, previousView }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
   const kgbStudentRecords = useAppStore(state => state.kgbStudentRecords) || [];
   const addNotification = useAppStore(state => state.addNotification);
   const logAction = useAppStore(state => state.logAction);
 
-  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513';
+  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.id === 'admin_1513';
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'admin' ? 'admin' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : 'student')
+  );
 
   // Fallback student profiles with tailored department data
   const DEFAULT_STUDENT_PROFILES = useMemo(() => ({
@@ -244,9 +253,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
     if (isAdmin) {
       return activeStudentList[0]?.id || 'STU-01';
     }
-    const match = activeStudentList.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
-    return match?.id || currentUser?.id || 'STU-01';
-  }, [isAdmin, currentUser, activeStudentList]);
+    const match = activeStudentList.find(r => r.id === effectiveCurrentUser?.id || r.name === effectiveCurrentUser?.name);
+    return match?.id || effectiveCurrentUser?.id || 'STU-01';
+  }, [isAdmin, effectiveCurrentUser, activeStudentList]);
 
   const [selectedStudentId, setSelectedStudentId] = useState(defaultStudentId);
 
@@ -254,10 +263,10 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
     if (isAdmin) {
       return activeStudentList.find(r => r.id === selectedStudentId) || activeStudentList[0];
     }
-    return activeStudentList.find(r => r.id === currentUser?.id || r.name === currentUser?.name);
-  }, [isAdmin, selectedStudentId, currentUser, activeStudentList]);
+    return activeStudentList.find(r => r.id === effectiveCurrentUser?.id || r.name === effectiveCurrentUser?.name);
+  }, [isAdmin, selectedStudentId, effectiveCurrentUser, activeStudentList]);
 
-  // Match student record from store or fallback to currentUser
+  // Match student record from store or fallback to effectiveCurrentUser
   const studentData = useMemo(() => {
     if (isAdmin) {
       const rec = currentStudentRecord || DEFAULT_STUDENT_PROFILES['STU-01'];
@@ -288,30 +297,30 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
     }
 
     const match = currentStudentRecord;
-    const profileData = DEFAULT_STUDENT_PROFILES[currentUser?.id || match?.id] || DEFAULT_STUDENT_PROFILES['STU-01'];
-    const score = currentUser?.cvCompleteness || match?.cvCompleteness || profileData.accreditationScore || 88;
+    const profileData = DEFAULT_STUDENT_PROFILES[effectiveCurrentUser?.id || match?.id] || DEFAULT_STUDENT_PROFILES['STU-01'];
+    const score = effectiveCurrentUser?.cvCompleteness || match?.cvCompleteness || profileData.accreditationScore || 88;
     return {
-      id: currentUser?.id || match?.id || profileData.id || 'STU-2026-001',
-      name: currentUser?.name || match?.name || profileData.name,
-      department: currentUser?.department || match?.department || profileData.department,
-      faculty: currentUser?.faculty || profileData.faculty,
-      grade: currentUser?.grade || (currentUser?.graduationYear ? `${currentUser.graduationYear} Mezun Adayı` : profileData.grade),
-      studentNo: currentUser?.studentNo || profileData.studentNo,
-      targetSector: profileData.targetSector || match?.targetSector || currentUser?.targetSector || 'Yazılım & Bilişim Mimarisi',
-      internshipsCount: typeof match?.internships === 'number' ? match.internships : (typeof currentUser?.internships === 'number' ? currentUser.internships : (match?.internshipsCount ?? profileData.internshipsCount)),
-      certificationsCount: typeof match?.certifications === 'number' ? match.certifications : (typeof currentUser?.certifications === 'number' ? currentUser.certifications : (match?.certificationsCount ?? profileData.certificationsCount)),
-      workshopsCount: typeof match?.workshopsAttended === 'number' ? match.workshopsAttended : (typeof currentUser?.workshopsAttended === 'number' ? currentUser.workshopsAttended : (match?.workshopsCount ?? profileData.workshopsCount)),
-      mentorMeetingsCount: typeof match?.mentorMeetings === 'number' ? match.mentorMeetings : (typeof currentUser?.mentorMeetings === 'number' ? currentUser.mentorMeetings : (match?.mentorMeetingsCount ?? profileData.mentorMeetingsCount)),
+      id: effectiveCurrentUser?.id || match?.id || profileData.id || 'STU-2026-001',
+      name: effectiveCurrentUser?.name || match?.name || profileData.name,
+      department: effectiveCurrentUser?.department || match?.department || profileData.department,
+      faculty: effectiveCurrentUser?.faculty || profileData.faculty,
+      grade: effectiveCurrentUser?.grade || (effectiveCurrentUser?.graduationYear ? `${effectiveCurrentUser.graduationYear} Mezun Adayı` : profileData.grade),
+      studentNo: effectiveCurrentUser?.studentNo || profileData.studentNo,
+      targetSector: profileData.targetSector || match?.targetSector || effectiveCurrentUser?.targetSector || 'Yazılım & Bilişim Mimarisi',
+      internshipsCount: typeof match?.internships === 'number' ? match.internships : (typeof effectiveCurrentUser?.internships === 'number' ? effectiveCurrentUser.internships : (match?.internshipsCount ?? profileData.internshipsCount)),
+      certificationsCount: typeof match?.certifications === 'number' ? match.certifications : (typeof effectiveCurrentUser?.certifications === 'number' ? effectiveCurrentUser.certifications : (match?.certificationsCount ?? profileData.certificationsCount)),
+      workshopsCount: typeof match?.workshopsAttended === 'number' ? match.workshopsAttended : (typeof effectiveCurrentUser?.workshopsAttended === 'number' ? effectiveCurrentUser.workshopsAttended : (match?.workshopsCount ?? profileData.workshopsCount)),
+      mentorMeetingsCount: typeof match?.mentorMeetings === 'number' ? match.mentorMeetings : (typeof effectiveCurrentUser?.mentorMeetings === 'number' ? effectiveCurrentUser.mentorMeetings : (match?.mentorMeetingsCount ?? profileData.mentorMeetingsCount)),
       cvCompleteness: score,
-      portfolioItems: match?.portfolioItems ?? (currentUser?.portfolioItems ?? profileData.portfolioItems),
+      portfolioItems: match?.portfolioItems ?? (effectiveCurrentUser?.portfolioItems ?? profileData.portfolioItems),
       accreditationScore: score,
-      verificationCode: currentUser?.verificationCode || profileData.verificationCode || `İESÜ-KGB-2026-${String(currentUser?.id || match?.id || '9941').replace(/[^0-9]/g, '').slice(-4).padStart(4, '0') || '9941'}`,
-      avatar: currentUser?.avatar || profileData.avatar,
-      advisorName: currentUser?.advisorName || profileData.advisorName || 'Doç. Dr. Selin Kaya',
+      verificationCode: effectiveCurrentUser?.verificationCode || profileData.verificationCode || `İESÜ-KGB-2026-${String(effectiveCurrentUser?.id || match?.id || '9941').replace(/[^0-9]/g, '').slice(-4).padStart(4, '0') || '9941'}`,
+      avatar: effectiveCurrentUser?.avatar || profileData.avatar,
+      advisorName: effectiveCurrentUser?.advisorName || profileData.advisorName || 'Doç. Dr. Selin Kaya',
       internships: profileData.internships,
       certifications: profileData.certifications
     };
-  }, [isAdmin, currentStudentRecord, currentUser, DEFAULT_STUDENT_PROFILES]);
+  }, [isAdmin, currentStudentRecord, effectiveCurrentUser, DEFAULT_STUDENT_PROFILES]);
 
   const [activeTab, setActiveTab] = useState('ozet'); // 'ozet' | 'stajlar' | 'sertifikalar' | 'etkinlikler' | 'transkript'
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -391,19 +400,19 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
           {/* Sol: Geri Dönüş ve Üniversite Logosu */}
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
+              onClick={() => setView(backTarget)}
               className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0"
               title="Geri Dön"
             >
               <ChevronLeft size={20} />
             </button>
             <div 
-              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
+              onClick={() => setView(backTarget)}
               className="flex items-center gap-3 cursor-pointer group"
-              title={isAdmin ? "Yönetim Paneline Dön" : "Öğrenci Portalına Dön"}
+              title={isAdmin && activePortalBranch === 'admin' ? "Yönetim Paneline Dön" : "Öğrenci Portalına Dön"}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setView(previousView || (userRole === 'admin' ? 'admin' : 'student')); } }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setView(backTarget); } }}
             >
               <Logo className="w-8 h-8 text-[#990000] group-hover:scale-105 transition-transform shrink-0" />
               <div>
@@ -427,7 +436,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             </button>
 
             <TopProfileMenu
-              currentUser={currentUser || { name: studentData.name, role: 'student' }}
+              currentUser={effectiveCurrentUser || { name: studentData.name, role: 'student' }}
               userRole={userRole || 'student'}
               setView={setView}
               setSelectedUserId={setSelectedUserId}
@@ -450,7 +459,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               <div className="flex items-center gap-4 sm:gap-5">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl border-3 border-white/40 bg-white shadow-xl overflow-hidden shrink-0">
                   <SafeAvatar
-                    src={studentData.avatar || currentUser?.avatar}
+                    src={studentData.avatar || effectiveCurrentUser?.avatar}
                     name={studentData.name}
                     size="2xl"
                     className="w-full h-full"
@@ -1113,21 +1122,13 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         </div>
       )}
       {/* ── 5. FLOATING DOCK (KURUMSAL ÖĞRENCİ DOCK'U) ─────────────── */}
-      {isAdmin ? (
-        <AdminOmniDock 
-          theme="amber" 
-          currentUser={currentUser} 
-          setView={setView} 
-          setSelectedUserId={setSelectedUserId} 
-          activeTab="student_kgb" 
-        />
-      ) : (
+      {(isAdmin || userRole === 'admin' || activePortalBranch === 'admin') ? null : (
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
           <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
             
             {/* Akış */}
             <button 
-              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))} 
+              onClick={() => setView(backTarget)} 
               className="p-2.5 rounded-full transition-all flex items-center justify-center text-slate-600 hover:text-[#990000] hover:bg-red-50 cursor-pointer" 
               title="Akış"
             >
@@ -1158,15 +1159,15 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
             {/* Profil */}
             <button 
               onClick={() => {
-                const selfId = studentData?.id || currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                const selfId = studentData?.id || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
                 if (setSelectedUserId) setSelectedUserId(selfId);
-                else useAppStore.getState().setSelectedUserId?.(selfId);
+                useAppStore.getState().setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Profilim"
             >
-              <SafeAvatar src={studentData.avatar || currentUser?.avatar} name={studentData.name} size="xs" alt="Profile" />
+              <SafeAvatar src={studentData.avatar || effectiveCurrentUser?.avatar} name={studentData.name} size="xs" alt="Profile" />
             </button>
           </div>
         </div>

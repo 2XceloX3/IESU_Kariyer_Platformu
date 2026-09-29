@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import { X, ChevronLeft, ChevronRight, Send, Image as ImageIcon, Camera, Aperture } from 'lucide-react';
 import { toast } from './shared/Toast';
 
@@ -249,12 +250,12 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
         <div className="absolute top-8 sm:top-6 left-0 w-full z-20 px-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full border-2 border-white/50 overflow-hidden bg-gray-800">
-              <img src={currentStory.author.avatar} className="w-full h-full object-cover" />
+              <SafeAvatar src={currentStory.author.avatar} name={currentStory.author.name} size={40} className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col text-white drop-shadow-md">
               <span className="font-bold text-sm leading-tight flex items-center gap-1">
                 {currentStory.author.name}
-                {currentStory.author.role === 'admin' && <img src="/logo.png" className="w-3 h-3 ml-1 bg-white rounded-full" />}
+                {currentStory.author.role === 'admin' && <SafeAvatar src="/logo.png" name="İESÜ" size={12} className="w-3 h-3 ml-1 bg-white rounded-full" />}
               </span>
               <span className="text-[10px] opacity-80">{new Date(currentStory.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             </div>

@@ -41,10 +41,19 @@ const skillAssessments = [
   }
 ];
 
-export default function SkillTree({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function SkillTree({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const unlockedBadges = useAppStore(state => state.unlockedBadges || []);
   const setUnlockedBadges = useAppStore(state => state.setUnlockedBadges);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const [isEvaluating, setIsEvaluating] = useState(null);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const handleAssessment = (node) => {
     if (unlockedBadges.includes(node.id)) return;
@@ -79,7 +88,7 @@ export default function SkillTree({ setView, currentUser, userRole, setSelectedU
           <button 
             onClick={() => {
               if (setView) {
-                setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student');
+                setView(backTarget);
               }
             }} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"

@@ -1,3 +1,4 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState, useMemo } from 'react';
 import {
   Calendar, MapPin, Clock, Users, Plus, Search, Filter, Trash2,

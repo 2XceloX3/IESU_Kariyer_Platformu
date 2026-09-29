@@ -4,7 +4,6 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 import SafeAvatar from './shared/SafeAvatar';
-import AdminOmniDock from './AdminOmniDock';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
@@ -282,10 +281,8 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
         </div>
       </main>
 
-      {/* FLOATING DOCK (ADMIN OMNIDOCK OR SUBPANEL FLOATING DOCK) */}
-      {effectiveRole === 'admin' ? (
-        <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="notifications" />
-      ) : (
+      {/* FLOATING DOCK (SUBPANEL FLOATING DOCK) */}
+      {effectiveRole === 'admin' ? null : (
         <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={effectiveRole} activeTab="notifications" />
       )}
     </div>

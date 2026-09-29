@@ -40,6 +40,8 @@ const DynamicContentPage = lazy(() => import('../../components/DynamicContentPag
  * Accepts currentUser and setView as props from App.jsx.
  */
 export default function CompanyHive({ currentUser, setView }) {
+  const storeCurrentUser = useAppStore((state) => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const navigate = useNavigate();
   const location = useLocation();
   const pathView = location?.pathname?.split('/').filter(Boolean).pop() || '';
@@ -67,59 +69,64 @@ export default function CompanyHive({ currentUser, setView }) {
         else navigate(clean === 'landing' ? '/' : '/' + clean);
         return;
       }
+      if (clean === 'user_profile') {
+        const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+        setSelectedUserId(selfId);
+        useAppStore.getState().setSelectedUserId?.(selfId);
+      }
     }
     setActiveView(v);
-  }, [setView, navigate, setActiveView]);
+  }, [setView, navigate, setActiveView, effectiveCurrentUser, setSelectedUserId]);
 
   const currentView = (pathView && pathView !== 'company') ? pathView : activeView;
 
   const renderActiveView = () => {
     switch (currentView) {
       case 'explore':
-        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
+        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'company_ats':
-        return <CompanyATSBoard setView={handleSetView} currentUser={currentUser} />;
+        return <CompanyATSBoard setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'create_job':
-        return <JobCreator setView={handleSetView} currentUser={currentUser} />;
+        return <JobCreator setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'jobs':
-        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="company" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'user_profile':
-        return <UserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
-        return <PublicUserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <PublicUserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
-        return <ProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <ProfileUpdate setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'applications':
-        return <ApplicationsPanel setView={handleSetView} currentUser={currentUser} />;
+        return <ApplicationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'virtual_fair':
-        return <VirtualCareerFair setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <VirtualCareerFair setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="company" setSelectedUserId={setSelectedUserId} />;
+        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
-        return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'group_profile':
-        return <GroupProfile setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <GroupProfile setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'news':
       case 'haberler':
-        return <NewsEvents setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <NewsEvents setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'events':
       case 'events_list':
       case 'etkinlikler':
-        return <EventsPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <EventsPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'contact':
       case 'contact_us':
-        return <ContactPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <ContactPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'about_us':
-        return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <AboutUsPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'services':
-        return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="company" />;
+        return <ServicesPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
           return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="company" />;
@@ -128,7 +135,7 @@ export default function CompanyHive({ currentUser, setView }) {
           <CompanyFeed
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
-            currentUser={currentUser}
+            currentUser={effectiveCurrentUser}
             userRole="company"
             academicRole="company"
             setSelectedGroupId={setSelectedGroupId}

@@ -4,6 +4,8 @@ import useAppStore from '../store/useAppStore';
 import eventBus from '../brain/eventBus';
 
 export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUser }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const internships = useAppStore(state => state.internships) || [];
   const setInternships = useAppStore(state => state.setInternships);
   const applications = useAppStore(state => state.applications) || [];
@@ -65,8 +67,8 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
 
     // GANO (GPA) Validation Rule: ONLY for CBİKO Ulusal Staj Programı
     if (form.type === 'CBİKO Ulusal Staj Programı') {
-      const isAssociateDegree1stYear = (currentUser?.degreeType === 'Ön Lisans' || currentUser?.degreeType === 'Önlisans' || currentUser?.programType === 'Ön Lisans') && (currentUser?.classYear === '1. Sınıf' || currentUser?.classYear === '1');
-      const studentGpa = parseFloat(currentUser?.gpa || currentUser?.gno || '2.50');
+      const isAssociateDegree1stYear = (effectiveCurrentUser?.degreeType === 'Ön Lisans' || effectiveCurrentUser?.degreeType === 'Önlisans' || effectiveCurrentUser?.programType === 'Ön Lisans') && (effectiveCurrentUser?.classYear === '1. Sınıf' || effectiveCurrentUser?.classYear === '1');
+      const studentGpa = parseFloat(effectiveCurrentUser?.gpa || effectiveCurrentUser?.gno || '2.50');
 
       if (!isAssociateDegree1stYear && studentGpa < 2.00) {
         window.toast?.error("Ulusal Staj Programı başvurularında GANO ortalamasının 4.00 üzerinden en az 2.00 olması gerekmektedir (Ön Lisans 1. Sınıf öğrencileri hariç).");
@@ -76,11 +78,11 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
 
     const newApp = {
       id: 'app_' + Date.now(),
-      userId: currentUser?.id || 'STU-001',
-      studentId: currentUser?.studentId || '20240001',
-      name: currentUser?.name || 'Alperen Yılmaz',
-      no: currentUser?.studentId || '220401015',
-      department: currentUser?.department || 'Yazılım Mühendisliği',
+      userId: effectiveCurrentUser?.id || 'STU-001',
+      studentId: effectiveCurrentUser?.studentId || '20240001',
+      name: effectiveCurrentUser?.name || 'Alperen Yılmaz',
+      no: effectiveCurrentUser?.studentId || '220401015',
+      department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
       type: form.type,
       company: form.company,
       status: 'Onay Bekliyor',
@@ -100,11 +102,11 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
       const unifiedApp = {
         ...newApp,
         jobTitle: `Staj Evrak Paketi (${form.type})`,
-        applicantName: currentUser?.name || newApp.name,
-        applicantId: currentUser?.id || newApp.userId,
-        applicantEmail: currentUser?.email || 'ogrenci@esenyurt.edu.tr',
-        applicantPhone: currentUser?.phone || '0555 000 0000',
-        applicantDept: currentUser?.department || newApp.department,
+        applicantName: effectiveCurrentUser?.name || newApp.name,
+        applicantId: effectiveCurrentUser?.id || newApp.userId,
+        applicantEmail: effectiveCurrentUser?.email || 'ogrenci@esenyurt.edu.tr',
+        applicantPhone: effectiveCurrentUser?.phone || '0555 000 0000',
+        applicantDept: effectiveCurrentUser?.department || newApp.department,
         status: 'Beklemede'
       };
       setApplications([unifiedApp, ...applications]);
@@ -114,7 +116,7 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
       eventBus.emit('application:status', { 
         type: 'internship_document_submitted',
         application: newApp,
-        student: currentUser?.name || newApp.name,
+        student: effectiveCurrentUser?.name || newApp.name,
         company: form.company
       });
     } catch (_) {}

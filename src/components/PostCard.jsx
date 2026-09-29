@@ -2,11 +2,14 @@ import React, { useState, useEffect, useCallback, memo } from 'react';
 import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
+import eventBus from '../brain/eventBus';
 import SafeAvatar from './shared/SafeAvatar';
 import DOMPurify from 'dompurify';
 
 
 const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessages, setSelectedUserId, setView }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const sendMessage = useAppStore(state => state.sendMessage);
   const activeFrame = useAppStore(state => state.activeFrame);
   const storeSetSelectedUserId = useAppStore(state => state.setSelectedUserId);
@@ -19,14 +22,14 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     const targetUserId = post?.authorId || post?.author?.id || post?.userId || post?.authorName || (typeof post?.author === 'string' ? post.author : post?.author?.name);
     const authorName = post?.authorName || (typeof post?.author === 'object' ? post.author?.name : (typeof post?.author === 'string' ? post.author : ''));
     if (targetUserId && activeSetSelectedUserId && activeSetView) {
-      const isSelf = targetUserId === 'self' || (currentUser && (
-        targetUserId === currentUser.id ||
-        targetUserId === currentUser.uid ||
-        targetUserId === currentUser.studentNo ||
-        (currentUser.name && String(targetUserId).trim().toLowerCase() === currentUser.name.trim().toLowerCase()) ||
-        (currentUser.name && authorName && currentUser.name.trim().toLowerCase() === String(authorName).trim().toLowerCase())
+      const isSelf = targetUserId === 'self' || (effectiveCurrentUser && (
+        targetUserId === effectiveCurrentUser.id ||
+        targetUserId === effectiveCurrentUser.uid ||
+        targetUserId === effectiveCurrentUser.studentNo ||
+        (effectiveCurrentUser.name && String(targetUserId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase()) ||
+        (effectiveCurrentUser.name && authorName && effectiveCurrentUser.name.trim().toLowerCase() === String(authorName).trim().toLowerCase())
       ));
-      activeSetSelectedUserId(isSelf ? (currentUser?.id || targetUserId) : targetUserId);
+      activeSetSelectedUserId(isSelf ? (effectiveCurrentUser?.id || targetUserId) : targetUserId);
       activeSetView(isSelf ? 'user_profile' : 'public_profile');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -40,12 +43,12 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const [applyPhone, setApplyPhone] = useState(currentUser?.phone || '');
+  const [applyPhone, setApplyPhone] = useState(effectiveCurrentUser?.phone || '');
   const [applyCvType, setApplyCvType] = useState('KGM Akredite İESÜ Dijital CV');
   const [applyCoverLetter, setApplyCoverLetter] = useState('');
   const [isApplying, setIsApplying] = useState(false);
 
-  const effectiveApplicantId = currentUser?.id || (activePortalBranch === 'alumni' ? 'ALU-001' : 'STU-001');
+  const effectiveApplicantId = effectiveCurrentUser?.id || (activePortalBranch === 'alumni' ? 'ALU-001' : 'STU-001');
   const targetJobId = post?.jobData?.id || post?.id;
   const rawTitle = post?.jobData?.title || (post?.content ? post.content.split('\n')[0].replace('💼 YENİ İLAN:', '').trim() : 'Ulusal Staj Programı İlanı');
   const cleanJobTitle = rawTitle.length > 75 ? rawTitle.slice(0, 75) + '...' : rawTitle;
@@ -55,7 +58,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
 
   const hasApplied = applications.some(a => 
     (a.jobId === targetJobId || (cleanJobTitle && a.jobTitle === cleanJobTitle)) &&
-    (a.applicantId === effectiveApplicantId || (currentUser?.email && a.applicantEmail === currentUser.email))
+    (a.applicantId === effectiveApplicantId || (effectiveCurrentUser?.email && a.applicantEmail === effectiveCurrentUser.email))
   );
 
   const handleOpenApplyModal = (e) => {
@@ -76,10 +79,10 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     }
 
     setIsApplying(true);
-    const applicantName = currentUser?.name || (activePortalBranch === 'alumni' ? 'Caner Yıldız (Mezun)' : 'Mert Demir');
-    const applicantDept = currentUser?.department || 'Bilgisayar Mühendisliği';
-    const applicantEmail = currentUser?.email || (activePortalBranch === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr');
-    const applicantPhone = applyPhone || currentUser?.phone || '0555 123 4567';
+    const applicantName = effectiveCurrentUser?.name || (activePortalBranch === 'alumni' ? 'Caner Yıldız (Mezun)' : 'Mert Demir');
+    const applicantDept = effectiveCurrentUser?.department || 'Bilgisayar Mühendisliği';
+    const applicantEmail = effectiveCurrentUser?.email || (activePortalBranch === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr');
+    const applicantPhone = applyPhone || effectiveCurrentUser?.phone || '0555 123 4567';
 
     const newApp = {
       id: 'APP-' + Date.now(),
@@ -118,6 +121,20 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       });
     }
 
+    // Cross-hive event broadcasting (Brain & ATS integration)
+    if (eventBus && typeof eventBus.emit === 'function') {
+      eventBus.emit('application:status', {
+        applicationId: newApp.id,
+        jobId: targetJobId,
+        jobTitle: cleanJobTitle,
+        applicantId: effectiveApplicantId,
+        applicantName: applicantName,
+        status: 'Beklemede',
+        company: companyName,
+        timestamp: new Date().toISOString()
+      });
+    }
+
     try {
       const LOCAL_STORAGE_KEY = 'iesu_candidate_pool_v1';
       const existing = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -127,7 +144,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           id: newApp.id,
           name: newApp.applicantName,
           department: newApp.applicantDept,
-          gpa: currentUser?.gpa || '3.50',
+          gpa: effectiveCurrentUser?.gpa || '3.50',
           company: newApp.company,
           date: newApp.date,
           stage: 'Başvuru',
@@ -562,7 +579,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
-                    <img src={post.author?.logo || post.author?.avatar || 'https://ui-avatars.com/api/?name=U&background=0A2342&color=fff'} alt="" className="w-full h-full object-cover" />
+                    <SafeAvatar src={post.author?.logo} name={post.author?.logo?.name} size={40} className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div>

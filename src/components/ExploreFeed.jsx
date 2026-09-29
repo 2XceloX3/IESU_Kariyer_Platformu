@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import { Search, Compass, Heart, MessageCircle, UserPlus, UserCheck, Eye, Sparkles, Building2, GraduationCap, Award, BookOpen, X, ChevronLeft } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import PostCard from './PostCard';
@@ -8,6 +9,9 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 export default function ExploreFeed({ posts: propPosts, setView, setSelectedUserId, currentUser }) {
   const storePosts = useAppStore(state => state.posts);
   const posts = (propPosts && propPosts.length) ? propPosts : storePosts;
+
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
@@ -29,13 +33,15 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
 
   const handleViewProfile = (userId) => {
     if (setSelectedUserId && setView) {
-      setSelectedUserId(userId);
-      const isSelf = !userId || userId === 'self' || (currentUser && (
-        userId === currentUser.id || 
-        userId === currentUser.uid || 
-        userId === currentUser.studentNo || 
-        (currentUser.name && userId === currentUser.name)
+      const isSelf = !userId || userId === 'self' || userId === 'me' || (effectiveCurrentUser && (
+        String(userId) === String(effectiveCurrentUser.id) || 
+        String(userId) === String(effectiveCurrentUser.uid) || 
+        String(userId) === String(effectiveCurrentUser.studentNo) || 
+        (effectiveCurrentUser.name && String(userId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase())
       ));
+      const targetId = isSelf ? (effectiveCurrentUser?.id || userId) : userId;
+      setSelectedUserId(targetId);
+      useAppStore.getState().setSelectedUserId?.(targetId);
       setView(isSelf ? 'user_profile' : 'public_profile');
     }
   };
@@ -152,7 +158,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
                     className="flex items-center gap-3 cursor-pointer group-hover:opacity-90 transition min-w-0"
                   >
                     <div className="w-11 h-11 rounded-full border border-slate-200 overflow-hidden shrink-0 shadow-sm">
-                      <img src={authorAvatar} alt={authorName} className="w-full h-full object-cover" />
+                      <SafeAvatar src={authorAvatar} name={authorName} size={44} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0">
                       <h4 className="font-bold text-sm text-gray-900 truncate hover:text-slate-700 transition">
@@ -255,7 +261,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
             </div>
             
             <div className="p-4 overflow-y-auto custom-scrollbar flex-1">
-              <PostCard post={selectedPost} currentUser={currentUser} />
+              <PostCard post={selectedPost} currentUser={effectiveCurrentUser} />
             </div>
           </div>
         </div>
@@ -263,11 +269,11 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
 
       {/* FLOATING BOTTOM DOCK */}
       <SubPanelFloatingDock 
-        currentUser={currentUser} 
+        currentUser={effectiveCurrentUser} 
         setView={setView} 
         setSelectedUserId={setSelectedUserId}
         activeTab="explore"
-        userRole={currentUser?.role || 'student'}
+        userRole={effectiveCurrentUser?.role || 'student'}
       />
     </div>
   );

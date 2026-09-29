@@ -58,9 +58,14 @@ export default function App() {
   const setView = useCallback((v) => {
     const raw = typeof v === 'function' ? v(pathView) : v;
     const clean = typeof raw === 'string' ? raw.replace(/^\//, '') : raw;
+    if (clean === 'user_profile') {
+      const s = useAppStore.getState();
+      const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'self';
+      s.setSelectedUserId?.(selfId);
+    }
     navigate(clean === 'landing' || clean === '' ? '/' : '/' + clean);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [navigate, pathView]);
+  }, [navigate, pathView, currentUser]);
 
   useEffect(() => {
     if (currentUser) {
@@ -119,7 +124,7 @@ export default function App() {
     // Admin branch handling for shared / other views
     if (currentBranch === 'admin' && isAdmin) {
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" />;
-      if (pathView === 'user_profile') return <UserProfile userId={s.selectedUserId || currentUser?.id} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'user_profile') return <UserProfile userId={currentUser?.id || 'admin_1513'} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'public_profile') return <PublicUserProfile userId={s.selectedUserId} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       const BENTO_MODULES = new Set(['cvbuilder', 'interview_sim', 'career_test', 'career_roadmap', 'startup_incubator', 'club_portal', 'sem', 'applications']);
       if (BENTO_MODULES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import { 
   Users, Trophy, FileText, ChevronRight, CheckCircle2, 
   XCircle, Clock, Plus, Search, Building2, Calendar, 
@@ -22,7 +23,12 @@ export default function StudentClubPortal({
   setSelectedUserId, 
   userRole = 'student' 
 }) {
-  const { clubs, setClubs, clubApplications, setClubApplications } = useAppStore();
+  const { clubs, setClubs, clubApplications, setClubApplications, activePortalBranch } = useAppStore();
+  const backTarget = (
+    previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView) ? previousView :
+    activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
   const [activeTab, setActiveTab] = useState('discover'); // 'discover' | 'my_clubs' | 'admin'
   const [clubDetailTab, setClubDetailTab] = useState('overview'); // 'overview' | 'events' | 'board' | 'venue_requests' | 'members'
   const [searchQuery, setSearchQuery] = useState('');
@@ -543,12 +549,12 @@ export default function StudentClubPortal({
           {/* MODERN CLUB PROFILE HERO BANNER */}
           <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
             {selectedClub.coverImage && (
-              <img src={selectedClub.coverImage} alt={selectedClub.name} className="absolute inset-0 w-full h-full object-cover opacity-15 mix-blend-overlay pointer-events-none" />
+              <SafeAvatar src={selectedClub.coverImage} name={selectedClub.name} size={256} className="absolute inset-0 w-full h-full object-cover opacity-15 mix-blend-overlay pointer-events-none" />
             )}
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-5">
                 <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white shadow-xl flex items-center justify-center border-4 border-white/90 overflow-hidden shrink-0">
-                  {selectedClub.logo ? <img src={selectedClub.logo} alt={selectedClub.name} className="w-full h-full object-cover" /> : <Building2 size={44} className="text-[#990000]" />}
+                  {selectedClub.logo ? <SafeAvatar src={selectedClub.logo} name={selectedClub.name} size={112} className="w-full h-full object-cover" /> : <Building2 size={44} className="text-[#990000]" />}
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -740,7 +746,7 @@ export default function StudentClubPortal({
                           <div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-amber-500 via-rose-500 to-[#990000] group-hover:scale-105 transition-transform shadow-xs">
                             <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-slate-100 flex items-center justify-center">
                               {hl.cover ? (
-                                <img src={hl.cover} alt={hl.title} className="w-full h-full object-cover" />
+                                <SafeAvatar src={hl.cover} name={hl.title} size={40} className="w-full h-full object-cover" />
                               ) : (
                                 <span className="text-xl">{hl.icon}</span>
                               )}
@@ -787,7 +793,7 @@ export default function StudentClubPortal({
                           <div className="p-4 flex items-center justify-between border-b border-slate-100">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-amber-500 to-[#990000]">
-                                <img src={post.author.logo} alt={post.author.name} className="w-full h-full object-cover rounded-full border border-white" />
+                                <SafeAvatar src={post.author.logo} name={post.author.name} size={40} className="w-full h-full object-cover rounded-full border border-white" />
                               </div>
                               <div>
                                 <div className="flex items-center gap-1">
@@ -804,12 +810,7 @@ export default function StudentClubPortal({
 
                           {/* Post Media Carousel Container */}
                           <div className="relative aspect-4/3 bg-slate-100 overflow-hidden group select-none">
-                            <img 
-                              src={currentImg} 
-                              alt="Club Post" 
-                              className={`w-full h-full object-cover transition-all duration-500 ${getFilterClass(post.filter)}`}
-                              onDoubleClick={() => handleToggleLike(post.id)}
-                            />
+                            <SafeAvatar src={currentImg} name="Club Post" size={400} className={`w-full h-full object-cover transition-all duration-500 ${getFilterClass(post.filter)}`} onDoubleClick={() => handleToggleLike(post.id)} />
 
                             {/* Floating Animated Heart on Double Tap */}
                             {heartAnimId === post.id && (
@@ -1020,7 +1021,7 @@ export default function StudentClubPortal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {(selectedClub.boardMembers || []).map(member => (
                       <div key={member.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                        <img src={member.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'} alt={member.name} className="w-14 h-14 rounded-2xl object-cover border border-slate-100 shrink-0" />
+                        <SafeAvatar src={member.avatar} name={member.name} size={56} className="w-14 h-14 rounded-2xl object-cover border border-slate-100 shrink-0" />
                         <div>
                           <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider block">{member.role}</span>
                           <h4 className="font-bold text-gray-900 text-sm">{member.name}</h4>
@@ -1809,7 +1810,7 @@ export default function StudentClubPortal({
 
               {/* Story Image */}
               <div className="absolute inset-0">
-                <img src={activeStoryModal.cover} alt={activeStoryModal.title} className="w-full h-full object-cover" />
+                <SafeAvatar src={activeStoryModal.cover} name={activeStoryModal.title} size={600} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
               </div>
 
@@ -1888,15 +1889,18 @@ export default function StudentClubPortal({
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => setView(previousView || 'student')} 
+              onClick={() => setView(backTarget)} 
               className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs"
               title="Geri Dön"
             >
               <ArrowLeft size={18} />
             </button>
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => setView(previousView || 'student')}>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => setView(backTarget)}>
               <Logo className="h-8 w-auto text-[#990000]" />
-              <h1 className="text-lg font-black text-gray-900 border-l-2 border-slate-200 pl-3">Öğrenci Kulüpleri Portalı</h1>
+              <div>
+                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Öğrenci Kulüpleri Portalı</h1>
+                <p className="text-[11px] font-bold text-gray-500">Sağlık, Kültür ve Spor Daire Başkanlığı (SKSDB)</p>
+              </div>
             </div>
           </div>
           <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} currentView="club_portal" />
@@ -1950,7 +1954,7 @@ export default function StudentClubPortal({
                   <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={club.id} onClick={() => setSelectedClub(club)} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-pointer group flex flex-col h-full">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="w-16 h-16 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-white overflow-hidden">
-                        {club.logo ? <img src={club.logo} alt={club.name} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 text-slate-500 flex items-center justify-center"><Building2 size={24} /></div>}
+                        {club.logo ? <SafeAvatar src={club.logo} name={club.name} size={64} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 text-slate-500 flex items-center justify-center"><Building2 size={24} /></div>}
                       </div>
                       <div>
                         <h3 className="font-black text-gray-900 leading-tight mb-1 group-hover:text-[#990000] transition-colors">{club.name}</h3>
@@ -2005,7 +2009,7 @@ export default function StudentClubPortal({
                 {myJoinedClubs.map(club => (
                   <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} key={club.id} onClick={() => setSelectedClub(club)} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer group flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <img src={club.logo} alt={club.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
+                      <SafeAvatar src={club.logo} name={club.name} size={48} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
                       <div>
                         <h3 className="font-black text-gray-900 group-hover:text-[#990000] transition-colors">{club.name}</h3>
                         <p className="text-xs text-slate-700 font-semibold">{club.category || 'Genel'}</p>

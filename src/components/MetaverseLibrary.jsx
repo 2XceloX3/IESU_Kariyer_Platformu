@@ -8,6 +8,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { generateAIResponse } from '../lib/gemini';
+import useAppStore from '../store/useAppStore';
 
 const MOCK_TRENDS = [
   'Kuantum Hesaplama',
@@ -16,7 +17,16 @@ const MOCK_TRENDS = [
   'Metaverse Eğitim Teknolojileri'
 ];
 
-export default function MetaverseLibrary({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function MetaverseLibrary({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState(null);
@@ -73,7 +83,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
             title="Geri Dön"
           >

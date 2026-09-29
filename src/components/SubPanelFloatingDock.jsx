@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Briefcase, Search, BookOpen, Plus, LayoutDashboard } from 'lucide-react';
+import { Home, Briefcase, Search, BookOpen, Plus, LayoutDashboard, Globe, Award, Users, FileText } from 'lucide-react';
 import SafeAvatar from './shared/SafeAvatar';
 import useAppStore from '../store/useAppStore';
 
@@ -15,35 +15,37 @@ export default function SubPanelFloatingDock({
   activeTab = '', 
   userRole = 'student' 
 }) {
-  const store = useAppStore?.getState ? useAppStore.getState() : {};
-  const activeBranch = store.activePortalBranch;
+  const activeBranch = useAppStore(state => state.activePortalBranch);
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const storeUserRole = useAppStore(state => state.userRole);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   
-  // Rolü akıllıca çözümle (prop -> currentUser.role -> store.userRole -> store.activePortalBranch -> 'student')
-  const effectiveRole = (
-    userRole && userRole !== 'student' ? userRole :
-    currentUser?.role && currentUser.role !== 'student' ? currentUser.role :
-    activeBranch && activeBranch !== 'student' ? activeBranch :
-    store?.userRole || userRole || 'student'
+  // Kovan Dalı Egemenliği (Her kovan kendi temasını ve geri dönüş hedefini mutlak korur):
+  // 1. activeBranch varsa (kullanıcı şu anda hangi kovan peteğindeyse o kovanın dock'u ve geri dönüşü geçerlidir)
+  // 2. userRole prop (eğer özel olarak iletilmişse)
+  // 3. effectiveCurrentUser.role
+  const currentHive = (
+    (activeBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activeBranch)) ? activeBranch :
+    (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
+    (effectiveCurrentUser?.role && ['student', 'alumni', 'academic', 'company', 'admin', 'employer', 'academic_staff'].includes(effectiveCurrentUser.role)) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role === 'academic_staff' ? 'academic' : effectiveCurrentUser.role) :
+    'student'
   );
 
-  const isAlumni = effectiveRole === 'alumni';
-  const isAcademic = effectiveRole === 'academic' || effectiveRole === 'academic_staff';
-  const isCompany = effectiveRole === 'company' || effectiveRole === 'employer';
-  const isAdmin = effectiveRole === 'admin';
+  const isAlumni = currentHive === 'alumni';
+  const isAcademic = currentHive === 'academic' || currentHive === 'academic_staff';
+  const isCompany = currentHive === 'company' || currentHive === 'employer';
+  const isAdmin = currentHive === 'admin';
   const isStudent = !isAlumni && !isAcademic && !isCompany && !isAdmin;
 
-  const userName = currentUser?.name || (isAlumni ? 'Mezun' : isAcademic ? 'Akademik' : isCompany ? 'Kurumsal Firma' : isAdmin ? 'KGM Yönetici' : 'Öğrenci');
-  const userAvatar = currentUser?.avatar || currentUser?.logo || '/iesu-logo.svg';
+  // Yönetim paneli (6. kovan) masaüstü kontrol odasıdır; alt yüzen dock render edilmez
+  if (isAdmin) return null;
 
-  const userId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || (
-    isAlumni ? 'ALU-001' : 
-    isAcademic ? 'ACAD-001' : 
-    isCompany ? 'CMP-001' : 
-    isAdmin ? 'admin_1513' : 
-    'STU-001'
-  );
+  const userName = effectiveCurrentUser?.name || (isAlumni ? 'Mezun' : isAcademic ? 'Akademik' : isCompany ? 'Kurumsal Firma' : isAdmin ? 'KGM Yönetici' : 'Öğrenci');
+  const userAvatar = effectiveCurrentUser?.avatar || effectiveCurrentUser?.logo || '/iesu-logo.svg';
 
-  const homeView = isAdmin ? 'admin' : isAlumni ? 'alumni' : isAcademic ? 'academic' : isCompany ? 'company' : 'student';
+  const userId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentId || effectiveCurrentUser?.studentNo || 'self';
+
+  const homeView = isAlumni ? 'alumni' : isAcademic ? 'academic' : isCompany ? 'company' : isAdmin ? 'admin' : 'student';
 
   // Tema Renkleri
   const borderColor = 
@@ -102,12 +104,12 @@ export default function SubPanelFloatingDock({
     isAdmin ? 'border-[#b45309]' :
     'border-[#990000]';
 
-  // 2. Buton Hedefi ve Başlığı (Rol Odaklı)
-  const action1View = isCompany ? 'company_ats' : isAcademic ? 'research_hub' : 'jobs';
-  const action1Title = isCompany ? 'ATS Aday Takip Panosu' : isAcademic ? 'Araştırma OS Hub' : 'İş & Staj Olanakları';
-  const Action1Icon = isAcademic ? BookOpen : Briefcase;
+  // 2. Buton Hedefi ve Başlığı (Her Kovana Özgü Kimlik ve Eylem)
+  const action1View = isCompany ? 'company_ats' : isAcademic ? 'research_hub' : isAlumni ? 'global_map' : 'jobs';
+  const action1Title = isCompany ? 'ATS Aday Takip Panosu' : isAcademic ? 'Araştırma OS Hub' : isAlumni ? 'Küresel Mezun Haritası' : 'İş & Staj Olanakları';
+  const Action1Icon = isCompany ? Briefcase : isAcademic ? BookOpen : isAlumni ? Globe : Briefcase;
 
-  // 3. Buton Hedefi ve Başlığı (Rol Odaklı)
+  // 3. İkinci Buton Hedefi ve Başlığı
   const action2View = isCompany ? 'create_job' : 'explore';
   const action2Title = isCompany ? 'Yeni İlan Yayınla' : 'Keşfet & Sosyal Ağ Portalı';
   const Action2Icon = isCompany ? Plus : Search;
@@ -119,6 +121,7 @@ export default function SubPanelFloatingDock({
         {/* 1. AKIŞ / ANA SAYFA */}
         <button 
           onClick={() => {
+            const store = useAppStore.getState();
             if (store.setActivePortalBranch) store.setActivePortalBranch(homeView);
             if (setView) setView(homeView);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -136,6 +139,7 @@ export default function SubPanelFloatingDock({
         {/* 2. ANA ROLLER EYLEM BUTONU (İş/Staj, ATS Panosu, Araştırma OS) */}
         <button 
           onClick={() => {
+            const store = useAppStore.getState();
             if (store.setActivePortalBranch) store.setActivePortalBranch(homeView);
             if (setView) setView(action1View);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -151,6 +155,7 @@ export default function SubPanelFloatingDock({
         {/* 3. İKİNCİ EYLEM BUTONU (Keşfet veya Yeni İlan) */}
         <button 
           onClick={() => {
+            const store = useAppStore.getState();
             if (store.setActivePortalBranch) store.setActivePortalBranch(homeView);
             if (setView) setView(action2View);
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -166,9 +171,10 @@ export default function SubPanelFloatingDock({
         {/* 4. PROFİLİM */}
         <button 
           onClick={() => {
+            const store = useAppStore.getState();
             if (store.setActivePortalBranch) store.setActivePortalBranch(homeView);
             if (setSelectedUserId) setSelectedUserId(userId);
-            else if (store.setSelectedUserId) store.setSelectedUserId(userId);
+            if (store.setSelectedUserId) store.setSelectedUserId(userId);
             if (setView) setView('user_profile');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }} 

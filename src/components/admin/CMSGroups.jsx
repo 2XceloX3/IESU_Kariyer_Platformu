@@ -1,3 +1,4 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState } from 'react';
 import { Users, Search, Plus, ShieldCheck, CheckCircle2, XCircle, Eye, Trash2, Calendar, MapPin, AlignLeft, Download, User } from 'lucide-react';
 import PanelHeader from './PanelHeader';

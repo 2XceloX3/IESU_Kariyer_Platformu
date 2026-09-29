@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, ChevronDown, MapPin, ChevronRight, GraduationCap, Award } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, ChevronDown, MapPin, ChevronRight, GraduationCap, Award, Building2 } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import BranchNewsWidget from './BranchNewsWidget';
 import ConnectionSuggestions from './ConnectionSuggestions';
@@ -17,7 +17,7 @@ import CalendarPlanning from './CalendarPlanning';
 import AICVBuilder from './AICVBuilder';
 import ApplicationsPanel from './ApplicationsPanel';
 import NavIcon from './shared/NavIcon';
-import AlumniSurveys from './AlumniSurveys';
+import CompanySurveys from './CompanySurveys';
 import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
 import FooterModals from './FooterModals';
@@ -27,6 +27,8 @@ import { exportPDF } from '../lib/pdfExporter';
 import SafeAvatar from './shared/SafeAvatar';
 
 export default function CompanyFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const [footerModal, setFooterModal] = useState(null);
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
@@ -187,15 +189,15 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   };
 
   const hasApplied = React.useMemo(() => {
-    return careerFairApplications?.some(app => app.companyId === currentUser?.id);
-  }, [careerFairApplications, currentUser]);
+    return careerFairApplications?.some(app => app.companyId === effectiveCurrentUser?.id);
+  }, [careerFairApplications, effectiveCurrentUser]);
 
   const handleFairSubmit = (e) => {
     e.preventDefault();
     const newApp = {
       id: 'CFA-' + Math.random().toString(36).substr(2, 9),
-      companyId: currentUser?.id || 'CMP-Unknown',
-      companyName: currentUser?.name || 'Firma Adı',
+      companyId: effectiveCurrentUser?.id || 'CMP-Unknown',
+      companyName: effectiveCurrentUser?.name || 'Firma Adı',
       status: 'Beklemede',
       appliedAt: new Date().toISOString(),
       answers: fairForm
@@ -209,38 +211,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   const [feedFilter, setFeedFilter] = useState('for_you'); // for_you, following // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showMentorshipModal, setShowMentorshipModal] = useState(false);
-  const [mentorshipForm, setMentorshipForm] = useState({ title: '', hours: '', mode: 'Online', motivation: '' });
-  const [showCardModal, setShowCardModal] = useState(false);
-  const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
-
-  const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
-  const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
-
-  const handleCardSubmit = (e) => {
-    e.preventDefault();
-    const newApp = {
-      id: `KART-${Date.now()}`,
-      name: currentUser?.name || 'Mezun',
-      tc: cardForm.tc,
-      department: currentUser?.department || 'Mezun',
-      gradYear: currentUser?.graduationYear || '2023',
-      email: currentUser?.email || 'mezun@esenyurt.edu.tr',
-      phone: cardForm.phone,
-      date: new Date().toLocaleDateString('tr-TR'),
-      status: 'Bekliyor'
-    };
-    if (setAlumniCardApplications) {
-      setAlumniCardApplications([newApp, ...(alumniCardApplications || [])]);
-    }
-    setShowCardModal(false);
-  };
 
   // Removed mock stories and defaultPosts
   
   const getManagedClubs = () => {
-    if (userRole === 'admin' || currentUser?.role === 'admin') return clubs || [];
-    if (!currentUser?.name) return [];
+    if (userRole === 'admin' || effectiveCurrentUser?.role === 'admin') return clubs || [];
+    if (!effectiveCurrentUser?.name) return [];
     return (clubs || []).filter(c => c.president?.name === currentUser?.name);
   };
   const isClubAdmin = getManagedClubs().length > 0;
@@ -291,12 +267,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
               <div className="relative">
                 <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
-                {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
+                {((notifications || []).filter(n => n.userId === effectiveCurrentUser?.id && !n.read).length > 0) && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
-            <TopProfileMenu currentUser={currentUser || { name: 'Kurumsal Firma', avatar: 'https://ui-avatars.com/api/?name=Firma&background=990000&color=fff' }} userRole={userRole || 'company'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="company" />
+            <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'company'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="company" />
           </div>
         </div>
       </nav>
@@ -353,25 +329,47 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 <div className="text-center relative z-10 pt-2">
                   <div className="mx-auto flex justify-center">
                     <SafeAvatar 
-                      src={currentUser?.avatar || currentUser?.logo} 
-                      name={currentUser?.name || 'Kurumsal Firma'} 
+                      src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.logo} 
+                      name={effectiveCurrentUser?.name || 'Kurumsal Firma'} 
                       size="2xl" 
                       rounded="rounded-2xl" 
                       className="border-2 border-red-100 bg-white mx-auto shadow-md p-1" 
                       alt="Company" 
                     />
                   </div>
-                  <h2 className="text-[17px] font-black text-gray-900 leading-tight mt-3 mb-1">{currentUser?.name || 'Kurumsal Firma'}</h2>
-                  <p className="text-[12px] font-bold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full inline-block mb-3 border border-purple-100">
-                    {currentUser?.sector || 'Sektör Lideri / Resmî Anlaşmalı Firma'}
+                  <h2 
+                    onClick={() => {
+                      const compId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+                      if (setSelectedUserId) setSelectedUserId(compId);
+                      useAppStore.getState().setSelectedUserId?.(compId);
+                      setView('user_profile');
+                    }}
+                    className="text-[17px] font-black text-gray-900 leading-tight mt-3 mb-1 cursor-pointer hover:text-blue-900 transition-colors"
+                    title="Firma Profilimi Görüntüle"
+                  >
+                    {effectiveCurrentUser?.name || 'Kurumsal Firma'}
+                  </h2>
+                  <p className="text-[12px] font-bold text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded-full inline-block mb-3 border border-blue-100">
+                    {effectiveCurrentUser?.sector || 'Sektör Lideri / Resmî Anlaşmalı Firma'}
                   </p>
                   
-                  <div className="mt-2 text-center p-3 bg-purple-50/60 rounded-xl border border-purple-100">
-                    <p className="text-[11px] font-bold text-purple-900">Kariyer Geliştirme Merkezi</p>
-                    <p className="text-[10px] text-purple-600 font-medium mt-0.5">Resmî Kurumsal İletişim Portalı</p>
+                  <div className="mt-2 text-center p-3 bg-blue-50/60 rounded-xl border border-blue-100">
+                    <p className="text-[11px] font-bold text-blue-950">Kariyer Geliştirme Merkezi</p>
+                    <p className="text-[10px] text-blue-700 font-medium mt-0.5">Resmî Kurumsal İletişim Portalı</p>
                   </div>
 
                   <div className="mt-3 flex flex-col gap-2 w-full">
+                    <button 
+                      onClick={() => {
+                        const compId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+                        if (setSelectedUserId) setSelectedUserId(compId);
+                        useAppStore.getState().setSelectedUserId?.(compId);
+                        setView('user_profile');
+                      }}
+                      className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Building2 size={14} /> Firma Profilimi Görüntüle
+                    </button>
                     <button 
                       onClick={() => setView('company_ats')}
                       className="w-full py-2.5 bg-[#1e3a5f] hover:bg-[#152843] text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
@@ -400,7 +398,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
               <Star className="text-orange-500 fill-current" size={24} /> Gönderi Paylaş & Düzenle
              </h2>
-             <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+             <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           </div>
         )}
 
@@ -506,7 +504,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               }
               
               return filtered.map(post => (
-                <PostCard key={post.id} post={post} currentUser={currentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
+                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
               ));
             })()}
           </div>
@@ -516,7 +514,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         {/* SURVEYS TAB */}
         {featureSurveys && activeTab === 'surveys' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <AlumniSurveys surveys={surveys} currentUser={currentUser} />
+            <CompanySurveys surveys={surveys} currentUser={effectiveCurrentUser} />
           </div>
         )}
 
@@ -525,12 +523,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         {/* RIGHT PANEL: Kurumsal İletişim, Şube Gündemi & Aday Takip Havuzu */}
         <div className="hidden lg:block w-[320px] shrink-0 space-y-5">
           {/* 1. FİRMA/KURUMSAL DAL ÖZEL İK & YETENEK BÜLTENİ */}
-          <BranchNewsWidget branch="company" currentUser={currentUser} setView={setView} />
+          <BranchNewsWidget branch="company" currentUser={effectiveCurrentUser} setView={setView} />
 
           {/* 2. FİRMA/KURUMSAL DAL ÖZEL YETENEK & STAJYER AĞI */}
           <ConnectionSuggestions 
             branch="company"
-            currentUser={currentUser}
+            currentUser={effectiveCurrentUser}
             students={students || []}
             alumni={alumni || []}
             companies={companies || []}
@@ -775,7 +773,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                   applications={applications} 
                   setApplications={setApplications} 
                   jobs={jobs} 
-                  currentUser={currentUser || { id: 'cmp-1', name: 'Kurumsal Firma', role: 'employer' }} 
+                  currentUser={effectiveCurrentUser || { id: 'cmp-1', name: 'Kurumsal Firma', role: 'employer' }} 
                   userRole={userRole || 'employer'} 
                   setView={setView}
                 />
@@ -797,8 +795,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               </div>
               <div className="w-full flex-1 overflow-hidden flex flex-col relative">
               <MessagingInterface 
-                currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=2563EB&color=fff' }} 
-                userRole={userRole} 
+                currentUser={effectiveCurrentUser || { id: 'cmp-1', name: 'Kurumsal Firma', avatar: null }} 
+                userRole={userRole || 'employer'} 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]} 
                 groups={groups}
                 setGroups={setGroups}
@@ -840,129 +838,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 <X size={20} />
               </button>
               <div className="h-full mt-12">
-                <AICVBuilder currentUser={currentUser} />
+                <AICVBuilder currentUser={effectiveCurrentUser} />
               </div>
             </div>
           </div>
         )}
 
-        {/* Mezun Kartı Modal */}
-        {showCardModal && (
-          <div className="fixed inset-0 z-[100] bg-gray-900/60 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-fade-in">
-              <div className="bg-gradient-to-r from-iesu-navy to-iesu-navy p-6 text-white relative">
-                <button onClick={() => setShowCardModal(false)} className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition"><X size={16}/></button>
-                <CreditCard size={32} className="mb-3 opacity-90"/>
-                <h2 className="text-xl font-black">Mezun Kartı Başvurusu</h2>
-                <p className="text-red-100 text-sm mt-1">Kartınızı almak için bilgilerinizi doğrulayın.</p>
-              </div>
-              <form onSubmit={handleCardSubmit} className="p-6 space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Ad Soyad</label>
-                  <input type="text" disabled value={currentUser?.name || 'Mezun'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Bölüm & Mezuniyet Yılı</label>
-                  <input type="text" disabled value={`${currentUser?.department || 'Mezun'} - ${currentUser?.graduationYear || '2023'}`} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">E-posta Adresi</label>
-                  <input type="email" disabled value={currentUser?.email || 'mezun@esenyurt.edu.tr'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">TC Kimlik No (Zorunlu)</label>
-                  <input type="text" required maxLength="11" pattern="\d{11}" value={cardForm.tc} onChange={e => setCardForm({...cardForm, tc: e.target.value.replace(/\D/g,'')})} placeholder="11 Haneli TC Kimlik No" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-300 outline-none" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">Telefon Numarası</label>
-                  <input type="tel" required value={cardForm.phone} onChange={e => setCardForm({...cardForm, phone: e.target.value})} placeholder="05XX XXX XX XX" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-300 outline-none" />
-                </div>
-                
-                <div className="pt-2">
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <div className="relative flex items-start pt-1">
-                      <input type="checkbox" required className="w-4 h-4 border-gray-300 rounded text-red-600 focus:ring-red-500 cursor-pointer" />
-                    </div>
-                    <span className="text-xs text-gray-500 font-medium leading-relaxed group-hover:text-gray-700 transition">
-                      Kişisel verilerimin Mezun Kartı basımı ve işlemleri amacıyla işlenmesine dair <button type="button" className="text-red-600 font-bold hover:underline">KVKK Aydınlatma Metni'ni</button> okudum ve onaylıyorum.
-                    </span>
-                  </label>
-                </div>
-                
-                <div className="pt-4 mt-4 border-t border-gray-100 flex gap-3">
-                  <button type="button" onClick={() => setShowCardModal(false)} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition">İptal</button>
-                  <button type="submit" className="flex-[2] bg-[#990000] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-700 transition shadow-sm">Başvuruyu Tamamla</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Mentorship Application Modal */}
-        {showMentorshipModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100">
-              <div className="flex justify-between items-center p-5 border-b border-gray-100">
-                <h3 className="font-black text-gray-900 text-lg">Mentorluk Başvurusu</h3>
-                <button onClick={() => setShowMentorshipModal(false)} className="text-gray-500 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition"><X size={20} /></button>
-              </div>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const newMentorship = {
-                  id: Date.now(),
-                  mentorName: currentUser?.name || 'Mezun',
-                  department: currentUser?.department || 'Mezun',
-                  programTitle: mentorshipForm.title,
-                  status: 'Beklemede', // PENDING ADMIN APPROVAL
-                  avatar: currentUser?.avatar || null,
-                  hours: mentorshipForm.hours,
-                  mode: mentorshipForm.mode,
-                  motivation: mentorshipForm.motivation
-                };
-                
-                if (setMentorships) {
-                  setMentorships([newMentorship, ...(mentorships || [])]);
-                } else {
-                  try {
-                    const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2') || localStorage.getItem('igu_mentorships_v2') || '[]');
-                    localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
-                    localStorage.setItem('igu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
-                  } catch (err) {}
-                }
-
-                window.toast?.success?.("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
-                setShowMentorshipModal(false);
-                setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
-              }} className="p-5 space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Uzmanlık / Program Başlığı</label>
-                  <input required type="text" value={mentorshipForm.title} onChange={e => setMentorshipForm({...mentorshipForm, title: e.target.value})} placeholder="Örn: Yazılım Mühendisliği Kariyer Rehberliği" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500" />
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Haftalık Uygunluk (Saat)</label>
-                    <input required type="number" min="1" max="20" value={mentorshipForm.hours} onChange={e => setMentorshipForm({...mentorshipForm, hours: e.target.value})} placeholder="Örn: 2" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Çalışma Şekli</label>
-                    <select value={mentorshipForm.mode} onChange={e => setMentorshipForm({...mentorshipForm, mode: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
-                      <option value="Online">Online</option>
-                      <option value="Yüz Yüze">Yüz Yüze</option>
-                      <option value="Hibrit">Hibrit</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Motivasyon / Kısa Özgeçmiş</label>
-                  <textarea required rows={3} value={mentorshipForm.motivation} onChange={e => setMentorshipForm({...mentorshipForm, motivation: e.target.value})} placeholder="Öğrencilerimize nasıl destek olabileceğinizi kısaca anlatın..." className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500"></textarea>
-                </div>
-                <div className="pt-2">
-                  <button type="submit" className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors">Başvuruyu Gönder</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
         {/* YÖNETİCİYE MESAJ GÖNDER POPUP FORM MODAL (CORPORATE MIDNIGHT SAPPHIRE THEME #0A2342) */}
         {showAdminMsgModal && (
           <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-sans">
@@ -977,8 +858,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 e.preventDefault();
                 const newMsg = {
                   id: 'ADM-MSG-' + Date.now(),
-                  companyName: currentUser?.name || 'Kurumsal Firma',
-                  email: adminMsgForm.email || currentUser?.email || 'Belirtilmedi',
+                  companyName: effectiveCurrentUser?.name || 'Kurumsal Firma',
+                  email: adminMsgForm.email || effectiveCurrentUser?.email || 'Belirtilmedi',
                   phone: adminMsgForm.phone || 'Belirtilmedi',
                   subject: adminMsgForm.subject,
                   message: adminMsgForm.message,
@@ -1353,7 +1234,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                   {/* Profile Photo / Avatar Frame */}
                   <div className="w-24 h-28 bg-slate-100 border border-slate-300 rounded-lg shadow-xs overflow-hidden shrink-0 flex items-center justify-center">
                     {selectedCandidateCvModal.photo ? (
-                      <img src={selectedCandidateCvModal.photo} alt={selectedCandidateCvModal.applicantName} className="w-full h-full object-cover" />
+                      <SafeAvatar src={selectedCandidateCvModal.photo} name={selectedCandidateCvModal.applicantName} size={80} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-tr from-purple-800 to-indigo-900 text-white font-black text-xl flex items-center justify-center">
                         {selectedCandidateCvModal.applicantName.substring(0, 2).toUpperCase()}
@@ -1549,13 +1430,17 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             <Briefcase size={22} strokeWidth={2.5} />
           </button>
           
-          {/* FİRMA KGM KİMLİK LOGOSU / PROFİL */}
           <button 
-            onClick={() => { if (setSelectedUserId) setSelectedUserId((currentUser?.role === 'company' || currentUser?.role === 'employer') ? currentUser.id : 'CMP-001'); setView('user_profile'); }} 
+            onClick={() => {
+              const compId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+              if (setSelectedUserId) setSelectedUserId(compId);
+              useAppStore.getState().setSelectedUserId?.(compId);
+              setView('user_profile');
+            }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
             title="Kurumsal Firma Profilim"
           >
-            <SafeAvatar src={currentUser?.avatar || currentUser?.logo} name={currentUser?.name || 'Firma'} size="xs" alt="Profile" />
+            <SafeAvatar src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.logo} name={effectiveCurrentUser?.name || 'Firma'} size="xs" alt="Profile" />
           </button>
         </div>
       </div>

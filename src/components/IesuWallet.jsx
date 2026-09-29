@@ -7,6 +7,7 @@ import {
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
 const VERIFIED_SKILLS = [
   { id: 1, type: 'course', amount: 'Tamamlandı', desc: 'İleri Seviye Veri Analizi Eğitimi', date: 'Bugün, 14:30', icon: <BookOpen size={16}/> },
@@ -22,9 +23,18 @@ const CERTIFICATES = [
   { id: 4, name: 'Liderlik ve Yönetim', issuer: 'LinkedIn Learning', icon: 'in', color: 'bg-sky-50 text-sky-700 border-sky-100' },
 ];
 
-export default function IesuWallet({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function IesuWallet({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [showExportModal, setShowExportModal] = useState(false);
   const [readinessScore, setReadinessScore] = useState(80);
+
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const handleRunAnalysis = () => {
     window.toast && window.toast.info("Dijital cüzdanınızdaki sertifikalar analiz ediliyor...");
@@ -41,7 +51,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >

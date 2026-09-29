@@ -1,3 +1,4 @@
+import SafeAvatar from './shared/SafeAvatar';
 import React, { useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import Logo from './Logo';

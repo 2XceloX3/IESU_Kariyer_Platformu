@@ -1,3 +1,4 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState } from 'react';
 import { BookOpen, Users, BarChart3, Download, Plus, CheckCircle, Search, Eye, Trash2, ImagePlus, ChevronDown, ChevronUp, FileText, AlertCircle, Award, Star } from 'lucide-react';
 import PostCard from '../PostCard';
@@ -472,7 +473,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                     >
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-3">
-                          <img src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}`} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
+                          <SafeAvatar src={user.avatar} name={user.avatar?.name} size={40} className="w-10 h-10 rounded-full object-cover" />
                           <div>
                             <p className="font-bold text-gray-900 text-sm">{user.name}</p>
                             <p className="text-[11px] font-bold text-gray-500 uppercase">{user.department || user.role}</p>

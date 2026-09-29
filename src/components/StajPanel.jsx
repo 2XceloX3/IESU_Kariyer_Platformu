@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { downloadReportPdf } from '../utils/downloadPdf';
-import { FileText, CheckCircle, Clock, Download, Briefcase, FileSignature, ArrowRight, ShieldCheck, HelpCircle, LogIn, Search, ChevronLeft } from 'lucide-react';
+import { FileText, CheckCircle, Clock, Download, Briefcase, FileSignature, ArrowRight, ShieldCheck, HelpCircle, LogIn, Search, ChevronLeft, Building2, CheckCircle2, UserCheck, Calendar } from 'lucide-react';
+import useAppStore from '../store/useAppStore';
 import Logo from './Logo';
 import SubPanelFooter from './SubPanelFooter';
 import TopProfileMenu from './TopProfileMenu';
@@ -8,7 +9,56 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SEO from './SEO';
 
 export default function StajPanel({ setView, userRole = 'student', currentUser, previousView, setSelectedUserId }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const [activeTab, setActiveTab] = useState('surec');
+  const [internshipStatus, setInternshipStatus] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iesu_internship_status_v1');
+      return saved ? JSON.parse(saved) : {
+        company: 'Trendyol Tech',
+        role: 'Ar-Ge & Yazılım Geliştirme Stajyeri',
+        status: 'Fakülte Komisyonu Tarafından Onaylandı',
+        duration: '20 İş Günü',
+        sgkStatus: 'SGK 5510 Girişi Aktif (Üniversite Karşılamalı)',
+        advisor: 'Prof. Dr. Ahmet Yılmaz',
+        approvedDate: '26 Eylül 2026',
+        notebookDeadline: '15 Ekim 2026'
+      };
+    } catch (_) {
+      return {
+        company: 'Trendyol Tech',
+        role: 'Ar-Ge & Yazılım Geliştirme Stajyeri',
+        status: 'Fakülte Komisyonu Tarafından Onaylandı',
+        duration: '20 İş Günü',
+        sgkStatus: 'SGK 5510 Girişi Aktif (Üniversite Karşılamalı)',
+        advisor: 'Prof. Dr. Ahmet Yılmaz',
+        approvedDate: '26 Eylül 2026',
+        notebookDeadline: '15 Ekim 2026'
+      };
+    }
+  });
+
+  useEffect(() => {
+    const handleApproved = (e) => {
+      const detail = e?.detail;
+      if (detail) {
+        setInternshipStatus(prev => {
+          const updated = {
+            ...prev,
+            company: detail.company || prev.company,
+            status: 'Fakülte Komisyonu Tarafından Onaylandı',
+            advisor: detail.approvedBy || prev.advisor,
+            approvedDate: new Date().toLocaleDateString('tr-TR')
+          };
+          try { localStorage.setItem('iesu_internship_status_v1', JSON.stringify(updated)); } catch(_) {}
+          return updated;
+        });
+      }
+    };
+    window.addEventListener('iesu_internship_approved', handleApproved);
+    return () => window.removeEventListener('iesu_internship_approved', handleApproved);
+  }, []);
 
   const adimlar = [
     {
@@ -40,6 +90,15 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
     { title: "Staj Ücretlerine İşsizlik Fonu Katkısı Formu", size: "142 KB", ext: "PDF" }
   ];
 
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' ? 'admin' : 'student')
+  );
+
   return (
     <div className="min-h-screen bg-[#f8f9fc] font-sans flex flex-col justify-between">
       <SEO 
@@ -53,13 +112,13 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
           {/* Left: Back Button + Pure White Logo + University Name */}
           <div className="flex items-center gap-3 shrink-0">
             <button 
-              onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}
+              onClick={() => setView(backTarget)}
               className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition cursor-pointer shrink-0"
               title="Geri Dön"
             >
               <ChevronLeft size={20} />
             </button>
-            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))}>
+            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
               <div className="brightness-0 invert flex-shrink-0">
                 <Logo className="h-10 w-auto" />
               </div>
@@ -93,8 +152,8 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
               <button onClick={() => setView('student_kgb')} className="hover:text-white hover:underline transition">KGB Karnesi</button>
             </div>
 
-            {currentUser ? (
-              <TopProfileMenu currentUser={currentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
+            {effectiveCurrentUser ? (
+              <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
             ) : (
               <button 
                 onClick={() => setView('login')}
@@ -135,18 +194,24 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
               </div>
 
               {/* Tab Selector */}
-              <div className="flex bg-black/30 p-1.5 rounded-2xl backdrop-blur-md border border-white/20 shadow-xl shrink-0">
+              <div className="flex bg-black/30 p-1.5 rounded-2xl backdrop-blur-md border border-white/20 shadow-xl shrink-0 flex-wrap gap-1">
                 <button 
                   onClick={() => setActiveTab('surec')}
-                  className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${activeTab === 'surec' ? 'bg-white text-[#990000] shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                  className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${activeTab === 'surec' ? 'bg-white text-[#990000] shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
                 >
                   Süreç Adımları
                 </button>
                 <button 
                   onClick={() => setActiveTab('belgeler')}
-                  className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${activeTab === 'belgeler' ? 'bg-white text-[#990000] shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                  className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${activeTab === 'belgeler' ? 'bg-white text-[#990000] shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
                 >
                   Gerekli Belgeler
+                </button>
+                <button 
+                  onClick={() => setActiveTab('takip')}
+                  className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${activeTab === 'takip' ? 'bg-white text-[#990000] shadow-md' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                >
+                  Staj & Komisyon Takibi
                 </button>
               </div>
             </div>
@@ -274,6 +339,100 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
             </div>
           )}
 
+          {activeTab === 'takip' && (
+            <div className="space-y-8 animate-fade-in">
+              <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-200 pb-5">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span className="text-xs font-black uppercase text-emerald-700 tracking-wider">Aktif Staj Dosyası</span>
+                  </div>
+                  <h2 className="text-2xl font-black text-slate-900 mt-1">Staj & Fakülte Komisyon Takip Kartı</h2>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3.5 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-black flex items-center gap-1.5">
+                    <CheckCircle2 size={15} className="text-emerald-600" /> {internshipStatus.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Status Bento Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center">
+                    <Building2 size={24} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Kabul Edilen Kurum</span>
+                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus.company}</h3>
+                    <p className="text-xs font-bold text-slate-500 mt-1">{internshipStatus.role}</p>
+                  </div>
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
+                    <span>Staj Süresi:</span>
+                    <span className="text-[#990000] font-black">{internshipStatus.duration}</span>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+                    <UserCheck size={24} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Akademik Staj Komisyonu</span>
+                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus.advisor}</h3>
+                    <p className="text-xs font-bold text-emerald-600 mt-1">✓ E-İmzalı Komisyon Onayı Verildi</p>
+                  </div>
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
+                    <span>Onay Tarihi:</span>
+                    <span className="text-slate-900 font-black">{internshipStatus.approvedDate}</span>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-4">
+                  <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+                    <ShieldCheck size={24} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">SGK & Güvenlik Kapsamı</span>
+                    <h3 className="text-lg font-black text-slate-900 mt-0.5">e-Devlet SGK 5510</h3>
+                    <p className="text-xs font-bold text-blue-600 mt-1">✓ Prim İESÜ Rektörlüğü Tarafından Karşılanmaktadır</p>
+                  </div>
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
+                    <span>Defter Teslim Son Gün:</span>
+                    <span className="text-amber-600 font-black">{internshipStatus.notebookDeadline}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Banner */}
+              <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-950 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+                <div>
+                  <h4 className="font-black text-base">Staj Defterinizi Hazırladınız mı?</h4>
+                  <p className="text-xs text-slate-300 mt-1">Staj bitiminde onaylı staj defterinizi fakülte staj komisyonuna teslim etmeyi unutmayın.</p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button 
+                    onClick={() => {
+                      downloadReportPdf('staj-defteri-sablonu', 'Staj Defteri Şablonu', ['İESÜ Staj Defteri Resmi Şablonu']);
+                      window.toast?.success?.("📄 Staj Defteri Şablonu indirildi.");
+                    }}
+                    className="px-4 py-2.5 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-xs font-black transition cursor-pointer"
+                  >
+                    Şablon İndir
+                  </button>
+                  <button 
+                    onClick={() => {
+                      window.toast?.info?.("Staj Defteri dijital yükleme havuzu açılıyor...");
+                    }}
+                    className="px-4 py-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-black transition cursor-pointer shadow-md"
+                  >
+                    Defter Yükle
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
 
@@ -281,9 +440,9 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
       <SubPanelFooter setView={setView} />
 
       {/* Floating Bottom Dock */}
-      {currentUser && (
+      {setView && (
         <SubPanelFloatingDock 
-          currentUser={currentUser} 
+          currentUser={effectiveCurrentUser} 
           setView={setView} 
           setSelectedUserId={setSelectedUserId}
           userRole={userRole || 'student'}

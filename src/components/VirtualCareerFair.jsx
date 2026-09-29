@@ -4,6 +4,8 @@ import { Building2, Users, MapPin, Search, ChevronLeft, ArrowRight, Video, Brief
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
+import useAppStore from '../store/useAppStore';
 
 const MOCK_COMPANIES = [
   {
@@ -56,11 +58,20 @@ const MOCK_COMPANIES = [
   }
 ];
 
-export default function VirtualCareerFair({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function VirtualCareerFair({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [activeTab, setActiveTab] = useState('booths'); // booths, sessions, appointments
   const [myAppointments, setMyAppointments] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const filteredCompanies = MOCK_COMPANIES.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -74,7 +85,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
         <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+              onClick={() => setView(backTarget)} 
               className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
               title="Geri Dön"
             >
@@ -181,7 +192,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
               {filteredCompanies.map(company => (
                 <div key={company.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs hover:shadow-md transition-shadow p-6 flex flex-col h-full group">
                   <div className="flex items-start justify-between mb-4">
-                    <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl border border-gray-100 shadow-xs" />
+                    <SafeAvatar src={company.logo} name={company.name} className="w-16 h-16 rounded-xl border border-gray-100 shadow-xs object-cover" />
                     {company.isHiring && (
                       <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
                         <Briefcase size={12} /> Aktif İşe Alım
@@ -309,7 +320,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
             >
               <div className="sticky top-0 bg-white border-b border-gray-100 p-4 sm:p-6 flex items-center justify-between z-10">
                 <div className="flex items-center gap-4">
-                  <img src={selectedCompany.logo} alt={selectedCompany.name} className="w-12 h-12 rounded-xl border border-gray-100" />
+                  <SafeAvatar src={selectedCompany.logo} name={selectedCompany.name} className="w-12 h-12 rounded-xl border border-gray-100 object-cover" />
                   <div>
                     <h3 className="text-xl font-black text-gray-900">{selectedCompany.name} <span className="text-sm font-medium text-gray-500 font-normal">| Sanal Stant</span></h3>
                   </div>

@@ -3,6 +3,7 @@ import { Sparkles, Calendar, ArrowRight, Megaphone, Search, X, ShieldCheck } fro
 import useAppStore from '../store/useAppStore';
 import MainHeader from './MainHeader';
 import MainFooter from './MainFooter';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 export default function PublicNewsView({ setView, currentUser, userRole }) {
   const news = useAppStore(state => state.news) || [];
@@ -186,6 +187,15 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
       {/* ─── ANA GİRİŞ FOOTER'I ─── */}
       <MainFooter setView={setView} />
 
+      {/* Floating Dock for Logged in Users */}
+      {currentUser && setView && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          userRole={userRole || currentUser?.role || 'student'} 
+          activeTab="news" 
+        />
+      )}
     </div>
   );
 }

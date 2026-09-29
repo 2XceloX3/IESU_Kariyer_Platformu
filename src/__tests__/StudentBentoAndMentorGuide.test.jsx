@@ -187,7 +187,7 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
     expect(screen.getByText(/EduChain/i)).toBeInTheDocument();
   });
 
-  it('opens Ecosystem Discovery modal when "Tümünü Keşfet (16)" is clicked and navigates to tools', () => {
+  it('renders core student career tools in bento grid and navigates correctly', () => {
     const setView = vi.fn();
     render(
       <MemoryRouter>
@@ -195,15 +195,14 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
       </MemoryRouter>
     );
 
-    const discoverBtn = screen.getByText(/Tümünü Keşfet \(16\)/i);
-    expect(discoverBtn).toBeInTheDocument();
-    fireEvent.click(discoverBtn);
+    const roadmapBtn = screen.getByText('Kariyer Haritası');
+    expect(roadmapBtn).toBeInTheDocument();
+    fireEvent.click(roadmapBtn);
+    expect(setView).toHaveBeenCalledWith('career_roadmap');
 
-    expect(screen.getByText('İESÜ Ekosistem Araçları & Modülleri')).toBeInTheDocument();
-    expect(screen.getByText('Akıllı CV & Özgeçmiş Tasarımcısı')).toBeInTheDocument();
-    expect(screen.getByText('3D Metaverse Kampüs Haritası')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('3D Metaverse Kampüs Haritası'));
-    expect(setView).toHaveBeenCalledWith('campus_map');
+    const testBtn = screen.getByText('Kariyer Testi');
+    expect(testBtn).toBeInTheDocument();
+    fireEvent.click(testBtn);
+    expect(setView).toHaveBeenCalledWith('career_test');
   });
 });

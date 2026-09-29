@@ -3,7 +3,6 @@ import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, Info, Plus, Graduat
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
-import AdminOmniDock from './AdminOmniDock';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
@@ -339,9 +338,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
       )}
 
       {/* Dock navigation */}
-      {effectiveRole === 'admin' ? (
-        <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="calendar" />
-      ) : (
+      {effectiveRole === 'admin' ? null : (
         <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={effectiveRole} activeTab="calendar" />
       )}
     </div>

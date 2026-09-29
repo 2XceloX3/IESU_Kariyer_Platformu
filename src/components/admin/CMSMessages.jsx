@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SafeAvatar from '../shared/SafeAvatar';
 import PanelHeader from './PanelHeader';
 import { MessageSquare, Bell, CheckCircle2, Send, Trash2, Search, Filter, Users, User, Building2, BookOpen } from 'lucide-react';
 
@@ -352,7 +353,7 @@ export default function CMSMessages({ messages, setMessages }) {
                   <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white shadow-sm z-10">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0 border border-gray-200 overflow-hidden">
-                        {selectedMessage.senderAvatar ? <img src={selectedMessage.senderAvatar} className="w-full h-full object-cover" /> : <MessageSquare size={20} className="text-gray-500"/>}
+                        {selectedMessage.senderAvatar ? <SafeAvatar src={selectedMessage.senderAvatar} name={selectedMessage.senderName || 'User'} size={20} className="w-full h-full object-cover" /> : <MessageSquare size={20} className="text-gray-500"/>}
                       </div>
                       <div>
                         <h3 className="font-black text-gray-900 text-lg">{selectedMessage.senderName}</h3>

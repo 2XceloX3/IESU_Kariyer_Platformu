@@ -2,14 +2,25 @@ import React from 'react';
 import { ArrowLeft, Users, ChevronRight } from 'lucide-react';
 import Logo from './Logo';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
-export default function OrganizationChart({ setView, userRole = 'student', currentUser, setSelectedUserId }) {
+export default function OrganizationChart({ setView, userRole = 'student', currentUser, setSelectedUserId, previousView }) {
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
+
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 pb-32">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50 border-b-4 border-[#990000]">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-4 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-4 cursor-pointer" onClick={() => setView(backTarget)}>
             <Logo className="h-10 sm:h-12 w-auto text-[#990000]" />
             <div className="hidden sm:block">
               <h1 className="text-[16px] md:text-xl font-black text-gray-900 leading-tight tracking-tight whitespace-nowrap">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
@@ -17,7 +28,7 @@ export default function OrganizationChart({ setView, userRole = 'student', curre
             </div>
           </div>
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0 shadow-xs"
             title="Geri Dön"
           >

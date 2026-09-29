@@ -5,13 +5,19 @@ import {
   Home, Layers, Clock, Tag, Globe, Check, FileText
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import eventBus from '../brain/eventBus';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 
-export default function JobCreator({ setView, currentUser: propsCurrentUser, addNotification: propsAddNotification }) {
+export default function JobCreator({ setView, currentUser: propsCurrentUser, addNotification: propsAddNotification, userRole: propsUserRole }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
+  const storeUserRole = useAppStore(state => state.userRole);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
   const currentUser = propsCurrentUser || storeCurrentUser;
+  const userRole = propsUserRole || currentUser?.role || storeUserRole;
+  const isCompany = activePortalBranch === 'company' || propsUserRole === 'company' || currentUser?.role === 'company';
+  const isAdmin = !isCompany && (activePortalBranch === 'admin' || propsUserRole === 'admin' || userRole === 'admin');
   const storeAddNotification = useAppStore(state => state.addNotification);
   const addNotification = propsAddNotification || storeAddNotification;
 
@@ -23,6 +29,7 @@ export default function JobCreator({ setView, currentUser: propsCurrentUser, add
 
   const [formData, setFormData] = useState({
     title: '',
+    companyName: isAdmin ? 'İstanbul Esenyurt Üniversitesi (İESÜ)' : (currentUser?.name || ''),
     type: 'STAJ',
     workModel: 'Hibrit',
     department: 'Tüm Bölümler & Genel',
@@ -30,6 +37,12 @@ export default function JobCreator({ setView, currentUser: propsCurrentUser, add
     date: defaultDeadline,
     description: '',
     applicationLink: ''
+  });
+
+  const [targetHives, setTargetHives] = useState({
+    student: true,
+    alumni: true,
+    company: true
   });
 
   const [previewImage, setPreviewImage] = useState(null);
@@ -120,9 +133,9 @@ Sunduğumuz Olanaklar:
       return;
     }
 
-    const companyName = (currentUser?.role === 'company' || currentUser?.role === 'employer')
-      ? (currentUser.name || 'Kurumsal Firma')
-      : (currentUser?.name || 'İESÜ Kurumsal Partner');
+    const companyName = isAdmin 
+      ? (formData.companyName?.trim() || 'İstanbul Esenyurt Üniversitesi (İESÜ)')
+      : (currentUser?.name || 'Kurumsal Firma');
 
     const formattedDate = formData.date 
       ? new Date(formData.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -140,33 +153,77 @@ Sunduğumuz Olanaklar:
       rawDeadline: formData.date,
       description: formData.description.trim(),
       applicationLink: formData.applicationLink.trim() || '#',
-      logo: previewImage || currentUser?.avatar || currentUser?.logo || '',
+      logo: previewImage || (isAdmin ? '/iesu-logo.svg' : (currentUser?.avatar || currentUser?.logo || '')),
       imageUrl: previewImage || '',
-      status: 'Beklemede', // Admin onay havuzuna gider
+      status: isAdmin ? 'Aktif' : 'Beklemede',
+      targetHives: targetHives,
+      publishedBy: isAdmin ? 'admin' : 'company',
       createdAt: new Date().toISOString()
     };
 
     setJobs([newJob, ...(jobs || [])]);
 
-    if (addNotification) {
-      addNotification({
-        id: 'NOTIF-' + Date.now(),
-        type: 'info',
-        title: 'İlan Onaya Gönderildi',
-        message: `"${newJob.title}" başlıklı ilanınız üniversite yönetimi onayına gönderildi. Onaylandığında tüm öğrencilere duyurulacaktır.`
+    // Cross-hive event broadcasting (Beehive Brain & useSharedStore)
+    if (eventBus && typeof eventBus.emit === 'function') {
+      eventBus.emit('job:published', { job: newJob, targetHives });
+      eventBus.emit('audit:logged', {
+        hive: isAdmin ? 'admin' : 'company',
+        action: 'job_created',
+        title: newJob.title,
+        company: companyName,
+        status: newJob.status,
+        timestamp: new Date().toISOString()
       });
     }
 
-    if (window.toast?.success) {
-      window.toast.success("İlanınız başarıyla yönetici onayına gönderildi!");
+    if (isAdmin) {
+      if (addNotification) {
+        addNotification({
+          id: 'NOTIF-' + Date.now(),
+          type: 'success',
+          title: 'İlan Tüm Kovanlarda Yayında',
+          message: `"${newJob.title}" başlıklı ilan başarıyla yayınlandı ve seçili kovanlara ulaştırıldı.`
+        });
+      }
+      if (window.toast?.success) {
+        window.toast.success("✅ İlan tüm üniversite kovanlarında başarıyla yayına alındı!");
+      }
+    } else {
+      if (addNotification) {
+        addNotification({
+          id: 'NOTIF-' + Date.now(),
+          type: 'info',
+          title: 'İlan Onaya Gönderildi',
+          message: `"${newJob.title}" başlıklı ilanınız üniversite yönetimi onayına gönderildi. Onaylandığında tüm öğrencilere duyurulacaktır.`
+        });
+      }
+      if (window.toast?.success) {
+        window.toast.success("İlanınız başarıyla yönetici onayına gönderildi!");
+      }
     }
 
     setSuccess(true);
     setTimeout(() => {
       const store = useAppStore.getState();
+      if (isAdmin) {
+        if (store.setActivePortalBranch) store.setActivePortalBranch('admin');
+        if (typeof setView === 'function') setView('jobs');
+      } else {
+        if (store.setActivePortalBranch) store.setActivePortalBranch('company');
+        if (typeof setView === 'function') setView('company');
+      }
+    }, 1200);
+  };
+
+  const handleExit = () => {
+    const store = useAppStore.getState();
+    if (isAdmin) {
+      if (store.setActivePortalBranch) store.setActivePortalBranch('admin');
+      if (typeof setView === 'function') setView('jobs');
+    } else {
       if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-      if (setView) setView('company');
-    }, 1500);
+      if (typeof setView === 'function') setView('company');
+    }
   };
 
   return (
@@ -176,46 +233,39 @@ Sunduğumuz Olanaklar:
       <header className="bg-white/95 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           
-          {/* Sol: Üniversite Logo & Başlık (Tıklanınca Firma Akışına Döner) */}
+          {/* Sol: Üniversite Logo & Başlık */}
           <div 
-            onClick={() => {
-              const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              if (setView) setView('company');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={handleExit}
             className="flex items-center gap-2.5 min-w-0 cursor-pointer group"
-            title="Firma Paneli & Kurumsal Akışa Dön"
+            title={isAdmin ? "KGM İlan & Staj Masasına Dön" : "Firma Paneli & Kurumsal Akışa Dön"}
           >
-            <Logo color="blue" className="h-9 w-auto shrink-0 group-hover:scale-105 transition-transform" />
+            <Logo color={isAdmin ? "amber" : "blue"} className="h-9 w-auto shrink-0 group-hover:scale-105 transition-transform" />
             <div className="text-left min-w-0">
               <h1 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight leading-tight truncate">
                 İstanbul Esenyurt Üniversitesi
               </h1>
-              <p className="text-[10px] font-extrabold text-blue-900 uppercase tracking-wider truncate">
-                Kurumsal İnsan Kaynakları & Yetenek Portalı
+              <p className={`text-[10px] font-extrabold uppercase tracking-wider truncate ${isAdmin ? 'text-amber-700' : 'text-blue-900'}`}>
+                {isAdmin ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Kurumsal İnsan Kaynakları & Yetenek Portalı'}
               </p>
             </div>
           </div>
 
           {/* Orta: Dal Rozeti */}
           <div className="hidden md:flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-blue-50 text-blue-900 border border-blue-200 shadow-2xs flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-              🏢 Yeni İlan & Yetenek Arama Masası
+            <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border shadow-2xs flex items-center gap-1.5 ${
+              isAdmin ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-blue-50 text-blue-900 border-blue-200'
+            }`}>
+              <span className={`w-2 h-2 rounded-full animate-pulse ${isAdmin ? 'bg-amber-600' : 'bg-blue-600'}`} />
+              {isAdmin ? '👑 KGM Resmî İlan & Kovan Dağıtım Masası' : '🏢 Yeni İlan & Yetenek Arama Masası'}
             </span>
           </div>
 
           {/* Sağ: Aksiyon Butonları */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button 
-              onClick={() => {
-                const store = useAppStore.getState();
-                if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-                if (setView) setView('company');
-              }} 
+              onClick={handleExit} 
               className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
-              title="İptal Et ve Firma Akışına Dön"
+              title="İptal Et ve Geri Dön"
             >
               <ArrowLeft size={16} /> 
               <span className="hidden sm:inline">Vazgeç</span>
@@ -223,11 +273,15 @@ Sunduğumuz Olanaklar:
 
             <button 
               onClick={handleSubmit} 
-              className="px-4 sm:px-5 py-1.5 sm:py-2 bg-gradient-to-r from-blue-900 via-[#0A2342] to-indigo-900 hover:from-blue-950 hover:to-indigo-950 text-white text-xs sm:text-sm font-black rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95"
-              title="İlanı Onaya Gönder"
+              className={`px-4 sm:px-5 py-1.5 sm:py-2 text-white text-xs sm:text-sm font-black rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95 ${
+                isAdmin 
+                  ? 'bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 hover:from-amber-700 hover:to-orange-600 shadow-amber-900/20' 
+                  : 'bg-gradient-to-r from-blue-900 via-[#0A2342] to-indigo-900 hover:from-blue-950 hover:to-indigo-950'
+              }`}
+              title={isAdmin ? "İlanı Tüm Kovanlarda Yayına Al" : "İlanı Onaya Gönder"}
             >
               <CheckCircle2 size={16} />
-              <span>Onaya Gönder</span>
+              <span>{isAdmin ? "Tüm Kovanlarda Yayına Al" : "Onaya Gönder"}</span>
             </button>
           </div>
         </div>
@@ -235,37 +289,51 @@ Sunduğumuz Olanaklar:
 
       {/* ─── 2. KURUMSAL HERO BANNER ─── */}
       <div className="max-w-[1500px] mx-auto px-4 sm:px-6 pt-6">
-        <div className="bg-gradient-to-r from-slate-950 via-[#0A2342] to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-blue-900/40 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 w-60 h-60 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none" />
+        <div className={`text-white rounded-3xl p-6 sm:p-7 shadow-xl border relative overflow-hidden ${
+          isAdmin 
+            ? 'bg-gradient-to-r from-slate-950 via-[#1a1714] to-amber-950 border-amber-500/40' 
+            : 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-slate-900 border-blue-900/40'
+        }`}>
+          <div className={`absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none ${isAdmin ? 'bg-amber-500/10' : 'bg-blue-600/10'}`} />
+          <div className={`absolute bottom-0 left-1/3 w-60 h-60 rounded-full blur-2xl pointer-events-none ${isAdmin ? 'bg-orange-500/10' : 'bg-indigo-600/10'}`} />
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2 max-w-2xl">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/20 border border-blue-400/40 text-blue-200 flex items-center gap-1">
-                  <Sparkles size={11} /> Resmî İlan & Staj Portalı
+                <span className={`px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border flex items-center gap-1 ${
+                  isAdmin ? 'bg-amber-500/20 border-amber-400/40 text-amber-200' : 'bg-blue-500/20 border-blue-400/40 text-blue-200'
+                }`}>
+                  <Sparkles size={11} /> {isAdmin ? 'KGM Resmî Üniversite Masası' : 'Resmî İlan & Staj Portalı'}
                 </span>
-                <span className="text-xs text-blue-200/80 font-medium">• Üniversite Onaylı İşveren Paneli</span>
+                <span className={`text-xs font-medium ${isAdmin ? 'text-amber-200/80' : 'text-blue-200/80'}`}>
+                  {isAdmin ? '• 5 Kovana Eş Zamanlı Dağıtım Entegrasyonu' : '• Üniversite Onaylı İşveren Paneli'}
+                </span>
               </div>
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
-                Yeni Kariyer & Staj İlanı Yayınlayın
+                {isAdmin ? 'Tüm Kovanlara Resmî İlan & Fırsat Yayınlayın' : 'Yeni Kariyer & Staj İlanı Yayınlayın'}
               </h2>
-              <p className="text-xs sm:text-sm text-blue-100/80 font-medium leading-relaxed">
-                İstanbul Esenyurt Üniversitesi öğrencileri ve mezunları için kariyer ve staj fırsatınızı oluşturun. İlanınız onaylandıktan sonra üniversitemizin tüm dijital portallarında eşzamanlı yayınlanacaktır.
+              <p className={`text-xs sm:text-sm font-medium leading-relaxed ${isAdmin ? 'text-amber-100/90' : 'text-blue-100/80'}`}>
+                {isAdmin 
+                  ? 'Kariyer Geliştirme Merkezi koordinatörlüğünde oluşturulan ilanlar tek tıklamayla Öğrenci, Mezun ve Firma ATS panolarına doğrudan bağlanır ve canlı dağıtılır.' 
+                  : 'İstanbul Esenyurt Üniversitesi öğrencileri ve mezunları için kariyer ve staj fırsatınızı oluşturun. İlanınız onaylandıktan sonra üniversitemizin tüm dijital portallarında eşzamanlı yayınlanacaktır.'}
               </p>
             </div>
 
             <div className="flex items-center gap-3 shrink-0 bg-white/5 backdrop-blur-md p-3.5 rounded-2xl border border-white/10">
-              <div className="w-11 h-11 rounded-xl bg-blue-600/30 text-blue-200 flex items-center justify-center font-black border border-blue-400/30">
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-black border ${
+                isAdmin ? 'bg-amber-500/30 text-amber-200 border-amber-400/30' : 'bg-blue-600/30 text-blue-200 border-blue-400/30'
+              }`}>
                 <Building2 size={22} />
               </div>
               <div className="text-left">
-                <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider">İşveren / Kurum</p>
+                <p className={`text-[10px] font-bold uppercase tracking-wider ${isAdmin ? 'text-amber-200' : 'text-blue-200'}`}>
+                  {isAdmin ? 'Yönetici Birimi' : 'İşveren / Kurum'}
+                </p>
                 <p className="text-sm font-black text-white leading-tight mt-0.5 max-w-[180px] truncate">
-                  {currentUser?.name || 'Kurumsal Partner'}
+                  {isAdmin ? 'KGM Koordinatörlüğü' : (currentUser?.name || 'Kurumsal Partner')}
                 </p>
                 <p className="text-[10px] text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
-                  <ShieldCheck size={11} /> Doğrulanmış Partner
+                  <ShieldCheck size={11} /> {isAdmin ? 'Süper Yönetici Yetkisi' : 'Doğrulanmış Partner'}
                 </p>
               </div>
             </div>
@@ -303,6 +371,74 @@ Sunduğumuz Olanaklar:
             </h3>
 
             <div className="space-y-4">
+              {/* Kurum / Firma Adı (Yönetici Düzenleyebilir) */}
+              {isAdmin && (
+                <div>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                    Yayıncı Kurum / Firma Adı <span className="text-amber-600">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    name="companyName" 
+                    value={formData.companyName} 
+                    onChange={handleInputChange} 
+                    placeholder="Örn: İstanbul Esenyurt Üniversitesi veya Anlaşmalı Kurumsal Firma" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-600/15 transition" 
+                  />
+                </div>
+              )}
+
+              {/* Kovan Bağlantıları & Dağıtım Kanalları (Admin Hive Multi-channel Distribution) */}
+              {isAdmin && (
+                <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                      <h4 className="text-xs font-black text-amber-950 uppercase tracking-wider">
+                        Kovan Bağlantıları & Dağıtım Kanalları
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-extrabold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-md">
+                      3 Kovan Aktif
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-amber-900/80 font-medium">
+                    Bu ilanın tek tıklamayla hangi kovanların beslemelerine ve başvuru havuzlarına dağıtılacağını belirleyin:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                    <label className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition ${targetHives.student ? 'bg-white border-red-300 text-red-950 shadow-2xs font-bold' : 'bg-slate-100/80 border-slate-200 text-slate-500'}`}>
+                      <input 
+                        type="checkbox" 
+                        checked={targetHives.student} 
+                        onChange={e => setTargetHives(prev => ({ ...prev, student: e.target.checked }))}
+                        className="rounded text-[#990000] focus:ring-red-500" 
+                      />
+                      <span className="text-xs font-bold">🎓 Öğrenci Kovanı</span>
+                    </label>
+
+                    <label className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition ${targetHives.alumni ? 'bg-white border-emerald-300 text-emerald-950 shadow-2xs font-bold' : 'bg-slate-100/80 border-slate-200 text-slate-500'}`}>
+                      <input 
+                        type="checkbox" 
+                        checked={targetHives.alumni} 
+                        onChange={e => setTargetHives(prev => ({ ...prev, alumni: e.target.checked }))}
+                        className="rounded text-emerald-600 focus:ring-emerald-500" 
+                      />
+                      <span className="text-xs font-bold">👥 Mezun Kovanı</span>
+                    </label>
+
+                    <label className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition ${targetHives.company ? 'bg-white border-blue-300 text-blue-950 shadow-2xs font-bold' : 'bg-slate-100/80 border-slate-200 text-slate-500'}`}>
+                      <input 
+                        type="checkbox" 
+                        checked={targetHives.company} 
+                        onChange={e => setTargetHives(prev => ({ ...prev, company: e.target.checked }))}
+                        className="rounded text-blue-600 focus:ring-blue-500" 
+                      />
+                      <span className="text-xs font-bold">🏢 Firma ATS Havuzu</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
               {/* İlan Başlığı */}
               <div>
                 <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
@@ -617,65 +753,69 @@ Sunduğumuz Olanaklar:
 
       </main>
 
-      {/* ─── 4. KURUMSAL FİRMA ALT NAVİGASYON DOCK'U (TEMİZ 4'LÜ SİMGE DOCK'U) ─── */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-blue-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800">
-          
-          {/* 1. Kurumsal Akış */}
-          <button 
-            onClick={() => {
-              const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              if (setView) setView('company');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }} 
-            className="p-2.5 rounded-full text-slate-600 hover:text-white hover:bg-gradient-to-r hover:from-slate-950 hover:to-[#0A2342] transition-all cursor-pointer flex items-center justify-center" 
-            title="Kurumsal Akış & Ana Sayfa"
-          >
-            <Home size={22} strokeWidth={2.2} />
-          </button>
-          
-          {/* 2. Yeni İlan Yayınla (Şu an aktif sayfa) */}
-          <button 
-            className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-700 via-[#0A2342] to-indigo-800 text-white shadow-lg shadow-blue-950/40 flex items-center justify-center mx-1 shrink-0 border border-blue-300/40 cursor-default" 
-            title="Yeni İlan Masası (Aktif)"
-          >
-            <Plus size={24} strokeWidth={2.8} />
-          </button>
-          
-          {/* 3. ATS Aday Takip Panosu */}
-          <button 
-            onClick={() => {
-              const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              if (setView) setView('company_ats');
-            }} 
-            className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-sky-600 text-white shadow-lg shadow-blue-600/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer" 
-            title="ATS Aday Takip Panosu (Kanban)"
-          >
-            <Briefcase size={22} strokeWidth={2.5} />
-          </button>
-          
-          {/* 4. Firma Profilim */}
-          <button 
-            onClick={() => { 
-              const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              if (setSelectedUserId) setSelectedUserId((currentUser?.role === 'company' || currentUser?.role === 'employer') ? currentUser.id : 'CMP-001'); 
-              if (setView) setView('user_profile'); 
-            }} 
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
-            title="Kurumsal Firma Profilim"
-          >
-            <SafeAvatar 
-              src={currentUser?.avatar || currentUser?.logo} 
-              name={currentUser?.name || 'Firma'} 
-              size="xs" 
-              alt="Profile" 
-            />
-          </button>
+      {/* ─── 4. ALT NAVİGASYON DOCK'U (YALNIZCA FİRMA KOVANI İÇİN) ─── */}
+      {!isAdmin && (
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
+          <div className="bg-white/95 backdrop-blur-2xl border-2 border-blue-200 shadow-[0_15px_40px_rgba(10,35,66,0.22)] p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-slate-800">
+            
+            {/* 1. Akış & Ana Sayfa */}
+            <button 
+              onClick={() => {
+                const store = useAppStore.getState();
+                if (store.setActivePortalBranch) store.setActivePortalBranch('company');
+                if (setView) setView('company');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} 
+              className="p-2.5 rounded-full text-slate-600 hover:text-white transition-all cursor-pointer flex items-center justify-center hover:bg-gradient-to-r hover:from-slate-950 hover:to-[#0A2342]" 
+              title="Kurumsal Akış & Ana Sayfa"
+            >
+              <Home size={22} strokeWidth={2.2} />
+            </button>
+            
+            {/* 2. Yeni İlan Yayınla (Şu an aktif sayfa) */}
+            <button 
+              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl text-white shadow-lg flex items-center justify-center mx-1 shrink-0 border cursor-default bg-gradient-to-tr from-blue-700 via-[#0A2342] to-indigo-800 shadow-blue-950/40 border-blue-300/40" 
+              title="Yeni İlan Masası (Aktif)"
+            >
+              <Plus size={24} strokeWidth={2.8} />
+            </button>
+            
+            {/* 3. İlan & ATS Panosu */}
+            <button 
+              onClick={() => {
+                const store = useAppStore.getState();
+                if (store.setActivePortalBranch) store.setActivePortalBranch('company');
+                if (setView) setView('company_ats');
+              }} 
+              className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer bg-gradient-to-tr from-indigo-600 via-blue-600 to-sky-600 shadow-blue-600/40" 
+              title="ATS Aday Takip Panosu (Kanban)"
+            >
+              <Briefcase size={22} strokeWidth={2.5} />
+            </button>
+            
+            {/* 4. Profilim */}
+            <button 
+              onClick={() => { 
+                const store = useAppStore.getState();
+                if (store.setActivePortalBranch) store.setActivePortalBranch('company');
+                const compId = currentUser?.id || 'CMP-001';
+                if (setSelectedUserId) setSelectedUserId(compId); 
+                store.setSelectedUserId?.(compId);
+                if (setView) setView('user_profile'); 
+              }} 
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
+              title="Kurumsal Firma Profilim"
+            >
+              <SafeAvatar 
+                src={currentUser?.avatar || currentUser?.logo} 
+                name={currentUser?.name || 'Firma'} 
+                size="xs" 
+                alt="Profile" 
+              />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );

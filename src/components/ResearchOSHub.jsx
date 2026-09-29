@@ -1242,8 +1242,9 @@ export default function ResearchOSHub({ setView, currentUser, userRole, setSelec
           <button 
             onClick={() => {
               const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-              if (setSelectedUserId) setSelectedUserId(currentUser?.role === 'academic' ? currentUser.id : 'ACAD-001');
+              const targetId = currentUser?.id || 'ACAD-001';
+              if (setSelectedUserId) setSelectedUserId(targetId);
+              store.setSelectedUserId?.(targetId);
               if (setView) setView('user_profile');
             }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 

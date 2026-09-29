@@ -171,13 +171,22 @@ export default function SKSDBLunchWidget({ setView, currentUser, userRole = 'stu
 
   const currentMenu = WEEKLY_MENU[selectedDay] || WEEKLY_MENU.pazartesi;
 
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'admin' ? 'admin' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : 'student')
+  );
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans pb-32">
       {/* Top Header */}
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs shrink-0"
             title="Geri Dön"
           >

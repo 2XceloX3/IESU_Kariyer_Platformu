@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
-import HiveHealthMonitor from '../brain/HiveHealthMonitor';
-import AdminOmniDock from './AdminOmniDock';
 
 import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
@@ -61,7 +59,7 @@ import {
   MessageSquare, GraduationCap, Building2, CreditCard,
   BarChart3, Network, ClipboardList, LogOut,
   ChevronDown, ChevronUp, Search, Bell, BellIcon,
-  CheckCircle, XCircle, Plus, Trash2, Send,
+  CheckCircle, XCircle, Plus, Trash2, Send, ArrowRight,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
   TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles, Cloud, Code2, Palette,
   Camera, Rocket
@@ -80,13 +78,12 @@ import { Badge, Card, StatCard, Progress, Tbl, BtnGreen, BtnRed, BtnPrimary } fr
 
 function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], announcements = [], mentorships = [], voluntaryInternships = [], surveys = [], academicApprovals = [], applications = [], setActiveTab, setView }) {
   const messages = useAppStore(state => state.messages);
+  const companies = useAppStore(state => state.companies) || [];
+  const academicStaff = useAppStore(state => state.academicStaff) || [];
   
   return (
     <div className="animate-fade-in space-y-6">
       <PanelHeader title="Kontrol Merkezi" sub="Sistemdeki genel durum ve özet veriler" />
-
-      {/* R7 Beehive Health Monitor */}
-      <HiveHealthMonitor />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Pending approvals */}
@@ -259,10 +256,10 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
 // ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
   { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'basvuru_havuzu', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['alumni', 'students', 'academic_staff', 'companies', 'cms_staff', 'mezun_dernek', 'kart', 'cms_clubs', 'user_types', 'cms_message_audit'] },
-  { id: 'icerik', label: 'İçerik & Platform', icon: <FileText size={14}/>, panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'kariyer_gunleri', 'mesajlar'] },
-  { id: 'kgm_danismanlik', label: 'Kariyer Danışmanlığı & Sektör', icon: <UserCheck size={14}/>, panels: ['cms_ment', 'mentorluk', 'cms_mentorship_pool', 'cms_career_counseling', 'cms_incubator', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs'] },
-  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'cms_message_audit', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] }
+  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'cms_staff', 'cms_clubs', 'user_types'] },
+  { id: 'icerik', label: 'İçerik & Platform Yönetimi', icon: <FileText size={14}/>, panels: ['ilan', 'cms_jobs', 'cms_feat', 'cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'sem', 'cms_portfolios', 'cms_gallery'] },
+  { id: 'kgm_danismanlik', label: 'Danışmanlık & TTO', icon: <UserCheck size={14}/>, panels: ['cms_career_counseling', 'mentorluk', 'cms_mentorship_pool', 'cms_incubator', 'cms_corporate_partnerships'] },
+  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['platform_ayarlari', 'analytics', 'anket', 'institutional_stats', 'site_editor', 'audit_log', 'entegrasyon'] }
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -589,20 +586,11 @@ export default function AdminDashboard({
       </div>
 
       {/* ── İÇERİK ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-28 sm:pb-20">
+      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-12">
         <main className="flex-1 bg-transparent">
           {renderPanel()}
         </main>
       </div>
-
-      {/* Admin Floating Omni Dock */}
-      <AdminOmniDock 
-        theme="amber" 
-        currentUser={currentUser} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId} 
-        activeTab="admin_cms" 
-      />
     </div>
   );
 }

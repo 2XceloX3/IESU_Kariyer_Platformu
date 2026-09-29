@@ -5,6 +5,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
+import useAppStore from '../store/useAppStore';
 
 const MOCK_LEADERS = [
   { id: 1, name: "Ali Yılmaz", department: "Bilgisayar Mühendisliği", company: "Trendyol Group", role: "Software Engineer", endorsements: 145, avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", skills: ["React", "Microservices", "System Design"], topRank: true },
@@ -15,15 +16,38 @@ const MOCK_LEADERS = [
   { id: 6, name: "Selin Çetin", department: "Grafik Tasarım", company: "TBWA\\Istanbul", role: "Art Director", endorsements: 65, avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150", skills: ["UI/UX", "Brand Identity", "Figma"] },
 ];
 
-export default function LeaderboardPanel({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function LeaderboardPanel({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const [sectorFilter, setSectorFilter] = useState('all'); // all, tech, business, design
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
+
+  const handleViewProfile = (targetUser) => {
+    const isSelf = !targetUser?.id || targetUser.id === 'self' || (effectiveCurrentUser && (
+      String(targetUser.id) === String(effectiveCurrentUser.id) ||
+      String(targetUser.id) === String(effectiveCurrentUser.uid) ||
+      (effectiveCurrentUser.name && targetUser.name && effectiveCurrentUser.name.trim().toLowerCase() === targetUser.name.trim().toLowerCase())
+    ));
+    const targetId = isSelf ? (effectiveCurrentUser?.id || targetUser.id) : targetUser.id;
+    if (setSelectedUserId) setSelectedUserId(targetId);
+    useAppStore.getState().setSelectedUserId?.(targetId);
+    if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-24">
       <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >
@@ -126,10 +150,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                     Kariyeri Modelle
                   </button>
                   <button 
-                    onClick={() => {
-                      if (setSelectedUserId) setSelectedUserId(user.id);
-                      if (setView) setView('public_profile');
-                    }}
+                    onClick={() => handleViewProfile(user)}
                     className="flex-1 sm:flex-none text-sm font-bold text-gray-600 hover:text-[#990000] bg-gray-50 hover:bg-red-50 px-4 py-2 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer"
                   >
                     İncele
@@ -171,10 +192,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                     <ShieldCheck size={16} /> {user.endorsements} Onay
                   </div>
                   <button 
-                    onClick={() => {
-                      if (setSelectedUserId) setSelectedUserId(user.id);
-                      if (setView) setView('public_profile');
-                    }}
+                    onClick={() => handleViewProfile(user)}
                     className="p-2 text-gray-400 hover:text-[#990000] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                     title="Profili Gör"
                   >

@@ -939,8 +939,16 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   };
 
   const handleNavigateToStudent = (studentId) => {
-    if (setSelectedUserId) setSelectedUserId(studentId);
-    if (setView) setView('user_profile');
+    const isSelf = !studentId || studentId === 'self' || studentId === 'me' || (currentUser && (
+      String(studentId) === String(currentUser.id) ||
+      String(studentId) === String(currentUser.uid) ||
+      String(studentId) === String(currentUser.studentNo) ||
+      (currentUser.name && String(studentId).trim().toLowerCase() === currentUser.name.trim().toLowerCase())
+    ));
+    const targetId = isSelf ? (currentUser?.id || studentId) : studentId;
+    if (setSelectedUserId) setSelectedUserId(targetId);
+    useAppStore.getState().setSelectedUserId?.(targetId);
+    if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
     setIsOpen(false);
   };
 

@@ -224,6 +224,7 @@ export default function StudentProfileUpdate({
         module: 'Profil',
         role: 'student'
       });
+      window.dispatchEvent(new CustomEvent('iesu_user_profile_updated', { detail: updatedUser }));
     } catch (_) {}
 
     setHasChanges(false);

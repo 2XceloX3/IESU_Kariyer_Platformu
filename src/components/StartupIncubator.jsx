@@ -4,7 +4,7 @@ import {
   Rocket, Target, Zap, ArrowLeft, Building2, CheckCircle2, 
   Flame, PieChart, Users, ArrowRight, Lightbulb, LineChart, 
   Download, Send, FileText, ShieldCheck, Sparkles, ExternalLink,
-  Award, TrendingUp, HelpCircle
+  Award, TrendingUp, HelpCircle, BookOpen
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -14,6 +14,7 @@ import { downloadReportPdf } from '../utils/downloadPdf';
 import { generateAIResponse } from '../lib/gemini';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
 import { toast } from './shared/Toast';
+import useAppStore from '../store/useAppStore';
 
 const PRESET_IDEAS = [
   {
@@ -60,7 +61,7 @@ const GRANT_PROGRAMS = [
   }
 ];
 
-export default function StartupIncubator({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function StartupIncubator({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [activeTab, setActiveTab] = useState('kanvas');
   const [pitch, setPitch] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -239,7 +240,14 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
     toast.success('Yalın Kanvas PDF raporu başarıyla indirildi.');
   };
 
-  const backTarget = userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student';
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-gray-900 flex flex-col font-sans pb-28">
@@ -555,6 +563,103 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
                   </div>
                 </div>
 
+                {/* ─── KOVAN EKOSİSTEM ENTEGRASYONU ─── */}
+                <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 text-white rounded-3xl p-6 sm:p-7 shadow-xl relative overflow-hidden">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80 mb-5">
+                    <div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-950/80 text-red-300 border border-red-800/40 text-[10px] font-black uppercase tracking-wider mb-2">
+                        <Sparkles size={12} className="text-amber-400" /> Kovanlar Arası Girişim Ağı
+                      </div>
+                      <h3 className="text-lg sm:text-xl font-black text-white">Girişiminizi Üniversite Ekosistemine Taşıyın</h3>
+                      <p className="text-xs text-slate-400 mt-1 max-w-xl">
+                        Yalın kanvasınız diğer üniversite kovanlarıyla canlı haberleşir; akademik danışman, tohum fon ve mezun mentörlerine tek tıkla bağlanın.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        toast.success(`🎯 "${canvas.name}" projeniz KGB Kariyer Karnenize Girişimcilik Kredisi olarak aktarıldı!`);
+                      }}
+                      className="px-4 py-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer self-start md:self-center shrink-0"
+                    >
+                      <CheckCircle2 size={15} /> KGB Karneme Aktar (+40 Puan)
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    {/* 1. Akademik Kovan: TTO & Tez Danışmanı */}
+                    <div className="bg-slate-900/90 border border-purple-900/40 hover:border-purple-500/80 rounded-2xl p-4 transition-all flex flex-col justify-between group">
+                      <div>
+                        <div className="w-8 h-8 rounded-xl bg-purple-950 text-purple-400 border border-purple-800/40 flex items-center justify-center mb-3">
+                          <BookOpen size={16} />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-purple-400">Akademik Kovan</span>
+                        <h4 className="text-sm font-black text-white mt-1">TTO Tez & Proje Danışmanı</h4>
+                        <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                          TÜBİTAK 2209 veya BİGG başvurusu için alanında uzman akademisyenlerle eşleşin.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (setView) setView('academic');
+                          toast.info('Akademik Kovan Danışmanlık Havuzuna yönlendirildiniz.');
+                        }}
+                        className="mt-4 w-full py-2 bg-purple-950/70 hover:bg-[#7c3aed] text-purple-200 hover:text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border border-purple-800/40"
+                      >
+                        <span>Danışman Randevusu</span>
+                        <ArrowRight size={13} />
+                      </button>
+                    </div>
+
+                    {/* 2. Firma Kovanı: Sanayi & Melek Yatırımcı */}
+                    <div className="bg-slate-900/90 border border-blue-900/40 hover:border-blue-500/80 rounded-2xl p-4 transition-all flex flex-col justify-between group">
+                      <div>
+                        <div className="w-8 h-8 rounded-xl bg-blue-950 text-blue-400 border border-blue-800/40 flex items-center justify-center mb-3">
+                          <Building2 size={16} />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-blue-400">Firma Kovanı</span>
+                        <h4 className="text-sm font-black text-white mt-1">Tohum Fon & Kurumsal Ortaklar</h4>
+                        <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                          Teknopark partnerleri ve kurumsal Ar-Ge yöneticilerine sunum yaparak çekirdek yatırım alın.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (setView) setView('jobs');
+                          toast.info('Firma Kovanı Açık Ar-Ge & İş Birlikleri Havuzuna yönlendirildiniz.');
+                        }}
+                        className="mt-4 w-full py-2 bg-blue-950/70 hover:bg-[#1e3a5f] text-blue-200 hover:text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border border-blue-800/40"
+                      >
+                        <span>Yatırımcı Havuzu</span>
+                        <ArrowRight size={13} />
+                      </button>
+                    </div>
+
+                    {/* 3. Mezun Kovanı: Mezun Girişimci Ağı */}
+                    <div className="bg-slate-900/90 border border-emerald-900/40 hover:border-emerald-500/80 rounded-2xl p-4 transition-all flex flex-col justify-between group">
+                      <div>
+                        <div className="w-8 h-8 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-800/40 flex items-center justify-center mb-3">
+                          <Award size={16} />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">Mezun Kovanı</span>
+                        <h4 className="text-sm font-black text-white mt-1">Mezun Kurucu Mentörlüğü</h4>
+                        <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                          Başarılı İESÜ mezunu girişimcilerden 'Pitch Deck' ve ticarileşme desteği alın.
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (setView) setView('mentor_booking');
+                          toast.info('Mezun Mentörlük Rezervasyon Masasına yönlendirildiniz.');
+                        }}
+                        className="mt-4 w-full py-2 bg-emerald-950/70 hover:bg-[#059669] text-emerald-200 hover:text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border border-emerald-800/40"
+                      >
+                        <span>Mezun Mentörle Görüş</span>
+                        <ArrowRight size={13} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
               </motion.div>
             )}
 
@@ -660,8 +765,16 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
                     <span className="text-[11px] font-bold text-emerald-700">★ {m.rating} ({m.menteeCount} Girişimci)</span>
                     <button
                       onClick={() => {
-                        if (setSelectedUserId) setSelectedUserId(m.id);
-                        setView('public_profile');
+                        const effectiveUser = currentUser || useAppStore.getState().currentUser;
+                        const isSelf = m.id === 'self' || (effectiveUser && (
+                          String(m.id) === String(effectiveUser.id) ||
+                          String(m.id) === String(effectiveUser.uid) ||
+                          (effectiveUser.name && m.name && effectiveUser.name.trim().toLowerCase() === m.name.trim().toLowerCase())
+                        ));
+                        const targetId = isSelf ? (effectiveUser?.id || m.id) : m.id;
+                        if (setSelectedUserId) setSelectedUserId(targetId);
+                        useAppStore.getState().setSelectedUserId?.(targetId);
+                        if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
                       }}
                       className="px-3.5 py-1.5 bg-[#990000] hover:bg-red-800 text-white rounded-lg text-xs font-bold transition cursor-pointer"
                     >

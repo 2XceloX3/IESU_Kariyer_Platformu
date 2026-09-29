@@ -48,6 +48,8 @@ const DynamicContentPage = lazy(() => import('../../components/DynamicContentPag
  * Accepts only currentUser as prop from App.jsx.
  */
 export default function AlumniHive({ currentUser, setView }) {
+  const storeCurrentUser = useAppStore((state) => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const navigate = useNavigate();
   const location = useLocation();
   const pathView = location?.pathname?.split('/').filter(Boolean).pop() || '';
@@ -75,76 +77,81 @@ export default function AlumniHive({ currentUser, setView }) {
         else navigate(clean === 'landing' ? '/' : '/' + clean);
         return;
       }
+      if (clean === 'user_profile') {
+        const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+        setSelectedUserId(selfId);
+        useAppStore.getState().setSelectedUserId?.(selfId);
+      }
     }
     setActiveView(v);
-  }, [setView, navigate, setActiveView]);
+  }, [setView, navigate, setActiveView, effectiveCurrentUser, setSelectedUserId]);
 
   const currentView = (pathView && pathView !== 'alumni') ? pathView : activeView;
 
   const renderActiveView = () => {
     switch (currentView) {
       case 'mbs':
-        return <AlumniInformationSystem setView={handleSetView} currentUser={currentUser} />;
+        return <AlumniInformationSystem setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'alumni_card':
-        return <AlumniCardWallet setView={handleSetView} currentUser={currentUser} />;
+        return <AlumniCardWallet setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'alumni_assoc_portal':
-        return <AlumniAssocPortal setView={handleSetView} currentUser={currentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} academicRole="alumni" />;
+        return <AlumniAssocPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} academicRole="alumni" />;
       case 'mezun_dernek':
       case 'birlik_agi':
-        return <BirlikAgiPortal setView={handleSetView} currentUser={currentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole="alumni" />;
+        return <BirlikAgiPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole="alumni" />;
       case 'alumni_dao':
-        return <AlumniDAO setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <AlumniDAO setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'global_map':
-        return <GlobalAlumniMap setView={handleSetView} currentUser={currentUser} />;
+        return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'jobs':
-        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="alumni" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'user_profile':
-        return <UserProfile userId={selectedUserId} viewerHive="alumni" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="alumni" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
-        return <PublicUserProfile userId={selectedUserId} viewerHive="alumni" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <PublicUserProfile userId={selectedUserId} viewerHive="alumni" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
-        return <ProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <ProfileUpdate setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'cvbuilder':
-        return <AICVBuilder setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <AICVBuilder setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'explore':
-        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
+        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
+        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
-        return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'group_profile':
-        return <GroupProfile setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <GroupProfile setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'live_rooms':
-        return <LiveRoomsPanel setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <LiveRoomsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'mentor_booking':
-        return <MentorBooking setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <MentorBooking setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'virtual_fair':
-        return <VirtualCareerFair setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <VirtualCareerFair setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'wallet':
-        return <IesuWallet setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <IesuWallet setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'campus_map':
-        return <CampusMap setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <CampusMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'news':
       case 'haberler':
-        return <NewsEvents setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <NewsEvents setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'events':
       case 'events_list':
       case 'etkinlikler':
-        return <EventsPage setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <EventsPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'contact':
       case 'contact_us':
-        return <ContactPage setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <ContactPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'about_us':
-        return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <AboutUsPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'services':
-        return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="alumni" />;
+        return <ServicesPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
           return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="alumni" />;
@@ -153,7 +160,7 @@ export default function AlumniHive({ currentUser, setView }) {
           <AlumniFeed
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
-            currentUser={currentUser}
+            currentUser={effectiveCurrentUser}
             userRole="alumni"
             academicRole="alumni"
             setSelectedGroupId={setSelectedGroupId}

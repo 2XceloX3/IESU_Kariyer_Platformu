@@ -1,11 +1,11 @@
 import useAppStore from '../store/useAppStore';
+import SafeAvatar from './shared/SafeAvatar';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, MicOff, VideoOff, Monitor, MonitorOff, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2, Bell, BellOff, Shield, ShieldOff, UserX, UserPlus, Building2, GraduationCap, School, Activity, Wifi } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
-import AdminOmniDock from './AdminOmniDock';
 
 // Audio Synth for Call Cues using Web Audio API
 class WebAudioCallSynth {
@@ -1040,7 +1040,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                 >
                   <div className="relative shrink-0">
                     <div className={`p-0.5 rounded-full ${isSelected ? 'ring-2 ring-red-600' : ''}`}>
-                      <img src={conv.avatar || conv.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.name)}`} className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-100" alt={conv.name} />
+                      <SafeAvatar src={conv.avatar || conv.logo} name={conv.name} size={48} className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-100" />
                     </div>
                     {!conv.isGroup && <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm"></div>}
                   </div>
@@ -1074,7 +1074,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                   className={`flex items-center gap-3 p-3.5 rounded-2xl cursor-pointer transition-all duration-300 border ${isSelected ? 'bg-white border-[#990000] shadow-[0_8px_20px_rgba(153,0,0,0.1)] -translate-y-0.5' : 'bg-white border-slate-200/80 hover:border-red-200 hover:shadow-md hover:-translate-y-0.5'}`}
                 >
                   <div className="relative shrink-0">
-                    <img src={conv.avatar || conv.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.name || 'Kişi')}`} className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-100" alt={conv.name} />
+                    <SafeAvatar src={conv.avatar} name={conv.name || 'Kişi'} size={40} className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-100" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className={`font-bold text-[14px] truncate ${isSelected ? 'text-[#990000]' : 'text-gray-900'}`}>{conv.name}</h3>
@@ -1101,7 +1101,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
               <div className="flex items-center gap-3">
                 <button onClick={() => setActiveContactId(null)} className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full transition" title="Sohbet Listesine Dön"><ArrowLeft size={20} /></button>
                 <div className="relative">
-                  <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || '')}`} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                  <SafeAvatar src={activeContact?.avatar} name={activeContact?.name || ''} size={40} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
                   {isTyping && (
                     <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 border border-gray-200">
                       <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
@@ -1399,7 +1399,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
         <div className="fixed inset-0 z-[500] bg-slate-950/95 backdrop-blur-2xl flex flex-col items-center justify-between p-4 sm:p-6 animate-fade-in font-sans text-white select-none">
           {/* Background Blurred Avatar Glow */}
           <div className="absolute inset-0 z-0 opacity-15 overflow-hidden pointer-events-none">
-            <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || 'User')}`} className="w-full h-full object-cover blur-3xl scale-125" />
+            <SafeAvatar src={activeContact?.avatar} name={activeContact?.name || 'User'} size={40} className="w-full h-full object-cover blur-3xl scale-125" />
           </div>
 
           {/* Top Bar: Participant Info & Active Network Quality Indicator Badge */}
@@ -1407,7 +1407,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
             {/* Participant Name & Status */}
             <div className="flex items-center gap-3">
               <div className="relative">
-                <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || 'User')}`} className="w-10 h-10 rounded-full object-cover border-2 border-red-500 shadow-md" />
+                <SafeAvatar src={activeContact?.avatar} name={activeContact?.name || 'User'} size={40} className="w-10 h-10 rounded-full object-cover border-2 border-red-500 shadow-md" />
                 <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-slate-900 ${callStatus === 'connected' ? 'bg-emerald-500' : 'bg-amber-500 animate-ping'}`} />
               </div>
               <div className="flex flex-col">
@@ -1473,7 +1473,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                 {callStatus === 'calling' && (
                   <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-10">
                     <div className="w-28 h-28 rounded-full border-4 border-red-600/60 p-1 mb-4 shadow-2xl relative animate-pulse">
-                      <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || 'User')}`} className="w-full h-full object-cover rounded-full" />
+                      <SafeAvatar src={activeContact?.avatar} name={activeContact?.name || 'User'} size={40} className="w-full h-full object-cover rounded-full" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-1">{activeContact?.name}</h3>
                     <p className="text-slate-400 text-xs font-medium">Uçtan Uca Kriptolu Görüşme Başlatılıyor...</p>
@@ -1510,7 +1510,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
               <div className="relative w-full h-full bg-gradient-to-b from-slate-900 to-slate-950 flex flex-col items-center justify-center p-6">
                 <div className="relative mb-6">
                   <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full border-4 border-emerald-500/50 p-1.5 shadow-2xl relative z-10 bg-slate-900">
-                    <img src={activeContact?.avatar || activeContact?.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || 'User')}`} className="w-full h-full object-cover rounded-full" />
+                    <SafeAvatar src={activeContact?.avatar} name={activeContact?.name || 'User'} size={40} className="w-full h-full object-cover rounded-full" />
                   </div>
                   {callStatus === 'calling' ? (
                     <div className="absolute inset-0 rounded-full border-4 border-amber-400 animate-ping opacity-75" />
@@ -1632,7 +1632,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                       className={`p-3 rounded-2xl border flex items-center justify-between transition cursor-pointer ${isBlocked ? 'opacity-50 bg-slate-100 border-slate-200' : 'bg-white border-slate-100 hover:border-red-200 hover:shadow-sm'}`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <img src={contact.avatar || contact.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}`} className="w-10 h-10 rounded-full object-cover border border-slate-100" alt={contact.name} />
+                        <SafeAvatar src={contact.avatar} name={contact.name} size={40} className="w-10 h-10 rounded-full object-cover border border-slate-100" />
                         <div className="min-w-0">
                           <h4 className="font-bold text-xs text-slate-900 truncate">{contact.name}</h4>
                           <span className="text-[10px] text-slate-500 font-medium truncate block">
@@ -1703,7 +1703,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                       className={`p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition ${isSelected ? 'border-[#990000] bg-red-50/40' : 'border-slate-100 hover:border-slate-200 bg-white'}`}
                     >
                       <div className="flex items-center gap-3">
-                        <img src={contact.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}`} className="w-9 h-9 rounded-full object-cover" />
+                        <SafeAvatar src={contact.avatar} name={contact.name} size={40} className="w-9 h-9 rounded-full object-cover" />
                         <div>
                           <h4 className="font-bold text-xs text-slate-900">{contact.name}</h4>
                           <span className="text-[10px] text-slate-500 font-medium">{contact.gradYear ? `Mezun (${contact.gradYear})` : 'Öğrenci'}</span>
@@ -1757,9 +1757,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
 
       {/* Floating Bottom Dock (when not rendered as an overlay) */}
       {!isOverlay && (
-        userRole === 'admin' ? (
-          <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="messaging" />
-        ) : (
+        userRole === 'admin' ? null : (
           <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={userRole || currentUser?.role || 'student'} activeTab="messaging" />
         )
       )}

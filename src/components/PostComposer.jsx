@@ -1,3 +1,4 @@
+import SafeAvatar from './shared/SafeAvatar';
 import React, { useState } from 'react';
 import { Image as ImageIcon, FileText, Video, Send, X, Plus, Calendar, Smile, BarChart2 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';

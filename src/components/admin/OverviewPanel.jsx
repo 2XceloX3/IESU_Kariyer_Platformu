@@ -3,7 +3,6 @@ import useAppStore from '../../store/useAppStore';
 import PanelHeader from './PanelHeader';
 import { Card, StatCard, Badge, Tbl } from './AdminShared';
 import { Users, Briefcase, GraduationCap, Award, BookOpen, Library, MessageSquare, Calendar, Megaphone, UserPlus, MessageCircle, Wand2 } from 'lucide-react';
-import HiveHealthMonitor from '../../brain/HiveHealthMonitor';
 
 export default function OverviewPanel({ setView }) {
   const { students, alumni, jobs, mentorships, voluntaryInternships, surveys, academicApprovals, messages } = useAppStore();
@@ -16,8 +15,6 @@ export default function OverviewPanel({ setView }) {
     <div className="animate-fade-in space-y-6">
       <PanelHeader title="Kontrol Merkezi" sub="Sistemin genel durumu" />
       
-      {/* R7 Beehive Health Monitor */}
-      <HiveHealthMonitor />
       
       {/* Kariyer Gelişim Modülleri Banner */}
       <div className="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden transition-all hover:scale-[1.01] duration-500">

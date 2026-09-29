@@ -6,39 +6,41 @@ import TopProfileMenu from './TopProfileMenu';
 import JobCreator from './JobCreator';
 import FooterModals from './FooterModals';
 import StudentDocumentSubmitModal from './StudentDocumentSubmitModal';
-import AdminOmniDock from './AdminOmniDock';
+import SubPanelFloatingDock from './SubPanelFloatingDock';
 import JobMatchScoreCard from './JobMatchScoreCard';
 import SafeAvatar from './shared/SafeAvatar';
 import AnkaCoverLetterModal from './AnkaCoverLetterModal';
 import eventBus from '../brain/eventBus';
 
 export default function JobsAndInternships({ userRole, setView, currentUser, jobs: propsJobs }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const previousView = useAppStore(state => state.previousView);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
-  const isAdminUser = userRole === 'admin' || currentUser?.role === 'admin';
+  const isAdminUser = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   const effectiveRole = (
     (['admin', 'admin_cms', 'yonetim_konsolu', 'admin_console'].includes(previousView) || activePortalBranch === 'admin' || (isAdminUser && previousView !== 'student' && previousView !== 'alumni' && activePortalBranch !== 'student' && activePortalBranch !== 'alumni')) ? 'admin' :
     (previousView === 'alumni' || activePortalBranch === 'alumni' || userRole === 'alumni') ? 'alumni' :
     (previousView === 'academic' || activePortalBranch === 'academic' || userRole === 'academic') ? 'academic' :
     (previousView === 'company' || activePortalBranch === 'company' || userRole === 'company' || userRole === 'employer') ? 'company' :
     (previousView === 'student' || activePortalBranch === 'student' || userRole === 'student') ? 'student' :
-    (userRole || currentUser?.role || 'student')
+    (userRole || effectiveCurrentUser?.role || 'student')
   );
 
   const branchTargetId = (
-    (currentUser?.id && currentUser.id !== 'admin_1513') ? currentUser.id :
+    (effectiveCurrentUser?.id && effectiveCurrentUser.id !== 'admin_1513') ? effectiveCurrentUser.id :
     effectiveRole === 'student' ? 'STU-001' :
     effectiveRole === 'alumni' ? 'ALU-001' :
     effectiveRole === 'academic' ? 'ACAD-001' :
     (effectiveRole === 'employer' || effectiveRole === 'company') ? 'CMP-001' :
-    (currentUser?.id || 'admin_1513')
+    (effectiveCurrentUser?.id || 'admin_1513')
   );
 
-  const branchName = currentUser?.name || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
+  const branchName = effectiveCurrentUser?.name || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
 
-  const branchAvatar = currentUser?.avatar || (effectiveRole === 'admin' ? '/iesu-logo.svg' : '/iesu-logo.svg');
+  const branchAvatar = effectiveCurrentUser?.avatar || (effectiveRole === 'admin' ? '/iesu-logo.svg' : '/iesu-logo.svg');
 
-  const branchDept = currentUser?.department || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Yazılım Mühendisliği');
+  const branchDept = effectiveCurrentUser?.department || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Yazılım Mühendisliği');
 
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
   const storeJobs = useAppStore(state => state.jobs);
@@ -90,7 +92,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     }
     window.toast?.success?.(`İlan durumu "${newStatus}" olarak güncellendi.`);
   };
-  if (isCreatingJob) return <JobCreator setView={() => setIsCreatingJob(false)} currentUser={currentUser} jobs={jobs} setJobs={setJobs} addNotification={addNotification} />;
+  if (isCreatingJob) return <JobCreator setView={() => setIsCreatingJob(false)} currentUser={effectiveCurrentUser} userRole={effectiveRole} jobs={jobs} setJobs={setJobs} addNotification={addNotification} />;
   
   const handleCompleteApplication = (e) => {
     e.preventDefault();
@@ -273,14 +275,14 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                     </div>
                   </div>
                   <div className="pt-12 pb-5 px-5 text-center">
-                    <h2 onClick={() => { if (setSelectedUserId) setSelectedUserId(branchTargetId); setView('user_profile'); }} className="text-[17px] font-black text-gray-900 leading-none mb-1 cursor-pointer hover:underline">{branchName}</h2>
+                    <h2 onClick={() => { if (setSelectedUserId) setSelectedUserId(branchTargetId); useAppStore.getState().setSelectedUserId?.(branchTargetId); setView('user_profile'); }} className="text-[17px] font-black text-gray-900 leading-none mb-1 cursor-pointer hover:underline">{branchName}</h2>
                     <p className="text-[12px] font-medium text-gray-500 mb-4">{branchDept}</p>
                     <div className="flex justify-center gap-5 border-y border-gray-50 py-3 mb-4">
                       <div className="text-center"><p className="text-gray-500 text-[11px] font-bold uppercase">Başvurum</p><p className="text-[18px] font-black text-gray-900">{myApplicationsCount}</p></div>
                       <div className="w-px bg-gray-100"></div>
                       <div className="text-center"><p className="text-gray-500 text-[11px] font-bold uppercase">Aktif İlan</p><p className="text-[18px] font-black text-gray-900">{activeJobs.length}</p></div>
                     </div>
-                    <button onClick={() => { if (setSelectedUserId) setSelectedUserId(branchTargetId); setView('user_profile'); }} className={`w-full py-2.5 rounded-xl text-[13px] font-bold transition-colors cursor-pointer ${
+                    <button onClick={() => { if (setSelectedUserId) setSelectedUserId(branchTargetId); useAppStore.getState().setSelectedUserId?.(branchTargetId); setView('user_profile'); }} className={`w-full py-2.5 rounded-xl text-[13px] font-bold transition-colors cursor-pointer ${
                       effectiveRole === 'alumni' ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100' : 'bg-red-50 text-[#990000] hover:bg-red-100'
                     }`}>Profili Görüntüle</button>
                   </div>
@@ -360,11 +362,11 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                     <div className="flex flex-col items-center py-4">
                       <div className="w-full max-w-sm">
                         <div className="relative h-[460px] w-full bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
-                          <img src={currentJob.logo||`https://ui-avatars.com/api/?name=${encodeURIComponent(currentJob.company)}&background=random`} className="absolute inset-0 w-full h-full object-cover opacity-10" alt="" />
+                          <SafeAvatar src={currentJob.logo} name={currentJob.company} size={40} className="absolute inset-0 w-full h-full object-cover opacity-10" />
                           <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95"></div>
                           <div className="relative z-10 p-6 flex flex-col h-full">
                             <div className="flex justify-between items-start mb-4">
-                              <img src={currentJob.logo||`https://ui-avatars.com/api/?name=${encodeURIComponent(currentJob.company)}&background=random`} className="w-16 h-16 rounded-2xl shadow-sm border border-gray-100 object-cover bg-white" alt="" />
+                              <SafeAvatar src={currentJob.logo} name={currentJob.company} size={40} className="w-16 h-16 rounded-2xl shadow-sm border border-gray-100 object-cover bg-white" />
                               <div className={`px-3 py-1 rounded-full text-xs font-black ${typeColors[currentJob.type]||'bg-gray-100 text-gray-700'}`}>{currentJob.type}</div>
                             </div>
                             <h2 className="text-2xl font-black text-gray-900 leading-tight mb-1">{currentJob.title}</h2>
@@ -570,9 +572,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
           </div>
         </div>
       </div>
-      {effectiveRole === 'admin' ? (
-        <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="cms_jobs" />
-      ) : effectiveRole && (
+      {effectiveRole === 'admin' ? null : effectiveRole && (
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
           <div className={`bg-white/95 backdrop-blur-2xl p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-gray-800 border-2 ${
             effectiveRole === 'alumni' ? 'border-emerald-100 shadow-[0_15px_40px_rgba(5,150,105,0.18)]' :
@@ -611,7 +611,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
             </button>
 
             {/* PROFILE AVATAR */}
-            <button onClick={()=>{ if (setSelectedUserId) setSelectedUserId(branchTargetId); setView('user_profile'); }} className={`w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ${
+            <button onClick={()=>{ if (setSelectedUserId) setSelectedUserId(branchTargetId); useAppStore.getState().setSelectedUserId?.(branchTargetId); setView('user_profile'); }} className={`w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ${
               effectiveRole === 'alumni' ? 'border-emerald-500' :
               effectiveRole === 'academic' ? 'border-purple-600' :
               (effectiveRole === 'employer' || effectiveRole === 'company') ? 'border-sky-600' :
@@ -813,6 +813,17 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
       )}
 
       {footerModal&&<FooterModals type={footerModal} onClose={()=>setFooterModal(null)}/>}
+
+      {/* FLOATING BOTTOM DOCK - HER KOVANA ÖZGÜ BAĞLAMSAL DOCK */}
+      {effectiveRole === 'admin' ? null : (
+        <SubPanelFloatingDock 
+          currentUser={effectiveCurrentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          activeTab="jobs" 
+          userRole={effectiveRole} 
+        />
+      )}
     </div>
   );
 }

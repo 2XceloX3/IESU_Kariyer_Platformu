@@ -6,6 +6,7 @@ import {
   Sparkles, Check, ChevronDown, Award, TrendingUp, Building2, Home
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import eventBus from '../brain/eventBus';
 import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
 
@@ -296,6 +297,17 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
 
     if (window.toast) {
       window.toast.success(`${item.name} adlı adayın durumu "${newStatus}" olarak güncellendi.`);
+    }
+
+    // Cross-hive event broadcasting (Student, Alumni & Admin notification)
+    if (eventBus && typeof eventBus.emit === 'function') {
+      eventBus.emit('application:status', {
+        applicationId: item.id,
+        applicantName: item.name,
+        status: newStatus,
+        company: currentUser?.name || 'Kurumsal Partner',
+        timestamp: new Date().toISOString()
+      });
     }
   };
 
@@ -1017,7 +1029,9 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
             onClick={() => { 
               const store = useAppStore.getState();
               if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              if (setSelectedUserId) setSelectedUserId((currentUser?.role === 'company' || currentUser?.role === 'employer') ? currentUser.id : 'CMP-001'); 
+              const compId = currentUser?.id || 'CMP-001';
+              if (setSelectedUserId) setSelectedUserId(compId); 
+              store.setSelectedUserId?.(compId);
               if (setView) setView('user_profile'); 
             }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 

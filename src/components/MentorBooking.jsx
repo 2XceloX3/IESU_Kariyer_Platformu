@@ -4,6 +4,9 @@ import { Calendar as CalendarIcon, Clock, Users, Star, Video, MessageSquare, Che
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
+import eventBus from '../brain/eventBus';
+import useAppStore from '../store/useAppStore';
 
 const MENTORS = [
   { id: 1, name: 'Dr. Zeynep Kaya', role: 'Veri Bilimi ve Sistem Mimarı', company: 'Google', rating: 4.9, sessions: 124, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80', availability: 'Bugün, 14:00' },
@@ -11,12 +14,43 @@ const MENTORS = [
   { id: 3, name: 'Elif Demir', role: 'Kurucu Ortak', company: 'FinTech Startup', rating: 5.0, sessions: 42, avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80', availability: '12 Eki, 16:00' },
 ];
 
-export default function MentorBooking({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function MentorBooking({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [bookingStep, setBookingStep] = useState(1); // 1: list, 2: calendar, 3: success
   const [searchQuery, setSearchQuery] = useState('');
+  const addNotification = useAppStore(state => state.addNotification);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const handleBookSession = () => {
+    if (selectedMentor) {
+      try {
+        eventBus.emit('mentorship:booked', {
+          mentorId: selectedMentor.id,
+          mentorName: selectedMentor.name,
+          studentId: currentUser?.id || 'STU-001',
+          studentName: currentUser?.name || 'Öğrenci',
+          time: '12 Ekim Salı, 14:00'
+        });
+      } catch (_) {}
+      if (addNotification) {
+        addNotification({
+          id: 'NOTIF-MB-' + Date.now(),
+          userId: currentUser?.id || 'STU-001',
+          text: `${selectedMentor.name} ile birebir mentorluk seansınız oluşturuldu (12 Ekim Salı 14:00).`,
+          read: false,
+          time: 'Şimdi'
+        });
+      }
+      window.toast?.success?.(`${selectedMentor.name} ile mentorluk randevunuz başarıyla oluşturuldu!`);
+    }
     setBookingStep(3);
   };
 
@@ -30,7 +64,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
                 setBookingStep(bookingStep - 1);
                 if (bookingStep === 2) setSelectedMentor(null);
               } else {
-                setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student');
+                setView(backTarget);
               }
             }} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
@@ -94,7 +128,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
               {MENTORS.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase()) || m.company.toLowerCase().includes(searchQuery.toLowerCase()) || m.role.toLowerCase().includes(searchQuery.toLowerCase())).map(mentor => (
                 <div key={mentor.id} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
                   <div className="flex items-start gap-4 mb-4">
-                    <img src={mentor.avatar} alt={mentor.name} className="w-16 h-16 rounded-full object-cover shadow-sm" />
+                    <SafeAvatar src={mentor.avatar} name={mentor.name} size="md" className="w-16 h-16 rounded-full object-cover shadow-sm shrink-0" />
                     <div>
                       <h4 className="font-bold text-gray-900 leading-tight">{mentor.name}</h4>
                       <p className="text-xs text-red-600 font-bold mb-1">{mentor.role}</p>
@@ -128,7 +162,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl mx-auto w-full">
             <div className="bg-white rounded-xl p-8 shadow-sm border border-slate-200">
               <div className="flex items-center gap-4 mb-8 pb-8 border-b border-slate-100">
-                <img src={selectedMentor.avatar} alt={selectedMentor.name} className="w-20 h-20 rounded-full object-cover shadow-sm" />
+                <SafeAvatar src={selectedMentor.avatar} name={selectedMentor.name} size="lg" className="w-20 h-20 rounded-full object-cover shadow-sm shrink-0" />
                 <div>
                   <h2 className="text-2xl font-black text-gray-900">{selectedMentor.name}</h2>
                   <p className="text-red-600 font-medium">{selectedMentor.role} @ {selectedMentor.company}</p>
@@ -179,7 +213,7 @@ export default function MentorBooking({ setView, currentUser, userRole, setSelec
             </p>
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <button 
-                onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+                onClick={() => setView(backTarget)} 
                 className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors cursor-pointer"
               >
                 Portala Dön

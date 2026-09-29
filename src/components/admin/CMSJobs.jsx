@@ -1,9 +1,12 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { Briefcase, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, MapPin, Calendar, Building2, Download, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { Briefcase, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, MapPin, Calendar, Building2, Download, Users, ChevronDown, ChevronUp, Network, GraduationCap, Award, Eye } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
+import eventBus from '../../brain/eventBus';
+import useAppStore from '../../store/useAppStore';
 
 export default function CMSJobs({ jobs = [], setJobs, applications = [], setApplications, setSelectedUserId, setView }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +27,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
     pdf: null,
     applicationLink: '',
     status: 'Aktif',
-    featured: false
+    featured: false,
+    targetHives: ['student', 'alumni']
   });
 
   const handleAddNew = () => {
@@ -40,7 +44,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
       pdf: null,
       applicationLink: '',
       status: 'Aktif',
-      featured: false
+      featured: false,
+      targetHives: ['student', 'alumni']
     });
     setCurrentId(null);
     setIsEditing(true);
@@ -51,7 +56,8 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
       ...job,
       deadline: job.deadline || '',
       pdf: job.pdf || null,
-      featured: job.featured || false
+      featured: job.featured || false,
+      targetHives: (job.targetHives && job.targetHives.length > 0) ? job.targetHives : (job.type === 'STAJ' ? ['student'] : ['student', 'alumni'])
     });
     setCurrentId(job.id);
     setIsEditing(true);
@@ -66,12 +72,26 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
   const handleSave = (e) => {
     e.preventDefault();
     if (!form.title || !form.company) return window.toast.info("Başlık ve şirket zorunludur.");
-
-    if (currentId) {
-      setJobs((jobs || []).map(job => job.id === currentId ? { ...job, ...form, updatedAt: new Date().toISOString() } : job));
-    } else {
-      setJobs(current => [{ ...form, id: 'JOB-' + Date.now(), applicants: 0, createdAt: new Date().toISOString() }, ...(current || [])]);
+    if (!form.targetHives || form.targetHives.length === 0) {
+      return window.toast.info("Lütfen ilanın bağlanacağı en az bir kovan seçin (Öğrenci veya Mezun).");
     }
+
+    let savedJob;
+    if (currentId) {
+      savedJob = { ...form, id: currentId, updatedAt: new Date().toISOString() };
+      setJobs((jobs || []).map(job => job.id === currentId ? { ...job, ...savedJob } : job));
+    } else {
+      savedJob = { ...form, id: 'JOB-' + Date.now(), applicants: 0, createdAt: new Date().toISOString() };
+      setJobs(current => [savedJob, ...(current || [])]);
+    }
+
+    if (savedJob.status === 'Aktif') {
+      try {
+        eventBus?.emit?.('job:published', { job: savedJob, targetHives: form.targetHives });
+        window.toast?.success?.(`✅ İlan ${form.targetHives.map(h => h === 'student' ? 'Öğrenci' : h === 'alumni' ? 'Mezun' : 'Firma').join(' ve ')} kovanlarına başarıyla dağıtıldı.`);
+      } catch (_) {}
+    }
+
     setIsEditing(false);
   };
 
@@ -93,6 +113,10 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
 
   const handleApproveJob = (jobId) => {
     setJobs((jobs || []).map(j => j.id === jobId ? { ...j, status: 'Aktif' } : j));
+    const targetJob = (jobs || []).find(j => j.id === jobId);
+    try {
+      eventBus?.emit?.('job:published', { job: { ...targetJob, status: 'Aktif' } });
+    } catch (_) {}
     window.toast && window.toast.success('İlan yayına alındı!');
   };
 
@@ -105,6 +129,15 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
     if (setApplications) {
       setApplications((applications || []).map(a => a.id === appId ? { ...a, status: newStatus } : a));
     }
+    const targetApp = (applications || []).find(a => a.id === appId);
+    try {
+      eventBus?.emit?.('application:status', {
+        applicationId: appId,
+        status: newStatus,
+        applicantName: targetApp?.applicantName,
+        jobTitle: targetApp?.jobTitle
+      });
+    } catch (_) {}
   };
 
   const listView = (
@@ -176,6 +209,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">İlan / Firma</th>
+                <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kovan Bağlantısı</th>
                 <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Çalışma Türü</th>
                 <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Konum</th>
                 <th className="py-3 px-5 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Durum</th>
@@ -199,6 +233,25 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
                             <p className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{j.title}</p>
                             <p className="text-[11px] font-bold text-red-600 mt-0.5 truncate max-w-[200px]">{j.company}</p>
                           </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-5">
+                        <div className="flex flex-wrap gap-1">
+                          {((j.targetHives || []).includes('student') || !j.targetHives || j.type === 'STAJ') && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-50 text-[#990000] border border-red-200 text-[10px] font-black" title="Öğrenci Kovanına Bağlı (KGB & Staj Masası)">
+                              <GraduationCap size={11} /> Öğrenci
+                            </span>
+                          )}
+                          {((j.targetHives || []).includes('alumni') || !j.targetHives || j.type !== 'STAJ') && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-[#059669] border border-emerald-200 text-[10px] font-black" title="Mezun Kovanına Bağlı (MBS & Kariyer)">
+                              <Award size={11} /> Mezun
+                            </span>
+                          )}
+                          {(j.targetHives || []).includes('company') && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-[#1e3a5f] border border-blue-200 text-[10px] font-black" title="Firma Kovanı ATS Masasına Bağlı">
+                              <Building2 size={11} /> Firma
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="py-3 px-5">
@@ -231,6 +284,20 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
                       </td>
                       <td className="py-3 px-5 text-right">
                         <div className="flex justify-end gap-1">
+                          <button 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              const targetHive = (j.targetHives && j.targetHives.includes('alumni') && !j.targetHives.includes('student')) ? 'alumni' : 'student';
+                              const store = useAppStore.getState();
+                              if (store.setActivePortalBranch) store.setActivePortalBranch(targetHive);
+                              if (setView) setView('jobs');
+                              window.toast?.info?.(`İlan ${targetHive === 'alumni' ? 'Mezun' : 'Öğrenci'} Kovanı iş/staj panosunda açılıyor...`);
+                            }} 
+                            className="p-2 text-slate-500 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition" 
+                            title="Kovanda İncele / Test Et"
+                          >
+                            <Eye size={16}/>
+                          </button>
                           <button onClick={(e) => { e.stopPropagation(); setExpandedJobId(isExpanded ? null : j.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Başvuruları Gör">
                             {isExpanded ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
                           </button>
@@ -243,7 +310,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
                     {/* APPLICANT LIST EXPANDED ROW */}
                     {isExpanded && (
                       <tr className="bg-slate-50/50">
-                        <td colSpan={5} className="p-0 border-b border-gray-100">
+                        <td colSpan={6} className="p-0 border-b border-gray-100">
                           <div className="p-6 bg-slate-50 border-t-2 border-red-500/20 shadow-inner">
                             <div className="flex justify-between items-center mb-4">
                               <h4 className="font-bold text-gray-900 flex items-center gap-2"><Users size={18} className="text-red-600" /> Bu İlana Başvuranlar ({jobApplications.length})</h4>
@@ -295,7 +362,7 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
                                          <td className="px-4 py-3 text-right">
                                            {setSelectedUserId && setView && (
                                              <button
-                                               onClick={(e) => { e.stopPropagation(); if(setSelectedUserId) setSelectedUserId(app.applicantId); if(setView) setView('user_profile'); }}
+                                               onClick={(e) => { e.stopPropagation(); if(setSelectedUserId) setSelectedUserId(app.applicantId); if(setView) setView('public_profile'); }}
                                                className="text-[11px] font-bold text-blue-600 hover:text-blue-800 hover:underline transition flex items-center gap-1 ml-auto"
                                              >
                                                Profil
@@ -365,6 +432,126 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
                 <option value="Taslak">Taslak</option>
                 <option value="Kapalı">Kapalı</option>
               </select>
+            </div>
+          </div>
+
+          {/* ─── KOVAN BAĞLANTI & DAĞITIM KONTROL MASASI ─── */}
+          <div className="bg-slate-900 text-white rounded-2xl p-5 border border-slate-800 space-y-4 shadow-inner">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-100 flex items-center gap-1.5">
+                  <Network size={15} className="text-amber-400" /> Kovan Bağlantı Masası & Dağıtım Kontrolü
+                </h4>
+              </div>
+              <span className="text-[11px] font-bold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-400/30">
+                Çapraz Kovan Entegrasyonu Aktif
+              </span>
+            </div>
+
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              İlanın bağlanacağı üniversite kovanlarını seçin. Seçilen kovanların akışlarına, iş/staj panolarına ve ilgili veri havuzlarına anında iletilecektir:
+            </p>
+
+            {/* Target Hive Toggles */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* 1. Öğrenci Kovanı */}
+              <button
+                type="button"
+                onClick={() => {
+                  const current = form.targetHives || [];
+                  const updated = current.includes('student') ? current.filter(h => h !== 'student') : [...current, 'student'];
+                  setForm({ ...form, targetHives: updated });
+                }}
+                className={`flex flex-col items-start p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                  (form.targetHives || []).includes('student')
+                    ? 'bg-red-950/60 border-red-500 text-white shadow-md shadow-red-950/50'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-500'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <span className="text-xs font-black flex items-center gap-1.5 text-red-300">
+                    <GraduationCap size={16} /> Öğrenci Kovanı
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={(form.targetHives || []).includes('student')}
+                    readOnly
+                    className="w-4 h-4 rounded text-red-600 focus:ring-red-500/20"
+                  />
+                </div>
+                <span className="text-[10px] text-slate-300 leading-tight">İş, staj, akış kartları & KGB Karnesi entegrasyonu</span>
+              </button>
+
+              {/* 2. Mezun Kovanı */}
+              <button
+                type="button"
+                onClick={() => {
+                  const current = form.targetHives || [];
+                  const updated = current.includes('alumni') ? current.filter(h => h !== 'alumni') : [...current, 'alumni'];
+                  setForm({ ...form, targetHives: updated });
+                }}
+                className={`flex flex-col items-start p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                  (form.targetHives || []).includes('alumni')
+                    ? 'bg-emerald-950/60 border-emerald-500 text-white shadow-md shadow-emerald-950/50'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-500'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <span className="text-xs font-black flex items-center gap-1.5 text-emerald-300">
+                    <Award size={16} /> Mezun Kovanı
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={(form.targetHives || []).includes('alumni')}
+                    readOnly
+                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500/20"
+                  />
+                </div>
+                <span className="text-[10px] text-slate-300 leading-tight">MBS, profesyonel kariyer masası & mezun istihdam ağı</span>
+              </button>
+
+              {/* 3. Firma Kovanı */}
+              <button
+                type="button"
+                onClick={() => {
+                  const current = form.targetHives || [];
+                  const updated = current.includes('company') ? current.filter(h => h !== 'company') : [...current, 'company'];
+                  setForm({ ...form, targetHives: updated });
+                }}
+                className={`flex flex-col items-start p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                  (form.targetHives || []).includes('company')
+                    ? 'bg-blue-950/60 border-blue-500 text-white shadow-md shadow-blue-950/50'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:border-slate-500'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full mb-1.5">
+                  <span className="text-xs font-black flex items-center gap-1.5 text-sky-300">
+                    <Building2 size={16} /> Firma Kovanı
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={(form.targetHives || []).includes('company')}
+                    readOnly
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500/20"
+                  />
+                </div>
+                <span className="text-[10px] text-slate-300 leading-tight">Kurumsal işveren paneli, ATS havuzu & partnerlik</span>
+              </button>
+            </div>
+
+            {/* Bağlantı Doğrulama Göstergesi */}
+            <div className="flex items-center justify-between bg-slate-950/80 rounded-xl px-4 py-2.5 border border-slate-800 text-[11px] flex-wrap gap-2">
+              <span className="text-slate-400 flex items-center gap-2">
+                <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
+                <span>Kovan Bağlantı Doğrulaması:</span>
+                <strong className="text-white">
+                  {(form.targetHives || []).length > 0 
+                    ? `${(form.targetHives || []).map(h => h === 'student' ? 'Öğrenci Kovanı' : h === 'alumni' ? 'Mezun Kovanı' : 'Firma Kovanı').join(' + ')} bağlı`
+                    : 'Bağlantı seçilmedi (Zorunlu)'}
+                </strong>
+              </span>
+              <span className="text-emerald-400 font-bold hidden sm:inline">EventBus: job:published hazır</span>
             </div>
           </div>
 

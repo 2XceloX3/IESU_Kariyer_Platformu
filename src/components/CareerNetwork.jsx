@@ -19,7 +19,8 @@ export default function CareerNetwork({
   const [modalSearch, setModalSearch] = useState('');
 
   const store = useAppStore?.getState ? useAppStore.getState() : {};
-  const effectiveRole = userRole || currentUser?.role || store.userRole || store.activePortalBranch || 'student';
+  const effectiveCurrentUser = currentUser || store.currentUser;
+  const effectiveRole = userRole || effectiveCurrentUser?.role || store.userRole || store.activePortalBranch || 'student';
   const isAlumni = effectiveRole === 'alumni';
   const isAcademic = effectiveRole === 'academic' || effectiveRole === 'academic_staff';
   const isCompany = effectiveRole === 'company' || effectiveRole === 'employer';
@@ -190,10 +191,18 @@ export default function CareerNetwork({
           </div>
         ) : (
           <div className="space-y-3">
-            {networkAcademics.slice(0, showAllAcademics ? networkAcademics.length : 5).map(academic => (
-              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={academic.id} className={`bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md ${cardHoverBorder} transition-all group cursor-pointer`} onClick={() => {
-                if (setSelectedUserId) setSelectedUserId(academic.id);
-                if (setView) setView('public_profile');
+            {networkAcademics.slice(0, showAllAcademics ? networkAcademics.length : 5).map(academic => {
+              const isSelf = !academic.id || academic.id === 'self' || academic.id === 'me' || (effectiveCurrentUser && (
+                String(academic.id) === String(effectiveCurrentUser.id) ||
+                String(academic.id) === String(effectiveCurrentUser.uid) ||
+                (effectiveCurrentUser.name && academic.name && effectiveCurrentUser.name.trim().toLowerCase() === academic.name.trim().toLowerCase())
+              ));
+              const targetId = isSelf ? (effectiveCurrentUser?.id || academic.id) : academic.id;
+              return (
+              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} key={academic.id} className={`bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md ${cardHoverBorder} transition-all group cursor-pointer`} onClick={() => {
+                if (setSelectedUserId) setSelectedUserId(targetId);
+                useAppStore.getState().setSelectedUserId?.(targetId);
+                if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
               }}>
                 <div className="flex items-center gap-3">
                   <SafeAvatar 
@@ -216,13 +225,15 @@ export default function CareerNetwork({
                   <button className={`w-8 h-8 rounded-full ${cardIconBg} flex items-center justify-center hover:${primaryBtnClass} hover:text-white transition-colors`} title="Mesaj Gönder" onClick={(e) => {
                     e.stopPropagation();
                     if (setSelectedUserId) setSelectedUserId(academic.id);
+                    useAppStore.getState().setSelectedUserId?.(academic.id);
                     if (setView) setView('messaging');
                   }}>
                     <ChevronRight size={16} />
                   </button>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         )}
       </div>

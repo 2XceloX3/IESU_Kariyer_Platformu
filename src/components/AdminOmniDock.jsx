@@ -109,7 +109,7 @@ export default function AdminOmniDock({ activeTab, setActiveTab, setView, setSel
               if (s.setActivePortalBranch) s.setActivePortalBranch('admin');
               if (s.setAdminActiveTab) s.setAdminActiveTab('search');
               if (setActiveTab) setActiveTab('search');
-              if (setView) setView('admin');
+              if (setView) setView(homeView || 'admin');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }} 
@@ -129,20 +129,24 @@ export default function AdminOmniDock({ activeTab, setActiveTab, setView, setSel
         <button 
           onClick={() => { 
             const s = useAppStore.getState();
+            const effectiveCurrentUser = currentUser || s.currentUser;
             if (isEmerald) {
               if (s.setActivePortalBranch) s.setActivePortalBranch('alumni');
-              const targetId = currentUser?.id || 'ALU-001';
+              const targetId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
               if (setSelectedUserId) setSelectedUserId(targetId); 
+              if (s.setSelectedUserId) s.setSelectedUserId(targetId);
               if (setView) setView('user_profile'); 
             } else if (isRed) {
               if (s.setActivePortalBranch) s.setActivePortalBranch('student');
-              const targetId = currentUser?.id || 'STU-001';
+              const targetId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
               if (setSelectedUserId) setSelectedUserId(targetId); 
+              if (s.setSelectedUserId) s.setSelectedUserId(targetId);
               if (setView) setView('user_profile'); 
             } else {
               if (s.setActivePortalBranch) s.setActivePortalBranch('admin');
-              const targetId = currentUser?.id || 'admin_1513';
+              const targetId = effectiveCurrentUser?.id || 'admin_1513';
               if (setSelectedUserId) setSelectedUserId(targetId); 
+              if (s.setSelectedUserId) s.setSelectedUserId(targetId);
               if (setView) setView('user_profile'); 
             }
           }} 

@@ -11,6 +11,7 @@ import {
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeAvatar from './shared/SafeAvatar';
 import useAppStore from '../store/useAppStore';
 import DailyQuestsPanel from './DailyQuestsPanel';
 import { 
@@ -38,6 +39,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function StudentAnalytics({ setView, currentUser, userRole, previousView }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
   const [timeRange, setTimeRange] = useState('90');
   const [aiReportLoading, setAiReportLoading] = useState(false);
@@ -178,7 +181,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <TopProfileMenu currentUser={currentUser || { name: 'Öğrenci' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="student_analytics" />
+            <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="student_analytics" />
           </div>
         </div>
       </nav>
@@ -566,7 +569,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               <div className="space-y-4 flex-grow">
                 {mockCompanies.slice(0,3).map((comp, idx) => (
                   <div key={idx} className="flex items-center gap-3 p-2.5 hover:bg-gray-50 rounded-xl transition cursor-pointer">
-                    <img src={comp.logo} alt={comp.name} className="w-10 h-10 rounded-xl border border-gray-100 object-cover shadow-sm" />
+                    <SafeAvatar src={comp.logo} name={comp.name} size="sm" className="w-10 h-10 rounded-xl border border-gray-100 object-cover shadow-sm shrink-0" />
                     <div className="flex-grow min-w-0">
                       <h4 className="font-black text-gray-900 text-sm truncate">{comp.name}</h4>
                       <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{comp.sector}</p>
@@ -618,10 +621,10 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               {/* 4 metrik kart */}
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {[
-                  { icon: '🏢', label: 'Staj', value: currentUser?.internships ?? 2 },
-                  { icon: '📜', label: 'Sertifika', value: currentUser?.certifications ?? 3 },
-                  { icon: '🎯', label: 'Workshop', value: currentUser?.workshopsAttended ?? 7 },
-                  { icon: '👥', label: 'Mentor Görüşmesi', value: currentUser?.mentorMeetings ?? 4 },
+                  { icon: '🏢', label: 'Staj', value: effectiveCurrentUser?.internships ?? 2 },
+                  { icon: '📜', label: 'Sertifika', value: effectiveCurrentUser?.certifications ?? 3 },
+                  { icon: '🎯', label: 'Workshop', value: effectiveCurrentUser?.workshopsAttended ?? 7 },
+                  { icon: '👥', label: 'Mentor Görüşmesi', value: effectiveCurrentUser?.mentorMeetings ?? 4 },
                 ].map(({ icon, label, value }) => (
                   <div key={label} className="bg-red-50 border border-red-100 rounded-xl p-3 flex flex-col items-center">
                     <span className="text-lg mb-0.5">{icon}</span>
@@ -633,7 +636,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
 
               {/* CV Doluluk % */}
               {(() => {
-                const pct = currentUser?.cvCompleteness ?? 85;
+                const pct = effectiveCurrentUser?.cvCompleteness ?? 85;
                 const color = pct >= 80 ? 'bg-emerald-500' : pct >= 51 ? 'bg-orange-400' : 'bg-red-500';
                 const textColor = pct >= 80 ? 'text-emerald-600' : pct >= 51 ? 'text-orange-500' : 'text-red-600';
                 return (
@@ -651,8 +654,9 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
 
               <button
                 onClick={() => {
-                  const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                  const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
                   if (setSelectedUserId) setSelectedUserId(selfId);
+                  useAppStore.getState().setSelectedUserId?.(selfId);
                   setView('user_profile');
                 }}
                 className="w-full py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition mb-4 flex items-center justify-center gap-1.5 cursor-pointer"
@@ -710,7 +714,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
               <div className="p-2 max-h-[60vh] overflow-y-auto">
                 {mockCompanies.map((comp, idx) => (
                   <div key={idx} className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl transition cursor-pointer group border-b border-gray-50 last:border-0">
-                    <img src={comp.logo} alt={comp.name} className="w-12 h-12 rounded-xl border border-gray-200 object-cover shadow-sm group-hover:scale-105 transition-transform" />
+                    <SafeAvatar src={comp.logo} name={comp.name} size="md" className="w-12 h-12 rounded-xl border border-gray-200 object-cover shadow-sm group-hover:scale-105 transition-transform shrink-0" />
                     <div className="flex-grow">
                       <h4 className="font-black text-gray-900 text-sm">{comp.name}</h4>
                       <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mt-0.5">{comp.sector}</p>
@@ -729,7 +733,7 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
 
       {/* FLOATING BOTTOM DOCK */}
       <SubPanelFloatingDock 
-        currentUser={currentUser} 
+        currentUser={effectiveCurrentUser} 
         setView={setView} 
         setSelectedUserId={setSelectedUserId}
         userRole={userRole || 'student'}

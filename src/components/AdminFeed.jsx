@@ -24,7 +24,6 @@ import ExploreFeed from './ExploreFeed';
 import FooterModals from './FooterModals';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
-import AdminOmniDock from './AdminOmniDock';
 
 export default function AdminFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab }) {
   const [footerModal, setFooterModal] = useState(null);
@@ -250,7 +249,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
 
             <div className="pt-12 pb-5 px-5 text-center">
               <h2 
-                onClick={() => { if (setSelectedUserId) setSelectedUserId('admin_1513'); setView('user_profile'); }} 
+                onClick={() => { if (setSelectedUserId) setSelectedUserId('admin_1513'); useAppStore.getState().setSelectedUserId?.('admin_1513'); setView('user_profile'); }} 
                 className="text-[17px] font-black text-slate-900 leading-tight mb-0.5 cursor-pointer hover:text-amber-600 transition"
               >
                 Kariyer Geliştirme Merkezi
@@ -314,6 +313,96 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                     <LayoutDashboard size={15} className="text-purple-600" /> Tam CMS Masası
                   </span>
                   <ChevronRight size={14} className="text-slate-400" />
+                </button>
+              </div>
+
+              {/* Portal Geçiş Noktaları */}
+              <div className="pt-3 border-t border-slate-100 space-y-1 text-left">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-1 mb-1">
+                  Portal Geçiş Noktaları
+                </p>
+
+                {/* 1. Öğrenci Kovanı */}
+                <button
+                  onClick={() => {
+                    const store = useAppStore.getState();
+                    if (store.setActivePortalBranch) store.setActivePortalBranch('student');
+                    setView('student');
+                  }}
+                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-[#990000] transition cursor-pointer group"
+                  title="Öğrenci Kovanına Geçiş Yap"
+                >
+                  <span className="flex items-center gap-2">
+                    <GraduationCap size={15} className="text-[#990000] group-hover:scale-110 transition-transform" /> 
+                    Öğrenci Kovanı
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-[#990000]">KGB & Staj →</span>
+                </button>
+
+                {/* 2. Mezun Kovanı */}
+                <button
+                  onClick={() => {
+                    const store = useAppStore.getState();
+                    if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
+                    setView('alumni');
+                  }}
+                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition cursor-pointer group"
+                  title="Mezun Kovanına Geçiş Yap"
+                >
+                  <span className="flex items-center gap-2">
+                    <Award size={15} className="text-emerald-600 group-hover:scale-110 transition-transform" /> 
+                    Mezun Kovanı
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-emerald-700">MBS & Harita →</span>
+                </button>
+
+                {/* 3. Akademik Kovan */}
+                <button
+                  onClick={() => {
+                    const store = useAppStore.getState();
+                    if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
+                    setView('academic');
+                  }}
+                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-800 transition cursor-pointer group"
+                  title="Akademik Kovana Geçiş Yap"
+                >
+                  <span className="flex items-center gap-2">
+                    <Building2 size={15} className="text-purple-600 group-hover:scale-110 transition-transform" /> 
+                    Akademik Kovan
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-purple-700">ResearchOS →</span>
+                </button>
+
+                {/* 4. Firma Kovanı */}
+                <button
+                  onClick={() => {
+                    const store = useAppStore.getState();
+                    if (store.setActivePortalBranch) store.setActivePortalBranch('company');
+                    setView('company');
+                  }}
+                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition cursor-pointer group"
+                  title="Firma Kovanına Geçiş Yap"
+                >
+                  <span className="flex items-center gap-2">
+                    <Briefcase size={15} className="text-blue-600 group-hover:scale-110 transition-transform" /> 
+                    Firma Kovanı
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 group-hover:text-blue-700">ATS & İlan →</span>
+                </button>
+              </div>
+
+              {/* İlan & Fırsat Dağıtım Aksiyonu */}
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  onClick={() => {
+                    const store = useAppStore.getState();
+                    if (store.setActivePortalBranch) store.setActivePortalBranch('admin');
+                    setView('jobs');
+                  }}
+                  className="w-full py-2.5 px-3 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 hover:from-amber-700 hover:to-orange-600 text-white rounded-xl text-xs font-black transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  title="Tüm Kovanlara Yeni İlan Yayınla"
+                >
+                  <Plus size={14} /> Yeni İlan & Kovan Dağıtım Masası
                 </button>
               </div>
             </div>
@@ -718,9 +807,6 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
         </div>
 
       </div>
-
-      {/* Floating Bottom Navigation Dock for Mobile & Quick Navigation (Royal Amber & Gold) */}
-      <AdminOmniDock setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} setSelectedUserId={setSelectedUserId} currentUser={currentUser} theme="amber" />
 
       <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} />
     </div>

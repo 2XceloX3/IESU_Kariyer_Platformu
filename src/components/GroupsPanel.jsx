@@ -1,8 +1,8 @@
+import SafeAvatar from './shared/SafeAvatar';
 import React, { useState } from 'react';
 import { Users, Search, Plus, ShieldCheck, MapPin, Calendar, Home, Compass, Briefcase, ChevronLeft } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
-import AdminOmniDock from './AdminOmniDock';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
@@ -32,9 +32,14 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
 export default function GroupsPanel({ previousView, currentUser, userRole, setView, setSelectedGroupId, setSelectedUserId }) {
   const { groups, setGroups } = useAppStore();
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
   const effectiveRole = (
-    userRole && userRole !== 'student' ? userRole :
-    currentUser?.role && currentUser.role !== 'student' ? currentUser.role :
     activePortalBranch || userRole || currentUser?.role || 'student'
   );
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,23 +92,23 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 shrink-0">
             <button
-              onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}
+              onClick={() => setView(backTarget)}
               className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0"
               title="Geri"
             >
               <ChevronLeft size={20} />
             </button>
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-              <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
+              <Logo color={effectiveRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
               <div className="hidden lg:block">
-                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${effectiveRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{effectiveRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
               </div>
             </div>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' || previousView === 'admin' ? 'admin' : previousView === 'academic' ? 'academic' : previousView === 'student' ? 'student' : previousView === 'alumni' ? 'alumni' : previousView === 'company' ? 'company' : userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(backTarget)} />
             <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView('network')} />
             <NavIcon icon={<Users />} label="Topluluklar" active={true} onClick={() => setView('groups')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" onClick={() => setView('jobs')} />
@@ -243,9 +248,7 @@ export default function GroupsPanel({ previousView, currentUser, userRole, setVi
       )}
 
       {/* Dock navigation */}
-      {effectiveRole === 'admin' ? (
-        <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="groups" />
-      ) : (
+      {effectiveRole === 'admin' ? null : (
         <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={effectiveRole} activeTab="groups" />
       )}
     </div>

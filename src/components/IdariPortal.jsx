@@ -110,6 +110,15 @@ export default function IdariPortal({ setView, previousView, currentUser, userRo
     window.toast && window.toast.success(`${docName} başarıyla indirildi (Simüle).`);
   };
 
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'admin' ? 'admin' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : 'student')
+  );
+
   return (
     <div className="min-h-screen bg-slate-50 text-red-900 p-4 sm:p-6 lg:p-8 pb-32">
       <div className="max-w-6xl mx-auto">
@@ -117,7 +126,7 @@ export default function IdariPortal({ setView, previousView, currentUser, userRo
         {/* Top bar */}
         <div className="flex items-center justify-between mb-8">
           <button 
-            onClick={() => setView(previousView || (userRole === 'admin' ? 'admin' : 'student'))} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-white border border-gray-200 hover:bg-red-50 text-gray-700 hover:text-[#990000] flex items-center justify-center shadow-xs transition cursor-pointer"
             title="Geri Dön"
           >

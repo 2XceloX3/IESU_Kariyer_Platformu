@@ -3,8 +3,18 @@ import { Award, ShieldCheck, CheckCircle2, Download, QrCode, Search, FileCheck, 
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
-export default function SmartCertificates({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function SmartCertificates({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
   const [activeTab, setActiveTab] = useState('dogrulama'); // dogrulama, sertifikalarim, devam_edenler
   const [verifyCode, setVerifyCode] = useState('');
   const [verifyResult, setVerifyResult] = useState(null);
@@ -86,9 +96,8 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
           <button 
             onClick={() => {
               if (setView) {
-                if (!userRole) { setView('sem'); return; }
-                const target = userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student';
-                setView(target);
+                if (!userRole && !activePortalBranch) { setView('sem'); return; }
+                setView(backTarget);
               }
             }} 
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"

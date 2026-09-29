@@ -30,7 +30,9 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     return {
       name: currentUser?.name || '',
       photo: (currentUser?.avatar && currentUser.avatar !== '/iesu-logo.svg') ? currentUser.avatar : '/iesu-logo.svg',
-      title: currentUser?.department ? `${currentUser.department} Öğrencisi` : '',
+      title: currentUser?.title || (userRole === 'alumni' || currentUser?.role === 'alumni'
+        ? (currentUser?.department ? `${currentUser.department} Mezunu` : 'İESÜ Mezunu')
+        : (currentUser?.department ? `${currentUser.department} Öğrencisi` : 'İESÜ Öğrencisi')),
       email: currentUser?.email || '',
       phone: '',
       location: 'İstanbul, Türkiye',

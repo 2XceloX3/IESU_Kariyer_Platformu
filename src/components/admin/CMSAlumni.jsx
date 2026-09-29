@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import SafeAvatar from '../shared/SafeAvatar';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
@@ -322,7 +323,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                       {c.alumni.slice(0, 4).map((al, idx) => (
                         <div key={al.id || idx} className="w-7 h-7 rounded-full bg-gray-200 border-2 border-white overflow-hidden shrink-0" title={al.name}>
                           {al.avatar ? (
-                            <img src={al.avatar} className="w-full h-full object-cover" />
+                            <SafeAvatar src={al.avatar} name={al.name} size={40} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
                               {al.name?.[0] || 'M'}
@@ -432,7 +433,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center relative">
-                            {a.avatar ? <img src={a.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={20} className="text-gray-500"/>}
+                            {a.avatar ? <SafeAvatar src={a.avatar} name={a.name} size={20} className="w-full h-full object-cover" /> : <UserCircle2 size={20} className="text-gray-500"/>}
                           </div>
                           <div>
                             <p className="text-sm font-bold text-gray-900 flex items-center gap-1.5">

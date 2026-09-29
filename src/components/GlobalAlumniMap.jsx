@@ -1192,10 +1192,18 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                                 {setSelectedUserId && alumnus.id && (
                                   <button
                                     onClick={() => {
-                                      setSelectedUserId(alumnus.id);
-                                      setView('public_profile');
+                                      const effectiveUser = currentUser || useAppStore.getState().currentUser;
+                                      const isSelf = alumnus.id === 'self' || (effectiveUser && (
+                                        String(alumnus.id) === String(effectiveUser.id) ||
+                                        String(alumnus.id) === String(effectiveUser.uid) ||
+                                        (effectiveUser.name && alumnusName && effectiveUser.name.trim().toLowerCase() === String(alumnusName).trim().toLowerCase())
+                                      ));
+                                      const targetId = isSelf ? (effectiveUser?.id || alumnus.id) : alumnus.id;
+                                      if (setSelectedUserId) setSelectedUserId(targetId);
+                                      useAppStore.getState().setSelectedUserId?.(targetId);
+                                      if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
                                     }}
-                                    className="px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1"
+                                    className="px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
                                   >
                                     Profil
                                   </button>

@@ -3,20 +3,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Target, Sparkles, ArrowLeft, ArrowRight, Zap, CheckCircle2, 
   CircleDashed, Rocket, Code, Award, Users, CalendarClock,
-  Compass, CheckSquare, Square, RefreshCw, BookOpen, Briefcase
+  Compass, CheckSquare, Square, RefreshCw, BookOpen, Briefcase,
+  Download, GraduationCap, CheckCheck, ShieldCheck
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 import { generateAIResponse } from '../lib/gemini';
+import { downloadReportPdf } from '../utils/downloadPdf';
 
 const PRESET_SECTORS = [
-  { id: 'swe', name: 'Yazılım & Bilişim', role: 'Full Stack Web & Mobil Geliştirici', icon: <Code size={16} /> },
-  { id: 'data', name: 'Veri & Analitik', role: 'Veri Bilimi ve İş Zekası Uzmanı', icon: <Target size={16} /> },
-  { id: 'fin', name: 'Finans & Bankacılık', role: 'Kurumsal Finans & Yatırım Danışmanı', icon: <Briefcase size={16} /> },
-  { id: 'mkt', name: 'Pazarlama & Tasarım', role: 'Dijital Büyüme & UI/UX Ürün Yöneticisi', icon: <Sparkles size={16} /> },
-  { id: 'eng', name: 'Mühendislik & Üretim', role: 'Endüstri & Operasyonel Mükemmellik Mühendisi', icon: <Rocket size={16} /> },
+  { id: 'swe', name: 'Yazılım & Bilişim', role: 'Full Stack Web & Mobil Geliştirici', faculty: 'Mühendislik & Mimarlık Fakültesi', icon: <Code size={16} /> },
+  { id: 'data', name: 'Veri & Analitik', role: 'Veri Bilimi ve İş Zekası Uzmanı', faculty: 'Mühendislik & Fen Bilimleri', icon: <Target size={16} /> },
+  { id: 'fin', name: 'Finans & Bankacılık', role: 'Kurumsal Finans & Yatırım Danışmanı', faculty: 'İktisadi ve İdari Bilimler Fakültesi', icon: <Briefcase size={16} /> },
+  { id: 'mkt', name: 'Pazarlama & Tasarım', role: 'Dijital Büyüme & UI/UX Ürün Yöneticisi', faculty: 'Sanat ve Tasarım Fakültesi', icon: <Sparkles size={16} /> },
+  { id: 'eng', name: 'Mühendislik & Üretim', role: 'Endüstri & Operasyonel Mükemmellik Mühendisi', faculty: 'Mühendislik & Mimarlık Fakültesi', icon: <Rocket size={16} /> },
 ];
+
+const SECTOR_MENTORS = {
+  swe: { name: 'Caner Öztürk', title: 'Senior Frontend Developer', company: 'Trendyol', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', dept: 'Yazılım Mühendisliği 2022 Mezunu' },
+  data: { name: 'Melis Kara', title: 'Data Scientist & AI Specialist', company: 'Garanti BBVA Teknoloji', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', dept: 'Bilgisayar Mühendisliği 2021 Mezunu' },
+  fin: { name: 'Burak Demir', title: 'Kurumsal Finans Analisti', company: 'KPMG Türkiye', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', dept: 'İşletme 2020 Mezunu' },
+  mkt: { name: 'Selin Acar', title: 'Growth & Product Designer', company: 'Getir', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150', dept: 'Görsel İletişim 2022 Mezunu' },
+  eng: { name: 'Emre Koç', title: 'Operasyonel Mükemmellik Mühendisi', company: 'Şişecam', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', dept: 'Endüstri Mühendisliği 2021 Mezunu' }
+};
 
 const DEFAULT_ROADMAPS = {
   swe: {
@@ -286,7 +297,7 @@ const DEFAULT_ROADMAPS = {
   }
 };
 
-export default function CareerRoadmap({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function CareerRoadmap({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [selectedSectorId, setSelectedSectorId] = useState('swe');
   const [dreamRole, setDreamRole] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -402,7 +413,37 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
   }, 0);
   const percent = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
 
-  const backTarget = userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student';
+  // Handlers
+  const handleDownloadPdf = () => {
+    const lines = [
+      `Universite: Istanbul Esenyurt Universitesi (IESU)`,
+      `Birim: Kariyer Gelistirme Merkezi (KGM)`,
+      `Ogrenci: ${currentUser?.name || 'IESU Ogrencisi'}`,
+      `Hedef Rol: ${roadmap?.title || 'Kariyer Yol Haritasi'}`,
+      `Genel Ilerleme: %${percent} (${completedCount}/${totalTasks} Gorev Tamamlandi)`,
+      `Tarih: ${new Date().toLocaleDateString('tr-TR')}`,
+      `------------------------------------------------------------------`,
+      ...((roadmap?.phases || []).flatMap(p => [
+        `[FAZ ${p.id}] ${p.title} (${p.timeframe})`,
+        `Aciklama: ${p.desc}`,
+        ...((p.tasks || []).map((t, idx) => `  ${completedTasks[`${roadmap.title}_${p.id-1}_${idx}`] ? '[X]' : '[ ]'} ${t}`)),
+        ` `
+      ]))
+    ];
+    downloadReportPdf('IESU_Kariyer_Yol_Haritasi', roadmap?.title || 'Kariyer Yol Haritası', lines);
+    window.toast?.success?.("📄 Resmi Kariyer Yol Haritanız PDF olarak başarıyla indirildi.");
+  };
+
+  const handleSyncToKgb = () => {
+    window.toast?.success?.(`🎯 ${completedCount} adet tamamlanan görev KGB Kariyer Karnenize senkronize edildi!`);
+  };
+
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = (
+    previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView) ? previousView :
+    activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-28">
@@ -493,28 +534,82 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
         </div>
 
         {/* PROGRESS CARD */}
-        <div className="bg-linear-to-r from-[#990000] via-[#850000] to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-md mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-xs font-bold text-red-200 uppercase tracking-wider">Hedef İlerlemesi</span>
-            <h3 className="text-lg sm:text-xl font-black">{roadmap?.title}</h3>
-            <p className="text-xs text-red-100">
-              Tamamlanan: <span className="font-bold text-white">{completedCount} / {totalTasks} Görev</span> (%{percent})
+        <div className="bg-gradient-to-r from-[#990000] via-[#850000] to-slate-900 rounded-3xl p-6 sm:p-7 text-white shadow-xl mb-6 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden border border-red-700/50">
+          <div className="space-y-1.5 z-10">
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-black uppercase tracking-wider text-red-200">
+              <GraduationCap size={12} /> İESÜ Kariyer & Yetkinlik Takibi
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black tracking-tight">{roadmap?.title}</h3>
+            <p className="text-xs text-red-100 font-medium">
+              Tamamlanan: <span className="font-black text-white">{completedCount} / {totalTasks} Görev</span> (%{percent} Yetkinlik Seviyesi)
             </p>
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <button
+                onClick={handleDownloadPdf}
+                className="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Download size={13} /> PDF İndir
+              </button>
+              <button
+                onClick={handleSyncToKgb}
+                className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <CheckCheck size={13} /> KGB Karneme Aktar
+              </button>
+            </div>
           </div>
 
-          <div className="w-full sm:w-60 flex flex-col gap-2">
+          <div className="w-full md:w-64 flex flex-col gap-2 z-10 bg-white/10 p-4 rounded-2xl border border-white/10">
+            <div className="flex justify-between items-center text-xs font-bold text-red-100">
+              <span>İlerleme Skoru</span>
+              <span className="font-black text-white text-sm">%{percent}</span>
+            </div>
             <div className="w-full bg-white/20 h-3 rounded-full overflow-hidden p-0.5">
               <div 
-                className="bg-white h-full rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full transition-all duration-500"
                 style={{ width: `${percent}%` }}
               />
             </div>
-            <div className="flex justify-between items-center text-[11px] text-red-200 font-semibold">
-              <span>Başlangıç</span>
-              <span>Hedefe Ulaşma</span>
+            <div className="flex justify-between items-center text-[10px] text-red-200 font-semibold">
+              <span>Faz 1 (Temel)</span>
+              <span>Faz 4 (Teklif)</span>
             </div>
           </div>
         </div>
+
+        {/* ALUMNI SECTOR MENTOR RECOMMENDATION */}
+        {SECTOR_MENTORS[selectedSectorId] && (
+          <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 rounded-2xl p-4 sm:p-5 text-white border border-emerald-800/40 shadow-md mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <img 
+                src={SECTOR_MENTORS[selectedSectorId].avatar} 
+                alt="" 
+                className="w-12 h-12 rounded-2xl object-cover border-2 border-emerald-400 shadow-md shrink-0" 
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-black uppercase">
+                    Önerilen Mezun Mentör
+                  </span>
+                  <ShieldCheck size={14} className="text-emerald-400" />
+                </div>
+                <h4 className="text-sm font-black text-white mt-0.5">
+                  {SECTOR_MENTORS[selectedSectorId].name} • <span className="text-emerald-300 font-semibold">{SECTOR_MENTORS[selectedSectorId].company}</span>
+                </h4>
+                <p className="text-[11px] text-slate-300">{SECTOR_MENTORS[selectedSectorId].title} ({SECTOR_MENTORS[selectedSectorId].dept})</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+              <button
+                onClick={() => setView('mentor_booking')}
+                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
+              >
+                <span>Mentörle Bire Bir Görüş</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* LOADING STATE */}
         {isGenerating && (

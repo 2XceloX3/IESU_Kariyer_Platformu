@@ -3,6 +3,7 @@ import { Briefcase, Search, MapPin, Building, ChevronLeft, ArrowRight, CheckCirc
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
 const JOBS_DATA = [
   { id: 1, title: "Junior Frontend Developer", company: "Trendyol", location: "İstanbul (Hibrit)", type: "Tam Zamanlı", category: "Yazılım", applied: false },
@@ -11,10 +12,19 @@ const JOBS_DATA = [
   { id: 4, title: "UI/UX Tasarım Stajyeri", company: "Ford Otosan", location: "Kocaeli (Hibrit)", type: "Staj", category: "Tasarım", applied: false }
 ];
 
-export default function KariyerJobBoard({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function KariyerJobBoard({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [filter, setFilter] = useState('Tümü');
   const [search, setSearch] = useState('');
   const [appliedJobs, setAppliedJobs] = useState([]);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const filteredJobs = JOBS_DATA.filter(job => {
     const matchesFilter = filter === 'Tümü' || job.type === filter;
@@ -34,7 +44,7 @@ export default function KariyerJobBoard({ setView, currentUser, userRole, setSel
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(currentUser ? (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student') : 'landing')} 
+            onClick={() => setView(currentUser ? backTarget : 'landing')} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >

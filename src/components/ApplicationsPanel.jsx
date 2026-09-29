@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
+import eventBus from '../brain/eventBus';
 import {  Briefcase, CheckCircle2, Clock, XCircle, ChevronRight, UserCircle2 , ChevronLeft, Home, Compass, Users, MessageCircle, Bell, Search, Globe } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
-import AdminOmniDock from './AdminOmniDock';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
@@ -31,15 +31,58 @@ const NavIcon = ({ icon, label, badge, active, onClick }) => {
 };
 
 export default function ApplicationsPanel({ currentUser, userRole, setView, setSelectedUserId }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const { applications, setApplications } = useAppStore();
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
-  const effectiveRole = (activePortalBranch === 'student') ? 'student' : (activePortalBranch === 'alumni' ? 'alumni' : (userRole || 'student'));
+  const effectiveRole = activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    activePortalBranch === 'admin' ? 'admin' :
+    (userRole || 'student');
+
+  const backTarget = (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    activePortalBranch === 'admin' ? 'admin' :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
+
+  // Clockwork cross-hive synchronizer: Listen to real-time status updates from CompanyATSBoard or Admin
+  useEffect(() => {
+    if (!eventBus || typeof eventBus.on !== 'function') return;
+    const unsub = eventBus.on('application:status', (data) => {
+      if (!data) return;
+      setApplications(prev => (prev || []).map(app => {
+        if (app.id === data.applicationId || (data.applicantName && app.applicantName === data.applicantName)) {
+          return { 
+            ...app, 
+            status: data.status, 
+            notes: data.notes || `Aşama "${data.status}" olarak güncellendi (${data.company || 'İESÜ'}).` 
+          };
+        }
+        return app;
+      }));
+    });
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [setApplications]);
+
   // If student: show their applications
   // If company: show applications to their jobs
 
   const myApplications = useMemo(() => {
     if (effectiveRole === 'student' || effectiveRole === 'alumni') {
-      const userApps = (applications || []).filter(app => app.applicantId === currentUser?.id || app.userId === currentUser?.id || app.applicantName === currentUser?.name);
+      const userApps = (applications || []).filter(app => 
+        (effectiveCurrentUser?.id && app.applicantId === effectiveCurrentUser.id) || 
+        (effectiveCurrentUser?.id && app.userId === effectiveCurrentUser.id) || 
+        (effectiveCurrentUser?.name && app.applicantName === effectiveCurrentUser.name) ||
+        (effectiveCurrentUser?.email && app.applicantEmail === effectiveCurrentUser.email)
+      );
       if (userApps.length > 0) return userApps;
       return [
         {
@@ -74,20 +117,29 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
         }
       ];
     }
-    if (userRole === 'admin' || currentUser?.role === 'admin') {
+    if (userRole === 'admin' || effectiveCurrentUser?.role === 'admin') {
       return applications || [];
     }
-    const myCompanyName = (currentUser?.companyName || currentUser?.name || '').toLowerCase();
+    const myCompanyName = (effectiveCurrentUser?.companyName || effectiveCurrentUser?.name || '').toLowerCase();
     return (applications || []).filter(app => {
       const appCompany = (app.company || '').toLowerCase();
       return myCompanyName && appCompany === myCompanyName;
     });
-  }, [applications, effectiveRole, userRole, currentUser]);
+  }, [applications, effectiveRole, userRole, effectiveCurrentUser]);
 
   const handleStatusChange = (appId, newStatus) => {
     setApplications((applications || []).map(app => 
       app.id === appId ? { ...app, status: newStatus } : app
     ));
+
+    if (eventBus && typeof eventBus.emit === 'function') {
+      eventBus.emit('application:status', {
+        applicationId: appId,
+        status: newStatus,
+        company: effectiveCurrentUser?.name || 'Firma',
+        timestamp: new Date().toISOString()
+      });
+    }
   };
 
   const getStatusColor = (status) => {
@@ -112,23 +164,23 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student')}
+              onClick={() => setView(backTarget)}
               className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
               title="Geri Dön"
             >
               <ChevronLeft size={20} />
             </button>
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-              <Logo className="h-10 w-auto hover:scale-105 transition-transform" color={userRole === 'admin' ? 'amber' : 'red'} />
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
+              <Logo className="h-10 w-auto hover:scale-105 transition-transform" color={effectiveRole === 'admin' ? 'amber' : 'red'} />
               <div className="hidden lg:block">
-                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Başvuru Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${effectiveRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{effectiveRole === 'admin' ? 'KGM Süper Yönetici Başvuru Masası' : 'Kariyer Geliştirme Merkezi'}</p>
               </div>
             </div>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} />
+            <NavIcon icon={<Home />} label="Akış" onClick={() => setView(backTarget)} />
             <NavIcon icon={<Compass />} label="Kariyer Ağı" onClick={() => setView('network')} />
             <NavIcon icon={<Briefcase />} label="İş ve Staj" active={true} onClick={() => setView('jobs')} />
             <div className="ml-2">
@@ -230,11 +282,9 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
       </main>
 
       {/* Floating Dock */}
-      {effectiveRole === 'admin' ? (
-        <AdminOmniDock theme="amber" currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} activeTab="applications" />
-      ) : (
+      {effectiveRole === 'admin' ? null : (
         <SubPanelFloatingDock 
-          currentUser={currentUser} 
+          currentUser={effectiveCurrentUser} 
           setView={setView} 
           setSelectedUserId={setSelectedUserId}
           userRole={effectiveRole || 'student'}

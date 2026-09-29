@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
 import { Search, LogIn, Menu, X } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
@@ -6,6 +7,15 @@ import useAppStore from '../store/useAppStore';
 export default function MainHeader({ setView, currentUser, userRole }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const siteConfig = useAppStore(state => state.siteConfig);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const getDestination = () => {
+    if (!currentUser) return 'landing';
+    if (activePortalBranch && activePortalBranch !== 'landing') return activePortalBranch;
+    const role = currentUser.role || userRole;
+    return role === 'admin' ? 'admin' : (role === 'employer' || role === 'company') ? 'company' : role === 'alumni' ? 'alumni' : role === 'academic' ? 'academic' : 'student';
+  };
+
   return (
     <header className="sticky top-0 z-50 shadow-2xl">
       {/* Dynamic Crimson Red Navbar with corporate primary color */}
@@ -23,12 +33,7 @@ export default function MainHeader({ setView, currentUser, userRole }) {
             className="flex items-center gap-3 cursor-pointer shrink-0" 
             onClick={() => {
               if (setView) {
-                if (currentUser) {
-                  const role = currentUser.role || userRole;
-                  setView(role === 'admin' ? 'admin' : (role === 'employer' || role === 'company') ? 'company' : role === 'alumni' ? 'alumni' : role === 'academic' ? 'academic' : 'student');
-                } else {
-                  setView('landing');
-                }
+                setView(getDestination());
               }
             }}
           >
@@ -69,10 +74,10 @@ export default function MainHeader({ setView, currentUser, userRole }) {
             {/* FAR RIGHT: User Avatar or Portala Giriş Button */}
             {currentUser ? (
               <button 
-                onClick={() => setView && setView(currentUser.role === 'admin' ? 'admin' : currentUser.role === 'student' ? 'student' : currentUser.role === 'alumni' ? 'alumni' : currentUser.role === 'company' ? 'company' : 'academic')}
+                onClick={() => setView && setView(getDestination())}
                 className="flex items-center gap-2 bg-white text-[#990000] hover:bg-red-50 px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all shadow-lg hover:scale-105 whitespace-nowrap flex-shrink-0"
               >
-                <img src={currentUser.avatar || '/iesu-logo.svg'} alt="" className="w-5 h-5 rounded-full object-cover border border-[#990000]" />
+                <SafeAvatar src={currentUser.avatar || '/iesu-logo.svg'} name={currentUser.name || 'U'} size={20} className="w-5 h-5 rounded-full object-cover border border-[#990000]" />
                 <span className="hidden sm:inline">Panelime Dön ({currentUser.name?.split(' ')[0]})</span>
                 <span className="sm:hidden">Panel</span>
               </button>

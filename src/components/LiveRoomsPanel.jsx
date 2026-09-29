@@ -5,6 +5,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
+import useAppStore from '../store/useAppStore';
 
 const MOCK_ROOMS = [
   {
@@ -45,8 +46,17 @@ const MOCK_ROOMS = [
   }
 ];
 
-export default function LiveRoomsPanel({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function LiveRoomsPanel({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [activeRoom, setActiveRoom] = useState(null);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const joinRoom = (room) => {
     setActiveRoom(room);
@@ -61,7 +71,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
       <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >

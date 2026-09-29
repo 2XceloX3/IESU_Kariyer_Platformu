@@ -1,3 +1,4 @@
+import SafeAvatar from './shared/SafeAvatar';
 import React, { useRef, useState, useMemo } from 'react';
 import { Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import StoryViewer from './StoryViewer';

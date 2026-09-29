@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import { Heart, MessageCircle, Share2, Bookmark, X, Play, Pause, ChevronUp, ChevronDown, UserPlus, FileText, Sparkles } from 'lucide-react';
 
 const DUMMY_SHORTS = [
@@ -101,7 +102,7 @@ export default function CareerShorts({ setView, onClose }) {
         <div className="absolute right-4 bottom-32 flex flex-col gap-6 z-20 items-center">
           {/* Avatar */}
           <div className="relative group cursor-pointer">
-            <img src={currentShort.author.avatar} className="w-12 h-12 rounded-full border-2 border-white object-cover" alt="Author" />
+            <SafeAvatar src={currentShort.author.avatar} name={currentShort.author.name} size={48} className="w-12 h-12 rounded-full border-2 border-white object-cover" />
             <button aria-label="İşlem Butonu" className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#990000] text-white rounded-full p-1 shadow-lg">
               <UserPlus size={14} />
             </button>

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
 const INTERVIEW_SCENARIOS = [
   {
@@ -39,13 +40,22 @@ const INTERVIEW_SCENARIOS = [
   }
 ];
 
-export default function InterviewSimulator({ setView, userRole, currentUser, setSelectedUserId }) {
+export default function InterviewSimulator({ setView, userRole, currentUser, setSelectedUserId, previousView }) {
   const [activeScenario, setActiveScenario] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [recordingState, setRecordingState] = useState('idle'); // idle, recording, processing, feedback
   const [timer, setTimer] = useState(0);
   const [isVREnabled, setIsVREnabled] = useState(false);
   const videoRef = useRef(null);
+
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   useEffect(() => {
     let interval;
@@ -207,7 +217,7 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
       <header className="h-20 bg-white border-b border-gray-200/50 flex items-center justify-between px-6 lg:px-12 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-6">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
             title="Geri Dön"
           >

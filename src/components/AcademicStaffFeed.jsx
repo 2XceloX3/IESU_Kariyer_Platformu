@@ -13,10 +13,14 @@ import BranchNewsWidget from './BranchNewsWidget';
 import ConnectionSuggestions from './ConnectionSuggestions';
 
 import useAppStore from '../store/useAppStore';
+import eventBus from '../brain/eventBus';
 
 export default function AcademicStaffFeed({ 
   setView, setSelectedUserId, currentUser, userRole, academicRole
 }) {
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
+  const acadId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
   const news = useAppStore(state => state.news);
@@ -191,12 +195,12 @@ export default function AcademicStaffFeed({
             <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
               <div className="relative">
                 <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
-                {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
+                {((notifications || []).filter(n => n.userId === effectiveCurrentUser?.id && !n.read).length > 0) && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
-            <TopProfileMenu currentUser={currentUser || { name: 'Akademik Personel', avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('Akademik Personel')}&background=0A2342&color=fff` }} userRole={userRole || 'academic'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="academic" />
+            <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'academic'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="academic" />
           </div>
         </div>
       </nav>
@@ -211,7 +215,8 @@ export default function AcademicStaffFeed({
             <div className="relative pt-8 flex flex-col items-center">
               <div 
                 onClick={() => {
-                  if (setSelectedUserId) setSelectedUserId(currentUser?.role === 'academic' ? currentUser.id : 'ACAD-001');
+                  if (setSelectedUserId) setSelectedUserId(acadId);
+                  useAppStore.getState().setSelectedUserId?.(acadId);
                   setView?.('user_profile');
                 }}
                 className="w-24 h-24 bg-white rounded-2xl border-4 border-white shadow-md overflow-hidden flex items-center justify-center p-1 mb-3 cursor-pointer hover:scale-105 transition-transform"
@@ -221,8 +226,8 @@ export default function AcademicStaffFeed({
                   <img src="/iesu-logo.svg" alt="Admin Logo" className="w-full h-full object-contain" />
                 ) : (
                   <SafeAvatar
-                    src={currentUser?.avatar}
-                    name={currentUser?.name || 'Akademik Personel'}
+                    src={effectiveCurrentUser?.avatar}
+                    name={effectiveCurrentUser?.name || 'Akademik Personel'}
                     isAdmin={userRole === 'admin'}
                     size="full"
                     rounded="rounded-xl"
@@ -234,16 +239,17 @@ export default function AcademicStaffFeed({
               
               <h2 
                 onClick={() => {
-                  if (setSelectedUserId) setSelectedUserId(currentUser?.role === 'academic' ? currentUser.id : 'ACAD-001');
+                  if (setSelectedUserId) setSelectedUserId(acadId);
+                  useAppStore.getState().setSelectedUserId?.(acadId);
                   setView?.('user_profile');
                 }}
                 className="text-base font-black text-gray-900 leading-tight cursor-pointer hover:text-[#4C1D95] transition-colors"
                 title="Akademik Profilimi Görüntüle"
               >
-                {userRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : currentUser?.name || 'Akademik Personel'}
+                {userRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : effectiveCurrentUser?.name || 'Akademik Personel'}
               </h2>
               <p className="text-xs text-purple-800 font-bold mt-1">
-                {userRole === 'admin' ? 'SÜPER YÖNETİCİ & KOORDİNATÖRLÜK' : `${currentUser?.title || 'Bölüm Başkanı'} / ${currentUser?.department || 'Bilgisayar Mühendisliği'}`}
+                {userRole === 'admin' ? 'SÜPER YÖNETİCİ & KOORDİNATÖRLÜK' : `${effectiveCurrentUser?.title || 'Bölüm Başkanı'} / ${effectiveCurrentUser?.department || 'Bilgisayar Mühendisliği'}`}
               </p>
 
               {/* Öğrenci & Stajyer Sayıları */}
@@ -261,7 +267,8 @@ export default function AcademicStaffFeed({
               {/* Akademik Profilimi Görüntüle Butonu */}
               <button 
                 onClick={() => {
-                  if (setSelectedUserId) setSelectedUserId(currentUser?.role === 'academic' ? currentUser.id : 'ACAD-001');
+                  if (setSelectedUserId) setSelectedUserId(acadId);
+                  useAppStore.getState().setSelectedUserId?.(acadId);
                   setView?.('user_profile');
                 }} 
                 className="mt-5 w-full py-2.5 bg-gradient-to-r from-purple-950 via-[#4C1D95] to-indigo-900 hover:from-purple-900 hover:to-indigo-800 text-white text-xs font-black rounded-xl transition-all shadow-md shadow-purple-950/20 active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-purple-400/30"
@@ -306,7 +313,7 @@ export default function AcademicStaffFeed({
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-between">
             <div>
               <h1 className="text-xl font-black text-gray-900 mb-1">
-                Hoş Geldiniz, {userRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : currentUser?.name || 'Akademik Personel'}
+                Hoş Geldiniz, {userRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : effectiveCurrentUser?.name || 'Akademik Personel'}
               </h1>
               <p className="text-xs text-slate-500 font-medium">Bekleyen işlemleriniz ve onay havuzunuz.</p>
             </div>
@@ -577,24 +584,28 @@ export default function AcademicStaffFeed({
                           {/* Student Header */}
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                             <div className="flex items-center gap-3">
-                              <img 
-                                src={req.studentAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(req.studentName)}&background=4C1D95&color=fff`} 
-                                alt={req.studentName} 
-                                onError={(e) => {
-                                  e.currentTarget.onerror = null;
-                                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(req.studentName || 'Student')}&background=4C1D95&color=fff`;
-                                }}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-purple-100 shadow-xs shrink-0 cursor-pointer"
+                              <div 
                                 onClick={() => {
                                   if (setSelectedUserId) setSelectedUserId(req.studentId);
+                                  useAppStore.getState().setSelectedUserId?.(req.studentId);
                                   setView('public_profile');
                                 }}
-                              />
+                                className="cursor-pointer shrink-0"
+                              >
+                                <SafeAvatar 
+                                  src={req.studentAvatar} 
+                                  name={req.studentName} 
+                                  size="md" 
+                                  rounded="rounded-full" 
+                                  className="w-12 h-12 border-2 border-purple-100 shadow-xs" 
+                                />
+                              </div>
                               <div>
                                 <div className="flex items-center gap-2">
                                   <h4 
                                     onClick={() => {
                                       if (setSelectedUserId) setSelectedUserId(req.studentId);
+                                      useAppStore.getState().setSelectedUserId?.(req.studentId);
                                       setView('public_profile');
                                     }}
                                     className="font-black text-sm text-gray-900 hover:text-[#4C1D95] transition cursor-pointer"
@@ -676,6 +687,7 @@ export default function AcademicStaffFeed({
                               type="button"
                               onClick={() => {
                                 if (setSelectedUserId) setSelectedUserId(req.studentId);
+                                useAppStore.getState().setSelectedUserId?.(req.studentId);
                                 setView('public_profile');
                               }}
                               className="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-[#4C1D95] rounded-xl text-xs font-black transition flex items-center gap-1.5 border border-purple-200 cursor-pointer"
@@ -881,7 +893,7 @@ export default function AcademicStaffFeed({
         {!isRadarOpen && activeTab === 'career_network' && (
           <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in">
             <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2"><Compass className="text-red-600" /> Kariyer Ağı</h2>
-            <CareerNetwork companies={companies} students={students} alumni={alumni} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} hideHeader={true} />
+            <CareerNetwork companies={companies} students={students} alumni={alumni} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} hideHeader={true} />
           </div>
         )}
         
@@ -905,7 +917,7 @@ export default function AcademicStaffFeed({
                   );
                 }
                 return filteredItems.map(post => (
-                  <PostCard key={post.id} post={post} currentUser={currentUser} setPosts={setPosts} setSelectedUserId={setSelectedUserId} setView={setView} />
+                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} setPosts={setPosts} setSelectedUserId={setSelectedUserId} setView={setView} />
                 ));
               })()}
             </div>
@@ -927,7 +939,7 @@ export default function AcademicStaffFeed({
               <MessagingInterface 
                 messages={messages} 
                 setMessages={setMessages} 
-                currentUser={currentUser} 
+                currentUser={effectiveCurrentUser} 
                 userRole={userRole} 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]}
                 setView={setView}
@@ -947,12 +959,12 @@ export default function AcademicStaffFeed({
         {/* RIGHT PANEL: Akademik İstatistikler & Şube Gündemi */}
         <div className="hidden lg:block w-[300px] shrink-0 space-y-6">
           {/* 1. AKADEMİK DAL ÖZEL GÜNDEM & FON BÜLTENİ */}
-          <BranchNewsWidget branch="academic" currentUser={currentUser} setView={setView} />
+          <BranchNewsWidget branch="academic" currentUser={effectiveCurrentUser} setView={setView} />
 
           {/* 2. AKADEMİK DAL ÖZEL MESLEKTAŞ & AKADEMİK AĞ ÖNERİLERİ */}
           <ConnectionSuggestions 
             branch="academic"
-            currentUser={currentUser}
+            currentUser={effectiveCurrentUser}
             students={students || []}
             alumni={alumni || []}
             companies={companies || []}
@@ -1059,8 +1071,8 @@ export default function AcademicStaffFeed({
                     }
                     const newMsg = {
                       id: 'ADMIN_MSG_' + Date.now(),
-                      senderId: currentUser?.id,
-                      senderName: currentUser?.name || 'Akademisyen',
+                      senderId: effectiveCurrentUser?.id,
+                      senderName: effectiveCurrentUser?.name || 'Akademisyen',
                       senderType: 'academic',
                       subject: adminMsgForm.subject,
                       priority: adminMsgForm.priority,
@@ -1346,7 +1358,7 @@ export default function AcademicStaffFeed({
                   </div>
                   <div>
                     <p className="font-bold text-slate-500">Bölüm Staj Komisyon Başkanı</p>
-                    <p className="font-black text-slate-800 mt-4">{currentUser?.name || 'Prof. Dr. Bölüm Başkanı'}</p>
+                    <p className="font-black text-slate-800 mt-4">{effectiveCurrentUser?.name || 'Prof. Dr. Bölüm Başkanı'}</p>
                     <span className="text-[9px] text-amber-600 font-bold">⏱️ Onayınız Bekleniyor</span>
                   </div>
                 </div>
@@ -1388,6 +1400,22 @@ export default function AcademicStaffFeed({
                 <button 
                   onClick={() => {
                     window.toast?.success(`✅ ${selectedDocModal.name} staj ve evrak başvurusu resmî olarak onaylandı ve e-imzalandı!`);
+                    try {
+                      eventBus?.emit?.('internship:approved', {
+                        studentId: selectedDocModal.no,
+                        studentName: selectedDocModal.name,
+                        company: selectedDocModal.company,
+                        approvedBy: effectiveCurrentUser?.name || 'Akademik Danışman'
+                      });
+                      window.dispatchEvent(new CustomEvent('iesu_internship_approved', {
+                        detail: {
+                          studentId: selectedDocModal.no,
+                          studentName: selectedDocModal.name,
+                          company: selectedDocModal.company,
+                          status: 'Onaylandı'
+                        }
+                      }));
+                    } catch (_) {}
                     setSelectedDocModal(null);
                   }} 
                   className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
@@ -1440,14 +1468,12 @@ export default function AcademicStaffFeed({
               {/* Student Card */}
               <div className="p-4 bg-white rounded-2xl border border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={selectedCounselingModal.studentAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedCounselingModal.studentName)}&background=4C1D95&color=fff`} 
-                    alt={selectedCounselingModal.studentName} 
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedCounselingModal.studentName || 'Student')}&background=4C1D95&color=fff`;
-                    }}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-purple-200" 
+                  <SafeAvatar 
+                    src={selectedCounselingModal.studentAvatar} 
+                    name={selectedCounselingModal.studentName} 
+                    size="md" 
+                    rounded="rounded-full" 
+                    className="w-12 h-12 border-2 border-purple-200" 
                   />
                   <div>
                     <h4 className="font-black text-sm text-gray-900">{selectedCounselingModal.studentName}</h4>
@@ -1460,6 +1486,7 @@ export default function AcademicStaffFeed({
                   type="button"
                   onClick={() => {
                     if (setSelectedUserId) setSelectedUserId(selectedCounselingModal.studentId);
+                    useAppStore.getState().setSelectedUserId?.(selectedCounselingModal.studentId);
                     setView('public_profile');
                     setSelectedCounselingModal(null);
                   }}
@@ -1581,8 +1608,8 @@ export default function AcademicStaffFeed({
           </button>
 
           {/* PROFILE AVATAR */}
-          <button onClick={() => { if (setSelectedUserId) setSelectedUserId?.(currentUser?.role === 'academic' ? currentUser.id : 'ACAD-001'); setView?.('user_profile'); }} className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" title="Akademik Profilim">
-            <SafeAvatar src={currentUser?.avatar} name={currentUser?.name || 'Akademik'} size="xs" alt="User" />
+          <button onClick={() => { if (setSelectedUserId) setSelectedUserId(acadId); useAppStore.getState().setSelectedUserId?.(acadId); setView?.('user_profile'); }} className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" title="Akademik Profilim">
+            <SafeAvatar src={effectiveCurrentUser?.avatar} name={effectiveCurrentUser?.name || 'Akademik'} size="xs" alt="User" />
           </button>
         </div>
       </div>

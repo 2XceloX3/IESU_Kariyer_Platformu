@@ -1,3 +1,4 @@
+import SafeAvatar from './shared/SafeAvatar';
 import React, { useState } from 'react';
 import { ArrowLeft, BookOpen, Calendar, ChevronRight, Award, Megaphone, ArrowRight, ShieldCheck, MonitorPlay, X, Sparkles, Send, Lightbulb } from 'lucide-react';
 import { toast } from './shared/Toast';
@@ -50,9 +51,9 @@ export default function SemPanel({ setView, userRole, currentUser, setSelectedUs
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-24">
-      {/* Modern High-End Banner */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white py-16 px-4 relative overflow-hidden shadow-2xl border-b border-white/10">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+      {/* Modern High-End Banner - Esenyurt Crimson Identity */}
+      <div className="bg-gradient-to-r from-slate-950 via-[#7A0000] to-[#990000] text-white py-16 px-4 relative overflow-hidden shadow-2xl border-b border-red-900/30">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
         
         <div className="max-w-7xl mx-auto relative z-10">
           <button 

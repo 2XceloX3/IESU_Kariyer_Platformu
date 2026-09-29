@@ -10,7 +10,6 @@ import useAppStore from '../store/useAppStore';
 import AICVBuilder from './AICVBuilder';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
-import AdminOmniDock from './AdminOmniDock';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { SUPPORTED_COUNTRIES, geocodeLocation } from '../utils/alumniGeoData';
 
@@ -2100,15 +2099,7 @@ export default function ProfileUpdate({
       </div>
 
       {/* FLOATING BOTTOM DOCK (HER PANELİN NORMAL AKIŞTAKİ İLE BİREBİR AYNI 4'LÜ DOCK'U) */}
-      {effectiveBranch === 'admin' ? (
-        <AdminOmniDock 
-          activeTab="feed"
-          setView={setView} 
-          setSelectedUserId={setSelectedUserId} 
-          currentUser={currentUser}
-          theme="amber" 
-        />
-      ) : effectiveBranch === 'alumni' ? (
+      {effectiveBranch === 'admin' ? null : effectiveBranch === 'alumni' ? (
         /* 🌿 MEZUNLAR AĞINA ÖZEL ZÜMRÜT DOCK (Normal Akıştaki ile Birebir) */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
           <div className="bg-white/95 backdrop-blur-2xl border-2 border-emerald-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(6,78,59,0.18)] flex items-center justify-between px-4 text-gray-800">
@@ -2157,7 +2148,9 @@ export default function ProfileUpdate({
                 if (hasChanges) handleSave(false);
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('alumni');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || 'ALU-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-600 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ring-2 ring-emerald-400" 
@@ -2223,7 +2216,9 @@ export default function ProfileUpdate({
                 if (hasChanges) handleSave(false);
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('academic');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || 'ACAD-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ring-2 ring-purple-400" 
@@ -2288,7 +2283,9 @@ export default function ProfileUpdate({
                 if (hasChanges) handleSave(false);
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('company');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || 'CMP-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ring-2 ring-blue-400" 
@@ -2352,7 +2349,9 @@ export default function ProfileUpdate({
                 if (hasChanges) handleSave(false);
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('student');
-                if (setSelectedUserId && currentUser?.id) setSelectedUserId(currentUser.id);
+                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ring-2 ring-red-400" 
@@ -2457,25 +2456,6 @@ export default function ProfileUpdate({
             </div>
           </div>
         </div>
-      )}
-
-      {/* FLOATING BOTTOM DOCK */}
-      {effectiveBranch === 'admin' ? (
-        <AdminOmniDock 
-          theme="amber" 
-          currentUser={currentUser} 
-          setView={setView} 
-          setSelectedUserId={setSelectedUserId} 
-          activeTab="profile" 
-        />
-      ) : (
-        <SubPanelFloatingDock 
-          currentUser={currentUser} 
-          setView={setView} 
-          setSelectedUserId={setSelectedUserId} 
-          userRole={effectiveBranch} 
-          activeTab="profile" 
-        />
       )}
 
     </div>

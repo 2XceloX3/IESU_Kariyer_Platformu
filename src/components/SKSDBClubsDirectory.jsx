@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Users, Search, ChevronLeft, Plus, CheckCircle, X } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import useAppStore from '../store/useAppStore';
 
 const CLUBS_DATA = [
   { id: 1, name: "Yazılım ve Bilişim Kulübü", category: "Teknoloji", members: 342, lead: "Zeynep Kaya", active: true },
@@ -10,10 +11,19 @@ const CLUBS_DATA = [
   { id: 4, name: "IEEE İESÜ Öğrenci Kolu", category: "Mühendislik", members: 420, lead: "Burak Şahin", active: true }
 ];
 
-export default function SKSDBClubsDirectory({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function SKSDBClubsDirectory({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [filter, setFilter] = useState('Tümü');
   const [search, setSearch] = useState('');
   const [joinedClubs, setJoinedClubs] = useState([]);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
 
   const filteredClubs = CLUBS_DATA.filter(club => {
     const matchesCategory = filter === 'Tümü' || club.category === filter;
@@ -26,7 +36,7 @@ export default function SKSDBClubsDirectory({ setView, currentUser, userRole, se
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40 shadow-2xs">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView ? setView(currentUser ? (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student') : 'landing') : window.history.back()} 
+            onClick={() => setView ? setView(backTarget) : window.history.back()} 
             className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 hover:text-[#990000] hover:bg-red-50 hover:border-red-200 border border-slate-200 flex items-center justify-center transition cursor-pointer"
             title="Geri Dön"
           >

@@ -23,6 +23,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import SafeAvatar from '../shared/SafeAvatar';
+import eventBus from '../../brain/eventBus';
 
 export default function CMSApplicationsPool({
   applications = [],
@@ -84,6 +85,15 @@ export default function CMSApplicationsPool({
     if (selectedAppModal && selectedAppModal.id === appId) {
       setSelectedAppModal(prev => ({ ...prev, status: newStatus }));
     }
+    const targetApp = (applications || []).find(a => a.id === appId);
+    try {
+      eventBus?.emit?.('application:status', {
+        applicationId: appId,
+        status: newStatus,
+        applicantName: targetApp?.applicantName,
+        jobTitle: targetApp?.jobTitle
+      });
+    } catch (_) {}
     window.toast?.success?.(`Başvuru durumu "${newStatus}" olarak güncellendi.`);
   };
 
@@ -394,7 +404,7 @@ export default function CMSApplicationsPool({
                           <button
                             onClick={() => {
                               setSelectedUserId(app.applicantId);
-                              setView('user_profile');
+                              setView('public_profile');
                             }}
                             className="p-1.5 text-gray-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition cursor-pointer"
                             title="Aday Profili"
@@ -487,7 +497,7 @@ export default function CMSApplicationsPool({
                     onClick={() => {
                       setSelectedAppModal(null);
                       setSelectedUserId(selectedAppModal.applicantId);
-                      setView('user_profile');
+                      setView('public_profile');
                     }}
                     className="text-[11px] font-black text-blue-700 hover:underline cursor-pointer"
                   >

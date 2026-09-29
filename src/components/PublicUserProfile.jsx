@@ -11,7 +11,6 @@ import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import useAppStore from '../store/useAppStore';
 import PostCard from './PostCard';
-import AdminOmniDock from './AdminOmniDock';
 import TopProfileMenu from './TopProfileMenu';
 import MentorRequestModal from './modals/MentorRequestModal';
 import { generateStudents, generateAlumni, generateCompanies, generateAcademicStaff } from '../utils/mockData';
@@ -35,6 +34,9 @@ export default function PublicUserProfile({
   const jobs = useAppStore(state => state.jobs);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const storeSelectedUserId = useAppStore(state => state.selectedUserId);
+
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
 
   const [user, setUser] = useState(null);
   const [userType, setUserType] = useState('student'); // 'student' | 'alumni' | 'academic' | 'company' | 'admin'
@@ -62,33 +64,55 @@ export default function PublicUserProfile({
   const effectiveTargetId = userId || storeSelectedUserId;
 
   const isProfileSelf = useMemo(() => {
+    if (user?.isSelf === true) return true;
     if (!effectiveTargetId || effectiveTargetId === 'self' || effectiveTargetId === 'me' || userId === 'self' || userId === 'me') return true;
-    if (currentUser) {
-      if (currentUser.id && (String(effectiveTargetId) === String(currentUser.id) || (user?.id && String(user.id) === String(currentUser.id)))) return true;
-      if (currentUser.uid && (String(effectiveTargetId) === String(currentUser.uid) || (user?.uid && String(user.uid) === String(currentUser.uid)))) return true;
-      if (currentUser.studentNo && (String(effectiveTargetId) === String(currentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(currentUser.studentNo)))) return true;
-      if (currentUser.email && (String(effectiveTargetId) === String(currentUser.email) || (user?.email && String(user.email) === String(currentUser.email)))) return true;
-      if (currentUser.name && user?.name && currentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
-      if (currentUser.name && String(effectiveTargetId).trim().toLowerCase() === currentUser.name.trim().toLowerCase()) return true;
+    if (effectiveCurrentUser) {
+      if (effectiveCurrentUser.id && (String(effectiveTargetId) === String(effectiveCurrentUser.id) || (user?.id && String(user.id) === String(effectiveCurrentUser.id)))) return true;
+      if (effectiveCurrentUser.uid && (String(effectiveTargetId) === String(effectiveCurrentUser.uid) || (user?.uid && String(user.uid) === String(effectiveCurrentUser.uid)))) return true;
+      if (effectiveCurrentUser.studentId && (String(effectiveTargetId) === String(effectiveCurrentUser.studentId) || (user?.studentId && String(user.studentId) === String(effectiveCurrentUser.studentId)))) return true;
+      if (effectiveCurrentUser.studentNo && (String(effectiveTargetId) === String(effectiveCurrentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(effectiveCurrentUser.studentNo)))) return true;
+      if (effectiveCurrentUser.username && (String(effectiveTargetId).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase() || (user?.username && String(user.username).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase()))) return true;
+      if (effectiveCurrentUser.email && (String(effectiveTargetId).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase() || (user?.email && String(user.email).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase()))) return true;
+      if (effectiveCurrentUser.name && user?.name && effectiveCurrentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
+      if (effectiveCurrentUser.name && String(effectiveTargetId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase()) return true;
     }
-    const currentBranch = viewerHive || activePortalBranch || currentUser?.role || 'student';
+    const currentBranch = viewerHive || activePortalBranch || effectiveCurrentUser?.role || 'student';
+    const targetStr = String(effectiveTargetId || '').trim().toLowerCase();
+    const userStr = String(user?.id || '').trim().toLowerCase();
+
     if (currentBranch === 'admin') {
-      if (effectiveTargetId === 'admin_1513' || user?.id === 'admin_1513' || effectiveTargetId === 'admin') return true;
+      if (targetStr === 'admin_1513' || userStr === 'admin_1513' || targetStr === 'admin' || userStr === 'admin') return true;
     }
     if (currentBranch === 'student') {
-      if (effectiveTargetId === 'STU-001' || effectiveTargetId === 'STU-01' || user?.id === 'STU-001' || user?.id === 'STU-01' || (currentUser?.role === 'student' && !currentUser?.id)) return true;
+      if (['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(targetStr) || ['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(userStr)) {
+        if (!effectiveCurrentUser?.id || ['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'student' || !effectiveCurrentUser.role) {
+          return true;
+        }
+      }
     }
     if (currentBranch === 'alumni') {
-      if (effectiveTargetId === 'ALU-001' || effectiveTargetId === 'ALU-01' || user?.id === 'ALU-001' || user?.id === 'ALU-01' || (currentUser?.role === 'alumni' && !currentUser?.id)) return true;
+      if (['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(targetStr) || ['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(userStr)) {
+        if (!effectiveCurrentUser?.id || ['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'alumni' || !effectiveCurrentUser.role) {
+          return true;
+        }
+      }
     }
     if (currentBranch === 'academic') {
-      if (effectiveTargetId === 'ACAD-001' || user?.id === 'ACAD-001' || ((currentUser?.role === 'academic' || currentUser?.role === 'academic_staff') && !currentUser?.id)) return true;
+      if (['acad-001', 'acad-01', 'acad-1'].includes(targetStr) || ['acad-001', 'acad-01', 'acad-1'].includes(userStr)) {
+        if (!effectiveCurrentUser?.id || ['acad-001', 'acad-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'academic' || effectiveCurrentUser.role === 'academic_staff' || !effectiveCurrentUser.role) {
+          return true;
+        }
+      }
     }
     if (currentBranch === 'company') {
-      if (effectiveTargetId === 'CMP-001' || user?.id === 'CMP-001' || ((currentUser?.role === 'company' || currentUser?.role === 'employer') && !currentUser?.id)) return true;
+      if (['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(targetStr) || ['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(userStr)) {
+        if (!effectiveCurrentUser?.id || ['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'company' || effectiveCurrentUser.role === 'employer' || !effectiveCurrentUser.role) {
+          return true;
+        }
+      }
     }
     return false;
-  }, [user, userId, effectiveTargetId, currentUser, viewerHive, activePortalBranch]);
+  }, [user, userId, effectiveTargetId, currentUser, storeCurrentUser, effectiveCurrentUser, viewerHive, activePortalBranch]);
 
   // ─── 1. HEDEF KULLANICIYI ÇÖZÜMLE (VERİ TABANI & MOCK POOL) ───
   useEffect(() => {
@@ -101,24 +125,30 @@ export default function PublicUserProfile({
     }
 
     // 0. Kendi Profilim (Self / Me) veya Hedef Kullanıcı Oturum Açan Kullanıcı ise
-    if (targetId === 'self' || targetId === 'me' || (currentUser && (targetId === currentUser.id || targetId === currentUser.uid))) {
-      const selfRole = currentUser?.role || activePortalBranch || viewerHive || 'student';
-      const selfId = currentUser?.id || currentUser?.uid || (selfRole === 'alumni' ? 'ALU-001' : selfRole === 'academic' ? 'ACAD-001' : selfRole === 'company' ? 'CMP-001' : selfRole === 'admin' ? 'admin_1513' : 'STU-001');
+    if (targetId === 'self' || targetId === 'me' || (effectiveCurrentUser && (
+      targetId === effectiveCurrentUser.id || 
+      targetId === effectiveCurrentUser.uid || 
+      (effectiveCurrentUser.studentNo && targetId === effectiveCurrentUser.studentNo) ||
+      (effectiveCurrentUser.name && targetId.trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase())
+    ))) {
+      const selfRole = effectiveCurrentUser?.role || activePortalBranch || viewerHive || 'student';
+      const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || (selfRole === 'alumni' ? 'ALU-001' : selfRole === 'academic' ? 'ACAD-001' : selfRole === 'company' ? 'CMP-001' : selfRole === 'admin' ? 'admin_1513' : 'STU-001');
       setUser({
         id: selfId,
-        name: currentUser?.name || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'İESÜ Üyesi'),
+        name: effectiveCurrentUser?.name || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'İESÜ Üyesi'),
         role: selfRole,
-        title: currentUser?.title || (selfRole === 'academic' ? 'Öğretim Üyesi' : selfRole === 'alumni' ? 'Mezun' : selfRole === 'admin' ? 'Süper Yönetici & Koordinatör' : ''),
-        department: currentUser?.department || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Yazılım Mühendisliği'),
-        company: currentUser?.company || '',
-        sector: currentUser?.sector || '',
-        grade: currentUser?.grade || currentUser?.year || '3. Sınıf',
-        graduationYear: currentUser?.graduationYear || currentUser?.gradYear || '2023',
-        gpa: currentUser?.gpa || '3.84',
-        email: currentUser?.email || 'kullanici@esenyurt.edu.tr',
-        avatar: currentUser?.avatar || (selfRole === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
-        badges: currentUser?.badges || ['verified', 'top_voice'],
-        bio: currentUser?.bio || currentUser?.about || 'İstanbul Esenyurt Üniversitesi Kariyer Ekosistemi Doğrulanmış Profili.'
+        title: effectiveCurrentUser?.title || (selfRole === 'academic' ? 'Öğretim Üyesi' : selfRole === 'alumni' ? 'Mezun' : selfRole === 'admin' ? 'Süper Yönetici & Koordinatör' : ''),
+        department: effectiveCurrentUser?.department || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Yazılım Mühendisliği'),
+        company: effectiveCurrentUser?.company || '',
+        sector: effectiveCurrentUser?.sector || '',
+        grade: effectiveCurrentUser?.grade || effectiveCurrentUser?.year || '3. Sınıf',
+        graduationYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || '2023',
+        gpa: effectiveCurrentUser?.gpa || '3.84',
+        email: effectiveCurrentUser?.email || 'kullanici@esenyurt.edu.tr',
+        avatar: effectiveCurrentUser?.avatar || (selfRole === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
+        badges: effectiveCurrentUser?.badges || ['verified', 'top_voice'],
+        bio: effectiveCurrentUser?.bio || effectiveCurrentUser?.about || 'İstanbul Esenyurt Üniversitesi Kariyer Ekosistemi Doğrulanmış Profili.',
+        isSelf: true
       });
       setUserType(selfRole);
       setIsLoading(false);
@@ -739,7 +769,18 @@ export default function PublicUserProfile({
                       <UserCheck size={16} /> Profili Düzenle
                     </button>
                     <button
-                      onClick={() => setView('user_profile')}
+                      onClick={() => {
+                        const selfId = (
+                          currentBranch === 'alumni' ? (effectiveCurrentUser?.id || 'ALU-001') :
+                          currentBranch === 'academic' ? (effectiveCurrentUser?.id || 'ACAD-001') :
+                          currentBranch === 'company' ? (effectiveCurrentUser?.id || 'CMP-001') :
+                          currentBranch === 'admin' ? (effectiveCurrentUser?.id || 'admin_1513') :
+                          (effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'STU-001')
+                        );
+                        if (setSelectedUserId) setSelectedUserId(selfId);
+                        useAppStore.getState().setSelectedUserId?.(selfId);
+                        setView('user_profile');
+                      }}
                       className="px-5 py-2.5 rounded-2xl text-xs font-black bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 transition shadow-md cursor-pointer hover:scale-[1.02] active:scale-95"
                     >
                       <FileText size={15} /> Kendi Profilim
@@ -1413,14 +1454,7 @@ export default function PublicUserProfile({
       )}
 
       {/* ─── DİNAMİK ALT NAVİGASYON DOCK'U (HER DALA ÖZEL EGEMEN DOCK) ─── */}
-      {currentBranch === 'admin' ? (
-        <AdminOmniDock 
-          currentUser={currentUser} 
-          setView={setView} 
-          setSelectedUserId={setSelectedUserId} 
-          theme="amber" 
-        />
-      ) : currentBranch === 'alumni' ? (
+      {currentBranch === 'admin' ? null : currentBranch === 'alumni' ? (
         /* 🌿 MEZUNLAR AĞINA ÖZEL ZÜMRÜT DOCK */
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
           <div className="bg-white/95 backdrop-blur-2xl border-2 border-emerald-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(6,78,59,0.18)] flex items-center justify-between px-4 text-gray-800">
@@ -1453,16 +1487,17 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('alumni');
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'ALU-001';
+                const selfId = effectiveCurrentUser?.id || 'ALU-001';
                 if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-600 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Mezun Profilim"
             >
               <SafeAvatar 
-                src={currentUser?.avatar || currentUser?.profileImage} 
-                name={currentUser?.name || 'Mezun'} 
+                src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage} 
+                name={effectiveCurrentUser?.name || 'Mezun'} 
                 size="xs" 
                 alt="Profile" 
               />
@@ -1502,16 +1537,17 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('academic');
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.academicId || 'ACAD-001';
+                const selfId = effectiveCurrentUser?.id || 'ACAD-001';
                 if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#4C1D95] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Hoca Profilim"
             >
               <SafeAvatar 
-                src={currentUser?.avatar || currentUser?.profileImage} 
-                name={currentUser?.name || 'Hoca'} 
+                src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage} 
+                name={effectiveCurrentUser?.name || 'Hoca'} 
                 size="xs" 
                 alt="Profile" 
               />
@@ -1551,16 +1587,17 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('company');
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.companyId || 'CMP-001';
+                const selfId = effectiveCurrentUser?.id || 'CMP-001';
                 if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#0A2342] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Firma Profilim"
             >
               <SafeAvatar 
-                src={currentUser?.avatar || currentUser?.profileImage || currentUser?.logo} 
-                name={currentUser?.name || 'Firma'} 
+                src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage || effectiveCurrentUser?.logo} 
+                name={effectiveCurrentUser?.name || 'Firma'} 
                 size="xs" 
                 alt="Profile" 
               />
@@ -1600,16 +1637,17 @@ export default function PublicUserProfile({
               onClick={() => {
                 const store = useAppStore.getState();
                 store.setActivePortalBranch?.('student');
-                const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+                const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'STU-001';
                 if (setSelectedUserId) setSelectedUserId(selfId);
+                store.setSelectedUserId?.(selfId);
                 setView('user_profile');
               }} 
               className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
               title="Öğrenci Profilim"
             >
               <SafeAvatar 
-                src={currentUser?.avatar || currentUser?.profileImage} 
-                name={currentUser?.name || 'Öğrenci'} 
+                src={effectiveCurrentUser?.avatar || effectiveCurrentUser?.profileImage} 
+                name={effectiveCurrentUser?.name || 'Öğrenci'} 
                 size="xs" 
                 alt="Profile" 
               />
@@ -1623,7 +1661,7 @@ export default function PublicUserProfile({
         isOpen={showMentorRequestModal}
         onClose={() => setShowMentorRequestModal(false)}
         mentor={user}
-        currentUser={currentUser}
+        currentUser={effectiveCurrentUser}
       />
     </div>
   );

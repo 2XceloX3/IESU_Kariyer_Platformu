@@ -1,3 +1,4 @@
+import SafeAvatar from '../shared/SafeAvatar';
 import React, { useState, useMemo } from 'react';
 import {
   TrendingUp, Plus, Search, Filter, Trash2, Edit3, ExternalLink,
@@ -8,6 +9,7 @@ import {
 import { exportToCSV } from '../../utils/export';
 import { toast } from '../shared/Toast';
 import useAppStore from '../../store/useAppStore';
+import eventBus from '../../brain/eventBus';
 
 export default function CMSCareerOpportunities({ careerOpportunities: propsOpps, setCareerOpportunities: propsSetOpps }) {
   const storeOpps = useAppStore(state => state.careerOpportunities) || [];
@@ -155,6 +157,22 @@ export default function CMSCareerOpportunities({ careerOpportunities: propsOpps,
       setOpportunities([newOpp, ...opportunities]);
       toast.success('Yeni kariyer fırsatı başarıyla yayınlandı!');
       if (logAction) logAction('Yönetici', `"${formData.title}" başlıklı yeni kariyer fırsatı yayınlandı.`, 'YENI_FIRSAT');
+
+      try {
+        eventBus?.emit?.('job:published', {
+          job: {
+            id: newOpp.id,
+            title: newOpp.title,
+            company: newOpp.organization,
+            location: newOpp.location,
+            type: newOpp.category,
+            deadline: newOpp.deadline,
+            description: newOpp.description,
+            status: 'Aktif'
+          },
+          targetHives: ['student', 'alumni']
+        });
+      } catch (_) {}
     }
 
     setIsModalOpen(false);

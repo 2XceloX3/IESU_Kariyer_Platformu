@@ -82,25 +82,28 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     return () => clearTimeout(timer);
   }, []);
 
-  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin';
-  const alumniName = currentUser?.name || 'Mezun';
-  const alumniDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (currentUser?.department || 'Yazılım Mühendisliği');
-  const alumniGradYear = (currentUser?.role === 'alumni' && (currentUser?.gradYear || currentUser?.graduationYear)) ? (currentUser.gradYear || currentUser.graduationYear) : '2023';
-  const alumniAvatar = currentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330');
-  const alumniId = (currentUser?.role === 'alumni' && currentUser?.id && currentUser.id !== 'admin_1513') ? currentUser.id : 'ALU-001';
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
 
-  const existingApp = (alumniCardApplications || []).find(a => a.tc === currentUser?.tc || a.email === currentUser?.email || a.name === currentUser?.name);
+  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
+  const alumniName = effectiveCurrentUser?.name || 'Mezun';
+  const alumniDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Yazılım Mühendisliği');
+  const alumniGradYear = (effectiveCurrentUser?.role === 'alumni' && (effectiveCurrentUser?.gradYear || effectiveCurrentUser?.graduationYear)) ? (effectiveCurrentUser.gradYear || effectiveCurrentUser.graduationYear) : '2023';
+  const alumniAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330');
+  const alumniId = (effectiveCurrentUser?.role === 'alumni' && effectiveCurrentUser?.id && effectiveCurrentUser.id !== 'admin_1513') ? effectiveCurrentUser.id : (effectiveCurrentUser?.id || 'self');
+
+  const existingApp = (alumniCardApplications || []).find(a => a.tc === effectiveCurrentUser?.tc || a.email === effectiveCurrentUser?.email || a.name === effectiveCurrentUser?.name);
   const isFormActive = (alumniCardForms || []).length > 0 ? alumniCardForms[0]?.isActive : true;
 
   const handleCardSubmit = (e) => {
     e.preventDefault();
     const newApp = {
       id: `KART-${Date.now()}`,
-      name: currentUser?.name || 'Mezun',
+      name: effectiveCurrentUser?.name || 'Mezun',
       tc: cardForm.tc,
-      department: currentUser?.department || 'Mezun',
-      gradYear: currentUser?.graduationYear || '2023',
-      email: currentUser?.email || 'mezun@esenyurt.edu.tr',
+      department: effectiveCurrentUser?.department || 'Mezun',
+      gradYear: effectiveCurrentUser?.graduationYear || '2023',
+      email: effectiveCurrentUser?.email || 'mezun@esenyurt.edu.tr',
       phone: cardForm.phone,
       date: new Date().toLocaleDateString('tr-TR'),
       status: 'Bekliyor'
@@ -154,12 +157,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
               <div className="relative">
                 <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
-                {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
+                {((notifications || []).filter(n => n.userId === effectiveCurrentUser?.id && !n.read).length > 0) && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
-            <TopProfileMenu currentUser={currentUser || { name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=EA580C&color=fff' }} userRole={userRole || 'alumni'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="alumni" />
+            <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'alumni'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="alumni" />
           </div>
         </div>
       </nav>
@@ -184,6 +187,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   <h2 
                     onClick={() => {
                       if (setSelectedUserId) setSelectedUserId(alumniId);
+                      useAppStore.getState().setSelectedUserId?.(alumniId);
                       setView('user_profile');
                     }}
                     className="text-[17px] font-black text-gray-900 leading-tight mb-1 cursor-pointer hover:text-emerald-700 transition flex items-center justify-center gap-1.5"
@@ -212,6 +216,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                     <button 
                       onClick={() => {
                         if (setSelectedUserId) setSelectedUserId(alumniId);
+                        useAppStore.getState().setSelectedUserId?.(alumniId);
                         setView('user_profile');
                       }} 
                       className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[12px] font-black transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
@@ -247,15 +252,15 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
             <div className="grid grid-cols-3 gap-2 py-2.5 border-y border-white/10 mb-3 text-center">
               <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-emerald-300">{currentUser?.mentoringSessions ?? 8}</span>
+                <span className="block text-base font-black text-emerald-300">{effectiveCurrentUser?.mentoringSessions ?? 8}</span>
                 <span className="block text-[8px] font-bold text-emerald-200 uppercase tracking-wider">Mentörlük</span>
               </div>
               <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-teal-300">{currentUser?.jobsShared ?? 15}</span>
+                <span className="block text-base font-black text-teal-300">{effectiveCurrentUser?.jobsShared ?? 15}</span>
                 <span className="block text-[8px] font-bold text-teal-200 uppercase tracking-wider">İş İlanı</span>
               </div>
               <div className="bg-white/5 rounded-xl p-2">
-                <span className="block text-base font-black text-cyan-300">{currentUser?.eventsAttended ?? 4}</span>
+                <span className="block text-base font-black text-cyan-300">{effectiveCurrentUser?.eventsAttended ?? 4}</span>
                 <span className="block text-[8px] font-bold text-cyan-200 uppercase tracking-wider">Etkinlik</span>
               </div>
             </div>
@@ -263,6 +268,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             <button
               onClick={() => {
                 if (setSelectedUserId) setSelectedUserId(alumniId);
+                useAppStore.getState().setSelectedUserId?.(alumniId);
                 setView('user_profile');
               }}
               className="w-full py-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-200 hover:text-white rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
@@ -278,12 +284,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
               <Star className="text-emerald-600 fill-current" size={24} /> Gönderi Paylaş & Düzenle
              </h2>
-             <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+             <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           </div>
         )}
 
         {activeTab === 'search' && (
-          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} />
+          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} />
         )}
 
         {activeTab === 'feed' && (
@@ -423,7 +429,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               }
               
               return filtered.map(post => (
-                <PostCard key={post.id} post={post} currentUser={currentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
+                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
               ));
             })()}
           </div>
@@ -432,13 +438,13 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
         {featureSurveys && activeTab === 'surveys' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <AlumniSurveys surveys={surveys} currentUser={currentUser} />
+            <AlumniSurveys surveys={surveys} currentUser={effectiveCurrentUser} />
           </div>
         )}
 
         {featureClubsShowcase && activeTab === 'clubs' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <ClubsDirectory clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={currentUser} featureClubApplications={featureClubApplications} />
+            <ClubsDirectory clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={effectiveCurrentUser} featureClubApplications={featureClubApplications} />
           </div>
         )}
 
@@ -446,12 +452,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
         <div className="hidden xl:block w-[300px] shrink-0 space-y-6">
           {/* 1. MEZUN DALI ÖZEL GÜNDEM & HABERLER WIDGET'I */}
-          <BranchNewsWidget branch="alumni" currentUser={currentUser} setView={setView} />
+          <BranchNewsWidget branch="alumni" currentUser={effectiveCurrentUser} setView={setView} />
 
           {/* 2. MEZUN DALI ÖZEL BAĞLANTI & AĞ ÖNERİLERİ */}
           <ConnectionSuggestions 
             branch="alumni"
-            currentUser={currentUser}
+            currentUser={effectiveCurrentUser}
             students={students}
             alumni={alumni}
             companies={companies}
@@ -570,7 +576,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   applications={applications} 
                   setApplications={setApplications} 
                   jobs={jobs} 
-                  currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
+                  currentUser={effectiveCurrentUser} 
                   userRole={userRole || "alumni"} 
                 />
               </div>
@@ -593,7 +599,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <MessagingInterface 
                  
                  
-                currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
+                currentUser={effectiveCurrentUser} 
                 userRole={userRole} 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]} 
                 groups={groups}
@@ -635,7 +641,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 <X size={20} />
               </button>
               <div className="h-full mt-12">
-                <AICVBuilder currentUser={currentUser} />
+                <AICVBuilder currentUser={effectiveCurrentUser} />
               </div>
             </div>
           </div>
@@ -654,15 +660,15 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <form onSubmit={handleCardSubmit} className="p-6 space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-600 block mb-1">Ad Soyad</label>
-                  <input type="text" disabled value={currentUser?.name || 'Mezun'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
+                  <input type="text" disabled value={effectiveCurrentUser?.name || 'Mezun'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-600 block mb-1">Bölüm & Mezuniyet Yılı</label>
-                  <input type="text" disabled value={`${currentUser?.department || 'Mezun'} - ${currentUser?.graduationYear || '2023'}`} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
+                  <input type="text" disabled value={`${effectiveCurrentUser?.department || 'Mezun'} - ${effectiveCurrentUser?.graduationYear || '2023'}`} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-600 block mb-1">E-posta Adresi</label>
-                  <input type="email" disabled value={currentUser?.email || 'mezun@esenyurt.edu.tr'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
+                  <input type="email" disabled value={effectiveCurrentUser?.email || 'mezun@esenyurt.edu.tr'} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-500" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-600 block mb-1">TC Kimlik No (Zorunlu)</label>
@@ -705,11 +711,11 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 e.preventDefault();
                 const newMentorship = {
                   id: Date.now(),
-                  mentorName: currentUser?.name || 'Mezun',
-                  department: currentUser?.department || 'Mezun',
+                  mentorName: effectiveCurrentUser?.name || 'Mezun',
+                  department: effectiveCurrentUser?.department || 'Mezun',
                   programTitle: mentorshipForm.title,
                   status: 'Beklemede', // PENDING ADMIN APPROVAL
-                  avatar: currentUser?.avatar || null,
+                  avatar: effectiveCurrentUser?.avatar || null,
                   hours: mentorshipForm.hours,
                   mode: mentorshipForm.mode,
                   motivation: mentorshipForm.motivation
@@ -781,6 +787,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           <button 
             onClick={() => {
               if (setSelectedUserId) setSelectedUserId(alumniId);
+              useAppStore.getState().setSelectedUserId?.(alumniId);
               setView('user_profile');
             }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-emerald-500 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 

@@ -38,6 +38,8 @@ const DynamicContentPage = lazy(() => import('../../components/DynamicContentPag
  * Accepts currentUser and setView as props from App.jsx.
  */
 export default function AcademicHive({ currentUser, setView }) {
+  const storeCurrentUser = useAppStore((state) => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
   const navigate = useNavigate();
   const location = useLocation();
   const pathView = location?.pathname?.split('/').filter(Boolean).pop() || '';
@@ -65,55 +67,60 @@ export default function AcademicHive({ currentUser, setView }) {
         else navigate(clean === 'landing' ? '/' : '/' + clean);
         return;
       }
+      if (clean === 'user_profile') {
+        const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
+        setSelectedUserId(selfId);
+        useAppStore.getState().setSelectedUserId?.(selfId);
+      }
     }
     setActiveView(v);
-  }, [setView, navigate, setActiveView]);
+  }, [setView, navigate, setActiveView, effectiveCurrentUser, setSelectedUserId]);
 
   const currentView = (pathView && pathView !== 'academic') ? pathView : activeView;
 
   const renderActiveView = () => {
     switch (currentView) {
       case 'explore':
-        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={currentUser} />;
+        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'research_hub':
-        return <ResearchOSHub setView={handleSetView} currentUser={currentUser} userRole="academic" setSelectedUserId={setSelectedUserId} />;
+        return <ResearchOSHub setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" setSelectedUserId={setSelectedUserId} />;
       case 'jobs':
-        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={currentUser} userRole="academic" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'user_profile':
-        return <UserProfile userId={selectedUserId} viewerHive="academic" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="academic" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
-        return <PublicUserProfile userId={selectedUserId} viewerHive="academic" setView={handleSetView} previousView={previousView} currentUser={currentUser} setSelectedUserId={setSelectedUserId} />;
+        return <PublicUserProfile userId={selectedUserId} viewerHive="academic" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
-        return <ProfileUpdate setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <ProfileUpdate setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={currentUser} userRole="academic" setSelectedUserId={setSelectedUserId} />;
+        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
-        return <GroupsPanel setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'group_profile':
-        return <GroupProfile setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <GroupProfile setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'news':
       case 'haberler':
-        return <NewsEvents setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <NewsEvents setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'events':
       case 'events_list':
       case 'etkinlikler':
-        return <EventsPage setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <EventsPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'contact':
       case 'contact_us':
-        return <ContactPage setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <ContactPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'about_us':
-        return <AboutUsPage setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <AboutUsPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'services':
-        return <ServicesPage setView={handleSetView} currentUser={currentUser} userRole="academic" />;
+        return <ServicesPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'academic_onboarding':
-        return <AcademicOnboarding onComplete={() => handleSetView('feed')} currentUser={currentUser} />;
+        return <AcademicOnboarding onComplete={() => handleSetView('feed')} currentUser={effectiveCurrentUser} />;
       default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
           return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="academic" />;
@@ -122,7 +129,7 @@ export default function AcademicHive({ currentUser, setView }) {
           <AcademicStaffFeed
             setView={handleSetView}
             setSelectedUserId={setSelectedUserId}
-            currentUser={currentUser}
+            currentUser={effectiveCurrentUser}
             userRole="academic"
             academicRole="standard_academic"
             setSelectedGroupId={setSelectedGroupId}

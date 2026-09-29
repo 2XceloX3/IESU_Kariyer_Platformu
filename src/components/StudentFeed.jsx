@@ -69,7 +69,6 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
   const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
-  const [showAllToolsModal, setShowAllToolsModal] = useState(false);
 
   // Guarantee Student branch isolation
   useEffect(() => {
@@ -77,18 +76,21 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
     if (store.setActivePortalBranch) store.setActivePortalBranch('student');
   }, []);
 
-  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin';
-  const studentName = currentUser?.name || 'Öğrenci';
-  const studentDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (currentUser?.department || 'Yazılım Mühendisliği');
-  const studentAvatar = currentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde');
-  const studentId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || 'STU-001';
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
+
+  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
+  const studentName = effectiveCurrentUser?.name || 'Öğrenci';
+  const studentDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Yazılım Mühendisliği');
+  const studentAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde');
+  const studentId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
 
   // Removed mock stories and defaultPosts
   
   const getManagedClubs = () => {
-    if (userRole === 'admin' || currentUser?.role === 'admin') return clubs || [];
-    if (!currentUser?.name) return [];
-    return (clubs || []).filter(c => c.president?.name === currentUser?.name);
+    if (userRole === 'admin' || effectiveCurrentUser?.role === 'admin') return clubs || [];
+    if (!effectiveCurrentUser?.name) return [];
+    return (clubs || []).filter(c => c.president?.name === effectiveCurrentUser?.name);
   };
   const isClubAdmin = getManagedClubs().length > 0;
 
@@ -103,7 +105,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               <Star size={22} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
             </button>
             
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => { setActiveTab('feed'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
               <Logo color="red" className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
               <div className="hidden sm:block text-left">
                 <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
@@ -126,12 +128,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
               <div className="relative">
                 <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
-                {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
+                {((notifications || []).filter(n => n.userId === effectiveCurrentUser?.id && !n.read).length > 0) && (
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
-            <TopProfileMenu currentUser={currentUser || { name: 'Öğrenci', avatar: 'https://ui-avatars.com/api/?name=Ogrenci&background=990000&color=fff' }} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="student" />
+            <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} currentView="student" />
           </div>
         </div>
       </nav>
@@ -156,9 +158,9 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               </div>
             </div>
             <div className="pt-10 pb-4 px-4 text-center">
-              <h2 onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); setView('user_profile'); }} className="text-[16px] font-black text-gray-900 leading-tight mb-0.5 cursor-pointer hover:text-[#990000] transition">{studentName}</h2>
+              <h2 onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); useAppStore.getState().setSelectedUserId?.(studentId); setView('user_profile'); }} className="text-[16px] font-black text-gray-900 leading-tight mb-0.5 cursor-pointer hover:text-[#990000] transition">{studentName}</h2>
               <p className="text-[12px] font-medium text-gray-500 mb-3">
-                {isAdmin ? 'Süper Yönetici & Koordinatör' : `${studentDept}${currentUser?.role === 'student' && currentUser?.graduationYear ? `, ${currentUser.graduationYear}` : ', 3. Sınıf'}`}
+                {isAdmin ? 'Süper Yönetici & Koordinatör' : `${studentDept}${effectiveCurrentUser?.role === 'student' && effectiveCurrentUser?.graduationYear ? `, ${effectiveCurrentUser.graduationYear}` : ', 3. Sınıf'}`}
               </p>
                   
               <div className="flex justify-center gap-6 border-y border-gray-50 py-2.5 mb-3">
@@ -174,7 +176,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               </div>
               <div className="flex flex-col gap-1.5">
                 <button 
-                  onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); setView('user_profile'); }} 
+                  onClick={() => { if (setSelectedUserId) setSelectedUserId(studentId); useAppStore.getState().setSelectedUserId?.(studentId); setView('user_profile'); }} 
                   className="w-full py-2 bg-gradient-to-r from-red-900 via-[#990000] to-red-700 hover:from-red-800 hover:to-red-600 text-white rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs border border-red-400/30"
                 >
                   <User size={13} /> Öğrenci Profilimi Görüntüle
@@ -219,15 +221,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
             <div className="grid grid-cols-3 gap-1.5 py-2 border-y border-gray-100 mb-2.5 text-center">
               <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
-                <span className="block text-sm font-black text-[#990000]">{currentUser?.internships ?? 2}</span>
+                <span className="block text-sm font-black text-[#990000]">{effectiveCurrentUser?.internships ?? 2}</span>
                 <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Staj</span>
               </div>
               <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
-                <span className="block text-sm font-black text-amber-700">{currentUser?.certifications ?? 3}</span>
+                <span className="block text-sm font-black text-amber-700">{effectiveCurrentUser?.certifications ?? 3}</span>
                 <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Sertifika</span>
               </div>
               <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
-                <span className="block text-sm font-black text-blue-700">{currentUser?.workshopsAttended ?? 7}</span>
+                <span className="block text-sm font-black text-blue-700">{effectiveCurrentUser?.workshopsAttended ?? 7}</span>
                 <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Workshop</span>
               </div>
             </div>
@@ -250,13 +252,13 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
               <Star className="text-orange-500 fill-current" size={24} /> Gönderi Paylaş & Düzenle
              </h2>
-             <PostComposer currentUser={currentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+             <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           </div>
         )}
 
         {/* Explore Native View */}
         {activeTab === 'search' && (
-          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} />
+          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} />
         )}
 
         {/* FEED TAB */}
@@ -269,13 +271,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse"></span>
                 <h3 className="text-sm font-bold text-gray-900 tracking-tight">Kariyer & Gelişim Araçları</h3>
               </div>
-              <button 
-                onClick={() => setShowAllToolsModal(true)} 
-                className="text-xs font-bold text-[#990000] hover:text-red-700 hover:underline flex items-center gap-1 cursor-pointer transition-colors"
-                title="Tüm Ekosistem Araçlarını Keşfet"
-              >
-                Tümünü Keşfet (16) →
-              </button>
+              <span className="text-xs font-semibold text-gray-400">Merkezi Hizmetler</span>
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -363,7 +359,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               }
               
               return filtered.map(post => (
-                <PostCard key={post.id} post={post} currentUser={currentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
+                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
               ));
             })()}
           </div>
@@ -372,20 +368,20 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
         {/* TEAM & MENTOR TAB */}
         {activeTab === 'team_mentor' && (
-          <TeamUpMentorHub currentUser={currentUser} />
+          <TeamUpMentorHub currentUser={effectiveCurrentUser} />
         )}
 
         {/* SURVEYS TAB */}
         {featureSurveys && activeTab === 'surveys' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <StudentSurveys surveys={surveys} currentUser={currentUser} />
+            <StudentSurveys surveys={surveys} currentUser={effectiveCurrentUser} />
           </div>
         )}
 
         {/* CLUBS TAB */}
         {featureClubsShowcase && activeTab === 'clubs' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <ClubsDirectory clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={currentUser} featureClubApplications={featureClubApplications} />
+            <ClubsDirectory clubs={clubs} setClubs={setClubs} clubApplications={clubApplications} setClubApplications={setClubApplications} currentUser={effectiveCurrentUser} featureClubApplications={featureClubApplications} />
           </div>
         )}
 
@@ -394,12 +390,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         {/* RIGHT PANEL: Dynamic Data */}
         <div className="hidden xl:block w-[300px] shrink-0 space-y-7">
           {/* 1. ÖĞRENCİ DALI ÖZEL GÜNDEM & HABERLER WIDGET'I */}
-          <BranchNewsWidget branch="student" currentUser={currentUser} setView={setView} />
+          <BranchNewsWidget branch="student" currentUser={effectiveCurrentUser} setView={setView} />
 
           {/* 2. ÖĞRENCİ DALI ÖZEL BAĞLANTI & AKRAN/MENTÖR ÖNERİLERİ */}
           <ConnectionSuggestions 
             branch="student"
-            currentUser={currentUser}
+            currentUser={effectiveCurrentUser}
             students={students}
             alumni={alumni}
             companies={companies}
@@ -472,7 +468,18 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                     >
                       <div 
                         className="flex items-center gap-3.5 min-w-0 cursor-pointer flex-1"
-                        onClick={() => { setShowMentorsModal(false); setSelectedUserId?.(mentorItem.id); setView?.('public_profile'); }}
+                        onClick={() => { 
+                          setShowMentorsModal(false); 
+                          const isSelf = mentorItem.id === 'self' || (effectiveCurrentUser && (
+                            String(mentorItem.id) === String(effectiveCurrentUser.id) ||
+                            String(mentorItem.id) === String(effectiveCurrentUser.uid) ||
+                            (effectiveCurrentUser.name && mentorItem.name && effectiveCurrentUser.name.trim().toLowerCase() === mentorItem.name.trim().toLowerCase())
+                          ));
+                          const targetId = isSelf ? (effectiveCurrentUser?.id || mentorItem.id) : mentorItem.id;
+                          if (setSelectedUserId) setSelectedUserId(targetId);
+                          useAppStore.getState().setSelectedUserId?.(targetId);
+                          if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
+                        }}
                       >
                         <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white border border-slate-200 shrink-0">
                           <img 
@@ -497,8 +504,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                           type="button"
                           onClick={() => { 
                             setShowMentorsModal(false); 
-                            setSelectedUserId?.(mentorItem.id); 
-                            setView?.('public_profile'); 
+                            const isSelf = mentorItem.id === 'self' || (effectiveCurrentUser && (
+                              String(mentorItem.id) === String(effectiveCurrentUser.id) ||
+                              String(mentorItem.id) === String(effectiveCurrentUser.uid) ||
+                              (effectiveCurrentUser.name && mentorItem.name && effectiveCurrentUser.name.trim().toLowerCase() === mentorItem.name.trim().toLowerCase())
+                            ));
+                            const targetId = isSelf ? (effectiveCurrentUser?.id || mentorItem.id) : mentorItem.id;
+                            if (setSelectedUserId) setSelectedUserId(targetId);
+                            useAppStore.getState().setSelectedUserId?.(targetId);
+                            if (setView) setView(isSelf ? 'user_profile' : 'public_profile');
                           }}
                           className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer"
                         >
@@ -620,7 +634,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                   applications={applications} 
                   setApplications={setApplications} 
                   jobs={jobs} 
-                  currentUser={currentUser || { id: 'STU-001', name: 'Öğrenci', avatar: '/iesu-logo.svg' }} 
+                  currentUser={effectiveCurrentUser} 
                   userRole="student" 
                 />
               </div>
@@ -641,7 +655,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               </div>
               <div className="w-full flex-1 overflow-hidden flex flex-col relative">
               <MessagingInterface 
-                currentUser={currentUser || { id: 'alm-1', name: 'Mezun', avatar: 'https://ui-avatars.com/api/?name=Mezun&background=10B981&color=fff' }} 
+                currentUser={effectiveCurrentUser} 
                 userRole={userRole} 
                 contacts={[...(students || []), ...(alumni || []), ...(companies || []), ...(academicStaff || [])]} 
 groups={groups}
@@ -809,7 +823,7 @@ groups={groups}
                 <X size={20} />
               </button>
               <div className="h-full mt-12">
-                <AICVBuilder currentUser={currentUser} />
+                <AICVBuilder currentUser={effectiveCurrentUser} />
               </div>
             </div>
           </div>
@@ -829,11 +843,11 @@ groups={groups}
                 e.preventDefault();
                 const newMentorship = {
                   id: Date.now(),
-                  mentorName: currentUser?.name || 'Mezun',
-                  department: currentUser?.department || 'Mezun',
+                  mentorName: effectiveCurrentUser?.name || 'Öğrenci',
+                  department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
                   programTitle: mentorshipForm.title,
                   status: 'Beklemede', // PENDING ADMIN APPROVAL
-                  avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${currentUser?.name || 'M'}&background=0A2342&color=fff`,
+                  avatar: effectiveCurrentUser?.avatar || `https://ui-avatars.com/api/?name=${effectiveCurrentUser?.name || 'O'}&background=990000&color=fff`,
                   hours: mentorshipForm.hours,
                   mode: mentorshipForm.mode,
                   motivation: mentorshipForm.motivation
@@ -907,6 +921,7 @@ groups={groups}
           <button 
             onClick={() => {
               if (setSelectedUserId) setSelectedUserId(studentId);
+              useAppStore.getState().setSelectedUserId?.(studentId);
               setView('user_profile');
             }} 
             className="w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 border-[#990000] shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer" 
@@ -973,204 +988,6 @@ groups={groups}
         </div>
       )}
 
-      {/* ─── TÜM EKOSİSTEM ARAÇLARI KEŞİF MODALI (16 GELİŞMİŞ ARAÇ) ─── */}
-      {showAllToolsModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
-          <div className="bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[88vh] relative animate-slide-up">
-            
-            {/* Modal Header */}
-            <div className="p-5 bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white flex items-center justify-between shrink-0 border-b border-red-900">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center font-black shadow-md shrink-0 border border-white/20">
-                  <Sparkles size={20} />
-                </div>
-                <div>
-                  <h3 className="font-black text-base text-white">İESÜ Ekosistem Araçları & Modülleri</h3>
-                  <p className="text-[11px] text-red-200 font-medium">Öğrenci Portalının Tüm Kariyer, Gelişim, Staj ve Kampüs Servisleri (16 Araç)</p>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => setShowAllToolsModal(false)}
-                className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer font-bold shrink-0 ml-1"
-                title="Kapat"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Modal Body - 16 Categorized Grid Cards */}
-            <div className="p-4 sm:p-6 overflow-y-auto flex-1 custom-scrollbar">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                {[
-                  {
-                    id: 'cvbuilder',
-                    view: 'cvbuilder',
-                    title: 'Akıllı CV & Özgeçmiş Tasarımcısı',
-                    desc: 'ATS uyumlu akıllı CV ve sektörel ön yazı tasarlayın',
-                    icon: <FileText size={18} />,
-                    bg: 'bg-blue-50 text-blue-700 border-blue-100',
-                  },
-                  {
-                    id: 'interview_sim',
-                    view: 'interview_sim',
-                    title: 'Mülakat Simülatörü & Prova Odası',
-                    desc: 'Gerçekçi mülakat senaryolarıyla anında geri bildirim alın',
-                    icon: <Wand2 size={18} />,
-                    bg: 'bg-purple-50 text-purple-700 border-purple-100',
-                  },
-                  {
-                    id: 'applications',
-                    view: 'applications',
-                    title: 'İş & Staj Başvuru Havuzum',
-                    desc: 'İş ve staj başvurularınızın anlık süreçlerini izleyin',
-                    icon: <ClipboardList size={18} />,
-                    bg: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                  },
-                  {
-                    id: 'smart_certs',
-                    view: 'smart_certs',
-                    title: 'Doğrulanabilir Akıllı Sertifikalar',
-                    desc: 'Akredite dijital sertifikalarınızı görüntüleyin ve paylaşın',
-                    icon: <Award size={18} />,
-                    bg: 'bg-amber-50 text-amber-700 border-amber-100',
-                  },
-                  {
-                    id: 'portfolio',
-                    view: 'portfolio',
-                    title: 'Dijital Proje Portfolyosu',
-                    desc: 'Projelerinizi, kod depolarınızı ve tasarımlarınızı sergileyin',
-                    icon: <LayoutDashboard size={18} />,
-                    bg: 'bg-indigo-50 text-indigo-700 border-indigo-100',
-                  },
-                  {
-                    id: 'sem',
-                    view: 'sem',
-                    title: 'Sürekli Eğitim Merkezi (SEM)',
-                    desc: 'Sektörel sertifika programları ve mesleki uzmanlık modülleri',
-                    icon: <GraduationCap size={18} />,
-                    bg: 'bg-rose-50 text-rose-700 border-rose-100',
-                  },
-                  {
-                    id: 'staj',
-                    view: 'staj',
-                    title: 'İsteğe Bağlı Staj Paneli',
-                    desc: 'Resmî staj süreçleri, üniversite sigortası ve yönergeler',
-                    icon: <Briefcase size={18} />,
-                    bg: 'bg-teal-50 text-teal-700 border-teal-100',
-                  },
-                  {
-                    id: 'wallet',
-                    view: 'wallet',
-                    title: 'İESÜ Kampüs Cüzdan',
-                    desc: 'Başarı puanları (BP), yemekhane bakiyesi ve indirim kuponları',
-                    icon: <CreditCard size={18} />,
-                    bg: 'bg-cyan-50 text-cyan-700 border-cyan-100',
-                  },
-                  {
-                    id: 'campus_map',
-                    view: 'campus_map',
-                    title: '3D Metaverse Kampüs Haritası',
-                    desc: 'Canlı yoğunluk haritası, amfiler ve çalışma rotaları',
-                    icon: <Compass size={18} />,
-                    bg: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                  },
-                  {
-                    id: 'anka_chat',
-                    view: 'anka_chat',
-                    title: 'Anka Kariyer Danışmanı',
-                    desc: '7/24 kişiselleştirilmiş akıllı kariyer rehberliği',
-                    icon: <Sparkles size={18} />,
-                    bg: 'bg-red-50 text-[#990000] border-red-100',
-                  },
-                  {
-                    id: 'sksdb_lunch',
-                    view: 'sksdb_lunch',
-                    title: 'SKS Yemekhane Günlük Menü',
-                    desc: 'Günün tabldot menüsü, kalori ve besin değerleri',
-                    icon: <Clock size={18} />,
-                    bg: 'bg-amber-50 text-amber-700 border-amber-100',
-                  },
-                  {
-                    id: 'virtual_fair',
-                    view: 'virtual_fair',
-                    title: 'Sanal Kariyer Fuarı',
-                    desc: 'Lider işverenlerin dijital stantları ve canlı sunumlar',
-                    icon: <Globe size={18} />,
-                    bg: 'bg-blue-50 text-blue-700 border-blue-100',
-                  },
-                  {
-                    id: 'hackathon_market',
-                    view: 'hackathon_market',
-                    title: 'Hackathon & Proje Pazarı',
-                    desc: 'Takım kurun, yarışmalara katılın ve projelerinizi fonlayın',
-                    icon: <Zap size={18} />,
-                    bg: 'bg-violet-50 text-violet-700 border-violet-100',
-                  },
-                  {
-                    id: 'rewards',
-                    view: 'rewards',
-                    title: 'Ödül & Başarı Mağazası',
-                    desc: 'Aktivite puanlarınızla üniversite ayrıcalıklarına erişin',
-                    icon: <Star size={18} />,
-                    bg: 'bg-yellow-50 text-yellow-700 border-yellow-100',
-                  },
-                  {
-                    id: 'bidb_helpdesk',
-                    view: 'bidb_helpdesk',
-                    title: 'BİDB Teknik Destek Masası',
-                    desc: 'Kampüs Wi-Fi, e-posta ve bilgi işlem yardım talepleri',
-                    icon: <ShieldCheck size={18} />,
-                    bg: 'bg-slate-50 text-slate-700 border-slate-200',
-                  },
-                  {
-                    id: 'metaverse_library',
-                    view: 'metaverse_library',
-                    title: 'Metaverse Dijital Kütüphane',
-                    desc: 'Akademik veri tabanları, e-kitaplar ve sessiz çalışma odaları',
-                    icon: <BookOpen size={18} />,
-                    bg: 'bg-teal-50 text-teal-700 border-teal-100',
-                  }
-                ].map(tool => (
-                  <button
-                    key={tool.id}
-                    onClick={() => {
-                      setShowAllToolsModal(false);
-                      setView(tool.view);
-                    }}
-                    className="group flex flex-col items-start p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-[#990000]/40 hover:shadow-md transition-all text-left cursor-pointer"
-                  >
-                    <div className={`w-9 h-9 rounded-xl ${tool.bg} border flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs`}>
-                      {tool.icon}
-                    </div>
-                    <span className="text-xs font-bold text-slate-900 group-hover:text-[#990000] transition-colors leading-tight">
-                      {tool.title}
-                    </span>
-                    <span className="text-[11px] text-slate-600 mt-1 line-clamp-2 leading-relaxed font-medium">
-                      {tool.desc}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
-              <span className="text-xs font-bold text-slate-700">
-                Toplam 16 Ekosistem Servisi Aktif
-              </span>
-              <button 
-                onClick={() => setShowAllToolsModal(false)}
-                className="px-5 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition cursor-pointer"
-              >
-                Kapat
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
       {/* CAREER SHORTS FULLSCREEN MODAL */}
       {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
       
@@ -1183,7 +1000,7 @@ groups={groups}
         isOpen={Boolean(selectedMentorForRequest)}
         onClose={() => setSelectedMentorForRequest(null)}
         mentor={selectedMentorForRequest}
-        currentUser={currentUser}
+        currentUser={effectiveCurrentUser}
       />
     </div>
   );

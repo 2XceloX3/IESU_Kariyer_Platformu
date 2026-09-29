@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import { 
   Users, Trophy, Zap, Star, Search, Plus, Bell, ChevronRight, 
   Map, Activity, Heart, MessageCircle, Share2, Play, Building2,
@@ -446,7 +447,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               <X size={20} />
             </button>
             <div className="p-4 bg-gradient-to-b from-black/80 to-transparent absolute top-0 inset-x-0 flex items-center gap-3 z-10">
-              <img src={selectedStory.logo} alt="" className="w-10 h-10 rounded-full border border-amber-400" />
+              <SafeAvatar src={selectedStory.logo} name={selectedStory.name} size={40} className="w-10 h-10 rounded-full border border-amber-400" />
               <div>
                 <h4 className="text-xs font-black">{selectedStory.name}</h4>
                 <span className="text-[10px] text-amber-300 font-bold">{selectedStory.tag} Hikâyesi</span>

@@ -122,9 +122,12 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     }
   };
 
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
+
   // Check if current user has alumni assoc management privileges
   const isAssocAdmin = userRole === 'admin' || (alumniAssocBoard || []).some(m => 
-    m.email === currentUser?.email || m.name === currentUser?.name
+    m.email === effectiveCurrentUser?.email || m.name === effectiveCurrentUser?.name
   );
 
   const activePortalBranch = useAppStore(state => state?.activePortalBranch);
@@ -137,15 +140,15 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     (currentView === 'company' || currentView === 'employer') ? 'company' :
     (currentView === 'admin' || currentView === 'admin_cms' || currentView === 'yonetim_konsolu') ? 'admin' :
     (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
-    (activePortalBranch || currentUser?.role || 'student');
+    (activePortalBranch || effectiveCurrentUser?.role || 'student');
 
-  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin' || academicRole === 'super_admin';
+  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || academicRole === 'super_admin';
 
-  const branchUserName = currentUser?.name || (isAdmin ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
+  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
 
-  const branchUserAvatar = currentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : '/iesu-logo.svg');
+  const branchUserAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : '/iesu-logo.svg');
 
-  if (!currentUser) {
+  if (!effectiveCurrentUser) {
     return (
       <div className="flex items-center gap-2">
         <button 
@@ -366,6 +369,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
               {/* ADMIN QUICK ACTIONS */}
               <div className="py-1">
+                <button role="menuitem" onClick={() => { 
+                  setIsOpen(false); 
+                  if (setSelectedUserId) setSelectedUserId('admin_1513');
+                  useAppStore.getState().setSelectedUserId?.('admin_1513');
+                  setView?.('user_profile'); 
+                }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
+                  <User size={16} className="text-amber-600 group-hover:scale-110 transition-all duration-200" /> Kurumsal Profilim (KGM)
+                </button>
                 <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
                   <Calendar size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Takvim
                 </button>
@@ -388,7 +399,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <p className="text-sm font-black text-gray-900 truncate flex items-center gap-1 transition-all duration-200">
                     {branchUserName}
-                    {currentUser?.badge && <ShieldCheck size={14} className="text-red-500 shrink-0" title={currentUser?.badge} />}
+                    {effectiveCurrentUser?.badge && <ShieldCheck size={14} className="text-red-500 shrink-0" title={effectiveCurrentUser?.badge} />}
                   </p>
                 </div>
                 <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5 flex items-center gap-1 transition-all duration-200">
@@ -540,7 +551,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   onClick={() => { 
                     setIsOpen(false); 
                     const store = useAppStore.getState();
-                    const selfId = currentUser?.id || currentUser?.uid || currentUser?.studentNo || (effectiveBranch === 'alumni' ? 'ALU-001' : effectiveBranch === 'academic' ? 'ACAD-001' : effectiveBranch === 'company' ? 'CMP-001' : effectiveBranch === 'admin' ? 'admin_1513' : 'STU-001');
+                    const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
                     if (setSelectedUserId) setSelectedUserId(selfId);
                     if (store?.setSelectedUserId) store.setSelectedUserId(selfId);
                     setView?.('user_profile'); 
@@ -630,7 +641,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       )}
       </div>
       <BMICalculatorModal isOpen={showBmiModal} onClose={() => setShowBmiModal(false)} />
-      <CompanyManagementModal isOpen={showCompanyModal} onClose={() => setShowCompanyModal(false)} currentUser={currentUser} />
+      <CompanyManagementModal isOpen={showCompanyModal} onClose={() => setShowCompanyModal(false)} currentUser={effectiveCurrentUser} />
     </div>
   );
 }

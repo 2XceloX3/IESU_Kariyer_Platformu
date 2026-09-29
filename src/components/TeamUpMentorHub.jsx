@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import { Search, Users, Target, UserCheck, Star, ArrowRight, MessageCircle, Heart, Share2, MapPin, Briefcase, GraduationCap } from 'lucide-react';
 
 const mockTeams = [
@@ -133,7 +134,7 @@ export default function TeamUpMentorHub({ currentUser }) {
             <div key={team.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow group">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                  <img src={team.author.avatar} alt={team.author.name} className="w-10 h-10 rounded-full" />
+                  <SafeAvatar src={team.author.avatar} name={team.author.name} size={40} className="w-10 h-10 rounded-full" />
                   <div>
                     <h4 className="font-bold text-gray-900 text-sm">{team.author.name}</h4>
                     <p className="text-xs text-gray-500">{team.author.department} • {team.time}</p>
@@ -201,7 +202,7 @@ export default function TeamUpMentorHub({ currentUser }) {
               <div key={mentor.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:border-emerald-200 hover:shadow-md transition-all">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="relative shrink-0">
-                    <img src={mentor.avatar} alt={mentor.name} className="w-14 h-14 rounded-2xl object-cover" />
+                    <SafeAvatar src={mentor.avatar} name={mentor.name} size={56} className="w-14 h-14 rounded-2xl object-cover" />
                     {mentor.available && <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></span>}
                   </div>
                   <div className="min-w-0">

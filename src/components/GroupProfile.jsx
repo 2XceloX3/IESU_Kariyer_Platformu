@@ -1,10 +1,10 @@
 import React from 'react';
-import { Users, Info, ShieldCheck, MessageCircle, Calendar, Home, Compass, Briefcase } from 'lucide-react';
+import SafeAvatar from './shared/SafeAvatar';
+import { Users, Info, ShieldCheck, MessageCircle, Calendar, Home, Compass, Briefcase, ArrowLeft } from 'lucide-react';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
 import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
-import AdminOmniDock from './AdminOmniDock';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
@@ -52,11 +52,20 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
     <div className="min-h-screen bg-gray-50 pb-20 pt-16">
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
-            <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
-            <div className="hidden lg:block">
-              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setView('groups')}
+              className="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-[#990000] flex items-center justify-center transition border border-slate-200 cursor-pointer"
+              title="Topluluklara Dön"
+            >
+              <ArrowLeft size={16} />
+            </button>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}>
+              <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-10 w-auto hover:scale-105 transition-transform" />
+              <div className="hidden lg:block">
+                <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Topluluk Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+              </div>
             </div>
           </div>
           
@@ -75,7 +84,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
       {/* Cover Image */}
       <div className="h-48 md:h-64 bg-gray-200 w-full relative">
         {groupData.cover ? (
-          <img src={groupData.cover} alt="Cover" className="w-full h-full object-cover" />
+          <SafeAvatar src={groupData.cover} name={groupData.name} size={256} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-gradient-to-r from-red-700 to-red-900"></div>
         )}
@@ -86,7 +95,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-8 relative z-10">
           <div className="w-32 h-32 rounded-2xl bg-white border-4 border-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center">
             {groupData.logo ? (
-              <img src={groupData.logo} alt="Logo" className="w-full h-full object-cover" />
+              <SafeAvatar src={groupData.logo} name={groupData.name} size={128} className="w-full h-full object-cover" />
             ) : (
               <Users size={48} className="text-gray-500" />
             )}
@@ -148,15 +157,27 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
               </h3>
               <div className="space-y-3">
                 {[
-                  { title: 'Kulüp Başkanı', name: groupData.president || 'Ahmet Yılmaz', role: 'Öğrenci' },
-                  { title: 'Başkan Yardımcısı', name: groupData.vicePresident || 'Ayşe Demir', role: 'Öğrenci' },
-                  { title: 'Sayman', name: 'Can Özkan', role: 'Öğrenci' },
-                  { title: 'Sekreter', name: 'Zeynep Çelik', role: 'Öğrenci' }
-                ].map((boardMember, idx) => (
-                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={idx} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition cursor-pointer" onClick={() => { if (setSelectedUserId) setSelectedUserId('USR-3'); if (setView) setView('public_profile'); }}>
+                  { id: 'STU-001', title: 'Kulüp Başkanı', name: groupData.president || 'Ahmet Yılmaz', role: 'Öğrenci' },
+                  { id: 'STU-002', title: 'Başkan Yardımcısı', name: groupData.vicePresident || 'Ayşe Demir', role: 'Öğrenci' },
+                  { id: 'STU-003', title: 'Sayman', name: 'Can Özkan', role: 'Öğrenci' },
+                  { id: 'STU-004', title: 'Sekreter', name: 'Zeynep Çelik', role: 'Öğrenci' }
+                ].map((boardMember, idx) => {
+                  const effectiveUser = currentUser || useAppStore.getState().currentUser;
+                  const isSelf = !boardMember.id || boardMember.id === 'self' || (effectiveUser && (
+                    String(boardMember.id) === String(effectiveUser.id) ||
+                    String(boardMember.id) === String(effectiveUser.uid) ||
+                    (effectiveUser.name && boardMember.name && effectiveUser.name.trim().toLowerCase() === boardMember.name.trim().toLowerCase())
+                  ));
+                  const targetId = isSelf ? (effectiveUser?.id || boardMember.id) : boardMember.id;
+                  return (
+                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} key={idx} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition cursor-pointer" onClick={() => { 
+                    if (setSelectedUserId) setSelectedUserId(targetId); 
+                    useAppStore.getState().setSelectedUserId?.(targetId);
+                    if (setView) setView(isSelf ? 'user_profile' : 'public_profile'); 
+                  }}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0">
-                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(boardMember.name)}&background=0A2342&color=fff`} className="w-full h-full object-cover" alt="" />
+                        <SafeAvatar src={null} name={boardMember.name} size={40} className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <p className="font-bold text-gray-900 text-[13px]">{boardMember.name}</p>
@@ -164,7 +185,8 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -188,9 +210,7 @@ export default function GroupProfile({ userRole, groupId, groupData, currentUser
         </div>
       </div>
 
-      {effectiveRole === 'admin' ? (
-        <AdminOmniDock currentUser={currentUser} setView={setView} theme="amber" />
-      ) : (
+      {effectiveRole === 'admin' ? null : (
         <SubPanelFloatingDock 
           currentUser={currentUser} 
           setView={setView} 

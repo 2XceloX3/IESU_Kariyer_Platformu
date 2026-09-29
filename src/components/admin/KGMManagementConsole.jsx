@@ -876,7 +876,7 @@ export default function KGMManagementConsole({ setView, currentUser, academicRol
                       <button
                         onClick={() => {
                           if (setSelectedUserId) setSelectedUserId(activeItem.studentId);
-                          if (setView) setView('user_profile');
+                          if (setView) setView('public_profile');
                         }}
                         className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-700 hover:underline cursor-pointer"
                       >
@@ -1020,65 +1020,6 @@ export default function KGMManagementConsole({ setView, currentUser, academicRol
         </div>
 
       </div>
-
-      {/* ── FLOATING BOTTOM EXECUTIVE NAVIGATION DOCK (ALT PANEL - PURE ICON BUTTONS) ── */}
-      <nav 
-        aria-label="Merkezi Yönetim Alt Navigasyon Paneli"
-        className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up"
-      >
-        <div className="bg-white/95 backdrop-blur-2xl border-2 border-amber-400/70 shadow-[0_15px_40px_rgba(217,119,6,0.25)] p-2 sm:p-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 text-slate-800">
-          
-          {/* 1. Yönetici Akışına Geri Dön (Ev Butonu - Beyaz İkon) */}
-          <button
-            onClick={() => {
-              if (setView) setView('admin');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white flex items-center justify-center shadow-md shadow-amber-500/30 hover:scale-110 active:scale-95 transition-all cursor-pointer border border-yellow-200/60"
-            title="Ana Sayfa & Yönetici Akışına Dön (Feed)"
-          >
-            <Home size={22} className="text-white drop-shadow-xs" strokeWidth={2.3} />
-          </button>
-
-          <div className="h-6 w-px bg-slate-200" />
-
-          {/* 2. Full CMS Tabloları */}
-          <button
-            onClick={() => {
-              if (setView) setView('admin_cms');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-xs"
-            title="Tam CMS Yönetim Panelleri"
-          >
-            <Building2 size={20} strokeWidth={2.2} />
-          </button>
-
-          {/* 3. ATS Aday Takip Havuzu */}
-          <button
-            onClick={() => {
-              if (setView) setView('company_ats');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-200 flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-xs"
-            title="ATS Aday & Mülakat Panosu"
-          >
-            <Briefcase size={20} strokeWidth={2.2} />
-          </button>
-
-          <div className="h-6 w-px bg-slate-200" />
-
-          {/* 4. Excel / CSV Havuz İndir */}
-          <button
-            onClick={handleExportCSV}
-            className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center justify-center hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-xs"
-            title="Değerlendirme Havuzunu Excel/CSV Olarak İndir"
-          >
-            <Download size={20} strokeWidth={2.2} />
-          </button>
-
-        </div>
-      </nav>
 
     </div>
   );
