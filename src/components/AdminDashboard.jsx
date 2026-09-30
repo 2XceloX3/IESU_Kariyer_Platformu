@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
+import AdminOmniDock from './AdminOmniDock';
 
 import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
@@ -51,6 +52,8 @@ import CMSGallery from './admin/CMSGallery';
 import CMSPortfolios from './admin/CMSPortfolios';
 import CMSClubs from './admin/CMSClubs';
 import CMSIncubator from './admin/CMSIncubator';
+import CMSWorldMap from './admin/CMSWorldMap';
+import CMSFirestoreBackup from './admin/CMSFirestoreBackup';
 import AkademikPanel from './admin/AkademikPanel';
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
@@ -62,7 +65,7 @@ import {
   CheckCircle, XCircle, Plus, Trash2, Send, ArrowRight,
   UserCheck, BookOpen, FileText, Heart, Award, ShieldCheck, Library,
   TrendingUp, Activity, Eye, Edit, Newspaper, Database, UserPlus, ShieldAlert, Settings, MessageCircle, Wand2, Radio, Brain, Sparkles, Cloud, Code2, Palette,
-  Camera, Rocket
+  Camera, Rocket, Globe, Layers
 } from 'lucide-react';
 
 import { STUDENTS, ALUMNI, COMPANIES, ALUMNI_CARDS, JOBS_INIT, MENTORSHIPS_INIT, VOLUNTEER_INIT, MESSAGES_INIT, SURVEYS_INIT, SEM_INIT, NEWS_INIT, EVENTS_INIT, ORG } from '../data/mockAdminData';
@@ -255,11 +258,48 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
 //  SIDEBAR NAVIGATION CONFIG
 // ══════════════════════════════════════════════════════════════
 const PANEL_CATEGORIES = [
-  { id: 'genel', label: 'Genel Bakış', icon: <LayoutDashboard size={14}/>, panels: ['overview', 'basvuru_havuzu', 'operasyon', 'akademik'] },
-  { id: 'kullanici', label: 'Kullanıcı Yönetimi', icon: <Users size={14}/>, panels: ['students', 'alumni', 'companies', 'academic_staff', 'cms_staff', 'cms_clubs', 'user_types'] },
-  { id: 'icerik', label: 'İçerik & Platform Yönetimi', icon: <FileText size={14}/>, panels: ['ilan', 'cms_jobs', 'cms_feat', 'cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'sem', 'cms_portfolios', 'cms_gallery'] },
-  { id: 'kgm_danismanlik', label: 'Danışmanlık & TTO', icon: <UserCheck size={14}/>, panels: ['cms_career_counseling', 'mentorluk', 'cms_mentorship_pool', 'cms_incubator', 'cms_corporate_partnerships'] },
-  { id: 'sistem', label: 'Sistem & Analiz', icon: <Settings size={14}/>, panels: ['platform_ayarlari', 'analytics', 'anket', 'institutional_stats', 'site_editor', 'audit_log', 'entegrasyon'] }
+  { 
+    id: 'genel', 
+    label: 'Genel Bakış', 
+    icon: <LayoutDashboard size={14}/>, 
+    panels: ['overview', 'operasyon', 'basvuru_havuzu', 'aday_havuzu', 'mesajlar', 'cms_datapool', 'world_map'] 
+  },
+  { 
+    id: 'kullanici', 
+    label: 'Kullanıcı Yönetimi', 
+    icon: <Users size={14}/>, 
+    panels: ['students', 'alumni', 'companies', 'academic_staff', 'cms_staff', 'cms_clubs', 'mezun_dernek', 'kart', 'cms_groups', 'user_types'] 
+  },
+  { 
+    id: 'icerik', 
+    label: 'İçerik & Platform', 
+    icon: <FileText size={14}/>, 
+    panels: ['cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'kariyer_gunleri', 'content_import', 'mesajlar'] 
+  },
+  { 
+    id: 'kgm_danismanlik', 
+    label: 'Kariyer Danışmanlığı & Sektör', 
+    icon: <UserCheck size={14}/>, 
+    panels: ['cms_career_counseling', 'mentorluk', 'cms_ment', 'cms_mentorship_pool', 'cms_incubator', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs', 'akademik', 'akademik_radar', 'cms_ssp'] 
+  },
+  { 
+    id: 'sistem', 
+    label: 'Sistem & Analiz', 
+    icon: <Settings size={14}/>, 
+    panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'cms_message_audit', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp', 'firestore_backup'] 
+  },
+  {
+    id: 'tumu',
+    label: 'Tüm Paneller',
+    icon: <Layers size={14}/>,
+    panels: [
+      'overview', 'operasyon', 'basvuru_havuzu', 'aday_havuzu', 'mesajlar', 'cms_datapool', 'world_map',
+      'students', 'alumni', 'companies', 'academic_staff', 'cms_staff', 'cms_clubs', 'mezun_dernek', 'kart', 'cms_groups', 'user_types',
+      'cms_news', 'cms_ann', 'cms_events', 'etkinlik', 'cms_jobs', 'ilan', 'cms_feat', 'cms_portfolios', 'cms_gallery', 'gonullu', 'sem', 'academic_catalog', 'academic_approvals', 'kariyer_gunleri', 'content_import',
+      'cms_career_counseling', 'mentorluk', 'cms_ment', 'cms_mentorship_pool', 'cms_incubator', 'cms_corporate_partnerships', 'company_edu_requests', 'company_event_msgs', 'akademik', 'akademik_radar', 'cms_ssp',
+      'site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'analytics', 'anket', 'audit_log', 'cms_message_audit', 'entegrasyon', 'firestore_backup'
+    ]
+  }
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -417,6 +457,8 @@ export default function AdminDashboard({
       case 'cms_incubator': return <CMSIncubator />;
       case 'cms_message_audit': return <CMSMessageAudit currentUser={currentUser} setView={setView} />;
       case 'site_editor': return <CMSSiteEditor />;
+      case 'world_map': return <CMSWorldMap />;
+      case 'firestore_backup': return <CMSFirestoreBackup />;
       default:            return <OverviewPanel {...p}/>;
     }
   };
@@ -476,6 +518,8 @@ export default function AdminDashboard({
     { id: 'cms_clubs', icon: <Users size={14}/>, label: 'Öğrenci Kulüpleri & EK-1 Onay' },
     { id: 'cms_gallery', icon: <Camera size={14}/>, label: 'Medya & Etkinlik Galerisi' },
     { id: 'cms_message_audit', icon: <MessageSquare size={14}/>, label: 'Mesajlaşma & İletişim Denetimi', superAdminOnly: true },
+    { id: 'world_map', icon: <Globe size={14}/>, label: 'Dünyadaki Mezunlarımız' },
+    { id: 'firestore_backup', icon: <Cloud size={14}/>, label: 'Firestore Veri Yedekleme', superAdminOnly: true },
   ];
 
   const isSuperAdmin = academicRole === 'super_admin' || userRole === 'admin' || currentUser?.role === 'admin';

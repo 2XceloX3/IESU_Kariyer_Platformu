@@ -423,7 +423,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <button
                 onClick={() => setView('company_ats')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-blue-50/40 to-white hover:border-blue-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-blue-50/40 to-white hover:border-blue-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-blue-100/70 text-[#1e3a5f] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <Briefcase size={16} />
@@ -434,7 +434,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
               <button
                 onClick={() => setView('create_job')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-emerald-50/40 to-white hover:border-emerald-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-emerald-50/40 to-white hover:border-emerald-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-emerald-100/70 text-emerald-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <Plus size={16} />
@@ -445,7 +445,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
               <button
                 onClick={() => setView('jobs')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <ClipboardList size={16} />
@@ -456,7 +456,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
               <button
                 onClick={() => setView('network')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-purple-50/40 to-white hover:border-purple-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-purple-50/40 to-white hover:border-purple-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-purple-100/70 text-purple-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <Users size={16} />

@@ -278,7 +278,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               {/* 1. Kariyer Haritası */}
               <button
                 onClick={() => setView('career_roadmap')}
-                className="group flex flex-col items-start p-3.5 rounded-xl border border-blue-100 bg-linear-to-b from-blue-50/50 to-white hover:border-blue-300 hover:shadow-md transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3.5 rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50/50 to-white hover:border-blue-300 hover:shadow-md transition-all text-left cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs">
                   <Compass size={18} />
@@ -290,7 +290,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               {/* 2. Kariyer Testi */}
               <button
                 onClick={() => setView('career_test')}
-                className="group flex flex-col items-start p-3.5 rounded-xl border border-purple-100 bg-linear-to-b from-purple-50/50 to-white hover:border-purple-300 hover:shadow-md transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3.5 rounded-xl border border-purple-100 bg-gradient-to-b from-purple-50/50 to-white hover:border-purple-300 hover:shadow-md transition-all text-left cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs">
                   <Target size={18} />
@@ -302,7 +302,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               {/* 3. Kuluçka Merkezi */}
               <button
                 onClick={() => setView('startup_incubator')}
-                className="group flex flex-col items-start p-3.5 rounded-xl border border-amber-100 bg-linear-to-b from-amber-50/50 to-white hover:border-amber-300 hover:shadow-md transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3.5 rounded-xl border border-amber-100 bg-gradient-to-b from-amber-50/50 to-white hover:border-amber-300 hover:shadow-md transition-all text-left cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs">
                   <Rocket size={18} />
@@ -314,7 +314,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               {/* 4. Kulüpler Portalı */}
               <button
                 onClick={() => setView('club_portal')}
-                className="group flex flex-col items-start p-3.5 rounded-xl border border-rose-100 bg-linear-to-b from-red-50/50 to-white hover:border-red-300 hover:shadow-md transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3.5 rounded-xl border border-rose-100 bg-gradient-to-b from-red-50/50 to-white hover:border-red-300 hover:shadow-md transition-all text-left cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs">
                   <Users size={18} />

@@ -390,7 +390,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
                 className="space-y-6"
               >
                 {/* Header info bar */}
-                <div className="bg-linear-to-r from-[#990000] via-[#850000] to-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="bg-gradient-to-r from-[#990000] via-[#850000] to-slate-900 bg-[#990000] text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-400/20 px-2.5 py-0.5 rounded-full border border-amber-300/30">

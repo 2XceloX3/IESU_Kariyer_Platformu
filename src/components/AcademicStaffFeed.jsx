@@ -336,7 +336,7 @@ export default function AcademicStaffFeed({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <button
                 onClick={() => setView('research_hub')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-purple-50/40 to-white hover:border-purple-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-purple-50/40 to-white hover:border-purple-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-purple-100/70 text-[#7c3aed] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <BookOpen size={16} />
@@ -351,7 +351,7 @@ export default function AcademicStaffFeed({
                   setActiveTab('approvals');
                   window.scrollTo({ top: 300, behavior: 'smooth' });
                 }}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-indigo-50/40 to-white hover:border-indigo-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-indigo-50/40 to-white hover:border-indigo-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-indigo-100/70 text-indigo-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <Radar size={16} />
@@ -366,7 +366,7 @@ export default function AcademicStaffFeed({
                   setActiveTab('counseling');
                   window.scrollTo({ top: 300, behavior: 'smooth' });
                 }}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-teal-50/40 to-white hover:border-teal-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-teal-50/40 to-white hover:border-teal-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-teal-100/70 text-teal-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <UserCheck size={16} />
@@ -377,7 +377,7 @@ export default function AcademicStaffFeed({
 
               <button
                 onClick={() => setView('network')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <Users size={16} />

@@ -311,7 +311,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
                   setView('global_map');
                 }}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-emerald-50/40 to-white hover:border-emerald-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-emerald-50/40 to-white hover:border-emerald-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-emerald-100/70 text-[#059669] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <Globe size={16} />
@@ -325,7 +325,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   if (setShowCardModal) setShowCardModal(true);
                   else setView('alumni_card');
                 }}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-teal-50/40 to-white hover:border-teal-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-teal-50/40 to-white hover:border-teal-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-teal-100/70 text-teal-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <CreditCard size={16} />
@@ -340,7 +340,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                   if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
                   setView('mezun_dernek');
                 }}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-cyan-50/40 to-white hover:border-cyan-200 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-cyan-50/40 to-white hover:border-cyan-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-cyan-100/70 text-cyan-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <GraduationCap size={16} />
@@ -351,7 +351,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
               <button
                 onClick={() => setView('cvbuilder')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-linear-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
+                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <FileText size={16} />

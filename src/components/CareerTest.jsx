@@ -381,7 +381,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
             className="space-y-6"
           >
             {/* Top Persona Card */}
-            <div className="bg-linear-to-r from-[#990000] via-[#850000] to-slate-900 text-white rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
+            <div className="bg-gradient-to-r from-[#990000] via-[#850000] to-slate-900 bg-[#990000] text-white rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
               <div className="inline-block px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-white/20">
                 {persona.badge}
               </div>
@@ -597,7 +597,7 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
           <form onSubmit={handleSubmitForm} className="space-y-6">
             
             {/* Banner */}
-            <div className="bg-linear-to-r from-[#8F0808] to-[#990000] rounded-3xl p-6 sm:p-8 text-white shadow-md">
+            <div className="bg-gradient-to-r from-[#7A0000] via-[#8F0808] to-[#990000] bg-[#990000] rounded-3xl p-6 sm:p-8 text-white shadow-lg border border-red-900/30 relative overflow-hidden">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                   <Brain size={18} />

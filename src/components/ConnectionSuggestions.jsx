@@ -271,9 +271,9 @@ export default function ConnectionSuggestions({
                   }`}
                 >
                   {isFollowed ? (
-                    <> <Check size={12} /> Takipte </>
+                    <> <Check size={12} /> {effectiveBranch === 'company' ? 'Bağlantıda' : 'Takipte'} </>
                   ) : (
-                    <> <UserPlus size={12} /> Takip Et </>
+                    <> <UserPlus size={12} /> {effectiveBranch === 'company' ? 'Bağlantı Kur' : 'Takip Et'} </>
                   )}
                 </button>
               </div>
