@@ -412,16 +412,13 @@ export default function UserProfile({
           const allStudents = generateStudents ? generateStudents() : [];
           found = allStudents.find(s => s.id === targetUserId);
         }
-        const isSelfStudent = (isStudentBranch || effectiveCurrentUser?.role === 'student' || (!effectiveCurrentUser?.role && !isAlumniBranch && !isAcademicBranch && !isCompanyBranch)) && (
+        const isSelfStudent = (isStudentBranch || effectiveCurrentUser?.role === 'student') && (
           (!userId || userId === 'self' || userId === 'me') ||
-          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
-          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser.id || targetUserId === 'self')) ||
+          (effectiveCurrentUser?.uid && targetUserId === effectiveCurrentUser.uid) ||
           (effectiveCurrentUser?.studentId && (targetUserId === effectiveCurrentUser.studentId || found?.studentId === effectiveCurrentUser.studentId)) ||
           (effectiveCurrentUser?.studentNo && (targetUserId === effectiveCurrentUser.studentNo || found?.studentNo === effectiveCurrentUser.studentNo)) ||
-          (!targetUserId && (effectiveCurrentUser?.role === 'student' || !effectiveCurrentUser?.role)) ||
-          (targetUserId === 'STU-001' && (effectiveCurrentUser?.role === 'student' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'STU-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
-          (effectiveCurrentUser?.email && found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()) ||
-          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+          (effectiveCurrentUser?.email && found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase())
         );
         const studentData = isSelfStudent ? {
           id: effectiveCurrentUser?.id || targetUserId || 'STU-001',
@@ -661,7 +658,7 @@ export default function UserProfile({
             (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
             (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
           )) ||
-          (isAlumniBranch && (userId === 'self' || !userId || found.id === 'ALU-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+          (isAlumniBranch && (userId === 'self' || !userId) && effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)
         );
         setUser({ ...found, isSelf: Boolean(isMatchedSelf) }); 
         setUserType('alumni'); 
@@ -680,7 +677,7 @@ export default function UserProfile({
             (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
             (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
           )) ||
-          (isStudentBranch && (userId === 'self' || !userId || found.id === 'STU-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+          (isStudentBranch && (userId === 'self' || !userId) && effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)
         );
         setUser({ ...found, isSelf: isMatchedSelf }); 
         setUserType('student'); 

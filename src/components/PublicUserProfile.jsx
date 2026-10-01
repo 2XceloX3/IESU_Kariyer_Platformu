@@ -85,28 +85,28 @@ export default function PublicUserProfile({
     }
     if (currentBranch === 'student') {
       if (['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(targetStr) || ['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(userStr)) {
-        if (!effectiveCurrentUser?.id || ['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'student' || !effectiveCurrentUser.role) {
+        if (['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
           return true;
         }
       }
     }
     if (currentBranch === 'alumni') {
       if (['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(targetStr) || ['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(userStr)) {
-        if (!effectiveCurrentUser?.id || ['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'alumni' || !effectiveCurrentUser.role) {
+        if (['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
           return true;
         }
       }
     }
     if (currentBranch === 'academic') {
       if (['acad-001', 'acad-01', 'acad-1'].includes(targetStr) || ['acad-001', 'acad-01', 'acad-1'].includes(userStr)) {
-        if (!effectiveCurrentUser?.id || ['acad-001', 'acad-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'academic' || effectiveCurrentUser.role === 'academic_staff' || !effectiveCurrentUser.role) {
+        if (['acad-001', 'acad-01'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
           return true;
         }
       }
     }
     if (currentBranch === 'company') {
       if (['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(targetStr) || ['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(userStr)) {
-        if (!effectiveCurrentUser?.id || ['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser.role === 'admin' || effectiveCurrentUser.role === 'company' || effectiveCurrentUser.role === 'employer' || !effectiveCurrentUser.role) {
+        if (['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
           return true;
         }
       }

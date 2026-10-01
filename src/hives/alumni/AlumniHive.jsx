@@ -102,7 +102,7 @@ export default function AlumniHive({ currentUser, setView }) {
       case 'alumni_dao':
         return <AlumniDAO setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'global_map':
-        return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} />;
+        return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} previousView={previousView} />;
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'user_profile':
