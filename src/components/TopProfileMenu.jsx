@@ -93,21 +93,25 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     } catch {
       // The local session still needs to be cleared if Firebase is unavailable.
     }
-    // LocalStorage'ı tamamen temizle
+    // Zustand store'u sıfırla (persist middleware'den önce)
+    try {
+      const store = useAppStore?.getState?.();
+      store?.reset?.();          // tüm store state'ini sıfırlar
+      store?.setCurrentUser?.(null);
+      store?.setUserRole?.(null);
+    } catch { /* intentional */ }
+    // TÜM localStorage oturum anahtarlarını temizle
+    // (Zustand persist key dahil)
     const keysToRemove = [
       'iesu_mock_user', 'igu_mock_user',
       'iesu_user_role_v1', 'igu_user_role_v1',
       'iesu_view_v1', 'igu_view_v1',
+      'iesu_app_session_v1',       // ← Zustand persist key
+      'iesu_active_portal_branch', // ← portal branch key
     ];
     keysToRemove.forEach(k => window?.localStorage?.removeItem?.(k));
-    // Zustand store'u temizle
-    try {
-      const store = useAppStore?.getState?.();
-      store?.setCurrentUser?.(null);
-      store?.setUserRole?.(null);
-    } catch { /* intentional */ }
     setIsOpen(false);
-    // Tek yönlendirme — href değişimi sayfayı zaten sıfırdan yükler
+    // Tek yönlendirme — href değişimi sayfayı sıfırdan yükler
     window.location.href = '/';
   };
 
