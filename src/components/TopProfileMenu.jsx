@@ -93,26 +93,45 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     } catch {
       // The local session still needs to be cleared if Firebase is unavailable.
     }
-    // Zustand store'u sıfırla (persist middleware'den önce)
+
+    // 1) Zustand persist clearStorage — persist middleware'in kendi silme yolu
+    try {
+      useAppStore?.persist?.clearStorage?.();
+    } catch { /* intentional */ }
+
+    // 2) Zustand store state'ini sıfırla
     try {
       const store = useAppStore?.getState?.();
-      store?.reset?.();          // tüm store state'ini sıfırlar
+      store?.reset?.();
       store?.setCurrentUser?.(null);
       store?.setUserRole?.(null);
     } catch { /* intentional */ }
-    // TÜM localStorage oturum anahtarlarını temizle
-    // (Zustand persist key dahil)
+
+    // 3) App.jsx React state'ini de güncelle (portalda kalma sorununu önler)
+    try {
+      if (typeof setCurrentUser === 'function') setCurrentUser(null);
+    } catch { /* intentional */ }
+
+    // 4) TÜM localStorage oturum anahtarlarını temizle
     const keysToRemove = [
       'iesu_mock_user', 'igu_mock_user',
       'iesu_user_role_v1', 'igu_user_role_v1',
       'iesu_view_v1', 'igu_view_v1',
-      'iesu_app_session_v1',       // ← Zustand persist key
-      'iesu_active_portal_branch', // ← portal branch key
+      'iesu_app_session_v1',        // Zustand core persist key
+      'iesu_active_portal_branch',  // portal branch key
+      'iesu-career-shared-store',   // useSharedStore persist key
+      'iesu-career-admin-store',    // useAdminStore persist key
     ];
     keysToRemove.forEach(k => window?.localStorage?.removeItem?.(k));
+
     setIsOpen(false);
-    // Tek yönlendirme — href değişimi sayfayı sıfırdan yükler
-    window.location.href = '/';
+    // setCurrentUser(null) ile React state güncellendi, navigate ile gönder
+    // window.location.href yerine setView kullan — sayfa yenilemeden login'e yönlendirir
+    if (typeof setView === 'function') {
+      setView('login');
+    } else {
+      window.location.href = '/';
+    }
   };
 
   const getRoleLabel = (role) => {

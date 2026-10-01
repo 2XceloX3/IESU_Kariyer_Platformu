@@ -50,6 +50,14 @@ export default function App() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false), [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const { userRole, setUserRole, siteConfig, activePortalBranch, setActivePortalBranch } = useAppStore();
+  const storeCurrentUser = useAppStore((state) => state.currentUser);
+
+  // Zustand store'daki currentUser null'a düştüğünde (logout) React local state'i de senkronize et
+  useEffect(() => {
+    if (storeCurrentUser === null && currentUser !== null) {
+      setCurrentUser(null);
+    }
+  }, [storeCurrentUser, currentUser]);
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
   const isAdmin = !import.meta.env.DEV ? (Boolean(authenticatedUserId && (currentUser?.role === 'admin' || userRole === 'admin')) || (currentUser?.id === 'admin_1513' && currentUser?.role === 'admin')) : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
