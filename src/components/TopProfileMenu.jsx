@@ -93,18 +93,22 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     } catch {
       // The local session still needs to be cleared if Firebase is unavailable.
     }
-    window?.localStorage?.removeItem?.('iesu_mock_user');
-    window?.localStorage?.removeItem?.('igu_mock_user');
-    window?.localStorage?.removeItem?.('iesu_user_role_v1');
-    window?.localStorage?.removeItem?.('igu_user_role_v1');
-    window?.localStorage?.removeItem?.('iesu_view_v1');
-    window?.localStorage?.removeItem?.('igu_view_v1');
-    useAppStore?.getState?.()?.setUserRole?.(null);
+    // LocalStorage'ı tamamen temizle
+    const keysToRemove = [
+      'iesu_mock_user', 'igu_mock_user',
+      'iesu_user_role_v1', 'igu_user_role_v1',
+      'iesu_view_v1', 'igu_view_v1',
+    ];
+    keysToRemove.forEach(k => window?.localStorage?.removeItem?.(k));
+    // Zustand store'u temizle
+    try {
+      const store = useAppStore?.getState?.();
+      store?.setCurrentUser?.(null);
+      store?.setUserRole?.(null);
+    } catch {}
     setIsOpen(false);
-    if (window?.location) {
-      window.location.href = '/';
-      window.location.reload?.();
-    }
+    // Tek yönlendirme — href değişimi sayfayı zaten sıfırdan yükler
+    window.location.href = '/';
   };
 
   const getRoleLabel = (role) => {
