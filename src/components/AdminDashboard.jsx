@@ -147,8 +147,8 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
           <Tbl
             headers={['İlan','Firma','Tür','Durum']}
             rows={(jobs || []).slice(0,5).map(j=>[
-              <span className="font-semibold text-gray-900">{j?.title}</span>,
-              j?.company, <Badge status={j?.type}/>, <Badge status={j?.status}/>
+              <span key="title" className="font-semibold text-gray-900">{j?.title}</span>,
+              j?.company, <Badge key="type" status={j?.type}/>, <Badge key="status" status={j?.status}/>
             ])}
           />
         </Card>
@@ -224,9 +224,9 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
           : <Tbl
               headers={['İlan','Firma','Tür','Tarih','İşlem']}
               rows={(jobs || []).filter(j=>j?.status==='Beklemede').map(j=>[
-                <span className="font-bold text-gray-900">{j?.title}</span>,
-                j?.company, <Badge status={j?.type}/>, j?.date,
-                <div className="flex gap-2">
+                <span key="title" className="font-bold text-gray-900">{j?.title}</span>,
+                j?.company, <Badge key="type" status={j?.type}/>, j?.date,
+                <div key="actions" className="flex gap-2">
                   <BtnGreen onClick={()=>setJobs((jobs || []).map(x=>x.id===j?.id?{...x,status:'Yayında'}:x))}>Onayla</BtnGreen>
                   <BtnRed onClick={()=>setJobs((jobs || []).filter(x=>x.id!==j?.id))}>Reddet</BtnRed>
                 </div>
@@ -241,9 +241,9 @@ function OperasyonPanel({ jobs = [], setJobs, voluntaryInternships = [], setVolu
           : <Tbl
               headers={['Öğrenci','Firma','Pozisyon','Başlangıç','İşlem']}
               rows={(voluntaryInternships || []).filter(v=>v.status==='Onay Bekliyor').map(v=>[
-                <span className="font-bold">{v.student}</span>,
+                <span key="student" className="font-bold">{v.student}</span>,
                 v.company, v.position, v.startDate,
-                <div className="flex gap-2">
+                <div key="actions" className="flex gap-2">
                   <BtnGreen onClick={()=>setVoluntaryInternships((voluntaryInternships || []).map(x=>x.id===v.id?{...x,status:'Onaylı'}:x))}>Onayla</BtnGreen>
                   <BtnRed onClick={()=>setVoluntaryInternships((voluntaryInternships || []).map(x=>x.id===v.id?{...x,status:'Reddedildi'}:x))}>Reddet</BtnRed>
                 </div>

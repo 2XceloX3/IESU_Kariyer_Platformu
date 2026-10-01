@@ -88,7 +88,7 @@ class EventBus {
               context: `EventBus listener for "${event}"`,
               timestamp: isoTimestamp
             });
-          } catch (_) {}
+          } catch (_) { /* intentional */ }
         }
       }
     }

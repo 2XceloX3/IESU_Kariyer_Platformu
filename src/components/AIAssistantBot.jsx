@@ -4,6 +4,7 @@ import { Sparkles, X, MessageSquare, Send, ArrowRight, BookOpen, BrainCircuit, S
 import useAppStore from '../store/useAppStore';
 import { AIEngine, SelfLearningMemory } from '../data/AIEngine';
 import { generateAIResponse } from '../services/aiService';
+import { toast } from './shared/Toast';
 
 export default function AIAssistantBot({ currentUser }) {
   const navigate = useNavigate();

@@ -93,7 +93,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
-    } catch(e) {}
+    } catch(e) { /* intentional */ }
     return [
       { id: 'req_acad_1', studentName: 'Alperen Yılmaz', department: 'Yazılım Mühendisliği', academicianName: 'Prof. Dr. Ahmet Yılmaz', subject: 'Bitirme Projesi & Staj Denkleştirme', date: 'Bugün 14:00', status: 'Beklemede' },
       { id: 'req_acad_2', studentName: 'Ayşe Demir', department: 'Görsel İletişim Tasarımı', academicianName: 'Doç. Dr. Zeynep Çelik', subject: 'Portfolyo İncelemesi & Akademik Danışmanlık', date: 'Yarın 11:30', status: 'Beklemede' }
@@ -131,7 +131,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
     setCounselingRequests(updated);
     try {
       localStorage.setItem('iesu_mentorship_requests_v1', JSON.stringify(updated));
-    } catch(e) {}
+    } catch(e) { /* intentional */ }
     window.toast?.success?.("✅ Akademik randevu / danışmanlık talebi onaylandı.");
   };
 
@@ -140,7 +140,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
     setCounselingRequests(updated);
     try {
       localStorage.setItem('iesu_mentorship_requests_v1', JSON.stringify(updated));
-    } catch(e) {}
+    } catch(e) { /* intentional */ }
     window.toast?.info?.("Danışmanlık talebi iptal edildi.");
   };
 

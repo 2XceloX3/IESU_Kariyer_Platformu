@@ -179,7 +179,7 @@ export function initSharedStoreSubscriptions() {
     sharedStoreUnsubscribers.forEach((unsub) => {
       try {
         if (typeof unsub === 'function') unsub();
-      } catch (_) {}
+      } catch (_) { /* intentional */ }
     });
     sharedStoreUnsubscribers = [];
   }
@@ -218,7 +218,7 @@ export function initSharedStoreSubscriptions() {
     sharedStoreUnsubscribers.forEach((unsub) => {
       try {
         if (typeof unsub === 'function') unsub();
-      } catch (_) {}
+      } catch (_) { /* intentional */ }
     });
     sharedStoreUnsubscribers = [];
   };

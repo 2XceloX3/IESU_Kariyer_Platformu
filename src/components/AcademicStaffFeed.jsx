@@ -44,6 +44,7 @@ export default function AcademicStaffFeed({
   const setMessages = useAppStore(state => state.setMessages);
   const setAdminMessages = useAppStore(state => state.setAdminMessages);
   const [activeTab, setActiveTab] = useState('dashboard'); // dashboard, approvals, radar, messaging
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [isRadarOpen, setIsRadarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const internships = useAppStore(state => state.internships) || [];
@@ -69,7 +70,7 @@ export default function AcademicStaffFeed({
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
-    } catch (e) {}
+    } catch (e) { /* intentional */ }
     return [];
   });
   const [counselingSearch, setCounselingSearch] = useState('');
@@ -85,7 +86,7 @@ export default function AcademicStaffFeed({
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) setCounselingRequests(parsed);
         }
-      } catch (e) {}
+      } catch (e) { /* intentional */ }
     };
 
     const handleOpenTab = () => {
@@ -109,7 +110,7 @@ export default function AcademicStaffFeed({
     try {
       localStorage.setItem('iesu_mentorship_requests_v1', JSON.stringify(updatedList));
       window.dispatchEvent(new CustomEvent('iesu_counseling_updated'));
-    } catch (e) {}
+    } catch (e) { /* intentional */ }
   };
 
   const handleUpdateCounselingStatus = (id, newStatus) => {
@@ -1415,7 +1416,7 @@ export default function AcademicStaffFeed({
                           status: 'Onaylandı'
                         }
                       }));
-                    } catch (_) {}
+                    } catch (_) { /* intentional */ }
                     setSelectedDocModal(null);
                   }} 
                   className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"

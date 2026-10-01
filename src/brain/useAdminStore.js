@@ -677,7 +677,7 @@ export function initAdminStoreSubscriptions() {
     adminStoreUnsubscribers.forEach((unsub) => {
       try {
         if (typeof unsub === 'function') unsub();
-      } catch (_) {}
+      } catch (_) { /* intentional */ }
     });
     adminStoreUnsubscribers = [];
   }
@@ -703,7 +703,7 @@ export function initAdminStoreSubscriptions() {
     adminStoreUnsubscribers.forEach((unsub) => {
       try {
         if (typeof unsub === 'function') unsub();
-      } catch (_) {}
+      } catch (_) { /* intentional */ }
     });
     adminStoreUnsubscribers = [];
   };

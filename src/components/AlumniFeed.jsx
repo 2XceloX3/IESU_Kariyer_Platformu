@@ -69,6 +69,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const [cardForm, setCardForm] = useState({ tc: '', phone: '' });
   const [showEventsModal, setShowEventsModal] = useState(false);
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
+  const [stories, setStories] = useState([]);
+  const setMentorships = useAppStore(state => state.setMentorships) || null;
 
   // Guarantee Alumni branch isolation & auto-open evaluation questions
   useEffect(() => {

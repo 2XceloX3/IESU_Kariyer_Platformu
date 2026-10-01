@@ -202,7 +202,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     try {
       localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
       localStorage.setItem(`igu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
-    } catch (e) {}
+    } catch (e) { /* intentional */ }
     if (onUpdateProfile) {
       onUpdateProfile(cvData);
     } else {
