@@ -7,7 +7,7 @@ import {
   Mic, Briefcase, Wallet, Bot, CalendarCheck, Target, BarChart2, Award, Atom, Activity, Compass, Camera
 } from 'lucide-react';
 import Logo from './Logo';
-import useAppStore from '../store/useAppStore';
+import useAppStore, { coreStore } from '../store/useAppStore';
 import BMICalculatorModal from './BMICalculatorModal';
 import CompanyManagementModal from './CompanyManagementModal';
 import SafeAvatar from './shared/SafeAvatar';
@@ -94,9 +94,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       // The local session still needs to be cleared if Firebase is unavailable.
     }
 
-    // 1) Zustand persist clearStorage — persist middleware'in kendi silme yolu
+    // 1) Zustand persist clearStorage — coreStore üzerinden (facade'da persist yok)
     try {
-      useAppStore?.persist?.clearStorage?.();
+      coreStore?.persist?.clearStorage?.();
     } catch { /* intentional */ }
 
     // 2) Zustand store state'ini sıfırla
