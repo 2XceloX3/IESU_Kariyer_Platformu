@@ -52,10 +52,14 @@ export default function App() {
   const { userRole, setUserRole, siteConfig, activePortalBranch, setActivePortalBranch } = useAppStore();
   const storeCurrentUser = useAppStore((state) => state.currentUser);
 
-  // Zustand store'daki currentUser null'a düştüğünde (logout) React local state'i de senkronize et
+  // Zustand store'daki currentUser null'a düştüğünde (logout) React local state'i de senkronize et.
+  // SADECE localStorage'da da kullanıcı kalmamışsa tetikle — ilk yüklemede race condition önlenir.
   useEffect(() => {
     if (storeCurrentUser === null && currentUser !== null) {
-      setCurrentUser(null);
+      const lsUser = localStorage.getItem('iesu_mock_user') || localStorage.getItem('igu_mock_user');
+      if (!lsUser) {
+        setCurrentUser(null);
+      }
     }
   }, [storeCurrentUser, currentUser]);
   const effectiveRole = currentUser?.role || userRole || null;
