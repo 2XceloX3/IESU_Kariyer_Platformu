@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wand2, UserCheck } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import SafeAvatar from './shared/SafeAvatar';
 
 export default function AIMatchmaker({ alumniList = [], setView, setSelectedUserId, currentUser, onSelectMentor }) {
   const [isMatching, setIsMatching] = useState(false);
@@ -78,11 +79,11 @@ export default function AIMatchmaker({ alumniList = [], setView, setSelectedUser
           animate={{ scale: 1, opacity: 1, y: 0 }}
           className="bg-white p-4 rounded-2xl shadow-sm border border-indigo-100 flex items-center gap-3"
         >
-          <img 
-            src={match.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(match.name || 'Mentor')}&background=990000&color=fff`} 
-            onError={(e) => { e.currentTarget.src = '/iesu-logo.svg'; }}
+          <SafeAvatar 
+            src={match.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(match.name || 'Mentor')}&background=990000&color=fff`}
+            name={match.name || 'Mentor'}
+            size={48}
             className="w-12 h-12 rounded-full border-2 border-indigo-100 object-cover" 
-            alt="Mentor" 
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">

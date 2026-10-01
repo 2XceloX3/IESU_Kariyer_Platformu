@@ -420,6 +420,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
               <div className="w-24 h-32 bg-white border-2 border-gray-200 rounded overflow-hidden flex items-center justify-center shrink-0 shadow-sm p-1">
                 <img 
                   src={((cvData || {})?.photo && !photoError) ? (cvData || {})?.photo : '/iesu-logo.svg'} 
+                  alt={cvData?.name || 'Profil fotoğrafı'}
                   className="w-full h-full object-contain" 
                   alt="Kurumsal Fotoğraf" 
                   onError={() => setPhotoError(true)}

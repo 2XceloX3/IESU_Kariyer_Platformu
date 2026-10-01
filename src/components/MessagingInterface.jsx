@@ -1204,7 +1204,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                       {msg.type === 'video' && <video src={msg.mediaUrl} controls className="max-w-full rounded-xl"/>}
                       {msg.type === 'audio' && (
                         <div className="flex items-center gap-3 p-2 bg-black/5 rounded-xl min-w-[200px]">
-                          <button className="w-10 h-10 bg-[#00A884] rounded-full flex items-center justify-center text-white"><Play size={20} className="ml-1"/></button>
+                          <button aria-label="Sesli mesajı oynat" className="w-10 h-10 bg-[#00A884] rounded-full flex items-center justify-center text-white"><Play size={20} className="ml-1"/></button>
                           <div className="flex-1"><div className="h-1 bg-gray-300 w-full"><div className="h-full bg-[#00A884] w-1/3"></div></div></div>
                         </div>
                       )}
@@ -1298,9 +1298,9 @@ export default function MessagingInterface({ previousView, currentUser, userRole
 
               <div className="shrink-0 mb-1.5">
                 {newMessage.trim() ? (
-                  <button onClick={handleSend} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md"><Send size={20} className="ml-1"/></button>
+                  <button onClick={handleSend} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md" aria-label="Mesaj gönder"><Send size={20} className="ml-1"/></button>
                 ) : (
-                  <button onClick={() => setIsRecordingVoice(!isRecordingVoice)} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md"><Mic size={20}/></button>
+                  <button onClick={() => setIsRecordingVoice(!isRecordingVoice)} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md" aria-label={isRecordingVoice ? 'Kaydı durdur' : 'Sesli mesaj kaydet'}><Mic size={20}/></button>
                 )}
               </div>
             </div>

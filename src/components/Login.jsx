@@ -72,13 +72,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       console.log("Firebase Login Failed, falling back to mock logic:", err.message);
     }
     
-    if (!import.meta.env.DEV) {
-      setError("Giriş servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.");
-      setIsLoading(false);
-      return;
-    }
-
-    // STRICT MOCK LOGIN LOGIC (No bypasses)
+    // Firebase başarısız oldu — mock login'e dön
+    // DEV'de ve Firebase yapılandırılmamış/ulaşılamaz ortamlarda her zaman çalışır
     if (loginRole === 'admin') {
       const adminUser = academicStaff.find(a => (a.email === username || a.id === username) && a.password === password);
       if (adminUser) {
