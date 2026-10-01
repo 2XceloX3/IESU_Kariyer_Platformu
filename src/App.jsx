@@ -70,12 +70,12 @@ export default function App() {
   useEffect(() => {
     if (currentUser) {
       ['iesu_mock_user', 'igu_mock_user'].forEach(k => localStorage.setItem(k, JSON.stringify(currentUser)));
-      try { useAppStore.getState().setCurrentUser(currentUser); } catch {}
+      try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
       if (currentUser.role !== 'admin') setActivePortalBranch?.(currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
     } else {
       ['iesu_mock_user', 'igu_mock_user', 'iesu_user_role_v1', 'igu_user_role_v1'].forEach(k => localStorage.removeItem(k));
-      try { useAppStore.getState().setCurrentUser(null); } catch {}
+      try { useAppStore.getState().setCurrentUser(null); } catch { /* store may not be ready */ }
     }
   }, [currentUser, userRole, setUserRole, setActivePortalBranch]);
 

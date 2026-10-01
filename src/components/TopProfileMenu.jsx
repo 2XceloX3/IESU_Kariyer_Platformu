@@ -105,7 +105,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       const store = useAppStore?.getState?.();
       store?.setCurrentUser?.(null);
       store?.setUserRole?.(null);
-    } catch {}
+    } catch { /* intentional */ }
     setIsOpen(false);
     // Tek yönlendirme — href değişimi sayfayı zaten sıfırdan yükler
     window.location.href = '/';

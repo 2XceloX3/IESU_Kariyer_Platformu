@@ -68,7 +68,7 @@ export const coreStore = create(
       setActivePortalBranch: (branch) => {
         try {
           if (typeof window !== 'undefined') localStorage.setItem('iesu_active_portal_branch', branch);
-        } catch {}
+        } catch { /* intentional */ }
         set({ activePortalBranch: branch });
       },
 
@@ -121,7 +121,7 @@ export const coreStore = create(
 
         try {
           useAdminStore.getState().logAuditAction?.(cleanUser, cleanAction, cleanModule, cleanLevel, entry.metadata);
-        } catch {}
+        } catch { /* intentional */ }
       },
 
       // Secondary session / UI helpers for backwards compatibility
@@ -162,8 +162,8 @@ export const coreStore = create(
           focusMode: false,
           ghostMode: false
         });
-        try { useSharedStore.getState().reset?.(); } catch {}
-        try { useAdminStore.getState().reset?.(); } catch {}
+        try { useSharedStore.getState().reset?.(); } catch { /* intentional */ }
+        try { useAdminStore.getState().reset?.(); } catch { /* intentional */ }
       }
     }),
     {

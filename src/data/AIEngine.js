@@ -651,7 +651,7 @@ export const SelfLearningMemory = {
   },
 
   _saveMemory: (key, data) => {
-    try { localStorage.setItem(key, JSON.stringify(data)); } catch {}
+    try { localStorage.setItem(key, JSON.stringify(data)); } catch { /* intentional */}
   },
 
   // ── B. KONUŞMA KAYDI (Conversation Logger) ──
