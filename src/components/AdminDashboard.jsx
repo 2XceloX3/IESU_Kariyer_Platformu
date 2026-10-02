@@ -630,11 +630,20 @@ export default function AdminDashboard({
       </div>
 
       {/* ── İÇERİK ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-12">
+      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-24">
         <main className="flex-1 bg-transparent">
           {renderPanel()}
         </main>
       </div>
+
+      {/* 👑 KGM SÜPER YÖNETİCİ DOCK */}
+      <AdminOmniDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        activeTab="cms"
+        theme="amber" 
+      />
     </div>
   );
 }

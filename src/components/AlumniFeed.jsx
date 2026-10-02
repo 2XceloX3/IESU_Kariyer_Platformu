@@ -21,6 +21,7 @@ import AlumniSurveys from './AlumniSurveys';
 import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
 import SafeAvatar from './shared/SafeAvatar';
+import FooterModals from './FooterModals';
 
 export default function AlumniFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
   const posts = useAppStore(state => state.posts);
@@ -549,14 +550,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
           {/* PROFESSIONAL RIGHT SIDEBAR FOOTER */}
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-6 text-[12px] text-gray-500 font-medium px-4 text-center">
-            <button onClick={() => setFooterModal('about')} className="hover:text-[#990000] transition-colors cursor-pointer">Hakkımızda</button>
-            <button onClick={() => setFooterModal('accessibility')} className="hover:text-[#990000] transition-colors cursor-pointer">Erişilebilirlik</button>
-            <button onClick={() => setFooterModal('help')} className="hover:text-[#990000] transition-colors cursor-pointer">Yardım Merkezi</button>
-            <button onClick={() => setFooterModal('privacy')} className="hover:text-[#990000] transition-colors cursor-pointer">Gizlilik ve Şartlar</button>
-            <button onClick={() => setFooterModal('ads')} className="hover:text-[#990000] transition-colors cursor-pointer">Reklam Seçenekleri</button>
-            <button onClick={() => setFooterModal('careers')} className="hover:text-[#990000] transition-colors cursor-pointer">Kariyer</button>
+            <button onClick={() => setFooterModal('about')} className="hover:text-emerald-700 transition-colors cursor-pointer">Hakkımızda</button>
+            <button onClick={() => setFooterModal('accessibility')} className="hover:text-emerald-700 transition-colors cursor-pointer">Erişilebilirlik</button>
+            <button onClick={() => setFooterModal('help')} className="hover:text-emerald-700 transition-colors cursor-pointer">Yardım Merkezi</button>
+            <button onClick={() => setFooterModal('privacy')} className="hover:text-emerald-700 transition-colors cursor-pointer">Gizlilik ve Şartlar</button>
+            <button onClick={() => setFooterModal('ads')} className="hover:text-emerald-700 transition-colors cursor-pointer">Reklam Seçenekleri</button>
+            <button onClick={() => setFooterModal('careers')} className="hover:text-emerald-700 transition-colors cursor-pointer">Kariyer</button>
             <div className="w-full flex items-center justify-center gap-1 mt-2">
-              <span className="font-bold text-[#990000]">İESÜ Kariyer Portalı</span>
+              <span className="font-bold text-emerald-700">İESÜ Mezunlar Portalı</span>
               <span>© 2026</span>
             </div>
           </div>
@@ -903,6 +904,9 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
       {/* CAREER SHORTS FULLSCREEN MODAL */}
       {showShorts && <CareerShorts setView={setView} onClose={() => setShowShorts(false)} />}
+
+      {/* INTERACTIVE FOOTER MODALS */}
+      <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} setView={setView} />
     </div>
   );
 }

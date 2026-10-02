@@ -3,7 +3,7 @@ import {
   Briefcase, Search, Plus, MoreHorizontal, ShieldCheck, 
   MessageSquare, FileText, Clock, X, Phone, Mail, GraduationCap, CheckCircle2,
   Users, Download, LayoutGrid, List, MessageCircle, ExternalLink, Printer,
-  Sparkles, Check, ChevronDown, Award, TrendingUp, Building2, Home
+  Sparkles, Check, ChevronDown, Award, TrendingUp, Building2, Home, ArrowLeft
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import eventBus from '../brain/eventBus';
@@ -171,6 +171,17 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
   const [deptFilter, setDeptFilter] = useState('Tümü');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
 
+  const handleReturn = () => {
+    const store = useAppStore.getState();
+    const role = currentUser?.role || store.userRole;
+    const targetBranch = (role === 'admin' || currentUser?.id === 'admin_1513') 
+      ? 'admin' 
+      : (role === 'student' ? 'student' : (role === 'alumni' ? 'alumni' : (role === 'academic' ? 'academic' : 'company')));
+    if (store.setActivePortalBranch) store.setActivePortalBranch(targetBranch);
+    if (setView) setView(targetBranch);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Connect to Zustand applications store for real-time applications
   const applications = useAppStore(state => state.applications) || [];
   const setApplications = useAppStore(state => state.setApplications);
@@ -249,9 +260,9 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
   const filteredApplicantsList = useMemo(() => {
     return allApplicants.filter(app => {
       const matchesSearch = 
-        app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (app.dept && app.dept.toLowerCase().includes(searchQuery.toLowerCase()));
+        (app.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (app.role || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (app.dept || '').toLowerCase().includes(searchQuery.toLowerCase());
       
       const colId = statusToColumnId(app.rawStatus || app.status);
       const appStatus = columnIdToStatus(colId);
@@ -372,25 +383,30 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
       <header className="bg-white/95 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           
-          {/* Sol: Üniversite Logo & Kurumsal Başlık */}
-          <div 
-            onClick={() => {
-              const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              if (setView) setView('company');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="flex items-center gap-2.5 min-w-0 cursor-pointer"
-            title="Firma Paneline Dön"
-          >
-            <Logo color="blue" className="h-9 w-auto shrink-0 hover:scale-105 transition-transform" />
-            <div className="text-left min-w-0">
-              <h1 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight leading-tight truncate">
-                İstanbul Esenyurt Üniversitesi
-              </h1>
-              <p className="text-[10px] font-extrabold text-blue-900 uppercase tracking-wider truncate">
-                Kariyer Geliştirme Koordinatörlüğü • Kurumsal ATS Masası
-              </p>
+          {/* Sol: Üniversite Logo & Kurumsal Başlık & Geri Dönüş */}
+          <div className="flex items-center gap-3 min-w-0">
+            <button 
+              onClick={handleReturn}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition cursor-pointer shrink-0"
+              title="Geri Dön"
+            >
+              <ArrowLeft size={15} />
+              <span className="hidden sm:inline">Geri</span>
+            </button>
+            <div 
+              onClick={handleReturn}
+              className="flex items-center gap-2.5 min-w-0 cursor-pointer"
+              title="Paneline Dön"
+            >
+              <Logo color="blue" className="h-9 w-auto shrink-0 hover:scale-105 transition-transform" />
+              <div className="text-left min-w-0">
+                <h1 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight leading-tight truncate">
+                  İstanbul Esenyurt Üniversitesi
+                </h1>
+                <p className="text-[10px] font-extrabold text-blue-900 uppercase tracking-wider truncate">
+                  Kariyer Geliştirme Koordinatörlüğü • Kurumsal ATS Masası
+                </p>
+              </div>
             </div>
           </div>
 
@@ -993,16 +1009,11 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[45] animate-fade-in-up w-[95%] max-w-[420px]">
         <div className="bg-white/95 backdrop-blur-2xl border-2 border-blue-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(10,35,66,0.22)] flex items-center justify-between px-4 text-slate-800">
           
-          {/* 1. FİRMA PANELİNE / KURUMSAL AKIŞA DÖNÜŞ (ANA SAYFA BUTONU - İSİMSİZ, TEMİZ İKON) */}
+          {/* 1. KURUMSAL AKIŞ / ANA SAYFAYA DÖNÜŞ */}
           <button 
-            onClick={() => {
-              const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              if (setView) setView('company');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }} 
+            onClick={handleReturn} 
             className="p-2.5 rounded-full bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white shadow-md shadow-blue-950/40 flex items-center justify-center cursor-pointer hover:scale-105 transition-all" 
-            title="Kurumsal Akış & Ana Sayfaya Dön"
+            title="Akış & Ana Sayfaya Dön"
           >
             <Home size={22} strokeWidth={2.2} />
           </button>

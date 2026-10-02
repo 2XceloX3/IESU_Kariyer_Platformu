@@ -823,9 +823,16 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                           onMouseLeave={() => setTooltipContent("")}
                           onClick={() => {
                             try {
-                              const countryHub = (hubs || []).find(h => h && matchCountryToTopo(countryName, h.country));
+                              const countryMatchingHubs = (hubs || []).filter(h => h && matchCountryToTopo(countryName, h.country));
+                              const countryHub = countryMatchingHubs.find(h => h.id === 'hub_istanbul' || (h.city && h.city.toLowerCase() === 'istanbul')) || 
+                                [...countryMatchingHubs].sort((a, b) => ((b.alumniList || []).length) - ((a.alumniList || []).length))[0];
+
                               if (countryHub && Array.isArray(countryHub.coordinates) && countryHub.coordinates.length >= 2) {
-                                handleHubSelect(countryHub);
+                                const allCountryAlumni = countryMatchingHubs.flatMap(h => h.alumniList || []);
+                                const enrichedHub = allCountryAlumni.length > (countryHub.alumniList || []).length
+                                  ? { ...countryHub, alumniList: allCountryAlumni, count: allCountryAlumni.length }
+                                  : countryHub;
+                                handleHubSelect(enrichedHub);
                               } else {
                                 const countryObj = SUPPORTED_COUNTRIES.find(c => matchCountryToTopo(countryName, c.name));
                                 if (countryObj && Array.isArray(countryObj.center) && countryObj.center.length >= 2) {

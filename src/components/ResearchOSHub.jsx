@@ -184,8 +184,12 @@ export default function ResearchOSHub({ setView, currentUser, userRole, setSelec
 
   const handleReturnToAcademic = () => {
     const store = useAppStore.getState();
-    if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-    if (setView) setView('academic');
+    const role = currentUser?.role || store.userRole;
+    const targetBranch = (role === 'admin' || currentUser?.id === 'admin_1513') 
+      ? 'admin' 
+      : (role === 'student' ? 'student' : (role === 'alumni' ? 'alumni' : (role === 'company' ? 'company' : 'academic')));
+    if (store.setActivePortalBranch) store.setActivePortalBranch(targetBranch);
+    if (setView) setView(targetBranch);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -1200,16 +1204,11 @@ export default function ResearchOSHub({ setView, currentUser, userRole, setSelec
       <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[340px]">
         <div className="bg-white/95 backdrop-blur-2xl border-2 border-purple-200 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(76,29,149,0.2)] flex items-center justify-around px-4 text-gray-800">
           
-          {/* 1. Akademik Akış & Ana Sayfa */}
+          {/* 1. Akış & Ana Sayfa */}
           <button 
-            onClick={() => {
-              const store = useAppStore.getState();
-              if (store.setActivePortalBranch) store.setActivePortalBranch('academic');
-              if (setView) setView('academic');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }} 
+            onClick={handleReturnToAcademic} 
             className="p-2.5 rounded-full bg-purple-50 text-purple-900 hover:bg-[#4C1D95] hover:text-white transition flex items-center justify-center cursor-pointer hover:scale-105" 
-            title="Akademik Akış & Ana Sayfa"
+            title="Akış & Ana Sayfa"
           >
             <Home size={22} strokeWidth={2.2} />
           </button>

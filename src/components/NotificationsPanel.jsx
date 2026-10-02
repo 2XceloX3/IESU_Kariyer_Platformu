@@ -59,6 +59,9 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
 
 
   const isCompany = userRole === 'company' || userRole === 'employer' || currentUser?.role === 'company' || currentUser?.role === 'employer';
+  const isAlumni = userRole === 'alumni' || currentUser?.role === 'alumni' || activePortalBranch === 'alumni';
+  const isAcademic = userRole === 'academic' || userRole === 'academic_staff' || currentUser?.role === 'academic' || currentUser?.role === 'academic_staff';
+  const isAdmin = userRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513';
 
   // Seed default notifications if empty for rich experience
   const displayNotifications = useMemo(() => {
@@ -94,8 +97,121 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
         }
       ];
     }
-    return [];
-  }, [myNotifications, isCompany]);
+    if (isAlumni) {
+      return [
+        {
+          id: 'nalum1',
+          title: 'Küresel Mezun Ağına Hoş Geldiniz',
+          description: 'Dünya haritasındaki profiliniz ve yetkinlik rozetleriniz güncellendi.',
+          type: 'system',
+          timestamp: Date.now() - 7200000,
+          read: false,
+          link: 'global_map'
+        },
+        {
+          id: 'nalum2',
+          title: 'Yeni Birebir Mentorluk Talebi',
+          description: 'Bilgisayar Mühendisliği öğrencisi Alperen Yılmaz sizinle kariyer görüşmesi talep etti.',
+          type: 'event',
+          timestamp: Date.now() - 86400000,
+          read: false,
+          link: 'mbs'
+        },
+        {
+          id: 'nalum3',
+          title: 'Yıllık Mezunlar Buluşması Takvimi',
+          description: 'İESÜ Mezunlar Derneği yıllık buluşma ve kariyer zirvesi programı yayınlandı.',
+          type: 'event',
+          timestamp: Date.now() - 259200000,
+          read: true,
+          link: 'alumni_assoc_portal'
+        }
+      ];
+    }
+    if (isAdmin) {
+      return [
+        {
+          id: 'nadm1',
+          title: 'Onay Bekleyen 3 Firma İlanı Var',
+          description: 'Kurumsal firmalar tarafından oluşturulan 3 yeni pozisyon onay kuyruğunda bekliyor.',
+          type: 'system',
+          timestamp: Date.now() - 3600000,
+          read: false,
+          link: 'jobs'
+        },
+        {
+          id: 'nadm2',
+          title: 'Yeni Sanal Fuar Katılım Talebi',
+          description: 'Trendyol ve Aselsan, Kariyer Fuarı stant yerleşim onayını iletti.',
+          type: 'application',
+          timestamp: Date.now() - 43200000,
+          read: false,
+          link: 'admin'
+        },
+        {
+          id: 'nadm3',
+          title: 'Sistem Haftalık Denetim Özeti',
+          description: 'Bu hafta 120 yeni öğrenci profili ve 8 yeni staj protokolü onaylandı.',
+          type: 'system',
+          timestamp: Date.now() - 172800000,
+          read: true,
+          link: 'admin'
+        }
+      ];
+    }
+    if (isAcademic) {
+      return [
+        {
+          id: 'nacad1',
+          title: 'Yeni Tez & Danışmanlık Randevusu',
+          description: 'Öğrenciniz Zeynep Kaya bitirme projesi danışmanlığı için randevu talep etti.',
+          type: 'event',
+          timestamp: Date.now() - 7200000,
+          read: false,
+          link: 'academic'
+        },
+        {
+          id: 'nacad2',
+          title: 'TÜBİTAK & BAP Çağrısı Yayında',
+          description: 'Kariyer ve Araştırma Merkezi yeni dönem proje fon çağrısını duyurdu.',
+          type: 'system',
+          timestamp: Date.now() - 86400000,
+          read: true,
+          link: 'research_hub'
+        }
+      ];
+    }
+    // Default: Student
+    return [
+      {
+        id: 'nstu1',
+        title: 'Kariyer Fuarı Başvuruları Başladı',
+        description: 'İESÜ 2026 Sanal Kariyer ve İstihdam Fuarı stant kayıtları açıldı.',
+        type: 'event',
+        timestamp: Date.now() - 3600000,
+        read: false,
+        link: 'virtual_fair'
+      },
+      {
+        id: 'nstu2',
+        title: 'Staj Başvurunuz İnceleniyor',
+        description: 'Trendyol - Frontend Developer staj başvurunuz İK ekibi tarafından inceleniyor.',
+        type: 'application',
+        timestamp: Date.now() - 86400000,
+        read: false,
+        link: 'staj'
+      },
+      {
+        id: 'nstu3',
+        title: 'Yeni Mentorluk Eşleşmesi',
+        description: 'Sektör mentorunuz Caner Öztürk ile tanışma seansı oluşturuldu.',
+        type: 'event',
+        timestamp: Date.now() - 172800000,
+        read: true,
+        link: 'mentor_match'
+      }
+    ];
+  }, [myNotifications, isCompany, isAlumni, isAdmin, isAcademic]);
 
   const [activeCategory, setActiveCategory] = useState('all');
 

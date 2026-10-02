@@ -102,13 +102,19 @@ export default function UserProfile({
       return true;
     }
 
-    // 4. Öğrenci dalında öğrencinin varsayılan profil kimliği
+    // 4. Kimlik kontrolü - Açık bir ID belirtilmişse ve kullanıcının ID'sinden farklıysa ASLA self değildir
     const targetStr = String(userId || '').trim().toLowerCase();
     const userStr = String(user?.id || '').trim().toLowerCase();
+    const curIdStr = String(effectiveCurrentUser?.id || effectiveCurrentUser?.uid || '').trim().toLowerCase();
+
+    if (userId && userId !== 'self' && userId !== 'me') {
+      if (curIdStr && (targetStr === curIdStr || userStr === curIdStr)) return true;
+      if (curIdStr && targetStr !== curIdStr) return false;
+    }
 
     if ((isStudentBranch || effectiveCurrentUser?.role === 'student' || (!effectiveCurrentUser?.role && profileType === 'student')) && (
       !userId || userId === 'self' || userId === 'me' ||
-      ((['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(targetStr) || ['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'student' || !effectiveCurrentUser?.role)) ||
+      ((['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(targetStr) || ['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role)) ||
       targetStr.startsWith('mock_stu') || userStr.startsWith('mock_stu')
     )) {
       return true;
@@ -117,7 +123,7 @@ export default function UserProfile({
     // 5. Mezun dalında mezun kimliği
     if ((isAlumniBranch || effectiveCurrentUser?.role === 'alumni' || (!effectiveCurrentUser?.role && profileType === 'alumni')) && (
       !userId || userId === 'self' || userId === 'me' ||
-      ((['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(targetStr) || ['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(userStr)) && (!effectiveCurrentUser?.id || ['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'alumni' || !effectiveCurrentUser?.role))
+      ((['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(targetStr) || ['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(userStr)) && (!effectiveCurrentUser?.id || ['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role))
     )) {
       return true;
     }
@@ -125,7 +131,7 @@ export default function UserProfile({
     // 6. Akademik dalında akademik kimliği
     if ((isAcademicBranch || effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || (!effectiveCurrentUser?.role && profileType === 'academic')) && (
       !userId || userId === 'self' || userId === 'me' ||
-      ((['acad-001', 'acad-01', 'acad-1'].includes(targetStr) || ['acad-001', 'acad-01', 'acad-1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['acad-001', 'acad-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || !effectiveCurrentUser?.role))
+      ((['acad-001', 'acad-01', 'acad-1'].includes(targetStr) || ['acad-001', 'acad-01', 'acad-1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['acad-001', 'acad-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role))
     )) {
       return true;
     }
@@ -133,7 +139,7 @@ export default function UserProfile({
     // 7. Firma dalında kurumsal kimlik
     if ((isCompanyBranch || effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || (!effectiveCurrentUser?.role && profileType === 'company')) && (
       !userId || userId === 'self' || userId === 'me' ||
-      ((['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(targetStr) || ['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(userStr)) && (!effectiveCurrentUser?.id || ['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || !effectiveCurrentUser?.role))
+      ((['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(targetStr) || ['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(userStr)) && (!effectiveCurrentUser?.id || ['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role))
     )) {
       return true;
     }
@@ -460,7 +466,7 @@ export default function UserProfile({
           (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
           (effectiveCurrentUser?.studentId && (targetUserId === effectiveCurrentUser.studentId || found?.studentId === effectiveCurrentUser.studentId)) ||
           (!targetUserId && (effectiveCurrentUser?.role === 'alumni' || !effectiveCurrentUser?.role)) ||
-          (targetUserId === 'ALU-001' && (effectiveCurrentUser?.role === 'alumni' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'ALU-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
+          (targetUserId === 'ALU-001' && (!effectiveCurrentUser?.id || effectiveCurrentUser?.id === 'ALU-001')) ||
           (effectiveCurrentUser?.email && found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()) ||
           (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
@@ -532,7 +538,7 @@ export default function UserProfile({
           (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
           (effectiveCurrentUser?.email && (targetUserId === effectiveCurrentUser.email || (found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()))) ||
           (!targetUserId && (effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || !effectiveCurrentUser?.role)) ||
-          (targetUserId === 'ACAD-001' && (effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'ACAD-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
+          (targetUserId === 'ACAD-001' && (!effectiveCurrentUser?.id || effectiveCurrentUser?.id === 'ACAD-001')) ||
           (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
         );
         const academicData = isSelfAcademic ? {
@@ -570,7 +576,7 @@ export default function UserProfile({
           (effectiveCurrentUser?.username && (targetUserId === effectiveCurrentUser.username || found?.username === effectiveCurrentUser.username)) ||
           (effectiveCurrentUser?.email && (targetUserId === effectiveCurrentUser.email || (found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()))) ||
           (!targetUserId && (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || !effectiveCurrentUser?.role)) ||
-          (targetUserId === 'CMP-001' && (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || !effectiveCurrentUser?.role || effectiveCurrentUser?.id === 'CMP-001' || !effectiveCurrentUser?.id || effectiveCurrentUser?.role === 'admin')) ||
+          (targetUserId === 'CMP-001' && (!effectiveCurrentUser?.id || effectiveCurrentUser?.id === 'CMP-001')) ||
           targetUserId === 'admin_1513' || 
           targetUserId === 'admin' ||
           (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())

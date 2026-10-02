@@ -740,69 +740,6 @@ groups={groups}
           </div>
         )}
 
-        {/* Stitch News Detail Modal Overlay */}
-        {selectedNewsItem && (
-          <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 sm:p-6 pb-24 animate-fade-in">
-            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setSelectedNewsItem(null)}></div>
-            <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl relative z-10 flex flex-col max-h-[80vh] border border-slate-100">
-              
-              <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#400000] z-0"></div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 z-0"></div>
-                
-                <div className="relative z-10 p-8 sm:p-10 text-white">
-                  <button 
-                    onClick={() => setSelectedNewsItem(null)} 
-                    className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition cursor-pointer"
-                  >
-                    <X size={18} strokeWidth={2.5} />
-                  </button>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/20 border border-white/20 text-[10px] font-black uppercase tracking-widest text-amber-300 mb-4 shadow-sm">
-                    <Sparkles size={12} className="text-amber-300" /> KGM Resmi Duyurusu
-                  </span>
-                  <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight drop-shadow-md">{selectedNewsItem.title}</h2>
-                  <div className="flex items-center gap-4 text-xs font-semibold text-red-100 mt-4 opacity-90">
-                    <span className="flex items-center gap-1.5"><Clock size={14} /> {selectedNewsItem.time}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/30"></span>
-                    <span className="flex items-center gap-1.5"><Users size={14} /> {selectedNewsItem.readers}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-8 overflow-y-auto space-y-6 text-slate-700 bg-white custom-scrollbar">
-                {(selectedNewsItem.location || selectedNewsItem.date) && (
-                  <div className="flex items-center gap-4 flex-wrap">
-                    {selectedNewsItem.location && (
-                      <div className="flex items-center gap-2 text-slate-800">
-                        <MapPin size={16} className="text-[#990000]" /> {selectedNewsItem.location}
-                      </div>
-                    )}
-                    {selectedNewsItem.date && (
-                      <div className="flex items-center gap-2 text-slate-800">
-                        <Calendar size={16} className="text-[#990000]" /> {selectedNewsItem.date}
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                <p className="text-sm font-medium leading-relaxed whitespace-pre-line text-slate-600">
-                  {selectedNewsItem.summary || 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından yapılan resmi duyuru ve haber içeriği.'}
-                </p>
-              </div>
-
-              {/* Footer Actions */}
-              <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
-                <button 
-                  onClick={() => setSelectedNewsItem(null)}
-                  className="px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-black transition-all cursor-pointer shadow-sm"
-                >
-                  Kapat
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Calendar Overlay */}
         {activeTab === 'calendar' && (
           <div className="fixed inset-0 z-[60] bg-gray-900/50 flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm">

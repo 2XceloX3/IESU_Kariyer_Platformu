@@ -13,6 +13,7 @@ const PublicNewsView = lazy(() => import('./components/PublicNewsView')), AdminF
 const AlumniHive = lazy(() => import('./hives/alumni/AlumniHive')), CompanyHive = lazy(() => import('./hives/company/CompanyHive')), AcademicHive = lazy(() => import('./hives/academic/AcademicHive')), FloatingChatWidget = lazy(() => import('./components/FloatingChatWidget'));
 const CommandPalette = lazy(() => import('./components/CommandPalette')), PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt')), SurveyPopupModal = lazy(() => import('./components/SurveyPopupModal')), GlobalSearchOverlay = lazy(() => import('./components/GlobalSearchOverlay'));
 const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserProfile = lazy(() => import('./components/PublicUserProfile')), JobsAndInternships = lazy(() => import('./components/JobsAndInternships'));
+const NotificationsPanel = lazy(() => import('./components/NotificationsPanel')), CalendarView = lazy(() => import('./components/CalendarView')), MessagingInterface = lazy(() => import('./components/MessagingInterface'));
 
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
@@ -159,6 +160,9 @@ export default function App() {
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" />;
       if (pathView === 'user_profile') return <UserProfile userId={currentUser?.id || 'admin_1513'} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'public_profile') return <PublicUserProfile userId={s.selectedUserId} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'notifications') return <NotificationsPanel setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" />;
+      if (pathView === 'calendar') return <CalendarView setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'messaging') return <MessagingInterface setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} selectedGroupId={s.selectedGroupId} setSelectedGroupId={s.setSelectedGroupId} />;
       const BENTO_MODULES = new Set(['cvbuilder', 'interview_sim', 'career_test', 'career_roadmap', 'startup_incubator', 'club_portal', 'sem', 'applications']);
       if (BENTO_MODULES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
       return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;

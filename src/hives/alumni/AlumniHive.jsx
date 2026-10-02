@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { HiveProvider } from './HiveContext';
 import useAlumniStore from './store/useAlumniStore';
@@ -67,26 +67,44 @@ export default function AlumniHive({ currentUser, setView }) {
       const clean = v.replace(/^\//, '');
       if (PORTAL_ROUTES.has(clean) && clean !== 'alumni') {
         const store = useAppStore.getState();
-        if (['student', 'company', 'academic'].includes(clean)) {
+        const isUserAdmin = effectiveCurrentUser?.role === 'admin' || store.userRole === 'admin';
+        if (['student', 'company', 'academic'].includes(clean) && isUserAdmin) {
           store.setActivePortalBranch?.(clean);
-        } else if (clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') {
+        } else if ((clean === 'admin' || clean === 'admin_cms' || clean === 'yonetim_konsolu') && isUserAdmin) {
           store.setActivePortalBranch?.('admin');
+        } else if (clean === 'login' || clean === 'register' || clean === 'landing' || clean === 'forgot_password') {
+          // allow public auth routes
         }
         setActiveView('feed');
         if (setView) setView(clean);
         else navigate(clean === 'landing' ? '/' : '/' + clean);
         return;
       }
-      if (clean === 'user_profile') {
+      const target = (clean === 'alumni' || clean === '' || clean === 'feed') ? 'feed' : clean;
+      if (target === 'user_profile') {
         const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
         setSelectedUserId(selfId);
         useAppStore.getState().setSelectedUserId?.(selfId);
       }
+      setActiveView(target);
+      if (target === 'feed') {
+        navigate('/alumni');
+      } else {
+        navigate('/' + target);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
     setActiveView(v);
   }, [setView, navigate, setActiveView, effectiveCurrentUser, setSelectedUserId]);
 
-  const currentView = (pathView && pathView !== 'alumni') ? pathView : activeView;
+  useEffect(() => {
+    if (pathView && pathView !== 'alumni' && pathView !== 'feed') {
+      setActiveView(pathView);
+    }
+  }, [pathView, setActiveView]);
+
+  const currentView = (pathView && pathView !== 'alumni' && pathView !== 'feed') ? pathView : (activeView || 'feed');
 
   const renderActiveView = () => {
     switch (currentView) {
@@ -119,15 +137,15 @@ export default function AlumniHive({ currentUser, setView }) {
       case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'groups':
-        return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
+        return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'group_profile':
-        return <GroupProfile setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
+        return <GroupProfile setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'notifications':
-        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
+        return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'calendar':
-        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
+        return <CalendarView setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'messaging':
-        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
+        return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} selectedGroupId={useAppStore.getState().selectedGroupId} setSelectedGroupId={setSelectedGroupId} />;
       case 'live_rooms':
         return <LiveRoomsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'mentor_booking':
