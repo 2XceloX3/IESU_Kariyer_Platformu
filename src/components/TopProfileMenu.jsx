@@ -88,32 +88,27 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
   }, [menuRef]);
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch {
-      // The local session still needs to be cleared if Firebase is unavailable.
-    }
+    // 1) Firebase oturumunu kapat
+    try { await signOut(auth); } catch { /* Firebase yoksa da devam */ }
 
-    // 1) Zustand persist clearStorage — coreStore üzerinden (facade'da persist yok)
+    // 2) Zustand coreStore'u doğrudan sıfırla (facade'da reset() yok)
     try {
+      coreStore.setState({
+        currentUser: null,
+        userRole: null,
+        authenticatedUserId: null,
+        activeHive: 'student',
+        previousHive: null,
+        selectedUserId: null,
+        selectedGroupId: null,
+        activePortalBranch: null,
+      });
+      // Persist middleware'in yazdığı storage'ı da temizle
       coreStore?.persist?.clearStorage?.();
     } catch { /* intentional */ }
 
-    // 2) Zustand store state'ini sıfırla
-    try {
-      const store = useAppStore?.getState?.();
-      store?.reset?.();
-      store?.setCurrentUser?.(null);
-      store?.setUserRole?.(null);
-    } catch { /* intentional */ }
-
-    // 3) App.jsx React state'ini de güncelle (portalda kalma sorununu önler)
-    try {
-      if (typeof setCurrentUser === 'function') setCurrentUser(null);
-    } catch { /* intentional */ }
-
-    // 4) TÜM localStorage oturum anahtarlarını temizle
-    const keysToRemove = [
+    // 3) TÜM localStorage oturum anahtarlarını temizle
+    [
       'iesu_mock_user', 'igu_mock_user',
       'iesu_user_role_v1', 'igu_user_role_v1',
       'iesu_view_v1', 'igu_view_v1',
@@ -121,17 +116,12 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       'iesu_active_portal_branch',  // portal branch key
       'iesu-career-shared-store',   // useSharedStore persist key
       'iesu-career-admin-store',    // useAdminStore persist key
-    ];
-    keysToRemove.forEach(k => window?.localStorage?.removeItem?.(k));
+    ].forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
 
     setIsOpen(false);
-    // setCurrentUser(null) ile React state güncellendi, navigate ile gönder
-    // window.location.href yerine setView kullan — sayfa yenilemeden login'e yönlendirir
-    if (typeof setView === 'function') {
-      setView('login');
-    } else {
-      window.location.href = '/';
-    }
+
+    // 4) Sayfayı tamamen sıfırla — App.jsx useState initializer'ı null okur
+    window.location.href = '/';
   };
 
   const getRoleLabel = (role) => {

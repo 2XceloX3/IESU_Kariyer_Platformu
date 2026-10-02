@@ -102,15 +102,11 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
 
   const pendingCounselingList = (counselingRequests || []).filter(r => r.status === 'Beklemede' || !r.status);
 
-  // Guarantee Admin branch isolation
+  // Guarantee Admin branch isolation (only set branch, never auto-relogin)
   useEffect(() => {
     const store = useAppStore.getState();
     if (store.setActivePortalBranch) store.setActivePortalBranch('admin');
-    if (!currentUser) {
-      const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' };
-      if (store.setCurrentUser) store.setCurrentUser(adminUser);
-    }
-  }, [currentUser]);
+  }, []);
 
   const handleApproveJob = (jobId) => {
     if (setJobs) {
