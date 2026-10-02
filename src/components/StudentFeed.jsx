@@ -45,7 +45,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [stories, setStories] = useState([]);
   const [mentorships, setMentorships] = useState(() => {
     try {
-      const saved = localStorage.getItem('igu_mentorships_v2') || localStorage.getItem('iesu_mentorships_v2');
+      const saved = localStorage.getItem('iesu_mentorships_v2');
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
@@ -863,9 +863,8 @@ groups={groups}
                   setMentorships([newMentorship, ...(mentorships || [])]);
                 } else {
                   try {
-                    const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2') || localStorage.getItem('igu_mentorships_v2') || '[]');
+                    const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2') || '[]');
                     localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
-                    localStorage.setItem('igu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
                   } catch (err) {}
                 }
 

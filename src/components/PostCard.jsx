@@ -252,8 +252,8 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   useEffect(() => {
     if (isShareModalOpen && availableUsers.length === 0) {
       try {
-        const students = JSON.parse(localStorage.getItem('iesu_students_v3') || localStorage.getItem('igu_students_v3') || '[]');
-        const alumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || localStorage.getItem('igu_alumni_v3') || '[]');
+        const students = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]');
+        const alumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || '[]');
         setAvailableUsers([...students, ...alumni].filter(u => u.source !== 'demo_seed'));
       } catch (e) { console.error(e); }
     }
@@ -344,7 +344,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       setMessages(prev => [...(prev || []), newMsg]);
     } else {
       try {
-        const msgs = JSON.parse(localStorage.getItem('iesu_messages_v2') || localStorage.getItem('igu_messages_v2') || '[]');
+        const msgs = JSON.parse(localStorage.getItem('iesu_messages_v2') || '[]');
         localStorage.setItem('iesu_messages_v2', JSON.stringify([...msgs, newMsg]));
       } catch(e) {}
     }

@@ -20,7 +20,7 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
   const setMessages = useAppStore(state => state.setMessages);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [personalEvents, setPersonalEvents] = useState(() => {
-    const saved = localStorage.getItem(`iesu_personal_events_${currentUser?.id}`) || localStorage.getItem(`igu_personal_events_${currentUser?.id}`);
+    const saved = localStorage.getItem(`iesu_personal_events_${currentUser?.id}`);
     try {
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
@@ -34,7 +34,6 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
   useEffect(() => {
     if (currentUser?.id) {
       localStorage.setItem(`iesu_personal_events_${currentUser?.id}`, JSON.stringify(personalEvents));
-      localStorage.setItem(`igu_personal_events_${currentUser?.id}`, JSON.stringify(personalEvents));
     }
   }, [personalEvents, currentUser?.id]);
 

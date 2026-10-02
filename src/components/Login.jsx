@@ -23,11 +23,11 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
     setError(null);
     setIsLoading(true);
     
-    const ADMIN_USER = import.meta.env.VITE_ADMIN_USER || 'Kariyer';
-    const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS || 'Z.s.1513';
+    const ADMIN_USER = import.meta.env.VITE_ADMIN_USER;
+    const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS;
     
-    // HARDCODED ADMIN CHECK
-    if (username === ADMIN_USER && password === ADMIN_PASS) {
+    // ENV-CONFIGURED ADMIN CHECK
+    if (ADMIN_USER && ADMIN_PASS && username === ADMIN_USER && password === ADMIN_PASS) {
       setUserRole('admin');
       if (setAcademicRole) setAcademicRole('super_admin');
       

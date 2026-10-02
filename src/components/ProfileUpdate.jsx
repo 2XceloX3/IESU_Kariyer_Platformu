@@ -436,7 +436,6 @@ export default function ProfileUpdate({
 
     try {
       localStorage.setItem('iesu_mock_user', JSON.stringify(finalData));
-      localStorage.setItem('igu_mock_user', JSON.stringify(finalData));
     } catch (e) {
       console.warn('LocalStorage save error', e);
     }
@@ -821,7 +820,6 @@ export default function ProfileUpdate({
                             const updatedUser = { ...(currentUser || {}), avatar: newAvatar };
                             if (setCurrentUser) setCurrentUser(updatedUser);
                             localStorage.setItem('iesu_mock_user', JSON.stringify(updatedUser));
-                            localStorage.setItem('igu_mock_user', JSON.stringify(updatedUser));
                             if (window.toast?.success) window.toast.success('✅ Profil fotoğrafınız başarıyla yenilendi ve kaydedildi!');
                           };
                           reader.readAsDataURL(file);

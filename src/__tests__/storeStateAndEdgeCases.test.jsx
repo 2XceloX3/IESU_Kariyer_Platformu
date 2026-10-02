@@ -88,11 +88,11 @@ describe('Empirical Challenger - Store State Updates & Edge Cases', () => {
 
     it('4.4 Recovers seamlessly from corrupted toxic localStorage keys', () => {
       const toxicKeys = [
-        ['igu_mock_user', '{ corrupted_unclosed_json: '],
+        ['iesu_mock_user', '{ corrupted_unclosed_json: '],
         ['iesu-kariyer-storage-v12', 'undefined'],
         ['iesu-kariyer-storage-v12', 'NaN'],
         ['iesu_site_config_v1', '<html><body>502 Bad Gateway</body></html>'],
-        ['igu_user_role_v1', '"><script>alert(1)</script>']
+        ['iesu_user_role_v1', '"><script>alert(1)</script>']
       ];
 
       toxicKeys.forEach(([k, v]) => {

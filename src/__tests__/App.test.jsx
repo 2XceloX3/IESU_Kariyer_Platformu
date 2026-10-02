@@ -83,7 +83,7 @@ describe('App Component', () => {
     }, { timeout: 5000 });
 
     expect(useAppStore.getState().userRole).not.toBe('admin');
-    expect(window.localStorage.getItem('igu_mock_user')).toBeNull();
+    expect(window.localStorage.getItem('iesu_mock_user')).toBeNull();
   });
 
   it('renders the student portal for an authenticated student', async () => {
@@ -93,7 +93,6 @@ describe('App Component', () => {
       role: 'student',
     });
     window.localStorage.setItem('iesu_mock_user', testUser);
-    window.localStorage.setItem('igu_mock_user', testUser);
     useAppStore.setState({
       userRole: 'student',
       posts: [{ id: 'post-1', text: 'Kariyer içeriği' }],
@@ -137,7 +136,7 @@ describe('App Component', () => {
 
   it('does not trust a stored admin role outside development', async () => {
     vi.stubEnv('DEV', false);
-    window.localStorage.setItem('igu_mock_user', JSON.stringify({
+    window.localStorage.setItem('iesu_mock_user', JSON.stringify({
       id: 'forged-admin',
       name: 'Sahte Yönetici',
       role: 'admin',
@@ -155,6 +154,6 @@ describe('App Component', () => {
     }, { timeout: 5000 });
 
     expect(useAppStore.getState().userRole).toBeNull();
-    expect(window.localStorage.getItem('igu_mock_user')).toBeNull();
+    expect(window.localStorage.getItem('iesu_mock_user')).toBeNull();
   });
 });

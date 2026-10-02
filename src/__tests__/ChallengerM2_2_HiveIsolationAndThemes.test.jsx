@@ -214,7 +214,6 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
 
         expect(useAppStore.getState().userRole).not.toBe('admin');
         expect(window.localStorage.getItem('iesu_mock_user')).toBeNull();
-        expect(window.localStorage.getItem('igu_mock_user')).toBeNull();
         unmount();
       }
     });

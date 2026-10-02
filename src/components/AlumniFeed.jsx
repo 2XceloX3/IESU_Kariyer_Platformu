@@ -726,9 +726,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 if (setMentorships) {
                   setMentorships([newMentorship, ...(mentorships || [])]);
                 } else {
-                    const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2') || localStorage.getItem('igu_mentorships_v2') || '[]');
+                    const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2') || '[]');
                     localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
-                    localStorage.setItem('igu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
                 }
 
                 window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");

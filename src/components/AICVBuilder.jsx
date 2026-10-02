@@ -19,7 +19,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   // Initialize from localStorage OR currentUser if available
   const [cvData, setCvData] = useState(() => {
     try {
-      const saved = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`) || localStorage.getItem(`igu_cv_draft_${currentUser?.id || 'guest'}`);
+      const saved = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed === 'object') return parsed;
@@ -117,7 +117,6 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
 
   useEffect(() => {
     localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
-    localStorage.setItem(`igu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
     setPhotoError(false);
   }, [cvData, currentUser?.id]);
 
@@ -201,7 +200,6 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
   const handleSaveToProfile = useCallback(() => {
     try {
       localStorage.setItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
-      localStorage.setItem(`igu_cv_draft_${currentUser?.id || 'guest'}`, JSON.stringify(cvData));
     } catch (e) { /* intentional */ }
     if (onUpdateProfile) {
       onUpdateProfile(cvData);

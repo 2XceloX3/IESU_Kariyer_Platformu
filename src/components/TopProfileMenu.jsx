@@ -26,7 +26,6 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
   const persistMockUser = (user) => {
     try {
       localStorage.setItem('iesu_mock_user', JSON.stringify(user));
-      localStorage.setItem('igu_mock_user', JSON.stringify(user));
     } catch (e) {}
   };
 
@@ -109,9 +108,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
     // 3) TÜM localStorage oturum anahtarlarını temizle
     [
-      'iesu_mock_user', 'igu_mock_user',
-      'iesu_user_role_v1', 'igu_user_role_v1',
-      'iesu_view_v1', 'igu_view_v1',
+      'iesu_mock_user',
+      'iesu_user_role_v1',
+      'iesu_view_v1',
       'iesu_app_session_v1',        // Zustand core persist key
       'iesu_active_portal_branch',  // portal branch key
       'iesu-career-shared-store',   // useSharedStore persist key

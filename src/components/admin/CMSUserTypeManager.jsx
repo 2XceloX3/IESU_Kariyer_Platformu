@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Crown, FileText, BookOpen, Building2, Eye,
   Plus, Edit2, Shield, Activity, Power, X,
-  Save, Search, Filter, ShieldCheck, Key, Copy, Check
+  Save, Search, Filter, ShieldCheck, Key, Check
 } from 'lucide-react';
 
 const DEFAULT_USER_TYPES = [
@@ -14,11 +14,12 @@ const DEFAULT_USER_TYPES = [
   { id: '5', name: 'Gözlemci / Raporcu', desc: 'Sadece okuma ve dışa aktarma', color: 'bg-gray-500', text: 'text-gray-600', bgSoft: 'bg-gray-50', icon: 'Eye', permissionCount: 5 }
 ];
 
+// Gerçek şifreler Firebase Admin SDK üzerinden yönetilmelidir
 const DEFAULT_ACCOUNTS = [
-  { id: '101', name: 'Zuhal ŞAHİN', email: 'zuhal.sahin@iesu.edu.tr', pass: 'Zuhal2026!', typeId: '1', typeName: 'Süper Admin', lastLogin: '2026-08-02 09:30', status: 'Aktif' },
-  { id: '104', name: 'Mutlu Gülsev YAĞIZ', email: 'myagiz@esenyurt.edu.tr', pass: 'Mutlu2026!', typeId: '6', typeName: 'Admin', lastLogin: '2026-08-02 10:15', status: 'Aktif' },
-  { id: '102', name: 'Ahmet Yıldız', email: 'ahmet.yildiz@iesu.edu.tr', pass: 'Ahmet2026!', typeId: '2', typeName: 'İçerik Editörü', lastLogin: '2026-08-01 14:15', status: 'Aktif' },
-  { id: '103', name: 'Dr. Elif Kaya', email: 'elif.kaya@iesu.edu.tr', pass: 'Elif2026!', typeId: '3', typeName: 'Akademik Koordinatör', lastLogin: '2026-08-02 11:45', status: 'Aktif' }
+  { id: '101', name: 'Zuhal ŞAHİN', email: 'zuhal.sahin@iesu.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '1', typeName: 'Süper Admin', lastLogin: '2026-08-02 09:30', status: 'Aktif' },
+  { id: '104', name: 'Mutlu Gülsev YAĞIZ', email: 'myagiz@esenyurt.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '6', typeName: 'Admin', lastLogin: '2026-08-02 10:15', status: 'Aktif' },
+  { id: '102', name: 'Ahmet Yıldız', email: 'ahmet.yildiz@iesu.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '2', typeName: 'İçerik Editörü', lastLogin: '2026-08-01 14:15', status: 'Aktif' },
+  { id: '103', name: 'Dr. Elif Kaya', email: 'elif.kaya@iesu.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '3', typeName: 'Akademik Koordinatör', lastLogin: '2026-08-02 11:45', status: 'Aktif' }
 ];
 
 const MODULES = [
@@ -85,7 +86,7 @@ export default function CMSUserTypeManager() {
     });
 
     saveAccounts(updated);
-    const msg = `Tebrikler! ${targetStaffForPassChange.name} şifresi başarıyla güncellendi. Yeni şifre ("${newPasswordInput}") anında İdari Yönetici / Admin paneline senkronize edildi.`;
+    const msg = `Tebrikler! ${targetStaffForPassChange.name} şifresi başarıyla güncellendi. Yeni şifre anında İdari Yönetici / Admin paneline senkronize edildi.`;
     if (window.toast?.success) window.toast.success(msg);
     else alert(msg);
     setIsChangePassModalOpen(false);
@@ -197,7 +198,7 @@ export default function CMSUserTypeManager() {
       id: Date.now().toString(),
       name: staffForm.name,
       email: staffForm.email,
-      pass: staffForm.password || 'Esenyurt2026!',
+      pass: staffForm.password || 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR',
       typeId: staffForm.typeId,
       typeName: type?.name || 'Bilinmiyor',
       lastLogin: 'Hiç giriş yapmadı',
@@ -438,19 +439,7 @@ export default function CMSUserTypeManager() {
                       <td className="px-6 py-4 font-mono font-bold text-slate-900" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-2 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 w-fit">
                           <Key size={13} className="text-[#990000]" />
-                          <span>{account.pass || 'Esenyurt2026!'}</span>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(account.pass || 'Esenyurt2026!');
-                              const text = `${account.name} için giriş şifresi (${account.pass || 'Esenyurt2026!'}) panoya kopyalandı!`;
-                              if (window.toast?.success) window.toast.success(text);
-                              else alert(text);
-                            }}
-                            className="p-1 hover:bg-white rounded transition text-slate-400 hover:text-slate-700 cursor-pointer"
-                            title="Şifreyi Kopyala"
-                          >
-                            <Copy size={12} />
-                          </button>
+                          <span>••••••••</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-slate-500 font-medium">{account.lastLogin}</td>
@@ -834,9 +823,9 @@ export default function CMSUserTypeManager() {
               <div>
                 <label className="block font-black text-slate-700 mb-1">Mevcut Şifre</label>
                 <input
-                  type="text"
+                  type="password"
                   disabled
-                  value={targetStaffForPassChange.pass || 'Esenyurt2026!'}
+                  value="••••••••"
                   className="w-full p-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 font-mono font-bold"
                 />
               </div>

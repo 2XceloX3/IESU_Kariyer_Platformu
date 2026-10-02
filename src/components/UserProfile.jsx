@@ -3170,10 +3170,9 @@ export default function UserProfile({
                     setCompanies(prev => (prev || []).map(c => (c.id === user?.id || c.name === user?.name) ? { ...c, ...updatedUser } : c));
                   }
                   try {
-                    const stored = JSON.parse(localStorage.getItem('iesu_mock_user') || localStorage.getItem('igu_mock_user') || '{}');
+                    const stored = JSON.parse(localStorage.getItem('iesu_mock_user') || '{}');
                     if (stored) {
                       localStorage.setItem('iesu_mock_user', JSON.stringify({ ...stored, ...updatedUser }));
-                      localStorage.setItem('igu_mock_user', JSON.stringify({ ...stored, ...updatedUser }));
                     }
                   } catch (e) {}
                   setShowImageUploadModal(false);
@@ -3859,9 +3858,8 @@ export default function UserProfile({
                     const updated = { ...user, internshipDuration: tempInternshipDuration || '20 İş Günü (1 Ay)' };
                     setUser(updated);
                     try {
-                      const stored = JSON.parse(localStorage.getItem('iesu_mock_user') || localStorage.getItem('igu_mock_user') || '{}');
+                      const stored = JSON.parse(localStorage.getItem('iesu_mock_user') || '{}');
                       localStorage.setItem('iesu_mock_user', JSON.stringify({ ...stored, ...updated }));
-                      localStorage.setItem('igu_mock_user', JSON.stringify({ ...stored, ...updated }));
                     } catch(e) {}
                     setShowInternshipDurationEditModal(false);
                     window.toast?.success('Staj süresi başarıyla güncellendi!');

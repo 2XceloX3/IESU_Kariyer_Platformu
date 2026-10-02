@@ -13,7 +13,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
     let isMounted = true;
     const generateLetter = async () => {
       try {
-        const cvDataStr = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`) || localStorage.getItem(`igu_cv_draft_${currentUser?.id || 'guest'}`);
+        const cvDataStr = localStorage.getItem(`iesu_cv_draft_${currentUser?.id || 'guest'}`);
         let academicContext = '';
         if (cvDataStr) {
           const cv = JSON.parse(cvDataStr);

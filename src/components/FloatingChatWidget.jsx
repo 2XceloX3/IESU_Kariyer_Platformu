@@ -205,7 +205,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   // Multi-tier resolution for currentUser:
   const localCurrentUser = useMemo(() => {
     try {
-      const saved = localStorage.getItem('iesu_mock_user') || localStorage.getItem('igu_mock_user') || localStorage.getItem('currentUser');
+      const saved = localStorage.getItem('iesu_mock_user') || localStorage.getItem('currentUser');
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -214,7 +214,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
   const localRole = useMemo(() => {
     try {
-      return localStorage.getItem('iesu_user_role_v1') || localStorage.getItem('igu_user_role_v1') || null;
+      return localStorage.getItem('iesu_user_role_v1') || null;
     } catch {
       return null;
     }

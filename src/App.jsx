@@ -40,7 +40,7 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('iesu_mock_user') || localStorage.getItem('igu_mock_user');
+      const saved = localStorage.getItem('iesu_mock_user');
       let p = saved ? JSON.parse(saved) : null;
       if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : 'admin_1513';
       
@@ -49,7 +49,6 @@ export default function App() {
       if (!import.meta.env.DEV && p && (p.role === 'admin' || p.id === 'admin_1513')) {
         if (!auth?.currentUser) {
           localStorage.removeItem('iesu_mock_user');
-          localStorage.removeItem('igu_mock_user');
           p = null;
         }
       }
@@ -66,7 +65,7 @@ export default function App() {
   // SADECE localStorage'da da kullanıcı kalmamışsa tetikle — ilk yüklemede race condition önlenir.
   useEffect(() => {
     if (storeCurrentUser === null && currentUser !== null) {
-      const lsUser = localStorage.getItem('iesu_mock_user') || localStorage.getItem('igu_mock_user');
+      const lsUser = localStorage.getItem('iesu_mock_user');
       if (!lsUser) {
         setCurrentUser(null);
       }
@@ -78,7 +77,7 @@ export default function App() {
   useEffect(() => {
     if (!import.meta.env.DEV && (currentUser?.role === 'admin' || currentUser?.id === 'admin_1513')) {
       if (!auth?.currentUser) {
-        ['iesu_mock_user', 'igu_mock_user'].forEach(k => localStorage.removeItem(k));
+        localStorage.removeItem('iesu_mock_user');
         setCurrentUser(null);
         setUserRole(null);
       }
@@ -103,12 +102,12 @@ export default function App() {
 
   useEffect(() => {
     if (currentUser) {
-      ['iesu_mock_user', 'igu_mock_user'].forEach(k => localStorage.setItem(k, JSON.stringify(currentUser)));
+      localStorage.setItem('iesu_mock_user', JSON.stringify(currentUser));
       try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
       if (currentUser.role !== 'admin') setActivePortalBranch?.(currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
     } else {
-      ['iesu_mock_user', 'igu_mock_user', 'iesu_user_role_v1', 'igu_user_role_v1'].forEach(k => localStorage.removeItem(k));
+      ['iesu_mock_user', 'iesu_user_role_v1'].forEach(k => localStorage.removeItem(k));
       try { useAppStore.getState().setCurrentUser(null); } catch { /* store may not be ready */ }
     }
   }, [currentUser, userRole, setUserRole, setActivePortalBranch]);
@@ -139,7 +138,7 @@ export default function App() {
     if (!isAuthStateResolved && !currentUser) return;
     if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin' || currentUser?.id === 'admin_1513') && !authenticatedUserId && !auth?.currentUser) {
       setCurrentUser(null); setUserRole(null);
-      ['igu_mock_user', 'iesu_mock_user'].forEach(k => localStorage.removeItem(k));
+      localStorage.removeItem('iesu_mock_user');
       setView('login');
     }
   }, [isAuthStateResolved, currentUser, userRole, authenticatedUserId, setView, setUserRole]);
