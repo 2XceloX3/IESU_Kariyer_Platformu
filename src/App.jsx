@@ -41,8 +41,18 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('iesu_mock_user') || localStorage.getItem('igu_mock_user');
-      const p = saved ? JSON.parse(saved) : null;
+      let p = saved ? JSON.parse(saved) : null;
       if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : 'admin_1513';
+      
+      // Admin claims from localStorage are only trusted if Firebase also has an active session
+      // This prevents the localStorage backdoor attack (e.g. setting id: 'admin_1513' or role: 'admin')
+      if (!import.meta.env.DEV && p && (p.role === 'admin' || p.id === 'admin_1513')) {
+        if (!auth?.currentUser) {
+          localStorage.removeItem('iesu_mock_user');
+          localStorage.removeItem('igu_mock_user');
+          p = null;
+        }
+      }
       return p;
     } catch { return null; }
   });
@@ -62,9 +72,21 @@ export default function App() {
       }
     }
   }, [storeCurrentUser, currentUser]);
+
+  // Admin claims from localStorage are only trusted if Firebase also has an active session
+  // This prevents the localStorage backdoor attack on mount
+  useEffect(() => {
+    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || currentUser?.id === 'admin_1513')) {
+      if (!auth?.currentUser) {
+        ['iesu_mock_user', 'igu_mock_user'].forEach(k => localStorage.removeItem(k));
+        setCurrentUser(null);
+        setUserRole(null);
+      }
+    }
+  }, [currentUser, setUserRole]);
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
-  const isAdmin = !import.meta.env.DEV ? (Boolean(authenticatedUserId && (currentUser?.role === 'admin' || userRole === 'admin')) || (currentUser?.id === 'admin_1513' && currentUser?.role === 'admin')) : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
+  const isAdmin = !import.meta.env.DEV ? Boolean((authenticatedUserId || auth?.currentUser) && (currentUser?.role === 'admin' || userRole === 'admin')) : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
 
   const setView = useCallback((v) => {
@@ -115,7 +137,7 @@ export default function App() {
 
   useEffect(() => {
     if (!isAuthStateResolved && !currentUser) return;
-    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin') && currentUser?.id !== 'admin_1513' && !authenticatedUserId) {
+    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin' || currentUser?.id === 'admin_1513') && !authenticatedUserId && !auth?.currentUser) {
       setCurrentUser(null); setUserRole(null);
       ['igu_mock_user', 'iesu_mock_user'].forEach(k => localStorage.removeItem(k));
       setView('login');

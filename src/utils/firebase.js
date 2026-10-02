@@ -6,9 +6,9 @@ import { getStorage } from "firebase/storage";
 // Firebase configuration: Defaults to project fallback or environment variables
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDEg5xrEJn4rXXgNGwcLaj0rvsbsaEfHOM",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "igu-kariyer-platformu.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "igu-kariyer-platformu",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "igu-kariyer-platformu.firebasestorage.app",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "iesu-kariyer-platformu.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "iesu-kariyer-platformu",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "iesu-kariyer-platformu.firebasestorage.app",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "824023340526",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:824023340526:web:e5c13c207a0e00bf6caaff",
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-TNSHH35QYT"
