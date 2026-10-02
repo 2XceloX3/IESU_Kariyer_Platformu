@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 
@@ -57,6 +57,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       
       if (userDoc.exists()) {
         const userData = userDoc.data();
+        if ((userData.role === 'company' || userData.role === 'employer') && userData.status === 'Onay Bekliyor') {
+          if (typeof signOut === 'function') {
+            await signOut(auth);
+          }
+          setError('Firma hesabınız henüz onaylanmamıştır. Lütfen admin onayını bekleyin.');
+          setIsLoading(false);
+          return;
+        }
         const finalRole = userData.role || loginRole;
         setUserRole(finalRole);
         if (setCurrentUser) setCurrentUser({ id: user.uid, ...userData });
@@ -101,6 +109,11 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       const companyUser = companies.find(c => c.username === username && c.password === password);
       
       if (companyUser) {
+        if (companyUser.status === 'Onay Bekliyor') {
+          setError('Firma hesabınız henüz onaylanmamıştır. Lütfen admin onayını bekleyin.');
+          setIsLoading(false);
+          return;
+        }
         setUserRole('employer');
         if (setCurrentUser) {
           setCurrentUser({

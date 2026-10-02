@@ -3,7 +3,7 @@ import { ArrowLeft, Building2, Mail, Phone, MapPin, User, FileText, CheckCircle2
 
 // IT Departmanı için Not: Firebase Kimlik Doğrulama (Auth) ve Veritabanı (Firestore) modülleri içeri aktarıldı.
 import { auth, db } from '../utils/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 
@@ -38,6 +38,13 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   const createAccount = async (email, password, mockPrefix) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      try {
+        if (typeof sendEmailVerification === 'function' && auth.currentUser) {
+          await sendEmailVerification(auth.currentUser);
+        }
+      } catch (_e) {
+        /* intentional - don't block registration */
+      }
       return userCredential.user.uid;
     } catch (authErr) {
       if (authErr.code === 'auth/email-already-in-use' || authErr.code === 'auth/weak-password') {
@@ -500,6 +507,9 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
             <div className="text-center py-8">
               <CheckCircle2 size={80} className="text-green-500 mx-auto mb-6" />
               <h2 className="text-2xl font-black text-gray-900 mb-2">İşlem Başarılı!</h2>
+              <div className="mb-4 inline-block bg-blue-50 border border-blue-200 text-blue-800 text-xs sm:text-sm font-bold px-4 py-2 rounded-xl">
+                Kayıt başarılı! E-posta adresinize doğrulama bağlantısı gönderildi.
+              </div>
               <p className="text-gray-500 font-medium mb-8">
                 {accountType === 'employer' 
                   ? "Firma kayıt talebiniz Kariyer Geliştirme Merkezine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."

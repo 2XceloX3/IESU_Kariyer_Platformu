@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
-import { ArrowLeft, User, KeyRound, CheckCircle2 } from 'lucide-react';
-import Logo from './Logo';
+import { ArrowLeft, Mail, KeyRound, CheckCircle2 } from 'lucide-react';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../utils/firebase';
 
 export default function ForgotPassword({ setView }) {
-  const [step, setStep] = useState(1); // 1: TC/No gir, 2: Kod Gir, 3: Yeni Şifre, 4: Başarılı
+  const [step, setStep] = useState(1); // 1: E-posta gir, 2: Doğrulama bağlantısı gönderildi
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (step === 3) {
-      const pass1 = e.target.elements[0]?.value;
-      const pass2 = e.target.elements[1]?.value;
-      if (pass1 !== pass2) {
-        window.toast.error("Şifreler eşleşmiyor! Lütfen kontrol edin.");
-        return;
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      await sendPasswordResetEmail(auth, email.trim());
+      setStep(2);
+    } catch (err) {
+      if (err.code === 'auth/user-not-found') {
+        setError('Bu e-posta adresiyle kayıtlı hesap bulunamadı.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Geçersiz e-posta adresi.');
+      } else {
+        setError('Bir hata oluştu. Lütfen tekrar deneyin.');
       }
-    }
-    if (step < 4) {
-      setStep(step + 1);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,88 +52,60 @@ export default function ForgotPassword({ setView }) {
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-iesu-navy via-iesu-blue to-iesu-navy"></div>
 
           <div className="flex justify-center mb-6 text-[#990000]">
-            {step === 4 ? <CheckCircle2 size={56} className="text-green-500" /> : <KeyRound size={56} />}
+            {step === 2 ? <CheckCircle2 size={56} className="text-green-500" /> : <KeyRound size={56} />}
           </div>
 
           <h2 className="text-2xl font-black text-gray-900 mb-2 text-center">
-            {step === 1 && "Şifremi Unuttum"}
-            {step === 2 && "Doğrulama Kodu"}
-            {step === 3 && "Yeni Şifre Belirle"}
-            {step === 4 && "İşlem Başarılı!"}
+            {step === 1 ? "Şifremi Unuttum" : "İşlem Başarılı!"}
           </h2>
-          <p className="text-center text-sm text-gray-500 font-medium mb-8">
+          <p className="text-center text-sm text-gray-500 font-medium mb-6">
             {step === 1 && "Sisteme kayıtlı kurumsal e-posta adresinizi girin."}
-            {step === 2 && "E-posta adresinize gönderilen 6 haneli doğrulama kodunu girin."}
-            {step === 3 && "Hesabınız için güçlü bir yeni şifre oluşturun."}
-            {step === 4 && "Şifreniz başarıyla güncellendi. Artık giriş yapabilirsiniz."}
           </p>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            {step === 1 && (
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-xl font-bold text-sm">
+              {error}
+            </div>
+          )}
+
+          {step === 1 ? (
+            <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="relative">
-                <User className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                <label htmlFor="reset-email" className="sr-only">E-Posta Adresi</label>
+                <Mail className="absolute left-4 top-3.5 text-gray-500" size={18} />
                 <input 
+                  id="reset-email"
                   type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Sistemde Kayıtlı E-Posta Adresiniz" 
                   className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium" 
                   required
                 />
               </div>
-            )}
 
-            {step === 2 && (
-              <div className="relative">
-                <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
-                <input 
-                  type="text" 
-                  placeholder="E-Posta Onay Kodu (Örn: 123456)" 
-                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium tracking-widest text-center" 
-                  required
-                />
-              </div>
-            )}
-
-            {step === 3 && (
-              <>
-                <div className="relative">
-                  <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
-                  <input 
-                    type="password" 
-                    placeholder="Yeni Şifreniz" 
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium" 
-                    required
-                  />
-                </div>
-                <div className="relative">
-                  <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
-                  <input 
-                    type="password" 
-                    placeholder="Yeni Şifreniz (Tekrar)" 
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 focus:border-iesu-blue outline-none transition text-[14px] font-medium" 
-                    required
-                  />
-                </div>
-              </>
-            )}
-
-            {step < 4 ? (
               <button 
                 type="submit" 
-                className="w-full flex items-center justify-center bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#990000] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-red-800 transition-all shadow-lg hover:shadow-xl active:scale-[0.98] mt-2 disabled:opacity-50 cursor-pointer"
               >
-                {step === 1 ? "Devam Et" : step === 2 ? "Doğrula" : "Şifreyi Kaydet"}
+                {isLoading ? 'Gönderiliyor...' : 'Şifre Sıfırlama Bağlantısı Gönder'}
               </button>
-            ) : (
+            </form>
+          ) : (
+            <div className="space-y-6 text-center">
+              <p className="text-sm text-gray-600 bg-gray-50 p-4 rounded-xl border border-gray-200 font-medium leading-relaxed">
+                Şifre sıfırlama bağlantısı <strong className="text-gray-900">{email}</strong> adresine gönderildi. E-postanızı kontrol edin ve bağlantıya tıklayın.
+              </p>
               <button 
                 type="button" 
                 onClick={() => setView('login')}
-                className="w-full flex items-center justify-center bg-green-500 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-green-600 transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
+                className="w-full flex items-center justify-center bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-red-800 transition-all shadow-lg hover:shadow-xl active:scale-[0.98] cursor-pointer"
               >
-                Giriş Yapmaya Git
+                Giriş Sayfasına Dön
               </button>
-            )}
-          </form>
-          
+            </div>
+          )}
         </div>
       </div>
     </div>
