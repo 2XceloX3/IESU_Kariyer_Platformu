@@ -65,12 +65,12 @@ export default function CMSUserTypeManager() {
     e.preventDefault();
     if (!newPasswordInput || newPasswordInput.length < 6) {
       if (window.toast?.error) window.toast.error("Yeni şifre en az 6 karakter olmalıdır.");
-      else alert("Yeni şifre en az 6 karakter olmalıdır.");
+      else console.warn("Yeni şifre en az 6 karakter olmalıdır.");
       return;
     }
     if (newPasswordInput !== confirmPasswordInput) {
       if (window.toast?.error) window.toast.error("Şifreler birbiriyle eşleşmiyor!");
-      else alert("Şifreler birbiriyle eşleşmiyor!");
+      else console.warn("Şifreler birbiriyle eşleşmiyor!");
       return;
     }
 
@@ -88,7 +88,7 @@ export default function CMSUserTypeManager() {
     saveAccounts(updated);
     const msg = `Tebrikler! ${targetStaffForPassChange.name} şifresi başarıyla güncellendi. Yeni şifre anında İdari Yönetici / Admin paneline senkronize edildi.`;
     if (window.toast?.success) window.toast.success(msg);
-    else alert(msg);
+    else console.info(msg);
     setIsChangePassModalOpen(false);
     setNewPasswordInput('');
     setConfirmPasswordInput('');

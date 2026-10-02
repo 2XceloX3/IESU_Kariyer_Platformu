@@ -302,9 +302,9 @@ export default function CMSCandidatePool() {
   const handleBulkSubmit = (e) => {
     e.preventDefault();
     if (selectedCandidates.length === 0) {
-      if (window.toast?.warn) window.toast.warn("Lütfen en az bir aday seçiniz.");
+      if (window.toast?.warning) window.toast.warning("Lütfen en az bir aday seçiniz.");
       else if (window.toast?.info) window.toast.info("Lütfen en az bir aday seçiniz.");
-      else alert("Lütfen en az bir aday seçiniz.");
+      else console.warn("Lütfen en az bir aday seçiniz.");
       return;
     }
 

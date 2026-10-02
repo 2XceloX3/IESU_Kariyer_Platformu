@@ -338,12 +338,12 @@ export default function ProfileUpdate({
   const handleSave = (showToast = true) => {
     if (formData.name && formData.name.trim().length < 2) {
       if (window.toast?.error) window.toast.error('Ad Soyad / Firma Adı alanı en az 2 karakter olmalıdır.');
-      else if (window.alert) window.alert('Ad Soyad / Firma Adı alanı en az 2 karakter olmalıdır.');
+      else console.warn('Ad Soyad / Firma Adı alanı en az 2 karakter olmalıdır.');
       return;
     }
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       if (window.toast?.error) window.toast.error('Lütfen geçerli bir e-posta adresi giriniz.');
-      else if (window.alert) window.alert('Lütfen geçerli bir e-posta adresi giriniz.');
+      else console.warn('Lütfen geçerli bir e-posta adresi giriniz.');
       return;
     }
 
@@ -454,7 +454,7 @@ export default function ProfileUpdate({
     setHasChanges(false);
     if (showToast) {
       if (window.toast?.success) window.toast.success(`✅ ${cfg.name} profil bilgileriniz başarıyla güncellendi!`);
-      else if (window.alert) window.alert(`✅ ${cfg.name} profil bilgileriniz başarıyla güncellendi!`);
+      else console.info(`✅ ${cfg.name} profil bilgileriniz başarıyla güncellendi!`);
     }
   };
 
@@ -1517,7 +1517,7 @@ export default function ProfileUpdate({
                     onClick={() => {
                       handleSave(false);
                       if (window.toast?.success) window.toast.success("🧭 12 soruluk Mezun Kariyer Anketi başarıyla kaydedildi ve sisteme işlendi!");
-                      else if (window.alert) window.alert("🧭 12 soruluk Mezun Kariyer Anketi başarıyla kaydedildi!");
+                      else console.info("🧭 12 soruluk Mezun Kariyer Anketi başarıyla kaydedildi!");
                     }}
                     className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-sm uppercase tracking-widest transition shadow-xl cursor-pointer active:scale-98 flex items-center justify-center gap-2"
                   >

@@ -94,6 +94,48 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           const normalizedId = id.replaceAll('\\', '/');
+          if (normalizedId.includes('/src/components/admin/')) {
+            if (
+              normalizedId.includes('CMSStudents') ||
+              normalizedId.includes('CMSAlumni') ||
+              normalizedId.includes('CMSCompanies') ||
+              normalizedId.includes('CMSJobs') ||
+              normalizedId.includes('CMSApplicationsPool') ||
+              normalizedId.includes('CMSCandidatePool')
+            ) {
+              return 'admin-cms-core';
+            }
+            if (normalizedId.includes('CMSAcademic') || normalizedId.includes('AkademikPanel')) {
+              return 'admin-cms-academic';
+            }
+            if (
+              normalizedId.includes('CMSNews') ||
+              normalizedId.includes('CMSAnnouncements') ||
+              normalizedId.includes('CMSEvents') ||
+              normalizedId.includes('CMSGeneralEvents') ||
+              normalizedId.includes('CMSCareerOpportunities') ||
+              normalizedId.includes('CMSFeatured')
+            ) {
+              return 'admin-cms-content';
+            }
+            if (
+              normalizedId.includes('CMSUserTypeManager') ||
+              normalizedId.includes('CMSAuditTrail') ||
+              normalizedId.includes('PlatformSettings') ||
+              normalizedId.includes('InstitutionalStatsManager') ||
+              normalizedId.includes('CMSSyncCenter') ||
+              normalizedId.includes('DataCleanup') ||
+              normalizedId.includes('OfficialContentImport') ||
+              normalizedId.includes('CMSIntegrations') ||
+              normalizedId.includes('CMSMessageAudit') ||
+              normalizedId.includes('CMSFirestoreBackup') ||
+              normalizedId.includes('CMSSiteEditor')
+            ) {
+              return 'admin-cms-system';
+            }
+            return 'admin-cms-panels';
+          }
+
           if (!normalizedId.includes('/node_modules/')) return;
 
           const isFrameworkModule = [

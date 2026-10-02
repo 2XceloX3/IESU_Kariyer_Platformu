@@ -292,7 +292,7 @@ export default function UserProfile({
       if (window.toast?.error) {
         window.toast.error("Lütfen mentöre iletmek istediğiniz detaylı talebinizi giriniz.");
       } else {
-        alert("Lütfen mentöre iletmek istediğiniz detaylı talebinizi giriniz.");
+        console.warn("Lütfen mentöre iletmek istediğiniz detaylı talebinizi giriniz.");
       }
       return;
     }
@@ -335,7 +335,7 @@ export default function UserProfile({
     if (window.toast?.success) {
       window.toast.success(`Resmî danışmanlık ve randevu talebiniz ${user?.name || 'Akademisyene'} ve KGM Evrak Havuzuna iletildi.`);
     } else {
-      alert(`Resmî danışmanlık ve randevu talebiniz ${user?.name || 'Akademisyene'} ve KGM Evrak Havuzuna iletildi.`);
+      console.info(`Resmî danışmanlık ve randevu talebiniz ${user?.name || 'Akademisyene'} ve KGM Evrak Havuzuna iletildi.`);
     }
     setShowMentorshipRequestModal(false);
     setMentorshipReqForm({

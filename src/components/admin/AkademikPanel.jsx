@@ -17,10 +17,8 @@ export default function AkademikPanel({ setView, setActiveTab }) {
       setActiveTab('akademik_radar');
     } else if (window.setActiveTabGlobal) {
       window.setActiveTabGlobal('akademik_radar');
-    } else if (window.toast?.info) {
-      window.toast.info("Akademik Staj Onay Listesi ve Evrak Havuzu açılıyor...");
     } else {
-      alert("Akademik Staj Onay Listesi ve Evrak Havuzuna Yönlendiriliyorsunuz...");
+      (window.toast?.info || console.info)("Akademik Staj Onay Listesi ve Evrak Havuzu açılıyor...");
     }
   };
 

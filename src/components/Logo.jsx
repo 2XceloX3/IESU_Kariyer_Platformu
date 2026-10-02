@@ -1,6 +1,8 @@
 import React from 'react';
+import { getTenantConfig } from '../config/tenantConfig';
 
 export default function Logo({ size = 'md', variant = 'default', color = 'default', className = '', ...props }) {
+  const tenant = getTenantConfig();
   const sizeMap = {
     sm: 'h-8',
     md: 'h-12',
@@ -22,12 +24,14 @@ export default function Logo({ size = 'md', variant = 'default', color = 'defaul
   };
 
   const colorFilterClass = colorFilterMap[color] || '';
+  const logoSrc = props.src || tenant.logoUrl || '/iesu-logo.svg';
+  const altText = props.alt || `${tenant.institutionName} ${tenant.coordinatorTitle}`;
 
   return (
     <div className={`flex items-center gap-2 cursor-pointer shrink-0 ${className}`} {...props}>
       <img
-        src="/iesu-logo.svg"
-        alt="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Ofisi"
+        src={logoSrc}
+        alt={altText}
         className={`${imgClass} w-auto object-contain shrink-0 ${isWhite ? 'brightness-0 invert' : colorFilterClass}`}
       />
     </div>

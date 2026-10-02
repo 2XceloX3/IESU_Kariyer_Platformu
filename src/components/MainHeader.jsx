@@ -3,11 +3,13 @@ import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
 import { Search, LogIn, Menu, X } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import { getTenantConfig } from '../config/tenantConfig';
 
 export default function MainHeader({ setView, currentUser, userRole }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const siteConfig = useAppStore(state => state.siteConfig);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const tenant = getTenantConfig();
 
   const getDestination = () => {
     if (!currentUser) return 'landing';
@@ -20,7 +22,7 @@ export default function MainHeader({ setView, currentUser, userRole }) {
     <header className="sticky top-0 z-50 shadow-2xl">
       {/* Dynamic Crimson Red Navbar with corporate primary color */}
       <nav 
-        style={{ backgroundColor: siteConfig?.primaryColor || '#990000' }}
+        style={{ backgroundColor: siteConfig?.primaryColor || tenant.colors?.primary || '#990000' }}
         className="text-white relative border-b border-red-950/60 transition-colors duration-300 shadow-md"
       >
         {/* Subtle Background Accent Grid Pattern matching footer */}
@@ -39,8 +41,10 @@ export default function MainHeader({ setView, currentUser, userRole }) {
           >
             <Logo size="lg" variant="white" />
             <div className="hidden sm:block">
-              <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight drop-shadow-md">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-              <p className="text-[10px] font-bold text-red-100 uppercase tracking-widest">{siteConfig?.logoSubText || 'Kariyer Geliştirme Merkezi'}</p>
+              <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight drop-shadow-md">
+                {tenant.institutionName ? tenant.institutionName.toUpperCase() : 'İSTANBUL ESENYURT ÜNİVERSİTESİ'}
+              </h1>
+              <p className="text-[10px] font-bold text-red-100 uppercase tracking-widest">{siteConfig?.logoSubText || tenant.coordinatorTitle || 'Kariyer Geliştirme Merkezi'}</p>
             </div>
           </div>
 

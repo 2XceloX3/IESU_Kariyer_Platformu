@@ -13,7 +13,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
     e.preventDefault();
     if (!form.message.trim()) {
       if (window.toast?.error) window.toast.error("Lütfen bir mesaj yazın.");
-      else alert("Lütfen bir mesaj yazın.");
+      else console.warn("Lütfen bir mesaj yazın.");
       return;
     }
     try {
@@ -34,7 +34,7 @@ export default function ContactPage({ setView, currentUser, userRole, setSelecte
     }
     setSent(true);
     if (window.toast?.success) window.toast.success("Mesajınız İletişim Koordinatörlüğüne ulaştırıldı.");
-    else alert("Mesajınız İletişim Koordinatörlüğüne ulaştırıldı.");
+    else console.info("Mesajınız İletişim Koordinatörlüğüne ulaştırıldı.");
   };
 
   return (

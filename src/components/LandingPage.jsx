@@ -11,6 +11,7 @@ import SubPanelFooter from './SubPanelFooter';
 import SEO from './SEO';
 import RichContentRenderer from './RichContentRenderer';
 import TuitionAccordion from './TuitionAccordion';
+import { getTenantConfig } from '../config/tenantConfig';
 
 
 const style = document.createElement('style');
@@ -36,6 +37,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 export default function LandingPage({ setView, currentUser, userRole }) {
+  const tenant = getTenantConfig();
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedPillModal, setSelectedPillModal] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -580,8 +582,10 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 <Logo className="h-10 w-auto" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+                <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">
+                  {tenant.institutionName ? tenant.institutionName.toUpperCase() : 'İSTANBUL ESENYURT ÜNİVERSİTESİ'}
+                </h1>
+                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">{tenant.coordinatorTitle || 'Kariyer Geliştirme Merkezi'}</p>
               </div>
             </div>
 

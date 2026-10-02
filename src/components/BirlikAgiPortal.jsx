@@ -95,7 +95,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
     if (window.toast?.success) {
       window.toast.success('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
     } else {
-      alert('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
+      console.info('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
     }
     setAppForm({ ...appForm, phone: '', note: '' });
     setActiveTab('feed');

@@ -88,7 +88,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.name || !form.graduationYear) return window.toast ? window.toast.info("Ad Soyad ve Mezuniyet Yılı zorunludur.") : alert("Ad Soyad ve Mezuniyet Yılı zorunludur.");
+    if (!form.name || !form.graduationYear) return (window.toast?.info || console.info)("Ad Soyad ve Mezuniyet Yılı zorunludur.");
 
     const geocoded = geocodeLocation(form.country, form.city);
     const updatedEntry = {
@@ -107,7 +107,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
 
   const handleSPSSExport = () => {
     if (!alumniSurveyResponses || alumniSurveyResponses.length === 0) {
-      return window.toast?.info ? window.toast.info('Dışa aktarılacak anket verisi bulunmuyor.') : alert('Dışa aktarılacak anket verisi bulunmuyor.');
+      return (window.toast?.info || console.info)('Dışa aktarılacak anket verisi bulunmuyor.');
     }
     const exportData = alumniSurveyResponses.map(r => {
       const { name, tc, phone, email, ...safeData } = r;

@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Send, CheckCircle2, ShieldCheck, Heart, X, FileTex
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import Logo from './Logo';
 import useAppStore from '../store/useAppStore';
+import { getTenantConfig } from '../config/tenantConfig';
 
 export default function MainFooter({ setView }) {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ export default function MainFooter({ setView }) {
   const [showKvkkModal, setShowKvkkModal] = useState(false);
   const [showSubscriberModal, setShowSubscriberModal] = useState(false);
   const [kvkkAgreed, setKvkkAgreed] = useState(false);
+  const tenant = getTenantConfig();
 
   const addNewsletterSubscriber = useAppStore(state => state.addNewsletterSubscriber);
   const siteConfig = useAppStore(state => state.siteConfig);
@@ -287,12 +289,12 @@ export default function MainFooter({ setView }) {
             <div className="flex items-center gap-3">
               <Logo size="lg" />
               <div>
-                <h3 className="font-black text-sm text-white tracking-wide">{corporateData.university}</h3>
-                <p className="text-[11px] font-bold text-red-200 uppercase tracking-wider">{siteConfig?.logoSubText || 'Kariyer Geliştirme Merkezi'}</p>
+                <h3 className="font-black text-sm text-white tracking-wide">{tenant.institutionName || corporateData.university}</h3>
+                <p className="text-[11px] font-bold text-red-200 uppercase tracking-wider">{siteConfig?.logoSubText || tenant.coordinatorTitle || 'Kariyer Geliştirme Merkezi'}</p>
               </div>
             </div>
             <p className="text-xs text-red-100/90 leading-relaxed font-medium">
-              {siteConfig?.footerMotto || 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.'}
+              {siteConfig?.footerMotto || `${tenant.institutionName} ${tenant.coordinatorTitle} olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.`}
             </p>
           </div>
 
@@ -340,7 +342,7 @@ export default function MainFooter({ setView }) {
                 <Mail size={16} className="text-white shrink-0 mt-0.5" />
                 <div>
                   <span className="text-[10px] uppercase text-red-200 block font-black tracking-wider">E-Posta</span>
-                  <a href="mailto:kariyer@esenyurt.edu.tr" className="hover:text-white transition font-bold text-white">kariyer@esenyurt.edu.tr</a>
+                  <a href={`mailto:${tenant.supportEmail || 'kariyer@esenyurt.edu.tr'}`} className="hover:text-white transition font-bold text-white">{tenant.supportEmail || 'kariyer@esenyurt.edu.tr'}</a>
                 </div>
               </div>
 
@@ -348,7 +350,7 @@ export default function MainFooter({ setView }) {
                 <Phone size={16} className="text-white shrink-0 mt-0.5" />
                 <div>
                   <span className="text-[10px] uppercase text-red-200 block font-black tracking-wider">Telefon</span>
-                  <span className="font-bold text-white">444 9 123 (Dahili: 1102)</span>
+                  <span className="font-bold text-white">{tenant.phone || '444 9 123 (Dahili: 1102)'}</span>
                 </div>
               </div>
 
@@ -356,7 +358,7 @@ export default function MainFooter({ setView }) {
                 <MapPin size={16} className="text-white shrink-0 mt-0.5" />
                 <div>
                   <span className="text-[10px] uppercase text-red-200 block font-black tracking-wider">Adres</span>
-                  <span className="font-bold text-white">Zafer Mahallesi, Doğan Araslı Bulvarı No:79, 34513 Esenyurt / İSTANBUL</span>
+                  <span className="font-bold text-white">{tenant.address || 'Zafer Mahallesi, Doğan Araslı Bulvarı No:79, 34513 Esenyurt / İSTANBUL'}</span>
                 </div>
               </div>
             </div>
@@ -422,7 +424,7 @@ export default function MainFooter({ setView }) {
 
         {/* Bottom Copyright Bar */}
         <div className="max-w-[1250px] mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-bold text-red-200 relative z-10">
-          <p>2026 © İstanbul Esenyurt Üniversitesi Bilgi İşlem Daire Başkanlığı tarafından hazırlanmıştır.</p>
+          <p>2026 © {tenant.institutionName} Bilgi İşlem Daire Başkanlığı tarafından hazırlanmıştır.</p>
           <div className="flex items-center gap-4 text-white">
             <button onClick={() => setView && setView('gizlilik')} className="hover:underline transition cursor-pointer">Gizlilik Politikası</button>
             <span>•</span>

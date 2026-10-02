@@ -78,7 +78,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     setAnnouncements(current => [created, ...(current || [])]);
     setNewAnnounce({ title: '', content: '', imageUrl: '' });
     if (window.toast?.success) window.toast.success('Duyuru başarıyla yayınlandı ve platform akışına eklendi!');
-    else alert('Duyuru başarıyla yayınlandı ve platform akışına eklendi!');
+    else console.info('Duyuru başarıyla yayınlandı ve platform akışına eklendi!');
   };
 
   const handleCreateEvent = (e) => {
@@ -98,7 +98,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     setEvents(current => [created, ...(current || [])]);
     setNewEvent({ title: '', date: '', time: '', location: '', description: '', imageUrl: '' });
     if (window.toast?.success) window.toast.success('Etkinlik başarıyla oluşturuldu ve etkinlikler listesine yayınlandı!');
-    else alert('Etkinlik başarıyla oluşturuldu ve etkinlikler listesine yayınlandı!');
+    else console.info('Etkinlik başarıyla oluşturuldu ve etkinlikler listesine yayınlandı!');
   };
 
   const handleAddBoardMember = (e) => {
@@ -114,7 +114,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     setAlumniAssocBoard([...(alumniAssocBoard || []), created]);
     setNewMember({ name: '', role: '', email: '', phone: '' });
     if (window.toast?.success) window.toast.success(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
-    else alert(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
+    else console.info(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
   };
 
   const handleRemoveBoardMember = (memberId) => {

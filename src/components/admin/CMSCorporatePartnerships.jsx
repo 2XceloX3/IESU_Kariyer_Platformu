@@ -215,7 +215,7 @@ export default function CMSCorporatePartnerships() {
       if (window.toast?.error) {
         window.toast.error('Lütfen gerekli alanları doldurunuz (Şirket Adı, İletişim Sorumlusu, Protokol Kapsamı).');
       } else {
-        alert('Lütfen gerekli alanları doldurunuz (Şirket Adı, İletişim Sorumlusu, Protokol Kapsamı).');
+        console.warn('Lütfen gerekli alanları doldurunuz (Şirket Adı, İletişim Sorumlusu, Protokol Kapsamı).');
       }
       return;
     }

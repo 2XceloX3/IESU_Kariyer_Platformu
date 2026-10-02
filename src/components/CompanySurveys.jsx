@@ -83,7 +83,7 @@ export default function CompanySurveys({ surveys, currentUser, addNotification }
 
   const handleSubmit = () => {
     if (Object.keys(answers).length < activeSurvey.questions.length) {
-      window.toast?.error?.("Lütfen tüm soruları yanıtlayın.") || alert("Lütfen tüm soruları yanıtlayın.");
+      (window.toast?.error || console.warn)("Lütfen tüm soruları yanıtlayın.");
       return;
     }
     
@@ -113,7 +113,7 @@ export default function CompanySurveys({ surveys, currentUser, addNotification }
         message: 'İşveren anketine katılımınız için teşekkür ederiz! Yanıtlarınız müfredat güncellemelerine dahil edilmiştir.'
       });
     } else {
-      window.toast?.success?.('İşveren değerlendirmeniz başarıyla kaydedildi.') || alert('İşveren değerlendirmeniz başarıyla kaydedildi.');
+      (window.toast?.success || console.info)('İşveren değerlendirmeniz başarıyla kaydedildi.');
     }
   };
 
