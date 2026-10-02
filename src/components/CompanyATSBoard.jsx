@@ -189,7 +189,14 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
     };
 
     // Append applications from Zustand store
-    applications.forEach(app => {
+    const companyApps = (applications || []).filter(app => 
+      app.companyId === currentUser?.id || 
+      app.companyName === currentUser?.name ||
+      app.companyName === currentUser?.companyName ||
+      app.company === currentUser?.name
+    );
+
+    companyApps.forEach(app => {
       const colId = statusToColumnId(app.status);
       const formattedApp = {
         id: app.id,

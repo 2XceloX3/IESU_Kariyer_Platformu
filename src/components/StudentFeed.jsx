@@ -42,7 +42,13 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const alumni = useAppStore(state => state.alumni);
   const companies = useAppStore(state => state.companies);
   const featuredOpportunities = useAppStore(state => state.featuredOpportunities);
-  const mentorships = useAppStore(state => state.mentorships);
+  const [stories, setStories] = useState([]);
+  const [mentorships, setMentorships] = useState(() => {
+    try {
+      const saved = localStorage.getItem('igu_mentorships_v2') || localStorage.getItem('iesu_mentorships_v2');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const applications = useAppStore(state => state.applications);
   const setApplications = useAppStore(state => state.setApplications);
   const jobs = useAppStore(state => state.jobs);

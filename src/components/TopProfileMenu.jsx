@@ -428,56 +428,6 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Portallar</p>
                 <div className="flex flex-col gap-1.5">
-                  <div className="grid grid-cols-2 gap-1.5 mb-1">
-                    <button 
-                      role="menuitem" 
-                      onClick={() => { 
-                        setIsOpen(false); 
-                        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' };
-                        const store = useAppStore.getState();
-                        store.setUserRole('admin'); 
-                        store.setActivePortalBranch?.('admin');
-                        updateActiveUser(adminUser);
-                        if (setSelectedUserId) setSelectedUserId('admin_1513');
-                        setView?.('admin_cms'); 
-                      }} 
-                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-center transition-all duration-200 group border shadow-sm ${
-                        (userRole === 'admin' && currentView === 'admin_cms')
-                          ? 'bg-[#990000] text-white font-black border-[#990000]' 
-                          : 'bg-white hover:bg-red-50 text-[#990000] font-black border-red-200 hover:-translate-y-0.5 active:scale-95'
-                      }`}
-                    >
-                      <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'admin' && currentView === 'admin_cms') ? 'bg-white/20 text-white' : 'bg-red-100 text-[#990000] group-hover:bg-[#990000] group-hover:text-white'}`}>
-                        <LayoutDashboard size={14} />
-                      </div>
-                      <span className="text-[9px] font-black uppercase tracking-wider">Yönetim Paneli</span>
-                    </button>
-
-                    <button 
-                      role="menuitem" 
-                      onClick={() => { 
-                        setIsOpen(false); 
-                        const adminUser = { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' };
-                        const store = useAppStore.getState();
-                        store.setUserRole('admin');
-                        store.setActivePortalBranch?.('admin');
-                        updateActiveUser(adminUser);
-                        if (setSelectedUserId) setSelectedUserId('admin_1513');
-                        setView?.('admin'); 
-                      }} 
-                      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-center transition-all duration-200 group border shadow-sm ${
-                        (userRole === 'admin' && currentView === 'admin')
-                          ? 'bg-amber-600 text-white font-black border-amber-600' 
-                          : 'bg-white hover:bg-amber-50 text-amber-700 font-black border-amber-200 hover:-translate-y-0.5 active:scale-95'
-                      }`}
-                    >
-                      <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'admin' && currentView === 'admin') ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
-                        <Crown size={14} />
-                      </div>
-                      <span className="text-[9px] font-black uppercase tracking-wider">Kariyer Merkezi</span>
-                    </button>
-                  </div>
-
                   <div className="grid grid-cols-4 gap-1">
                     <button 
                       role="menuitem" 

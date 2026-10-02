@@ -155,7 +155,7 @@ Sunduğumuz Olanaklar:
       applicationLink: formData.applicationLink.trim() || '#',
       logo: previewImage || (isAdmin ? '/iesu-logo.svg' : (currentUser?.avatar || currentUser?.logo || '')),
       imageUrl: previewImage || '',
-      status: isAdmin ? 'Aktif' : 'Beklemede',
+      status: isAdmin ? 'Aktif' : 'Onay Bekliyor',
       targetHives: targetHives,
       publishedBy: isAdmin ? 'admin' : 'company',
       createdAt: new Date().toISOString()
