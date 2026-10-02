@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronRight, Mail, ArrowRight, CheckCircle } from 'lucide-react';
 import Logo from '../Logo';
+import { getTenantConfig } from '../../config/tenantConfig';
 
 export default function Footer({ setSelectedItem, legalData, setView }) {
+  const tenant = getTenantConfig();
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -35,18 +37,18 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
             <div className="flex items-center gap-3.5 mb-6">
               <Logo size="lg" variant="white" />
               <div>
-                <h3 className="text-sm font-black text-white leading-tight tracking-tight uppercase">İstanbul Esenyurt Üniversitesi</h3>
+                <h3 className="text-sm font-black text-white leading-tight tracking-tight uppercase">{tenant.institutionName}</h3>
                 <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest mt-0.5">Kariyer Geliştirme Merkezi</p>
               </div>
             </div>
             <p className="text-[14px] text-red-50 leading-relaxed mb-6 font-medium">
-              İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
+              {tenant.institutionName} Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
             </p>
             <div className="flex gap-3">
               <a href="https://tr-tr.facebook.com/iesuedu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
               </a>
-              <a href="https://www.instagram.com/iguiesu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
+              <a href="https://www.instagram.com/iesuedu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
               </a>
               <a href="https://www.youtube.com/@IesuUniversitesi" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
