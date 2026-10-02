@@ -80,7 +80,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         return;
       }
     } catch (err) {
-      console.log("Firebase Login Failed, falling back to mock logic:", err.message);
+      console.log("Firebase Login Failed:", err.message);
+      if (!import.meta.env.DEV) {
+        setError('Giriş servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.');
+        setIsLoading(false);
+        return;
+      }
     }
     
     // Firebase başarısız oldu — mock login'e dön

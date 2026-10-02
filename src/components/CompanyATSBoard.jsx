@@ -173,10 +173,13 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
 
   const handleReturn = () => {
     const store = useAppStore.getState();
+    const branch = store.activePortalBranch;
     const role = currentUser?.role || store.userRole;
-    const targetBranch = (role === 'admin' || currentUser?.id === 'admin_1513') 
-      ? 'admin' 
-      : (role === 'student' ? 'student' : (role === 'alumni' ? 'alumni' : (role === 'academic' ? 'academic' : 'company')));
+    const targetBranch = (branch === 'company' || (!branch && role === 'company'))
+      ? 'company'
+      : ((role === 'admin' || currentUser?.id === 'admin_1513')
+          ? 'admin'
+          : (role === 'student' ? 'student' : (role === 'alumni' ? 'alumni' : (role === 'academic' ? 'academic' : 'company'))));
     if (store.setActivePortalBranch) store.setActivePortalBranch(targetBranch);
     if (setView) setView(targetBranch);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -396,7 +399,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
             <div 
               onClick={handleReturn}
               className="flex items-center gap-2.5 min-w-0 cursor-pointer"
-              title="Paneline Dön"
+              title="Firma Paneline Dön"
             >
               <Logo color="blue" className="h-9 w-auto shrink-0 hover:scale-105 transition-transform" />
               <div className="text-left min-w-0">
@@ -1013,7 +1016,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
           <button 
             onClick={handleReturn} 
             className="p-2.5 rounded-full bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white shadow-md shadow-blue-950/40 flex items-center justify-center cursor-pointer hover:scale-105 transition-all" 
-            title="Akış & Ana Sayfaya Dön"
+            title="Kurumsal Akış & Ana Sayfaya Dön"
           >
             <Home size={22} strokeWidth={2.2} />
           </button>

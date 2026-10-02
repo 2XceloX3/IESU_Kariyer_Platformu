@@ -401,6 +401,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
   const [capturedMedia, setCapturedMedia] = useState(null);
   const [cameraShareOption, setCameraShareOption] = useState('keep'); // 'keep', 'replay', 'once'
   const [isRecording, setIsRecording] = useState(false);
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
   const [viewReplayMsgs, setViewReplayMsgs] = useState({});
   const [cameraFilter, setCameraFilter] = useState(CAMERA_FILTERS[0]);
 

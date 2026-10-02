@@ -1208,7 +1208,7 @@ export default function ResearchOSHub({ setView, currentUser, userRole, setSelec
           <button 
             onClick={handleReturnToAcademic} 
             className="p-2.5 rounded-full bg-purple-50 text-purple-900 hover:bg-[#4C1D95] hover:text-white transition flex items-center justify-center cursor-pointer hover:scale-105" 
-            title="Akış & Ana Sayfa"
+            title="Akademik Akış & Ana Sayfa"
           >
             <Home size={22} strokeWidth={2.2} />
           </button>
