@@ -6,9 +6,11 @@ import {
   Sparkles, Check, ChevronDown, Award, TrendingUp, Building2, Home, ArrowLeft
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import useAdminStore from '../brain/useAdminStore';
 import eventBus from '../brain/eventBus';
 import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
+import { getTenantConfig } from '../config/tenantConfig';
 
 const INITIAL_COLUMNS = [
   { id: 'new', title: 'Yeni Başvuru', color: 'bg-blue-50 text-blue-900 border-blue-200' },
@@ -203,12 +205,19 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
     };
 
     // Append applications from Zustand store
-    const companyApps = (applications || []).filter(app => 
-      app.companyId === currentUser?.id || 
-      app.companyName === currentUser?.name ||
-      app.companyName === currentUser?.companyName ||
-      app.company === currentUser?.name
-    );
+    const tenant = getTenantConfig();
+    const isAdmin = currentUser?.role === 'admin' || currentUser?.id === 'admin_1513';
+    const companyApps = (applications || []).filter(app => {
+      if (app.tenantId && app.tenantId !== tenant.id) return false;
+      if (isAdmin) return true;
+      return (
+        app.companyId === currentUser?.id || 
+        app.companyName === currentUser?.name ||
+        app.companyName === currentUser?.companyName ||
+        app.company === currentUser?.name ||
+        (currentUser?.companyName && app.company === currentUser?.companyName)
+      );
+    });
 
     companyApps.forEach(app => {
       const colId = statusToColumnId(app.status);
@@ -216,7 +225,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
         id: app.id,
         name: app.applicantName || 'Öğrenci / Mezun',
         role: app.jobTitle || 'Açık Pozisyon Başvurusu',
-        uni: 'İstanbul Esenyurt Üniversitesi',
+        uni: tenant.institutionName,
         dept: app.applicantDept || 'Üniversite Adayı',
         gpa: app.gpa || '3.70',
         date: app.date || 'Bugün',
@@ -225,12 +234,12 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
         coverLetter: app.coverLetter || 'İlanınızla yakından ilgileniyorum.',
         email: app.applicantEmail || 'aday@esenyurt.edu.tr',
         phone: app.applicantPhone || '0555 000 0000',
-        cvType: app.cvType || 'KGM Akredite İESÜ Dijital CV',
+        cvType: app.cvType || `KGM Akredite ${tenant.institutionShortName} Dijital CV`,
         isStoreApp: true,
         company: app.company,
         rawStatus: app.status,
         experiences: [
-          { role: 'Stajyer / Proje Üyesi', company: 'İESÜ Kampüs İçi', date: '2025' }
+          { role: 'Stajyer / Proje Üyesi', company: `${tenant.institutionShortName} Kampüs İçi`, date: '2025' }
         ],
         skills: ['İletişim', 'Takım Çalışması', 'Teknik Yetkinlik']
       };
@@ -240,7 +249,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
     });
 
     return combined;
-  }, [applications, mockApplicants]);
+  }, [applications, mockApplicants, currentUser]);
 
   // Flatten all applicants for list view and metrics
   const allApplicants = useMemo(() => {
@@ -330,6 +339,16 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
         timestamp: new Date().toISOString()
       });
     }
+
+    try {
+      useAdminStore.getState().logAuditAction?.(
+        currentUser?.name || currentUser?.email || 'Firma Yöneticisi',
+        `Aday Durumu Güncellendi: ${item.name} -> ${newStatus}`,
+        'ATS & Başvuru',
+        'info',
+        { applicantId: item.id, newStatus, companyId: currentUser?.id }
+      );
+    } catch { /* intentional */ }
   };
 
   const handleDrop = (e, targetColId) => {

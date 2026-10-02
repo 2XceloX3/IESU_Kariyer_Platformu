@@ -11,6 +11,8 @@ import JobMatchScoreCard from './JobMatchScoreCard';
 import SafeAvatar from './shared/SafeAvatar';
 import AnkaCoverLetterModal from './AnkaCoverLetterModal';
 import eventBus from '../brain/eventBus';
+import useAdminStore from '../brain/useAdminStore';
+import { getTenantConfig } from '../config/tenantConfig';
 
 export default function JobsAndInternships({ userRole, setView, currentUser, jobs: propsJobs }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -100,21 +102,25 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     if (effectiveRole !== 'student' && effectiveRole !== 'alumni' && userRole !== 'student' && userRole !== 'alumni') { window.toast?.error("Sadece öğrenciler ve mezunlar başvuru yapabilir."); return; }
     if (applications.some(a => a.jobId === applyModalJob.id && (a.applicantId === branchTargetId || a.applicantId === currentUser?.id))) { window.toast?.info("Bu ilana zaten başvurdunuz."); setApplyModalJob(null); return; }
     
+    const tenant = getTenantConfig();
     const newApp = { 
       id: 'APP-' + Date.now(), 
+      tenantId: applyModalJob.tenantId || tenant.id,
       jobId: applyModalJob.id, 
       jobTitle: applyModalJob.title, 
       company: applyModalJob.company, 
+      companyId: applyModalJob.companyId || null,
       applicantId: branchTargetId, 
       applicantName: branchName, 
       applicantEmail: currentUser?.email || (effectiveRole === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr'),
       applicantPhone: appForm.phone || '0555 000 0000',
       applicantDept: branchDept,
       coverLetter: appForm.coverLetter || 'İlanınızla yakından ilgileniyorum.',
-      cvType: appForm.cvType,
+      cvType: appForm.cvType || `KGM Akredite ${tenant.institutionShortName} Dijital CV`,
       status: 'Beklemede', 
       companyContacted: false,
-      date: new Date().toLocaleDateString('tr-TR') 
+      date: new Date().toLocaleDateString('tr-TR'),
+      timestamp: new Date().toISOString()
     };
     
     setApplications(prev => [...(prev || []), newApp]);
@@ -123,14 +129,25 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
         type: 'applied', 
         application: newApp,
         role: effectiveRole,
-        jobTitle: applyModalJob.title,
+        jobTitle: applyModalJob.title, 
         applicant: branchName
       });
     } catch (_) {}
+
+    try {
+      useAdminStore.getState().logAuditAction?.(
+        branchName,
+        `İş/Staj Başvurusu: ${applyModalJob.title} (${applyModalJob.company})`,
+        'Başvuru & Kariyer',
+        'info',
+        { jobId: applyModalJob.id, applicantId: branchTargetId, company: applyModalJob.company, tenantId: tenant.id }
+      );
+    } catch { /* intentional */ }
+
     window.toast?.success("İş & Staj başvurunuz KGM ve Firma Havuzuna başarıyla iletildi!");
     addNotification({ id:'N-'+Date.now(), userId:branchTargetId, text:`${applyModalJob.title} ilanına başvurunuz iletildi.`, read:false, time:'Az önce' });
     setApplyModalJob(null);
-    setAppForm({ coverLetter: '', phone: currentUser?.phone || '', cvType: 'KGM Akredite İESÜ Dijital CV' });
+    setAppForm({ coverLetter: '', phone: currentUser?.phone || '', cvType: `KGM Akredite ${tenant.institutionShortName} Dijital CV` });
   };
   const activeJobs = (jobs||[]).filter(j => j.status === 'Aktif' || !j.status);
   const pendingJobs = (jobs||[]).filter(j => j.status === 'Onay Bekliyor' || j.status === 'Pending');

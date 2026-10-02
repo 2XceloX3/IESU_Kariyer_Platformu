@@ -2,9 +2,11 @@ import React, { useState, useEffect, useCallback, memo } from 'react';
 import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
+import useAdminStore from '../brain/useAdminStore';
 import eventBus from '../brain/eventBus';
 import SafeAvatar from './shared/SafeAvatar';
 import DOMPurify from 'dompurify';
+import { getTenantConfig } from '../config/tenantConfig';
 
 
 const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessages, setSelectedUserId, setView }) {
@@ -84,11 +86,14 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     const applicantEmail = effectiveCurrentUser?.email || (activePortalBranch === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr');
     const applicantPhone = applyPhone || effectiveCurrentUser?.phone || '0555 123 4567';
 
+    const tenant = getTenantConfig();
     const newApp = {
       id: 'APP-' + Date.now(),
       jobId: targetJobId,
       jobTitle: cleanJobTitle,
       company: companyName,
+      companyId: post?.jobData?.companyId || post?.authorId || post?.userId || null,
+      tenantId: post?.tenantId || post?.jobData?.tenantId || tenant.id,
       applicantId: effectiveApplicantId,
       applicantName: applicantName,
       applicantEmail: applicantEmail,
@@ -109,6 +114,16 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     } else {
       useAppStore.getState().setApplications?.([newApp, ...(useAppStore.getState().applications || [])]);
     }
+
+    try {
+      useAdminStore.getState().logAuditAction?.(
+        applicantName,
+        `İş/Staj Başvurusu (Gönderi): ${cleanJobTitle} (${companyName})`,
+        'Başvuru & Gönderi',
+        'info',
+        { jobId: targetJobId, applicantId: effectiveApplicantId, company: companyName, tenantId: tenant.id }
+      );
+    } catch { /* intentional */ }
 
     if (addNotification) {
       addNotification({

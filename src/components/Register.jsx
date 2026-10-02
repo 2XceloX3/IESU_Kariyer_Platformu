@@ -6,6 +6,8 @@ import { auth, db } from '../utils/firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
+import useAdminStore from '../brain/useAdminStore';
+import { getTenantConfig } from '../config/tenantConfig';
 
 const REGISTRATION_UNAVAILABLE_MESSAGE = 'Kayıt servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.';
 const PROFILE_SAVE_FAILED_MESSAGE = 'Profil bilgileriniz kaydedilemedi. Lütfen tekrar deneyin veya Kariyer Geliştirme Merkezi ile iletişime geçin.';
@@ -16,6 +18,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   const [accountType, setAccountType] = useState(registerAccountType || 'alumni'); // 'alumni', 'student', 'employer', 'academic'
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [kvkkConsent, setKvkkConsent] = useState(true);
+  const tenant = getTenantConfig();
 
   React.useEffect(() => {
     if (registerAccountType) {
@@ -76,7 +80,14 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!kvkkConsent) {
+      setError("Kayıt işlemine devam edebilmek için KVKK Aydınlatma Metnini onaylamanız gerekmektedir.");
+      return;
+    }
+
     setIsLoading(true);
+    const tenantId = tenant?.id || 'iesu';
     
     try {
       if (accountType === 'student') {
@@ -94,6 +105,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         // [FİREBASE FIRESTORE] - Kullanıcı Detaylarını Veritabanına Kaydet
         const newStudent = {
           id: studentUid, // Eşsiz UID
+          tenantId,
           name: formData.studentName || 'Yeni Öğrenci',
           studentId: formData.studentId,
           email: formData.studentEmail,
@@ -104,6 +116,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           internshipStatus: 'Arıyor',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.studentName || 'Öğrenci')}&background=0A2342&color=fff`,
           onboardingCompleted: false,
+          kvkkConsent: true,
+          kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
 
@@ -127,6 +141,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         // [FİREBASE FIRESTORE] - Firma Detaylarını Veritabanına Kaydet
         const newCompany = {
           id: companyUid,
+          tenantId,
           name: formData.companyName,
           username: formData.email,
           email: formData.email,
@@ -138,6 +153,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           role: 'employer',
           status: 'Onay Bekliyor',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.companyName)}&background=8B5CF6&color=fff`,
+          kvkkConsent: true,
+          kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
 
@@ -158,6 +175,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         // [FİREBASE FIRESTORE] - Akademik Detayları Veritabanına Kaydet
         const newAcademic = {
           id: academicUid,
+          tenantId,
           name: formData.academicName || 'Yeni Akademisyen',
           email: formData.academicEmail,
           title: formData.academicTitle || 'Akademisyen',
@@ -165,6 +183,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           department: 'Belirtilmedi',
           status: 'Aktif',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.academicName || 'Akademisyen')}&background=0EA5E9&color=fff`,
+          kvkkConsent: true,
+          kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
 
@@ -187,6 +207,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         // [FİREBASE FIRESTORE] - Mezun Detayları
         const newAlumni = {
           id: alumniUid,
+          tenantId,
           name: formData.alumniName || 'Yeni Mezun',
           studentId: formData.alumniId,
           email: formData.alumniEmail,
@@ -195,6 +216,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           role: 'alumni',
           status: 'Aktif',
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.alumniName || 'Mezun')}&background=F59E0B&color=fff`,
+          kvkkConsent: true,
+          kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
 
@@ -204,6 +227,18 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         if (setUserRole) setUserRole('alumni');
       }
       
+      // Kayıt ve KVKK denetim logunu arka planda kaydet
+      try {
+        const regEmail = formData.studentEmail || formData.email || formData.academicEmail || formData.alumniEmail || 'kayitli_kullanici';
+        useAdminStore.getState().logAuditAction?.(
+          regEmail,
+          `Kayıt ve KVKK Onayı: ${accountType.toUpperCase()}`,
+          'Kullanıcı & KVKK',
+          'info',
+          { tenantId, role: accountType, kvkkVersion: 'KVKK-2026-V1' }
+        );
+      } catch { /* intentional */ }
+
       // Tüm caselerde başarılı olursa Success (Adım 2) göster
       setStep(2);
 
@@ -336,6 +371,19 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       </div>
                     </div>
 
+                    <div className="flex items-start gap-2.5 pt-2">
+                      <input 
+                        type="checkbox" 
+                        id="kvkk-check-employer" 
+                        checked={kvkkConsent} 
+                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
+                      />
+                      <label htmlFor="kvkk-check-employer" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
+                        6698 sayılı KVKK Aydınlatma Metni'ni ve Platform Kullanım Koşulları'nı okudum, kurumsal verilerimizin işlenmesini onaylıyorum.
+                      </label>
+                    </div>
+
                     <div className="pt-4">
                       <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
@@ -382,6 +430,19 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                         <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
                         <input id="academicPasswordConfirm" type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
+                    </div>
+
+                    <div className="flex items-start gap-2.5 pt-2">
+                      <input 
+                        type="checkbox" 
+                        id="kvkk-check-academic" 
+                        checked={kvkkConsent} 
+                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
+                      />
+                      <label htmlFor="kvkk-check-academic" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
+                        6698 sayılı KVKK Aydınlatma Metni'ni okudum, akademik verilerimin ve danışmanlık kayıtlarımın işlenmesini onaylıyorum.
+                      </label>
                     </div>
 
                     <div className="pt-4">
@@ -445,6 +506,19 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       </div>
                     </div>
 
+                    <div className="flex items-start gap-2.5 pt-2">
+                      <input 
+                        type="checkbox" 
+                        id="kvkk-check-alumni" 
+                        checked={kvkkConsent} 
+                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
+                      />
+                      <label htmlFor="kvkk-check-alumni" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
+                        6698 sayılı KVKK Aydınlatma Metni'ni okudum, mezun bilgi havuzunda profilimin işlenmesini onaylıyorum.
+                      </label>
+                    </div>
+
                     <div className="pt-4">
                       <button disabled={isLoading} type="submit" className="w-full flex items-center justify-center gap-2 bg-[#990000] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#163B65] hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98] disabled:opacity-50 group">
                         {isLoading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
@@ -491,6 +565,19 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                         <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
                         <input id="studentPasswordConfirm" type="password" name="passwordConfirm" minLength={6} value={formData.passwordConfirm} onChange={handleChange} placeholder="Yeni Şifre (Tekrar)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
+                    </div>
+
+                    <div className="flex items-start gap-2.5 pt-2">
+                      <input 
+                        type="checkbox" 
+                        id="kvkk-check-student" 
+                        checked={kvkkConsent} 
+                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
+                      />
+                      <label htmlFor="kvkk-check-student" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
+                        6698 sayılı KVKK Aydınlatma Metni'ni okudum, kişisel ve akademik verilerimin staj ve kariyer olanakları kapsamında işlenmesini onaylıyorum.
+                      </label>
                     </div>
 
                     <div className="pt-4">

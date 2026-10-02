@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Mic, Headphones, Users, ChevronLeft, Plus, Play, MoreHorizontal, MessageSquare, Hand } from 'lucide-react';
+import { Mic, Headphones, Users, ChevronLeft, Plus, Play, MoreHorizontal, MessageSquare, Hand, X, Radio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import useAppStore from '../store/useAppStore';
+import useAdminStore from '../brain/useAdminStore';
+import { getTenantConfig } from '../config/tenantConfig';
 
-const MOCK_ROOMS = [
+const getInitialRooms = (tenant) => [
   {
     id: 'room_1',
     title: 'Mülakat Stratejileri',
@@ -16,7 +18,7 @@ const MOCK_ROOMS = [
     speakers: [
       { name: 'Dr. Ahmet Yılmaz', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150', role: 'Host' },
       { name: 'Zeynep Kaya', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', role: 'Speaker' },
-      { name: 'Kariyer Danışmanı', avatar: '/iesu-logo.svg', role: 'Moderatör' }
+      { name: 'Kariyer Danışmanı', avatar: tenant.logoUrl || '/iesu-logo.svg', role: 'Moderatör' }
     ],
     listenersCount: 145,
     tags: ['Yapay Zeka', 'Mülakat', 'Kariyer']
@@ -47,7 +49,13 @@ const MOCK_ROOMS = [
 ];
 
 export default function LiveRoomsPanel({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+  const tenant = getTenantConfig();
+  const [rooms, setRooms] = useState(() => getInitialRooms(tenant));
   const [activeRoom, setActiveRoom] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newRoomTitle, setNewRoomTitle] = useState('');
+  const [newRoomType, setNewRoomType] = useState('student');
+  const [newRoomTags, setNewRoomTags] = useState('Kariyer, Sohbet');
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
   const backTarget = previousView || (
@@ -66,6 +74,44 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
     setActiveRoom(null);
   };
 
+  const handleCreateRoom = (e) => {
+    e.preventDefault();
+    if (!newRoomTitle.trim()) {
+      window.toast?.error?.('Lütfen bir oda başlığı girin.');
+      return;
+    }
+    const hostName = currentUser?.name || 'Oturum Sahibi';
+    const newRoom = {
+      id: 'room_' + Date.now(),
+      title: newRoomTitle.trim(),
+      host: hostName,
+      type: newRoomType,
+      speakers: [
+        {
+          name: hostName,
+          avatar: currentUser?.avatar || '',
+          role: 'Host'
+        }
+      ],
+      listenersCount: 1,
+      tags: newRoomTags.split(',').map(t => t.trim()).filter(Boolean)
+    };
+    setRooms(prev => [newRoom, ...prev]);
+    setIsCreateModalOpen(false);
+    setNewRoomTitle('');
+    setActiveRoom(newRoom);
+    window.toast?.success?.(`"${newRoom.title}" odası kuruldu, canlı yayındasınız!`);
+    try {
+      useAdminStore.getState().logAuditAction?.(
+        hostName,
+        `Canlı Oda Kuruldu: ${newRoom.title}`,
+        'Canlı Odalar',
+        'info',
+        { roomId: newRoom.id, type: newRoomType, tenantId: tenant.id }
+      );
+    } catch { /* intentional */ }
+  };
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">
       <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40">
@@ -81,7 +127,7 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
             <Logo className="h-8 w-auto text-[#990000]" />
             <div className="hidden sm:block">
               <h1 className="font-black text-[#990000] leading-tight">Canlı Kariyer Odaları</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">İESÜ Spaces</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{tenant.institutionShortName} Spaces</p>
             </div>
           </div>
         </div>
@@ -96,13 +142,16 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                 <h2 className="text-2xl font-black text-gray-900 mb-2">Keşfet</h2>
                 <p className="text-gray-500 text-sm">Şu an aktif olan sesli odalara katıl veya kendi odanı oluştur.</p>
               </div>
-              <button className="bg-[#990000] text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-red-800 transition flex items-center gap-2 shadow-lg shadow-red-500/20 cursor-pointer">
+              <button 
+                onClick={() => setIsCreateModalOpen(true)} 
+                className="bg-[#990000] text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-red-800 transition flex items-center gap-2 shadow-lg shadow-red-500/20 cursor-pointer"
+              >
                 <Plus size={18} /> Oda Kur
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {MOCK_ROOMS.map(room => (
+              {rooms.map(room => (
                 <button
                   key={room.id}
                   onClick={() => joinRoom(room)}
@@ -231,6 +280,91 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
           </AnimatePresence>
         )}
       </main>
+
+      {/* Oda Kurma Modalı */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden">
+            <div className="bg-gradient-to-r from-red-950 via-[#990000] to-rose-900 p-6 text-white flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Radio size={22} className="text-white animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="font-black text-lg">Yeni Canlı Oda Başlat</h3>
+                  <p className="text-xs text-red-100">{tenant.institutionShortName} Spaces Etkileşim Odası</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsCreateModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateRoom} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                  Oda Başlığı *
+                </label>
+                <input 
+                  type="text" 
+                  value={newRoomTitle}
+                  onChange={(e) => setNewRoomTitle(e.target.value)}
+                  placeholder="Örn: Yapay Zeka ile Mülakat Hazırlığı"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#990000] focus:ring-2 focus:ring-red-100 outline-none text-sm text-slate-800 font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                  Oda Türü
+                </label>
+                <select 
+                  value={newRoomType}
+                  onChange={(e) => setNewRoomType(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#990000] focus:ring-2 focus:ring-red-100 outline-none text-sm text-slate-800 font-semibold bg-white"
+                >
+                  <option value="student">Öğrenci & Akran Sohbeti</option>
+                  <option value="club">Kulüp & Topluluk Oturumu</option>
+                  <option value="official">Kariyer Merkezi / Resmi</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                  Etiketler (Virgülle ayırın)
+                </label>
+                <input 
+                  type="text" 
+                  value={newRoomTags}
+                  onChange={(e) => setNewRoomTags(e.target.value)}
+                  placeholder="Kariyer, Yapay Zeka, Mülakat"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#990000] focus:ring-2 focus:ring-red-100 outline-none text-sm text-slate-800"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition cursor-pointer"
+                >
+                  Vazgeç
+                </button>
+                <button 
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-[#990000] hover:bg-red-800 text-white font-bold text-sm shadow-lg shadow-red-900/20 transition flex items-center gap-2 cursor-pointer"
+                >
+                  <Play size={16} /> Odayı Başlat
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Floating Bottom Dock */}
       {setView && (

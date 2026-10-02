@@ -8,6 +8,7 @@ import useAppStore from '../store/useAppStore';
 import eventBus from '../brain/eventBus';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
+import { getTenantConfig } from '../config/tenantConfig';
 
 export default function JobCreator({ setView, currentUser: propsCurrentUser, addNotification: propsAddNotification, userRole: propsUserRole }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -133,8 +134,9 @@ Sunduğumuz Olanaklar:
       return;
     }
 
+    const tenant = getTenantConfig();
     const companyName = isAdmin 
-      ? (formData.companyName?.trim() || 'İstanbul Esenyurt Üniversitesi (İESÜ)')
+      ? (formData.companyName?.trim() || `${tenant.institutionName} (${tenant.institutionShortName})`)
       : (currentUser?.name || 'Kurumsal Firma');
 
     const formattedDate = formData.date 
@@ -143,6 +145,8 @@ Sunduğumuz Olanaklar:
 
     const newJob = {
       id: 'JOB-' + Date.now(),
+      tenantId: tenant.id || 'iesu',
+      companyId: currentUser?.id || (isAdmin ? 'admin_1513' : 'company'),
       title: formData.title.trim(),
       company: companyName,
       location: formData.location.trim(),
@@ -153,7 +157,7 @@ Sunduğumuz Olanaklar:
       rawDeadline: formData.date,
       description: formData.description.trim(),
       applicationLink: formData.applicationLink.trim() || '#',
-      logo: previewImage || (isAdmin ? '/iesu-logo.svg' : (currentUser?.avatar || currentUser?.logo || '')),
+      logo: previewImage || (isAdmin ? (tenant.logoUrl || '/iesu-logo.svg') : (currentUser?.avatar || currentUser?.logo || '')),
       imageUrl: previewImage || '',
       status: isAdmin ? 'Aktif' : 'Onay Bekliyor',
       targetHives: targetHives,

@@ -3,6 +3,7 @@ import { Mail, Phone, MapPin, Send, CheckCircle2, ShieldCheck, Heart, X, FileTex
 import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import Logo from './Logo';
 import useAppStore from '../store/useAppStore';
+import useAdminStore from '../brain/useAdminStore';
 import { getTenantConfig } from '../config/tenantConfig';
 
 export default function MainFooter({ setView }) {
@@ -39,6 +40,7 @@ export default function MainFooter({ setView }) {
 
     const newSub = {
       id: 'SUB-' + Date.now(),
+      tenantId: tenant?.id || 'iesu',
       email: email,
       fullName: form.fullName,
       faculty: form.faculty,
@@ -46,12 +48,24 @@ export default function MainFooter({ setView }) {
       grade: form.grade,
       birthDate: form.birthDate,
       date: new Date().toLocaleString("tr-TR"),
+      kvkkConsent: true,
+      kvkkVersion: 'KVKK-2026-V1',
       status: 'Onaylandı (KVKK İzinli)'
     };
 
     if (addNewsletterSubscriber) {
       addNewsletterSubscriber(newSub);
     }
+
+    try {
+      useAdminStore.getState().logAuditAction?.(
+        email,
+        `E-Bülten Aboneliği & KVKK Onayı (${form.fullName})`,
+        'Bülten & KVKK',
+        'info',
+        { tenantId: tenant?.id || 'iesu', email, kvkkVersion: 'KVKK-2026-V1' }
+      );
+    } catch { /* intentional */ }
 
     setShowSubscriberModal(false);
     setSubscribed(true);
