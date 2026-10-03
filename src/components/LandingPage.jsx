@@ -823,7 +823,13 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                       if (currentUser) { setView && setView(target); }
                       else { setView && setView('register'); }
                     } else {
+                      const protectedViews = ['student_kgb', 'staj', 'mentor_match', 'cvbuilder', 'startup_incubator', 'incubator', 'research_hub'];
+                    if (protectedViews.includes(target)) {
+                      if (currentUser) { setView && setView(target); }
+                      else { setView && setView('register'); }
+                    } else {
                       if (setView) setView(target);
+                    }
                     }
                   }}
                   className="flex-1 py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-xs uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2 cursor-pointer"

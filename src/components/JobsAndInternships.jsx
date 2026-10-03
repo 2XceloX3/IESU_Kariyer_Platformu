@@ -1,5 +1,7 @@
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 import useAppStore from '../store/useAppStore';
 import React, { useState } from 'react';
 import { ExternalLink, Calendar, MapPin, Building2, Search, Briefcase, FileText, CheckCircle2, Download, Home, MessageCircle, Bell, Heart, X, Flame, Star, ArrowRight, Sparkles, Target, Users, TrendingUp, Clock, Crown, LayoutDashboard, ChevronRight, Scale } from 'lucide-react';
@@ -58,6 +60,8 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const notifications = useAppStore(state => state.notifications) || [];
   const [viewMode, setViewMode] = useState('list');
   const [swipeIndex, setSwipeIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [activeTab, setActiveTab] = useState('ilanlar');
@@ -128,7 +132,18 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     };
     
     
+    
     setApplications(prev => [...(prev || []), newApp]);
+    try {
+      addDoc(collection(db, 'applications'), {
+        ...newApp,
+        createdAt: serverTimestamp(),
+        status: 'Onay Bekliyor',
+      });
+    } catch (e) {
+      console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
+    }
+
     try {
       addDoc(collection(db, 'applications'), {
         ...newApp,
@@ -165,6 +180,18 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     setAppForm({ coverLetter: '', phone: currentUser?.phone || '', cvType: `KGM Akredite ${tenant.institutionShortName} Dijital CV` });
   };
   const activeJobs = (jobs||[]).filter(j => j.status === 'Aktif' || !j.status);
+
+  const filteredJobs = (activeJobs || []).filter(job => {
+    const q = searchQuery.toLocaleLowerCase('tr-TR');
+    const matchesSearch = !q || 
+      (job.title || '').toLocaleLowerCase('tr-TR').includes(q) ||
+      (job.company || job.companyName || '').toLocaleLowerCase('tr-TR').includes(q) ||
+      (job.location || job.city || '').toLocaleLowerCase('tr-TR').includes(q);
+    const matchesType = filterType === 'all' || 
+      (job.type || job.jobType || '').toLocaleLowerCase('tr-TR').includes(filterType);
+    return matchesSearch && matchesType;
+  });
+
 
   const filteredJobs = (activeJobs || []).filter(job => {
     const q = searchQuery.toLocaleLowerCase('tr-TR');
