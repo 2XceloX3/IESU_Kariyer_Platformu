@@ -97,8 +97,8 @@ const PlatformSettings = ({
             />
 
             <Toggle 
-              label="Mezun Derneği Akış & Portal Görünürlüğü"
-              description="Öğrenci ve mezun ana yayın akışında Mezunlar Derneği duyuru, üyelik ve yönetim paneli sekmesinin görünmesini sağlar."
+              label="İESÜ Mezunlar Portalı Akış & Modül Görünürlüğü"
+              description="Öğrenci ve mezun ana yayın akışında İESÜ Mezunlar Portalı duyuru, kayıt ve koordinasyon paneli sekmesinin görünmesini sağlar."
               icon={Award}
               enabled={featureAlumniAssocToggle !== false}
               onChange={() => setFeatureAlumniAssocToggle && setFeatureAlumniAssocToggle(!featureAlumniAssocToggle)}

@@ -124,7 +124,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           setCurrentUser({
             ...companyUser,
             role: 'employer',
-            avatar: companyUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(companyUser.name)}&background=8B5CF6&color=fff`,
+            avatar: companyUser.avatar || null,
             onboardingCompleted: true
           });
         }

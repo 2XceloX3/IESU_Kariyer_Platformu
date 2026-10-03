@@ -222,7 +222,7 @@ export default function PublicUserProfile({
           gradYear: '2023',
           title: 'Frontend Developer',
           company: 'Trendyol',
-          avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff',
+          avatar: null,
           email: 'caner@mezun.esenyurt.edu.tr',
           badges: ['verified', 'mentor'],
           bio: 'İESÜ Yazılım Mühendisliği mezunuyum. Trendyol bünyesinde Frontend Developer olarak görev yapıyorum.'
@@ -235,7 +235,7 @@ export default function PublicUserProfile({
           gradYear: '2022',
           title: 'Üretim ve Operasyon Yöneticisi',
           company: 'Ford Otosan',
-          avatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff',
+          avatar: null,
           email: 'seda@mezun.esenyurt.edu.tr',
           badges: ['verified', 'mentor'],
           bio: 'İESÜ 2022 Mezunu. Otomotiv sanayisinde tedarik zinciri ve yalın üretim süreçlerini yönetiyorum.'
@@ -248,7 +248,7 @@ export default function PublicUserProfile({
           gradYear: '2023',
           title: 'Uzman',
           company: 'Sektör Lideri',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(targetId)}&background=EA580C&color=fff`,
+          avatar: null,
           email: 'alumni@mezun.esenyurt.edu.tr',
           badges: ['verified']
         })));
@@ -305,7 +305,7 @@ export default function PublicUserProfile({
           location: 'İstanbul, TR',
           foundingYear: '2015',
           description: `${fallbackName} — İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi onaylı kurumsal staj ve istihdam paydaşı.`,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=0A2342&color=fff`,
+          avatar: null,
           role: 'company',
           badges: ['verified', 'corporate_partner']
         });

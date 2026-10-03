@@ -1394,13 +1394,13 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                 </div>
               )}
 
-              {/* TAB: Mezun Derneği Başvurusu */}
+              {/* TAB: Mezun Portalı Başvurusu */}
               {activeTab === 'mezun_dernek_basvuru' && (
                 <div className="space-y-6 flex flex-col items-center">
                   <div className="border-b border-slate-100 pb-4 w-full">
-                    <h3 className="text-lg font-black text-slate-900">🏛️ Mezunlar Derneği Üyelik & Ekip Başvurusu</h3>
+                    <h3 className="text-lg font-black text-slate-900">🏛️ İESÜ Mezunlar Portalı Temsilcilik & Ekip Başvurusu</h3>
                     <p className="text-xs text-slate-500 font-medium">
-                      İstanbul Esenyurt Üniversitesi Mezunlar Derneği'ne resmî üyelik başvurusu yapabilir veya dernek yönetim ekibinde görev almak için aday olabilirsiniz.
+                      İstanbul Esenyurt Üniversitesi (İESÜ) Mezunlar Portalı'na resmî mezun kaydı yapabilir veya koordinasyon ekibinde görev almak için aday olabilirsiniz.
                     </p>
                   </div>
 
@@ -1411,7 +1411,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                       </div>
                       <h4 className="font-black text-slate-900 text-base">Başvurunuz Başarıyla İletildi!</h4>
                       <p className="text-slate-500 text-xs font-semibold max-w-md mx-auto leading-relaxed">
-                        Mezunlar Derneği Yönetim Kurulu başvurunuzu inceledikten sonra e-posta ve telefon üzerinden sizinle iletişime geçecektir. Katkılarınız için teşekkür ederiz.
+                        Mezunlar Koordinasyon Kurulu başvurunuzu inceledikten sonra e-posta ve telefon üzerinden sizinle iletişime geçecektir. Katkılarınız için teşekkür ederiz.
                       </p>
                       <button 
                         onClick={() => setAssocAppSubmitted(false)}
@@ -1564,7 +1564,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                           className="mt-1 accent-emerald-600"
                         />
                         <label htmlFor="agree_assoc" className="text-[11px] text-slate-600 leading-relaxed font-bold">
-                          Mezunlar Derneği Tüzüğünü okuduğumu ve bilgilerimin Dernek Yönetim Kurulu ile paylaşılmasını onaylıyorum.
+                          İESÜ Mezunlar Portalı İlkelerini okuduğumu ve bilgilerimin Mezunlar Koordinasyon Kurulu ile paylaşılmasını onaylıyorum.
                         </label>
                       </div>
 
@@ -1572,7 +1572,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         type="submit"
                         className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md mt-4"
                       >
-                        Dernek Başvurusunu Gönder
+                        Mezun Başvurusunu Gönder
                       </button>
                     </form>
                   )}
@@ -1583,9 +1583,9 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
               {(activeTab === 'kulup_basvuru' || activeTab === 'mezun_komisyon') && (
                 <div className="space-y-6">
                   <div className="border-b border-slate-100 pb-4">
-                    <h3 className="text-lg font-black text-slate-900">🏛️ İESÜMED Mezun Çalışma Grupları & İhtisas Masaları</h3>
+                    <h3 className="text-lg font-black text-slate-900">🏛️ İESÜ Mezun Çalışma Grupları & İhtisas Masaları</h3>
                     <p className="text-xs text-slate-500 font-medium mt-1">
-                      Mezunlar Derneği bünyesindeki aktif çalışma komisyonlarına katılarak üniversitemize, mezun ağımıza ve genç mezunlara katkı sunabilirsiniz.
+                      İESÜ Mezunlar Portalı bünyesindeki aktif çalışma komisyonlarına katılarak üniversitemize, mezun ağımıza ve genç mezunlara katkı sunabilirsiniz.
                     </p>
                   </div>
 

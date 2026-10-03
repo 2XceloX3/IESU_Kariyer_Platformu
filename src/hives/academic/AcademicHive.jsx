@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { HiveProvider } from './HiveContext';
 import useAcademicStore from './store/useAcademicStore';
@@ -67,16 +67,31 @@ export default function AcademicHive({ currentUser, setView }) {
         else navigate(clean === 'landing' ? '/' : '/' + clean);
         return;
       }
-      if (clean === 'user_profile') {
+      const target = (clean === 'academic' || clean === '' || clean === 'feed') ? 'feed' : clean;
+      if (target === 'user_profile') {
         const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self';
         setSelectedUserId(selfId);
         useAppStore.getState().setSelectedUserId?.(selfId);
       }
+      setActiveView(target);
+      if (target === 'feed') {
+        navigate('/academic');
+      } else {
+        navigate('/' + target);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
     setActiveView(v);
   }, [setView, navigate, setActiveView, effectiveCurrentUser, setSelectedUserId]);
 
-  const currentView = (pathView && pathView !== 'academic') ? pathView : activeView;
+  useEffect(() => {
+    if (pathView && pathView !== 'academic' && pathView !== 'feed') {
+      setActiveView(pathView);
+    }
+  }, [pathView, setActiveView]);
+
+  const currentView = (pathView && pathView !== 'academic' && pathView !== 'feed') ? pathView : (activeView || 'feed');
 
   const renderActiveView = () => {
     switch (currentView) {
@@ -100,7 +115,7 @@ export default function AcademicHive({ currentUser, setView }) {
         return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" setSelectedUserId={setSelectedUserId} />;
+        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'group_profile':

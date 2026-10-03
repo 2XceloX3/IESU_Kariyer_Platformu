@@ -437,8 +437,6 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
   const showToast = (type, message) => {
     if (typeof window !== 'undefined' && window.toast && typeof window.toast[type] === 'function') {
       window.toast[type](message);
-    } else {
-      console.log(`[Toast ${type}]: ${message}`);
     }
   };
 
@@ -1217,6 +1215,20 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                                 )}
                                 <button
                                   onClick={() => {
+                                    try {
+                                      const store = useAppStore.getState();
+                                      if (typeof store.addConnectionRequest === 'function') {
+                                        store.addConnectionRequest({
+                                          targetUserId: alumnus.id,
+                                          targetName: alumnusName,
+                                          senderId: currentUser?.id,
+                                          timestamp: new Date().toISOString()
+                                        });
+                                      }
+                                      if (typeof store.logAction === 'function') {
+                                        store.logAction(`Küresel Harita üzerinden ${alumnusName} kullanıcısına bağlantı isteği gönderildi.`);
+                                      }
+                                    } catch { /* intentional */ }
                                     showToast('success', `${alumnusName} için bağlantı isteği gönderildi.`);
                                   }}
                                   className="px-2.5 py-1 bg-white/5 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 border border-white/10 rounded-lg text-[11px] font-medium transition"

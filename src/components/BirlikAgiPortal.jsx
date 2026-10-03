@@ -47,29 +47,29 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
   const [activeModal, setActiveModal] = useState(null); // story, postDetail
   const [selectedStory, setSelectedStory] = useState(null);
 
-  // Mezun Derneği Resmî Hikâyeleri (Stories) - Google Stitch Style
+  // Mezunlar Portalı Resmî Hikâyeleri (Stories) - Google Stitch Style
   const assocStories = [
-    { id: 1, name: 'Mezunlar Derneği', logo: '/iesu-logo.svg', tag: 'Resmî', hasUnseen: true, image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80', caption: '2026 Mezunlar Buluşması ve Gala Yemeği detayları açıklandı!' },
-    { id: 2, name: 'Kariyer Mentorluğu', logo: 'https://ui-avatars.com/api/?name=KM&background=990000&color=fff', tag: 'Program', hasUnseen: true, image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80', caption: 'Yeni dönem Mezun-Öğrenci Akran Mentorluğu eşleşmeleri başladı.' },
-    { id: 3, name: 'Yurt Dışı Mezunlar', logo: 'https://ui-avatars.com/api/?name=YD&background=0A2342&color=fff', tag: 'Global', hasUnseen: false, image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80', caption: 'Avrupa ve Amerika komitelerimizle küresel ağımızı büyütüyoruz.' },
-    { id: 4, name: 'Dernek Burs Fonu', logo: 'https://ui-avatars.com/api/?name=BF&background=059669&color=fff', tag: 'Sosyal', hasUnseen: false, image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80', caption: 'Başarılı öğrencilerimize sunduğumuz Dernek Burs Komisyonu başvuruları açıldı.' },
+    { id: 1, name: 'İESÜ Mezunlar Portalı', logo: '/iesu-logo.svg', tag: 'Resmî', hasUnseen: true, image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80', caption: '2026 Mezunlar Buluşması ve Gala Yemeği detayları açıklandı!' },
+    { id: 2, name: 'Kariyer Mentorluğu', logo: null, tag: 'Program', hasUnseen: true, image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80', caption: 'Yeni dönem Mezun-Öğrenci Akran Mentorluğu eşleşmeleri başladı.' },
+    { id: 3, name: 'Yurt Dışı Mezunlar', logo: null, tag: 'Global', hasUnseen: false, image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80', caption: 'Avrupa ve Amerika komitelerimizle küresel ağımızı büyütüyoruz.' },
+    { id: 4, name: 'Mezun Destek Fonu', logo: null, tag: 'Sosyal', hasUnseen: false, image: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80', caption: 'Başarılı öğrencilerimize sunduğumuz Mezun Burs Komisyonu başvuruları açıldı.' },
   ];
 
-  // Live platform feed stream connected seamlessly with Mezun Derneği official items
+  // Live platform feed stream connected seamlessly with official alumni portal items
   const displayPosts = useMemo(() => {
     const combined = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
     if (combined.length > 0) return combined;
     return [
       {
         id: 'assoc-feed-1',
-        title: 'İESÜ Mezunlar Derneği 2026 Büyük Bahar Buluşması ve Kariyer Zirvesi',
-        author: { name: 'İESÜ Mezunlar Derneği', role: 'Resmî Dernek Yönetimi', avatar: '/iesu-logo.svg' },
+        title: 'İESÜ Mezunlar Portalı 2026 Büyük Bahar Buluşması ve Kariyer Zirvesi',
+        author: { name: 'İESÜ Mezunlar Portalı', role: 'Kariyer Geliştirme Koordinatörlüğü', avatar: '/iesu-logo.svg' },
         date: 'Bugün, 14:30',
         content: 'Değerli Mezunlarımız ve Öğrencilerimiz! 🎓 2026 yılı geleneksel mezunlar buluşmamızı bu yıl dev bir Kariyer Zirvesi ile taçlandırıyoruz. Sektör lideri mezunlarımız deneyimlerini paylaşacak, yeni üyelikler kabul edilecek.',
         imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
         likes: 184,
         comments: 32,
-        category: 'Mezun Derneği'
+        category: 'İESÜ Mezunlar Portalı'
       }
     ];
   }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities]);
@@ -159,7 +159,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               Geleceği Birlikte İnşa Eden Büyük İESÜ Mezun Ailesi
             </h1>
             <p className="text-slate-200 text-sm sm:text-base font-medium leading-relaxed max-w-2xl">
-              İstanbul Esenyurt Üniversitesi Mezunlar Derneği; 77.000+ mezunumuz ile öğrencilerimiz arasında yaşam boyu köprü kurar, kariyer fıkirlerini destekler ve dayanışmayı büyütür.
+              İstanbul Esenyurt Üniversitesi (İESÜ) Mezunlar Portalı; 77.000+ mezunumuz ile öğrencilerimiz arasında yaşam boyu köprü kurar, kariyer fıkirlerini destekler ve dayanışmayı büyütür.
             </p>
           </div>
         </div>
@@ -167,11 +167,11 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
         {/* NAVIGATION TABS */}
         <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-2 overflow-x-auto">
           {[
-            { id: 'feed', label: 'Dernek Akışı & Duyurular', icon: <FileText size={16} /> },
+            { id: 'feed', label: 'Portala Özel Akış & Duyurular', icon: <FileText size={16} /> },
             { id: 'network', label: 'Küresel Mezun Ağı & Komiteler', icon: <Globe size={16} /> },
-            { id: 'events', label: 'Dernek Etkinlikleri', icon: <Calendar size={16} /> },
-            { id: 'board', label: 'Yönetim Kurulu & Tüzük', icon: <Users size={16} /> },
-            { id: 'apply', label: 'Üyelik & Ekip Başvuru Formu', icon: <Award size={16} /> },
+            { id: 'events', label: 'Mezun Etkinlikleri', icon: <Calendar size={16} /> },
+            { id: 'board', label: 'Koordinasyon Kurulu & Tüzük', icon: <Users size={16} /> },
+            { id: 'apply', label: 'Kayıt & İletişim Formu', icon: <Award size={16} /> },
           ].map(t => (
             <button
               key={t.id}
@@ -209,25 +209,25 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
               <div className="bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-950 text-white p-6 rounded-3xl border border-emerald-800/50 shadow-xl space-y-4">
                 <div className="flex items-center gap-2">
                   <Sparkles size={18} className="text-amber-400" />
-                  <h3 className="font-black text-base">Dernek Hakkında Özet</h3>
+                  <h3 className="font-black text-base">Portal Hakkında Özet</h3>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                  İstanbul Esenyurt Üniversitesi Mezunlar Derneği, tüm mezunlarımızın haklarını gözeten, kariyer imkânları oluşturan ve sosyal dayanışmayı yüksek tutan resmi kurumsal yapıdır.
+                  İstanbul Esenyurt Üniversitesi (İESÜ) Mezunlar Portalı, tüm mezunlarımızın haklarını gözeten, kariyer imkânları oluşturan ve sosyal dayanışmayı yüksek tutan resmi kurumsal yapıdır.
                 </p>
               </div>
 
               <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                 <h3 className="font-black text-sm text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                  <Bell size={16} className="text-emerald-700" /> Dernek İletişim Kanalları
+                  <Bell size={16} className="text-emerald-700" /> Koordinasyon İletişim Kanalları
                 </h3>
                 <div className="space-y-3 text-xs font-semibold text-slate-600">
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                     <strong className="block text-slate-900">E-posta</strong>
-                    <span>mezundernegi@esenyurt.edu.tr</span>
+                    <span>mezun@esenyurt.edu.tr</span>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                     <strong className="block text-slate-900">Ofis Adresi</strong>
-                    <span>İESÜ Rektörlük Binası, Zemin Kat Mezun Derneği Odası</span>
+                    <span>İESÜ Rektörlük Binası, Zemin Kat Kariyer & Mezun Koordinatörlüğü</span>
                   </div>
                 </div>
               </div>
@@ -263,18 +263,18 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           </div>
         )}
 
-        {/* TAB 3: DERNEK ETKİNLİKLERİ */}
+        {/* TAB 3: MEZUN ETKİNLİKLERİ */}
         {activeTab === 'events' && (
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-2xl font-black text-slate-900 mb-2">Geleneksel Dernek Etkinlikleri Takvimi</h3>
+              <h3 className="text-2xl font-black text-slate-900 mb-2">Geleneksel Mezun Etkinlikleri Takvimi</h3>
               <p className="text-xs sm:text-sm font-medium text-slate-500">
-                Mezunlar Derneğimizin organize ettiği gala yemekleri, kariyer konferansları ve network kahvaltıları.
+                İESÜ Mezunlar Portalı tarafından organize edilen gala buluşmaları, kariyer konferansları ve network kahvaltıları.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
-                { title: '2026 Olağan Mezunlar Genel Kurul Toplantısı', date: '18 Mayıs 2026', loc: 'Prof. Dr. Fuat Sezgin Konferans Salonu', desc: 'Yeni dönem dernek organlarının seçimi ve yıllık faaliyet raporlarının sunumu.' },
+                { title: '2026 Olağan Mezunlar Koordinasyon Toplantısı', date: '18 Mayıs 2026', loc: 'Prof. Dr. Fuat Sezgin Konferans Salonu', desc: 'Yeni dönem mezun temsilcilerinin seçimi ve yıllık faaliyet raporlarının sunumu.' },
                 { title: 'Sektör Liderleri ile Mezun-Öğrenci Buluşması', date: '02 Haziran 2026', loc: 'İESÜ Kampüs Kuluçka Merkezi', desc: 'CEO ve direktör pozisyonundaki mezunlarımızla birebir kariyer sohbetleri.' },
               ].map((ev, i) => (
                 <div key={i} className="p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-start gap-4">
@@ -293,13 +293,13 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
           </div>
         )}
 
-        {/* TAB 4: YÖNETİM KURULU */}
+        {/* TAB 4: KOORDİNASYON KURULU */}
         {activeTab === 'board' && (
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-2xl font-black text-slate-900 mb-2">Dernek Yönetim Kurulu ve Tüzük</h3>
+              <h3 className="text-2xl font-black text-slate-900 mb-2">Mezunlar Koordinasyon Kurulu</h3>
               <p className="text-xs sm:text-sm font-medium text-slate-500">
-                İstanbul Esenyurt Üniversitesi Mezunlar Derneği resmî idari organları.
+                İstanbul Esenyurt Üniversitesi (İESÜ) Mezunlar Portalı resmî idari organları.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

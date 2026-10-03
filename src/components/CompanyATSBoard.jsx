@@ -229,7 +229,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
         dept: app.applicantDept || 'Üniversite Adayı',
         gpa: app.gpa || '3.70',
         date: app.date || 'Bugün',
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicantName || 'A')}&background=0A2342&color=fff`,
+        avatar: app.applicantAvatar || null,
         match: app.match || 92,
         coverLetter: app.coverLetter || 'İlanınızla yakından ilgileniyorum.',
         email: app.applicantEmail || 'aday@esenyurt.edu.tr',

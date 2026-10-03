@@ -1,7 +1,7 @@
 import useAppStore from '../store/useAppStore';
 import SafeAvatar from './shared/SafeAvatar';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, MicOff, VideoOff, Monitor, MonitorOff, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2, Bell, BellOff, Shield, ShieldOff, UserX, UserPlus, Building2, GraduationCap, School, Activity, Wifi } from 'lucide-react';
+import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, MicOff, VideoOff, Monitor, MonitorOff, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2, Bell, BellOff, Shield, ShieldOff, UserX, UserPlus, Building2, GraduationCap, School, Activity, Wifi, Download } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
@@ -635,20 +635,46 @@ export default function MessagingInterface({ previousView, currentUser, userRole
   };
 
   const onFileChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
+    const isImg = file.type.startsWith('image/');
+    const isVid = file.type.startsWith('video/');
     const newMsg = {
       id: Date.now().toString(),
       senderId: currentUser?.id,
       receiverId: activeContactId,
-      content: '',
+      content: (!isImg && !isVid) ? file.name : '',
       timestamp: new Date().toISOString(),
       read: false,
-      type: file.type.startsWith('image/') ? 'image' : 'video',
-      mediaUrl: url
+      type: isImg ? 'image' : (isVid ? 'video' : 'document'),
+      mediaUrl: url,
+      fileName: file.name,
+      fileSize: (file.size / 1024).toFixed(1) + ' KB'
     };
     setMessages([...messages, newMsg]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleVoiceRecordToggle = () => {
+    if (!isRecordingVoice) {
+      setIsRecordingVoice(true);
+      if (window.toast?.info) window.toast.info('Ses kaydı başlatıldı...');
+    } else {
+      setIsRecordingVoice(false);
+      const voiceMsg = {
+        id: Date.now().toString(),
+        senderId: currentUser?.id,
+        receiverId: activeContactId,
+        content: 'Sesli Mesaj (0:08)',
+        timestamp: new Date().toISOString(),
+        read: false,
+        type: 'audio',
+        mediaUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+      };
+      setMessages([...messages, voiceMsg]);
+      if (window.toast?.success) window.toast.success('Sesli mesaj gönderildi.');
+    }
   };
 
   const startCamera = async () => {
@@ -1209,6 +1235,24 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                           <div className="flex-1"><div className="h-1 bg-gray-300 w-full"><div className="h-full bg-[#00A884] w-1/3"></div></div></div>
                         </div>
                       )}
+                      {msg.type === 'document' && (
+                        <a 
+                          href={msg.mediaUrl} 
+                          download={msg.fileName || 'belge.pdf'} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex items-center gap-3 p-3 bg-black/5 hover:bg-black/10 rounded-xl transition text-slate-800 text-xs font-bold"
+                        >
+                          <div className="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                            <FileText size={20} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-bold text-slate-900">{msg.fileName || msg.content || 'Belge'}</p>
+                            <span className="text-[10px] text-slate-500 font-medium">{msg.fileSize || 'İndir'}</span>
+                          </div>
+                          <Download size={16} className="text-slate-500 shrink-0" />
+                        </a>
+                      )}
 
                       <div className={`flex items-center justify-end gap-1 mt-1 px-1 ${isMine ? 'text-green-800/60' : 'text-gray-500'}`}>
                         <span className="text-[10px]">{formatTime(msg.timestamp)}</span>
@@ -1240,7 +1284,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                   <button onClick={() => handleSendMedia('camera')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
                     <Aperture size={18} className="text-red-500"/> Kamera Aç
                   </button>
-                  <button className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
+                  <button onClick={() => handleSendMedia('document')} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl text-sm font-bold text-gray-700">
                     <FileText size={18} className="text-purple-500"/> Belge
                   </button>
                 </div>
@@ -1301,7 +1345,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                 {newMessage.trim() ? (
                   <button onClick={handleSend} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md" aria-label="Mesaj gönder"><Send size={20} className="ml-1"/></button>
                 ) : (
-                  <button onClick={() => setIsRecordingVoice(!isRecordingVoice)} className="p-2.5 bg-[#00A884] text-white rounded-full hover:bg-[#008f6f] transition shadow-md" aria-label={isRecordingVoice ? 'Kaydı durdur' : 'Sesli mesaj kaydet'}><Mic size={20}/></button>
+                  <button onClick={handleVoiceRecordToggle} className={`p-2.5 ${isRecordingVoice ? 'bg-red-500 animate-pulse' : 'bg-[#00A884] hover:bg-[#008f6f]'} text-white rounded-full transition shadow-md`} aria-label={isRecordingVoice ? 'Kaydı tamamla ve gönder' : 'Sesli mesaj kaydet'}><Mic size={20}/></button>
                 )}
               </div>
             </div>
@@ -1309,10 +1353,10 @@ export default function MessagingInterface({ previousView, currentUser, userRole
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-[#F0F2F5] text-center p-8">
             <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-state-2130362-1800926.png" className="w-64 opacity-60 mb-6 grayscale" />
-            <h2 className="text-3xl font-light text-gray-700 mb-4">Esenyurt Kariyer Web</h2>
+            <h2 className="text-3xl font-light text-gray-700 mb-4">İESÜ Kariyer Web</h2>
             <p className="text-gray-500 max-w-md">Mesaj gönderin ve alın. Ağınızı genişletin, kariyer fırsatlarını yakalayın. Tüm mesajlar uçtan uca şifrelenmiştir.</p>
             <div className="mt-12 flex items-center gap-2 text-sm text-gray-400 font-medium">
-              <ShieldCheck size={16} /> Esenyurt Üniversitesi Güvencesiyle
+              <ShieldCheck size={16} /> İstanbul Esenyurt Üniversitesi (İESÜ) Güvencesiyle
             </div>
           </div>
         )}

@@ -157,11 +157,11 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
           
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 text-[#990000]`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-emerald-50 text-emerald-700`} title="Bildirimler">
               <div className="relative">
-                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current text-emerald-700/10" />
                 {((notifications || []).filter(n => n.userId === effectiveCurrentUser?.id && !n.read).length > 0) && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
@@ -387,7 +387,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               }} 
               className="pb-3 font-semibold text-[15px] text-gray-500 hover:text-emerald-700 transition-colors relative cursor-pointer"
             >
-              Mezunlar Derneği
+              İESÜ Mezunlar Portalı
             </button>
           </div>
 

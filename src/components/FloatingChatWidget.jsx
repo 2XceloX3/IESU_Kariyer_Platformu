@@ -7,13 +7,15 @@ import {
   Filter, ShieldAlert, CheckCheck, LayoutDashboard
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import useAdminStore from '../brain/useAdminStore';
+import SafeAvatar from './shared/SafeAvatar';
 
 const INITIAL_CANDIDATE_CHATS = [
   {
     id: 'chat_cand_1',
     candidateId: 'app-1',
     candidateName: 'Ahmet Yılmaz',
-    candidateAvatar: 'https://ui-avatars.com/api/?name=Ahmet+Yılmaz&background=0A2342&color=fff',
+    candidateAvatar: null,
     candidateDept: 'Bilgisayar Mühendisliği',
     candidateRole: 'Frontend Developer',
     companyName: 'Aselsan Savunma & Teknoloji',
@@ -30,7 +32,7 @@ const INITIAL_CANDIDATE_CHATS = [
     id: 'chat_cand_2',
     candidateId: 'app-2',
     candidateName: 'Ayşe Demir',
-    candidateAvatar: 'https://ui-avatars.com/api/?name=Ayşe+Demir&background=0A2342&color=fff',
+    candidateAvatar: null,
     candidateDept: 'Görsel İletişim Tasarımı',
     candidateRole: 'UI/UX Tasarımcı',
     companyName: 'Trendyol Tech Labs',
@@ -46,7 +48,7 @@ const INITIAL_CANDIDATE_CHATS = [
     id: 'chat_cand_3',
     candidateId: 'app-4',
     candidateName: 'Zeynep Kaya',
-    candidateAvatar: 'https://ui-avatars.com/api/?name=Zeynep+Kaya&background=0A2342&color=fff',
+    candidateAvatar: null,
     candidateDept: 'Bilgisayar Mühendisliği',
     candidateRole: 'Backend Engineer',
     companyName: 'Getir Core Platform',
@@ -61,7 +63,7 @@ const INITIAL_CANDIDATE_CHATS = [
     id: 'chat_peer_1',
     candidateId: 'ALU-001',
     candidateName: 'Caner Öztürk',
-    candidateAvatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff',
+    candidateAvatar: null,
     candidateDept: 'Frontend Developer • Trendyol',
     candidateRole: 'alumni',
     candidateCompany: 'Trendyol',
@@ -77,7 +79,7 @@ const INITIAL_CANDIDATE_CHATS = [
     id: 'chat_peer_2',
     candidateId: 'ALU-002',
     candidateName: 'Seda Çelik',
-    candidateAvatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff',
+    candidateAvatar: null,
     candidateDept: 'Üretim ve Operasyon Yöneticisi • Ford Otosan',
     candidateRole: 'alumni',
     candidateCompany: 'Ford Otosan',
@@ -92,7 +94,7 @@ const INITIAL_CANDIDATE_CHATS = [
     id: 'chat_peer_3',
     candidateId: 'STU-002',
     candidateName: 'Zeynep Kaya',
-    candidateAvatar: 'https://ui-avatars.com/api/?name=Zeynep+Kaya&background=0A2342&color=fff',
+    candidateAvatar: null,
     candidateDept: 'Bilgisayar Mühendisliği (ÇAP)',
     candidateRole: 'student',
     candidateCompany: '',
@@ -112,7 +114,7 @@ const INITIAL_REQUESTS = [
     studentName: 'Alperen Yılmaz',
     studentDept: 'Yazılım Mühendisliği',
     studentEmail: 'alperen@ogr.esenyurt.edu.tr',
-    studentAvatar: 'https://ui-avatars.com/api/?name=Alperen+Yılmaz&background=4C1D95&color=fff',
+    studentAvatar: null,
     advisor: 'Prof. Dr. Ahmet Yılmaz',
     mentorName: 'Prof. Dr. Ahmet Yılmaz',
     topic: 'Bitirme Projesi & Staj Denkleştirme',
@@ -133,7 +135,7 @@ const INITIAL_REQUESTS = [
     studentName: 'Zeynep Kaya',
     studentDept: 'Bilgisayar Mühendisliği',
     studentEmail: 'zeynep@ogr.esenyurt.edu.tr',
-    studentAvatar: 'https://ui-avatars.com/api/?name=Zeynep+Kaya&background=4C1D95&color=fff',
+    studentAvatar: null,
     advisor: 'Doç. Dr. Seda Demir',
     mentorName: 'Doç. Dr. Seda Demir',
     topic: 'Yurtdışı Yüksek Lisans Referans Mektubu',
@@ -154,7 +156,7 @@ const INITIAL_REQUESTS = [
     studentName: 'Mert Can',
     studentDept: 'İşletme',
     studentEmail: 'mert@ogr.esenyurt.edu.tr',
-    studentAvatar: 'https://ui-avatars.com/api/?name=Mert+Can&background=4C1D95&color=fff',
+    studentAvatar: null,
     advisor: 'Dr. Öğr. Üyesi Mehmet Aksoy',
     mentorName: 'Dr. Öğr. Üyesi Mehmet Aksoy',
     topic: 'Kariyer Yönlendirme ve Çift Anadal (ÇAP)',
@@ -177,7 +179,7 @@ const INITIAL_REQUESTS = [
     studentName: 'Elif Demir',
     studentDept: 'Mimarlık',
     studentEmail: 'elif@ogr.esenyurt.edu.tr',
-    studentAvatar: 'https://ui-avatars.com/api/?name=Elif+Demir&background=4C1D95&color=fff',
+    studentAvatar: null,
     advisor: 'Prof. Dr. Ahmet Yılmaz',
     mentorName: 'Prof. Dr. Ahmet Yılmaz',
     topic: 'SGK Evrak Süreci & Geciken Onay',
@@ -606,7 +608,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
     try {
       const raw = localStorage.getItem('iesu_platform_messages_audit_v1');
       const logs = raw ? JSON.parse(raw) : [];
-      logs.push({
+      const entry = {
         id: 'AUDIT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
         senderId: senderId || 'user',
         senderName: senderName || 'Kullanıcı',
@@ -616,8 +618,21 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
         receiverRole: receiverRole || 'company',
         content: text,
         timestamp: Date.now()
-      });
+      };
+      logs.push(entry);
       localStorage.setItem('iesu_platform_messages_audit_v1', JSON.stringify(logs));
+
+      // Central admin audit trail synchronization
+      try {
+        const adminStore = useAdminStore.getState();
+        if (typeof adminStore.logAuditAction === 'function') {
+          adminStore.logAuditAction(
+            'MESSAGE_AUDIT',
+            `Mesaj İletişimi: ${senderName || 'Kullanıcı'} (${senderRole || 'user'}) -> ${receiverName || 'Alıcı'} (${receiverRole || 'target'})`,
+            senderId || 'user'
+          );
+        }
+      } catch { /* intentional */ }
     } catch (e) {
       console.warn('Audit record error:', e);
     }
@@ -694,7 +709,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
           id: 'chat_' + Date.now(),
           candidateId: detail.candidateId || 'cand_' + Date.now(),
           candidateName: detail.candidateName || 'İESÜ Üyesi',
-          candidateAvatar: detail.candidateAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(detail.candidateName || 'U')}&background=0A2342&color=fff`,
+          candidateAvatar: detail.candidateAvatar || null,
           candidateDept: detail.candidateDept || 'İstanbul Esenyurt Üniversitesi',
           candidateRole: detail.candidateRole || 'İESÜ Üyesi',
           candidateCompany: detail.candidateCompany || '',
@@ -2374,9 +2389,9 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <img 
-                                src={req.studentAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(req.studentName)}&background=4C1D95&color=fff`} 
-                                alt={req.studentName} 
+                              <SafeAvatar 
+                                src={req.studentAvatar || null} 
+                                name={req.studentName} 
                                 className="w-9 h-9 rounded-full object-cover border border-purple-200 shrink-0" 
                               />
                               <div className="min-w-0">
@@ -2415,9 +2430,9 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                     <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <img 
-                            src={activeReq.studentAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeReq.studentName)}&background=4C1D95&color=fff`} 
-                            alt={activeReq.studentName} 
+                          <SafeAvatar 
+                            src={activeReq.studentAvatar || null} 
+                            name={activeReq.studentName} 
                             className="w-12 h-12 rounded-full object-cover border-2 border-purple-200" 
                           />
                           <div>

@@ -618,7 +618,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                               detail: {
                                 candidateId: app.id,
                                 candidateName: app.applicantName,
-                                candidateAvatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicantName || 'A')}&background=0A2342&color=fff`,
+                                candidateAvatar: app.applicantAvatar || null,
                                 candidateDept: app.applicantDept,
                                 candidateRole: app.jobTitle,
                                 initialMessage: `Merhaba ${app.applicantName}, "${app.jobTitle}" başvurunuzla ilgili görüşmemizi bu panelden sürdürebiliriz.`
@@ -637,7 +637,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                               detail: {
                                 candidateId: app.id,
                                 candidateName: app.applicantName,
-                                candidateAvatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicantName || 'A')}&background=0A2342&color=fff`,
+                                candidateAvatar: app.applicantAvatar || null,
                                 candidateDept: app.applicantDept,
                                 candidateRole: app.jobTitle,
                                 initialMessage: `Merhaba ${app.applicantName}, "${app.jobTitle}" başvurunuzu inceledik. Süreç hakkında görüşmek isteriz.`
@@ -1084,7 +1084,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                               detail: {
                                 candidateId: app.id,
                                 candidateName: app.applicantName,
-                                candidateAvatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicantName || 'A')}&background=0A2342&color=fff`,
+                                candidateAvatar: app.applicantAvatar || null,
                                 candidateDept: app.applicantDept,
                                 candidateRole: app.jobTitle,
                                 initialMessage: `Merhaba ${app.applicantName}, "${app.jobTitle}" başvurunuzu inceledik. Süreç hakkında sizinle görüşmek isteriz.`

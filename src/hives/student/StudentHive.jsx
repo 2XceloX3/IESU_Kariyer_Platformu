@@ -20,6 +20,7 @@ const StudentProfileUpdate = lazy(() => import('../../components/profile/Student
 const StudentKGBPanel = lazy(() => import('../../components/StudentKGBPanel'));
 const StudentAnalytics = lazy(() => import('../../components/StudentAnalytics'));
 const AICVBuilder = lazy(() => import('../../components/AICVBuilder'));
+const GlobalAlumniMap = lazy(() => import('../../components/GlobalAlumniMap'));
 const InterviewSimulator = lazy(() => import('../../components/InterviewSimulator'));
 const ApplicationsPanel = lazy(() => import('../../components/ApplicationsPanel'));
 const CareerTest = lazy(() => import('../../components/CareerTest'));
@@ -194,6 +195,8 @@ export default function StudentHive({ currentUser, setView }) {
       case 'network':
       case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
+      case 'global_map':
+        return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'group_profile':

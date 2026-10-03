@@ -28,7 +28,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         id: asClub.id, name: asClub.name, avatar: asClub.logo, title: 'Öğrenci Kulübü', role: 'club'
       } : {
         name: currentUser?.name || 'Kullanıcı',
-        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=0A2342&color=fff`,
+        avatar: currentUser?.avatar || null,
         title: currentUser?.title || currentUser?.department || 'Öğrenci',
         role: userRole || currentUser?.role || undefined
       },
@@ -83,7 +83,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         role: 'club'
       } : {
         name: currentUser?.name || 'Kullanıcı',
-        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'U')}&background=0A2342&color=fff`,
+        avatar: currentUser?.avatar || null,
         title: currentUser?.title || currentUser?.department || 'Öğrenci',
         role: userRole || currentUser?.role || undefined
       },

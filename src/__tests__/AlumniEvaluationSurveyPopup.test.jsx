@@ -75,10 +75,10 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
     expect(screen.getByText(/Resmî Mezun Değerlendirme Anketi/i)).toBeTruthy();
     expect(screen.getByText(/Soruları Yanıtla/i)).toBeTruthy();
 
-    // The feed filter tabs are clean: Senin İçin, Ağım, Mezunlar Derneği
+    // The feed filter tabs are clean: Senin İçin, Ağım, İESÜ Mezunlar Portalı
     expect(screen.getByRole('button', { name: /^Senin İçin/i })).toBeTruthy();
     expect(screen.getByRole('button', { name: /^Ağım/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /^Mezunlar Derneği/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^(İESÜ Mezunlar Portalı|Mezunlar Derneği)/i })).toBeTruthy();
     
     // There should be NO extra standalone "Değerlendirme Anketi" tab button in the feed tab row
     const tabs = screen.getAllByRole('button');

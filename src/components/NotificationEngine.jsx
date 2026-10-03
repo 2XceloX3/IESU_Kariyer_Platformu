@@ -5,7 +5,7 @@ const MOCK_NOTIFICATIONS = [
   "Profilin Google İK uzmanı tarafından incelendi!",
   "Sana uygun yeni bir staj ilanı eklendi: Trendyol - Frontend Stajyeri",
   "Yeni bir yetenek önerisi var. Hemen incele!",
-  "Mezunlar derneğinden Ahmet Yılmaz sana bir mesaj gönderdi.",
+  "İESÜ Mezunlar Portalı'ndan Ahmet Yılmaz sana bir mesaj gönderdi.",
   "Kariyer fuarı için son 2 gün! Stant randevularını kontrol et.",
   "Katıldığın Python Eğitimi için Akıllı Sertifikan cüzdanına eklendi.",
   "Mentorun ile yarın saat 14:00'te görüşmen var.",

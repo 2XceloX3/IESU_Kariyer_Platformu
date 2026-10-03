@@ -33,14 +33,16 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
   };
 
   const markAllAsRead = () => {
-    const updated = (notifications || []).map(n => n.userId === currentUser?.id ? { ...n, read: true } : n);
+    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
+    const updated = baseList.map(n => ({ ...n, read: true }));
     setNotifications(updated);
     const store = useAppStore.getState();
     if (store.markAllNotificationsRead) store.markAllNotificationsRead();
   };
 
   const handleNotificationClick = (id, link) => {
-    const updated = (notifications || []).map(n => n.id === id ? { ...n, read: true } : n);
+    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
+    const updated = baseList.map(n => n.id === id ? { ...n, read: true } : n);
     setNotifications(updated);
     if (link) {
       setView(link); // Optional handling to route to specific view based on notification
@@ -49,7 +51,8 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
 
   const handleDelete = (id, e) => {
     e.stopPropagation();
-    const updated = (notifications || []).filter(n => n.id !== id);
+    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
+    const updated = baseList.filter(n => n.id !== id);
     setNotifications(updated);
   };
 
@@ -120,7 +123,7 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
         {
           id: 'nalum3',
           title: 'Yıllık Mezunlar Buluşması Takvimi',
-          description: 'İESÜ Mezunlar Derneği yıllık buluşma ve kariyer zirvesi programı yayınlandı.',
+          description: 'İESÜ Mezunlar Portalı yıllık buluşma ve kariyer zirvesi programı yayınlandı.',
           type: 'event',
           timestamp: Date.now() - 259200000,
           read: true,
@@ -216,12 +219,20 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
   const [activeCategory, setActiveCategory] = useState('all');
 
   const filteredNotifications = useMemo(() => {
-    if (activeCategory === 'all') return displayNotifications;
-    if (activeCategory === 'applications') return displayNotifications.filter(n => n.type === 'application');
-    if (activeCategory === 'events') return displayNotifications.filter(n => n.type === 'event' || n.type === 'message');
-    if (activeCategory === 'system') return displayNotifications.filter(n => n.type === 'system');
-    return displayNotifications;
-  }, [displayNotifications, activeCategory]);
+    let result = displayNotifications;
+    if (activeCategory === 'applications') result = result.filter(n => n.type === 'application');
+    else if (activeCategory === 'events') result = result.filter(n => n.type === 'event' || n.type === 'message');
+    else if (activeCategory === 'system') result = result.filter(n => n.type === 'system');
+
+    if (searchQuery && searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(n => 
+        (n.title && n.title.toLowerCase().includes(q)) || 
+        (n.description && n.description.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [displayNotifications, activeCategory, searchQuery]);
 
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans pb-24">
