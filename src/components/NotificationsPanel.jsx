@@ -32,29 +32,7 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
     }
   };
 
-  const markAllAsRead = () => {
-    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
-    const updated = baseList.map(n => ({ ...n, read: true }));
-    setNotifications(updated);
-    const store = useAppStore.getState();
-    if (store.markAllNotificationsRead) store.markAllNotificationsRead();
-  };
 
-  const handleNotificationClick = (id, link) => {
-    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
-    const updated = baseList.map(n => n.id === id ? { ...n, read: true } : n);
-    setNotifications(updated);
-    if (link) {
-      setView(link); // Optional handling to route to specific view based on notification
-    }
-  };
-
-  const handleDelete = (id, e) => {
-    e.stopPropagation();
-    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
-    const updated = baseList.filter(n => n.id !== id);
-    setNotifications(updated);
-  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const activeTab = 'notifications';
@@ -233,6 +211,30 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
     }
     return result;
   }, [displayNotifications, activeCategory, searchQuery]);
+
+  const markAllAsRead = () => {
+    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
+    const updated = baseList.map(n => ({ ...n, read: true }));
+    setNotifications(updated);
+    const store = useAppStore.getState();
+    if (store.markAllNotificationsRead) store.markAllNotificationsRead();
+  };
+
+  const handleNotificationClick = (id, link) => {
+    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
+    const updated = baseList.map(n => n.id === id ? { ...n, read: true } : n);
+    setNotifications(updated);
+    if (link) {
+      setView(link); // Optional handling to route to specific view based on notification
+    }
+  };
+
+  const handleDelete = (id, e) => {
+    e.stopPropagation();
+    const baseList = (notifications && notifications.length > 0) ? notifications : (displayNotifications || []);
+    const updated = baseList.filter(n => n.id !== id);
+    setNotifications(updated);
+  };
 
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans pb-24">

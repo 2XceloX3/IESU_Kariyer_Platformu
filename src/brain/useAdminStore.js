@@ -594,7 +594,10 @@ export const useAdminStore = create(
 
         setNotifications: setter('notifications'),
         setUnreadNotificationsCount: setter('unreadNotificationsCount'),
-        markAllNotificationsRead: () => set({ unreadNotificationsCount: 0 }),
+        markAllNotificationsRead: () => set((state) => ({
+          unreadNotificationsCount: 0,
+          notifications: (state.notifications || []).map(n => ({ ...n, read: true }))
+        })),
         addNotification: (notif) =>
           set((state) => ({
             ...(notif ? { notifications: [notif, ...(state.notifications || [])].slice(0, 50) } : {}),
@@ -659,7 +662,8 @@ export const useAdminStore = create(
         institutionalStatsData: state.institutionalStatsData,
         showInstitutionalStats: state.showInstitutionalStats,
         messages: state.messages,
-        mentorships: state.mentorships
+        mentorships: state.mentorships,
+        notifications: state.notifications
       })
     }
   )
