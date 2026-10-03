@@ -265,7 +265,7 @@ export default function NotificationsPanel({ previousView, userRole, currentUser
               <Logo color={userRole === 'admin' ? 'amber' : 'red'} className="h-9 w-auto shrink-0" />
               <div className="text-left">
                 <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${userRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{userRole === 'admin' ? 'KGM Süper Yönetici Portalı' : 'Kariyer Portalı'}</p>
+                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
           </div>

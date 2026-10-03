@@ -13,9 +13,10 @@ export default function MainHeader({ setView, currentUser, userRole }) {
 
   const getDestination = () => {
     if (!currentUser) return 'landing';
-    if (activePortalBranch && activePortalBranch !== 'landing') return activePortalBranch;
     const role = currentUser.role || userRole;
-    return role === 'admin' ? 'admin' : (role === 'employer' || role === 'company') ? 'company' : role === 'alumni' ? 'alumni' : role === 'academic' ? 'academic' : 'student';
+    if (role === 'admin') return 'admin';
+    if (activePortalBranch && activePortalBranch !== 'landing') return activePortalBranch;
+    return (role === 'employer' || role === 'company') ? 'company' : role === 'alumni' ? 'alumni' : role === 'academic' ? 'academic' : 'student';
   };
 
   return (
@@ -42,9 +43,9 @@ export default function MainHeader({ setView, currentUser, userRole }) {
             <Logo size="lg" variant="white" />
             <div className="hidden sm:block">
               <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight drop-shadow-md">
-                {tenant.institutionName ? tenant.institutionName.toUpperCase() : 'İSTANBUL ESENYURT ÜNİVERSİTESİ'}
+                İstanbul Esenyurt Üniversitesi
               </h1>
-              <p className="text-[10px] font-bold text-red-100 uppercase tracking-widest">{siteConfig?.logoSubText || tenant.coordinatorTitle || 'Kariyer Geliştirme Merkezi'}</p>
+              <p className="text-[10px] font-bold text-red-100 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
 

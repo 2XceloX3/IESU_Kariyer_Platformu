@@ -652,12 +652,14 @@ export default function EventsPage({ setView, currentUser, userRole, setSelected
 
       <SubPanelFooter setView={setView} />
 
-      <SubPanelFloatingDock 
-        currentUser={currentUser} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId} 
-        userRole={userRole || 'student'} 
-      />
+      {currentUser && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          userRole={userRole || 'student'} 
+        />
+      )}
     </div>
   );
 }

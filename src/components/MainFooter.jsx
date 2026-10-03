@@ -303,8 +303,8 @@ export default function MainFooter({ setView }) {
             <div className="flex items-center gap-3">
               <Logo size="lg" />
               <div>
-                <h3 className="font-black text-sm text-white tracking-wide">{tenant.institutionName || corporateData.university}</h3>
-                <p className="text-[11px] font-bold text-red-200 uppercase tracking-wider">{siteConfig?.logoSubText || tenant.coordinatorTitle || 'Kariyer Geliştirme Merkezi'}</p>
+                <h3 className="font-black text-sm text-white tracking-wide">İstanbul Esenyurt Üniversitesi</h3>
+                <p className="text-[11px] font-bold text-red-200 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
             <p className="text-xs text-red-100/90 leading-relaxed font-medium">

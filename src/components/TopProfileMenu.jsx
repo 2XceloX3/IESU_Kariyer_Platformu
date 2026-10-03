@@ -135,7 +135,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
         if (academicRole === 'super_admin') return 'Süper Yönetici';
         if (academicRole === 'content_admin') return 'İçerik Yöneticisi';
         if (academicRole === 'mentor_admin') return 'Mentor Yönetici';
-        return 'Kariyer Geliştirme Merkezi';
+        return 'Kariyer Geliştirme Koordinatörlüğü';
       default: return 'Kullanıcı';
     }
   };
@@ -162,7 +162,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
   const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || academicRole === 'super_admin';
 
-  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
+  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Kullanıcı');
 
   const branchUserAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : '/iesu-logo.svg');
 
@@ -239,7 +239,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               <div className="px-4 py-3 border-b border-gray-50 bg-orange-50/20">
                 <div className="flex items-center gap-2 mb-1.5">
                   <p className="text-[14px] font-black text-gray-900 truncate flex-1 transition-all duration-200">
-                    Kariyer Geliştirme Merkezi
+                    Kariyer Geliştirme Koordinatörlüğü
                   </p>
                   <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-black uppercase tracking-wider shrink-0 transition-all duration-200">
                     <Crown size={12} /> SÜPER ADMIN

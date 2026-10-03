@@ -174,7 +174,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
 
       <SEO 
         title="Ana Sayfa" 
-        description="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi"
+        description="İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü"
         url="https://kariyer.esenyurt.edu.tr/"
       />
 
@@ -583,9 +583,9 @@ export default function LandingPage({ setView, currentUser, userRole }) {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">
-                  {tenant.institutionName ? tenant.institutionName.toUpperCase() : 'İSTANBUL ESENYURT ÜNİVERSİTESİ'}
+                  İstanbul Esenyurt Üniversitesi
                 </h1>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">{tenant.coordinatorTitle || 'Kariyer Geliştirme Merkezi'}</p>
+                <p className="text-[10px] font-bold text-red-200 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
 

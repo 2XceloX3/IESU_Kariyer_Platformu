@@ -343,12 +343,14 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
 
       <SubPanelFooter setView={setView} />
 
-      <SubPanelFloatingDock 
-        currentUser={currentUser} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId} 
-        userRole={userRole || 'student'} 
-      />
+      {currentUser && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          userRole={userRole || 'student'} 
+        />
+      )}
     </div>
   );
 }

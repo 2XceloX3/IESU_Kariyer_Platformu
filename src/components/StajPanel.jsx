@@ -123,8 +123,8 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                 <Logo className="h-10 w-auto" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</h1>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-widest">Kariyer Geliştirme Merkezi</p>
+                <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-red-200 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
           </div>

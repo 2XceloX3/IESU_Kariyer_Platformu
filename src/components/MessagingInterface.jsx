@@ -1012,7 +1012,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
               <Logo variant="white" size="sm" className="h-8 w-auto hover:opacity-90 transition shrink-0" />
               <div className="flex flex-col min-w-0">
                 <span className="font-black text-[12px] sm:text-[13px] leading-tight text-white truncate">İstanbul Esenyurt Üniversitesi</span>
-                <span className="text-[9px] sm:text-[10px] text-red-200 font-bold uppercase tracking-wider truncate">Kariyer Geliştirme Merkezi</span>
+                <span className="text-[9px] sm:text-[10px] text-red-200 font-bold tracking-wider truncate">Kariyer Geliştirme Koordinatörlüğü</span>
               </div>
             </div>
             <button 

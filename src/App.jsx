@@ -15,9 +15,10 @@ const CommandPalette = lazy(() => import('./components/CommandPalette')), PWAIns
 const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserProfile = lazy(() => import('./components/PublicUserProfile')), JobsAndInternships = lazy(() => import('./components/JobsAndInternships'));
 const NotificationsPanel = lazy(() => import('./components/NotificationsPanel')), CalendarView = lazy(() => import('./components/CalendarView')), MessagingInterface = lazy(() => import('./components/MessagingInterface'));
 const ContactPage = lazy(() => import('./components/ContactPage')), ServicesPage = lazy(() => import('./components/ServicesPage'));
+const AboutUsPage = lazy(() => import('./components/AboutUsPage')), EventsPage = lazy(() => import('./components/EventsPage'));
 
 window.toast = toast;
-const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
+const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events', 'events_list', 'etkinliklerimiz']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
 const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao', 'global_map']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
 const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
 const STUDENT_EXCLUSIVE_ROUTES = new Set([
@@ -30,7 +31,7 @@ const SHARED_ROUTES = new Set([
   'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 
   'calendar', 'groups', 'group_profile', 'network', 'career_network', 'live_rooms', 
   'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard',
-  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'contact', 'about_us', 'services'
+  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services'
 ]);
 
 const Spinner = () => (<div className="flex items-center justify-center min-h-screen bg-[#f8f9fc]"><div className="w-12 h-12 border-4 border-[#990000] border-t-transparent rounded-full animate-spin shadow-lg" /></div>);
@@ -118,7 +119,8 @@ export default function App() {
       localStorage.setItem('iesu_mock_user', JSON.stringify(currentUser));
       try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
-      if (currentUser.role !== 'admin') setActivePortalBranch?.(currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
+      const targetBranch = currentUser.role === 'admin' ? 'admin' : (currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
+      setActivePortalBranch?.(targetBranch);
     } else {
       ['iesu_mock_user', 'iesu_user_role_v1'].forEach(k => localStorage.removeItem(k));
       try { useAppStore.getState().setCurrentUser(null); } catch { /* store may not be ready */ }
@@ -176,7 +178,9 @@ export default function App() {
       if (pathView === 'calendar') return <CalendarView setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'messaging') return <MessagingInterface setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} selectedGroupId={s.selectedGroupId} setSelectedGroupId={s.setSelectedGroupId} />;
       if (pathView === 'contact' || pathView === 'contact_us') return <ContactPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
-      if (pathView === 'about_us' || pathView === 'services') return <ServicesPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'about_us') return <AboutUsPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'services') return <ServicesPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'events_list' || pathView === 'events' || pathView === 'etkinlikler') return <EventsPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
       const BENTO_MODULES = new Set(['cvbuilder', 'interview_sim', 'career_test', 'career_roadmap', 'startup_incubator', 'club_portal', 'sem', 'applications']);
       if (BENTO_MODULES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
       return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
@@ -201,12 +205,14 @@ export default function App() {
             <button onClick={() => setView('login')} className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs">Yönetici Girişi</button>
           </div>
         ) : !currentUser ? (
-          PUBLIC_NEWS.has(pathView) ? <PublicNewsView setView={setView} currentUser={null} userRole={null} />
+          (pathView === 'contact' || pathView === 'contact_us') ? <ContactPage setView={setView} currentUser={null} userRole={null} />
+          : (pathView === 'about_us') ? <AboutUsPage setView={setView} currentUser={null} userRole={null} />
+          : (pathView === 'services') ? <ServicesPage setView={setView} currentUser={null} userRole={null} />
+          : (pathView === 'events_list') ? <EventsPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'login' || ADMIN_CMS.has(pathView)) ? <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} />
           : pathView === 'register' ? <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={store.setStudents} setAlumni={store.setAlumni} setAcademicStaff={store.setAcademicStaff} setCompanies={store.setCompanies} setUserRole={setUserRole} />
           : pathView === 'forgot_password' ? <ForgotPassword setView={setView} />
-          : (pathView === 'contact' || pathView === 'contact_us') ? <ContactPage setView={setView} currentUser={null} userRole={null} />
-          : (pathView === 'about_us' || pathView === 'services') ? <ServicesPage setView={setView} currentUser={null} userRole={null} />
+          : PUBLIC_NEWS.has(pathView) ? <PublicNewsView setView={setView} currentUser={null} userRole={null} />
           : <LandingPage setView={setView} currentUser={null} userRole={userRole} setUserRole={setUserRole} />
         ) : (
           <>

@@ -233,12 +233,8 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
               }`}>
                 İstanbul Esenyurt Üniversitesi
               </h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                {effectiveRole === 'admin' ? 'KGM Süper Yönetici & Koordinasyon Merkezi' :
-                 effectiveRole === 'alumni' ? 'İESÜ Mezunlar Portalı' :
-                 effectiveRole === 'academic' ? 'Akademik Bilgi & Yönetim Portalı' :
-                 (effectiveRole === 'company' || effectiveRole === 'employer') ? 'Kurumsal İnsan Kaynakları Portalı' :
-                 'Kariyer Geliştirme Merkezi'}
+              <p className="text-[10px] font-bold text-gray-500 tracking-wider">
+                Kariyer Geliştirme Koordinatörlüğü
               </p>
             </div>
           </div>

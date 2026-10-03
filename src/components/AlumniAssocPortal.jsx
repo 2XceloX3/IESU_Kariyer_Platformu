@@ -136,7 +136,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
               <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
               <div className="hidden sm:block text-left">
                 <h1 className="text-[13px] font-black text-[#059669] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Portalı & Dernek Paneli</p>
+                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
             <TopProfileMenu currentUser={currentUser} userRole={userRole} setView={setView} setSelectedUserId={setSelectedUserId} academicRole={academicRole} />
@@ -175,7 +175,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
             <div className="hidden sm:block text-left">
               <h1 className="text-[13px] font-black text-[#059669] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Kariyer Portalı & Dernek Paneli</p>
+              <p className="text-[10px] font-bold text-gray-500 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
 

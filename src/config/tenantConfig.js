@@ -9,7 +9,7 @@ export const DEFAULT_TENANT_CONFIG = {
   id: 'iesu',
   institutionName: 'İstanbul Esenyurt Üniversitesi',
   institutionShortName: 'İESÜ',
-  coordinatorTitle: 'Kariyer Geliştirme Merkezi',
+  coordinatorTitle: 'Kariyer Geliştirme Koordinatörlüğü',
   portalTitle: 'İESÜ Mezunlar Portalı',
   motto: 'Kariyer ve İstihdam Ekosistemi',
   domain: 'esenyurt.edu.tr',

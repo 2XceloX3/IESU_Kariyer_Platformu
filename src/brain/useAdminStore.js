@@ -144,7 +144,7 @@ export const getInitialAdminState = () => ({
     maintenanceMode: false,
     announcementBanner: { visible: false, text: '', color: 'red' },
     primaryColor: '#990000',
-    logoSubText: 'IESU KARİYER',
+    logoSubText: 'Kariyer Geliştirme Koordinatörlüğü',
     footerMotto: 'Geleceğe açılan kapı.'
   },
 

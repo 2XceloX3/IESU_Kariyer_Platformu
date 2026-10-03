@@ -355,8 +355,8 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
             <div className="flex items-center gap-3">
               <Logo size="lg" variant="white" />
               <div>
-                <h3 className="font-black text-sm text-white tracking-wide">{corporateData.university}</h3>
-                <p className="text-[10px] font-bold text-red-200 uppercase tracking-wider">{siteConfig?.logoSubText || 'Kariyer Geliştirme Merkezi'}</p>
+                <h3 className="font-black text-sm text-white tracking-wide">İstanbul Esenyurt Üniversitesi</h3>
+                <p className="text-[10px] font-bold text-red-200 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
 
@@ -406,16 +406,6 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
                 </a>
               </li>
               <li>
-                <button onClick={() => setView && setView('staj')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
-                  <ChevronRight size={14} className="text-white/80 shrink-0" /> İsteğe Bağlı Staj Süreçleri
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setView && setView('idari_portal')} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
-                  <ChevronRight size={14} className="text-white/80 shrink-0" /> İdari Birimler & Formlar (SKSDB/BİDB)
-                </button>
-              </li>
-              <li>
                 <button onClick={() => setShowContactModal(true)} className="hover:underline transition flex items-center gap-2 text-left cursor-pointer">
                   <ChevronRight size={14} className="text-white/80 shrink-0" /> İletişim & Bize Ulaşın
                 </button>
@@ -425,17 +415,10 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
 
           {/* Column 3: Contact Info Box */}
           <div className="space-y-3 text-xs font-medium text-white">
-            <div className="flex items-center justify-between border-b border-white/20 pb-2">
+            <div className="border-b border-white/20 pb-2">
               <h4 className="text-sm font-black text-white uppercase tracking-wider">
                 İletişim Bilgileri
               </h4>
-              <button 
-                type="button"
-                onClick={() => setShowContactModal(true)}
-                className="text-[10px] bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg transition font-bold cursor-pointer border border-white/20"
-              >
-                Mesaj Bırak
-              </button>
             </div>
             <div className="flex items-start gap-3">
               <div className="p-2 rounded-lg bg-white/10 text-white shrink-0 mt-0.5 border border-white/10">

@@ -174,7 +174,7 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
               <Logo className="h-10 w-auto hover:scale-105 transition-transform" color={effectiveRole === 'admin' ? 'amber' : 'red'} />
               <div className="hidden lg:block">
                 <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${effectiveRole === 'admin' ? 'text-amber-800' : 'text-[#990000]'}`}>İstanbul Esenyurt Üniversitesi</h1>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{effectiveRole === 'admin' ? 'KGM Süper Yönetici Başvuru Masası' : 'Kariyer Geliştirme Merkezi'}</p>
+                <p className="text-[10px] font-bold text-gray-500 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
           </div>

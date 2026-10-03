@@ -680,7 +680,7 @@ describe('Branch Context Retention & Super Admin Root Command Center', () => {
 
     // 1. Top Navbar presence
     expect(screen.getByText(/👑 SÜPER YÖNETİCİ & KGM KONTROL PORTALI/i)).toBeInTheDocument();
-    expect(screen.getByText(/Kariyer Geliştirme Merkezi \(KGM\)/i)).toBeInTheDocument();
+    expect(screen.getByText('Kariyer Geliştirme Koordinatörlüğü')).toBeInTheDocument();
 
     // 2. Left Column presence
     expect(screen.getByText(/SÜPER YÖNETİCİ & KOORDİNASYON MERKEZİ/i)).toBeInTheDocument();
