@@ -230,8 +230,8 @@ export const CITY_COORDINATES = {
   'karabuk': { coords: [32.6277, 41.2061], country: 'Türkiye', flag: '🇹🇷', city: 'Karabük', specialty: 'Demir & Çelik' },
   'kilis': { coords: [37.1150, 36.7184], country: 'Türkiye', flag: '🇹🇷', city: 'Kilis', specialty: 'Zeytincilik & Ticaret' },
   'osmaniye': { coords: [36.2467, 37.0742], country: 'Türkiye', flag: '🇹🇷', city: 'Osmaniye', specialty: 'Demir-Çelik & Rüzgar Enerjisi' },
-  'iesu': { coords: [31.1626, 40.8387], country: 'Türkiye', flag: '🇹🇷', city: 'İESÜ', region: 'Karadeniz / Marmara Geçişi', specialty: 'Orman Ürünleri, Makine & Sanayi', tier: 1 },
-  'İESÜ': { coords: [31.1626, 40.8387], country: 'Türkiye', flag: '🇹🇷', city: 'İESÜ', region: 'Karadeniz / Marmara Geçişi', specialty: 'Orman Ürünleri, Makine & Sanayi', tier: 1 },
+  'duzce': { coords: [31.1626, 40.8387], country: 'Türkiye', flag: '🇹🇷', city: 'Düzce', region: 'Karadeniz / Marmara Geçişi', specialty: 'Orman Ürünleri, Makine & Sanayi', tier: 1 },
+  'düzce': { coords: [31.1626, 40.8387], country: 'Türkiye', flag: '🇹🇷', city: 'Düzce', region: 'Karadeniz / Marmara Geçişi', specialty: 'Orman Ürünleri, Makine & Sanayi', tier: 1 },
 
   // -------------------------------------------------------------
   // GERMANY & DACH REGION (ALMANYA & DACH)
@@ -679,14 +679,14 @@ export const BASE_ALUMNI_HUBS = [
     region: 'middle_east'
   },
   {
-    id: 'hub_iesu',
-    name: 'İESÜ, Türkiye',
-    city: 'İESÜ',
+    id: 'hub_duzce',
+    name: 'Düzce, Türkiye',
+    city: 'Düzce',
     country: 'Türkiye',
     flag: '🇹🇷',
     coordinates: [31.1626, 40.8387],
     baseCount: 420,
-    topCompanies: ['Standart Profil', 'Teknorot Otomotiv', 'İESÜ Cam', 'Nobel İlaç', 'Divapan'],
+    topCompanies: ['Standart Profil', 'Teknorot Otomotiv', 'Düzce Cam', 'Nobel İlaç', 'Divapan'],
     topRoles: ['Makine Mühendisi', 'Endüstri Mühendisi', 'Ar-Ge Mühendisi', 'Üretim Planlama'],
     region: 'turkey'
   },
@@ -742,7 +742,7 @@ export const BASE_ALUMNI_HUBS = [
 
 export const REGION_PRESETS = [
   { id: 'all', label: '🌍 Tüm Dünya', center: [20, 40], zoom: 1 },
-  { id: 'iesu_corridor', label: '📍 İESÜ Hattı (3.06z)', center: [10, 44], zoom: 3.06, origin: 'İESÜ' },
+  { id: 'duzce_corridor', label: '📍 Düzce Hattı (3.06z)', center: [10, 44], zoom: 3.06, origin: 'Düzce' },
   { id: 'turkey', label: '🇹🇷 Türkiye', center: [35.2, 39.0], zoom: 4.2 },
   { id: 'europe', label: '🇪🇺 Avrupa', center: [14.0, 52.0], zoom: 3.2 },
   { id: 'north_america', label: '🇺🇸 Kuzey Amerika', center: [-98.0, 40.0], zoom: 2.4 },
@@ -1096,10 +1096,10 @@ export function aggregateAlumniHubs(alumniList = [], currentUser = null) {
 }
 
 export const CAREER_ROUTES = [
-  // İESÜ Routes (Inspired by Google Maps Direction from İESÜ [31.162609, 40.83872] to Europe/Atlantic)
+  // Düzce Routes (Inspired by Google Maps Direction from Düzce [31.162609, 40.83872] to Europe/Atlantic)
   {
-    id: 'route_iesu_stuttgart',
-    fromCity: 'İESÜ',
+    id: 'route_duzce_stuttgart',
+    fromCity: 'Düzce',
     fromCountry: 'Türkiye',
     fromCoords: [31.1626, 40.8387],
     toCity: 'Stuttgart',
@@ -1108,13 +1108,13 @@ export const CAREER_ROUTES = [
     field: 'Otomotiv Yan Sanayi & İleri İmalat',
     alumniCount: 120,
     corridor: 'Almanya Otomotiv & İleri İmalat Koridoru',
-    originHub: 'İESÜ',
-    title: 'İESÜ ➔ Stuttgart Otomotiv Koridoru',
-    description: 'İESÜ sanayi kümelenmesi ve otomotiv yan sanayi mühendislerinin Stuttgart merkezli küresel otomotiv devlerine (Porsche, Bosch, Mercedes) uzanan kariyer ve staj hattı.'
+    originHub: 'Düzce',
+    title: 'Düzce ➔ Stuttgart Otomotiv Koridoru',
+    description: 'Düzce sanayi kümelenmesi ve otomotiv yan sanayi mühendislerinin Stuttgart merkezli küresel otomotiv devlerine (Porsche, Bosch, Mercedes) uzanan kariyer ve staj hattı.'
   },
   {
-    id: 'route_iesu_munich',
-    fromCity: 'İESÜ',
+    id: 'route_duzce_munich',
+    fromCity: 'Düzce',
     fromCountry: 'Türkiye',
     fromCoords: [31.1626, 40.8387],
     toCity: 'Münih',
@@ -1123,13 +1123,13 @@ export const CAREER_ROUTES = [
     field: 'Makine, Robotik & Endüstriyel Otomasyon',
     alumniCount: 95,
     corridor: 'Bavyera Yüksek Teknoloji Hattı',
-    originHub: 'İESÜ',
-    title: 'İESÜ ➔ Münih Robotik & Makine Hattı',
-    description: 'İESÜ mühendislik ve teknoloji mezunlarının Bavyera endüstriyel otomasyon ve mekatronik ekosistemine transfer yolu.'
+    originHub: 'Düzce',
+    title: 'Düzce ➔ Münih Robotik & Makine Hattı',
+    description: 'Düzce Üniversitesi ve İESÜ mühendislik mezunlarının Bavyera endüstriyel otomasyon ve mekatronik ekosistemine transfer yolu.'
   },
   {
-    id: 'route_iesu_london',
-    fromCity: 'İESÜ',
+    id: 'route_duzce_london',
+    fromCity: 'Düzce',
     fromCountry: 'Türkiye',
     fromCoords: [31.1626, 40.8387],
     toCity: 'Londra',
@@ -1138,13 +1138,13 @@ export const CAREER_ROUTES = [
     field: 'Uluslararası Ticaret, Lojistik & Tedarik Zinciri',
     alumniCount: 80,
     corridor: 'Atlantik Ticaret & Dağıtım Hattı',
-    originHub: 'İESÜ',
-    title: 'İESÜ ➔ Londra Ticaret & Lojistik Rotası',
-    description: 'İESÜ sanayi havzası ürünlerinin İngiltere ve Birleşik Krallık ticaret ve tedarik zinciri ağlarıyla entegrasyonu.'
+    originHub: 'Düzce',
+    title: 'Düzce ➔ Londra Ticaret & Lojistik Rotası',
+    description: 'Düzce sanayi havzası ürünlerinin İngiltere ve Birleşik Krallık ticaret ve tedarik zinciri ağlarıyla entegrasyonu.'
   },
   {
-    id: 'route_iesu_detroit',
-    fromCity: 'İESÜ',
+    id: 'route_duzce_detroit',
+    fromCity: 'Düzce',
     fromCountry: 'Türkiye',
     fromCoords: [31.1626, 40.8387],
     toCity: 'Detroit',
@@ -1153,13 +1153,13 @@ export const CAREER_ROUTES = [
     field: 'Global Otomotiv & Otonom Mobilite',
     alumniCount: 45,
     corridor: 'Transatlantik Otomotiv Koridoru',
-    originHub: 'İESÜ',
-    title: 'İESÜ ➔ Detroit Otomotiv Aksı',
-    description: 'Kuzey Amerika otomotiv merkezi Detroit ile İESÜ otomotiv yan sanayii arasındaki mühendislik ve inovasyon köprüsü.'
+    originHub: 'Düzce',
+    title: 'Düzce ➔ Detroit Otomotiv Aksı',
+    description: 'Kuzey Amerika otomotiv merkezi Detroit ile Düzce otomotiv yan sanayii arasındaki mühendislik ve inovasyon köprüsü.'
   },
   {
-    id: 'route_iesu_tokyo',
-    fromCity: 'İESÜ',
+    id: 'route_duzce_tokyo',
+    fromCity: 'Düzce',
     fromCountry: 'Türkiye',
     fromCoords: [31.1626, 40.8387],
     toCity: 'Tokyo',
@@ -1168,9 +1168,9 @@ export const CAREER_ROUTES = [
     field: 'Hassas Makine, Kalıp & Malzeme Teknolojileri',
     alumniCount: 35,
     corridor: 'Asya İleri İmalat Yolu',
-    originHub: 'İESÜ',
-    title: 'İESÜ ➔ Tokyo Hassas İmalat Hattı',
-    description: 'Japonya hassas mekanik üreticileri ile İESÜ cam ve sanayi kuruluşları arasındaki mühendislik ortaklığı.'
+    originHub: 'Düzce',
+    title: 'Düzce ➔ Tokyo Hassas İmalat Hattı',
+    description: 'Japonya hassas mekanik üreticileri ile Düzce cam ve sanayi kuruluşları arasındaki mühendislik ortaklığı.'
   },
   // İstanbul Routes
   {

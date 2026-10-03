@@ -143,7 +143,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
         if (academicRole === 'super_admin') return 'Süper Yönetici';
         if (academicRole === 'content_admin') return 'İçerik Yöneticisi';
         if (academicRole === 'mentor_admin') return 'Mentor Yönetici';
-        return 'Kariyer Geliştirme Koordinatörlüğü';
+        return 'Süper Yönetici';
       default: return 'Kullanıcı';
     }
   };
@@ -170,7 +170,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
 
   const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || academicRole === 'super_admin';
 
-  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Kullanıcı');
+  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'KGM Yöneticisi' : 'Kullanıcı');
 
   const branchUserAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : '/iesu-logo.svg');
 
@@ -231,7 +231,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               effectiveBranch === 'company' ? (isDark ? 'text-blue-400' : 'text-blue-700') :
               (isDark ? 'text-amber-400' : 'text-amber-600')
             }`}>
-              {getRoleLabel(effectiveBranch)}
+              {isAdmin ? getRoleLabel('admin') : getRoleLabel(effectiveBranch)}
             </span>
           </div>
 

@@ -4,24 +4,22 @@ import PanelHeader from './PanelHeader';
 import useAppStore from '../../store/useAppStore';
 
 export default function CMSAlumniCard() {
-  const alumniCardApplications = useAppStore(state => state.alumniCardApplications) || [];
+  const alumniCardApplications = useAppStore(state => state.alumniCardApplications);
   const setAlumniCardApplications = useAppStore(state => state.setAlumniCardApplications);
   const featureAlumniCard = useAppStore(state => state.featureAlumniCard);
   const setFeatureAlumniCard = useAppStore(state => state.setFeatureAlumniCard);
-
   const [search, setSearch] = useState('');
 
-  const filtered = alumniCardApplications.filter(app => 
+  const filtered = (alumniCardApplications || []).filter(app => 
     app.name?.toLowerCase().includes(search.toLowerCase()) || 
-    app.email?.toLowerCase().includes(search.toLowerCase()) ||
+    app.department?.toLowerCase().includes(search.toLowerCase()) ||
+    app.tc?.includes(search) ||
     app.tcNo?.includes(search) || app.studentId?.includes(search)
   );
 
   const toggleFormStatus = () => {
-    const newState = featureAlumniCard === false ? true : false;
-    setFeatureAlumniCard(newState);
-    if (window.toast) {
-      window.toast.success(newState ? "Mezun Kart başvuru formu aktif edildi." : "Mezun Kart başvuru formu kapatıldı.");
+    if (setFeatureAlumniCard) {
+      setFeatureAlumniCard(featureAlumniCard === false ? true : false);
     }
   };
 
@@ -121,7 +119,7 @@ export default function CMSAlumniCard() {
                 <tr key={app.id} className="hover:bg-gray-50/50 transition">
                   <td className="py-3 px-5">
                     <p className="font-bold text-gray-900 text-sm">{app.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">TC: {app.tc ? app.tc.slice(0, 3) + '*****' + app.tc.slice(-2) : '�'}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">TC: {app.tc ? app.tc.slice(0, 3) + '*****' + app.tc.slice(-2) : '-'}</p>
                     <p className="text-[10px] text-gray-500 mt-1">Başvuru: {app.date}</p>
                   </td>
                   <td className="py-3 px-5">

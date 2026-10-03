@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
-import React
-import AdminOmniDock from './AdminOmniDock';, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import AdminOmniDock from './AdminOmniDock';
 import { 
   Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, 
   UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, 
@@ -219,7 +219,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
             </button>
 
             <TopProfileMenu 
-              currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: '/iesu-logo.svg' }} 
+              currentUser={currentUser || { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' }} 
               userRole="admin" 
               setView={setView} 
               setSelectedUserId={setSelectedUserId} 
@@ -249,7 +249,7 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                 onClick={() => { if (setSelectedUserId) setSelectedUserId('admin_1513'); useAppStore.getState().setSelectedUserId?.('admin_1513'); setView('user_profile'); }} 
                 className="text-[17px] font-black text-slate-900 leading-tight mb-0.5 cursor-pointer hover:text-amber-600 transition"
               >
-                Kariyer Geliştirme Merkezi
+                {currentUser?.name || 'Kariyer Geliştirme Koordinatörlüğü'}
               </h2>
               <p className="text-[11px] font-extrabold text-amber-600 uppercase tracking-wider mb-3">
                 SÜPER YÖNETİCİ & KOORDİNASYON MERKEZİ
