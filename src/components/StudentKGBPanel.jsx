@@ -289,7 +289,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         portfolioItems: rec.portfolioItems ?? profileData.portfolioItems,
         accreditationScore: score,
         verificationCode: profileData.verificationCode || `İESÜ-KGB-2026-${(rec.id || 'STU-01').replace('STU-', '994')}`,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.name || profileData.name)}&background=990000&color=fff&size=120`,
+        avatar: null,
         advisorName: profileData.advisorName,
         internships: Array.isArray(profileData.internships) ? profileData.internships : [],
         certifications: Array.isArray(profileData.certifications) ? profileData.certifications : []

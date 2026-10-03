@@ -551,7 +551,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
       id: Date.now().toString(),
       senderId: currentUser?.id || 'usr_me',
       senderName: currentUser?.name || 'Ben',
-      senderAvatar: currentUser?.avatar || 'https://ui-avatars.com/api/?name=Me',
+      senderAvatar: currentUser?.avatar || null,
       receiverId: activeContactId,
       receiverName: activeContact?.name || 'Kullanıcı',
       content: sentMessageContent,
@@ -597,7 +597,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
         if (lowerMsg.includes('mülakat') || lowerMsg.includes('staj') || lowerMsg.includes('iş')) {
            replyContent = "Harika! Kariyerin için atmış olduğun bu adım çok önemli. Bol şans diliyorum, sana her zaman destek olmaya hazırım!";
         } else if (lowerMsg.includes('selam') || lowerMsg.includes('merhaba')) {
-           replyContent = "Selam! Sana nasıl yardımcı olabilirim? Esenyurt Kariyer platformunda bugün neler yapıyorsun?";
+           replyContent = "Selam! Sana nasıl yardımcı olabilirim? İESÜ Kariyer platformunda bugün neler yapıyorsun?";
         } else if (lowerMsg.includes('teşekkür')) {
            replyContent = "Ne demek, lafı bile olmaz! Başka bir sorun olursa buradayım.";
         } else if (lowerMsg.includes('nasılsın')) {
@@ -608,7 +608,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
           id: Date.now().toString() + '_auto',
           senderId: activeContactId,
           senderName: activeContact.name,
-          senderAvatar: activeContact.avatar || 'https://ui-avatars.com/api/?name=A&background=random',
+          senderAvatar: activeContact?.avatar || null,
           receiverId: currentUser?.id,
           content: replyContent,
           timestamp: new Date().toISOString(),
@@ -1729,7 +1729,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
                     name: newGroupTitle,
                     isGroup: true,
                     members: selectedGroupMembers,
-                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(newGroupTitle)}&background=990000&color=fff`
+                    avatar: null
                   };
                   setGroups([...groups, newGrp]);
                   setActiveContactId(newGrp.id);

@@ -488,10 +488,11 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                         }}
                       >
                         <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white border border-slate-200 shrink-0">
-                          <img 
-                            src={mentorItem.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(mentorItem.name||'M')}&background=0F766E&color=fff&size=100`} 
-                            alt={mentorItem.name} 
-                            className="w-full h-full object-cover" 
+                          <SafeAvatar 
+                            src={mentorItem?.avatar || null} 
+                            name={mentorItem.name} 
+                            rounded="rounded-2xl"
+                            className="w-full h-full" 
                           />
                         </div>
                         <div className="min-w-0">
@@ -790,7 +791,7 @@ groups={groups}
                   department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
                   programTitle: mentorshipForm.title,
                   status: 'Beklemede', // PENDING ADMIN APPROVAL
-                  avatar: effectiveCurrentUser?.avatar || `https://ui-avatars.com/api/?name=${effectiveCurrentUser?.name || 'O'}&background=990000&color=fff`,
+                  avatar: effectiveCurrentUser?.avatar || null,
                   hours: mentorshipForm.hours,
                   mode: mentorshipForm.mode,
                   motivation: mentorshipForm.motivation

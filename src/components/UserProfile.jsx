@@ -211,7 +211,7 @@ export default function UserProfile({
     if (!targetUser) return;
     const targetId = targetUser.id || 'usr_' + Date.now();
     const targetName = targetUser.name || 'İESÜ Üyesi';
-    const targetAvatar = targetUser.avatar || targetUser.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(targetName)}&background=0A2342&color=fff`;
+    const targetAvatar = targetUser.avatar || targetUser.logo || null;
     const targetRole = targetUser.role || (targetUser.gpa ? 'student' : (targetUser.graduationYear || targetUser.gradYear) ? 'alumni' : targetUser.sector ? 'company' : 'academic');
     const targetDept = targetUser.title 
       ? (targetUser.company ? `${targetUser.title} • ${targetUser.company}` : `${targetUser.title} • ${targetUser.department || 'İESÜ'}`)
@@ -479,7 +479,7 @@ export default function UserProfile({
           gradYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || found?.graduationYear || found?.gradYear || '2023',
           title: effectiveCurrentUser?.title || found?.title || 'Frontend Developer',
           company: effectiveCurrentUser?.company || (effectiveCurrentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : (found?.company || 'Trendyol')),
-          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff')),
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || null)),
           email: effectiveCurrentUser?.email || found?.email || 'caner@mezun.esenyurt.edu.tr',
           badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
           isSelf: true
@@ -492,7 +492,7 @@ export default function UserProfile({
           gradYear: '2023',
           title: 'Frontend Developer',
           company: 'Trendyol',
-          avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff',
+          avatar: null,
           email: 'caner@mezun.esenyurt.edu.tr',
           badges: ['verified', 'mentor']
         } : (targetUserId === 'ALU-002' ? {
@@ -504,7 +504,7 @@ export default function UserProfile({
           gradYear: '2022',
           title: 'Üretim ve Operasyon Yöneticisi',
           company: 'Ford Otosan',
-          avatar: 'https://ui-avatars.com/api/?name=Seda+Çelik&background=EA580C&color=fff',
+          avatar: null,
           email: 'seda@mezun.esenyurt.edu.tr',
           badges: ['verified', 'mentor']
         } : {
@@ -516,7 +516,7 @@ export default function UserProfile({
           gradYear: '2023',
           title: 'Uzman',
           company: 'Sektör Lideri',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(targetUserId)}&background=EA580C&color=fff`,
+          avatar: null,
           email: 'alumni@mezun.esenyurt.edu.tr',
           badges: ['verified']
         })));

@@ -102,11 +102,11 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
   ];
 
   const mockCompanies = [
-    { name: 'Trendyol', logo: 'https://ui-avatars.com/api/?name=Trendyol&background=F97316&color=fff', sector: 'E-Ticaret', time: '2 saat önce' },
-    { name: 'Getir', logo: 'https://ui-avatars.com/api/?name=Getir&background=5B21B6&color=fff', sector: 'Lojistik / Teknoloji', time: 'Dün' },
-    { name: 'Aselsan', logo: 'https://ui-avatars.com/api/?name=Aselsan&background=0A2342&color=fff', sector: 'Savunma Sanayi', time: '3 gün önce' },
-    { name: 'Havelsan', logo: 'https://ui-avatars.com/api/?name=Havelsan&background=1E3A8A&color=fff', sector: 'Savunma Sanayi', time: '1 hafta önce' },
-    { name: 'Peak Games', logo: 'https://ui-avatars.com/api/?name=Peak&background=E11D48&color=fff', sector: 'Oyun Sektörü', time: '2 hafta önce' }
+    { name: 'Trendyol', logo: null, sector: 'E-Ticaret', time: '2 saat önce' },
+    { name: 'Getir', logo: null, sector: 'Lojistik / Teknoloji', time: 'Dün' },
+    { name: 'Aselsan', logo: null, sector: 'Savunma Sanayi', time: '3 gün önce' },
+    { name: 'Havelsan', logo: null, sector: 'Savunma Sanayi', time: '1 hafta önce' },
+    { name: 'Peak Games', logo: null, sector: 'Oyun Sektörü', time: '2 hafta önce' }
   ];
 
   const topCompetitors = [

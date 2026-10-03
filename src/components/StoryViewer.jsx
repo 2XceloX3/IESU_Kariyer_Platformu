@@ -61,7 +61,7 @@ export default function StoryViewer({ stories, initialIndex = 0, onClose, isCrea
       id: 'STORY-' + Date.now(),
       author: {
         name: currentUser?.name || 'Sen',
-        avatar: currentUser?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.name || 'S')}&background=0A2342&color=fff`,
+        avatar: currentUser?.avatar || null,
         role: currentUser?.role || 'student'
       },
       content: newContent,

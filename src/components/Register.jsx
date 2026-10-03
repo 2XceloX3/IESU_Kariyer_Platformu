@@ -114,7 +114,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           grade: 'Aktif',
           status: 'Aktif',
           internshipStatus: 'Arıyor',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.studentName || 'Öğrenci')}&background=0A2342&color=fff`,
+          avatar: null,
           onboardingCompleted: false,
           kvkkConsent: true,
           kvkkConsentDate: new Date().toISOString(),
@@ -152,7 +152,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           sector: 'Belirtilmedi',
           role: 'employer',
           status: 'Onay Bekliyor',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.companyName)}&background=8B5CF6&color=fff`,
+          avatar: null,
           kvkkConsent: true,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
@@ -182,7 +182,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           role: 'academic',
           department: 'Belirtilmedi',
           status: 'Aktif',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.academicName || 'Akademisyen')}&background=0EA5E9&color=fff`,
+          avatar: null,
           kvkkConsent: true,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
@@ -215,7 +215,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           graduationYear: formData.graduationYear || new Date().getFullYear().toString(),
           role: 'alumni',
           status: 'Aktif',
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.alumniName || 'Mezun')}&background=F59E0B&color=fff`,
+          avatar: null,
           kvkkConsent: true,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
