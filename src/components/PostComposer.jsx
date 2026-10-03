@@ -61,10 +61,19 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
   const handleFileUpload = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setMedia(url);
-    setMediaType(type);
-    setIsFocused(true);
+    if (file.size > 2 * 1024 * 1024) {
+      if (window.toast && typeof window.toast.error === 'function') {
+        window.toast.error("Dosya boyutu en fazla 2 MB olmalıdır.");
+      }
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setMedia(event.target.result);
+      setMediaType(type);
+      setIsFocused(true);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -127,9 +136,8 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
         
         {/* TOP AREA: AVATAR & INPUT */}
         <div className="flex gap-3 items-start">
-          <img 
+          <SafeAvatar 
             src={authorAvatar} 
-            onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }}
             alt="Profile" 
             className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200" 
           />
