@@ -278,7 +278,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
       </nav>
 
       {/* Main Container - Padded for Navbar */}
-      <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-20">
+      <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-28 sm:pb-20">
         
         {/* LEFT PANEL: Corporate Profile & Quick ATS Actions */}
         <div className="hidden lg:block w-[300px] shrink-0">

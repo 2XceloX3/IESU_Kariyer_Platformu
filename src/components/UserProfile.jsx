@@ -2508,7 +2508,7 @@ export default function UserProfile({
       </nav>
 
       {/* Main Container */}
-      <main className="max-w-[1320px] mx-auto px-4 lg:px-8 pt-24 pb-20 animate-fade-in">
+      <main className="max-w-[1320px] mx-auto px-4 lg:px-8 pt-24 pb-28 sm:pb-20 animate-fade-in">
         {userType === 'student' && renderStudentProfile()}
         {userType === 'alumni' && renderAlumniProfile()}
         {userType === 'company' && renderCompanyProfile()}

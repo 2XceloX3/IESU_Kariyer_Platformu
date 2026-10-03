@@ -275,7 +275,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           )}
 
           {/* Role Selector Pill Tabs */}
-          <div className="flex items-center justify-center gap-1.5 p-1 bg-slate-200/60 rounded-2xl mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1.5 bg-slate-200/60 rounded-2xl mb-8">
             <button 
               type="button"
               onClick={() => setLoginRole('alumni')}

@@ -1069,17 +1069,17 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 animate-fade-in font-sans">
+    <div className="fixed bottom-24 sm:bottom-6 right-3 sm:right-6 z-50 flex flex-col items-end gap-3 animate-fade-in font-sans">
       
       {/* ═══════════════════════════════════════════════════════════════════
           EXPANDED WIDGET CONTAINER
          ═══════════════════════════════════════════════════════════════════ */}
       {isOpen && (
         <div 
-          className={`bg-white w-88 sm:w-[430px] rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all animate-slide-up ${
+          className={`bg-white w-[calc(100vw-1.5rem)] max-w-[430px] rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all animate-slide-up ${
             isAdmin ? 'border-2 border-amber-400/90 shadow-[0_20px_60px_-15px_rgba(245,158,11,0.45)]' : 'border border-slate-200'
           }`} 
-          style={{ height: '590px', maxHeight: '86vh' }}
+          style={{ height: '590px', maxHeight: 'calc(100vh - 120px)' }}
         >
           {/* Top Header */}
           <div className={`text-white px-5 py-3.5 flex items-center justify-between shrink-0 shadow-sm transition-colors ${getHeaderGradient()}`}>

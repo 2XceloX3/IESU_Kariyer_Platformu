@@ -170,7 +170,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         </div>
       </nav>
 
-      <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-20">
+      <div className="pt-24 max-w-6xl mx-auto px-4 flex justify-center gap-6 pb-28 sm:pb-20">
         <div className="hidden lg:block w-[300px] shrink-0">
           <div className="bg-white rounded-2xl border border-gray-100 p-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden text-center">
             <div className="h-24 bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 relative">
