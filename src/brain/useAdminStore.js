@@ -657,7 +657,9 @@ export const useAdminStore = create(
         kgbAlumniRecords: state.kgbAlumniRecords,
         sspUsers: state.sspUsers,
         institutionalStatsData: state.institutionalStatsData,
-        showInstitutionalStats: state.showInstitutionalStats
+        showInstitutionalStats: state.showInstitutionalStats,
+        messages: state.messages,
+        mentorships: state.mentorships
       })
     }
   )

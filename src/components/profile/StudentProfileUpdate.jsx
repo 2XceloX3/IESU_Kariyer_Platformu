@@ -200,6 +200,16 @@ export default function StudentProfileUpdate({
       localStorage.setItem('iesu_mock_user', JSON.stringify(updatedUser));
     } catch { /* intentional */}
 
+    // Firestore synchronization for authenticated student accounts
+    const studentUid = updatedUser?.uid || updatedUser?.id;
+    if (studentUid && !String(studentUid).startsWith('mock_')) {
+      import('../../utils/firebase').then(({ db }) => {
+        import('firebase/firestore').then(({ doc, setDoc }) => {
+          setDoc(doc(db, 'users', studentUid), updatedUser, { merge: true }).catch(() => {});
+        }).catch(() => {});
+      }).catch(() => {});
+    }
+
     // 2. Synchronize with Admin Brain Student Directory (useAdminStore)
     try {
       const adminStore = useAdminStore.getState();

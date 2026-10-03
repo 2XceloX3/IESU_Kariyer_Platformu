@@ -2180,6 +2180,13 @@ export default function StudentClubPortal({
               };
               const updatedApps = [newApp, ...(clubApplications || [])];
               if (setClubApplications) setClubApplications(updatedApps);
+              if (newApp.id) {
+                import('../utils/firebase').then(({ db }) => {
+                  import('firebase/firestore').then(({ doc, setDoc, serverTimestamp }) => {
+                    setDoc(doc(db, 'club_applications', newApp.id), { ...newApp, createdAt: serverTimestamp() }, { merge: true }).catch(() => {});
+                  }).catch(() => {});
+                }).catch(() => {});
+              }
               setShowCreateModal(false);
               setCreateForm({ name: '', category: 'Bilim ve Teknoloji', description: '', purpose: '', advisor: '' });
               toast.success('EK-1 Kulüp kurma başvurunuz SKS Daire Başkanlığına iletildi!');

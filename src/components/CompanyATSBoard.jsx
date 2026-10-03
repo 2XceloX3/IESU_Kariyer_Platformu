@@ -314,6 +314,13 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
 
     if (item.isStoreApp) {
       setApplications(prev => (prev || []).map(a => a.id === item.id ? { ...a, status: newStatus } : a));
+      if (item.id && !String(item.id).startsWith('mock_')) {
+        import('../utils/firebase').then(({ db }) => {
+          import('firebase/firestore').then(({ doc, updateDoc }) => {
+            updateDoc(doc(db, 'applications', item.id), { status: newStatus }).catch(() => {});
+          }).catch(() => {});
+        }).catch(() => {});
+      }
     } else {
       setMockApplicants(prev => {
         const next = { ...prev };

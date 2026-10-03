@@ -167,7 +167,7 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     
     // Build context prompt based on Agent 1 and Agent 10 research
     const prompt = `
-      Sen Esenyurt Üniversitesi kariyer asistanı ANKA'sın. Öğrencinin akademik ve profesyonel verilerine dayanarak, staj/iş başvurularında İK uzmanlarını ve akademisyenleri etkileyecek, 2026 standartlarına uygun (max 3 cümle) profesyonel bir "Akademik/Kariyer Özeti" oluştur.
+      Sen İstanbul Esenyurt Üniversitesi (İESÜ) kariyer asistanı ANKA'sın. Öğrencinin akademik ve profesyonel verilerine dayanarak, staj/iş başvurularında İK uzmanlarını ve akademisyenleri etkileyecek, 2026 standartlarına uygun (max 3 cümle) profesyonel bir "Akademik/Kariyer Özeti" oluştur.
       
       KURALLAR:
       1. Robotik, ChatGPT tarzı klişelerden KAÇIN ("I am writing to express", "Highly motivated professional", "Synergy", vb.).

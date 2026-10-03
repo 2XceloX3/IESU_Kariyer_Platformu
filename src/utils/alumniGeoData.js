@@ -1125,7 +1125,7 @@ export const CAREER_ROUTES = [
     corridor: 'Bavyera Yüksek Teknoloji Hattı',
     originHub: 'Düzce',
     title: 'Düzce ➔ Münih Robotik & Makine Hattı',
-    description: 'Düzce Üniversitesi ve İESÜ mühendislik mezunlarının Bavyera endüstriyel otomasyon ve mekatronik ekosistemine transfer yolu.'
+    description: 'İESÜ mühendislik ve teknoloji mezunlarının Bavyera endüstriyel otomasyon ve mekatronik ekosistemine transfer yolu.'
   },
   {
     id: 'route_duzce_london',
