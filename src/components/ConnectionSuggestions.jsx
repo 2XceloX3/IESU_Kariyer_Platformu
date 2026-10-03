@@ -81,7 +81,10 @@ export default function ConnectionSuggestions({
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   const storeActiveBranch = useAppStore(state => state.activePortalBranch);
-  const [followedIds, setFollowedIds] = useState([]);
+  const followedUserIds = useAppStore(state => state.followedUserIds) || [];
+  const addFollowedUserId = useAppStore(state => state.addFollowedUserId);
+  const removeFollowedUserId = useAppStore(state => state.removeFollowedUserId);
+  const followedIds = followedUserIds;
   const [showNetworkModal, setShowNetworkModal] = useState(false);
   const [modalTab, setModalTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -178,9 +181,9 @@ export default function ConnectionSuggestions({
   const handleToggleFollow = (e, userId) => {
     e.stopPropagation();
     if (followedIds.includes(userId)) {
-      setFollowedIds(followedIds.filter(id => id !== userId));
+      removeFollowedUserId(userId);
     } else {
-      setFollowedIds([...followedIds, userId]);
+      addFollowedUserId(userId);
     }
   };
 

@@ -1,3 +1,5 @@
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 import useAppStore from '../store/useAppStore';
 import React, { useState } from 'react';
 import { ExternalLink, Calendar, MapPin, Building2, Search, Briefcase, FileText, CheckCircle2, Download, Home, MessageCircle, Bell, Heart, X, Flame, Star, ArrowRight, Sparkles, Target, Users, TrendingUp, Clock, Crown, LayoutDashboard, ChevronRight, Scale } from 'lucide-react';
@@ -56,6 +58,8 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const notifications = useAppStore(state => state.notifications) || [];
   const [viewMode, setViewMode] = useState('list');
   const [swipeIndex, setSwipeIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('all');
   const [activeTab, setActiveTab] = useState('ilanlar');
   const [isCreatingJob, setIsCreatingJob] = useState(false);
   const [showDocSubmitModal, setShowDocSubmitModal] = useState(false);
@@ -123,7 +127,18 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
       timestamp: new Date().toISOString()
     };
     
+    
     setApplications(prev => [...(prev || []), newApp]);
+    try {
+      addDoc(collection(db, 'applications'), {
+        ...newApp,
+        createdAt: serverTimestamp(),
+        status: 'Onay Bekliyor',
+      });
+    } catch (e) {
+      console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
+    }
+
     try {
       eventBus.emit('application:status', { 
         type: 'applied', 
@@ -150,6 +165,18 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     setAppForm({ coverLetter: '', phone: currentUser?.phone || '', cvType: `KGM Akredite ${tenant.institutionShortName} Dijital CV` });
   };
   const activeJobs = (jobs||[]).filter(j => j.status === 'Aktif' || !j.status);
+
+  const filteredJobs = (activeJobs || []).filter(job => {
+    const q = searchQuery.toLocaleLowerCase('tr-TR');
+    const matchesSearch = !q || 
+      (job.title || '').toLocaleLowerCase('tr-TR').includes(q) ||
+      (job.company || job.companyName || '').toLocaleLowerCase('tr-TR').includes(q) ||
+      (job.location || job.city || '').toLocaleLowerCase('tr-TR').includes(q);
+    const matchesType = filterType === 'all' || 
+      (job.type || job.jobType || '').toLocaleLowerCase('tr-TR').includes(filterType);
+    return matchesSearch && matchesType;
+  });
+
   const pendingJobs = (jobs||[]).filter(j => j.status === 'Onay Bekliyor' || j.status === 'Pending');
   const myApplicationsCount = applications.filter(a => a.applicantId === branchTargetId || a.applicantId === currentUser?.id).length;
   const unreadNotifCount = notifications.filter(n => (n.userId === branchTargetId || n.userId === currentUser?.id) && !n.read).length;
@@ -362,14 +389,14 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
           {activeTab==='ilanlar'&&(
             <div className="space-y-4 animate-fade-in">
               <div className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm">
-                <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{activeJobs.length} guncel firsat</p>
+                <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{activeJobs.length} güncel fırsat</p>
               </div>
               {(()=>{
-                if(activeJobs.length===0) return(<div className="flex flex-col items-center justify-center p-16 bg-white border border-gray-100 border-dashed rounded-2xl"><Briefcase size={44} className="text-gray-300 mb-4" /><p className="text-gray-900 font-black text-lg mb-1">Henuz ilan yok</p><p className="text-gray-500 font-medium text-center text-sm">Yeni ilanlar eklendiginde burada gorunecek.</p></div>);
+                if(filteredJobs.length===0) return(<div className="flex flex-col items-center justify-center p-16 bg-white border border-gray-100 border-dashed rounded-2xl"><Briefcase size={44} className="text-gray-300 mb-4" /><p className="text-gray-900 font-black text-lg mb-1">Henüz ilan yok</p><p className="text-gray-500 font-medium text-center text-sm">Yeni ilanlar eklendiğinde burada görünecek.</p></div>);
                 if(viewMode==='swipe'){
                   const unswipedJobs=activeJobs.filter(j=>!swipedJobs.includes(j.id));
                   const currentJob=unswipedJobs[swipeIndex];
-                  if(!currentJob) return(<div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 rounded-2xl h-[400px] shadow-sm"><CheckCircle2 size={48} className="text-emerald-400 mb-4" /><p className="text-gray-900 font-black text-xl mb-2 text-center">Harikasin!</p><p className="text-gray-500 font-medium text-center">Butun ilanlari inceledin.</p><button onClick={()=>{setSwipedJobs([]);setSwipeIndex(0);}} className={`mt-6 text-sm font-bold hover:underline ${theme.matchText}`}>Basa Don</button></div>);
+                  if(!currentJob) return(<div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-100 rounded-2xl h-[400px] shadow-sm"><CheckCircle2 size={48} className="text-emerald-400 mb-4" /><p className="text-gray-900 font-black text-xl mb-2 text-center">Harikasın!</p><p className="text-gray-500 font-medium text-center">Bütün ilanları inceledin.</p><button onClick={()=>{setSwipedJobs([]);setSwipeIndex(0);}} className={`mt-6 text-sm font-bold hover:underline ${theme.matchText}`}>Başa Dön</button></div>);
                   const hasApplied=applications.some(a=>a.jobId===currentJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id));
                   return(
                     <div className="flex flex-col items-center py-4">
@@ -389,7 +416,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                               <p className="text-sm font-medium text-gray-700 flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-100"><Calendar size={15} className="text-amber-500 shrink-0"/> Son: {currentJob.deadline}</p>
                             </div>
                             <div className="w-full mb-5">
-                              <div className="flex justify-between items-center mb-1"><span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Profil Eslesme</span><span className={`text-sm font-black ${theme.matchText}`}>%{((currentJob.id.length*7+currentJob.title.length*3)%30)+70}</span></div>
+                              <div className="flex justify-between items-center mb-1"><span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Profil Eşleşme</span><span className={`text-sm font-black ${theme.matchText}`}>%{((currentJob.id.length*7+currentJob.title.length*3)%30)+70}</span></div>
                               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${((currentJob.id.length*7+currentJob.title.length*3)%30)+70}%`}}></div></div>
                             </div>
                             <div className="mt-auto flex justify-center gap-6">
@@ -398,14 +425,14 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                             </div>
                           </div>
                         </div>
-                        <p className="text-center text-gray-400 text-xs font-bold mt-4 animate-pulse">Sola gec, saga basvur!</p>
+                        <p className="text-center text-gray-400 text-xs font-bold mt-4 animate-pulse">Sola geç, sağa başvur!</p>
                       </div>
                     </div>
                   );
                 }
                 return(
                   <div className="space-y-3">
-                    {activeJobs.map(job=>{
+                    {filteredJobs.map(job=>{
                       const hasApplied=applications.some(a=>a.jobId===job.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id));
                       const matchScore=((job.id.length*7+job.title.length*3)%30)+70;
                       return(
@@ -429,7 +456,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                                   <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                                   <span className="flex items-center gap-1 text-[12px] text-gray-500 font-medium"><Clock size={12} className="text-amber-500"/> Son: {job.deadline||'Belirtilmedi'}</span>
                                 </div>
-                                <div className="mt-3 flex items-center gap-2"><div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${matchScore}%`}}></div></div><span className={`text-[11px] font-black shrink-0 ${theme.matchText}`}>%{matchScore} eslesme</span></div>
+                                <div className="mt-3 flex items-center gap-2"><div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${matchScore}%`}}></div></div><span className={`text-[11px] font-black shrink-0 ${theme.matchText}`}>%{matchScore} eşleşme</span></div>
                               </div>
                             </div>
                             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50 gap-2 flex-wrap">
@@ -511,21 +538,21 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
           {activeTab==='ulusal'&&(
             <div className="animate-fade-in space-y-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-5"><div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"><Target size={20}/></div><div><h3 className="text-xl font-black text-gray-900">T.C. Ulusal Staj Programi</h3><p className="text-[12px] text-gray-500 font-medium">Cumhurbaskanligi Insan Kaynaklari Ofisi koordinasyonunda</p></div></div>
+                <div className="flex items-center gap-3 mb-5"><div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"><Target size={20}/></div><div><h3 className="text-xl font-black text-gray-900">T.C. Ulusal Staj Programi</h3><p className="text-[12px] text-gray-500 font-medium">Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda</p></div></div>
                 <ul className="space-y-3 mb-6">
-                  {['Kariyer Kapisi (ulusalstajprogrami.iskur.gov.tr) adresine gidin.','e-Devlet sifrenizle sisteme giris yapin.','Staj Basvurusu menuunden guncel yilin programina tiklayin.','Basvuru formunu eksiksiz doldurun.','Basvuru durumunuzu Kariyer Kapisi uzerinden takip edin.'].map((step,i)=>(
+                  {['Kariyer Kapisi (ulusalstajprogrami.iskur.gov.tr) adresine gidin.','e-Devlet şifrenizle sisteme giriş yapın.','Staj Başvurusu menüsünden güncel yılın programına tıklayın.','Başvuru formunu eksiksiz doldurun.','Başvuru durumunuzu Kariyer Kapısı üzerinden takip edin.'].map((step,i)=>(
                     <li key={i} className="flex gap-3 items-start bg-gray-50 rounded-xl p-3 border border-gray-100"><span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-black text-[12px] flex-shrink-0">{i+1}</span><span className="text-[13px] text-gray-700 font-medium leading-relaxed">{step}</span></li>
                   ))}
                 </ul>
               </div>
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h4 className="font-extrabold text-[15px] text-gray-900 mb-4 flex items-center gap-2"><FileText size={18} className="text-[#990000]" /> Ilgili Formlar</h4>
+                <h4 className="font-extrabold text-[15px] text-gray-900 mb-4 flex items-center gap-2"><FileText size={18} className="text-[#990000]" /> İlgili Formlar</h4>
                 <div className="space-y-2.5">
-                  {[{title:'Zorunlu Staj Formu',link:'/docs/zorunlu_staj.pdf'},{title:'Mesleki Egitim Sozlesmesi (SHMYO-SBF)',link:'/docs/mesleki_egitim.pdf'},{title:'Is Sagligi ve Guvenligi Belgesi (SHMYO)',link:'/docs/isg_shmyo.pdf'},{title:'Is Sagligi ve Guvenligi Belgesi (SBF)',link:'/docs/isg_sbf.pdf'},{title:'Ulusal Staj Basvuru Formu',link:'/docs/ulusal_staj.pdf'}].map((doc,i)=>(
+                  {[{title:'Zorunlu Staj Formu',link:'/docs/zorunlu_staj.pdf'},{title:'Mesleki Eğitim Sözleşmesi (SHMYO-SBF)',link:'/docs/mesleki_egitim.pdf'},{title:'İş Sağlığı ve Güvenliği Belgesi (SHMYO)',link:'/docs/isg_shmyo.pdf'},{title:'İş Sağlığı ve Güvenliği Belgesi (SBF)',link:'/docs/isg_sbf.pdf'},{title:'Ulusal Staj Başvuru Formu',link:'/docs/ulusal_staj.pdf'}].map((doc,i)=>(
                     <a key={i} href={doc.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition group cursor-pointer"><span className="font-semibold text-[13px] text-gray-700 group-hover:text-blue-700 transition">{doc.title}</span><Download size={16} className="text-gray-400 group-hover:text-blue-600 transition" /></a>
                   ))}
                 </div>
-                <div className="mt-5 p-4 bg-amber-50 rounded-xl border border-amber-100 text-[12px] text-amber-800 font-medium"><strong>Not:</strong> Istenilen evraklarin eksiksiz doldurulmasi zorunludur.</div>
+                <div className="mt-5 p-4 bg-amber-50 rounded-xl border border-amber-100 text-[12px] text-amber-800 font-medium"><strong>Not:</strong> İstenilen evrakların eksiksiz doldurulması zorunludur.</div>
               </div>
             </div>
           )}
@@ -535,7 +562,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <div className="flex items-center gap-3 mb-4"><div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600"><Heart size={20}/></div><div><h3 className="text-xl font-black text-gray-900">İsteğe Bağlı Staj Başvuru Süreci</h3><p className="text-[12px] text-gray-500 font-medium">Zorunlu stajı olmayan öğrenciler için ek deneyim</p></div></div>
                 <div className="relative border-l-2 border-emerald-100 ml-4 space-y-6 pb-4">
-                  {[{num:1,title:'Basvuru Formunun Doldurulmasi',desc:'Uygulamali Egitim Basvuru Formu doldurulmalidir. Ogrenci, kurum yetkilisi ve bolum staj sorumlusu tarafindan islak imzali olmalidir.'},{num:2,title:'SGK Mustehaklik Belgesi',desc:'e-Devlet sistemi uzerinden barkodlu olarak guncel tarihli temin edilmelidir.',link:{href:'https://www.turkiye.gov.tr/spas-mustahaklik-sorgulama',label:'e-Devlet Sorgulama'}},{num:3,title:'Kimlik Fotokopisi',desc:'Ogrencinin gecerli T.C. Kimlik Karti fotokopisi dosyaya eklenmelidir.'},{num:4,title:'Evrak Teslimi (3 Suret)',desc:'Tum belgeler 3 takim halinde hazirlanmalidir.',done:true}].map((step,i)=>(
+                  {[{num:1,title:'Başvuru Formunun Doldurulması',desc:'Uygulamalı Eğitim Başvuru Formu doldurulmalıdır. Öğrenci, kurum yetkilisi ve bölüm staj sorumlusu tarafından ıslak imzalı olmalıdır.'},{num:2,title:'SGK Müstehaklık Belgesi',desc:'e-Devlet sistemi üzerinden barkodlu olarak güncel tarihli temin edilmelidir.',link:{href:'https://www.turkiye.gov.tr/spas-mustahaklik-sorgulama',label:'e-Devlet Sorgulama'}},{num:3,title:'Kimlik Fotokopisi',desc:'Öğrencinin geçerli T.C. Kimlik Kartı fotokopisi dosyaya eklenmelidir.'},{num:4,title:'Evrak Teslimi (3 Suret)',desc:'Tüm belgeler 3 takım halinde hazırlanmalıdır.',done:true}].map((step,i)=>(
                     <div key={i} className="relative pl-8">
                       <span className={`absolute -left-[17px] top-1 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center font-black text-[13px] shadow-sm ${step.done?'bg-emerald-100 text-emerald-700':'bg-red-100 text-[#990000]'}`}>{step.done?<CheckCircle2 size={16}/>:step.num}</span>
                       <h5 className="font-extrabold text-gray-900 text-[15px] mb-1">{step.title}</h5>
@@ -546,11 +573,11 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                 </div>
               </div>
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="bg-emerald-50 px-5 py-4 border-b border-emerald-100 flex items-center gap-2"><FileText size={16} className="text-emerald-700"/><h4 className="font-bold text-emerald-800 text-[14px]">Gorsel Kilavuz ve Formlar</h4></div>
+                <div className="bg-emerald-50 px-5 py-4 border-b border-emerald-100 flex items-center gap-2"><FileText size={16} className="text-emerald-700"/><h4 className="font-bold text-emerald-800 text-[14px]">Görsel Kılavuz ve Formlar</h4></div>
                 <div className="p-5 flex items-center justify-center bg-gray-50 h-52 overflow-hidden group">
                   <img src="https://www.esenyurt.edu.tr/uploads/2025/08/y2j65ag3nsq19-gonullu-staj-formu.jpg" alt="İsteğe Bağlı Staj İnfografik" className="w-full h-full object-contain cursor-zoom-in group-hover:scale-105 transition-transform duration-500" onError={(e)=>{if(e.target.src.includes('2025/08')){e.target.src='https://www.esenyurt.edu.tr/uploads/2023/11/y2j65ag3nsq19-gonullu-staj-formu.jpg';}}} />
                 </div>
-                <div className="p-5 border-t border-gray-100"><a href="https://www.esenyurt.edu.tr/icerik/4540-kariyer-gelistirme-ofisi-koordinatorlugu-formlar-ve-belgeler" target="_blank" rel="noreferrer" className="w-full bg-[#990000] hover:bg-red-800 text-white py-3 rounded-xl font-bold text-[13px] transition flex items-center justify-center gap-2">Tum Formlar Sayfasina Git <ExternalLink size={15}/></a></div>
+                <div className="p-5 border-t border-gray-100"><a href="https://www.esenyurt.edu.tr/icerik/4540-kariyer-gelistirme-ofisi-koordinatorlugu-formlar-ve-belgeler" target="_blank" rel="noreferrer" className="w-full bg-[#990000] hover:bg-red-800 text-white py-3 rounded-xl font-bold text-[13px] transition flex items-center justify-center gap-2">Tüm Formlar Sayfasına Git <ExternalLink size={15}/></a></div>
               </div>
             </div>
           )}
@@ -558,9 +585,9 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
         <div className="hidden xl:block w-[280px] shrink-0">
           <div className="space-y-4" style={{position:'sticky',top:'88px'}}>
             <div className="bg-white rounded-xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-5">
-              <h3 className="font-black text-gray-900 text-[14px] mb-4 flex items-center gap-2"><TrendingUp size={16} className="text-purple-600" /> Ilan Havuzu</h3>
+              <h3 className="font-black text-gray-900 text-[14px] mb-4 flex items-center gap-2"><TrendingUp size={16} className="text-purple-600" /> İlan Havuzu</h3>
               <div className="space-y-3">
-                {[{label:'Aktif Ilan',value:activeJobs.length,color:'text-purple-700 bg-purple-50',icon:<Briefcase size={16}/>},{label:'Staj Firsati',value:activeJobs.filter(j=>j.type==='STAJ').length,color:'text-indigo-700 bg-indigo-50',icon:<Target size={16}/>},{label:'Toplam Basvuru',value:applications.length,color:'text-emerald-700 bg-emerald-50',icon:<Users size={16}/>},{label:'Basvurularim',value:myApplicationsCount,color:'text-amber-700 bg-amber-50',icon:<CheckCircle2 size={16}/>}].map((item,i)=>(
+                {[{label:'Aktif İlan',value:activeJobs.length,color:'text-purple-700 bg-purple-50',icon:<Briefcase size={16}/>},{label:'Staj Fırsatı',value:activeJobs.filter(j=>j.type==='STAJ').length,color:'text-indigo-700 bg-indigo-50',icon:<Target size={16}/>},{label:'Toplam Başvuru',value:applications.length,color:'text-emerald-700 bg-emerald-50',icon:<Users size={16}/>},{label:'Başvurularım',value:myApplicationsCount,color:'text-amber-700 bg-amber-50',icon:<CheckCircle2 size={16}/>}].map((item,i)=>(
                   <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
                     <div className="flex items-center gap-2"><span className={`w-8 h-8 rounded-lg flex items-center justify-center ${item.color}`}>{item.icon}</span><span className="text-[12px] font-semibold text-gray-700">{item.label}</span></div>
                     <span className="text-[16px] font-black text-gray-900">{item.value}</span>
@@ -569,16 +596,16 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
               </div>
             </div>
             <div className="bg-white rounded-xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-5">
-              <h3 className="font-black text-gray-900 text-[14px] mb-4 flex items-center gap-2"><Star size={15} className="text-amber-500 fill-current" /> Isveren Partnerler</h3>
+              <h3 className="font-black text-gray-900 text-[14px] mb-4 flex items-center gap-2"><Star size={15} className="text-amber-500 fill-current" /> İşveren Partnerler</h3>
               <div className="space-y-3">
                 {[...new Map((jobs||[]).map(j=>[j.company,j])).values()].slice(0,4).map((job,i)=>(
-                  <div key={i} className="flex items-center gap-3"><div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">{job.logo?<img src={job.logo} alt={job.company} className="w-full h-full object-cover"/>:<Building2 size={16} className="text-gray-400"/>}</div><div className="flex-1 min-w-0"><p className="text-[12px] font-bold text-gray-900 truncate">{job.company}</p><p className="text-[10px] text-gray-500">{(jobs||[]).filter(j=>j.company===job.company).length} acik pozisyon</p></div></div>
+                  <div key={i} className="flex items-center gap-3"><div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">{job.logo?<img src={job.logo} alt={job.company} className="w-full h-full object-cover"/>:<Building2 size={16} className="text-gray-400"/>}</div><div className="flex-1 min-w-0"><p className="text-[12px] font-bold text-gray-900 truncate">{job.company}</p><p className="text-[10px] text-gray-500">{(jobs||[]).filter(j=>j.company===job.company).length} açık pozisyon</p></div></div>
                 ))}
               </div>
               <div className="mt-5 pt-4 border-t border-gray-50 text-[11px] text-gray-400 flex flex-wrap gap-x-2 gap-y-1">
-                <button onClick={()=>setFooterModal('about')} className="hover:text-red-600 transition-colors">Hakkinda</button> ·
+                <button onClick={()=>setFooterModal('about')} className="hover:text-red-600 transition-colors">Hakkında</button> ·
                 <button onClick={()=>setFooterModal('privacy')} className="hover:text-red-600 transition-colors">Gizlilik</button> ·
-                <button onClick={()=>setFooterModal('help')} className="hover:text-red-600 transition-colors">Yardim</button>
+                <button onClick={()=>setFooterModal('help')} className="hover:text-red-600 transition-colors">Yardım</button>
                 <p className="w-full mt-1.5 uppercase tracking-wider text-[9px] text-gray-500 font-bold">2026 ISTANBUL ESENYURT UNIVERSITESI KGM</p>
               </div>
             </div>
@@ -659,7 +686,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
               </div>
 
               <div className="space-y-5">
-                <div><h4 className="text-[13px] font-black text-gray-900 mb-2 uppercase tracking-wide">Is Tanimi</h4><p className="text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedJob.description||'Is tanimi belirtilmemis.'}</p></div>
+                <div><h4 className="text-[13px] font-black text-gray-900 mb-2 uppercase tracking-wide">İş Tanımı</h4><p className="text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedJob.description||'İş tanımı belirtilmemiş.'}</p></div>
                 {selectedJob.requirements&&selectedJob.requirements.length>0&&(<div><h4 className="text-[13px] font-black text-gray-900 mb-3 uppercase tracking-wide">Aranan Nitelikler</h4><ul className="space-y-2">{selectedJob.requirements.map((req,i)=>(<li key={i} className="flex gap-2 items-start text-[13.5px] text-gray-700"><CheckCircle2 size={16} className="text-emerald-500 mt-0.5 flex-shrink-0"/><span>{req}</span></li>))}</ul></div>)}
               </div>
               <div className="mt-7 pt-5 border-t border-gray-100 flex gap-3">

@@ -15,20 +15,21 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [followedUsers, setFollowedUsers] = useState({});
+  const followedUserIds = useAppStore(state => state.followedUserIds) || [];
+  const addFollowedUserId = useAppStore(state => state.addFollowedUserId);
+  const removeFollowedUserId = useAppStore(state => state.removeFollowedUserId);
+  const setPosts = useAppStore(state => state.setPosts);
   const [selectedPost, setSelectedPost] = useState(null);
 
   const handleToggleFollow = (userId, userName) => {
-    setFollowedUsers(prev => {
-      const isFollowing = !!prev[userId];
-      const updated = { ...prev, [userId]: !isFollowing };
-      if (!isFollowing) {
-        if (window.toast && window.toast.success) window.toast.success(`${userName} takip ediliyor!`);
-      } else {
-        if (window.toast && window.toast.info) window.toast.info(`${userName} takipten çıkarıldı.`);
-      }
-      return updated;
-    });
+    const isFollowing = followedUserIds.includes(userId);
+    if (!isFollowing) {
+      addFollowedUserId(userId);
+      if (window.toast && window.toast.success) window.toast.success(`${userName} takip ediliyor!`);
+    } else {
+      removeFollowedUserId(userId);
+      if (window.toast && window.toast.info) window.toast.info(`${userName} takipten çıkarıldı.`);
+    }
   };
 
   const handleViewProfile = (userId) => {
@@ -140,7 +141,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredPosts.map((item, index) => {
           const authorId = item.authorId || item.userId || (typeof item.author === 'object' ? item.author?.id : null) || `user_${index}`;
-          const isFollowing = !!followedUsers[authorId];
+          const isFollowing = followedUserIds.includes(authorId);
           const authorName = (typeof item.authorName === 'string' && item.authorName) || (typeof item.author === 'string' && item.author) || (typeof item.author === 'object' && item.author?.name) || 'Esenyurt Üyesi';
           const authorDepartment = (typeof item.authorDepartment === 'string' && item.authorDepartment) || (typeof item.department === 'string' && item.department) || (typeof item.author === 'object' && item.author?.title) || (typeof item.author === 'object' && item.author?.role) || 'Öğrenci / Üye';
           const authorAvatar = (typeof item.authorAvatar === 'string' && item.authorAvatar) || (typeof item.avatar === 'string' && item.avatar) || (typeof item.author === 'object' && item.author?.avatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0A2342&color=fff`;
@@ -171,24 +172,26 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
                   </div>
 
                   {/* Follow Button */}
-                  <button
-                    onClick={() => handleToggleFollow(authorId, authorName)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${
-                      isFollowing
-                        ? 'bg-slate-100 text-slate-700 border border-slate-200'
-                        : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-700 hover:text-white border border-emerald-200'
-                    }`}
-                  >
-                    {isFollowing ? (
-                      <>
-                        <UserCheck size={14} /> Takip Ediliyor
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus size={14} /> Takip Et
-                      </>
-                    )}
-                  </button>
+                  {authorId !== effectiveCurrentUser?.id && (
+                    <button
+                      onClick={() => handleToggleFollow(authorId, authorName)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${
+                        isFollowing
+                          ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                          : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-700 hover:text-white border border-emerald-200'
+                      }`}
+                    >
+                      {isFollowing ? (
+                        <>
+                          <UserCheck size={14} /> Takip Ediliyor
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus size={14} /> Takip Et
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
 
                 {/* Content Text & Media (Clicking anywhere opens post detail modal) */}
@@ -261,7 +264,7 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
             </div>
             
             <div className="p-4 overflow-y-auto custom-scrollbar flex-1">
-              <PostCard post={selectedPost} currentUser={effectiveCurrentUser} />
+              <PostCard post={selectedPost} currentUser={effectiveCurrentUser} setPosts={setPosts} />
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import useAppStore from '../store/useAppStore';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap } from 'lucide-react';
-import JobsAndInternships from './JobsAndInternships';
+
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
 import CareerShorts from './CareerShorts';
@@ -76,6 +76,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
   const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
   const followedUserIds = useAppStore(state => state.followedUserIds) || [];
+  const EMPTY_ARRAY = useMemo(() => [], []);
 
   // Guarantee Student branch isolation
   useEffect(() => {
@@ -374,7 +375,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               }
               
               return filtered.map(post => (
-                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
+                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} />
               ));
             })()}
           </div>
