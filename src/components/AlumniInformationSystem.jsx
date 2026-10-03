@@ -28,7 +28,7 @@ const TABS = [
   { id: 'cv',              label: '📄 Akıllı CV' },
   { id: 'kariyer_checkup', label: '🧭 Mezun Kariyer Anketi' },
   { id: 'mezun_kart',      label: '💳 Mezun Kart' },
-  { id: 'mezun_dernek_basvuru', label: '🏛️ Mezun Derneği Başvurusu' },
+  { id: 'mezun_dernek_basvuru', label: '🏛️ İESÜ Mezunlar Ağı Başvurusu' },
 ];
 
 const CHECKUP_QUESTIONS = [
@@ -98,7 +98,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
       list.push({ id: 'mezun_kart', label: '💳 Mezun Kart' });
     }
     if (featureAlumniAssocToggle) {
-      list.push({ id: 'mezun_dernek_basvuru', label: '🏛️ Mezun Derneği Başvurusu' });
+      list.push({ id: 'mezun_dernek_basvuru', label: '🏛️ İESÜ Mezunlar Ağı Başvurusu' });
     }
     return list;
   }, [featureAlumniCard, featureAlumniAssocToggle]);

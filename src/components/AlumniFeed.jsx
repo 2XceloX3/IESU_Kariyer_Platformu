@@ -731,7 +731,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                     localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
                 }
 
-                window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
+                window.toast?.success?.("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Koordinatörlüğü yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
                 setShowMentorshipModal(false);
                 setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
               }} className="p-5 space-y-4">
@@ -884,7 +884,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               </div>
 
               <div className="flex items-center justify-between p-3.5 bg-emerald-50 rounded-2xl border border-emerald-100 text-emerald-800 text-xs font-bold">
-                <span>İlgili Birim: Kariyer Geliştirme Merkezi</span>
+                <span>İlgili Birim: Kariyer Geliştirme Koordinatörlüğü</span>
                 <span className="bg-emerald-600 text-white px-2.5 py-1 rounded-full text-[10px] uppercase font-black">Resmî Haber</span>
               </div>
             </div>

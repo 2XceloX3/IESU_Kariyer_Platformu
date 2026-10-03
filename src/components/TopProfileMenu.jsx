@@ -160,13 +160,11 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
     (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
     (activePortalBranch || effectiveCurrentUser?.role || 'student');
 
-  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || effectiveCurrentUser?.id === 'admin_1513' || academicRole === 'super_admin';
+  const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || academicRole === 'super_admin';
 
-  const branchUserName = isAdmin ? 'KGM Yöneticisi' : (effectiveCurrentUser?.name || 'Kullanıcı');
+  const branchUserName = effectiveCurrentUser?.name || (isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Kullanıcı');
 
   const branchUserAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : '/iesu-logo.svg');
-
-  const displayRoleLabel = isAdmin ? 'SÜPER YÖNETİCİ' : getRoleLabel(effectiveBranch);
 
   if (!effectiveCurrentUser) {
     return (
@@ -225,7 +223,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
               effectiveBranch === 'company' ? (isDark ? 'text-blue-400' : 'text-blue-700') :
               (isDark ? 'text-amber-400' : 'text-amber-600')
             }`}>
-              {displayRoleLabel}
+              {getRoleLabel(effectiveBranch)}
             </span>
           </div>
 
@@ -423,7 +421,7 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   </p>
                 </div>
                 <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5 flex items-center gap-1 transition-all duration-200">
-                  <Shield size={10} /> {displayRoleLabel}
+                  <Shield size={10} /> {getRoleLabel(effectiveBranch)}
                 </p>
               </div>
               

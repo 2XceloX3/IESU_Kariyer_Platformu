@@ -10,7 +10,11 @@ export default function AkademikPanel({ setView, setActiveTab }) {
   const honor = (students || []).filter(s=>s?.gpa>=3.5).length;
   const withCV = (students || []).filter(s=>s?.cv).length;
   const [search, setSearch] = useState('');
-  const filtered = (students || []).filter(s=>s?.name.toLowerCase().includes(search.toLowerCase())||s?.dept.toLowerCase().includes(search.toLowerCase()));
+  const filtered = (students || []).filter(s=>{
+    const deptStr = (s?.dept || s?.department || '').toLowerCase();
+    const nameStr = (s?.name || '').toLowerCase();
+    return nameStr.includes(search.toLowerCase()) || deptStr.includes(search.toLowerCase());
+  });
 
   const handleOpenAcademicRadar = () => {
     if (setActiveTab) {

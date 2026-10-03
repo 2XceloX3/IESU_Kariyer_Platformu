@@ -53,14 +53,14 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     setAlumniAssocApplications(
       (alumniAssocApplications || []).map(a => a.id === appId ? { ...a, status: 'Onaylandı' } : a)
     );
-    logAction?.(currentUser?.name || 'Dernek Yöneticisi', `Mezun Derneği Başvurusu Onaylandı (ID: ${appId})`, 'Mezun Derneği');
+    logAction?.(currentUser?.name || 'Portal Yöneticisi', `Mezunlar Portalı Başvurusu Onaylandı (ID: ${appId})`, 'İESÜ Mezunlar Portalı');
   };
 
   const handleRejectApp = (appId) => {
     setAlumniAssocApplications(
       (alumniAssocApplications || []).map(a => a.id === appId ? { ...a, status: 'Reddedildi' } : a)
     );
-    logAction?.(currentUser?.name || 'Dernek Yöneticisi', `Mezun Derneği Başvurusu Reddedildi (ID: ${appId})`, 'Mezun Derneği');
+    logAction?.(currentUser?.name || 'Portal Yöneticisi', `Mezunlar Portalı Başvurusu Reddedildi (ID: ${appId})`, 'İESÜ Mezunlar Portalı');
   };
 
   const handleCreateAnnounce = (e) => {
@@ -68,12 +68,12 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     if (!newAnnounce.title || !newAnnounce.content) return;
     const created = {
       id: `ann-assoc-${Date.now()}`,
-      title: `[MEZUN DERNEĞİ] ${newAnnounce.title}`,
+      title: `[İESÜ MEZUNLAR PORTALI] ${newAnnounce.title}`,
       content: newAnnounce.content,
       imageUrl: newAnnounce.imageUrl,
       date: new Date().toLocaleDateString('tr-TR'),
-      category: 'Mezun Derneği',
-      publisher: currentUser?.name || 'Mezun Derneği Yönetimi'
+      category: 'İESÜ Mezunlar Portalı',
+      publisher: currentUser?.name || 'Mezunlar Portalı Yönetimi'
     };
     setAnnouncements(current => [created, ...(current || [])]);
     setNewAnnounce({ title: '', content: '', imageUrl: '' });
@@ -86,14 +86,14 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     if (!newEvent.title || !newEvent.date) return;
     const created = {
       id: `evt-assoc-${Date.now()}`,
-      title: `[MEZUN DERNEĞİ] ${newEvent.title}`,
+      title: `[İESÜ MEZUNLAR PORTALI] ${newEvent.title}`,
       date: newEvent.date,
       time: newEvent.time || '14:00',
       location: newEvent.location || 'Esenyurt Üniversitesi Kampüsü / Online',
       description: newEvent.description,
       imageUrl: newEvent.imageUrl,
       status: 'Aktif',
-      category: 'Mezun Derneği'
+      category: 'İESÜ Mezunlar Portalı'
     };
     setEvents(current => [created, ...(current || [])]);
     setNewEvent({ title: '', date: '', time: '', location: '', description: '', imageUrl: '' });
@@ -113,12 +113,12 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
     };
     setAlumniAssocBoard([...(alumniAssocBoard || []), created]);
     setNewMember({ name: '', role: '', email: '', phone: '' });
-    if (window.toast?.success) window.toast.success(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
-    else console.info(`${newMember.name} kişisine Mezun Derneği Yönetici yetkisi başarıyla tanımlandı!`);
+    if (window.toast?.success) window.toast.success(`${newMember.name} kişisine Mezunlar Portalı Yönetici yetkisi başarıyla tanımlandı!`);
+    else console.info(`${newMember.name} kişisine Mezunlar Portalı Yönetici yetkisi başarıyla tanımlandı!`);
   };
 
   const handleRemoveBoardMember = (memberId) => {
-    if (confirm('Bu üyenin dernek yönetim yetkisini kaldırmak istediğinize emin misiniz?')) {
+    if (confirm('Bu üyenin Portal Yönetim yetkisini kaldırmak istediğinize emin misiniz?')) {
       setAlumniAssocBoard((alumniAssocBoard || []).filter(m => m.id !== memberId));
     }
   };
@@ -148,13 +148,13 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
           </div>
           <h2 className="text-2xl font-black text-slate-900">Erişim Yetkisi Sınırlı</h2>
           <p className="text-xs font-medium text-slate-600 leading-relaxed">
-            Mezun Derneği Özel Yönetim Portalı sadece yetkili dernek yönetim kurulu üyeleri ve koordinatörlük yöneticilerine açıktır.
+            Mezunlar Portalı Özel Yönetim Portalı sadece yetkili Portal Yönetim kurulu üyeleri ve koordinatörlük yöneticilerine açıktır.
           </p>
           <button 
             onClick={() => setView('mezun_dernek')}
             className="px-6 py-3 bg-[#059669] text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition shadow-md cursor-pointer"
           >
-            Mezun Derneği Kamusal Akışına Dön →
+            Mezunlar Akışına Dön →
           </button>
         </main>
         <SubPanelFooter setView={setView} />
@@ -214,7 +214,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
             onClick={() => setView('mezun_dernek')}
             className="z-10 bg-white text-[#059669] font-black text-xs px-5 py-3 rounded-2xl hover:bg-emerald-50 transition shadow-lg whitespace-nowrap cursor-pointer"
           >
-            Kamuya Açık Dernek Sayfasını Gör →
+            Kamuya Açık Akış Sayfasını Gör →
           </button>
         </div>
 
@@ -246,9 +246,9 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
         {activeTab === 'board' && (
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-xl font-black text-slate-900 mb-1">Mezun Derneği Yönetim Kurulu Üyeleri</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Mezunlar Portalı Yönetim Kurulu Üyeleri</h3>
               <p className="text-xs font-semibold text-slate-500">
-                Sistem genelinde duyuru ve etkinlik paylaşma yetkisine sahip aktif dernek kadrosu.
+                Sistem genelinde duyuru ve etkinlik paylaşma yetkisine sahip aktif portal kadrosu.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -281,7 +281,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
         {activeTab === 'applications' && (
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-xl font-black text-slate-900 mb-1">Gelen Dernek Başvuruları Havuzu</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Gelen Portal Başvuruları Havuzu</h3>
               <p className="text-xs font-semibold text-slate-500">
                 Açılan dönemlerde mezunlardan ve öğrencilerden gelen üyelik veya yönetim ekibi başvuruları.
               </p>
@@ -358,9 +358,9 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
         {activeTab === 'announce' && (
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-xl font-black text-slate-900 mb-1">Mezun Derneği Duyurusu Paylaş</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Mezun Duyurusu Paylaş</h3>
               <p className="text-xs font-semibold text-slate-500">
-                Burada yayınladığınız duyurular ana akışta "Mezun Derneği" etiketiyle tüm kullanıcılara gösterilir.
+                Burada yayınladığınız duyurular ana akışta "İESÜ Mezunlar Portalı" etiketiyle tüm kullanıcılara gösterilir.
               </p>
             </div>
 
@@ -443,7 +443,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                       className="border border-slate-200"
                     />
                     <div>
-                      <h4 className="text-xs font-black text-slate-900">{currentUser?.name || 'Mezun Derneği'}</h4>
+                      <h4 className="text-xs font-black text-slate-900">{currentUser?.name || 'İESÜ Mezunlar Portalı'}</h4>
                       <span className="text-[9px] font-bold text-[#059669] bg-emerald-100 px-1.5 py-0.5 rounded">Resmî Duyuru</span>
                     </div>
                   </div>
@@ -466,7 +466,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
         {activeTab === 'events' && (
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-xl font-black text-slate-900 mb-1">Mezun Derneği Etkinliği Oluştur</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Mezunlar Portalı Etkinliği Oluştur</h3>
               <p className="text-xs font-semibold text-slate-500">
                 Mezunlar ve öğrenciler için özel organizasyon ve buluşma etkinlikleri tanımlayın.
               </p>
@@ -598,9 +598,9 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
         {activeTab === 'team_management' && (
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
             <div>
-              <h3 className="text-xl font-black text-slate-900 mb-1">Dernek Yönetim Kuruluna Yeni Üye / Yetkili Ekle</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-1">Portal Yönetim Kuruluna Yeni Üye / Yetkili Ekle</h3>
               <p className="text-xs font-semibold text-slate-500">
-                Ekibinize yeni bir mezun ekleyerek dernek portalına erişim yetkisi tanımlayabilirsiniz.
+                Ekibinize yeni bir mezun ekleyerek portal ağına erişim yetkisi tanımlayabilirsiniz.
               </p>
             </div>
             <form onSubmit={handleAddBoardMember} className="space-y-4 max-w-xl">
@@ -640,7 +640,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                 type="submit"
                 className="px-6 py-3 bg-gradient-to-r from-emerald-800 via-[#059669] to-teal-700 hover:from-emerald-900 hover:to-teal-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
               >
-                <UserPlus size={16} /> Dernek Yetkisi Ver
+                <UserPlus size={16} /> Portal Yetkisi Ver
               </button>
             </form>
           </div>

@@ -92,16 +92,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           return;
         }
         const finalRole = userData.role || loginRole;
-        const loggedUser = { id: user.uid, ...userData, role: finalRole };
+        const loggedUser = { id: user.uid, ...userData };
         try {
           localStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
           localStorage.setItem('iesu_user_role_v1', finalRole);
           const s = useAppStore.getState();
           s.setUserRole?.(finalRole);
           s.setCurrentUser?.(loggedUser);
-          const branchMap = { student: 'student', alumni: 'alumni', company: 'company', employer: 'company', academic: 'academic', admin: 'admin' };
-          const targetBranch = branchMap[finalRole] || 'student';
-          s.setActivePortalBranch?.(targetBranch);
         } catch (e) { /* intentional */ }
         setUserRole(finalRole);
         if (setCurrentUser) setCurrentUser(loggedUser);
@@ -134,7 +131,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
     }
     
     // Local / Mock verification fallback (works offline and when Firebase is not configured)
-    if (loginRole === 'academic' || loginRole === 'admin') {
+    if (loginRole === 'admin') {
       const adminUser = academicStaff.find(a => (a.email === username || a.id === username || a.username === username) && (a.password === password || password === 'Z.s.1513' || password === '123456'));
       if (adminUser) {
         const acadPayload = { ...adminUser, role: 'academic', onboardingCompleted: true };
@@ -292,8 +289,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </button>
             <button 
               type="button"
-              onClick={() => setLoginRole('academic')}
-              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'academic' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+              onClick={() => setLoginRole('admin')}
+              className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'admin' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
               <ShieldCheck size={15} /> <span>Akademik</span>
             </button>
@@ -309,14 +306,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           {/* Login Form */}
           <form className="space-y-4" onSubmit={handleLogin}>
             <div className="relative">
-              <label htmlFor="username" className="sr-only">E-Posta veya Kullanıcı Adı</label>
+              <label htmlFor="username" className="sr-only">Kullanıcı Adı veya E-Posta</label>
               <User className="absolute left-4 top-3.5 text-slate-400" size={18} />
               <input 
                 id="username"
                 name="username"
-                aria-label="E-Posta veya Kullanıcı Adı"
+                aria-label="Kullanıcı Adı veya E-Posta"
                 type="text" 
-                placeholder={loginRole === 'student' ? "E-posta veya kullanıcı adı" : "Kullanıcı Adı / E-Posta"} 
+                placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : "Kullanıcı Adı / E-Posta"} 
                 className="w-full pl-11 pr-4 py-3 bg-white border border-red-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 placeholder:text-slate-400" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -373,7 +370,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               <button 
                 onClick={() => {
                   if (setRegisterAccountType) {
-                    setRegisterAccountType(loginRole === 'employer' ? 'employer' : loginRole === 'student' ? 'student' : (loginRole === 'admin' || loginRole === 'academic') ? 'academic' : 'alumni');
+                    setRegisterAccountType(loginRole === 'employer' ? 'employer' : loginRole === 'student' ? 'student' : loginRole === 'admin' ? 'academic' : 'alumni');
                   }
                   setView('register');
                 }} 
