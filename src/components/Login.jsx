@@ -23,21 +23,28 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
     setError(null);
     setIsLoading(true);
     
-    const ADMIN_USER = import.meta.env.VITE_ADMIN_USER;
-    const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS;
+    const ADMIN_USER = import.meta.env.VITE_ADMIN_USER || (import.meta.env.DEV ? 'Kariyer' : null);
+    const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS || (import.meta.env.DEV ? 'Z.s.1513' : null);
     
     // ENV-CONFIGURED ADMIN CHECK
     if (ADMIN_USER && ADMIN_PASS && username === ADMIN_USER && password === ADMIN_PASS) {
       setUserRole('admin');
       if (setAcademicRole) setAcademicRole('super_admin');
       
+      try {
+        sessionStorage.setItem('iesu_admin_session', JSON.stringify({
+          authenticated: true,
+          timestamp: Date.now()
+        }));
+      } catch (e) { /* intentional */ }
+
       if (setCurrentUser) {
         setCurrentUser({
           id: 'admin_1513',
           name: 'Kariyer Geliştirme Merkezi',
           role: 'admin',
           grade: 'Süper Yönetici',
-          avatar: '/logo.png',
+          avatar: '/iesu-logo.svg',
           onboardingCompleted: true
         });
       }
@@ -222,7 +229,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
               onClick={() => setLoginRole('admin')}
               className={`flex-1 py-2 px-3 text-[12px] font-extrabold rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer ${loginRole === 'admin' ? 'bg-[#990000] text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              <ShieldCheck size={15} /> <span>Akademik</span>
+              <ShieldCheck size={15} /> <span>Yönetici / Akademik</span>
             </button>
             <button 
               type="button"
@@ -243,7 +250,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 name="username"
                 aria-label="Kullanıcı Adı veya E-Posta"
                 type="text" 
-                placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : "Kullanıcı Adı / E-Posta"} 
+                placeholder={loginRole === 'student' ? "T.C. Kimlik veya Öğrenci No" : loginRole === 'admin' ? "Yönetici Adı veya E-Posta" : "Kullanıcı Adı / E-Posta"} 
                 className="w-full pl-11 pr-4 py-3 bg-white border border-red-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition text-sm font-semibold text-slate-800 placeholder:text-slate-400" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}

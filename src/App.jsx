@@ -35,6 +35,17 @@ const SHARED_ROUTES = new Set([
 
 const Spinner = () => (<div className="flex items-center justify-center min-h-screen bg-[#f8f9fc]"><div className="w-12 h-12 border-4 border-[#990000] border-t-transparent rounded-full animate-spin shadow-lg" /></div>);
 
+const hasValidAdminSession = () => {
+  try {
+    const raw = sessionStorage.getItem('iesu_admin_session');
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    return Boolean(data && data.authenticated);
+  } catch {
+    return false;
+  }
+};
+
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,10 +57,10 @@ export default function App() {
       let p = saved ? JSON.parse(saved) : null;
       if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : 'admin_1513';
       
-      // Admin claims from localStorage are only trusted if Firebase also has an active session
-      // This prevents the localStorage backdoor attack (e.g. setting id: 'admin_1513' or role: 'admin')
+      // Admin claims from localStorage are only trusted if Firebase has an active session OR legitimate admin session exists
+      // This prevents the localStorage backdoor attack (e.g. manually injecting id: 'admin_1513' or role: 'admin')
       if (!import.meta.env.DEV && p && (p.role === 'admin' || p.id === 'admin_1513')) {
-        if (!auth?.currentUser) {
+        if (!auth?.currentUser && !hasValidAdminSession()) {
           localStorage.removeItem('iesu_mock_user');
           p = null;
         }
@@ -74,11 +85,11 @@ export default function App() {
     }
   }, [storeCurrentUser, currentUser]);
 
-  // Admin claims from localStorage are only trusted if Firebase also has an active session
+  // Admin claims from localStorage are only trusted if Firebase has an active session OR verified admin session
   // This prevents the localStorage backdoor attack on mount
   useEffect(() => {
     if (!import.meta.env.DEV && (currentUser?.role === 'admin' || currentUser?.id === 'admin_1513')) {
-      if (!auth?.currentUser) {
+      if (!auth?.currentUser && !hasValidAdminSession()) {
         localStorage.removeItem('iesu_mock_user');
         setCurrentUser(null);
         setUserRole(null);
@@ -87,7 +98,7 @@ export default function App() {
   }, [currentUser, setUserRole]);
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
-  const isAdmin = !import.meta.env.DEV ? Boolean((authenticatedUserId || auth?.currentUser) && (currentUser?.role === 'admin' || userRole === 'admin')) : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
+  const isAdmin = !import.meta.env.DEV ? Boolean(((authenticatedUserId || auth?.currentUser) || hasValidAdminSession()) && (currentUser?.role === 'admin' || userRole === 'admin')) : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
 
   const setView = useCallback((v) => {
@@ -138,7 +149,7 @@ export default function App() {
 
   useEffect(() => {
     if (!isAuthStateResolved && !currentUser) return;
-    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin' || currentUser?.id === 'admin_1513') && !authenticatedUserId && !auth?.currentUser) {
+    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin' || currentUser?.id === 'admin_1513') && !authenticatedUserId && !auth?.currentUser && !hasValidAdminSession()) {
       setCurrentUser(null); setUserRole(null);
       localStorage.removeItem('iesu_mock_user');
       setView('login');

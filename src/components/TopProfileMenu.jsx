@@ -117,6 +117,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       'iesu-career-admin-store',    // useAdminStore persist key
     ].forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
 
+    try { sessionStorage.removeItem('iesu_admin_session'); } catch { /* intentional */ }
+
     setIsOpen(false);
 
     // 4) Sayfayı tamamen sıfırla — App.jsx useState initializer'ı null okur
