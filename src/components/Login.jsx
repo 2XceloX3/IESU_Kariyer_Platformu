@@ -23,54 +23,10 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
     setError(null);
     setIsLoading(true);
     
-    const ADMIN_USER = import.meta.env.VITE_ADMIN_USER || 'Kariyer';
-    const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS || 'Z.s.1513';
-    
     const cleanUser = (username || '').trim().toLowerCase();
     const cleanPass = (password || '').trim();
 
-    // SUPER ADMIN CHECK (Works from ANY role tab, especially Akademik)
-    if (
-      (cleanUser === ADMIN_USER.toLowerCase() || 
-       cleanUser === 'kariyer' || 
-       cleanUser === 'admin' || 
-       cleanUser === 'admin_1513' || 
-       cleanUser === 'admin@esenyurt.edu.tr') && 
-      (cleanPass === ADMIN_PASS || cleanPass === 'Z.s.1513')
-    ) {
-      const adminPayload = {
-        id: 'admin_1513',
-        name: 'Kariyer Geliştirme Koordinatörlüğü',
-        role: 'admin',
-        grade: 'Süper Yönetici',
-        avatar: '/iesu-logo.svg',
-        onboardingCompleted: true
-      };
-
-      try {
-        sessionStorage.setItem('iesu_admin_session', JSON.stringify({
-          authenticated: true,
-          timestamp: Date.now()
-        }));
-      } catch (e) { /* intentional */ }
-
-      try {
-        localStorage.setItem('iesu_mock_user', JSON.stringify(adminPayload));
-        localStorage.setItem('iesu_user_role_v1', 'admin');
-        const s = useAppStore.getState();
-        s.setUserRole?.('admin');
-        s.setCurrentUser?.(adminPayload);
-        s.setActivePortalBranch?.('admin');
-      } catch (e) { /* intentional */ }
-
-      setUserRole('admin');
-      if (setAcademicRole) setAcademicRole('super_admin');
-      if (setCurrentUser) setCurrentUser(adminPayload);
-      
-      setView('admin');
-      setIsLoading(false);
-      return;
-    }
+    // Admin kimlik doğrulaması yalnızca Firebase Authentication üzerinden yapılır.
 
     try {
       // FIREBASE AUTHENTICATION (The New Way)

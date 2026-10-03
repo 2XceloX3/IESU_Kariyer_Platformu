@@ -250,9 +250,6 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
   // Portala girilmediyse (kullanıcı giriş yapmamışsa veya genel açılış sayfalarındaysa) sağ alttaki mesaj kutusu görünmez
   const isPublicPage = propsCurrentView === 'landing' || propsCurrentView === 'login' || propsCurrentView === 'register';
-  if (!currentUser?.id || isPublicPage) {
-    return null;
-  }
 
   const resolvedRole = currentUser?.role || storeUserRole || localRole || 'student';
   const userRole = currentUser?.role || resolvedRole;
@@ -1067,6 +1064,10 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
     if (isStudent) return 'bg-gradient-to-tr from-slate-950 via-[#990000] to-rose-600 shadow-rose-900/30 border-rose-400/40';
     return 'bg-gradient-to-tr from-slate-950 via-slate-800 to-indigo-700 shadow-slate-900/30 border-slate-500/40';
   };
+
+  if (!currentUser?.id || isPublicPage) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-24 sm:bottom-6 right-3 sm:right-6 z-50 flex flex-col items-end gap-3 animate-fade-in font-sans">

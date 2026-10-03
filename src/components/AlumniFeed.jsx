@@ -72,6 +72,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [stories, setStories] = useState([]);
   const setMentorships = useAppStore(state => state.setMentorships) || null;
+  const followedUserIds = useAppStore(state => state.followedUserIds) || [];
 
   // Guarantee Alumni branch isolation & auto-open evaluation questions
   useEffect(() => {
@@ -423,7 +424,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase());
                 if (!matchesSearch) return false;
                 if (feedFilter === 'following') {
-                  return post.type === 'post' || post.author?.role === 'alumni' || post.author?.role === 'student' || post.category === 'Mezun Paylaşımı';
+                  if (followedUserIds.length === 0) return true; // show all if not following anyone yet
+                  return followedUserIds.includes(post.author?.id) || followedUserIds.includes(post.authorId) || post.author?.id === effectiveCurrentUser?.id;
                 }
                 return true;
               });

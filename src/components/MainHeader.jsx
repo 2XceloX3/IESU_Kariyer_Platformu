@@ -88,12 +88,21 @@ export default function MainHeader({ setView, currentUser, userRole }) {
                 <span className="sm:hidden">Panel</span>
               </button>
             ) : (
-              <button 
-                onClick={() => setView && setView('login')}
-                className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all shadow-lg hover:shadow-xl whitespace-nowrap flex-shrink-0 hover:scale-105"
-              >
-                <LogIn size={15} strokeWidth={2.5} /> <span>Giriş</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setView && setView('register')}
+                  className="flex items-center gap-1.5 bg-[#ffffff] text-[#990000] hover:bg-red-50 border border-[#990000] px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all shadow-lg hover:shadow-xl whitespace-nowrap flex-shrink-0 hover:scale-105"
+                  style={{ backgroundColor: '#ffffff', color: '#990000' }}
+                >
+                  <span>Kayıt Ol</span>
+                </button>
+                <button 
+                  onClick={() => setView && setView('login')}
+                  className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all shadow-lg hover:shadow-xl whitespace-nowrap flex-shrink-0 hover:scale-105"
+                >
+                  <LogIn size={15} strokeWidth={2.5} /> <span>Giriş</span>
+                </button>
+              </div>
             )}
 
             {/* Mobile Hamburger Menu Toggle Button */}

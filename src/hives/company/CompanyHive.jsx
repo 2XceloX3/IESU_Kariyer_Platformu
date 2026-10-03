@@ -53,6 +53,8 @@ export default function CompanyHive({ currentUser, setView }) {
   const setSelectedUserId = useAppStore((state) => state.setSelectedUserId);
   const setSelectedGroupId = useAppStore((state) => state.setSelectedGroupId);
   const posts = useAppStore((state) => state.posts);
+  const groups = useAppStore((state) => state.groups) || [];
+  const selectedGroupId = useAppStore((state) => state.selectedGroupId);
 
   const handleSetView = useCallback((v) => {
     if (typeof v === 'string') {
@@ -127,16 +129,14 @@ export default function CompanyHive({ currentUser, setView }) {
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'group_profile': {
-        const groupId = useAppStore.getState().selectedGroupId;
-        const groups = useAppStore.getState().groups || [];
-        const groupData = groups.find(g => g.id === groupId) || {};
+        const groupData = groups.find(g => g.id === selectedGroupId) || {};
         return <GroupProfile 
           setView={handleSetView} 
           currentUser={effectiveCurrentUser} 
           userRole="company" 
           setSelectedUserId={setSelectedUserId}
           groupData={groupData}
-          groupId={groupId}
+          groupId={selectedGroupId}
         />;
       }
       case 'news':

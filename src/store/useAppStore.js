@@ -73,6 +73,11 @@ export const coreStore = create(
         set({ activePortalBranch: branch });
       },
 
+      followedUserIds: [],
+      setFollowedUserIds: (ids) => set({ followedUserIds: ids }),
+      addFollowedUserId: (id) => set(state => ({ followedUserIds: [...new Set([...state.followedUserIds, id])] })),
+      removeFollowedUserId: (id) => set(state => ({ followedUserIds: state.followedUserIds.filter(fid => fid !== id) })),
+
       // 9. logAction (audit logger with DOMPurify sanitization & circular ref defense)
       logAction: (actionOrUser, userOrAction, moduleOrDetails = 'Genel', severityOrLevel = 'info', metadata = null) => {
         let action, user, moduleName, level;
@@ -173,7 +178,8 @@ export const coreStore = create(
         userRole: state.userRole,
         currentUser: state.currentUser,
         activePortalBranch: state.activePortalBranch,
-        activeHive: state.activeHive
+        activeHive: state.activeHive,
+        followedUserIds: state.followedUserIds
       })
     }
   )

@@ -11,6 +11,9 @@ export default defineConfig({
       overlay: false
     }
   },
+  esbuild: {
+    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+  },
   optimizeDeps: {
     entries: ['index.html']
   },
@@ -23,7 +26,13 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        maximumFileSizeToCacheInBytes: 5000000, // 5MB limit
+        maximumFileSizeToCacheInBytes: 500 * 1024, // 500KB limit
+        globIgnores: [
+          '**/admin-cms-core*.js',
+          '**/admin-cms-academic*.js',
+          '**/admin-cms-panels*.js',
+          '**/vendor-documents*.js',
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -90,6 +99,7 @@ export default defineConfig({
     })
   ],
   build: {
+    minify: true,
     rollupOptions: {
       output: {
         manualChunks(id) {

@@ -16,44 +16,44 @@ import CMSStudents from './admin/CMSStudents';
 import CMSAlumni from './admin/CMSAlumni';
 import CMSCompanies from './admin/CMSCompanies';
 import CMSMessages from './admin/CMSMessages';
-import CMSMessageAudit from './admin/CMSMessageAudit';
-import CMSIntegrations from './admin/CMSIntegrations';
-import CMSAcademicStaff from './admin/CMSAcademicStaff';
-import CMSVoluntaryInternships from './admin/CMSVoluntaryInternships';
-import CMSSEMCourses from './admin/CMSSEMCourses';
-import CMSAcademicCatalog from './admin/CMSAcademicCatalog';
-import CMSAcademicApprovals from './admin/CMSAcademicApprovals';
-import DataCleanup from './admin/DataCleanup';
-import OfficialContentImport from './admin/OfficialContentImport';
-import CMSSurveys from './admin/CMSSurveys';
-import CMSAnalytics from './admin/CMSAnalytics';
-import CMSCareerFair from './admin/CMSCareerFair';
-import PlatformSettings from './admin/PlatformSettings';
-import InstitutionalStatsManager from './admin/InstitutionalStatsManager';
-import CMSAlumniAssoc from './admin/CMSAlumniAssoc';
-import CMSAlumniCard from './admin/CMSAlumniCard';
-import CMSGroups from './admin/CMSGroups';
-import CMSSSP from './admin/CMSSSP';
-import CMSDataPoolExport from './admin/CMSDataPoolExport';
-import CMSStaff from './admin/CMSStaff';
-import CMSSyncCenter from './admin/CMSSyncCenter';
-import CMSMentorshipPool from './admin/CMSMentorshipPool';
-import CMSCompanyEducationRequests from './admin/CMSCompanyEducationRequests';
-import CMSCompanyEventMessages from './admin/CMSCompanyEventMessages';
-import CMSCareerCounseling from './admin/CMSCareerCounseling';
-import CMSCorporatePartnerships from './admin/CMSCorporatePartnerships';
-import CMSAcademicRadar from './admin/CMSAcademicRadar';
-import CMSCandidatePool from './admin/CMSCandidatePool';
-import CMSApplicationsPool from './admin/CMSApplicationsPool';
-import CMSUserTypeManager from './admin/CMSUserTypeManager';
-import CMSAuditTrail from './admin/CMSAuditTrail';
-import CMSSiteEditor from './admin/CMSSiteEditor';
-import CMSGallery from './admin/CMSGallery';
-import CMSPortfolios from './admin/CMSPortfolios';
-import CMSClubs from './admin/CMSClubs';
-import CMSIncubator from './admin/CMSIncubator';
-import CMSWorldMap from './admin/CMSWorldMap';
-import AkademikPanel from './admin/AkademikPanel';
+const CMSMessageAudit = React.lazy(() => import('./admin/CMSMessageAudit'));
+const CMSIntegrations = React.lazy(() => import('./admin/CMSIntegrations'));
+const CMSAcademicStaff = React.lazy(() => import('./admin/CMSAcademicStaff'));
+const CMSVoluntaryInternships = React.lazy(() => import('./admin/CMSVoluntaryInternships'));
+const CMSSEMCourses = React.lazy(() => import('./admin/CMSSEMCourses'));
+const CMSAcademicCatalog = React.lazy(() => import('./admin/CMSAcademicCatalog'));
+const CMSAcademicApprovals = React.lazy(() => import('./admin/CMSAcademicApprovals'));
+const DataCleanup = React.lazy(() => import('./admin/DataCleanup'));
+const OfficialContentImport = React.lazy(() => import('./admin/OfficialContentImport'));
+const CMSSurveys = React.lazy(() => import('./admin/CMSSurveys'));
+const CMSAnalytics = React.lazy(() => import('./admin/CMSAnalytics'));
+const CMSCareerFair = React.lazy(() => import('./admin/CMSCareerFair'));
+const PlatformSettings = React.lazy(() => import('./admin/PlatformSettings'));
+const InstitutionalStatsManager = React.lazy(() => import('./admin/InstitutionalStatsManager'));
+const CMSAlumniAssoc = React.lazy(() => import('./admin/CMSAlumniAssoc'));
+const CMSAlumniCard = React.lazy(() => import('./admin/CMSAlumniCard'));
+const CMSGroups = React.lazy(() => import('./admin/CMSGroups'));
+const CMSSSP = React.lazy(() => import('./admin/CMSSSP'));
+const CMSDataPoolExport = React.lazy(() => import('./admin/CMSDataPoolExport'));
+const CMSStaff = React.lazy(() => import('./admin/CMSStaff'));
+const CMSSyncCenter = React.lazy(() => import('./admin/CMSSyncCenter'));
+const CMSMentorshipPool = React.lazy(() => import('./admin/CMSMentorshipPool'));
+const CMSCompanyEducationRequests = React.lazy(() => import('./admin/CMSCompanyEducationRequests'));
+const CMSCompanyEventMessages = React.lazy(() => import('./admin/CMSCompanyEventMessages'));
+const CMSCareerCounseling = React.lazy(() => import('./admin/CMSCareerCounseling'));
+const CMSCorporatePartnerships = React.lazy(() => import('./admin/CMSCorporatePartnerships'));
+const CMSAcademicRadar = React.lazy(() => import('./admin/CMSAcademicRadar'));
+const CMSCandidatePool = React.lazy(() => import('./admin/CMSCandidatePool'));
+const CMSApplicationsPool = React.lazy(() => import('./admin/CMSApplicationsPool'));
+const CMSUserTypeManager = React.lazy(() => import('./admin/CMSUserTypeManager'));
+const CMSAuditTrail = React.lazy(() => import('./admin/CMSAuditTrail'));
+const CMSSiteEditor = React.lazy(() => import('./admin/CMSSiteEditor'));
+const CMSGallery = React.lazy(() => import('./admin/CMSGallery'));
+const CMSPortfolios = React.lazy(() => import('./admin/CMSPortfolios'));
+const CMSClubs = React.lazy(() => import('./admin/CMSClubs'));
+const CMSIncubator = React.lazy(() => import('./admin/CMSIncubator'));
+const CMSWorldMap = React.lazy(() => import('./admin/CMSWorldMap'));
+const AkademikPanel = React.lazy(() => import('./admin/AkademikPanel'));
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
 import {
@@ -617,7 +617,13 @@ export default function AdminDashboard({
       {/* ── İÇERİK ─────────────────────────────────────── */}
       <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-24">
         <main className="flex-1 bg-transparent">
-          {renderPanel()}
+          <React.Suspense fallback={
+            <div className="flex items-center justify-center h-64">
+              <div className="w-8 h-8 border-4 border-[#990000] border-t-transparent rounded-full animate-spin" />
+            </div>
+          }>
+            {renderPanel()}
+          </React.Suspense>
         </main>
       </div>
 

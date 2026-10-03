@@ -182,7 +182,12 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     window.toast?.success?.("Başvurunuz başarıyla kaydedildi! Yönetici Paneli Başvuru Havuzuna iletildi.");
   };
 
-  const [liked, setLiked] = useState(post?.likes > 0);
+  const [liked, setLiked] = useState(() => {
+    if (!effectiveCurrentUser?.id) return false;
+    return Array.isArray(post?.likedBy) 
+      ? post.likedBy.includes(effectiveCurrentUser.id)
+      : false;
+  });
   const [showHeart, setShowHeart] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -256,13 +261,24 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   }, [liked]);
 
   const handleLikeToggle = useCallback(() => {
+    if (effectiveCurrentUser?.id === (post?.authorId || post?.author?.id)) return;
     setLiked(!liked);
     if (setPosts) {
-      setPosts(prev => (prev || []).map(p => 
-        p.id === post.id ? { ...p, likes: (p.likes || 0) + (liked ? -1 : 1) } : p
-      ));
+      setPosts(prev => (prev || []).map(p => {
+        if (p.id === post.id) {
+          const currentLikes = p.likes || 0;
+          let newLikedBy = Array.isArray(p.likedBy) ? [...p.likedBy] : [];
+          if (!liked) {
+            if (!newLikedBy.includes(effectiveCurrentUser?.id)) newLikedBy.push(effectiveCurrentUser?.id);
+          } else {
+            newLikedBy = newLikedBy.filter(id => id !== effectiveCurrentUser?.id);
+          }
+          return { ...p, likes: currentLikes + (liked ? -1 : 1), likedBy: newLikedBy };
+        }
+        return p;
+      }));
     }
-  }, [liked, post?.id, setPosts]);
+  }, [liked, post?.id, post?.authorId, post?.author?.id, effectiveCurrentUser?.id, setPosts]);
 
   useEffect(() => {
     if (isShareModalOpen && availableUsers.length === 0) {

@@ -152,7 +152,7 @@ export default function App() {
   }, [setUserRole]);
 
   useEffect(() => {
-    if (!isAuthStateResolved && !currentUser) return;
+    if (!isAuthStateResolved) return;
     if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin' || currentUser?.id === 'admin_1513') && !authenticatedUserId && !auth?.currentUser && !hasValidAdminSession()) {
       setCurrentUser(null); setUserRole(null);
       localStorage.removeItem('iesu_mock_user');

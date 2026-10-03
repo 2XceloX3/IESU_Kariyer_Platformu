@@ -5,7 +5,7 @@ import useAppStore from '../store/useAppStore';
 import DOMPurify from 'dompurify';
 import eventBus from '../brain/eventBus';
 
-export default function PostComposer({ currentUser, userRole, posts, setPosts, asClub }) {
+export default function PostComposer({ currentUser, userRole, posts, setPosts, asClub, setActiveTab }) {
   const logAction = useAppStore(state => state.logAction);
   const [content, setContent] = useState('');
   const [media, setMedia] = useState(null);
@@ -94,7 +94,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
       time: 'Az önce',
       likes: 0,
       comments: 0,
-      status: (userRole === 'admin' || currentUser?.role === 'admin') ? 'Yayında' : 'Beklemede'
+      status: 'Yayında'
     };
 
     setPosts([newPost, ...(posts || [])]);

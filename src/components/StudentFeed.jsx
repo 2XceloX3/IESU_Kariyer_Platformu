@@ -75,6 +75,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
   const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
+  const followedUserIds = useAppStore(state => state.followedUserIds) || [];
 
   // Guarantee Student branch isolation
   useEffect(() => {
@@ -356,7 +357,8 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase());
                 if (!matchesSearch) return false;
                 if (feedFilter === 'following') {
-                  return post.type === 'post' || post.author?.role === 'student' || post.author?.role === 'alumni' || post.category === 'Öğrenci Paylaşımı';
+                  if (followedUserIds.length === 0) return true; // show all if not following anyone yet
+                  return followedUserIds.includes(post.author?.id) || followedUserIds.includes(post.authorId) || post.author?.id === effectiveCurrentUser?.id;
                 }
                 return true;
               });

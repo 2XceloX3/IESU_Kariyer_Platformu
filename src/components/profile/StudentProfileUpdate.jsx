@@ -197,6 +197,7 @@ export default function StudentProfileUpdate({
     }
     try {
       localStorage.setItem('iesu_user', JSON.stringify(updatedUser));
+      localStorage.setItem('iesu_mock_user', JSON.stringify(updatedUser));
     } catch { /* intentional */}
 
     // 2. Synchronize with Admin Brain Student Directory (useAdminStore)

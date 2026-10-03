@@ -312,11 +312,14 @@ export async function fetchOfficialPage(url) {
 
 // ─── VERSIYON KARŞILAŞTIRMA ───────────────────────────────────────────────────
 export function loadVersionHistory() {
+  let data = {};
   try {
-    return JSON.parse(localStorage.getItem(SYNC_VERSION_KEY) || '{}');
-  } catch {
-    return {};
+    data = JSON.parse(localStorage.getItem(SYNC_VERSION_KEY)) || {};
+  } catch (e) {
+    data = {};
+    localStorage.removeItem(SYNC_VERSION_KEY);
   }
+  return data;
 }
 
 export function saveVersionHistory(history) {
@@ -331,11 +334,14 @@ export function detectChange(pageId, newHash, history) {
 
 // ─── SYNC LOG ──────────────────────────────────────────────────────────────────
 export function loadSyncLog() {
+  let data = [];
   try {
-    return JSON.parse(localStorage.getItem(SYNC_LOG_KEY) || '[]');
-  } catch {
-    return [];
+    data = JSON.parse(localStorage.getItem(SYNC_LOG_KEY)) || [];
+  } catch (e) {
+    data = [];
+    localStorage.removeItem(SYNC_LOG_KEY);
   }
+  return data;
 }
 
 export function appendSyncLog(entry) {
@@ -439,17 +445,20 @@ export async function runFullSync(onProgress) {
     });
 
     if (newsItems.length > 0) {
-      const existing = JSON.parse(localStorage.getItem('iesu_news_v2') || '[]');
+      let existing = [];
+      try { existing = JSON.parse(localStorage.getItem('iesu_news_v2')) || []; } catch(e) { localStorage.removeItem('iesu_news_v2'); }
       const combined = [...newsItems, ...existing].slice(0, 50);
       localStorage.setItem('iesu_news_v2', JSON.stringify(combined));
     }
     if (annItems.length > 0) {
-      const existing = JSON.parse(localStorage.getItem('iesu_announcements_v2') || '[]');
+      let existing = [];
+      try { existing = JSON.parse(localStorage.getItem('iesu_announcements_v2')) || []; } catch(e) { localStorage.removeItem('iesu_announcements_v2'); }
       const combined = [...annItems, ...existing].slice(0, 50);
       localStorage.setItem('iesu_announcements_v2', JSON.stringify(combined));
     }
     if (eventItems.length > 0) {
-      const existing = JSON.parse(localStorage.getItem('iesu_events_v2') || '[]');
+      let existing = [];
+      try { existing = JSON.parse(localStorage.getItem('iesu_events_v2')) || []; } catch(e) { localStorage.removeItem('iesu_events_v2'); }
       const combined = [...eventItems, ...existing].slice(0, 50);
       localStorage.setItem('iesu_events_v2', JSON.stringify(combined));
     }

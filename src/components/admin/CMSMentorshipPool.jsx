@@ -13,8 +13,14 @@ export default function CMSMentorshipPool() {
 
   useEffect(() => {
     // Load requests from LocalStorage + store
+    let stored = [];
     try {
-      const stored = JSON.parse(localStorage.getItem('iesu_mentorship_requests_v1')) || [];
+      stored = JSON.parse(localStorage.getItem('iesu_mentorship_requests_v1')) || [];
+    } catch (e) {
+      stored = [];
+      localStorage.removeItem('iesu_mentorship_requests_v1');
+    }
+    try {
       if (stored.length === 0) {
         // Fallback demo audit data for KGM admin supervision
         setRequests([
