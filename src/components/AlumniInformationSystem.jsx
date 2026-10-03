@@ -1442,15 +1442,15 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
                         };
                         setAlumniAssocApplications([newApp, ...(alumniAssocApplications || [])]);
                         setAssocAppSubmitted(true);
-                        window.toast && window.toast.success("🏛️ Mezun Derneği başvurunuz yönetim kuruluna iletildi!");
+                        window.toast && window.toast.success("🏛️ İESÜ Mezunlar Ağı başvurunuz koordinasyon ekibine iletildi!");
                       }} 
                       className="w-full max-w-xl bg-slate-50 border border-slate-200 p-6 sm:p-8 rounded-3xl space-y-4 shadow-sm"
                     >
                       <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-2">
                         <Users className="text-emerald-700" size={24} />
                         <div>
-                          <h4 className="font-black text-sm text-slate-900">Dernek Katılım & Adaylık Formu</h4>
-                          <p className="text-[11px] text-slate-500 font-medium">Resmî Dernek Tüzüğü ve Yönetim Kurulu değerlendirmesi için.</p>
+                          <h4 className="font-black text-sm text-slate-900">Mezunlar Ağı Katılım & Adaylık Formu</h4>
+                          <p className="text-[11px] text-slate-500 font-medium">Resmî mezun bilgi sistemi ve koordinasyon değerlendirmesi için.</p>
                         </div>
                       </div>
 

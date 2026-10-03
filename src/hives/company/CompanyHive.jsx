@@ -126,8 +126,19 @@ export default function CompanyHive({ currentUser, setView }) {
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
-      case 'group_profile':
-        return <GroupProfile setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
+      case 'group_profile': {
+        const groupId = useAppStore.getState().selectedGroupId;
+        const groups = useAppStore.getState().groups || [];
+        const groupData = groups.find(g => g.id === groupId) || {};
+        return <GroupProfile 
+          setView={handleSetView} 
+          currentUser={effectiveCurrentUser} 
+          userRole="company" 
+          setSelectedUserId={setSelectedUserId}
+          groupData={groupData}
+          groupId={groupId}
+        />;
+      }
       case 'news':
       case 'haberler':
         return <NewsEvents setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;

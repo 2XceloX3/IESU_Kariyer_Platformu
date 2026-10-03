@@ -805,6 +805,16 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
 
       </div>
 
+      <AdminOmniDock 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        currentUser={currentUser} 
+        theme="amber" 
+        homeView="admin" 
+      />
+
       <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} />
     </div>
   );

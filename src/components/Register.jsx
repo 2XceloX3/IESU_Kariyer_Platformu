@@ -19,6 +19,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [kvkkConsent, setKvkkConsent] = useState(true);
+  const [registeredUser, setRegisteredUser] = useState(null);
+  const [companyLogoData, setCompanyLogoData] = useState(null);
   const tenant = getTenantConfig();
 
   React.useEffect(() => {
@@ -30,8 +32,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   // Form State
   const [formData, setFormData] = useState({
     companyName: '', website: '', contactName: '', title: '', email: '', phone: '',
-    studentName: '', studentId: '', studentEmail: '', password: '', passwordConfirm: '',
-    academicName: '', academicEmail: '', academicTitle: '',
+    studentName: '', studentId: '', studentEmail: '', studentDepartment: '', studentGrade: '1. Sınıf', password: '', passwordConfirm: '',
+    academicName: '', academicEmail: '', academicTitle: '', academicDepartment: '',
     alumniName: '', alumniId: '', alumniEmail: '', graduationYear: '', alumniDepartment: ''
   });
 
@@ -109,9 +111,9 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           name: formData.studentName || 'Yeni Öğrenci',
           studentId: formData.studentId,
           email: formData.studentEmail,
-          department: 'Belirtilmedi',
+          department: formData.studentDepartment || 'Belirtilmedi',
           role: 'student',
-          grade: 'Aktif',
+          grade: formData.studentGrade || 'Aktif',
           status: 'Aktif',
           internshipStatus: 'Arıyor',
           avatar: null,
@@ -125,10 +127,14 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
 
         // Arayüzü yalnızca doğrulanmış kayıt sonrasında güncelle.
         if (setStudents) setStudents(prev => [...(prev || []), newStudent]);
-        if (setCurrentUser) setCurrentUser(newStudent);
-        if (setUserRole) setUserRole('student');
+        setRegisteredUser(newStudent);
         
       } else if (accountType === 'employer') {
+        if (formData.password !== formData.passwordConfirm) {
+          setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
+          setIsLoading(false);
+          return;
+        }
         // [FİREBASE AUTH] - Yeni Firma Kullanıcısı Oluştur
         if (!formData.password || formData.password.length < 6) {
           setError("Lütfen en az 6 karakterli bir şifre belirleyin.");
@@ -152,7 +158,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           sector: 'Belirtilmedi',
           role: 'employer',
           status: 'Onay Bekliyor',
-          avatar: null,
+          avatar: companyLogoData || null,
           kvkkConsent: true,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
@@ -180,7 +186,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           email: formData.academicEmail,
           title: formData.academicTitle || 'Akademisyen',
           role: 'academic',
-          department: 'Belirtilmedi',
+          department: formData.academicDepartment || 'Belirtilmedi',
           status: 'Aktif',
           avatar: null,
           kvkkConsent: true,
@@ -190,8 +196,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
 
         await saveProfile(academicUid, newAcademic);
         if (setAcademicStaff) setAcademicStaff(prev => [...(prev || []), newAcademic]);
-        if (setCurrentUser) setCurrentUser(newAcademic);
-        if (setUserRole) setUserRole('academic');
+        setRegisteredUser(newAcademic);
       } else if (accountType === 'alumni') {
         if (formData.password !== formData.passwordConfirm) {
           setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
@@ -223,8 +228,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
 
         await saveProfile(alumniUid, newAlumni);
         if (setAlumni) setAlumni(prev => [...(prev || []), newAlumni]);
-        if (setCurrentUser) setCurrentUser(newAlumni);
-        if (setUserRole) setUserRole('alumni');
+        setRegisteredUser(newAlumni);
       }
       
       // Kayıt ve KVKK denetim logunu arka planda kaydet
@@ -358,16 +362,34 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                         <Phone className="absolute left-4 top-3.5 text-gray-500" size={18} />
                         <input id="phone" type="tel" pattern="[0-9]{10,11}" name="phone" value={formData.phone} onChange={handleChange} placeholder="Yetkili Telefon Numarası (05XX...)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
-                      <div className="relative col-span-1 sm:col-span-2">
+                      <div className="relative">
                         <label htmlFor="emp_password" className="sr-only">Şifre Belirleyin</label>
                         <Lock className="absolute left-4 top-3.5 text-gray-500" size={18} />
                         <input id="emp_password" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Şifre Belirleyin (En az 6 karakter)" minLength={6} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
+                      </div>
+                      <div className="relative">
+                        <label htmlFor="emp_passwordConfirm" className="sr-only">Şifre Tekrar</label>
+                        <Lock className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="emp_passwordConfirm" type="password" name="passwordConfirm" value={formData.passwordConfirm} onChange={handleChange} placeholder="Şifre Tekrar" minLength={6} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
                       {/* Logo Yükleme */}
                       <div className="relative col-span-1 sm:col-span-2 mt-2">
                         <label htmlFor="companyLogo" className="block text-[13px] font-bold text-gray-700 mb-2">Firma Logosu Yükle</label>
-                        <input id="companyLogo" type="file" accept="image/*" className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#990000]/10 file:text-[#990000] hover:file:bg-[#990000]/20 transition-all cursor-pointer border border-gray-200 rounded-xl bg-gray-50" />
+                        <input 
+                          id="companyLogo" 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (ev) => setCompanyLogoData(ev.target?.result);
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#990000]/10 file:text-[#990000] hover:file:bg-[#990000]/20 transition-all cursor-pointer border border-gray-200 rounded-xl bg-gray-50" 
+                        />
                       </div>
                     </div>
 
@@ -411,6 +433,12 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                         <label htmlFor="academicTitle" className="sr-only">Unvan</label>
                         <FileText className="absolute left-4 top-3.5 text-gray-500" size={18} />
                         <input id="academicTitle" type="text" name="academicTitle" value={formData.academicTitle} onChange={handleChange} placeholder="Unvan (Prof. Dr., Doç. Dr., vb.)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
+                      </div>
+
+                      <div className="relative">
+                        <label htmlFor="academicDepartment" className="sr-only">Bölüm / Fakülte</label>
+                        <MapPin className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                        <input id="academicDepartment" type="text" name="academicDepartment" value={formData.academicDepartment} onChange={handleChange} placeholder="Bölüm / Fakülte (Örn: Bilgisayar Mühendisliği)" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" />
                       </div>
 
                       <div className="relative">
@@ -554,6 +582,26 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                         <input id="studentEmail" type="email" name="studentEmail" value={formData.studentEmail} onChange={handleChange} placeholder="E-Posta Adresi" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" required />
                       </div>
 
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="relative">
+                          <label htmlFor="studentDepartment" className="sr-only">Bölüm</label>
+                          <MapPin className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                          <input id="studentDepartment" type="text" name="studentDepartment" value={formData.studentDepartment} onChange={handleChange} placeholder="Bölümünüz" className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px]" />
+                        </div>
+                        <div className="relative">
+                          <label htmlFor="studentGrade" className="sr-only">Sınıf</label>
+                          <GraduationCap className="absolute left-4 top-3.5 text-gray-500" size={18} />
+                          <select id="studentGrade" name="studentGrade" value={formData.studentGrade} onChange={handleChange} className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-iesu-blue/30 outline-none text-[14px] text-gray-700">
+                            <option value="Hazırlık">Hazırlık</option>
+                            <option value="1. Sınıf">1. Sınıf</option>
+                            <option value="2. Sınıf">2. Sınıf</option>
+                            <option value="3. Sınıf">3. Sınıf</option>
+                            <option value="4. Sınıf">4. Sınıf</option>
+                            <option value="Yüksek Lisans">Yüksek Lisans</option>
+                          </select>
+                        </div>
+                      </div>
+
                       <div className="relative mt-4">
                         <label htmlFor="studentPassword" className="sr-only">Yeni Şifre</label>
                         <KeyRound className="absolute left-4 top-3.5 text-gray-500" size={18} />
@@ -617,7 +665,13 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                 ) : (
                   <>
                     <button 
-                      onClick={() => setView(accountType === 'academic' ? 'academic' : accountType === 'alumni' ? 'alumni' : 'student')}
+                      onClick={() => {
+                        if (registeredUser) {
+                          if (setCurrentUser) setCurrentUser(registeredUser);
+                          if (setUserRole) setUserRole(registeredUser.role);
+                        }
+                        setView(accountType === 'academic' ? 'academic' : accountType === 'alumni' ? 'alumni' : 'student');
+                      }}
                       className="inline-flex items-center justify-center bg-[#990000] hover:bg-red-800 text-white font-bold py-3.5 px-8 rounded-xl transition-all shadow-lg active:scale-[0.98] cursor-pointer"
                     >
                       Platforma Giriş Yap & Devam Et

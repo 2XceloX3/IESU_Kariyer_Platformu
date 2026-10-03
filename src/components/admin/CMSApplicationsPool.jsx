@@ -58,6 +58,7 @@ export default function CMSApplicationsPool({
       const matchStatus =
         statusFilter === 'Tümü' ||
         (statusFilter === 'Beklemede' && (app.status === 'Beklemede' || !app.status)) ||
+        ((statusFilter === 'Kabul Edildi' || statusFilter === 'Onaylandı') && (app.status === 'Kabul Edildi' || app.status === 'Onaylandı' || app.status === 'Onaylanıdı')) ||
         app.status === statusFilter;
 
       const matchCompany =

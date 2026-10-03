@@ -19,7 +19,7 @@ const AboutUsPage = lazy(() => import('./components/AboutUsPage')), EventsPage =
 
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events', 'events_list', 'etkinliklerimiz']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
-const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao', 'global_map']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
+const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
 const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
 const STUDENT_EXCLUSIVE_ROUTES = new Set([
   'student', 'feed', 'student_kgb', 'student_analytics', 'career_test', 
@@ -30,7 +30,7 @@ const STUDENT_EXCLUSIVE_ROUTES = new Set([
 const SHARED_ROUTES = new Set([
   'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 
   'calendar', 'groups', 'group_profile', 'network', 'career_network', 'live_rooms', 
-  'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard',
+  'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard', 'global_map',
   'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services'
 ]);
 
@@ -211,9 +211,10 @@ export default function App() {
           : (pathView === 'about_us') ? <AboutUsPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'services') ? <ServicesPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'events_list') ? <EventsPage setView={setView} currentUser={null} userRole={null} />
-          : (pathView === 'login' || ADMIN_CMS.has(pathView)) ? <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} />
+          : (pathView === 'login' || pathView === 'admin' || ADMIN_CMS.has(pathView) || pathView === 'student' || pathView === 'alumni' || pathView === 'company' || pathView === 'academic') ? <Login setView={setView} setUserRole={setUserRole} setAcademicRole={store.setAcademicRole || (() => {})} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} />
           : pathView === 'register' ? <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={store.setStudents} setAlumni={store.setAlumni} setAcademicStaff={store.setAcademicStaff} setCompanies={store.setCompanies} setUserRole={setUserRole} />
           : pathView === 'forgot_password' ? <ForgotPassword setView={setView} />
+          : pathView === 'jobs' ? <JobsAndInternships setView={setView} currentUser={null} userRole={null} />
           : PUBLIC_NEWS.has(pathView) ? <PublicNewsView setView={setView} currentUser={null} userRole={null} />
           : <LandingPage setView={setView} currentUser={null} userRole={userRole} setUserRole={setUserRole} />
         ) : (

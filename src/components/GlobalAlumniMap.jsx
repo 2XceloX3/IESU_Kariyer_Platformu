@@ -74,7 +74,7 @@ class MapErrorBoundary extends React.Component {
   }
 }
 
-export default function GlobalAlumniMap({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+export default function GlobalAlumniMap({ setView, currentUser, userRole, setSelectedUserId, previousView, onBack }) {
   const alumni = useAppStore(state => state.alumni);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
@@ -447,6 +447,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
         <div className="flex items-center gap-4">
           <button 
             onClick={() => {
+              if (onBack) { onBack(); return; }
               const allowedBranches = ['student', 'company', 'academic', 'alumni'];
               const store = useAppStore.getState();
               if (previousView && allowedBranches.includes(previousView)) {

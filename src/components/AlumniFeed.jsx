@@ -419,7 +419,14 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           <div className="space-y-6">
             {(() => {
               const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
-              const filtered = allItems.filter(post => post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+              const filtered = allItems.filter(post => {
+                const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+                if (!matchesSearch) return false;
+                if (feedFilter === 'following') {
+                  return post.type === 'post' || post.author?.role === 'alumni' || post.author?.role === 'student' || post.category === 'Mezun Paylaşımı';
+                }
+                return true;
+              });
               
               if (filtered.length === 0) {
                 return (

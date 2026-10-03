@@ -93,9 +93,9 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
 
     setAlumniAssocApplications([newApp, ...currentApps]);
     if (window.toast?.success) {
-      window.toast.success('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
+      window.toast.success('Tebrikler! İESÜ Mezunlar Ağı başvurunuz başarıyla alınmıştır. Yönetim koordinasyonumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
     } else {
-      console.info('Tebrikler! Mezun Derneği başvurunuz başarıyla alınmıştır. Yönetim kurulumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
+      console.info('Tebrikler! İESÜ Mezunlar Ağı başvurunuz başarıyla alınmıştır. Yönetim koordinasyonumuz inceledikten sonra tarafınıza dönüş yapacaktır.');
     }
     setAppForm({ ...appForm, phone: '', note: '' });
     setActiveTab('feed');
@@ -325,17 +325,17 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
             {featureAlumniAssocToggle === false ? (
               <div className="text-center py-12 bg-amber-50 rounded-2xl border border-amber-200 space-y-3">
                 <ShieldCheck size={48} className="mx-auto text-amber-600" />
-                <h3 className="text-xl font-black text-slate-900">Dernek Başvuru Dönemi Şu An Kapalıdır</h3>
+                <h3 className="text-xl font-black text-slate-900">Mezunlar Ağı Başvuru Dönemi Şu An Kapalıdır</h3>
                 <p className="text-xs font-medium text-slate-600 max-w-md mx-auto">
-                  Mezun Derneği üyelik ve yönetim ekibi başvuruları belirli dönemlerde açılmaktadır. Lütfen yeni duyuruları takip ediniz.
+                  İESÜ Mezunlar Ağı üyelik ve yönetim ekibi başvuruları belirli dönemlerde açılmaktadır. Lütfen yeni duyuruları takip ediniz.
                 </p>
               </div>
             ) : (
               <>
                 <div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-1">Mezun Derneği Üyelik & Ekip Başvuru Formu</h3>
+                  <h3 className="text-2xl font-black text-slate-900 mb-1">İESÜ Mezunlar Ağı Üyelik & Ekip Başvuru Formu</h3>
                   <p className="text-xs font-medium text-slate-500">
-                    Aşağıdaki formu doldurarak resmi dernek üyeliğinizi başlatabilir veya dernek yönetim organlarında görev alma talebinizi iletebilirsiniz.
+                    Aşağıdaki formu doldurarak resmi mezunlar ağı üyeliğinizi başlatabilir veya mezunlar ağı koordinasyonunda görev alma talebinizi iletebilirsiniz.
                   </p>
                 </div>
 

@@ -78,12 +78,12 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
   return (
     <div className="animate-fade-in space-y-6">
       <PanelHeader 
-        title="Mezun Derneği (CMS)" 
-        sub="Mezun derneği duyuru, etkinlik ve buluşma içeriklerini yönetin"
+        title="İESÜ Mezunlar Portalı (CMS)" 
+        sub="Mezunlar portalı duyuru, etkinlik ve buluşma içeriklerini yönetin"
         action={
           <div className="flex items-center gap-2">
             <button onClick={() => setView?.('alumni_assoc_portal')} className="flex items-center gap-2 bg-[#990000] hover:bg-red-800 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-md">
-              <Users size={16} /> Mezun Derneği Özel Portalı Aç →
+              <Users size={16} /> İESÜ Mezunlar Portalı Aç →
             </button>
             <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold transition">
               <Plus size={16} /> Yeni İçerik Ekle
@@ -249,7 +249,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
           <div>
             <h3 className="font-black text-slate-900 text-lg flex items-center gap-2">
               <Users className="text-[#990000]" size={20} />
-              Gelen Mezun Derneği Üyelik & Ekip Başvuruları Havuzu
+              Gelen Mezunlar Portalı Üyelik & Ekip Başvuruları Havuzu
             </h3>
             <p className="text-xs font-semibold text-slate-500">
               Başvuru dönemi açıldığında kayıt olan tüm mezun ve adayların kayıtlı liste havuzu.

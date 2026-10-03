@@ -185,7 +185,9 @@ export default function ConnectionSuggestions({
   };
 
   const filteredModalUsers = useMemo(() => {
-    let list = allNetworkUsers;
+    const currentId = effectiveCurrentUser?.id;
+    const currentEmail = effectiveCurrentUser?.email;
+    let list = (allNetworkUsers || []).filter(u => u.id !== currentId && (!currentEmail || u.email !== currentEmail));
     if (modalTab === 'students') list = list.filter(u => u._type === 'student');
     else if (modalTab === 'alumni') list = list.filter(u => u._type === 'alumni');
     else if (modalTab === 'academics') list = list.filter(u => u._type === 'academic');
@@ -202,7 +204,7 @@ export default function ConnectionSuggestions({
       );
     }
     return list;
-  }, [allNetworkUsers, modalTab, searchTerm]);
+  }, [allNetworkUsers, modalTab, searchTerm, effectiveCurrentUser]);
 
   if (suggestions.length === 0) return null;
 
