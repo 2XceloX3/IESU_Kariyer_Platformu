@@ -66,6 +66,7 @@ export const coreStore = create(
       // 8. activePortalBranch
       activePortalBranch: 'student',
       setActivePortalBranch: (branch) => {
+        if (!branch || branch === 'undefined') return;
         try {
           if (typeof window !== 'undefined') localStorage.setItem('iesu_active_portal_branch', branch);
         } catch { /* intentional */ }

@@ -120,7 +120,9 @@ export default function App() {
       try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
       const targetBranch = currentUser.role === 'admin' ? 'admin' : (currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
-      setActivePortalBranch?.(targetBranch);
+      if (targetBranch && targetBranch !== 'undefined') {
+        setActivePortalBranch?.(targetBranch);
+      }
     } else {
       ['iesu_mock_user', 'iesu_user_role_v1'].forEach(k => localStorage.removeItem(k));
       try { useAppStore.getState().setCurrentUser(null); } catch { /* store may not be ready */ }

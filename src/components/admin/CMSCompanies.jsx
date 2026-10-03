@@ -5,6 +5,8 @@ import MediaUploader from './MediaUploader';
 import { Building2, Edit, Trash2, Plus, Search, Mail, Phone, CheckCircle2, Clock, Download, ShieldCheck, Eye } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
 import useAppStore from '../../store/useAppStore';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../utils/firebase';
 
 export default function CMSCompanies({ companies = [], setCompanies }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -84,7 +86,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   });
 
   const activeCount = safeCompanies.filter(c => c.status === 'Onaylı').length;
-  const pendingCount = safeCompanies.filter(c => c.status === 'Beklemede').length;
+  const pendingCount = safeCompanies.filter(c => c.status === 'Onay Bekliyor').length;
 
   const listView = (
     <div className="space-y-6">
@@ -123,7 +125,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
         >
           <option value="all">Tüm Durumlar</option>
           <option value="onaylı">Onaylı</option>
-          <option value="beklemede">Beklemede</option>
+          <option value="onay bekliyor">Onay Bekliyor</option>
           <option value="reddedildi">Reddedildi</option>
         </select>
       </div>
@@ -232,7 +234,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                 <label className="text-xs font-bold text-gray-600 block mb-1.5">Sistem Durumu</label>
                 <select value={form.status} onChange={e=>setForm({...form, status: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
                   <option>Onaylı</option>
-                  <option>Beklemede</option>
+                  <option>Onay Bekliyor</option>
                   <option>Reddedildi</option>
                   <option>Pasif</option>
                 </select>
