@@ -66,7 +66,7 @@ describe('Login fallback flow', () => {
       />
     );
 
-    fireEvent.change(screen.getByLabelText('Kullanıcı Adı veya E-Posta'), {
+    fireEvent.change(screen.getByLabelText('E-Posta veya Kullanıcı Adı'), {
       target: { value: 'fixture@example.test' },
     });
     fireEvent.change(screen.getByLabelText('Şifre'), {

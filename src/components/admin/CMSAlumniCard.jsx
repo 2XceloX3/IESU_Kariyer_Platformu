@@ -39,7 +39,7 @@ export default function CMSAlumniCard() {
     const csvContent = [
       headers.join(';'),
       ...(alumniCardApplications || []).map(app => [
-        app.id, app.tc, app.name, app.department, app.gradYear, app.email, app.phone, app.date, app.status
+        app.id, app.tc ? app.tc.slice(0, 3) + '*****' + app.tc.slice(-2) : '', app.name, app.department, app.gradYear, app.email, app.phone, app.date, app.status
       ].join(';'))
     ].join('\n');
 
