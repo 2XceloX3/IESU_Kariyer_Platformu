@@ -151,12 +151,13 @@ export default function ClubAdminPanel({
     toast.info('Üyelik isteği reddedildi.');
   };
 
-  const handleToggleAdmin = (userId) => {
+  const handleToggleAdmin = (userId, memberId) => {
     if (!isPresident) {
       toast.error('Sadece kulüp başkanı yetki verebilir!');
       return;
     }
-    if (!userId) {
+    const resolvedId = userId || memberId;
+    if (!resolvedId) {
       toast.error('Kullanıcı kimliği bulunamadı.');
       return;
     }
@@ -164,14 +165,14 @@ export default function ClubAdminPanel({
     const updatedClubs = (clubs || []).map(c => {
       if (c.id === selectedClub.id) {
         const currentAdmins = c.admins || [];
-        const isAlreadyAdmin = currentAdmins.includes(userId);
+        const isAlreadyAdmin = currentAdmins.includes(resolvedId);
         
         let newAdmins;
         if (isAlreadyAdmin) {
-          newAdmins = currentAdmins.filter(id => id !== userId);
+          newAdmins = currentAdmins.filter(id => id !== resolvedId);
           toast.info('Yönetici yetkisi alındı.');
         } else {
-          newAdmins = [...currentAdmins, userId];
+          newAdmins = [...currentAdmins, resolvedId];
           toast.success('Yönetici yetkisi verildi.');
         }
         
@@ -490,7 +491,7 @@ export default function ClubAdminPanel({
                           
                           {isPresident && !isMemberPresident && (
                             <button 
-                              onClick={() => handleToggleAdmin(member.userId)}
+                              onClick={() => handleToggleAdmin(member.userId, member.id)}
                               className={`p-2 rounded-xl transition-colors cursor-pointer ${isMemberAdmin ? 'text-[#990000] bg-red-100 hover:bg-red-200' : 'text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900'}`}
                               title={isMemberAdmin ? "Yöneticilikten Al" : "Yönetici Yap"}
                             >

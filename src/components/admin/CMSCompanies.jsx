@@ -5,6 +5,8 @@ import MediaUploader from './MediaUploader';
 import { Building2, Edit, Trash2, Plus, Search, Mail, Phone, CheckCircle2, Clock, Download, ShieldCheck, Eye } from 'lucide-react';
 import { exportToCSV } from '../../utils/export';
 import useAppStore from '../../store/useAppStore';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../utils/firebase';
 
 export default function CMSCompanies({ companies = [], setCompanies }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -63,12 +65,15 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
     }
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email) return window.toast.info("Firma Adı ve E-Posta zorunludur.");
 
     if (currentId) {
       setCompanies(prev => (prev || []).map(c => c.id === currentId ? { ...c, ...form, updatedAt: new Date().toISOString() } : c));
+      try {
+        await updateDoc(doc(db, 'users', currentId), { status: form.status, updatedAt: new Date().toISOString() });
+      } catch (err) { /* intentional - Firestore may not be available in dev */ }
     } else {
       setCompanies(prev => [{ ...form, id: 'CMP-' + Date.now(), activeJobs: 0, createdAt: new Date().toISOString() }, ...(prev || [])]);
     }
@@ -84,7 +89,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   });
 
   const activeCount = safeCompanies.filter(c => c.status === 'Onaylı').length;
-  const pendingCount = safeCompanies.filter(c => c.status === 'Beklemede').length;
+  const pendingCount = safeCompanies.filter(c => c.status === 'Onay Bekliyor').length;
 
   const listView = (
     <div className="space-y-6">
@@ -123,7 +128,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
         >
           <option value="all">Tüm Durumlar</option>
           <option value="onaylı">Onaylı</option>
-          <option value="beklemede">Beklemede</option>
+          <option value="onay bekliyor">Onay Bekliyor</option>
           <option value="reddedildi">Reddedildi</option>
         </select>
       </div>
@@ -232,7 +237,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
                 <label className="text-xs font-bold text-gray-600 block mb-1.5">Sistem Durumu</label>
                 <select value={form.status} onChange={e=>setForm({...form, status: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
                   <option>Onaylı</option>
-                  <option>Beklemede</option>
+                  <option>Onay Bekliyor</option>
                   <option>Reddedildi</option>
                   <option>Pasif</option>
                 </select>

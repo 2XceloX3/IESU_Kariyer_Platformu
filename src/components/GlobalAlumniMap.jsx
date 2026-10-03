@@ -74,7 +74,7 @@ class MapErrorBoundary extends React.Component {
   }
 }
 
-export default function GlobalAlumniMap({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+export default function GlobalAlumniMap({ setView, currentUser, userRole, setSelectedUserId, previousView, onBack }) {
   const alumni = useAppStore(state => state.alumni);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
@@ -447,15 +447,14 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
         <div className="flex items-center gap-4">
           <button 
             onClick={() => {
+              if (onBack) { onBack(); return; }
               const allowedBranches = ['student', 'company', 'academic', 'alumni'];
               const store = useAppStore.getState();
-              if (previousView && allowedBranches.includes(previousView)) {
-                if (store.setActivePortalBranch) store.setActivePortalBranch(previousView);
-                setView(previousView);
-              } else {
-                if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
-                setView('alumni');
+              const prev = previousView || 'alumni';
+              if (allowedBranches.includes(prev)) {
+                if (store.setActivePortalBranch) store.setActivePortalBranch(prev);
               }
+              setView(prev);
             }} 
             className="w-9 h-9 rounded-full bg-white/5 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 border border-white/10 hover:border-cyan-400/40 flex items-center justify-center transition shadow-sm shrink-0"
             title="Geri Dön"

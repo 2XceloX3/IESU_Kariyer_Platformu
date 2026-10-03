@@ -19,7 +19,7 @@ const AboutUsPage = lazy(() => import('./components/AboutUsPage')), EventsPage =
 
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events', 'events_list', 'etkinliklerimiz']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
-const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao', 'global_map']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
+const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
 const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
 const STUDENT_EXCLUSIVE_ROUTES = new Set([
   'student', 'feed', 'student_kgb', 'student_analytics', 'career_test', 
@@ -31,7 +31,7 @@ const SHARED_ROUTES = new Set([
   'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 
   'calendar', 'groups', 'group_profile', 'network', 'career_network', 'live_rooms', 
   'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard',
-  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services'
+  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services', 'global_map'
 ]);
 
 const Spinner = () => (<div className="flex items-center justify-center min-h-screen bg-[#f8f9fc]"><div className="w-12 h-12 border-4 border-[#990000] border-t-transparent rounded-full animate-spin shadow-lg" /></div>);
@@ -120,7 +120,9 @@ export default function App() {
       try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
       const targetBranch = currentUser.role === 'admin' ? 'admin' : (currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
-      setActivePortalBranch?.(targetBranch);
+      if (targetBranch && targetBranch !== 'undefined') {
+        setActivePortalBranch?.(targetBranch);
+      }
     } else {
       ['iesu_mock_user', 'iesu_user_role_v1'].forEach(k => localStorage.removeItem(k));
       try { useAppStore.getState().setCurrentUser(null); } catch { /* store may not be ready */ }

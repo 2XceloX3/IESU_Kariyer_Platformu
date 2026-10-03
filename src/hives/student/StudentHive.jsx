@@ -196,11 +196,22 @@ export default function StudentHive({ currentUser, setView }) {
       case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'global_map':
-        return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+        return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" onBack={() => handleSetView('student')} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
-      case 'group_profile':
-        return <GroupProfile setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+      case 'group_profile': {
+        const groupId = useAppStore.getState().selectedGroupId;
+        const groups = useAppStore.getState().groups || [];
+        const groupData = groups.find(g => g.id === groupId) || {};
+        return <GroupProfile 
+          setView={handleSetView} 
+          currentUser={effectiveCurrentUser} 
+          userRole="student" 
+          setSelectedUserId={setSelectedUserId}
+          groupData={groupData}
+          groupId={groupId}
+        />;
+      }
       case 'notifications':
         return <NotificationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'calendar':

@@ -122,7 +122,12 @@ export default function StudentClubPortal({
   ), [clubList, currentUser]);
 
   const myJoinedClubs = useMemo(() => (clubList || []).filter(c => 
-    (c.members || []).some(m => m.id === currentUser?.id || m.email === currentUser?.email || m.name === currentUser?.name)
+    (c.members || []).some(m => 
+      m.id === currentUser?.id || 
+      m.userId === currentUser?.id ||
+      m.email === currentUser?.email || 
+      m.name === currentUser?.name
+    )
   ), [clubList, currentUser]);
 
   const filteredClubs = useMemo(() => (clubList || []).filter(c => 
@@ -136,7 +141,10 @@ export default function StudentClubPortal({
     if (!club || !currentUser) return false;
     if (currentUser.role === 'admin') return true;
     if (club.presidentId === currentUser.id || club.president?.email === currentUser.email) return true;
-    if ((club.authorizedOfficers || []).some(o => o.id === currentUser.id || o.email === currentUser.email)) return true;
+    if ((club.authorizedOfficers || []).some(o => 
+      (o.id === currentUser.id || o.email === currentUser.email) &&
+      o.role && o.role !== 'Aktif Üye'
+    )) return true;
     if ((club.boardMembers || []).some(b => (b.id === currentUser.id || b.email === currentUser.email) && (
       b.role?.toLowerCase().includes('başkan') || 
       b.role?.toLowerCase().includes('sekreter') || 
@@ -147,7 +155,7 @@ export default function StudentClubPortal({
   };
 
   const isMemberOfClub = (club) => (club.members || []).some(m => 
-    m.id === currentUser?.id || m.email === currentUser?.email || m.name === currentUser?.name
+    m.id === currentUser?.id || m.userId === currentUser?.id || m.email === currentUser?.email || m.name === currentUser?.name
   );
 
   const hasPendingRequest = (club) => (
@@ -276,10 +284,13 @@ export default function StudentClubPortal({
     const updatedMembers = (selectedClub.members || []).map(m => 
       m.id === assignRoleModalMember.id ? { ...m, role: newAssignedRole } : m
     );
-    const updatedOfficers = [
-      ...(selectedClub.authorizedOfficers || []),
-      { id: assignRoleModalMember.id, name: assignRoleModalMember.name, role: newAssignedRole, email: assignRoleModalMember.email }
-    ];
+    const baseOfficers = (selectedClub.authorizedOfficers || []).filter(
+      o => o.id !== assignRoleModalMember.id && o.email !== assignRoleModalMember.email
+    );
+    
+    const updatedOfficers = newAssignedRole && newAssignedRole !== 'Aktif Üye' 
+      ? [...baseOfficers, { id: assignRoleModalMember.id, name: assignRoleModalMember.name, role: newAssignedRole, email: assignRoleModalMember.email }]
+      : baseOfficers;
 
     const updatedClub = {
       ...selectedClub,
@@ -1190,7 +1201,7 @@ export default function StudentClubPortal({
                             : 'Onaylanmış resmi kulüp üyeleri.'}
                         </p>
                       </div>
-                      {!userIsMember && (
+                      {!userIsMember && !userHasPending && (
                         <button
                           onClick={() => setShowApplyMemberModal(true)}
                           className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
@@ -2043,16 +2054,21 @@ export default function StudentClubPortal({
           <div className="animate-fade-in space-y-6">
              <div className="bg-white rounded-xl p-6 md:p-8 border border-slate-200 shadow-sm">
                <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2"><ShieldCheck className="text-amber-500"/> SKS & Dekanlık Onay Bekleyenler</h2>
-               {applications.length === 0 ? (
-                 <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                   <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-2xs">
-                     <CheckCircle2 size={28} />
-                   </div>
-                   <p className="text-slate-700 font-medium">Bekleyen başvuru yok!</p>
-                 </div>
-               ) : (
+               {(() => {
+                 const pendingApps = applications.filter(a => a.status === 'pending' || a.status === 'Beklemede' || !a.status);
+                 if (pendingApps.length === 0) {
+                   return (
+                     <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                       <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3 shadow-2xs">
+                         <CheckCircle2 size={28} />
+                       </div>
+                       <p className="text-slate-700 font-medium">Bekleyen başvuru yok!</p>
+                     </div>
+                   );
+                 }
+                 return (
                  <div className="space-y-4">
-                   {applications.map(app => (
+                   {pendingApps.map(app => (
                      <div key={app.id} className="flex flex-col md:flex-row justify-between md:items-center gap-4 p-5 rounded-2xl border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all bg-white">
                        <div className="flex items-start gap-4">
                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${app.type === 'new_club' ? 'bg-violet-50 text-violet-600 border-violet-100' : 'bg-red-50 text-[#990000] border-red-100'}`}>
@@ -2073,12 +2089,22 @@ export default function StudentClubPortal({
                          </div>
                        </div>
                        <div className="flex items-center gap-2">
-                         {app.status === 'pending' ? (
+                         {app.status === 'pending' || app.status === 'Beklemede' || !app.status ? (
                            <>
                              <button 
                                onClick={() => {
                                  const updated = applications.map(a => a.id === app.id ? { ...a, status: 'approved' } : a);
                                  if (setClubApplications) setClubApplications(updated);
+                                 if (app.type === 'new_club') {
+                                   const newClub = { 
+                                     id: 'CLUB-' + Date.now(), 
+                                     name: app.clubName || app.name,
+                                     status: 'active',
+                                     members: [],
+                                     ...app
+                                   };
+                                   if (setClubs) setClubs(prev => [...(prev || []), newClub]);
+                                 }
                                  toast.success('Başvuru onaylandı!');
                                }}
                                className="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100 font-bold rounded-lg transition-colors text-sm flex items-center gap-1 cursor-pointer"
@@ -2105,7 +2131,8 @@ export default function StudentClubPortal({
                      </div>
                    ))}
                  </div>
-               )}
+                 );
+               })()}
              </div>
           </div>
         )}
