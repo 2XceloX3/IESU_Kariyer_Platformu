@@ -1026,7 +1026,7 @@ export default function StudentClubPortal({
                           <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider block">{member.role}</span>
                           <h4 className="font-bold text-gray-900 text-sm">{member.name}</h4>
                           <p className="text-xs text-slate-600 font-medium">{member.department}</p>
-                          {member.studentNo && <span className="text-[10px] text-slate-700 font-mono font-bold">No: {member.studentNo}</span>}
+                          {authorized && member.studentNo && <span className="text-[10px] text-slate-700 font-mono font-bold">No: {member.studentNo}</span>}
                         </div>
                       </div>
                     ))}
@@ -1184,7 +1184,11 @@ export default function StudentClubPortal({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div>
                         <h3 className="font-bold text-gray-900 text-base">Kayıtlı Kulüp Üyeleri ({selectedClub.members?.length || selectedClub.memberCount || 0})</h3>
-                        <p className="text-xs text-slate-600 font-medium">T.C. Kimlik, Öğrenci No ve bölüm bazında onaylanmış resmi kulüp üyeleri.</p>
+                        <p className="text-xs text-slate-600 font-medium">
+                          {authorized 
+                            ? 'T.C. Kimlik, Öğrenci No ve bölüm bazında onaylanmış resmi kulüp üyeleri.' 
+                            : 'Onaylanmış resmi kulüp üyeleri.'}
+                        </p>
                       </div>
                       {!userIsMember && (
                         <button
@@ -1213,11 +1217,14 @@ export default function StudentClubPortal({
                             <tr key={idx} className="hover:bg-slate-50/60">
                               <td className="py-3 px-3 font-bold text-gray-900">{mem.name}</td>
                               <td className="py-3 px-3 text-slate-600 font-mono text-[11px]">
-                                {mem.studentNo || '2023010***'}
-                                {mem.tcKimlik && (
+                                {authorized ? (mem.studentNo || '—') : '••••••••'}
+                                {authorized && mem.tcKimlik && (
                                   <span className="block text-[10px] text-slate-600 font-medium">
-                                    TC: {mem.tcKimlik.slice(0, 3)}*****{mem.tcKimlik.slice(-2)}
+                                    TC: {mem.tcKimlik.slice(0, 4)}*****{mem.tcKimlik.slice(-2)}
                                   </span>
+                                )}
+                                {!authorized && (
+                                  <span className="block text-[10px] text-slate-500 italic">Gizli</span>
                                 )}
                               </td>
                               <td className="py-3 px-3 text-slate-700">

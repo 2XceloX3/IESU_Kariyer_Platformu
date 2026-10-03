@@ -426,7 +426,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
                   İstanbul Esenyurt Üniversitesi
                 </h1>
                 <p className="text-[10px] font-extrabold text-blue-900 uppercase tracking-wider truncate">
-                  Kariyer Geliştirme Koordinatörlüğü • Kurumsal ATS Masası
+                  Kariyer Geliştirme Koordinatörlüğü
                 </p>
               </div>
             </div>
