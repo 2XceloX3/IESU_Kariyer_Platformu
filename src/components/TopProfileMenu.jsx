@@ -115,6 +115,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       'iesu_active_portal_branch',  // portal branch key
       'iesu-career-shared-store',   // useSharedStore persist key
       'iesu-career-admin-store',    // useAdminStore persist key
+        
+      'iesu_staff_accounts_v1',
+      'iesu_academic_radar_v1',
+      'iesu_mentorship_requests_v1',
+      'iesu_document_tracking_v1',
+      'iesu_candidate_pool_v1',
+      'iesu_admin_messages_v1',
+      'iesu_platform_messages_audit_v1'
     ].forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
 
     try { sessionStorage.removeItem('iesu_admin_session'); } catch { /* intentional */ }

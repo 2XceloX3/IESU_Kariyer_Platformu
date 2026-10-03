@@ -121,7 +121,7 @@ export default function CMSAlumniCard() {
                 <tr key={app.id} className="hover:bg-gray-50/50 transition">
                   <td className="py-3 px-5">
                     <p className="font-bold text-gray-900 text-sm">{app.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">TC: {app.tc}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">TC: {app.tc ? app.tc.slice(0, 3) + '*****' + app.tc.slice(-2) : 'ó'}</p>
                     <p className="text-[10px] text-gray-500 mt-1">Ba≈üvuru: {app.date}</p>
                   </td>
                   <td className="py-3 px-5">

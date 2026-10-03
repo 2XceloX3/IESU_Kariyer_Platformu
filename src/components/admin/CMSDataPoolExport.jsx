@@ -1777,7 +1777,7 @@ export default function CMSDataPoolExport() {
                     <tr key={a.id} onClick={() => setSelectedGenericItem({ type: 'Mezun Kart Başvurusu', data: a })} className="hover:bg-indigo-50/50 transition cursor-pointer group">
                       <td className="p-3.5 font-mono text-indigo-900 font-black">{a.id}</td>
                       <td className="p-3.5 font-bold group-hover:text-indigo-900 flex items-center gap-1.5">{a.name} <ArrowUpRight size={13} className="opacity-0 group-hover:opacity-100 transition text-indigo-900"/></td>
-                      <td className="p-3.5 font-mono text-slate-600">{a.tcNo || '-'} / {a.studentId}</td>
+                      <td className="p-3.5 font-mono text-slate-600">{a.tcNo ? a.tcNo.slice(0, 4) + '*****' + a.tcNo.slice(-2) : '-'} / {a.studentId}</td>
                       <td className="p-3.5 text-slate-600">{a.dept} ({a.gradYear})</td>
                       <td className="p-3.5 font-bold text-indigo-900">{a.deliveryType === 'digital' ? 'Dijital Kart' : 'Fiziksel + Dijital'}</td>
                       <td className="p-3.5 text-slate-400 text-[10px]">{a.appliedAt || new Date().toLocaleDateString('tr-TR')}</td>

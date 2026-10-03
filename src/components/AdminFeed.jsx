@@ -1,5 +1,6 @@
 import useAppStore from '../store/useAppStore';
-import React, { useState, useEffect } from 'react';
+import React
+import AdminOmniDock from './AdminOmniDock';, { useState, useEffect } from 'react';
 import { 
   Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, 
   UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, 

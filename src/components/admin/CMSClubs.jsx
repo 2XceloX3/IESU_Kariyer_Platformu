@@ -120,7 +120,7 @@ export default function CMSClubs({
     const headers = ['Ogrenci No', 'TC Kimlik No', 'Ad Soyad', 'Kulup', 'Kulup Rolu', 'Bolum', 'Sinif', 'Telefon', 'E-Posta', 'Kayit Tarihi', 'Durum'];
     const rows = filteredMembers.map(m => [
       m.studentNo || '',
-      m.tcKimlik || '',
+      m.tcKimlik ? m.tcKimlik.slice(0, 4) + '*****' + m.tcKimlik.slice(-2) : '',
       m.name || '',
       m.clubName || '',
       m.role || 'Aktif Üye',
@@ -810,7 +810,7 @@ export default function CMSClubs({
                     <td className="py-3.5 px-4 font-mono">
                       <span className="font-bold text-gray-900 block">{m.studentNo || '2023010482'}</span>
                       <span className="text-[10px] text-slate-600 font-medium">
-                        TC: {m.tcKimlik ? `${m.tcKimlik.slice(0, 3)}*****${m.tcKimlik.slice(-2)}` : '39281749102'}
+                        TC: {m.tcKimlik ? m.tcKimlik.slice(0, 4) + '*****' + m.tcKimlik.slice(-2) : '—'}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 font-bold text-gray-900">
