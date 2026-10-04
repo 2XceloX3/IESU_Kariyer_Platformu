@@ -90,8 +90,30 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   const studentName = effectiveCurrentUser?.name || 'Öğrenci';
   const studentDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Yazılım Mühendisliği');
-  const studentAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde');
+  const studentAvatar = effectiveCurrentUser?.avatar || '/iesu-logo.svg';
   const studentId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
+  const [visibleFeedCount, setVisibleFeedCount] = useState(12);
+
+  const allFeedItems = useMemo(() => {
+    return combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
+  }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities]);
+
+  const filteredFeedItems = useMemo(() => {
+    const q = searchQuery ? searchQuery.trim().toLocaleLowerCase('tr-TR') : '';
+    return allFeedItems.filter(post => {
+      if (q) {
+        const c = (post.content || '').toLocaleLowerCase('tr-TR');
+        const a = (post.author?.name || '').toLocaleLowerCase('tr-TR');
+        if (!c.includes(q) && !a.includes(q)) return false;
+      }
+      if (feedFilter === 'following') {
+        if (followedUserIds.length === 0) return true;
+        return followedUserIds.includes(post.author?.id) || followedUserIds.includes(post.authorId) || post.author?.id === effectiveCurrentUser?.id;
+      }
+      return true;
+    });
+  }, [allFeedItems, searchQuery, feedFilter, followedUserIds, effectiveCurrentUser?.id]);
+
 
   // Removed mock stories and defaultPosts
   
@@ -350,34 +372,32 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             </button>
           </div>
 
-          {/* FEED POSTS */}
+          {/* FEED POSTS (5M Ölçekli Sayfalamalı ve Optimize) */}
           <div className="space-y-6">
-            {(() => {
-              const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
-              const filtered = allItems.filter(post => {
-                const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-                if (!matchesSearch) return false;
-                if (feedFilter === 'following') {
-                  if (followedUserIds.length === 0) return true; // show all if not following anyone yet
-                  return followedUserIds.includes(post.author?.id) || followedUserIds.includes(post.authorId) || post.author?.id === effectiveCurrentUser?.id;
-                }
-                return true;
-              });
-              
-              if (filtered.length === 0) {
-                return (
-                  <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-16 h-16 bg-red-50 text-[#990000] rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
-                    <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
-                    <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
+            {filteredFeedItems.length === 0 ? (
+              <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
+                <div className="w-16 h-16 bg-red-50 text-[#990000] rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
+                <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
+                <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
+              </div>
+            ) : (
+              <>
+                {filteredFeedItems.slice(0, visibleFeedCount).map(post => (
+                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} />
+                ))}
+
+                {visibleFeedCount < filteredFeedItems.length && (
+                  <div className="pt-4 pb-2 text-center">
+                    <button
+                      onClick={() => setVisibleFeedCount(prev => prev + 12)}
+                      className="px-6 py-3 bg-white hover:bg-slate-50 text-[#990000] border-2 border-red-100 hover:border-[#990000] font-bold text-sm rounded-2xl shadow-sm transition-all active:scale-95 cursor-pointer"
+                    >
+                      Daha Fazla Gönderi Yükle ({filteredFeedItems.length - visibleFeedCount} kalan)
+                    </button>
                   </div>
-                );
-              }
-              
-              return filtered.map(post => (
-                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} />
-              ));
-            })()}
+                )}
+              </>
+            )}
           </div>
           </div>
         )}

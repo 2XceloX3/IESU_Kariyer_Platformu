@@ -1,5 +1,5 @@
 import useAppStore from '../store/useAppStore';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap, BookOpen } from 'lucide-react';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
@@ -73,6 +73,30 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const [stories, setStories] = useState([]);
   const setMentorships = useAppStore(state => state.setMentorships) || null;
   const followedUserIds = useAppStore(state => state.followedUserIds) || [];
+  const [visibleFeedCount, setVisibleFeedCount] = useState(12);
+
+  const storeCurrentUser = useAppStore(state => state.currentUser);
+  const effectiveCurrentUser = currentUser || storeCurrentUser;
+
+  const allFeedItems = useMemo(() => {
+    return combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
+  }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities]);
+
+  const filteredFeedItems = useMemo(() => {
+    const q = searchQuery ? searchQuery.trim().toLocaleLowerCase('tr-TR') : '';
+    return allFeedItems.filter(post => {
+      if (q) {
+        const c = (post.content || '').toLocaleLowerCase('tr-TR');
+        const a = (post.author?.name || '').toLocaleLowerCase('tr-TR');
+        if (!c.includes(q) && !a.includes(q)) return false;
+      }
+      if (feedFilter === 'following') {
+        if (followedUserIds.length === 0) return true;
+        return followedUserIds.includes(post.author?.id) || followedUserIds.includes(post.authorId) || post.author?.id === effectiveCurrentUser?.id;
+      }
+      return true;
+    });
+  }, [allFeedItems, searchQuery, feedFilter, followedUserIds, effectiveCurrentUser?.id]);
 
   // Guarantee Alumni branch isolation & auto-open evaluation questions
   useEffect(() => {
@@ -86,14 +110,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     return () => clearTimeout(timer);
   }, []);
 
-  const storeCurrentUser = useAppStore(state => state.currentUser);
-  const effectiveCurrentUser = currentUser || storeCurrentUser;
 
   const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   const alumniName = effectiveCurrentUser?.name || 'Mezun';
   const alumniDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Yazılım Mühendisliği');
   const alumniGradYear = (effectiveCurrentUser?.role === 'alumni' && (effectiveCurrentUser?.gradYear || effectiveCurrentUser?.graduationYear)) ? (effectiveCurrentUser.gradYear || effectiveCurrentUser.graduationYear) : '2023';
-  const alumniAvatar = effectiveCurrentUser?.avatar || (isAdmin ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1494790108377-be9c29b29330');
+  const alumniAvatar = effectiveCurrentUser?.avatar || '/iesu-logo.svg';
   const alumniId = (effectiveCurrentUser?.role === 'alumni' && effectiveCurrentUser?.id && effectiveCurrentUser.id !== 'admin_1513') ? effectiveCurrentUser.id : (effectiveCurrentUser?.id || 'self');
 
   const existingApp = (alumniCardApplications || []).find(a => a.tc === effectiveCurrentUser?.tc || a.email === effectiveCurrentUser?.email || a.name === effectiveCurrentUser?.name);
@@ -418,32 +440,30 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           </div>
 
           <div className="space-y-6">
-            {(() => {
-              const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
-              const filtered = allItems.filter(post => {
-                const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase()) || post.author?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-                if (!matchesSearch) return false;
-                if (feedFilter === 'following') {
-                  if (followedUserIds.length === 0) return true; // show all if not following anyone yet
-                  return followedUserIds.includes(post.author?.id) || followedUserIds.includes(post.authorId) || post.author?.id === effectiveCurrentUser?.id;
-                }
-                return true;
-              });
-              
-              if (filtered.length === 0) {
-                return (
-                  <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
-                    <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
-                    <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
+            {filteredFeedItems.length === 0 ? (
+              <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
+                <div className="w-16 h-16 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
+                <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
+                <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
+              </div>
+            ) : (
+              <>
+                {filteredFeedItems.slice(0, visibleFeedCount).map(post => (
+                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || []} alumni={alumni || []} setPosts={setPosts} />
+                ))}
+
+                {visibleFeedCount < filteredFeedItems.length && (
+                  <div className="pt-4 pb-2 text-center">
+                    <button
+                      onClick={() => setVisibleFeedCount(prev => prev + 12)}
+                      className="px-6 py-3 bg-white hover:bg-slate-50 text-emerald-800 border-2 border-emerald-100 hover:border-emerald-700 font-bold text-sm rounded-2xl shadow-sm transition-all active:scale-95 cursor-pointer"
+                    >
+                      Daha Fazla Gönderi Yükle ({filteredFeedItems.length - visibleFeedCount} kalan)
+                    </button>
                   </div>
-                );
-              }
-              
-              return filtered.map(post => (
-                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
-              ));
-            })()}
+                )}
+              </>
+            )}
           </div>
           </div>
         )}

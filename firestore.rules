@@ -14,7 +14,8 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
       );
     }
     
@@ -22,7 +23,8 @@ service cloud.firestore {
       return isAuthenticated() && (
         request.auth.token.role == 'company' ||
         request.auth.token.role == 'employer' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['company', 'employer']
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['company', 'employer'])
       );
     }
 

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { safeStorage } from './safeStorage';
 
 export default function useLocalStorageState(key, defaultValue) {
   const [state, setState] = useState(() => {
     try {
-      const item = localStorage.getItem(key);
+      const item = safeStorage.getItem(key);
       if (item !== null) {
         const parsed = JSON.parse(item);
         if (parsed === null && defaultValue !== null) {
@@ -13,16 +14,16 @@ export default function useLocalStorageState(key, defaultValue) {
       }
       return typeof defaultValue === 'function' ? defaultValue() : defaultValue;
     } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
+      console.warn(`[useLocalStorageState] Error reading key "${key}":`, error);
       return typeof defaultValue === 'function' ? defaultValue() : defaultValue;
     }
   });
 
   useEffect(() => {
     try {
-      localStorage.setItem(key, JSON.stringify(state));
+      safeStorage.setItem(key, JSON.stringify(state));
     } catch (error) {
-      console.error(`Error setting localStorage key "${key}":`, error);
+      console.warn(`[useLocalStorageState] Error writing key "${key}":`, error);
     }
   }, [key, state]);
 

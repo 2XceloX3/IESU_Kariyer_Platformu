@@ -29,8 +29,13 @@ export const SYNCABLE_SLICES = [
 export async function syncSliceToFirestore(sliceKey, data) {
   try {
     const docRef = doc(db, SYNC_COLLECTION, sliceKey);
+    // 1MB Firestore limit kalkanı: Büyük dizileri son 500 kayıt ile sınırla
+    const boundedData = Array.isArray(data) && data.length > 500 
+      ? data.slice(0, 500) 
+      : data;
     await setDoc(docRef, {
-      data,
+      data: boundedData,
+      totalCount: Array.isArray(data) ? data.length : 1,
       lastSynced: new Date().toISOString(),
       version: 1,
     });
