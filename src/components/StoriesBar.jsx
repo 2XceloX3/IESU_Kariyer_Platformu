@@ -67,10 +67,11 @@ export default function StoriesBar({ currentUser, stories = [], setStories }) {
                 <div className="relative transition-transform duration-300 group-hover/story:scale-105">
                   <div className={`w-[68px] h-[68px] rounded-full p-[2.5px] ${hasUnseen ? 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600' : 'bg-gray-200'}`}>
                     <div className="w-full h-full bg-white rounded-full p-[2.5px]">
-                      <img 
-                        src={story.author.avatar === '/logo.png' ? '/iesu-logo.svg' : (story.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(story.author.name || 'U')}&background=0A2342&color=fff`)} 
+                      <SafeAvatar 
+                        src={story.author.avatar === '/logo.png' ? '/iesu-logo.svg' : story.author.avatar} 
+                        name={story.author.name}
+                        size="md"
                         className="w-full h-full rounded-full object-contain p-0.5" 
-                        alt={story.author.name} 
                       />
                     </div>
                   </div>

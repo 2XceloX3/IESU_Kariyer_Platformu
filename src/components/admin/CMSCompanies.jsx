@@ -1,5 +1,5 @@
 import SafeAvatar from '../shared/SafeAvatar';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import AdminCMSLayout from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import { Building2, Edit, Trash2, Plus, Search, Mail, Phone, CheckCircle2, Clock, Download, ShieldCheck, Eye } from 'lucide-react';
@@ -14,6 +14,8 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   const careerFairApplications = useAppStore(state => state.careerFairApplications) || [];
   const adminMessages = useAppStore(state => state.adminMessages) || [];
@@ -67,7 +69,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.name || !form.email) return window.toast.info("Firma Adı ve E-Posta zorunludur.");
+    if (!form.name || !form.email) return (window.toast?.info || console.info)("Firma Adı ve E-Posta zorunludur.");
 
     if (currentId) {
       setCompanies(prev => (prev || []).map(c => c.id === currentId ? { ...c, ...form, updatedAt: new Date().toISOString() } : c));
@@ -143,7 +145,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {filtered.map(c => (
+            {paginatedCompanies.map(c => (
               <tr key={c.id} onClick={() => setSelectedCompany(c)} className="cursor-pointer hover:bg-red-50/20 transition group">
                 <td className="py-3 px-5">
                   <div className="flex items-center gap-3">

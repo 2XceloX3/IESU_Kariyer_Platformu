@@ -22,6 +22,8 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
   const [statusFilter, setStatusFilter] = useState('all');
   const [countryFilter, setCountryFilter] = useState('all');
   const [selectedSurvey, setSelectedSurvey] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   const [form, setForm] = useState({
     name: '',
@@ -154,15 +156,28 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
     };
   }, [safeAlumni]);
 
-  const filtered = safeAlumni.filter(a => {
-    const matchQ = (a.name||'').toLowerCase().includes(searchQuery.toLowerCase()) || 
-                   (a.currentCompany||'').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                   (a.city||'').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                   (a.country||'').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchS = statusFilter === 'all' || (a.status||'').toLowerCase() === statusFilter.toLowerCase();
-    const matchC = countryFilter === 'all' || (a.country||'').toLowerCase() === countryFilter.toLowerCase();
-    return matchQ && matchS && matchC;
-  });
+  const filtered = useMemo(() => {
+    const q = (searchQuery || '').trim().toLocaleLowerCase('tr-TR');
+    const sFilter = (statusFilter || '').toLocaleLowerCase('tr-TR');
+    const cFilter = (countryFilter || '').toLocaleLowerCase('tr-TR');
+    return safeAlumni.filter(a => {
+      const matchQ = !q ||
+        (a.name || '').toLocaleLowerCase('tr-TR').includes(q) || 
+        (a.currentCompany || '').toLocaleLowerCase('tr-TR').includes(q) ||
+        (a.city || '').toLocaleLowerCase('tr-TR').includes(q) ||
+        (a.country || '').toLocaleLowerCase('tr-TR').includes(q) ||
+        (a.department || '').toLocaleLowerCase('tr-TR').includes(q);
+      const matchS = sFilter === 'all' || (a.status || '').toLocaleLowerCase('tr-TR') === sFilter;
+      const matchC = cFilter === 'all' || (a.country || '').toLocaleLowerCase('tr-TR') === cFilter;
+      return matchQ && matchS && matchC;
+    });
+  }, [safeAlumni, searchQuery, statusFilter, countryFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginatedAlumni = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, currentPage]);
 
   const mentorCount = safeAlumni.filter(a => a.isMentor).length;
   const employedCount = safeAlumni.filter(a => a.careerStatus === 'Çalışıyorum' || a.currentCompany).length;
@@ -428,7 +443,7 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {filtered.map(a => (
+                  {paginatedAlumni.map(a => (
                     <tr key={a.id} className="hover:bg-gray-50/50 transition group">
                       <td className="py-3 px-5">
                         <div className="flex items-center gap-3">
@@ -514,6 +529,32 @@ export default function CMSAlumni({ alumni = [], setAlumni, surveys, setSurveys,
                   ))}
                 </tbody>
               </table>
+            )}
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between bg-white px-5 py-3 rounded-2xl border border-gray-100 shadow-xs mt-4">
+                <span className="text-xs font-bold text-gray-500">
+                  Sayfa {currentPage} / {totalPages} (Toplam {filtered.length} mezun)
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-600 disabled:opacity-40 hover:bg-gray-50 cursor-pointer transition"
+                  >
+                    Önceki
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-600 disabled:opacity-40 hover:bg-gray-50 cursor-pointer transition"
+                  >
+                    Sonraki
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </>

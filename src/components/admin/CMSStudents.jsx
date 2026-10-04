@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import SafeAvatar from '../shared/SafeAvatar';
 import PanelHeader from './PanelHeader';
 import MediaUploader from './MediaUploader';
@@ -13,6 +13,8 @@ export default function CMSStudents({ students = [], setStudents }) {
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   const [form, setForm] = useState({
     name: '',
@@ -64,7 +66,7 @@ export default function CMSStudents({ students = [], setStudents }) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.name || !form.studentId) return window.toast.info("Ad Soyad ve Öğrenci No zorunludur.");
+    if (!form.name || !form.studentId) return (window.toast?.info || console.info)("Ad Soyad ve Öğrenci No zorunludur.");
 
     if (currentId) {
       setStudents(prev => (prev || []).map(s => s.id === currentId ? { ...s, ...form, updatedAt: new Date().toISOString() } : s));
@@ -76,11 +78,24 @@ export default function CMSStudents({ students = [], setStudents }) {
 
   const safeStudents = students || [];
 
-  const filtered = safeStudents.filter(s => {
-    const matchQ = (s.name||'').toLowerCase().includes(searchQuery.toLowerCase()) || (s.studentId||'').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchS = statusFilter === 'all' || (s.status||'').toLowerCase() === statusFilter.toLowerCase();
-    return matchQ && matchS;
-  });
+  const filtered = useMemo(() => {
+    const q = (searchQuery || '').trim().toLocaleLowerCase('tr-TR');
+    const sFilter = (statusFilter || '').toLocaleLowerCase('tr-TR');
+    return safeStudents.filter(s => {
+      const matchQ = !q || 
+        (s.name || '').toLocaleLowerCase('tr-TR').includes(q) || 
+        (s.studentId || '').toLocaleLowerCase('tr-TR').includes(q) ||
+        (s.department || '').toLocaleLowerCase('tr-TR').includes(q);
+      const matchS = sFilter === 'all' || (s.status || '').toLocaleLowerCase('tr-TR') === sFilter;
+      return matchQ && matchS;
+    });
+  }, [safeStudents, searchQuery, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginatedStudents = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, currentPage]);
 
   const activeCount = safeStudents.filter(s => s.status === 'Aktif').length;
   const internshipSeekers = safeStudents.filter(s => s.internshipStatus === 'Arıyor').length;
@@ -250,7 +265,7 @@ export default function CMSStudents({ students = [], setStudents }) {
             <p className="text-xs text-slate-400 mt-1">Arama kriterlerine uygun öğrenci bulunmuyor.</p>
           </div>
         ) : (
-          filtered.map(s => (
+          paginatedStudents.map(s => (
             <div 
               key={s.id}
               className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-rose-200 relative overflow-hidden"

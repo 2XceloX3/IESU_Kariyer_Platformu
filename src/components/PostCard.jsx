@@ -627,7 +627,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   if (setPosts) {
                     const newPost = {
                       id: Date.now(),
-                      author: currentUser || { name: 'Kullanıcı', avatar: 'https://ui-avatars.com/api/?name=K&background=0A2342&color=fff' },
+                      author: currentUser || { name: 'Kullanıcı', avatar: null },
                       content: repostComment,
                       time: 'Şimdi',
                       likes: 0,
@@ -636,7 +636,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                     };
                     setPosts(prev => [newPost, ...prev]);
                   }
-                  window.toast.success('Gönderi başarıyla profilinizde paylaşıldı!');
+                  window.toast?.success?.('Gönderi başarıyla profilinizde paylaşıldı!');
                   setIsRepostModalOpen(false);
                   setRepostComment('');
                 }}

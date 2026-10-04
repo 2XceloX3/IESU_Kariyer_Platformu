@@ -632,8 +632,8 @@ export const useAdminStore = create(
         featureSSPLeaderboard: state.featureSSPLeaderboard,
         hiveErrors: state.hiveErrors,
         adminActiveTab: state.adminActiveTab,
-        adminMessages: state.adminMessages,
-        applications: state.applications,
+        adminMessages: Array.isArray(state.adminMessages) ? state.adminMessages.slice(0, 50) : [],
+        applications: Array.isArray(state.applications) ? state.applications.slice(0, 100) : [],
         staffList: state.staffList,
         careerFairEvent: state.careerFairEvent,
         careerFairFormTemplate: state.careerFairFormTemplate,
@@ -644,10 +644,10 @@ export const useAdminStore = create(
         researchConfig: state.researchConfig,
         labReservations: state.labReservations,
         researchCallApplications: state.researchCallApplications,
-        checkupRecords: state.checkupRecords,
-        newsletterSubscribers: state.newsletterSubscribers,
-        bmiRecords: state.bmiRecords,
-        helpdeskTickets: state.helpdeskTickets,
+        checkupRecords: Array.isArray(state.checkupRecords) ? state.checkupRecords.slice(0, 50) : [],
+        newsletterSubscribers: Array.isArray(state.newsletterSubscribers) ? state.newsletterSubscribers.slice(0, 50) : [],
+        bmiRecords: Array.isArray(state.bmiRecords) ? state.bmiRecords.slice(0, 50) : [],
+        helpdeskTickets: Array.isArray(state.helpdeskTickets) ? state.helpdeskTickets.slice(0, 50) : [],
         clubs: state.clubs,
         clubApplications: state.clubApplications,
         careerTestSubmissions: state.careerTestSubmissions,
@@ -661,9 +661,9 @@ export const useAdminStore = create(
         sspUsers: state.sspUsers,
         institutionalStatsData: state.institutionalStatsData,
         showInstitutionalStats: state.showInstitutionalStats,
-        messages: state.messages,
+        messages: Array.isArray(state.messages) ? state.messages.slice(-100) : [],
         mentorships: state.mentorships,
-        notifications: state.notifications
+        notifications: Array.isArray(state.notifications) ? state.notifications.slice(0, 50) : []
       })
     }
   )
