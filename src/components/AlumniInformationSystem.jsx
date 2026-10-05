@@ -84,7 +84,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
   const alumniAssocApplications = useAppStore(state => state.alumniAssocApplications) || [];
   const setAlumniAssocApplications = useAppStore(state => state.setAlumniAssocApplications);
 
-  // Mezun Derneği Başvuru State
+  // İESÜ Mezunlar Ağı Başvuru State
   const [assocAppSubmitted, setAssocAppSubmitted] = useState(false);
   const [assocForm, setAssocForm] = useState({
     type: 'Genel Üyelik', // 'Genel Üyelik' | 'Yönetim Ekibi Adaylığı'

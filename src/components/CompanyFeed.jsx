@@ -179,22 +179,22 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
       if (!effectiveCurrentUser) return true;
       return a.companyId === effectiveCurrentUser?.id || 
              a.company === effectiveCurrentUser?.name || 
-             a.companyName === effectiveCurrentUser?.name;
+             a.companyName === effectiveCurrentUser?.name ||
+             a.companyName === effectiveCurrentUser?.companyName ||
+             (effectiveCurrentUser?.companyName && a.company === effectiveCurrentUser?.companyName);
     });
-    if (storeApps.length > 0) {
-      return storeApps.map(a => ({
-        id: a.id,
-        applicantName: a.applicantName || a.name || 'Öğrenci Adayı',
-        applicantDept: a.applicantDept || a.department || 'Bölüm Belirtilmemiş',
-        jobTitle: a.jobTitle || 'Başvuru Yapılan Pozisyon',
-        status: a.status || 'Beklemede',
-        applicantPhone: a.applicantPhone || '0555 000 0000',
-        applicantEmail: a.applicantEmail || a.email || '-',
-        cvType: a.cvType || 'İESÜ Dijital CV',
-        coverLetter: a.coverLetter || 'Ön yazı belirtilmedi.'
-      }));
-    }
-    return companyCandidateApps;
+    const formattedStoreApps = storeApps.map(a => ({
+      id: a.id,
+      applicantName: a.applicantName || a.name || 'Öğrenci Adayı',
+      applicantDept: a.applicantDept || a.department || 'Bölüm Belirtilmemiş',
+      jobTitle: a.jobTitle || 'Başvuru Yapılan Pozisyon',
+      status: a.status || 'Beklemede',
+      applicantPhone: a.applicantPhone || '0555 000 0000',
+      applicantEmail: a.applicantEmail || a.email || '-',
+      cvType: a.cvType || 'İESÜ Dijital CV',
+      coverLetter: a.coverLetter || 'Ön yazı belirtilmedi.'
+    }));
+    return [...formattedStoreApps, ...companyCandidateApps];
   }, [applications, effectiveCurrentUser, companyCandidateApps]);
 
   const filteredCandidateApps = React.useMemo(() => {
@@ -207,7 +207,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
     if (setApplications) {
       setApplications(prev => (prev || []).map(a => a.id === appId ? { ...a, status: newStatus } : a));
     }
-    const targetCandidate = companyCandidateApps.find(a => a.id === appId);
+    const targetCandidate = allCandidateApps.find(a => a.id === appId);
     window.toast?.success?.(`Aday (${targetCandidate?.applicantName || 'Öğrenci'}) durumu "${newStatus}" olarak güncellendi.`);
   };
 
