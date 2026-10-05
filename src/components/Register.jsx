@@ -8,6 +8,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 import useAdminStore from '../brain/useAdminStore';
 import { getTenantConfig } from '../config/tenantConfig';
+import EDevletObsModal from './modals/EDevletObsModal';
 
 const REGISTRATION_UNAVAILABLE_MESSAGE = 'Kayıt servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.';
 const PROFILE_SAVE_FAILED_MESSAGE = 'Profil bilgileriniz kaydedilemedi. Lütfen tekrar deneyin veya Kariyer Geliştirme Merkezi ile iletişime geçin.';
@@ -21,6 +22,8 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   const [kvkkConsent, setKvkkConsent] = useState(true);
   const [registeredUser, setRegisteredUser] = useState(null);
   const [companyLogoData, setCompanyLogoData] = useState(null);
+  const [isEdevletModalOpen, setIsEdevletModalOpen] = useState(false);
+  const [isVerifiedByGov, setIsVerifiedByGov] = useState(false);
   const tenant = getTenantConfig();
 
   React.useEffect(() => {
@@ -39,6 +42,29 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleVerifiedData = (profile) => {
+    setIsVerifiedByGov(true);
+    if (accountType === 'student') {
+      setFormData(prev => ({
+        ...prev,
+        studentName: profile.name || prev.studentName,
+        studentId: profile.studentId || prev.studentId,
+        studentEmail: profile.email || prev.studentEmail,
+        studentDepartment: profile.department || prev.studentDepartment,
+        studentGrade: profile.grade || prev.studentGrade
+      }));
+    } else if (accountType === 'alumni') {
+      setFormData(prev => ({
+        ...prev,
+        alumniName: profile.name || prev.alumniName,
+        alumniId: profile.studentId || prev.alumniId,
+        alumniEmail: profile.email || prev.alumniEmail,
+        alumniDepartment: profile.department || prev.alumniDepartment,
+        graduationYear: profile.graduationYear || prev.graduationYear || '2023'
+      }));
+    }
   };
 
   const createAccount = async (email, password, mockPrefix) => {
@@ -484,9 +510,29 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
               ) : accountType === 'alumni' ? (
                 <>
                   <h2 className="text-2xl font-black text-gray-900 mb-2 text-center">Mezun İlk Giriş (Şifre Belirleme)</h2>
-                  <p className="text-center text-sm text-gray-500 font-medium mb-8">
+                  <p className="text-center text-sm text-gray-500 font-medium mb-6">
                     Mezuniyet bilgilerinizle hesabınızı oluşturun ve Esenyurt Kariyer Ağına katılın.
                   </p>
+
+                  {/* e-Devlet & YÖKSİS Otomatik Doldurma Butonu */}
+                  <div className="mb-6 p-4 bg-red-50/80 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-red-200 flex items-center justify-center shrink-0">
+                        <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-5 w-auto object-contain" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-black text-slate-900">e-Devlet & YÖKSİS ile Hızlı Doldur</h4>
+                        <p className="text-[11px] text-slate-600 font-medium">Mezuniyet ve bölüm bilgilerinizi resmî kütükten tek tıkla çekin.</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsEdevletModalOpen(true)}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-red-50 text-[#990000] border border-red-200 rounded-xl font-extrabold text-xs shadow-xs transition active:scale-95 cursor-pointer whitespace-nowrap"
+                    >
+                      YÖKSİS'ten Bilgileri Çek
+                    </button>
+                  </div>
 
                   <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 gap-4">
@@ -558,9 +604,29 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
               ) : (
                 <>
                   <h2 className="text-2xl font-black text-gray-900 mb-2 text-center">İlk Giriş (Şifre Belirleme)</h2>
-                  <p className="text-center text-sm text-gray-500 font-medium mb-8">
+                  <p className="text-center text-sm text-gray-500 font-medium mb-6">
                     Öğrenci numaranız ve bilgilerinizle kayıt oluşturun.
                   </p>
+
+                  {/* e-Devlet & Kampüs OBS Otomatik Doldurma Butonu */}
+                  <div className="mb-6 p-4 bg-red-50/80 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white border border-red-200 flex items-center justify-center shrink-0">
+                        <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-5 w-auto object-contain" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-black text-slate-900">e-Devlet & İESÜ OBS ile Hızlı Doldur</h4>
+                        <p className="text-[11px] text-slate-600 font-medium">Aktif öğrencilik ve fakülte bilgilerinizi tek tıkla forma aktarın.</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsEdevletModalOpen(true)}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-red-50 text-[#990000] border border-red-200 rounded-xl font-extrabold text-xs shadow-xs transition active:scale-95 cursor-pointer whitespace-nowrap"
+                    >
+                      OBS'den Bilgileri Çek
+                    </button>
+                  </div>
 
                   <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 gap-4">
@@ -689,6 +755,14 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           )}
         </div>
       </div>
+
+      <EDevletObsModal
+        isOpen={isEdevletModalOpen}
+        onClose={() => setIsEdevletModalOpen(false)}
+        initialRole={accountType === 'alumni' ? 'alumni' : 'student'}
+        mode="autofill"
+        onVerifiedData={handleVerifiedData}
+      />
     </div>
   );
 }

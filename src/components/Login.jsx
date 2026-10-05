@@ -6,14 +6,14 @@ import { auth, db } from '../utils/firebase';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
-
-
+import EDevletObsModal from './modals/EDevletObsModal';
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
   const { students, alumni, companies, academicStaff, setRegisterAccountType } = useAppStore();
   const [loginRole, setLoginRole] = useState('alumni');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEdevletModalOpen, setIsEdevletModalOpen] = useState(false);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -176,7 +176,22 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   };
 
   const handleEDevlet = () => {
-    setError("e-Devlet Kapısı entegrasyonu şu anda bakımda. Lütfen şifreniz ile giriş yapınız.");
+    setIsEdevletModalOpen(true);
+  };
+
+  const handleEDevletSuccessLogin = (profile) => {
+    try {
+      localStorage.setItem('iesu_mock_user', JSON.stringify(profile));
+      localStorage.setItem('iesu_user_role_v1', profile.role);
+      const s = useAppStore.getState();
+      s.setUserRole?.(profile.role);
+      s.setCurrentUser?.(profile);
+      s.setActivePortalBranch?.(profile.role);
+    } catch (e) { /* intentional */ }
+    setUserRole(profile.role);
+    if (setCurrentUser) setCurrentUser(profile);
+    setView(profile.role);
+    setIsEdevletModalOpen(false);
   };
 
   return (
@@ -341,22 +356,33 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </div>
           </div>
 
-          {/* e-Devlet Login Button */}
-          {loginRole === 'student' && (
+          {/* e-Devlet & Kampüs OBS Doğrulama Butonları */}
+          {(loginRole === 'student' || loginRole === 'alumni' || loginRole === 'academic') && (
             <>
               <div className="relative flex items-center py-5">
                 <div className="flex-grow border-t border-slate-200"></div>
-                <span className="flex-shrink-0 mx-4 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">veya</span>
+                <span className="flex-shrink-0 mx-4 text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">veya Resmî Giriş</span>
                 <div className="flex-grow border-t border-slate-200"></div>
               </div>
 
-              <button 
-                onClick={handleEDevlet}
-                className="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 py-3 px-4 rounded-2xl hover:bg-slate-50 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
-              >
-                <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-6 w-auto object-contain" />
-                <span className="font-bold text-xs">ile Giriş Yap</span>
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button 
+                  type="button"
+                  onClick={handleEDevlet}
+                  className="w-full flex items-center justify-center gap-2 bg-white border border-slate-200 hover:border-red-300 text-slate-700 py-3 px-3 rounded-2xl hover:bg-red-50/40 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
+                >
+                  <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-4 w-auto object-contain" />
+                  <span className="font-bold text-xs">e-Devlet ile Giriş</span>
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleEDevlet}
+                  className="w-full flex items-center justify-center gap-2 bg-white border border-slate-200 hover:border-red-300 text-slate-700 py-3 px-3 rounded-2xl hover:bg-red-50/40 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
+                >
+                  <Building2 size={16} className="text-[#990000]" />
+                  <span className="font-bold text-xs">İESÜ OBS ile Giriş</span>
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -366,6 +392,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           © 2026 Tüm Hakları Saklıdır. İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü.
         </p>
       </div>
+
+      <EDevletObsModal
+        isOpen={isEdevletModalOpen}
+        onClose={() => setIsEdevletModalOpen(false)}
+        initialRole={loginRole === 'alumni' ? 'alumni' : 'student'}
+        onSuccessLogin={handleEDevletSuccessLogin}
+      />
     </div>
   );
 }
