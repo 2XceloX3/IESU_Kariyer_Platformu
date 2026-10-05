@@ -69,7 +69,6 @@ export default function MainHeader({ setView, currentUser, userRole }) {
 
             {/* Nav Links (Desktop) */}
             <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
-              <button onClick={() => setView && setView('jobs')} className="hover:text-white hover:scale-105 transition-all text-amber-300 font-black">İş & Staj İlanları</button>
               <button onClick={() => setView && setView('about_us')} className="hover:text-white hover:scale-105 transition-all">Hakkımızda</button>
               <button onClick={() => setView && setView('services')} className="hover:text-white hover:scale-105 transition-all">Hizmetlerimiz</button>
               <button onClick={() => setView && setView('events_list')} className="hover:text-white hover:scale-105 transition-all">Etkinliklerimiz</button>
@@ -111,13 +110,6 @@ export default function MainHeader({ setView, currentUser, userRole }) {
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-slate-900/95 backdrop-blur-xl border-t border-white/10 px-6 py-4 space-y-3 animate-fade-in shadow-2xl">
             <div className="flex flex-col space-y-2 text-sm font-bold text-white/90">
-              <button 
-                onClick={() => { if (setView) setView('jobs'); setIsMobileMenuOpen(false); }} 
-                className="text-left py-2 px-3 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-400/30 hover:bg-amber-500/30 transition flex items-center justify-between"
-              >
-                <span>İş & Staj İlanları</span>
-                <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded-full">Yeni</span>
-              </button>
               <button 
                 onClick={() => { if (setView) setView('about_us'); setIsMobileMenuOpen(false); }} 
                 className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
