@@ -259,8 +259,8 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           {/* Soru 8: Çalışma Şekli */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-sky-400 block mb-1">Soru 8 — Çalışma Modeli</span>
-            <div className="text-2xl font-black text-white">{hasCheckupData ? (workModeData[0]?.count ?? 0) + ' Hibrit / ' + (workModeData[1]?.count ?? 0) + ' Ofis' : 'Veri yok'}</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">{hasCheckupData ? (workModeData[2]?.count ?? 0) + ' Remote / ' + (workModeData[3]?.count ?? 0) + ' Freelance' : 'Check-up verisi girilmedi'}</p>
+            <div className="text-2xl font-black text-white">{hasCheckupData ? (workModeData[0]?.count != null ? workModeData[0].count : '—') + ' Hibrit / ' + (workModeData[1]?.count != null ? workModeData[1].count : '—') + ' Ofis' : 'Veri yok'}</div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">{hasCheckupData ? (workModeData[2]?.count != null ? workModeData[2].count : '—') + ' Remote / ' + (workModeData[3]?.count != null ? workModeData[3].count : '—') + ' Freelance' : 'Check-up verisi girilmedi'}</p>
           </div>
 
           {/* Soru 9: Lisansüstü Eğitim */}
@@ -357,7 +357,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 8 — Çalışma Şekli</td>
                   <td className="p-3">Hibrit / Remote / Ofis</td>
-                  <td className="p-3 font-black text-sky-300">{hasCheckupData ? ((workModeData[0]?.count ?? 0) + ' kişi Hibrit') : 'Veri yok'}</td>
+                  <td className="p-3 font-black text-sky-300">{hasCheckupData ? (workModeData[0]?.count != null ? workModeData[0].count + ' kişi Hibrit' : 'Veri yok') : 'Veri yok'}</td>
                   <td className="p-3 text-slate-300">Esnek ve uzaktan çalışma tercihleri yaygınlaşmıştır.</td>
                 </tr>
                 <tr>
