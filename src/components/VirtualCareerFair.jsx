@@ -165,13 +165,20 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
-                    window.toast && window.toast.info("Akıllı Sistem: Özgeçmişiniz analiz ediliyor...");
+                    const dept = currentUser?.department || '';
+                    const skills = (currentUser?.skills || []).slice(0, 3).join(', ') || 'Temel Yetkinlikler';
+                    let targetSector = '';
+                    if (dept.toLowerCase().includes('hukuk')) targetSector = 'Hukuk';
+                    else if (dept.toLowerCase().includes('işletme') || dept.toLowerCase().includes('iktisat')) targetSector = 'Lojistik';
+                    else if (dept.toLowerCase().includes('mühendis')) targetSector = 'Savunma';
+                    
+                    window.toast && window.toast.info("Akıllı Sistem: Profil yetkinlikleriniz taranıyor...");
                     setTimeout(() => {
-                      setSearchQuery('Yazılım');
-                      window.toast && window.toast.success("✅ Yetkinliklerinize (React, Node.js) en uygun teknoloji firmaları filtrelendi.");
-                    }, 1500);
+                      setSearchQuery(targetSector);
+                      window.toast && window.toast.success(`✅ ${dept || 'Bölüm'} profilinize (${skills}) en uygun fuar stantları listelendi.`);
+                    }, 800);
                   }}
-                  className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold rounded-lg shadow-sm hover:shadow-md transition-all"
+                  className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer"
                 >
                   <Star size={14} /> Filtrele
                 </button>

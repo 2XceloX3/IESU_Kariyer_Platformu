@@ -10,7 +10,7 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 const INITIAL_PROPOSALS = [
   { id: 1, title: 'İESÜ Mezunlar Başarı & İhtiyaç Burs Fonu 2026', author: 'Dr. Mehmet Y. (2015 Mezunu)', category: 'Burs & Sosyal Katkı', date: '3 Gün Kaldı', for: 1420, against: 85, status: 'active' },
   { id: 2, title: 'Global Diaspora: Berlin & Londra Mezunlar Çalışma Masası', author: 'Zeynep Kaya (Global Ağı)', category: 'Uluslararası Ağ', date: 'Oylama Kapandı', for: 980, against: 32, status: 'passed' },
-  { id: 3, title: 'Genç Mezunlar Girişimcilik & Melek Yatırım Çekirdek Havuzu', author: 'İESÜMED Yönetim Kurulu', category: 'Girişim & Yatırım', date: '5 Gün Kaldı', for: 740, against: 190, status: 'active' },
+  { id: 3, title: 'Genç Mezunlar Girişimcilik & Melek Yatırım Çekirdek Havuzu', author: 'İESÜ Mezunlar Portalı Koordinasyon Kurulu', category: 'Girişim & Yatırım', date: '5 Gün Kaldı', for: 740, against: 190, status: 'active' },
 ];
 
 export default function AlumniDAO({ setView, currentUser, userRole = 'alumni', setSelectedUserId, previousView = 'alumni' }) {
