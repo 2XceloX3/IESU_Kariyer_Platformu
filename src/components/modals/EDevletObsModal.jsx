@@ -174,7 +174,7 @@ export default function EDevletObsModal({
             </div>
           </div>
           <p className="text-xs text-red-100/90 leading-relaxed font-medium">
-            2547 Sayılı Yükseköğretim Kanunu ve YÖKSİS Entegrasyon Protokolü kapsamında öğrenci/mezun durumunuz anlık doğrulanır.
+            Öğrenci/mezun durumu doğrulama önizlemesi — canlı YÖKSİS API bağlantısı yoktur.
           </p>
         </div>
 

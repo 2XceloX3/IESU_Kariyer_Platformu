@@ -255,7 +255,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                             `Sertifika Kodu: ${cert.code}`,
                             `e-Devlet Barkod Numarası: ${cert.edevletBarcode}`,
                             `Veriliş Tarihi: ${cert.date}`,
-                            `Durum: ${cert.status} (Resmi İESÜ & YÖK Akreditasyon Standardı)`,
+                            `Durum: ${cert.status} (İESÜ kurum içi belge standardı (önizleme))`,
                             `Blokzincir Doğrulama Özeti: ${cert.hash}`,
                             `Bu belge İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü ve e-Devlet Kapısı üzerinden doğrulanabilir.`
                           ]

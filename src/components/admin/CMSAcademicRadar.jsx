@@ -582,7 +582,7 @@ export default function CMSAcademicRadar() {
 
   const handleExportFacultyExcel = (faculty) => {
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-    csvContent += `FAKÜLTE / YÜKSEKOKUL: ${faculty.facultyName} (${faculty.code})\n`;
+    csvContent += `FAKÜLTE / YÜKSEKOKUL: ${faculty.facultyName} (${faculty.code}) — ÖRNEK / ÖNİZLEME VERİ\n`;
     csvContent += `Tür;Başarı Oranı;İstihdam Oranı;Ortalama Süre;Aktif Staj;Tamamlanan;Bekleyen\n`;
     csvContent += `${faculty.type};${faculty.successRate || '%96'};${faculty.jobPlacementRate || '%85'};${faculty.avgDuration || '30 Gün'};${faculty.activeCount};${faculty.completedCount};${faculty.pendingCount}\n\n`;
     
@@ -612,6 +612,7 @@ export default function CMSAcademicRadar() {
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
     csvContent += `İSTANBUL ESENYURT ÜNİVERSİTESİ - TÜM AKADEMİK BİRİMLER STAJ & AKADEMİK RADAR RAPORU\n`;
     csvContent += `Tarih: ${new Date().toLocaleDateString('tr-TR')}\n\n`;
+    csvContent += `Not: Örnek / önizleme veri — resmi canlı istatistik değildir\n`;
     csvContent += `Fakülte Kodu;Fakülte/MYO Adı;Tür;Başarı Oranı;İstihdam Oranı;Ortalama Süre;Aktif Staj;Tamamlanan;Bekleyen;Toplam Program Sayısı\n`;
 
     facultyStatsData.forEach(fac => {
@@ -911,16 +912,16 @@ export default function CMSAcademicRadar() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-[#990000]"></span> 2. Fakülte & Program Akademik Radarı (9 Akademik Birim)
+              <span className="w-3 h-3 rounded-full bg-[#990000]"></span> 2. Fakülte & Program Akademik Radarı (9 Akademik Birim) <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">Örnek veri</span>
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">Üniversitemize bağlı 6 fakülte ve 3 meslek yüksekokulunun canlı staj yük dağılımı.</p>
+            <p className="text-xs text-slate-500 mt-0.5">Üniversitemize bağlı 6 fakülte ve 3 meslek yüksekokulunun staj yük dağılımı (önizleme — örnek veri).</p>
           </div>
 
           <button
             onClick={handleExportAllFacultiesExcel}
             className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white rounded-2xl text-xs font-black transition flex items-center gap-2 shadow-md cursor-pointer self-start sm:self-auto"
           >
-            <Download size={15} /> Tüm Birimleri Toplu Excele Aktar (.CSV)
+            <Download size={15} /> Toplu Excel (.CSV) — örnek veri
           </button>
         </div>
 
@@ -989,11 +990,11 @@ export default function CMSAcademicRadar() {
                 {/* Additional Statistical Analytics Footer */}
                 <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-3 gap-1 text-[10px] text-center font-bold text-slate-600">
                   <div className="bg-emerald-50 text-emerald-900 p-1.5 rounded-xl border border-emerald-100">
-                    <span className="block text-[8px] uppercase text-emerald-600">Başarı</span>
+                    <span className="block text-[8px] uppercase text-emerald-600">Başarı <span className="text-amber-600">· örnek</span></span>
                     <span>{fac.successRate || '%97.0'}</span>
                   </div>
                   <div className="bg-blue-50 text-blue-900 p-1.5 rounded-xl border border-blue-100">
-                    <span className="block text-[8px] uppercase text-blue-600">İstihdam</span>
+                    <span className="block text-[8px] uppercase text-blue-600">İstihdam <span className="text-amber-600">· örnek</span></span>
                     <span>{fac.jobPlacementRate || '%85.0'}</span>
                   </div>
                   <div className="bg-purple-50 text-purple-900 p-1.5 rounded-xl border border-purple-100">
@@ -1306,11 +1307,11 @@ export default function CMSAcademicRadar() {
               {/* Analytics Header Summary */}
               <div className="grid grid-cols-3 gap-3 bg-red-50/70 p-4 rounded-2xl text-center border border-red-100">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Fakülte Başarı Oranı</span>
+                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Fakülte Başarı Oranı <span className="text-amber-600">(örnek)</span></span>
                   <span className="text-base font-black text-emerald-600">{selectedFacultyModal.successRate || '%97.2'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Staj İle İstihdam</span>
+                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Staj İle İstihdam <span className="text-amber-600">(örnek)</span></span>
                   <span className="text-base font-black text-blue-600">{selectedFacultyModal.jobPlacementRate || '%88.5'}</span>
                 </div>
                 <div>

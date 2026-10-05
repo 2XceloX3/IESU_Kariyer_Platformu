@@ -455,7 +455,7 @@ export default function CMSSSP({ sspEnabled, setSspEnabled, sspUsers, setSspUser
                 <button 
                   type="button"
                   onClick={() => { 
-                    toast.info('Resmi YÖK / Kurumsal Akreditasyon PDF raporu oluşturuluyor...'); 
+                    toast.info('Kurum içi KGB PDF raporu oluşturuluyor (önizleme)...'); 
                     setTimeout(()=>toast.success('IESU_KGB_Kariyer_Akreditasyon_Raporu_2024.pdf indirildi!'), 1500); 
                   }}
                   className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition shadow-xs"

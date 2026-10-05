@@ -14,7 +14,7 @@ export default function CompanySurveys({ surveys, currentUser, addNotification }
       title: 'İESÜ Mezun İstihdamı & İşveren Memnuniyet Anketi',
       description: 'Kurumunuzda istihdam edilen İESÜ mezunlarının mesleki yetkinlikleri ve iş başı performans değerlendirmesi.',
       targetAudience: 'Firmalar',
-      reward: 'YÖK Akreditasyon Katkı Belgesi',
+      reward: 'Kurum içi katkı belgesi (önizleme)',
       deadline: '15 Kasım 2026',
       questions: [
         {
@@ -125,7 +125,7 @@ export default function CompanySurveys({ surveys, currentUser, addNotification }
         </div>
         <div>
           <h2 className="text-lg font-black text-slate-900 leading-tight">İşveren & Sektörel Değerlendirme Anketleri</h2>
-          <p className="text-xs text-slate-500 font-medium">YÖK Kalite Güvencesi ve İESÜ Müfredat Geliştirme Süreçlerine Katkınız</p>
+          <p className="text-xs text-slate-500 font-medium">İESÜ kalite süreçleri ve müfredat geliştirmeye katkınız (önizleme)</p>
         </div>
       </div>
 

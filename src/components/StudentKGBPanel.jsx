@@ -974,7 +974,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   RESMİ KARİYER GELİŞİM BELGESİ (KGB) VE YETENEK KARNESİ
                 </h3>
                 <p className="text-[11px] text-slate-600 font-mono font-semibold">
-                  Belge Kayıt No: İESÜ-KGB-2026/0941 • YÖKSİS Entegrasyon Kodu: TR-34-IESU-KGB
+                  Belge Kayıt No: İESÜ-KGB-2026/0941 • Kurum içi referans (önizleme)
                 </p>
               </div>
 

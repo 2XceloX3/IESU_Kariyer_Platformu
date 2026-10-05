@@ -78,7 +78,7 @@ export default function SurveyIntelligenceModal({ isOpen, onClose }) {
             <div className="flex items-center gap-2 text-amber-300 text-xs font-bold uppercase tracking-wider mb-1">
               <Sparkles size={14} className="animate-pulse" /> Data Intelligence Office — Survey Intelligence Agent
             </div>
-            <h2 className="text-2xl font-black tracking-tight">Dinamik Anket & YÖK Akreditasyon Analiz Zekası</h2>
+            <h2 className="text-2xl font-black tracking-tight">Dinamik Anket & Kurum içi Analiz Önizlemesi</h2>
             <p className="text-red-100/90 text-xs mt-1">
               Çok boyutlu anket kırılımları, Likert/NPS ısı haritaları ve YÖK Kalite Standartlarına uygun otomatik raporlama motoru.
             </p>
@@ -108,7 +108,7 @@ export default function SurveyIntelligenceModal({ isOpen, onClose }) {
                 activeTab === 'yok_report' ? 'bg-white text-[#990000] border-t-2 border-[#990000] shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <Award size={16} /> YÖK / YÖKAK Akreditasyon Çıktısı
+              <Award size={16} /> Kurum içi anket çıktısı (önizleme)
             </button>
           </div>
 
@@ -274,12 +274,12 @@ export default function SurveyIntelligenceModal({ isOpen, onClose }) {
             {activeTab === 'yok_report' && (
               <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-5 text-center py-10">
                 <Award size={48} className="mx-auto text-[#990000] animate-bounce" />
-                <h3 className="text-lg font-black text-gray-900">YÖK & YÖKAK Akreditasyon Raporlama Motoru</h3>
+                <h3 className="text-lg font-black text-gray-900">Kurum içi anket raporlama önizlemesi</h3>
                 <p className="text-xs text-gray-600 max-w-xl mx-auto">
                   İstanbul Esenyurt Üniversitesi Kalite Güvence Komisyonu ve YÖK denetimleri için anket verilerini anında resmi PDF formatında paketler.
                 </p>
                 <button 
-                  onClick={() => { if (window.toast) window.toast.success("YÖK Akreditasyon Anket Raporu (PDF) başarıyla oluşturuldu."); }}
+                  onClick={() => { if (window.toast) window.toast.success("Kurum içi anket raporu (PDF) oluşturuldu (önizleme)."); }}
                   className="px-6 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-2xl text-xs transition shadow-lg inline-flex items-center gap-2 cursor-pointer"
                 >
                   <Download size={16} /> YÖK Kalite Standartları PDF Raporunu İndir

@@ -821,12 +821,12 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                     const protectedViews = ['student_kgb', 'staj', 'mentor_match', 'cvbuilder', 'startup_incubator', 'incubator', 'research_hub'];
                     if (protectedViews.includes(target)) {
                       if (currentUser) { setView && setView(target); }
-                      else { setView && setView('register'); }
+                      else { setView && setView('login'); }
                     } else {
                       const protectedViews = ['student_kgb', 'staj', 'mentor_match', 'cvbuilder', 'startup_incubator', 'incubator', 'research_hub'];
                     if (protectedViews.includes(target)) {
                       if (currentUser) { setView && setView(target); }
-                      else { setView && setView('register'); }
+                      else { setView && setView('login'); }
                     } else {
                       if (setView) setView(target);
                     }

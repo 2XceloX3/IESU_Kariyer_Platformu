@@ -21,7 +21,7 @@ export default function NelerOluyorPanel({ onSelectAnnouncement, setView }) {
         title: titleClean,
         category: item.category || 'Haber & Rapor',
         date: item.date || '02 Ocak 2026',
-        badge: item.badge || (idx === 0 ? '🔥 YÖK Resmi Raporu' : idx === 1 ? '🎓 Akreditasyon Başarısı' : '🚀 TEKNOFEST 2026'),
+        badge: item.badge || (idx === 0 ? '🔥 Mezun istihdam önizlemesi' : idx === 1 ? '🎓 Akreditasyon Başarısı' : '🚀 TEKNOFEST 2026'),
         summary: descClean ? (descClean.slice(0, 120) + '...') : 'İçerik detayları için tıklayınız.',
         rawItem: item
       };
@@ -33,7 +33,7 @@ export default function NelerOluyorPanel({ onSelectAnnouncement, setView }) {
       title: 'YÖK Üniversite İzleme ve Değerlendirme Genel Raporu 2025’te Önemli Başarı',
       category: 'Haber & Rapor',
       date: '02 Ocak 2026',
-      badge: '🔥 YÖK Resmi Raporu',
+      badge: '🔥 Mezun istihdam önizlemesi',
       summary: 'İstanbul Esenyurt Üniversitesi, YÖK 2025 genel değerlendirme raporunda Ar-Ge, mezun istihdamı ve toplumsal katkı alanlarında yüksek başarı kaydetti.',
       rawItem: liveNewsData?.[0] || null
     },

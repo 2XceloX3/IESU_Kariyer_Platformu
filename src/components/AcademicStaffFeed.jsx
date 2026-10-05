@@ -256,11 +256,11 @@ export default function AcademicStaffFeed({
               {/* Öğrenci & Stajyer Sayıları */}
               <div className="grid grid-cols-2 gap-4 bg-purple-50/60 p-3 rounded-2xl border border-purple-100 text-center w-full mt-6">
                 <div>
-                  <p className="text-xl font-black text-[#4C1D95]">{stats.totalStudents}</p>
+                  <p className="text-xl font-black text-[#4C1D95]">{stats.totalStudents} <span className="text-[9px] font-black text-amber-600 align-middle">Örnek</span></p>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">ÖĞRENCİ</p>
                 </div>
                 <div className="border-l border-purple-200">
-                  <p className="text-xl font-black text-emerald-600">{stats.activeInterns}</p>
+                  <p className="text-xl font-black text-emerald-600">{stats.activeInterns} <span className="text-[9px] font-black text-amber-600 align-middle">Örnek</span></p>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">STAJYER</p>
                 </div>
               </div>

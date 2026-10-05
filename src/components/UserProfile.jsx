@@ -2622,7 +2622,7 @@ export default function UserProfile({
                     <div className="flex items-start gap-3 p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
                       <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-xs font-bold text-slate-900">YÖK & Akreditasyon Raporlaması</p>
+                        <p className="text-xs font-bold text-slate-900">Mezun istihdam raporu (önizleme)</p>
                         <p className="text-[11px] text-slate-500">Mezun istihdam verilerini Excel ve PDF çıktısı alabilme yetkisi.</p>
                       </div>
                     </div>

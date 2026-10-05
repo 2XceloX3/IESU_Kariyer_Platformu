@@ -45,7 +45,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
       <!DOCTYPE html>
       <html>
       <head>
-        <title>İESÜ YÖK Mezun İstihdam ve Akreditasyon Raporu (2026)</title>
+        <title>İESÜ Mezun İstihdam Raporu — Önizleme (2026)</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; }
           .header { border-bottom: 3px solid #990000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
@@ -65,12 +65,12 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <div class="header">
           <div>
             <div class="title">İSTANBUL ESENYURT ÜNİVERSİTESİ</div>
-            <div class="subtitle">Kariyer Geliştirme Merkezi — YÖK Mezun Takip & Akreditasyon Raporu</div>
+            <div class="subtitle">Kariyer Geliştirme Merkezi — Kurum içi mezun istihdam önizlemesi (örnek / tahmini veri)</div>
           </div>
           <div><strong>Tarih:</strong> ${new Date().toLocaleDateString('tr-TR')}</div>
         </div>
 
-        <h3>1. YÖK Akreditasyon ve İstihdam Göstergeleri</h3>
+        <h3>1. Mezun İstihdam Göstergeleri <span style="font-size:12px;color:#b45309;background:#fef3c7;padding:2px 8px;border-radius:999px;margin-left:8px;">Önizleme — gerçek veri yokken örnek</span></h3>
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-label">Kendi Bölümüyle İlgili Çalışan</div>
@@ -115,7 +115,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         </table>
 
         <div class="footer">
-          Bu rapor İstanbul Esenyurt Üniversitesi Kariyer Platformu Otomatik YÖK Akreditasyon Servisi tarafından üretilmiştir. © 2026
+          Bu çıktı İstanbul Esenyurt Üniversitesi Kariyer Platformu kurum içi mezun istihdam önizlemesidir; resmi YÖK akreditasyon belgesi değildir. © 2026
         </div>
         <script>window.print();</script>
       </body>
@@ -189,7 +189,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             onClick={exportYokReport}
             className="bg-[#990000] hover:bg-red-800 text-white px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-md transition-all cursor-pointer active:scale-95"
           >
-            <Download size={16} /> Mezun Akreditasyon Raporu Çıktısı Al (PDF/Yazdır)
+            <Download size={16} /> Mezun İstihdam Önizleme Raporu (PDF/Yazdır)
           </button>
         } 
       />
@@ -208,7 +208,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-blue-900/60 pb-4">
           <div>
             <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
-              <Sparkles size={14} /> Kurumsal Akreditasyon & İstihdam Performans Motoru
+              <Sparkles size={14} /> Kurum içi mezun istihdam önizlemesi · Örnek / tahmini veri
             </span>
             <h3 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
               <GraduationCap className="text-red-500" size={26} /> Mezun İstihdamı & Bölüm Uyum Analitiği
@@ -221,7 +221,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             onClick={exportYokReport}
             className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shrink-0"
           >
-            <FileText size={15} /> Resmî Akreditasyon Raporu Al
+            <FileText size={15} /> Önizleme Raporu Al
           </button>
         </div>
         
@@ -230,7 +230,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           {/* Soru 1: Aktif İstihdam */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block mb-1">Soru 1 — Aktif Çalışma Oranı</span>
-            <div className="text-2xl font-black text-white">%85 Aktif Çalışıyor</div>
+            <div className="text-2xl font-black text-white">%85 Aktif Çalışıyor <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/40 px-2 py-0.5 rounded-full align-middle">Örnek / Tahmini veri</span></div>
             <p className="text-[11px] text-blue-200 font-semibold mt-1">Özel Şirket, Kamu veya Kendi İşi</p>
           </div>
 
@@ -324,7 +324,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 1 — Aktif İstihdam</td>
                   <td className="p-3">Aktif Çalışanlar</td>
-                  <td className="p-3 font-black text-emerald-400">%85 Evet</td>
+                  <td className="p-3 font-black text-emerald-400">%85 Evet <span className="ml-1 text-[9px] font-bold text-amber-300">(örnek)</span></td>
                   <td className="p-3 text-slate-300">Mezunların ezici çoğunluğu iş gücüne katılmıştır.</td>
                 </tr>
                 <tr>

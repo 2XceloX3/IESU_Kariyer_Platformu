@@ -128,14 +128,6 @@ export default function HeroSlider({ onSelectSlide, setView }) {
               <span>{siteConfig?.ctaButtonText || 'Hemen Başla'}</span>
               <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <button
-              onClick={() => {
-                if (setView) setView('register');
-              }}
-              className="px-5 py-2.5 rounded-xl bg-white text-[#990000] font-black text-xs sm:text-sm shadow-xl hover:bg-red-50 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <span>Kayıt Ol / Platforma Katıl</span>
-            </button>
           </div>
         </div>
       </div>

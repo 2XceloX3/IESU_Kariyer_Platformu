@@ -365,7 +365,7 @@ export default function ResearchOSHub({ setView, currentUser, userRole, setSelec
               <Sparkles size={13} className="text-purple-300" /> Enterprise Research OS Layer
             </span>
             <h2 className="text-2xl md:text-3xl font-black mt-3 mb-2 tracking-tight">
-              Akademik Araştırma, Makale & Ar-Ge Ekosistemi
+              Akademik Araştırma, Makale & Ar-Ge Ekosistemi <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-amber-200 bg-amber-500/20 border border-amber-300/40 px-2 py-0.5 rounded-full align-middle">Örnek / önizleme</span>
             </h2>
             <p className="text-purple-100/90 text-xs md:text-sm font-semibold max-w-2xl leading-relaxed">
               Üniversitemiz bünyesinde yayınlanan uluslararası makaleleri inceleyin, 110+ Ar-Ge laboratuvarından ekipman rezerve edin ve TÜBİTAK/BAP araştırma projelerine başvurun.
@@ -381,7 +381,7 @@ export default function ResearchOSHub({ setView, currentUser, userRole, setSelec
                     : 'bg-purple-950/80 text-purple-200 hover:text-white hover:bg-purple-900/80 border border-purple-800/40'
                 }`}
               >
-                <BookOpen size={16} /> Makale & Bildiri İndeksi ({PAPERS_DATA.length})
+                <BookOpen size={16} /> Makale & Bildiri İndeksi ({PAPERS_DATA.length}) · örnek
               </button>
               <button 
                 onClick={() => setActiveTab('labs')}

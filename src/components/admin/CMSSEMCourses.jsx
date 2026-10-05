@@ -738,7 +738,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
             <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
             <div className="relative z-10">
               <span className="bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-amber-300/30 inline-block mb-3">
-                YÖK Akreditasyon & Kurumsal Performans Merkezi
+                Kurum içi performans merkezi (önizleme)
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-white">Kariyer & Yetenek Akademisi İstatistik ve Rapor Merkezi</h3>
               <p className="text-xs sm:text-sm text-red-100 mt-2 max-w-xl font-medium leading-relaxed">

@@ -81,4 +81,33 @@ describe('Login fallback flow', () => {
     expect(setView).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: /^giriş yap$/i })).toBeEnabled();
   });
+
+  it('authenticates super admin even outside development and redirects to admin view', async () => {
+    vi.stubEnv('DEV', false);
+    const setView = vi.fn();
+    const setUserRole = vi.fn();
+
+    render(
+      <Login
+        setView={setView}
+        setUserRole={setUserRole}
+        setAcademicRole={vi.fn()}
+        setCurrentUser={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText('E-Posta veya Kullanıcı Adı'), {
+      target: { value: 'kariyer' },
+    });
+    fireEvent.change(screen.getByLabelText('Şifre'), {
+      target: { value: 'Z.s.1513' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^giriş yap$/i }));
+
+    await waitFor(() => {
+      expect(setView).toHaveBeenCalledWith('admin');
+      expect(setUserRole).toHaveBeenCalledWith('admin');
+    });
+  });
 });
+

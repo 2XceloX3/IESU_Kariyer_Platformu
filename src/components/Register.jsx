@@ -521,7 +521,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                         <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-5 w-auto object-contain" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-black text-slate-900">e-Devlet & YÖKSİS ile Hızlı Doldur</h4>
+                        <h4 className="text-xs font-black text-slate-900">e-Devlet ile hızlı doldur (önizleme)</h4>
                         <p className="text-[11px] text-slate-600 font-medium">Mezuniyet ve bölüm bilgilerinizi resmî kütükten tek tıkla çekin.</p>
                       </div>
                     </div>
@@ -530,7 +530,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       onClick={() => setIsEdevletModalOpen(true)}
                       className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-red-50 text-[#990000] border border-red-200 rounded-xl font-extrabold text-xs shadow-xs transition active:scale-95 cursor-pointer whitespace-nowrap"
                     >
-                      YÖKSİS'ten Bilgileri Çek
+                      Örnek bilgileri doldur (önizleme)
                     </button>
                   </div>
 
