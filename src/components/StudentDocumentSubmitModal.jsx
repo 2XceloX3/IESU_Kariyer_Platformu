@@ -22,18 +22,19 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
 
   const [form, setForm] = useState({
     type: 'Zorunlu Yaz Stajı (30 Gün)',
-    company: 'Aselsan A.Ş.',
-    startDate: '2026-07-01',
-    endDate: '2026-08-15',
-    sgkBarcode: '2026-SGK-' + Math.floor(10000 + Math.random() * 90000),
+    company: '',
+    startDate: '',
+    endDate: '',
+    sgkBarcode: '',
   });
 
   const [files, setFiles] = useState({
-    doc1: { name: 'FR.KGM.12_IslakImzaliForm.pdf', size: '2.4 MB', uploaded: true, title: '1. İmzalı Başvuru Formu' },
-    doc2: { name: 'eDevlet_SGK_Barkodlu.pdf', size: '1.1 MB', uploaded: true, title: '2. SGK Müstahaklık Belgesi' },
-    doc3: { name: 'TC_Kimlik_Fotokopisi.pdf', size: '850 KB', uploaded: true, title: '3. T.C. Kimlik Fotokopisi' },
-    doc4: { name: 'ISG_Egitim_Sertifikasi.pdf', size: '1.8 MB', uploaded: true, title: '4. İSG Eğitimi Belgesi / Sözleşme' }
+    doc1: { name: '', size: '', uploaded: false, title: '1. İmzalı Başvuru Formu' },
+    doc2: { name: '', size: '', uploaded: false, title: '2. SGK Müstahaklık Belgesi' },
+    doc3: { name: '', size: '', uploaded: false, title: '3. T.C. Kimlik Fotokopisi' },
+    doc4: { name: '', size: '', uploaded: false, title: '4. İSG Eğitimi Belgesi / Sözleşme' }
   });
+  const [submitting, setSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
@@ -58,65 +59,74 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
 
   const uploadedCount = Object.values(files).filter(f => f.uploaded).length;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.company.trim()) {
       window.toast?.error("Lütfen firma veya kurum adını girin.");
       return;
     }
 
+    const authUid = effectiveCurrentUser?.uid || effectiveCurrentUser?.id || null;
+    if (!authUid) {
+      window.toast?.error('Staj başvurusu için Firebase oturumu gerekli.');
+      return;
+    }
+
     // GANO (GPA) Validation Rule: ONLY for CBİKO Ulusal Staj Programı
     if (form.type === 'CBİKO Ulusal Staj Programı') {
       const isAssociateDegree1stYear = (effectiveCurrentUser?.degreeType === 'Ön Lisans' || effectiveCurrentUser?.degreeType === 'Önlisans' || effectiveCurrentUser?.programType === 'Ön Lisans') && (effectiveCurrentUser?.classYear === '1. Sınıf' || effectiveCurrentUser?.classYear === '1');
-      const studentGpa = parseFloat(effectiveCurrentUser?.gpa || effectiveCurrentUser?.gno || '2.50');
+      const gpaRaw = effectiveCurrentUser?.gpa ?? effectiveCurrentUser?.gno;
+      const studentGpa = gpaRaw != null && gpaRaw !== '' ? parseFloat(gpaRaw) : NaN;
 
-      if (!isAssociateDegree1stYear && studentGpa < 2.00) {
+      if (!isAssociateDegree1stYear && !(studentGpa >= 2.00)) {
         window.toast?.error("Ulusal Staj Programı başvurularında GANO ortalamasının 4.00 üzerinden en az 2.00 olması gerekmektedir (Ön Lisans 1. Sınıf öğrencileri hariç).");
         return;
       }
     }
 
     const newApp = {
-      id: 'app_' + Date.now(),
-      userId: effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null,
-      studentId: effectiveCurrentUser?.studentId || '20240001',
-      name: effectiveCurrentUser?.name || 'Alperen Yılmaz',
-      no: effectiveCurrentUser?.studentId || '220401015',
-      department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
+      id: 'INT-' + Date.now(),
+      userId: authUid,
+      studentId: authUid,
+      name: effectiveCurrentUser?.name || 'Öğrenci',
+      no: effectiveCurrentUser?.studentId || effectiveCurrentUser?.studentNo || '',
+      department: effectiveCurrentUser?.department || '',
+      departmentId: effectiveCurrentUser?.departmentId || null,
       type: form.type,
-      company: form.company,
+      company: form.company.trim(),
       status: 'Onay Bekliyor',
-      date: 'Bugün, ' + new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-      startDate: form.startDate,
-      endDate: form.endDate,
-      sgkBarcode: form.sgkBarcode,
-      sgkStatus: 'e-Devlet Barkodlu Doğrulandı',
-      fileUrl: files.doc1.name,
-      uploadedFiles: files
+      advisorStatus: 'pending',
+      companyStatus: 'pending',
+      date: new Date().toLocaleDateString('tr-TR'),
+      startDate: form.startDate || null,
+      endDate: form.endDate || null,
+      sgkBarcode: form.sgkBarcode || '',
+      sgkStatus: form.sgkBarcode ? 'Barkod girildi' : '',
+      fileUrl: files.doc1.name || null,
+      uploadedFilesMeta: Object.fromEntries(
+        Object.entries(files).map(([k, v]) => [k, { name: v.name, size: v.size, uploaded: !!v.uploaded, title: v.title }])
+      ),
     };
+
+    setSubmitting(true);
+    try {
+      const { createInternshipRequest } = await import('../services/internshipsFs');
+      await createInternshipRequest(newApp);
+    } catch (err) {
+      window.toast?.error?.(err?.message || 'Staj kaydı Firestore\'a yazılamadı');
+      setSubmitting(false);
+      return;
+    }
 
     if (setInternships) {
       setInternships([newApp, ...internships]);
     }
-    if (setApplications) {
-      const unifiedApp = {
-        ...newApp,
-        jobTitle: `Staj Evrak Paketi (${form.type})`,
-        applicantName: effectiveCurrentUser?.name || newApp.name,
-        applicantId: effectiveCurrentUser?.id || newApp.userId,
-        applicantEmail: effectiveCurrentUser?.email || 'ogrenci@esenyurt.edu.tr',
-        applicantPhone: effectiveCurrentUser?.phone || '0555 000 0000',
-        applicantDept: effectiveCurrentUser?.department || newApp.department,
-        status: 'Beklemede'
-      };
-      setApplications([unifiedApp, ...applications]);
-    }
 
     try {
-      eventBus.emit('application:status', { 
+      eventBus.emit('application:status', {
         type: 'internship_document_submitted',
         application: newApp,
-        student: effectiveCurrentUser?.name || newApp.name,
+        student: newApp.name,
         company: form.company
       });
     } catch (_) {}
@@ -125,11 +135,12 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
       addNotification({
         id: 'NOTIF-' + Date.now(),
         type: 'success',
-        message: `📄 ${form.type} evrak paketi (${uploadedCount} Belge) başarıyla Akademisyen ve KGM Yönetici Onay Havuzuna iletildi!`
+        message: `📄 ${form.type} evrak paketi (${uploadedCount} Belge) Akademisyen / KGM onay havuzuna iletildi.`
       });
     }
 
-    window.toast?.success(`✅ Toplam ${uploadedCount} adet resmî staj evrakınız başarıyla yüklendi! Hem Akademisyen Hem de Yönetici Onay Havuzuna iletildi.`);
+    window.toast?.success(`✅ Staj başvurunuz kaydedildi (${uploadedCount} belge meta).`);
+    setSubmitting(false);
     onClose();
   };
 
@@ -366,7 +377,7 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
                 İptal
               </button>
               <button
-                type="submit"
+                type="submit" disabled={submitting}
                 className="px-6 py-2.5 bg-gradient-to-r from-red-900 to-[#990000] hover:from-red-800 hover:to-red-700 text-white rounded-xl text-xs font-black shadow-lg shadow-red-900/30 transition flex items-center gap-2 cursor-pointer"
               >
                 <CheckCircle2 size={16} /> {uploadedCount} Evrakı Gönder

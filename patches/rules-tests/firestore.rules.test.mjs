@@ -182,3 +182,77 @@ describe.skipIf(!EMU)('jobs companyId create binding', () => {
     await assertFails(updateDoc(doc(db, 'jobs/j-upd2'), { status: 'Pasif' }));
   });
 });
+
+
+describe.skipIf(!EMU)('internships student binding', () => {
+  beforeEach(async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await setDoc(doc(db, 'users/stu1'), { role: 'student' });
+      await setDoc(doc(db, 'users/acad1'), { role: 'academic' });
+      await setDoc(doc(db, 'users/stu2'), { role: 'student' });
+    });
+  });
+
+  it('allows student create with studentId == auth.uid', async () => {
+    const db = authed('stu1');
+    await assertSucceeds(setDoc(doc(db, 'internships/i1'), {
+      studentId: 'stu1',
+      company: 'Firma A',
+      status: 'Onay Bekliyor',
+      advisorStatus: 'pending',
+    }));
+  });
+
+  it('denies student create for another studentId', async () => {
+    const db = authed('stu1');
+    await assertFails(setDoc(doc(db, 'internships/i2'), {
+      studentId: 'stu2',
+      company: 'Firma A',
+      status: 'Onay Bekliyor',
+      advisorStatus: 'pending',
+    }));
+  });
+
+  it('allows academic to approve', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'internships/i3'), {
+        studentId: 'stu1',
+        company: 'Firma A',
+        status: 'Onay Bekliyor',
+        advisorStatus: 'pending',
+      });
+    });
+    const db = authed('acad1', { role: 'academic' });
+    await assertSucceeds(updateDoc(doc(db, 'internships/i3'), {
+      status: 'Onaylandı',
+      advisorStatus: 'approved',
+      studentId: 'stu1',
+      reviewedBy: 'acad1',
+    }));
+  });
+
+  it('denies other student reading foreign internship', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'internships/i4'), {
+        studentId: 'stu1',
+        company: 'Firma A',
+        status: 'Onay Bekliyor',
+      });
+    });
+    const db = authed('stu2');
+    await assertFails(getDoc(doc(db, 'internships/i4')));
+  });
+
+  it('allows owner student to read own internship', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'internships/i5'), {
+        studentId: 'stu1',
+        company: 'Firma A',
+        status: 'Onay Bekliyor',
+      });
+    });
+    const db = authed('stu1');
+    await assertSucceeds(getDoc(doc(db, 'internships/i5')));
+  });
+});

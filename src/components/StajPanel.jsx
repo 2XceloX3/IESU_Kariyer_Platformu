@@ -12,49 +12,50 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   const [activeTab, setActiveTab] = useState('surec');
-  const [internshipStatus, setInternshipStatus] = useState(() => {
-    try {
-      const saved = localStorage.getItem('iesu_internship_status_v1');
-      return saved ? JSON.parse(saved) : {
-        company: 'Trendyol Tech',
-        role: 'Ar-Ge & Yazılım Geliştirme Stajyeri',
-        status: 'Fakülte Komisyonu Tarafından Onaylandı',
-        duration: '20 İş Günü',
-        sgkStatus: 'SGK 5510 Girişi Aktif (Üniversite Karşılamalı)',
-        advisor: 'Prof. Dr. Ahmet Yılmaz',
-        approvedDate: '26 Eylül 2026',
-        notebookDeadline: '15 Ekim 2026'
-      };
-    } catch (_) {
-      return {
-        company: 'Trendyol Tech',
-        role: 'Ar-Ge & Yazılım Geliştirme Stajyeri',
-        status: 'Fakülte Komisyonu Tarafından Onaylandı',
-        duration: '20 İş Günü',
-        sgkStatus: 'SGK 5510 Girişi Aktif (Üniversite Karşılamalı)',
-        advisor: 'Prof. Dr. Ahmet Yılmaz',
-        approvedDate: '26 Eylül 2026',
-        notebookDeadline: '15 Ekim 2026'
-      };
-    }
-  });
+  const [internshipStatus, setInternshipStatus] = useState(null);
+  const [internshipLoading, setInternshipLoading] = useState(true);
+
+  // Load latest internship for signed-in student from Firestore (no demo / localStorage seed)
+  useEffect(() => {
+    let cancelled = false;
+    try { localStorage.removeItem('iesu_internship_status_v1'); } catch (_) {}
+    (async () => {
+      const uid = effectiveCurrentUser?.uid || effectiveCurrentUser?.id || null;
+      if (!uid) {
+        if (!cancelled) { setInternshipStatus(null); setInternshipLoading(false); }
+        return;
+      }
+      try {
+        const { fetchInternshipsForStudent, mapInternshipToPanelStatus } = await import('../services/internshipsFs');
+        const rows = await fetchInternshipsForStudent(uid);
+        if (cancelled) return;
+        if (!rows.length) {
+          setInternshipStatus(null);
+        } else {
+          const sorted = [...rows].sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
+          setInternshipStatus(mapInternshipToPanelStatus(sorted[0]));
+        }
+      } catch (e) {
+        console.warn('StajPanel FS load failed', e?.message);
+        if (!cancelled) setInternshipStatus(null);
+      } finally {
+        if (!cancelled) setInternshipLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [effectiveCurrentUser?.id, effectiveCurrentUser?.uid]);
 
   useEffect(() => {
     const handleApproved = (e) => {
       const detail = e?.detail;
-      if (detail) {
-        setInternshipStatus(prev => {
-          const updated = {
-            ...prev,
-            company: detail.company || prev.company,
-            status: 'Fakülte Komisyonu Tarafından Onaylandı',
-            advisor: detail.approvedBy || prev.advisor,
-            approvedDate: new Date().toLocaleDateString('tr-TR')
-          };
-          try { localStorage.setItem('iesu_internship_status_v1', JSON.stringify(updated)); } catch(_) {}
-          return updated;
-        });
-      }
+      if (!detail) return;
+      setInternshipStatus(prev => ({
+        ...(prev || {}),
+        company: detail.company || prev?.company || '',
+        status: detail.status || 'Onaylandı',
+        advisor: detail.approvedBy || prev?.advisor || '',
+        approvedDate: new Date().toLocaleDateString('tr-TR'),
+      }));
     };
     window.addEventListener('iesu_internship_approved', handleApproved);
     return () => window.removeEventListener('iesu_internship_approved', handleApproved);
@@ -372,7 +373,7 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-3.5 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-black flex items-center gap-1.5">
-                    <CheckCircle2 size={15} className="text-emerald-600" /> {internshipStatus.status}
+                    <CheckCircle2 size={15} className="text-emerald-600" /> {internshipStatus?.status || (internshipLoading ? 'Yükleniyor…' : 'Henüz staj kaydı yok')}
                   </span>
                 </div>
               </div>
@@ -385,12 +386,12 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                   </div>
                   <div>
                     <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Kabul Edilen Kurum</span>
-                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus.company}</h3>
-                    <p className="text-xs font-bold text-slate-500 mt-1">{internshipStatus.role}</p>
+                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus?.company || '—'}</h3>
+                    <p className="text-xs font-bold text-slate-500 mt-1">{internshipStatus?.role || '—'}</p>
                   </div>
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
                     <span>Staj Süresi:</span>
-                    <span className="text-[#990000] font-black">{internshipStatus.duration}</span>
+                    <span className="text-[#990000] font-black">{internshipStatus?.duration || '—'}</span>
                   </div>
                 </div>
 
@@ -400,12 +401,12 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                   </div>
                   <div>
                     <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Akademik Staj Komisyonu</span>
-                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus.advisor}</h3>
+                    <h3 className="text-lg font-black text-slate-900 mt-0.5">{internshipStatus?.advisor || '—'}</h3>
                     <p className="text-xs font-bold text-emerald-600 mt-1">✓ E-İmzalı Komisyon Onayı Verildi</p>
                   </div>
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
                     <span>Onay Tarihi:</span>
-                    <span className="text-slate-900 font-black">{internshipStatus.approvedDate}</span>
+                    <span className="text-slate-900 font-black">{internshipStatus?.approvedDate || '—'}</span>
                   </div>
                 </div>
 
@@ -420,7 +421,7 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                   </div>
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
                     <span>Defter Teslim Son Gün:</span>
-                    <span className="text-amber-600 font-black">{internshipStatus.notebookDeadline}</span>
+                    <span className="text-amber-600 font-black">{internshipStatus?.notebookDeadline || '—'}</span>
                   </div>
                 </div>
               </div>

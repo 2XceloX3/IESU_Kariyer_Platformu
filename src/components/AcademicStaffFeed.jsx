@@ -164,8 +164,58 @@ export default function AcademicStaffFeed({
     pendingApprovals: internships.filter(i => i.status === 'Onay Bekliyor').length + approvals.filter(a => a.status === 'Beklemede').length
   }), [internships, approvals]);
 
-  const handleApproveInternship = (id) => {
-    setInternships(internships.map(i => i.id === id ? { ...i, status: 'Onaylandı' } : i));
+  // Hydrate internship queue from Firestore
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { fetchAllInternships } = await import('../services/internshipsFs');
+        const remote = await fetchAllInternships();
+        if (cancelled || !Array.isArray(remote)) return;
+        if (!remote.length) return;
+        setInternships?.(prev => {
+          const map = new Map((prev || []).map(i => [i.id, i]));
+          remote.forEach(i => map.set(i.id, { ...map.get(i.id), ...i }));
+          return [...map.values()];
+        });
+      } catch (e) {
+        console.warn('AcademicStaffFeed internships FS load failed', e?.message);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [setInternships]);
+
+  const handleApproveInternship = async (id, decision = 'Onaylandı') => {
+    try {
+      const { setInternshipDecision } = await import('../services/internshipsFs');
+      await setInternshipDecision(id, {
+        status: decision,
+        advisorStatus: decision === 'Onaylandı' ? 'approved' : 'rejected',
+        reviewerId: effectiveCurrentUser?.uid || effectiveCurrentUser?.id,
+        reviewerName: effectiveCurrentUser?.name || 'Akademik Danışman',
+      });
+    } catch (e) {
+      window.toast?.error?.(e?.message || 'Staj kararı kaydedilemedi');
+      return;
+    }
+    setInternships(prev => (prev || internships).map(i => i.id === id ? { ...i, status: decision, advisorStatus: decision === 'Onaylandı' ? 'approved' : 'rejected' } : i));
+    const item = (internships || []).find(i => i.id === id);
+    if (decision === 'Onaylandı') {
+      window.toast?.success?.(`${item?.name || 'Öğrenci'} staj başvurusu onaylandı.`);
+      try {
+        window.dispatchEvent(new CustomEvent('iesu_internship_approved', {
+          detail: {
+            studentId: item?.studentId || item?.no,
+            studentName: item?.name,
+            company: item?.company,
+            status: 'Onaylandı',
+            approvedBy: effectiveCurrentUser?.name || 'Akademik Danışman',
+          }
+        }));
+      } catch (_) {}
+    } else {
+      window.toast?.info?.('Staj başvurusu reddedildi.');
+    }
   };
 
 
@@ -477,15 +527,16 @@ export default function AcademicStaffFeed({
                           </button>
                           {item.status !== 'Onaylandı' ? (
                             <button 
-                              onClick={() => {
-                                if (setInternships) {
-                                  setInternships(internships.map(i => i.id === item.id ? { ...i, status: 'Onaylandı' } : i));
-                                }
-                                window.toast?.success(`${item.name} staj başvurusu başarıyla onaylandı!`);
-                              }}
+                              onClick={() => handleApproveInternship(item.id, 'Onaylandı')}
                               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
                             >
                               <CheckCircle2 size={15} /> Onayla
+                            </button>
+                            <button
+                              onClick={() => handleApproveInternship(item.id, 'Reddedildi')}
+                              className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-bold rounded-xl border border-rose-200 transition cursor-pointer"
+                            >
+                              Reddet
                             </button>
                           ) : (
                             <span className="px-3 py-1.5 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-xl flex items-center gap-1">
@@ -1421,21 +1472,22 @@ export default function AcademicStaffFeed({
                   Kapat
                 </button>
                 <button 
-                  onClick={() => {
-                    window.toast?.success(`✅ ${selectedDocModal.name} staj ve evrak başvurusu resmî olarak onaylandı ve e-imzalandı!`);
+                  onClick={async () => {
+                    await handleApproveInternship(selectedDocModal.id, 'Onaylandı');
                     try {
                       eventBus?.emit?.('internship:approved', {
-                        studentId: selectedDocModal.no,
+                        studentId: selectedDocModal.studentId || selectedDocModal.no,
                         studentName: selectedDocModal.name,
                         company: selectedDocModal.company,
                         approvedBy: effectiveCurrentUser?.name || 'Akademik Danışman'
                       });
                       window.dispatchEvent(new CustomEvent('iesu_internship_approved', {
                         detail: {
-                          studentId: selectedDocModal.no,
+                          studentId: selectedDocModal.studentId || selectedDocModal.no,
                           studentName: selectedDocModal.name,
                           company: selectedDocModal.company,
-                          status: 'Onaylandı'
+                          status: 'Onaylandı',
+                          approvedBy: effectiveCurrentUser?.name || 'Akademik Danışman'
                         }
                       }));
                     } catch (_) { /* intentional */ }
