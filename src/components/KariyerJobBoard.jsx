@@ -33,9 +33,40 @@ export default function KariyerJobBoard({ setView, currentUser, userRole, setSel
   });
 
   const handleApply = (jobId, jobTitle) => {
-    if (!appliedJobs.includes(jobId)) {
+    if (!currentUser?.id) {
+      window.toast?.error?.('Başvuru yapmak için giriş yapmalısınız.');
+      setView?.('login');
+      return;
+    }
+    if (appliedJobs.includes(jobId)) return;
+
+    // Gerçek kayıt (store) — başarı tostu yalnızca kayıt sonrası
+    try {
+      const store = useAppStore.getState();
+      const newApp = {
+        id: 'APP-' + Date.now(),
+        jobId,
+        jobTitle,
+        applicantId: currentUser.id,
+        applicantName: currentUser.name || 'Aday',
+        applicantEmail: currentUser.email || '',
+        status: 'Beklemede',
+        date: new Date().toLocaleDateString('tr-TR'),
+        timestamp: new Date().toISOString(),
+        source: 'KariyerJobBoard',
+      };
+      if (store.addApplication) {
+        store.addApplication(newApp);
+      } else if (store.setApplications) {
+        store.setApplications([newApp, ...(store.applications || [])]);
+      } else {
+        window.toast?.error?.('Başvuru kaydı yapılamadı. Lütfen daha sonra tekrar deneyin.');
+        return;
+      }
       setAppliedJobs([...appliedJobs, jobId]);
-      window.toast && window.toast.success(`"${jobTitle}" ilanına CV'niz başarıyla iletildi.`);
+      window.toast?.success?.(`"${jobTitle}" ilanına CV'niz başarıyla iletildi.`);
+    } catch (e) {
+      window.toast?.error?.('Başvuru kaydı sırasında bir hata oluştu.');
     }
   };
 

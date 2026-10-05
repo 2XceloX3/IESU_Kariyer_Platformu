@@ -1,5 +1,5 @@
 import { collection, addDoc, setDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../utils/firebase';
+import { auth, db } from '../utils/firebase';
 import useAppStore from '../store/useAppStore';
 import React, { useState } from 'react';
 import { ExternalLink, Calendar, MapPin, Building2, Search, Briefcase, FileText, CheckCircle2, Download, Home, MessageCircle, Bell, Heart, X, Flame, Star, ArrowRight, Sparkles, Target, Users, TrendingUp, Clock, Crown, LayoutDashboard, ChevronRight, Scale } from 'lucide-react';
@@ -23,23 +23,39 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const previousView = useAppStore(state => state.previousView);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const isAdminUser = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
+  // Misafir (giriş yok): mock öğrenci kimliğine düşülmez; başvuru login ister.
+  const isGuest = !effectiveCurrentUser?.id;
+
   const effectiveRole = (
     (['admin', 'admin_cms', 'yonetim_konsolu', 'admin_console'].includes(previousView) || activePortalBranch === 'admin' || (isAdminUser && previousView !== 'student' && previousView !== 'alumni' && activePortalBranch !== 'student' && activePortalBranch !== 'alumni')) ? 'admin' :
     (previousView === 'alumni' || activePortalBranch === 'alumni' || userRole === 'alumni') ? 'alumni' :
     (previousView === 'academic' || activePortalBranch === 'academic' || userRole === 'academic') ? 'academic' :
     (previousView === 'company' || activePortalBranch === 'company' || userRole === 'company' || userRole === 'employer') ? 'company' :
     (previousView === 'student' || activePortalBranch === 'student' || userRole === 'student') ? 'student' :
-    (userRole || effectiveCurrentUser?.role || 'student')
+    (userRole || effectiveCurrentUser?.role || (isGuest ? 'guest' : 'student'))
   );
 
   const branchTargetId = (
-    (effectiveCurrentUser?.id && effectiveCurrentUser.id !== 'admin_1513') ? effectiveCurrentUser.id :
+    effectiveCurrentUser?.id ? effectiveCurrentUser.id :
+    isGuest ? null :
     effectiveRole === 'student' ? 'STU-001' :
     effectiveRole === 'alumni' ? 'ALU-001' :
     effectiveRole === 'academic' ? 'ACAD-001' :
     (effectiveRole === 'employer' || effectiveRole === 'company') ? 'CMP-001' :
-    (effectiveCurrentUser?.id || 'admin_1513')
+    (effectiveCurrentUser?.id || (currentUser?.uid || currentUser?.id || 'self'))
   );
+
+  const requireLoginForApply = () => {
+    if (!isGuest) return true;
+    window.toast?.error?.('Başvuru yapmak için giriş yapmalısınız.');
+    setView?.('login');
+    return false;
+  };
+
+  const openApplyModal = (job) => {
+    if (!requireLoginForApply()) return;
+    setApplyModalJob(job);
+  };
 
   const branchName = effectiveCurrentUser?.name || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
 
@@ -121,18 +137,32 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const handleCompleteApplication = (e) => {
     e.preventDefault();
     if (!applyModalJob) return;
+    if (!requireLoginForApply()) return;
+    if (!branchTargetId) { window.toast?.error("Başvuru için geçerli bir kullanıcı kimliği bulunamadı. Lütfen tekrar giriş yapın."); setView?.('login'); return; }
     if (effectiveRole !== 'student' && effectiveRole !== 'alumni' && userRole !== 'student' && userRole !== 'alumni') { window.toast?.error("Sadece öğrenciler ve mezunlar başvuru yapabilir."); return; }
     if (applications.some(a => a.jobId === applyModalJob.id && (a.applicantId === branchTargetId || a.applicantId === currentUser?.id))) { window.toast?.info("Bu ilana zaten başvurdunuz."); setApplyModalJob(null); return; }
     
     const tenant = getTenantConfig();
+    const authUid = auth?.currentUser?.uid || null;
+    const applicantUid = authUid || branchTargetId;
+    if (!applyModalJob.companyId) {
+      window.toast?.error?.('İlan firma kimliği eksik; başvuru kaydedilemedi.');
+      setApplyModalJob(null);
+      return;
+    }
+    if (!applicantUid) {
+      window.toast?.error?.('Başvuru için giriş gerekli.');
+      setView?.('login');
+      return;
+    }
     const newApp = { 
       id: 'APP-' + Date.now(), 
       tenantId: applyModalJob.tenantId || tenant.id,
       jobId: applyModalJob.id, 
       jobTitle: applyModalJob.title, 
       company: applyModalJob.company, 
-      companyId: applyModalJob.companyId || null,
-      applicantId: branchTargetId, 
+      companyId: applyModalJob.companyId,
+      applicantId: applicantUid, 
       applicantName: branchName, 
       applicantEmail: currentUser?.email || (effectiveRole === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr'),
       applicantPhone: appForm.phone || '0555 000 0000',
@@ -149,13 +179,18 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     
     setApplications(prev => [...(prev || []), newApp]);
     try {
-      setDoc(doc(db, 'applications', newApp.id), {
-        ...newApp,
-        createdAt: serverTimestamp(),
-        status: 'Onay Bekliyor',
-      }).catch(e => {
-        console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
-      });
+      if (!authUid) {
+        console.warn('Firestore başvuru atlandı: Firebase Auth oturumu yok (applicantId kuralları).');
+      } else {
+        setDoc(doc(db, 'applications', newApp.id), {
+          ...newApp,
+          applicantId: authUid,
+          createdAt: serverTimestamp(),
+          status: 'Onay Bekliyor',
+        }).catch(e => {
+          console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
+        });
+      }
     } catch (e) {
       console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
     }
@@ -447,7 +482,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                             </div>
                             <div className="mt-auto flex justify-center gap-6">
                               <button onClick={()=>setSwipedJobs([...swipedJobs,currentJob.id])} className="w-16 h-16 rounded-full bg-white border-2 border-red-100 flex items-center justify-center text-red-500 hover:bg-red-50 hover:scale-110 transition-transform shadow-sm"><X size={28} strokeWidth={3} /></button>
-                              <button onClick={()=>{if(!hasApplied)setApplyModalJob(currentJob);setSwipedJobs([...swipedJobs,currentJob.id]);}} className={`w-16 h-16 rounded-full flex items-center justify-center transition-transform shadow-lg ${hasApplied?'bg-gray-200 text-gray-400 cursor-not-allowed':theme.applyBtn}`}>{hasApplied?<CheckCircle2 size={28}/>:<Heart size={28} strokeWidth={3} className="fill-emerald-500" />}</button>
+                              <button onClick={()=>{if(!hasApplied)openApplyModal(currentJob);setSwipedJobs([...swipedJobs,currentJob.id]);}} className={`w-16 h-16 rounded-full flex items-center justify-center transition-transform shadow-lg ${hasApplied?'bg-gray-200 text-gray-400 cursor-not-allowed':theme.applyBtn}`}>{hasApplied?<CheckCircle2 size={28}/>:<Heart size={28} strokeWidth={3} className="fill-emerald-500" />}</button>
                             </div>
                           </div>
                         </div>
@@ -497,7 +532,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                                   </button>
                                 </div>
                               ) : (
-                                <button onClick={() => setApplyModalJob(job)} disabled={hasApplied} className={`px-5 py-2 rounded-xl font-black text-[13px] transition-all flex items-center gap-1.5 cursor-pointer ${hasApplied?'bg-gray-100 text-gray-400 cursor-not-allowed':theme.applyBtn}`}>{hasApplied?<><CheckCircle2 size={14}/> Başvuruldu</>:'Hemen Başvur'}</button>
+                                <button onClick={() => openApplyModal(job)} disabled={hasApplied} className={`px-5 py-2 rounded-xl font-black text-[13px] transition-all flex items-center gap-1.5 cursor-pointer ${hasApplied?'bg-gray-100 text-gray-400 cursor-not-allowed':theme.applyBtn}`}>{hasApplied?<><CheckCircle2 size={14}/> Başvuruldu</>:'Hemen Başvur'}</button>
                               )}
                             </div>
                           </div>
@@ -729,7 +764,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
               </div>
               <div className="mt-7 pt-5 border-t border-gray-100 flex gap-3">
                 <button onClick={()=>setSelectedJob(null)} className="px-5 py-3 rounded-xl font-bold text-[14px] text-gray-600 hover:bg-gray-100 transition-all">Kapat</button>
-                <button onClick={() => { const target = selectedJob; setSelectedJob(null); setApplyModalJob(target); }} disabled={applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))} className={`flex-1 py-3 rounded-xl font-black text-[14px] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))?'bg-gray-200 text-gray-500 cursor-not-allowed shadow-none':'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-purple-500/30 hover:scale-[1.02]'}`}>
+                <button onClick={() => { const target = selectedJob; setSelectedJob(null); openApplyModal(target); }} disabled={applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))} className={`flex-1 py-3 rounded-xl font-black text-[14px] shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))?'bg-gray-200 text-gray-500 cursor-not-allowed shadow-none':'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-purple-500/30 hover:scale-[1.02]'}`}>
                   {applications.some(a=>a.jobId===selectedJob.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id))?<><CheckCircle2 size={16}/> Başvuruldu</>:'Hemen Başvur'}
                 </button>
               </div>

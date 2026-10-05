@@ -163,7 +163,7 @@ describe('DeepCoder Core Transformations Verification', () => {
           userRole="alumni" 
           currentUser={currentUser} 
           setView={mockSetView} 
-          jobs={[{ id: 'JOB-99', title: 'Senior Developer', company: 'Tech Inc', status: 'Aktif' }]}
+          jobs={[{ id: 'JOB-99', title: 'Senior Developer', company: 'Tech Inc', companyId: 'co-tech', status: 'Aktif' }]}
         />
       );
 

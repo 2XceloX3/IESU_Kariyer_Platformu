@@ -50,7 +50,9 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   const [applyCoverLetter, setApplyCoverLetter] = useState('');
   const [isApplying, setIsApplying] = useState(false);
 
-  const effectiveApplicantId = effectiveCurrentUser?.id || (activePortalBranch === 'alumni' ? 'ALU-001' : 'STU-001');
+  const isGuestApplicant = !effectiveCurrentUser?.id;
+  // Üretim yollarında mock STU-001/ALU-001 fallback kullanılmaz.
+  const effectiveApplicantId = effectiveCurrentUser?.id || null;
   const targetJobId = post?.jobData?.id || post?.id;
   const rawTitle = post?.jobData?.title || (post?.content ? post.content.split('\n')[0].replace('💼 YENİ İLAN:', '').trim() : 'Ulusal Staj Programı İlanı');
   const cleanJobTitle = rawTitle.length > 75 ? rawTitle.slice(0, 75) + '...' : rawTitle;
@@ -65,6 +67,11 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
 
   const handleOpenApplyModal = (e) => {
     e?.stopPropagation?.();
+    if (isGuestApplicant) {
+      window.toast?.error?.('Başvuru yapmak için giriş yapmalısınız.');
+      if (typeof activeSetView === 'function') activeSetView('login');
+      return;
+    }
     if (hasApplied) {
       window.toast?.info?.("Bu ilana zaten başvuruda bulundunuz. Başvurunuz Yönetici Paneli Başvuru Havuzunda incelenmektedir.");
       return;
@@ -74,6 +81,12 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
 
   const handleApplySubmit = (e) => {
     e.preventDefault();
+    if (isGuestApplicant || !effectiveApplicantId) {
+      window.toast?.error?.('Başvuru yapmak için giriş yapmalısınız.');
+      setIsApplyModalOpen(false);
+      if (typeof activeSetView === 'function') activeSetView('login');
+      return;
+    }
     if (hasApplied) {
       window.toast?.info?.("Bu ilana zaten başvuruda bulundunuz.");
       setIsApplyModalOpen(false);
@@ -81,10 +94,10 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     }
 
     setIsApplying(true);
-    const applicantName = effectiveCurrentUser?.name || (activePortalBranch === 'alumni' ? 'Caner Yıldız (Mezun)' : 'Mert Demir');
-    const applicantDept = effectiveCurrentUser?.department || 'Bilgisayar Mühendisliği';
-    const applicantEmail = effectiveCurrentUser?.email || (activePortalBranch === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr');
-    const applicantPhone = applyPhone || effectiveCurrentUser?.phone || '0555 123 4567';
+    const applicantName = effectiveCurrentUser?.name || 'İsimsiz Aday';
+    const applicantDept = effectiveCurrentUser?.department || 'Belirtilmedi';
+    const applicantEmail = effectiveCurrentUser?.email || '';
+    const applicantPhone = applyPhone || effectiveCurrentUser?.phone || '';
 
     const tenant = getTenantConfig();
     const newApp = {
