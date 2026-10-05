@@ -175,6 +175,7 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/setupTests.js',
     exclude: [
+      'patches/**',
       '**/node_modules/**',
       '**/dist/**',
       '**/.{idea,git,cache,output,temp}/**',
