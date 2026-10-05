@@ -14,6 +14,9 @@ import ConnectionSuggestions from './ConnectionSuggestions';
 
 import useAppStore from '../store/useAppStore';
 import eventBus from '../brain/eventBus';
+import { computeKpi } from '../kpi/compute';
+import { KpiStatusViewLight } from '../kpi/KpiStatusView';
+import { checkupToEmploymentDeclarations } from '../kpi/adapters';
 
 export default function AcademicStaffFeed({ 
   setView, setSelectedUserId, currentUser, userRole, academicRole
@@ -814,25 +817,20 @@ export default function AcademicStaffFeed({
               {activeTab === 'dashboard' && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-100 relative">
-<p className="text-[11px] font-black text-red-600 uppercase tracking-wider">Mezun İstihdam Oranı</p>
-                      <p className="text-3xl font-black text-gray-900 mt-1">{
-                        (() => {
-                          const rows = checkupRecords || [];
-                          if (!rows.length) return 'Henüz veri yok';
-                          const employed = rows.filter(r => r.employed === 'Evet' || r.employed === true).length;
-                          return '%' + Math.round((employed / rows.length) * 100);
-                        })()
-                      }</p>
-                      <p className="text-[10px] font-semibold text-slate-500 mt-1">
-                        {(checkupRecords || []).length ? `${checkupRecords.length} check-up kaydından hesaplandı` : 'Kariyer check-up yanıtı bulunmuyor'}
-                      </p>
-                    </div>
-                    <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 relative">
-<p className="text-[11px] font-black text-emerald-700 uppercase tracking-wider">Aktif Staj Yapanlar</p>
-                      <p className="text-3xl font-black text-gray-900 mt-1">{(() => { const n=(internships||[]).filter(i => i.status==='Aktif'||i.status==='Onaylandı').length; return n>0?n:'Henüz veri yok'; })()}</p>
-                      <p className="text-[10px] font-semibold text-gray-500 mt-1">Kayıtlı staj listesinden</p>
-                    </div>
+                    <KpiStatusViewLight
+                      kpi={computeKpi('alumni_employment_rate', checkupToEmploymentDeclarations(checkupRecords), { period: '2026-H1' })}
+                      title="Mezun İstihdam Oranı"
+                      formHref="alumni_information"
+                      formLabel="Mezun beyan formuna git"
+                      onNavigate={(v) => setView?.(v)}
+                    />
+                    <KpiStatusViewLight
+                      kpi={computeKpi('internship_completion_rate', internships || [], { period: '2026-H1', advisorId: effectiveCurrentUser?.id || effectiveCurrentUser?.uid })}
+                      title="Staj tamamlama oranı"
+                      formHref="academic"
+                      formLabel="Staj onay kuyruğu"
+                      onNavigate={(v) => setView?.(v)}
+                    />
                     <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 relative">
 <p className="text-[11px] font-black text-blue-700 uppercase tracking-wider">Anlaşmalı Kurum Sayısı</p>
                       <p className="text-3xl font-black text-gray-900 mt-1">{((companies||[]).length>0)?(companies||[]).length:'Henüz veri yok'}</p>

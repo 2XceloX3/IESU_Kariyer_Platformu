@@ -5,19 +5,38 @@ import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
 import CMSWorldMap from './CMSWorldMap';
 import useAppStore from '../../store/useAppStore';
+import { computeKpi } from '../../kpi/compute';
+import KpiStatusView from '../../kpi/KpiStatusView';
+import { checkupToEmploymentDeclarations } from '../../kpi/adapters';
 
 export default function CMSAnalytics({ students = [], alumni = [], companies = [], jobs = [], applications = [] }) {
   const checkupRecords = useAppStore(state => state.checkupRecords) || [];
+  const employmentDeclarations = useAppStore(state => state.employmentDeclarations) || [];
+  const internships = useAppStore(state => state.internships) || [];
+  const surveyInvites = useAppStore(state => state.surveyInvites) || [];
+  const surveyResponses = useAppStore(state => state.surveyResponses) || [];
+  const eventRegistrations = useAppStore(state => state.eventRegistrations) || [];
+  const period = '2026-H1';
+  const decl = (employmentDeclarations.length ? employmentDeclarations : checkupToEmploymentDeclarations(checkupRecords));
+  const kpiEmployment = computeKpi('alumni_employment_rate', decl, { period });
+  const kpiRelevance = computeKpi('major_relevance_rate', decl, { period });
+  const kpiPlacement90 = computeKpi('placement_90d_rate', decl, { period });
+  const kpiInternship = computeKpi('internship_completion_rate', internships, { period });
+  const kpiPerJob = computeKpi('placements_per_job', { jobs, applications }, { jobs, applications, period });
+  const kpiEvents = computeKpi('event_attendance_rate', eventRegistrations, { period });
+  const kpiSurvey = computeKpi('survey_response_rate', surveyInvites, { period, responses: surveyResponses });
+  const kpisOk = [kpiEmployment, kpiRelevance, kpiPlacement90, kpiInternship, kpiPerJob, kpiEvents, kpiSurvey].filter(k => k.status === 'ok');
+  const hasExportableKpis = kpisOk.length > 0;
 
-  // Gerçek checkup verisi yoksa uydurma oran/sayı kullanılmaz.
+  // Legacy checkup charts: only when raw checkup rows exist (non-KPI decorative); never invent % 
   const hasCheckupData = checkupRecords.length > 0;
   const totalCheckup = checkupRecords.length;
-  const relatedJobCount = checkupRecords.filter(r => r.relatedToMajor === 'Evet').length;
   const postgradCount = checkupRecords.filter(r => r.postgrad === 'Evet').length;
   const updatedPhoneCount = checkupRecords.filter(r => r.phoneUpdated === 'Hayır' || r.newPhone).length;
   const updatedEmailCount = checkupRecords.filter(r => r.emailUpdated === 'Hayır' || r.newEmail).length;
 
-  const relatedPct = hasCheckupData ? Math.round((relatedJobCount / totalCheckup) * 100) : null;
+  const relatedPct = kpiRelevance.status === 'ok' ? kpiRelevance.value : null;
+  const relatedJobCount = kpiRelevance.numerator;
   const postgradPct = hasCheckupData ? Math.round((postgradCount / totalCheckup) * 100) : null;
   const otherSectorPct = hasCheckupData && relatedPct != null ? Math.max(0, 100 - relatedPct) : null;
   const fmtPct = (v) => (v == null ? 'Veri yok' : `%${v}`);
@@ -38,8 +57,8 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
 
   // YÖK Report PDF / Print Export Handler — gerçek veri yoksa dışa aktarım yapılmaz
   const exportYokReport = () => {
-    if (!hasCheckupData) {
-      window.toast?.error?.('Raporlanacak gerçek veri yok. Kariyer Check-up yanıtları olmadan YÖK raporu üretilemez.');
+    if (!hasExportableKpis) {
+      window.toast?.error?.('Raporlanacak KPI yok (status=ok ve n≥minN). Boş/yetersiz veri ile export üretilmez.');
       return;
     }
     const reportWindow = window.open('', '_blank');
@@ -216,19 +235,12 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         
         {/* Odak Sorular (1, 2, 4, 6, 8, 9) KPI Kartları */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {/* Soru 1: Aktif İstihdam */}
-          <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
-            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block mb-1">Soru 1 — Aktif Çalışma Oranı</span>
-            <div className="text-2xl font-black text-white">{hasCheckupData ? '%' + Math.round((checkupRecords.filter(r => r.employed === 'Evet' || r.employed === true).length / totalCheckup) * 100) + ' Aktif Çalışıyor' : 'Veri yok'}</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">Özel Şirket, Kamu veya Kendi İşi</p>
-          </div>
-
-          {/* Soru 2: İlk İş Bulma Süresi */}
-          <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block mb-1">Soru 2 — Mezuniyet Sonrası İş Bulma</span>
-            <div className="text-2xl font-black text-white">{hasCheckupData ? 'Hesaplanamadı (alan yok)' : 'Veri yok'}</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">Mezun Olmadan veya İlk 3 Ay</p>
-          </div>
+          <KpiStatusView kpi={kpiEmployment} title="Mezun istihdam oranı" formHref="/alumni_information" formLabel="Mezun istihdam beyan formu" />
+          <KpiStatusView kpi={kpiPlacement90} title="İlk 90 gün yerleşme" formHref="/alumni_information" formLabel="Mezun beyan formu" />
+          <KpiStatusView kpi={kpiRelevance} title="Bölüm uyum oranı" formHref="/alumni_information" formLabel="Mezun beyan formu" />
+          <KpiStatusView kpi={kpiInternship} title="Staj tamamlama oranı" formHref="/academic" formLabel="Staj onay protokolü" />
+          <KpiStatusView kpi={kpiPerJob} title="İlan başına yerleşme" formHref="/jobs" formLabel="İlanlar" />
+          <KpiStatusView kpi={kpiSurvey} title="Anket yanıt oranı" formHref="/admin_cms" formLabel="Anket modülü" />
 
           {/* Soru 4: Kurum Türü */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">

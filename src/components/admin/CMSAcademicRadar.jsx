@@ -1,4 +1,7 @@
 import useAppStore from '../../store/useAppStore';
+import { computeKpi } from '../../kpi/compute';
+import { KpiStatusViewLight } from '../../kpi/KpiStatusView';
+import { checkupToEmploymentDeclarations } from '../../kpi/adapters';
 import React, { useState, useEffect } from 'react';
 import {
   Search,
@@ -48,6 +51,10 @@ const facultyStatsData = [];
 
 export default function CMSAcademicRadar() {
   const storeApprovals = useAppStore(state => state.academicApprovals) || [];
+  const checkupRecords = useAppStore(state => state.checkupRecords) || [];
+  const internships = useAppStore(state => state.internships) || [];
+  const kpiEmployment = computeKpi('alumni_employment_rate', checkupToEmploymentDeclarations(checkupRecords), { period: '2026-H1' });
+  const kpiInternship = computeKpi('internship_completion_rate', internships, { period: '2026-H1' });
   const [approvals, setApprovals] = useState(() => {
     try {
       const saved = localStorage.getItem('iesu_academic_radar_v1');
@@ -269,7 +276,7 @@ export default function CMSAcademicRadar() {
     if (doc.notebook === 'Yüklendi') uploadedDocsCount++;
     if (doc.evaluation === 'Yüklendi') uploadedDocsCount++;
   });
-  const docCompletionRate = Math.round((uploadedDocsCount / totalDocs) * 100);
+  const docCompletionRate = totalDocs > 0 ? Math.round((uploadedDocsCount / totalDocs) * 100) : null;
 
   return (
     <div className="space-y-8 font-sans pb-12">
@@ -315,7 +322,7 @@ export default function CMSAcademicRadar() {
             </div>
             <div className="bg-white/15 border border-white/30 backdrop-blur-md p-3.5 rounded-2xl text-white shadow-sm min-w-[130px]">
               <span className="text-[10px] font-bold uppercase tracking-wider text-red-100 block">Evrak Tamamlanma</span>
-              <span className="text-xl font-black text-emerald-300 mt-0.5 block">%{docCompletionRate} Tamam</span>
+              <span className="text-xl font-black text-emerald-300 mt-0.5 block">{docCompletionRate == null ? 'Veri yok' : `%${docCompletionRate} Tamam`}</span>
             </div>
           </div>
         </div>
@@ -520,6 +527,10 @@ export default function CMSAcademicRadar() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <KpiStatusViewLight kpi={kpiEmployment} title="Mezun istihdam oranı" formHref="#beyan" formLabel="Henüz kayıt yok — beyan formu" />
+            <KpiStatusViewLight kpi={kpiInternship} title="Staj tamamlama oranı" formHref="#staj" formLabel="Henüz kayıt yok — staj protokolü" />
+          </div>
           {facultyStatsData.length === 0 && (
             <div className="col-span-full py-16 text-center bg-white rounded-3xl border border-slate-200">
               <p className="text-sm font-black text-slate-800">Henüz veri yok</p>
@@ -690,7 +701,7 @@ export default function CMSAcademicRadar() {
             </div>
             <div className="text-right">
               <span className="text-xs font-black text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                %{docCompletionRate} Genel Uyum
+                {docCompletionRate == null ? 'Veri yok' : `%${docCompletionRate} Genel Uyum`}
               </span>
             </div>
           </div>
