@@ -11,11 +11,13 @@ import SafeAvatar from './shared/SafeAvatar';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
+import { computeCareerProgress, gradeFromPercent } from '../utils/careerProgress';
 import { toast } from './shared/Toast';
 import eventBus from '../brain/eventBus';
 
 export default function StudentKGBPanel({ setView, currentUser, userRole, previousView }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
+  const applications = useAppStore(state => state.applications) || [];
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
   const kgbStudentRecords = useAppStore(state => state.kgbStudentRecords) || [];
@@ -42,12 +44,12 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       grade: '3. Sınıf',
       studentNo: '2023010482',
       targetSector: 'Yazılım & Bilişim Mimarisi',
-      accreditationScore: 88,
+      accreditationScore: null,
       internshipsCount: 2,
       certificationsCount: 3,
       workshopsCount: 7,
       mentorMeetingsCount: 4,
-      cvCompleteness: 88,
+      cvCompleteness: null,
       portfolioItems: 5,
       verificationCode: 'İESÜ-KGB-2026-9941',
       advisorName: 'Doç. Dr. Selin Kaya',
@@ -123,12 +125,12 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       grade: '4. Sınıf',
       studentNo: '2023010485',
       targetSector: 'Kurumsal Finans & Denetim',
-      accreditationScore: 92,
+      accreditationScore: null,
       internshipsCount: 1,
       certificationsCount: 2,
       workshopsCount: 12,
       mentorMeetingsCount: 6,
-      cvCompleteness: 92,
+      cvCompleteness: null,
       portfolioItems: 3,
       verificationCode: 'İESÜ-KGB-2026-9942',
       advisorName: 'Prof. Dr. Murat Doğan',
@@ -180,12 +182,12 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       grade: '2. Sınıf',
       studentNo: '2023010490',
       targetSector: 'Dijital Tasarım & Yaratıcı Endüstriler',
-      accreditationScore: 78,
+      accreditationScore: null,
       internshipsCount: 3,
       certificationsCount: 1,
       workshopsCount: 5,
       mentorMeetingsCount: 2,
-      cvCompleteness: 78,
+      cvCompleteness: null,
       portfolioItems: 8,
       verificationCode: 'İESÜ-KGB-2026-9943',
       advisorName: 'Doç. Dr. Emre Çelik',
@@ -271,7 +273,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
     if (isAdmin) {
       const rec = currentStudentRecord || DEFAULT_STUDENT_PROFILES['STU-01'];
       const profileData = DEFAULT_STUDENT_PROFILES[rec.id] || DEFAULT_STUDENT_PROFILES['STU-01'];
-      const score = rec.cvCompleteness ?? profileData.accreditationScore;
+      const score = computeCareerProgress({ user: { ...profileData, ...rec, id: rec.id || profileData.id }, applications }).percent;
 
       return {
         id: rec.id,
@@ -298,9 +300,14 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
 
     const match = currentStudentRecord;
     const profileData = DEFAULT_STUDENT_PROFILES[effectiveCurrentUser?.id || match?.id] || DEFAULT_STUDENT_PROFILES['STU-01'];
-    const score = effectiveCurrentUser?.cvCompleteness || match?.cvCompleteness || profileData.accreditationScore || 88;
+    const progress = computeCareerProgress({
+      user: effectiveCurrentUser || match,
+      applications: applications || [],
+    });
+    const score = progress.percent;
+    const grade = gradeFromPercent(score);
     return {
-      id: effectiveCurrentUser?.id || match?.id || profileData.id || 'STU-2026-001',
+      id: effectiveCurrentUser?.id || match?.id || profileData.id || (effectiveCurrentUser?.uid || 'self'),
       name: effectiveCurrentUser?.name || match?.name || profileData.name,
       department: effectiveCurrentUser?.department || match?.department || profileData.department,
       faculty: effectiveCurrentUser?.faculty || profileData.faculty,
@@ -320,7 +327,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       internships: Array.isArray(effectiveCurrentUser?.internships) ? effectiveCurrentUser.internships : (effectiveCurrentUser?.id && !DEFAULT_STUDENT_PROFILES[effectiveCurrentUser.id] ? [] : (Array.isArray(profileData.internships) ? profileData.internships : [])),
       certifications: Array.isArray(effectiveCurrentUser?.certifications) ? effectiveCurrentUser.certifications : (effectiveCurrentUser?.id && !DEFAULT_STUDENT_PROFILES[effectiveCurrentUser.id] ? [] : (Array.isArray(profileData.certifications) ? profileData.certifications : []))
     };
-  }, [isAdmin, currentStudentRecord, effectiveCurrentUser, DEFAULT_STUDENT_PROFILES]);
+  }, [isAdmin, currentStudentRecord, effectiveCurrentUser, DEFAULT_STUDENT_PROFILES, applications]);
 
   const [activeTab, setActiveTab] = useState('ozet'); // 'ozet' | 'stajlar' | 'sertifikalar' | 'etkinlikler' | 'transkript'
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -493,11 +500,11 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <div className="text-left md:text-right">
                   <p className="text-[10px] font-bold text-red-200 uppercase tracking-wider">KGB Genel Skoru</p>
                   <div className="flex items-baseline gap-1 justify-start md:justify-end">
-                    <span className="text-3xl font-black text-white">{studentData.accreditationScore}</span>
+                    <span className="text-3xl font-black text-white">{studentData.accreditationScore == null ? '—' : studentData.accreditationScore}</span>
                     <span className="text-xs font-bold text-red-200">/ 100</span>
                   </div>
                   <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full bg-emerald-500/90 text-white text-[10px] font-black shadow-xs">
-                    {studentData.accreditationScore >= 85 ? 'A+ Düzeyi (Pekiyi)' : studentData.accreditationScore >= 75 ? 'A Düzeyi (Pekiyi)' : 'B+ Düzeyi (İyi)'}
+                    {gradeFromPercent(studentData.accreditationScore).label}
                   </span>
                 </div>
 
@@ -529,12 +536,12 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <span className="text-gray-700 flex items-center gap-1.5">
                   <Compass size={14} className="text-[#990000]" /> Mezuniyet Kariyer Yeterliliği ve Yetenek Karnesi İlerlemesi
                 </span>
-                <span className="text-[#990000] font-black">%{studentData.accreditationScore} Tamamlandı</span>
+                <span className="text-[#990000] font-black">{studentData.accreditationScore == null ? 'Veri yok' : `%${studentData.accreditationScore} Tamamlandı`}</span>
               </div>
               <div className="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-red-800 via-[#990000] to-emerald-500 rounded-full transition-all duration-500" 
-                  style={{ width: `${studentData.accreditationScore}%` }}
+                  style={{ width: `${studentData.accreditationScore ?? 0}%` }}
                 />
               </div>
               <div className="flex items-center justify-between mt-2 text-[10px] text-slate-600 font-semibold">
@@ -994,7 +1001,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 </div>
                 <div>
                   <span className="block text-[10px] text-slate-700 font-bold uppercase">Genel Başarı Seviyesi</span>
-                  <span className="font-black text-emerald-800">{studentData.accreditationScore >= 88 ? 'A+' : 'A'} (%{studentData.accreditationScore} Pekiyi)</span>
+                  <span className="font-black text-emerald-800">{gradeFromPercent(studentData.accreditationScore).letter}{studentData.accreditationScore == null ? '' : ` (%${studentData.accreditationScore})`}</span>
                 </div>
               </div>
 

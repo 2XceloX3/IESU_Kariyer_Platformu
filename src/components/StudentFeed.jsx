@@ -1,4 +1,5 @@
 import useAppStore from '../store/useAppStore';
+import { computeCareerProgress, gradeFromPercent } from '../utils/careerProgress';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap } from 'lucide-react';
 
@@ -234,7 +235,10 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 </div>
               </div>
               <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black">
-                Aktif • %88
+                {(() => {
+                  const p = computeCareerProgress({ user: currentUser, applications: useAppStore.getState().applications || [] });
+                  return p.percent == null ? 'Veri yok' : `Aktif • %${p.percent}`;
+                })()}
               </span>
             </div>
 
@@ -242,7 +246,10 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             <div className="mb-2.5">
               <div className="flex justify-between text-[10px] font-bold text-gray-500 mb-1">
                 <span>YÖK Kariyer Standartları</span>
-                <span className="text-[#990000] font-black">A+ Seviye</span>
+                <span className="text-[#990000] font-black">{(() => {
+                  const p = computeCareerProgress({ user: currentUser, applications: useAppStore.getState().applications || [] });
+                  return gradeFromPercent(p.percent).letter === '—' ? 'Veri yok' : gradeFromPercent(p.percent).letter;
+                })()}</span>
               </div>
               <div className="h-1.5 w-full bg-red-50 rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-amber-500 via-[#990000] to-emerald-500 rounded-full" style={{ width: '88%' }} />
