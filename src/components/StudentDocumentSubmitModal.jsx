@@ -78,7 +78,7 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
 
     const newApp = {
       id: 'app_' + Date.now(),
-      userId: effectiveCurrentUser?.id || 'STU-001',
+      userId: effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null,
       studentId: effectiveCurrentUser?.studentId || '20240001',
       name: effectiveCurrentUser?.name || 'Alperen Yılmaz',
       no: effectiveCurrentUser?.studentId || '220401015',

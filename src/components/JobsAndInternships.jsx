@@ -83,6 +83,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const [selectedJob, setSelectedJob] = useState(null);
   const [footerModal, setFooterModal] = useState(null);
   const [applyModalJob, setApplyModalJob] = useState(null);
+  const [postApplyHint, setPostApplyHint] = useState(false);
   const [appForm, setAppForm] = useState({ coverLetter: '', phone: currentUser?.phone || '', cvType: 'KGM Akredite İESÜ Dijital CV' });
   const [showAnkaModal, setShowAnkaModal] = useState(false);
   const addNotification = (notif) => { setNotifications(prev => [notif, ...prev]); };
@@ -219,6 +220,8 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     addNotification({ id:'N-'+Date.now(), userId:branchTargetId, text:`${applyModalJob.title} ilanına başvurunuz iletildi.`, read:false, time:'Az önce' });
     setApplyModalJob(null);
     setAppForm({ coverLetter: '', phone: currentUser?.phone || '', cvType: `KGM Akredite ${tenant.institutionShortName} Dijital CV` });
+    // Post-apply next step: offer CV builder refresh + applications list
+    setPostApplyHint(true);
   };
   const activeJobs = (jobs||[]).filter(j => 
     j.status === 'Aktif' || !j.status || 
@@ -308,6 +311,18 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const typeColors = { 'TAM ZAMANLI':'bg-blue-50 text-blue-700', 'STAJ':'bg-purple-50 text-purple-700', 'YARI ZAMANLI':'bg-amber-50 text-amber-700', 'UZAKTAN':'bg-emerald-50 text-emerald-700', 'SERBEST':'bg-rose-50 text-rose-700' };
   return (
     <div className="min-h-screen bg-[#f3f2ee] font-sans">
+
+      {postApplyHint && (effectiveRole === 'student' || effectiveRole === 'alumni') && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[80] max-w-md w-[92%] bg-white border border-emerald-200 shadow-2xl rounded-2xl p-4 flex flex-col gap-2" data-testid="post-apply-next-step">
+          <p className="text-sm font-black text-slate-900">Başvurunuz alındı — sonraki adım</p>
+          <p className="text-xs text-slate-600 font-medium">CV&#39;nizi güncelleyin veya başvurularınızı kontrol edin.</p>
+          <div className="flex gap-2 mt-1">
+            <button type="button" data-testid="jobs-to-cvbuilder" onClick={() => { setPostApplyHint(false); setView?.('cvbuilder'); }} className="flex-1 py-2 rounded-xl bg-[#990000] text-white text-xs font-black">CV Oluşturucuya Git</button>
+            <button type="button" onClick={() => setPostApplyHint(false)} className="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Kapat</button>
+          </div>
+        </div>
+      )}
+
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 z-50">
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between">
           <div role="button" tabIndex={0} onKeyDown={(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.currentTarget.click();}}} className="flex items-center gap-3 cursor-pointer" onClick={()=>setView(getFeedView())}>
@@ -940,3 +955,9 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     </div>
   );
 }
+              {(effectiveRole === 'student' || effectiveRole === 'alumni') && (
+                <button type="button" data-testid="jobs-cvbuilder-link" onClick={() => setView?.('cvbuilder')} className="text-xs font-black text-[#990000] hover:underline px-2 py-1 rounded-lg border border-red-100 bg-red-50">
+                  CV Oluşturucu
+                </button>
+              )}
+
