@@ -33,7 +33,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2024-01-15',
     validUntil: '2027-06-30',
     status: 'Aktif Protokol',
-    logo: 'https://ui-avatars.com/api/?name=Aselsan+AS&background=1e3a8a&color=fff',
+    logo: null,
     notes: 'Her akademik yıl için 25 Ar-Ge staj kontenjanı tahsis edilmiştir. Başarılı öğrencilere burs imkanı sağlanmaktadır.'
   },
   {
@@ -46,7 +46,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2023-09-01',
     validUntil: '2028-12-31',
     status: 'Aktif Protokol',
-    logo: 'https://ui-avatars.com/api/?name=Baykar+Teknoloji&background=0284c7&color=fff',
+    logo: null,
     notes: 'Havacılık ve yazılım mühendisliği öğrencilerine öncelikli uzun dönem aday mühendislik ve staj kontenjanı.'
   },
   {
@@ -59,7 +59,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2023-05-10',
     validUntil: '2026-08-15',
     status: 'Yenileme Bekliyor',
-    logo: 'https://ui-avatars.com/api/?name=THY&background=b91c1c&color=fff',
+    logo: null,
     notes: 'Protokol süresi dolmak üzere. İnsan Kaynakları ile ek kontenjan artırımı talebi görüşülüyor.'
   },
   {
@@ -72,7 +72,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2024-02-20',
     validUntil: '2027-02-20',
     status: 'Aktif Protokol',
-    logo: 'https://ui-avatars.com/api/?name=Turkcell&background=eab308&color=fff',
+    logo: null,
     notes: 'Yazılım ve telekomünikasyon alanında sertifikasyon programları ve veri analitiği stajları dahildir.'
   },
   {
@@ -85,7 +85,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2025-01-10',
     validUntil: '2026-12-31',
     status: 'Aktif Protokol',
-    logo: 'https://ui-avatars.com/api/?name=Trendyol&background=f97316&color=fff',
+    logo: null,
     notes: 'Bootcamp mezunları ve dereceye giren öğrenciler için junior pozisyon mülakat önceliği tanımlanmıştır.'
   },
   {
@@ -98,7 +98,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2025-11-01',
     validUntil: '2026-11-01',
     status: 'Görüşme Aşamasında',
-    logo: 'https://ui-avatars.com/api/?name=Logo+Yazilim&background=4f46e5&color=fff',
+    logo: null,
     notes: 'Ön protokol taslağı Hukuk Müşavirliği incelemesinde. İmzalanması halinde 12 kontenjan açılacak.'
   },
   {
@@ -111,7 +111,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2022-04-15',
     validUntil: '2025-12-31',
     status: 'Süre Doldu',
-    logo: 'https://ui-avatars.com/api/?name=HAVELSAN&background=0369a1&color=fff',
+    logo: null,
     notes: 'Protokol süresi tamamlandı. Yeni dönem revize maddeleriyle imzaya sunulacak.'
   },
   {
@@ -124,7 +124,7 @@ const INITIAL_PARTNERSHIPS = [
     signedDate: '2024-06-01',
     validUntil: '2027-06-01',
     status: 'Aktif Protokol',
-    logo: 'https://ui-avatars.com/api/?name=Arcelik&background=dc2626&color=fff',
+    logo: null,
     notes: 'Üretim tesisleri ve Ar-Ge merkezlerinde 15 stajyer kontenjanı ayrılmıştır.'
   }
 ];
@@ -221,7 +221,7 @@ export default function CMSCorporatePartnerships() {
     }
 
     const newId = `PRT-2026-${String(partnerships.length + 1).padStart(2, '0')}`;
-    const logoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(newProtocol.companyName)}&background=0D8ABC&color=fff`;
+    const logoUrl = null;
 
     const item = {
       ...newProtocol,
@@ -462,11 +462,7 @@ export default function CMSCorporatePartnerships() {
                     {/* Firma */}
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={p.logo}
-                          alt={p.companyName}
-                          className="w-8 h-8 rounded-lg object-cover border border-slate-200 shadow-2xs"
-                        />
+                        <SafeAvatar src={p.logo} name={p.companyName} size="md" className="w-8 h-8 rounded-lg object-cover border border-slate-200 shadow-2xs" />
                         <div>
                           <div className="font-bold text-slate-900 group-hover:text-blue-900 transition-colors">
                             {p.companyName}
@@ -558,11 +554,7 @@ export default function CMSCorporatePartnerships() {
             {/* Modal Header */}
             <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img
-                  src={selectedPartnership.logo}
-                  alt={selectedPartnership.companyName}
-                  className="w-11 h-11 rounded-xl object-cover border border-slate-200 shadow-2xs"
-                />
+                <SafeAvatar src={selectedPartnership.logo} name={selectedPartnership.companyName} size="lg" className="w-11 h-11 rounded-xl object-cover border border-slate-200 shadow-2xs" />
                 <div>
                   <h3 className="text-base font-black text-slate-900">
                     {selectedPartnership.companyName}

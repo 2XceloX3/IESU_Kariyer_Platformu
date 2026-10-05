@@ -169,7 +169,7 @@ export default function CMSClubs({
         currency: '₺',
         fiscalYear: '2026-2027'
       },
-      logo: `https://ui-avatars.com/api/?name=${encodeURIComponent((app.name || 'Kulüp').substring(0, 2))}&background=990000&color=fff`,
+      logo: null,
       coverImage: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
       boardMembers: [
         { id: 'BM-1', name: app.applicant || 'Kurucu Başkan', role: 'Kulüp Başkanı', department: 'Öğrenci' },
@@ -473,11 +473,7 @@ export default function CMSClubs({
                 <tr key={club.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
-                      <img 
-                        src={club.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(club.name.substring(0, 2))}&background=990000&color=fff`} 
-                        alt={club.name} 
-                        className="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0" 
-                      />
+                      <SafeAvatar src={club.logo} name={club.name} size="md" className="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0" />
                       <div>
                         <h4 className="font-bold text-gray-900 text-sm">{club.name}</h4>
                         <span className="text-[11px] text-slate-400 font-medium">{club.category}</span>
@@ -876,11 +872,7 @@ export default function CMSClubs({
             </button>
 
             <div className="flex items-center gap-4 mb-6">
-              <img 
-                src={selectedClubForView.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedClubForView.name.substring(0, 2))}&background=990000&color=fff`} 
-                alt={selectedClubForView.name} 
-                className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-2xs"
-              />
+              <SafeAvatar src={selectedClubForView.logo} name={selectedClubForView.name} size="lg" className="w-16 h-16 rounded-2xl object-cover border border-slate-200 shadow-2xs" />
               <div>
                 <span className="text-xs font-black text-[#990000] uppercase tracking-wider">{selectedClubForView.category}</span>
                 <h3 className="text-xl font-black text-slate-900">{selectedClubForView.name}</h3>

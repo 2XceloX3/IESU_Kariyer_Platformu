@@ -268,13 +268,18 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
     return ['Tümü', ...Array.from(set)];
   }, [allApplicants]);
 
+  const [listPage, setListPage] = useState(1);
+  const LIST_PAGE_SIZE = 15;
+
   // Filtered applicants for List view
   const filteredApplicantsList = useMemo(() => {
+    const q = (searchQuery || '').trim().toLocaleLowerCase('tr-TR');
     return allApplicants.filter(app => {
       const matchesSearch = 
-        (app.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (app.role || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (app.dept || '').toLowerCase().includes(searchQuery.toLowerCase());
+        !q ||
+        (app.name || '').toLocaleLowerCase('tr-TR').includes(q) ||
+        (app.role || '').toLocaleLowerCase('tr-TR').includes(q) ||
+        (app.dept || '').toLocaleLowerCase('tr-TR').includes(q);
       
       const colId = statusToColumnId(app.rawStatus || app.status);
       const appStatus = columnIdToStatus(colId);
@@ -284,6 +289,12 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
       return matchesSearch && matchesStatus && matchesDept;
     });
   }, [allApplicants, searchQuery, statusFilter, deptFilter]);
+
+  const totalListPages = Math.max(1, Math.ceil(filteredApplicantsList.length / LIST_PAGE_SIZE));
+  const paginatedApplicantsList = useMemo(() => {
+    const start = (listPage - 1) * LIST_PAGE_SIZE;
+    return filteredApplicantsList.slice(start, start + LIST_PAGE_SIZE);
+  }, [filteredApplicantsList, listPage]);
 
   // Drag and drop states
   const [draggedItem, setDraggedItem] = useState(null);
@@ -642,11 +653,13 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
           // ── KANBAN PANOSU (SÜRÜKLE-BIRAK) ──
           <div className="flex gap-5 overflow-x-auto pb-6 custom-scrollbar min-h-[calc(100vh-380px)]">
             {columns.map(column => {
+              const q = (searchQuery || '').trim().toLocaleLowerCase('tr-TR');
               const columnApps = (boardApplicants[column.id] || []).filter(app => {
                 const matchesSearch = 
-                  app.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                  app.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  (app.dept && app.dept.toLowerCase().includes(searchQuery.toLowerCase()));
+                  !q ||
+                  (app.name || '').toLocaleLowerCase('tr-TR').includes(q) || 
+                  (app.role || '').toLocaleLowerCase('tr-TR').includes(q) ||
+                  ((app.dept || '').toLocaleLowerCase('tr-TR').includes(q));
                 const matchesDept = deptFilter === 'Tümü' || app.dept === deptFilter;
                 const colStatus = columnIdToStatus(column.id);
                 const matchesStatus = statusFilter === 'Tümü' || colStatus === statusFilter;
@@ -793,7 +806,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
                   <p className="text-xs text-slate-400 mt-1">Arama terimlerinizi veya filtreleri temizlemeyi deneyin.</p>
                 </div>
               ) : (
-                filteredApplicantsList.map((app) => {
+                paginatedApplicantsList.map((app) => {
                   const colId = statusToColumnId(app.rawStatus || app.status);
                   const stage = columnIdToStatus(colId);
 
@@ -876,6 +889,32 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
                 })
               )}
             </div>
+
+            {totalListPages > 1 && (
+              <div className="flex items-center justify-between bg-white px-5 py-3 border-t border-slate-200">
+                <span className="text-xs font-bold text-slate-500">
+                  Sayfa {listPage} / {totalListPages} (Toplam {filteredApplicantsList.length} aday)
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setListPage(p => Math.max(1, p - 1))}
+                    disabled={listPage === 1}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 disabled:opacity-40 hover:bg-slate-50 cursor-pointer transition"
+                  >
+                    Önceki
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setListPage(p => Math.min(totalListPages, p + 1))}
+                    disabled={listPage === totalListPages}
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 disabled:opacity-40 hover:bg-slate-50 cursor-pointer transition"
+                  >
+                    Sonraki
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>

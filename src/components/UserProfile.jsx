@@ -433,7 +433,7 @@ export default function UserProfile({
           department: effectiveCurrentUser?.department || found?.department || 'Yazılım Mühendisliği',
           grade: effectiveCurrentUser?.grade || effectiveCurrentUser?.year || found?.grade || found?.year || '3. Sınıf',
           gpa: effectiveCurrentUser?.gpa || found?.gpa || '3.84',
-          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150')),
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || null)),
           email: effectiveCurrentUser?.email || found?.email || 'ogrenci@esenyurt.edu.tr',
           badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
           isSelf: true
@@ -444,7 +444,7 @@ export default function UserProfile({
           department: 'Yazılım Mühendisliği',
           grade: '3. Sınıf',
           gpa: '3.84',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+          avatar: null,
           email: 'ogrenci@esenyurt.edu.tr',
           badges: ['verified']
         });
@@ -548,7 +548,7 @@ export default function UserProfile({
           title: effectiveCurrentUser?.title || found?.title || 'Bölüm Başkanı & Profesör',
           department: effectiveCurrentUser?.department || (effectiveCurrentUser?.role === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : (found?.department || 'Bilgisayar Mühendisliği')),
           email: effectiveCurrentUser?.email || found?.email || 'ahmet.yilmaz@esenyurt.edu.tr',
-          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150')),
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || null)),
           badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
           isSelf: true
         } : (found || {
@@ -558,7 +558,7 @@ export default function UserProfile({
           title: 'Bölüm Başkanı & Profesör',
           department: 'Bilgisayar Mühendisliği',
           email: 'ahmet.yilmaz@esenyurt.edu.tr',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
+          avatar: null,
           badges: ['verified']
         });
         setUser(academicData);
@@ -592,7 +592,7 @@ export default function UserProfile({
           alumniCount: found?.alumniCount || '42',
           hiringConversion: found?.hiringConversion || '%84',
           internshipDuration: found?.internshipDuration || '20 İş Günü (1 Ay)',
-          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150')),
+          avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || null)),
           badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
           isSelf: true
         } : (found || {
@@ -605,7 +605,7 @@ export default function UserProfile({
           alumniCount: '42',
           hiringConversion: '%84',
           internshipDuration: '20 İş Günü (1 Ay)',
-          avatar: 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150',
+          avatar: null,
           role: 'company'
         });
         setUser(companyData);
@@ -703,7 +703,7 @@ export default function UserProfile({
         gradYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || '2023',
         title: effectiveCurrentUser?.title || 'Frontend Developer',
         company: effectiveCurrentUser?.company || (effectiveCurrentUser?.role === 'admin' ? 'İESÜ Kariyer Geliştirme Merkezi' : 'Trendyol'),
-        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'),
+        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : null),
         email: effectiveCurrentUser?.email || 'caner@mezun.esenyurt.edu.tr',
         badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
         isSelf: true
@@ -722,7 +722,7 @@ export default function UserProfile({
         title: effectiveCurrentUser?.title || 'Bölüm Başkanı & Profesör',
         department: effectiveCurrentUser?.department || (effectiveCurrentUser?.role === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Bilgisayar Mühendisliği'),
         email: effectiveCurrentUser?.email || 'ahmet.yilmaz@esenyurt.edu.tr',
-        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'),
+        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : null),
         badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
         isSelf: true
       };
@@ -744,7 +744,7 @@ export default function UserProfile({
         alumniCount: '42',
         hiringConversion: '%84',
         internshipDuration: '20 İş Günü (1 Ay)',
-        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=150'),
+        avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : null),
         badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
         isSelf: true
       };
@@ -779,7 +779,7 @@ export default function UserProfile({
       department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
       grade: effectiveCurrentUser?.grade || effectiveCurrentUser?.year || '3. Sınıf',
       gpa: effectiveCurrentUser?.gpa || '3.84',
-      avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
+      avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : null),
       email: effectiveCurrentUser?.email || 'ogrenci@esenyurt.edu.tr',
       badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : ['verified']),
       isSelf: true
@@ -991,10 +991,10 @@ export default function UserProfile({
                   isOpen: true, 
                   title: isSelf ? 'Seni Takip Edenler (Takipçiler)' : `${user?.name || 'Öğrenci'} Takipçileri`, 
                   users: [
-                    { id: 'STU-003', name: 'Zeynep Kaya', department: 'Bilgisayar Mühendisliği', role: 'student', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', isMutual: true },
-                    { id: 'STU-004', name: 'Mert Demir', department: 'Yazılım Mühendisliği', role: 'student', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', isMutual: false },
-                    { id: 'ALM-002', name: 'Elif Yılmaz', department: 'Endüstri Mühendisliği', role: 'alumni', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', isMutual: true },
-                    { id: 'STU-005', name: 'Alperen Çelik', department: 'Elektrik-Elektronik', role: 'student', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', isMutual: false }
+                    { id: 'STU-003', name: 'Zeynep Kaya', department: 'Bilgisayar Mühendisliği', role: 'student', avatar: null, isMutual: true },
+                    { id: 'STU-004', name: 'Mert Demir', department: 'Yazılım Mühendisliği', role: 'student', avatar: null, isMutual: false },
+                    { id: 'ALM-002', name: 'Elif Yılmaz', department: 'Endüstri Mühendisliği', role: 'alumni', avatar: null, isMutual: true },
+                    { id: 'STU-005', name: 'Alperen Çelik', department: 'Elektrik-Elektronik', role: 'student', avatar: null, isMutual: false }
                   ] 
                 })}
                 className="p-3.5 bg-gradient-to-br from-blue-50/80 to-white border border-blue-100 rounded-2xl text-center shadow-sm cursor-pointer hover:bg-blue-100/50 transition group"
@@ -1076,8 +1076,8 @@ export default function UserProfile({
               </div>
               <div className="space-y-2.5">
                 {[
-                  { id: 'ACM-001', name: 'Dr. Öğr. Üyesi Mehmet Selim', title: 'Mühendislik Fakültesi', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100' },
-                  { id: 'ACM-002', name: 'Prof. Dr. Ayşe Yılmaz', title: 'Bilgisayar Mühendisliği', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100' }
+                  { id: 'ACM-001', name: 'Dr. Öğr. Üyesi Mehmet Selim', title: 'Mühendislik Fakültesi', avatar: null },
+                  { id: 'ACM-002', name: 'Prof. Dr. Ayşe Yılmaz', title: 'Bilgisayar Mühendisliği', avatar: null }
                 ].map(academic => (
                   <div key={academic.id} className="p-2.5 bg-blue-50/40 hover:bg-blue-50 rounded-2xl border border-blue-100/60 flex items-center gap-3 transition">
                     <img 
@@ -2063,7 +2063,7 @@ export default function UserProfile({
       name: currentUser?.name || 'Prof. Dr. Ahmet Yılmaz', 
       title: currentUser?.title || 'Bölüm Başkanı & Profesör', 
       department: currentUser?.department || 'Bilgisayar Mühendisliği',
-      avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150')
+      avatar: currentUser?.avatar || (currentUser?.role === 'admin' ? '/iesu-logo.svg' : null)
     };
 
     return (

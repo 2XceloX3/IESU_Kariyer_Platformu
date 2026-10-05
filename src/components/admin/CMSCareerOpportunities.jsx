@@ -92,7 +92,7 @@ export default function CMSCareerOpportunities({ careerOpportunities: propsOpps,
       targetAudience: 'Mühendislik & İİBF Son Sınıf ve Yeni Mezunlar',
       description: '',
       benefits: 'Tam Zamanlı İstihdam, Mentorluk Desteği, Sertifika',
-      logo: 'https://ui-avatars.com/api/?name=IESU&background=990000&color=fff&size=120',
+      logo: '/iesu-logo.svg',
       applicationUrl: 'https://esenyurt.edu.tr',
       status: 'Yayında',
       featured: false
@@ -482,7 +482,7 @@ export default function CMSCareerOpportunities({ careerOpportunities: propsOpps,
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <img
-                        src={opp.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(opp.organization)}&background=990000&color=fff&size=100`}
+                        src={opp.logo || '/iesu-logo.svg'}
                         alt={opp.organization}
                         className="w-12 h-12 rounded-2xl object-cover border border-gray-100 shadow-xs shrink-0"
                         onError={(e) => { e.target.src = '/iesu-logo.svg'; }}

@@ -154,9 +154,9 @@ export default function SemPanel({ setView, userRole, currentUser, setSelectedUs
                   >
                     <div className="h-48 overflow-hidden relative bg-slate-100">
                       <img 
-                        src={egitim.img || egitim.image || egitim.imageUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(egitim.title || 'SEM')}&background=0F172A&color=fff`} 
+                        src={egitim.img || egitim.image || egitim.imageUrl || '/iesu-logo.svg'} 
                         alt={egitim.title} 
-                        onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(egitim.title || 'Eğitim')}&background=0F172A&color=fff&size=512`; }} 
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                       />
                       

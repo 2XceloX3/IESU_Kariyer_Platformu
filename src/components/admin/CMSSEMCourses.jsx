@@ -138,8 +138,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
       author: {
         id: 'sem',
         name: 'Sürekli Eğitim Merkezi',
-        avatar: 'https://ui-avatars.com/api/?name=SEM&background=1e3a8a&color=fff',
-        title: 'Kariyer Geliştirme Merkezi'
+        avatar: '/iesu-logo.svg', title: 'Kariyer Geliştirme Koordinatörlüğü'
       },
       title: form.title,
       content: form.content,
@@ -367,8 +366,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                             id: 'preview',
                             author: {
                               name: 'Sürekli Eğitim Merkezi',
-                              avatar: 'https://ui-avatars.com/api/?name=SEM&background=1e3a8a&color=fff',
-                              title: 'Kariyer Geliştirme Merkezi',
+                              avatar: '/iesu-logo.svg', title: 'Kariyer Geliştirme Koordinatörlüğü',
                             },
                             title: form.title,
                             content: form.content,

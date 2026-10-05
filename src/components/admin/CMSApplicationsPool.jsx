@@ -36,6 +36,8 @@ export default function CMSApplicationsPool({
   const [statusFilter, setStatusFilter] = useState('Tümü');
   const [companyFilter, setCompanyFilter] = useState('Tümü');
   const [selectedAppModal, setSelectedAppModal] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 15;
 
   // Distinct company list
   const companies = useMemo(() => {
@@ -45,15 +47,16 @@ export default function CMSApplicationsPool({
 
   // Filtered applications
   const filteredApps = useMemo(() => {
+    const q = (searchQuery || '').trim().toLocaleLowerCase('tr-TR');
     return applications.filter(app => {
       const matchSearch =
-        !searchQuery ||
-        (app.applicantName && app.applicantName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (app.applicantDept && app.applicantDept.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (app.jobTitle && app.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (app.company && app.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (app.applicantEmail && app.applicantEmail.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (app.applicantPhone && app.applicantPhone.includes(searchQuery));
+        !q ||
+        (app.applicantName && app.applicantName.toLocaleLowerCase('tr-TR').includes(q)) ||
+        (app.applicantDept && app.applicantDept.toLocaleLowerCase('tr-TR').includes(q)) ||
+        (app.jobTitle && app.jobTitle.toLocaleLowerCase('tr-TR').includes(q)) ||
+        (app.company && app.company.toLocaleLowerCase('tr-TR').includes(q)) ||
+        (app.applicantEmail && app.applicantEmail.toLocaleLowerCase('tr-TR').includes(q)) ||
+        (app.applicantPhone && app.applicantPhone.includes(q));
 
       const matchStatus =
         statusFilter === 'Tümü' ||
@@ -67,6 +70,12 @@ export default function CMSApplicationsPool({
       return matchSearch && matchStatus && matchCompany;
     });
   }, [applications, searchQuery, statusFilter, companyFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredApps.length / PAGE_SIZE));
+  const paginatedApps = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredApps.slice(start, start + PAGE_SIZE);
+  }, [filteredApps, currentPage]);
 
   // Statistics
   const stats = useMemo(() => {
@@ -284,21 +293,22 @@ export default function CMSApplicationsPool({
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-gray-50/80 text-gray-500 font-bold uppercase tracking-wider border-b border-gray-100">
-                <tr>
-                  <th className="px-4 py-3.5">Aday Bilgisi</th>
-                  <th className="px-4 py-3.5">Başvurulan İlan & Kurum</th>
-                  <th className="px-4 py-3.5">İletişim</th>
-                  <th className="px-4 py-3.5">CV & Ön Yazı</th>
-                  <th className="px-4 py-3.5">Tarih</th>
-                  <th className="px-4 py-3.5">Durum</th>
-                  <th className="px-4 py-3.5 text-right">İşlemler</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredApps.map(app => (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-gray-50/80 text-gray-500 font-bold uppercase tracking-wider border-b border-gray-100">
+                  <tr>
+                    <th className="px-4 py-3.5">Aday Bilgisi</th>
+                    <th className="px-4 py-3.5">Başvurulan İlan & Kurum</th>
+                    <th className="px-4 py-3.5">İletişim</th>
+                    <th className="px-4 py-3.5">CV & Ön Yazı</th>
+                    <th className="px-4 py-3.5">Tarih</th>
+                    <th className="px-4 py-3.5">Durum</th>
+                    <th className="px-4 py-3.5 text-right">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {paginatedApps.map(app => (
                   <tr key={app.id} className="hover:bg-amber-50/30 transition">
                     {/* Candidate */}
                     <td className="px-4 py-3.5">
@@ -427,8 +437,35 @@ export default function CMSApplicationsPool({
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between bg-white px-5 py-3 border-t border-gray-100 shadow-2xs">
+              <span className="text-xs font-bold text-gray-500">
+                Sayfa {currentPage} / {totalPages} (Toplam {filteredApps.length} başvuru)
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-600 disabled:opacity-40 hover:bg-gray-50 cursor-pointer transition"
+                >
+                  Önceki
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-600 disabled:opacity-40 hover:bg-gray-50 cursor-pointer transition"
+                >
+                  Sonraki
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
 
       {/* ─── DETAIL & COVER LETTER MODAL ─── */}
       {selectedAppModal && (

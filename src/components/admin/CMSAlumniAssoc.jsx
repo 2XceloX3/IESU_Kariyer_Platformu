@@ -41,9 +41,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
     const newPost = {
       id: `AA-POST-${Date.now()}`,
       author: {
-        id: 'mezun_dernegi',
-        name: 'Mezun Derneği',
-        avatar: 'https://ui-avatars.com/api/?name=Mezun+Dernegi&background=0A2342&color=fff',
+        id: 'iesu_mezunlar_portali', name: 'İESÜ Mezunlar Portalı', avatar: '/iesu-logo.svg',
         title: 'Resmi Topluluk',
         type: 'admin'
       },
@@ -206,8 +204,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
                       post={{
                         id: 'preview',
                         author: {
-                          name: 'Mezun Derneği',
-                          avatar: 'https://ui-avatars.com/api/?name=Mezun+Dernegi&background=0A2342&color=fff',
+                          name: 'İESÜ Mezunlar Portalı', avatar: '/iesu-logo.svg',
                           title: 'Resmi Topluluk',
                         },
                         title: form.title,

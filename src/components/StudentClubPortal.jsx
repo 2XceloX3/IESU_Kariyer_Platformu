@@ -452,7 +452,7 @@ export default function StudentClubPortal({
       id: Date.now(),
       user: currentUser?.id || 'ogrenci',
       name: currentUser?.name || 'Öğrenci',
-      avatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+      avatar: currentUser?.avatar || null,
       text,
       time: 'Şimdi'
     };

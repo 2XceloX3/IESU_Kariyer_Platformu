@@ -144,7 +144,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     if(!setPosts) { window.toast.info('Feed entegrasyonu bulunamadı!'); return; }
     const newPost = {
       id: Date.now(),
-      author: currentUser || { name: 'Kariyer Geliştirme Merkezi', role: 'admin', avatar: `https://ui-avatars.com/api/?name=Kariyer&background=0D8ABC&color=fff` },
+      author: currentUser || { name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' },
       content: `📢 **Yeni Anket:** ${survey.title}\n\nLütfen değerlendirme anketimize katılarak bize geri bildirimde bulunun. Desteğiniz için teşekkürler!\n\n[Ankete Katıl]`,
       timestamp: 'Az önce',
       likes: 0,

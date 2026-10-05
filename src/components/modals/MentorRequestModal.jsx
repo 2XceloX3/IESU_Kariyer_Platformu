@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Send, Calendar, Clock, Video, Building, Award, ShieldCheck, UserCheck, CheckCircle2, MessageSquare, AlertCircle } from 'lucide-react';
 import { toast } from '../shared/Toast';
+import SafeAvatar from '../shared/SafeAvatar';
 import useAppStore from '../../store/useAppStore';
 import { useAdminStore } from '../../brain/useAdminStore';
 
@@ -127,11 +128,7 @@ export default function MentorRequestModal({ isOpen, onClose, mentor, currentUse
           {/* Selected Mentor Card */}
           <div className="p-4 bg-teal-50/70 border border-teal-100 rounded-2xl flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white border border-teal-200 shrink-0 shadow-xs">
-              <img
-                src={mentor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(mentor.name || 'M')}&background=0F766E&color=fff&size=120`}
-                alt={mentor.name}
-                className="w-full h-full object-cover"
-              />
+              <SafeAvatar src={mentor.avatar} name={mentor.name} size="md" className="w-full h-full object-cover" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 flex-wrap">

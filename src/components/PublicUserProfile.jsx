@@ -145,7 +145,7 @@ export default function PublicUserProfile({
         graduationYear: effectiveCurrentUser?.graduationYear || effectiveCurrentUser?.gradYear || '2023',
         gpa: effectiveCurrentUser?.gpa || '3.84',
         email: effectiveCurrentUser?.email || 'kullanici@esenyurt.edu.tr',
-        avatar: effectiveCurrentUser?.avatar || (selfRole === 'admin' ? '/iesu-logo.svg' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
+        avatar: effectiveCurrentUser?.avatar || (selfRole === 'admin' ? '/iesu-logo.svg' : null),
         badges: effectiveCurrentUser?.badges || ['verified', 'top_voice'],
         bio: effectiveCurrentUser?.bio || effectiveCurrentUser?.about || 'İstanbul Esenyurt Üniversitesi Kariyer Ekosistemi Doğrulanmış Profili.',
         isSelf: true
@@ -197,7 +197,7 @@ export default function PublicUserProfile({
           department: 'Yazılım Mühendisliği',
           grade: '3. Sınıf',
           gpa: '3.84',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+          avatar: null,
           email: 'ogrenci@esenyurt.edu.tr',
           badges: ['verified', 'top_voice'],
           bio: 'İstanbul Esenyurt Üniversitesi Yazılım Mühendisliği öğrencisi. Büyük veri, dağıtık sistemler ve otonom sistemler alanında araştırmalar yapıyorum.'
@@ -269,7 +269,7 @@ export default function PublicUserProfile({
           title: 'Bölüm Başkanı',
           department: 'Yazılım Mühendisliği',
           email: 'zcelik@esenyurt.edu.tr',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
+          avatar: null,
           badges: ['verified', 'phd'],
           bio: 'Yazılım Mühendisliği Bölüm Başkanı. Yapay sinir ağları, makine öğrenmesi ve akademik kariyer danışmanlığı yürütmekteyim.'
         });
@@ -344,7 +344,7 @@ export default function PublicUserProfile({
       name: 'İESÜ Üyesi',
       role: 'student',
       department: 'İstanbul Esenyurt Üniversitesi',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+      avatar: null,
       bio: 'İstanbul Esenyurt Üniversitesi Kampüs ve Kariyer Ağı üyesi.'
     });
     setUserType('student');
