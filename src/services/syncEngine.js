@@ -300,7 +300,7 @@ export async function fetchOfficialPage(url) {
     h1: 'İstanbul Esenyurt Üniversitesi',
     headings: ['Resmi Duyuru ve Bilgilendirmeler', 'Akademik Gelişmeler'],
     paragraphs: ['İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü portalında güncel akademik ve idari duyurular yayınlanmaktadır.'],
-    images: [{ src: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60', alt: 'İESÜ Kampüs' }],
+    images: [{ src: 'https://www.esenyurt.edu.tr/uploads/2026/08/lg1nca27cy79g-esenyurt-universitesi-logo.png', alt: 'İESÜ Kampüs' }],
     links: [{ href: url, text: 'Resmi Web Sayfası' }],
     docs: [],
     dates: [new Date().toLocaleDateString('tr-TR')],
@@ -431,7 +431,7 @@ export async function runFullSync(onProgress) {
             date: res.dates && res.dates[0] ? res.dates[0] : new Date().toLocaleDateString('tr-TR'),
             description: res.paragraphs && res.paragraphs[idx] ? res.paragraphs[idx] : `${heading} - İstanbul Esenyurt Üniversitesi Resmi Yayını.`,
             content: res.paragraphs ? res.paragraphs.join('\n\n') : `${heading}\n\nDetaylı bilgi için resmi web sitesini ziyaret edebilirsiniz: ${res.url}`,
-            imageUrl: res.images && res.images[0] ? res.images[0].src : 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60',
+            imageUrl: res.images && res.images[0] ? res.images[0].src : 'https://www.esenyurt.edu.tr/uploads/2026/08/lg1nca27cy79g-esenyurt-universitesi-logo.png',
             url: res.url,
             isOfficialSynced: true,
             syncedAt: new Date().toLocaleString('tr-TR')

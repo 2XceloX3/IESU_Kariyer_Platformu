@@ -73,6 +73,57 @@ export const liveSliderData = [
 
 export const liveNewsData = [
   {
+    id: "news-oryantasyon-2-2026",
+    title: "2026-2027 Akademik Yılı Oryantasyon Programı İkinci Gününde de Yoğun İlgiyle Devam Etti",
+    date: "30 Eylül 2026",
+    category: "Kampüs Haberi",
+    description: "Oryantasyon programının ikinci günü Prof. Dr. Fuat Sezgin Konferans Salonu'nda yoğun katılımla gerçekleşti.",
+    content: "Üniversitemizin 2026-2027 Eğitim-Öğretim Yılı Oryantasyon Programı ikinci gününde devam etti.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/c71wnhcl0oykv-2026-2027-akademik-yili-oryantasyon-programi-ikinci-gununde-de-yogun-ilgiyle-devam-etti.png",
+    url: "https://www.esenyurt.edu.tr/haber/2446-2026-2027-akademik-yili-oryantasyon-programi-ikinci-gununde-de-yogun-ilgiyle-devam-etti"
+  },
+  {
+    id: "news-ogrenci-basari-2026",
+    title: "Öğrencimize Başarılar Dileriz!",
+    date: "30 Eylül 2026",
+    category: "Spor & Başarı",
+    description: "Spor Bilimleri Fakültesi Spor Yöneticiliği öğrencimiz Ümit ERCAN yarışmalara katılım gösteriyor.",
+    content: "Öğrencimize başarılar dileriz.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/6pq419hp1u0td-ogrencimize-basarilar-dileriz.jpg",
+    url: "https://www.esenyurt.edu.tr/haber/2445-ogrencimize-basarilar-dileriz"
+  },
+  {
+    id: "news-egiticilerin-egitimi-2026",
+    title: "Üniversitemizde Eğiticilerin Eğitimi Programı Tamamlandı!",
+    date: "25 Eylül 2026",
+    category: "Akademik Başarı",
+    description: "Akademik personelin öğretim becerilerini geliştirmeye yönelik program tamamlandı.",
+    content: "Eğiticilerin Eğitimi Programı tamamlandı.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/2681okobhtrmi-universitemizde-egiticilerin-egitimi-programi-tamamlandi-1.png",
+    url: "https://www.esenyurt.edu.tr/haber/2437-universitemizde-egiticilerin-egitimi-programi-tamamlandi-1"
+  },
+  {
+    id: "news-oryantasyon-1-2026",
+    title: "2026-2027 Akademik Yılı Oryantasyon Programı Coşkuyla Gerçekleşti",
+    date: "24 Eylül 2026",
+    category: "Kampüs Haberi",
+    description: "Yeni akademik yılda ailemize katılan öğrenciler için oryantasyon programı coşkuyla başladı.",
+    content: "Oryantasyon Programı coşkuyla gerçekleşti.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/9gqufyixnk6do-2026-2027-akademik-yili-oryantasyon-programi-coskuyla-gerceklesti.png",
+    url: "https://www.esenyurt.edu.tr/haber/2432-2026-2027-akademik-yili-oryantasyon-programi-coskuyla-gerceklesti"
+  },
+  {
+    id: "news-gazze-konusuldu-2026",
+    title: "İstanbul Esenyurt Üniversitesinde Gazze'de Eğitim, Üniversite ve Gelecek Konuşuldu",
+    date: "23 Eylül 2026",
+    category: "Kampüs Haberi",
+    description: "Bilim İletişimi Koordinatörlüğü tarafından düzenlenen söyleşi kampüste gerçekleştirildi.",
+    content: "Gazze'de Eğitim, Üniversite ve Gelecek konuşuldu.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/qa40at9reyzdh-istanbul-esenyurt-universitesi’nde-“gazze’de-egitim-universite-ve-gelecek”-konusuldu.png",
+    url: "https://www.esenyurt.edu.tr/haber/2424-istanbul-esenyurt-universitesi’nde-“gazze’de-egitim-universite-ve-gelecek”-konusuldu"
+  },
+
+  {
     id: "news-yok-2025",
     title: "YÖK Üniversite İzleme ve Değerlendirme Genel Raporu 2025’te Önemli Başarı",
     date: "02 Ocak 2026",
@@ -285,6 +336,91 @@ export const liveStatsData = [
 ];
 
 export const liveEventData = [
+  {
+    id: "event-real-gazze-2026",
+    title: "Gazze'de Eğitim, Üniversite ve Gelecek",
+    date: "22 Eylül 2026",
+    time: "13:30",
+    category: "Sosyal & Kültürel",
+    location: "Prof. Dr. Fuat Sezgin Konferans Salonu / 3. Kat",
+    speaker: "Prof. Dr. Neziha Musaoğlu ve konuklar",
+    description: "Gazze İçin Bilim Kafe serisi kapsamında Gazze'deki eğitimin dünü, bugünü ve geleceği konuşuluyor.",
+    content: "Gazze'de Eğitim, Üniversite ve Gelecek söyleşisi. Detay: esenyurt.edu.tr",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/1opxtu7z9ikzy-gazzede-egitim-universite-ve-gelecek.jpg",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1763-gazzede-egitim-universite-ve-gelecek",
+    status: "Aktif"
+  },
+  {
+    id: "event-real-btmyo-2026",
+    title: "Bilişim Teknolojileri Meslek Yüksekokulu (BTMYO) yeni öğrencileriyle buluşuyor.",
+    date: "30 Eylül 2026",
+    time: "11:00",
+    category: "Akademik Zirve",
+    location: "Kampüs",
+    speaker: "BTMYO",
+    description: "BTMYO yeni öğrencileriyle oryantasyon ve tanışma buluşması.",
+    content: "BTMYO yeni öğrencileriyle buluşuyor. Detay: esenyurt.edu.tr",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/r7j7cntu4zmxm-bilisim-teknolojileri-meslek-yuksekokulu-btmyo-yeni-ogrencileriyle-bulusuyor.jpg",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1764-bilisim-teknolojileri-meslek-yuksekokulu-btmyo-yeni-ogrencileriyle-bulusuyor",
+    status: "Aktif"
+  },
+  {
+    id: "event-real-dijital-tehlike-2026",
+    title: "Dijital dünyadaki tehlikelerin farkında mısınız?",
+    date: "30 Eylül 2026",
+    time: "12:00",
+    category: "Teknoloji & Bilim",
+    location: "Kampüs",
+    speaker: "İESÜ",
+    description: "Dijital güvenlik farkındalık etkinliği.",
+    content: "Dijital dünyadaki tehlikeler etkinliği. Detay: esenyurt.edu.tr",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/91zovmif74y0n-121211212121.jpg",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1765-121211212121",
+    status: "Aktif"
+  },
+  {
+    id: "event-real-cografi-2026",
+    title: "Türkiye Coğrafi İstihbarat Sempozyumu'nu duyurmaktan gurur duyuyoruz!",
+    date: "19 Kasım 2026",
+    time: "09:00",
+    category: "Akademik Zirve",
+    location: "İstanbul | Wish More Hotel",
+    speaker: "İESÜ & TASAM MSGE & MSB Harita Genel Müdürlüğü",
+    description: "Jeouzamsal İstihbarat ve Yapay Zeka temalı uluslararası sempozyum.",
+    content: "Türkiye Coğrafi İstihbarat Sempozyumu, 19-20 Kasım 2026.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/08/z3eienjfa37b8-turkiye-cografi-istihbarat-sempozyumunu-duyurmaktan-gurur-duyuyoruz.jpg",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1756-turkiye-cografi-istihbarat-sempozyumunu-duyurmaktan-gurur-duyuyoruz",
+    status: "Aktif"
+  },
+  {
+    id: "event-real-acilis-2026",
+    title: "Yeni akademik yılımızı coşkuyla açıyoruz!",
+    date: "21 Eylül 2026",
+    time: "11:00",
+    category: "Sosyal & Kültürel",
+    location: "Kampüs",
+    speaker: "Rektörlük",
+    description: "2026-2027 akademik yılı açılış etkinliği.",
+    content: "Yeni akademik yılımızı coşkuyla açıyoruz!",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/09/xaqyfbxf41t4e-yeni-akademik-yilimizi-coskuyla-aciyoruz.jpg",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1761-yeni-akademik-yilimizi-coskuyla-aciyoruz",
+    status: "Aktif"
+  },
+  {
+    id: "event-real-gencfest-2026",
+    title: "GençFest 2026 Başlıyor!",
+    date: "21 Nisan 2026",
+    time: "13:00",
+    category: "Sosyal & Kültürel",
+    location: "İESU Genç Ofis",
+    speaker: "İESU Genç Yeşilay Kulübü",
+    description: "Müzik, teknoloji ve kültür-sanat atölyeleriyle GençFest 2026.",
+    content: "GençFest 2026 Başlıyor!",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/04/vzf9ndd1pvpb8-gencfest-2026-basliyor.jfif",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1610-gencfest-2026-basliyor",
+    status: "Aktif"
+  },
+
   {
     id: "event-real-1",
     title: "Geleceğin dünyasını şekillendiren teknolojiler ve dijital dönüşüm Bilim Kafe’de konuşuluyor!",
