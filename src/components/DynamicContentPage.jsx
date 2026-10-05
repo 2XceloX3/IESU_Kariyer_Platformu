@@ -48,6 +48,7 @@ export default function DynamicContentPage({ contentId, setView, previousView = 
                 {data.subtitle}
               </p>
             )}
+
           </div>
         </div>
       </div>

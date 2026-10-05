@@ -147,7 +147,22 @@ export default function AcademicHive({ currentUser, setView }) {
         return <ServicesPage setView={handleSetView} currentUser={effectiveCurrentUser} userRole="academic" />;
       case 'academic_onboarding':
         return <AcademicOnboarding onComplete={() => handleSetView('feed')} currentUser={effectiveCurrentUser} />;
-      default:
+            case 'gizlilik':
+      case 'kvkk':
+      case 'kullanim':
+      case 'cerez':
+      case 'aydinlatma-metni':
+      case 'aydinlatma':
+      case 'cerez-politikasi':
+      case 'cerez-politikası': {
+        const legalId = (
+          activeView === 'aydinlatma-metni' || activeView === 'aydinlatma' ? 'kvkk' :
+          activeView === 'cerez-politikasi' || activeView === 'cerez-politikası' ? 'cerez' :
+          activeView
+        );
+        return <DynamicContentPage contentId={legalId} setView={handleSetView} previousView="academic" />;
+      }
+default:
         if (typeof activeView === 'string' && activeView.startsWith('inner_page_')) {
           return <DynamicContentPage contentId={activeView.replace('inner_page_', '')} setView={handleSetView} previousView="academic" />;
         }

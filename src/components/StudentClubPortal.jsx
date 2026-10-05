@@ -95,7 +95,7 @@ export default function StudentClubPortal({
     phone: currentUser?.phone || '0532 000 1122',
     email: currentUser?.email || 'ogrenci@ogr.esenyurt.edu.tr',
     reason: '',
-    kvkkAccepted: true
+    kvkkAccepted: false
   });
 
   const [postForm, setPostForm] = useState({

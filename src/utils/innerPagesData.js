@@ -1,3 +1,4 @@
+// TODO(legal): KVKK / gizlilik / kullanım / çerez metinleri hukuk onayı bekliyor; yayın öncesi resmi metinle değiştirin.
 export const innerPagesData = {
   hakkimizda: {
     title: "Hakkımızda",
@@ -116,6 +117,19 @@ export const innerPagesData = {
         title: "Kişisel Verilerin İşlenme Amacı ve Haklarınız",
         content: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca; kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından işlenmektedir.\\n\\nVerileriniz staj başvurularının alınması, kariyer danışmanlığı, yetenek kapısı eşleşmeleri ve mezun istihdam takibi amacıyla kullanılmaktadır. KVKK Madde 11 uyarınca verilerinizin silinmesini, düzeltilmesini veya işlenme amacını öğrenmeyi kvkk@esenyurt.edu.tr adresi üzerinden talep edebilirsiniz.",
         icon: "ShieldCheck"
+      }
+    ]
+  },
+  cerez: {
+    title: "Çerez Politikası",
+    subtitle: "Çerez kullanımı hakkında bilgilendirme (taslak)",
+    heroImage: "https://www.esenyurt.edu.tr/uploads/2026/07/hzzl9zmqxgrc0--20.jpg",
+    sections: [
+      {
+        id: "cerez-genel",
+        title: "Çerezlerin Kullanımı",
+        content: "Bu platform, oturum yönetimi ve temel işlevsellik için zorunlu çerezler kullanabilir. Tercih ve analitik çerezlere ilişkin ayrıntılı liste ve saklama süreleri hukuk onayı sonrasında bu sayfada yayımlanacaktır. Detaylı bilgi için kvkk@esenyurt.edu.tr adresine başvurabilirsiniz.",
+        icon: "Cookie"
       }
     ]
   },

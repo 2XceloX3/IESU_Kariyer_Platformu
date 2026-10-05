@@ -40,6 +40,7 @@ describe('Register production safety', () => {
     fireEvent.change(screen.getByLabelText('E-Posta Adresi'), { target: { value: 'mezun@example.test' } });
     fireEvent.change(screen.getByLabelText('Yeni Şifre'), { target: { value: 'guvenli-sifre' } });
     fireEvent.change(screen.getByLabelText('Yeni Şifre Tekrar'), { target: { value: 'guvenli-sifre' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: /KVKK Aydınlatma Metni/i }));
     fireEvent.click(screen.getByRole('button', { name: 'Mezun Hesabımı Aktifleştir' }));
 
     await waitFor(() => {
