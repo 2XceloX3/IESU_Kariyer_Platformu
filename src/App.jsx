@@ -26,7 +26,7 @@ const STUDENT_EXCLUSIVE_ROUTES = new Set([
   'student', 'feed', 'student_kgb', 'student_analytics', 'career_test', 
   'career_roadmap', 'startup_incubator', 'smart_certs', 'digital_portfolio', 
   'reward_store', 'metaverse_library', 'hackathon_market', 'clubs', 'club_portal', 
-  'club_admin', 'sem', 'staj', 'anka_chat', 'skills', 'skill_tree', 'mentor_match', 'knowledge_portal'
+  'club_admin', 'sem', 'staj', 'anka_chat', 'skills', 'skill_tree', 'mentor_match', 'knowledge_portal', 'student_onboarding', 'onboarding'
 ]);
 const SHARED_ROUTES = new Set([
   'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 

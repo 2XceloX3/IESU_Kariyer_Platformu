@@ -13,6 +13,7 @@ const PORTAL_ROUTES = new Set([
 
 // Lazy-loaded feed and subviews
 const StudentFeed = lazy(() => import('../../components/StudentFeed'));
+const StudentOnboarding = lazy(() => import('../../components/StudentOnboarding'));
 const JobsAndInternships = lazy(() => import('../../components/JobsAndInternships'));
 const UserProfile = lazy(() => import('../../components/UserProfile'));
 const PublicUserProfile = lazy(() => import('../../components/PublicUserProfile'));
@@ -141,6 +142,9 @@ export default function StudentHive({ currentUser, setView }) {
 
   const renderActiveView = () => {
     switch (currentView) {
+      case 'student_onboarding':
+      case 'onboarding':
+        return <StudentOnboarding setView={handleSetView} onComplete={() => handleSetView('feed')} currentUser={effectiveCurrentUser} />;
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="student" />;
       case 'user_profile':
@@ -314,6 +318,12 @@ export default function StudentHive({ currentUser, setView }) {
 
   return (
     <HiveProvider>
+      {!effectiveCurrentUser?.onboardingCompleted && currentView !== 'student_onboarding' && currentView !== 'onboarding' ? (
+        <div data-testid="onboarding-banner" className="sticky top-0 z-[60] bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center justify-between gap-3">
+          <p className="text-xs font-bold text-amber-900">Profil onboarding tamamlanmadı — kariyer ilerlemesi için bilgilerinizi tamamlayın.</p>
+          <button type="button" onClick={() => handleSetView('student_onboarding')} className="shrink-0 px-3 py-1.5 rounded-lg bg-[#990000] text-white text-[11px] font-black cursor-pointer">Başla</button>
+        </div>
+      ) : null}
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="w-10 h-10 border-4 border-[#990000] border-t-transparent rounded-full animate-spin" /></div>}>
         {renderActiveView()}
       </Suspense>

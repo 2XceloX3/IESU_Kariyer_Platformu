@@ -252,21 +252,21 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 })()}</span>
               </div>
               <div className="h-1.5 w-full bg-red-50 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-amber-500 via-[#990000] to-emerald-500 rounded-full" style={{ width: '88%' }} />
+                <div className="h-full bg-gradient-to-r from-amber-500 via-[#990000] to-emerald-500 rounded-full" style={{ width: `${(() => { const p = computeCareerProgress({ user: currentUser, applications: useAppStore.getState().applications || [] }); return p.percent == null ? 0 : p.percent; })()}%` }} />
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-1.5 py-2 border-y border-gray-100 mb-2.5 text-center">
               <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
-                <span className="block text-sm font-black text-[#990000]">{effectiveCurrentUser?.internships ?? 2}</span>
+                <span className="block text-sm font-black text-[#990000]">{effectiveCurrentUser?.internships ?? 0}</span>
                 <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Staj</span>
               </div>
               <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
-                <span className="block text-sm font-black text-amber-700">{effectiveCurrentUser?.certifications ?? 3}</span>
+                <span className="block text-sm font-black text-amber-700">{effectiveCurrentUser?.certifications ?? 0}</span>
                 <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Sertifika</span>
               </div>
               <div className="bg-slate-50 rounded-xl p-1.5 border border-gray-100/80">
-                <span className="block text-sm font-black text-blue-700">{effectiveCurrentUser?.workshopsAttended ?? 7}</span>
+                <span className="block text-sm font-black text-blue-700">{effectiveCurrentUser?.workshopsAttended ?? 0}</span>
                 <span className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider">Workshop</span>
               </div>
             </div>
