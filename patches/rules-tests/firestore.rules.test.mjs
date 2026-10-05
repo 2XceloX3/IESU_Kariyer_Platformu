@@ -12,6 +12,8 @@ import {
 } from '@firebase/rules-unit-testing';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
+const EMU = Boolean(process.env.FIRESTORE_EMULATOR_HOST || process.env.FIREBASE_EMULATOR_HUB);
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '../..');
 const PROJECT_ID = 'iesu-rules-test';
@@ -19,6 +21,7 @@ const PROJECT_ID = 'iesu-rules-test';
 let testEnv;
 
 beforeAll(async () => {
+  if (!EMU) return;
   testEnv = await initializeTestEnvironment({
     projectId: PROJECT_ID,
     firestore: {
@@ -30,10 +33,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  if (!EMU) return;
   await testEnv?.cleanup();
 });
 
 beforeEach(async () => {
+  if (!EMU || !testEnv) return;
   await testEnv.clearFirestore();
 });
 
@@ -41,7 +46,7 @@ function authed(uid, token = {}) {
   return testEnv.authenticatedContext(uid, token).firestore();
 }
 
-describe('users role escalation', () => {
+describe.skipIf(!EMU)('users role escalation', () => {
   it('denies create with role=admin', async () => {
     const db = authed('stu1');
     await assertFails(setDoc(doc(db, 'users/stu1'), { role: 'admin', name: 'X' }));
@@ -74,7 +79,7 @@ describe('users role escalation', () => {
   });
 });
 
-describe('applications applicant binding', () => {
+describe.skipIf(!EMU)('applications applicant binding', () => {
   beforeEach(async () => {
     await testEnv.withSecurityRulesDisabled(async (ctx) => {
       const db = ctx.firestore();
