@@ -96,40 +96,47 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     }));
   };
 
-  const handleSpssExport = (survey) => {
-    // Generate dummy SPSS/CSV content
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + "ID,Cinsiyet,Bolum,Soru1_Likert,Soru2_Likert,Soru3_Likert\n"
-      + "1,1,Bilgisayar,5,4,5\n"
-      + "2,2,Isletme,3,4,4\n"
-      + "3,1,Endustri,5,5,4\n"
-      + "4,2,Mimarlik,4,2,3\n";
-    
-    const encodedUri = encodeURI(csvContent);
+    const handleSpssExport = (survey) => {
+    const responses = Array.isArray(survey.responseRows) ? survey.responseRows
+      : Array.isArray(survey.answers) ? survey.answers
+      : [];
+    if (!responses.length) {
+      window.toast?.error?.('Raporlanacak gerçek veri yok. SPSS dışa aktarımı için anket yanıtları gerekli.');
+      return;
+    }
+    const qCount = (survey.questions || []).length || 0;
+    const header = ['ID', ...(survey.questions || []).map((_, i) => `Soru${i+1}_Likert`)];
+    const lines = [header.join(',')];
+    responses.forEach((row, i) => {
+      const scores = Array.isArray(row) ? row : (row.scores || row.answers || []);
+      lines.push([row.id || `R_${i+1}`, ...scores.slice(0, qCount)].join(','));
+    });
+    const blob = new Blob(["\ufeff" + lines.join("\n")], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.setAttribute("href", url);
     link.setAttribute("download", `SPSS_Export_${survey.id}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    window.toast.success("SPSS / Excel uyumlu veri başarıyla indirildi. (Mock Data)");
+    window.toast.success("SPSS / Excel uyumlu gerçek yanıtlar indirildi.");
   };
 
   const handleKVKKExport = (survey) => {
-    const csvContent = [];
-    // KVKK & SPSS İsteği: İsim/ID yok, sadece soruların skorları (Sütun: Q1, Q2, Q3 vb., Satır: Katılımcı Yanıtları)
-    const headerRow = ["Katilimci_No", ...survey.questions.map((q, i) => `Soru_${i+1}_Skor`)];
-    csvContent.push(headerRow.join(","));
-    
-    for(let i = 0; i < (survey.responses || 15); i++) {
-      const row = [`K_${i+1}`]; // Katılımcı ID (Anonim)
-      survey.questions.forEach(q => {
-        const score = Math.floor(Math.random() * 5) + 1; // 1-5 Mock data
-        row.push(score);
-      });
-      csvContent.push(row.join(","));
+    const responses = Array.isArray(survey.responseRows) ? survey.responseRows
+      : Array.isArray(survey.answers) ? survey.answers
+      : [];
+    if (!responses.length) {
+      window.toast?.error?.('Raporlanacak gerçek veri yok. Boş veri ile SPSS/CSV üretilmez.');
+      return;
     }
-
+    const csvContent = [];
+    const headerRow = ["Katilimci_No", ...(survey.questions || []).map((q, i) => `Soru_${i+1}_Skor`)];
+    csvContent.push(headerRow.join(","));
+    responses.forEach((row, i) => {
+      const scores = Array.isArray(row) ? row : (row.scores || row.answers || []);
+      csvContent.push([`K_${i+1}`, ...scores].join(","));
+    });
     const blob = new Blob(["\ufeff" + csvContent.join("\n")], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -140,7 +147,7 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     document.body.removeChild(link);
   };
 
-  const handleShareToFeed = (survey) => {
+const handleShareToFeed = (survey) => {
     if(!setPosts) { window.toast.info('Feed entegrasyonu bulunamadı!'); return; }
     const newPost = {
       id: Date.now(),

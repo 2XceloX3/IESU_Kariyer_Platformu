@@ -1,3 +1,4 @@
+import useAppStore from '../../store/useAppStore';
 import React, { useState, useEffect } from 'react';
 import {
   Search,
@@ -39,460 +40,44 @@ import {
   Download
 } from 'lucide-react';
 
-// --- INITIAL DEMO DATA ---
-const defaultApprovals = [
-  {
-    id: 'RAD-2026-001',
-    studentName: 'Ahmet Yılmaz',
-    studentId: '20210401012',
-    dept: 'Bilgisayar Mühendisliği Bölümü',
-    company: 'ASELSAN A.Ş.',
-    type: 'Zorunlu',
-    startDate: '2026-06-15',
-    endDate: '2026-08-15',
-    status: 'Bekleyen',
-    advisor: 'Prof. Dr. Mehmet Kaya',
-    appliedDate: '2026-07-28',
-    gpa: '3.42',
-    note: 'Zorunlu staj başvuru formu ve onaylı SGK beyannamesi ektedir.'
-  },
-  {
-    id: 'RAD-2026-002',
-    studentName: 'Zeynep Kaya',
-    studentId: '20210202044',
-    dept: 'İşletme',
-    company: 'Garanti BBVA Genel Müd.',
-    type: 'Gönüllü',
-    startDate: '2026-07-01',
-    endDate: '2026-08-30',
-    status: 'Bekleyen',
-    advisor: 'Doç. Dr. Ayşe Demir',
-    appliedDate: '2026-07-29',
-    gpa: '3.18',
-    note: 'İnsan Kaynakları departmanında yaz dönemi gönüllü stajı.'
-  },
-  {
-    id: 'RAD-2026-003',
-    studentName: 'Caner Erkin',
-    studentId: '20200305088',
-    dept: 'Endüstri Mühendisliği Bölümü',
-    company: 'Trendyol Tech HQ',
-    type: 'Zorunlu',
-    startDate: '2026-06-01',
-    endDate: '2026-07-15',
-    status: 'Bekleyen',
-    advisor: 'Dr. Öğr. Üyesi Ali Serper',
-    appliedDate: '2026-07-30',
-    gpa: '3.65',
-    note: 'Tedarik zinciri analizi ve envanter optimizasyonu stajı.'
-  },
-  {
-    id: 'RAD-2026-004',
-    studentName: 'Elif Şahin',
-    studentId: '20220101033',
-    dept: 'Elektrik ve Elektronik Mühendisliği (İngilizce) Bölümü',
-    company: 'Siemens Türkiye Ar-Ge',
-    type: 'Zorunlu',
-    startDate: '2026-07-10',
-    endDate: '2026-09-10',
-    status: 'Bekleyen',
-    advisor: 'Prof. Dr. Selim Öz',
-    appliedDate: '2026-07-31',
-    gpa: '3.29',
-    note: 'Gömülü sistemler ve otomasyon stajı onay talebi.'
-  },
-  {
-    id: 'RAD-2026-005',
-    studentName: 'Burak Özkan',
-    studentId: '20210504019',
-    dept: 'Yazılım Geliştirme Bölümü',
-    company: 'HAVELSAN Siber Güvenlik',
-    type: 'Zorunlu',
-    startDate: '2026-06-20',
-    endDate: '2026-08-20',
-    status: 'Bekleyen',
-    advisor: 'Doç. Dr. Seda Bulut',
-    appliedDate: '2026-08-01',
-    gpa: '3.80',
-    note: 'Ağ güvenliği ve sızma testleri ekibinde zorunlu staj.'
-  },
-  {
-    id: 'RAD-2026-006',
-    studentName: 'Ece Tekin',
-    studentId: '20210303015',
-    dept: 'Mimarlık Bölümü',
-    company: 'Tabanlıoğlu Mimarlık',
-    type: 'Zorunlu',
-    startDate: '2026-05-15',
-    endDate: '2026-07-15',
-    status: 'Onaylanan',
-    advisor: 'Prof. Dr. Kenan Doğan',
-    appliedDate: '2026-05-10',
-    gpa: '3.50',
-    note: 'Şantiye ve proje stajı eksiksiz onaylanmıştır.'
-  },
-  {
-    id: 'RAD-2026-007',
-    studentName: 'Deniz Arslan',
-    studentId: '20220401099',
-    dept: 'Bilgisayar Programcılığı',
-    company: 'Bilinmeyen Yazılım A.Ş.',
-    type: 'Gönüllü',
-    startDate: '2026-06-01',
-    endDate: '2026-07-01',
-    status: 'Reddedildi',
-    advisor: 'Prof. Dr. Mehmet Kaya',
-    appliedDate: '2026-05-20',
-    gpa: '2.10',
-    note: 'Firma faaliyet alanı akademik kriterlere uygun bulunmadı.'
-  }
-];
+// Demo seed removed — approvals come from store/local persisted real data only.
 
-const defaultMentorshipRequests = [
-  {
-    id: 'DNT-2026-101',
-    studentName: 'Selin Yıldız',
-    studentId: '20210401055',
-    dept: 'Bilgisayar Mühendisliği Bölümü',
-    advisor: 'Prof. Dr. Mehmet Kaya',
-    subject: 'Bitirme Projesi & Staj Denkleştirme',
-    requestDate: '2026-08-01',
-    status: 'Beklemede',
-    urgency: 'Yüksek',
-    details: 'Yaz stajım kapsamında geliştirdiğim yapay zeka modelini bitirme tezi konusu olarak kullanmak istiyorum. Ön inceleme ve görüşme talep ediyorum.'
-  },
-  {
-    id: 'DNT-2026-102',
-    studentName: 'Mert Aksoy',
-    studentId: '20220202011',
-    dept: 'İşletme',
-    advisor: 'Doç. Dr. Ayşe Demir',
-    subject: 'Yurtdışı Yüksek Lisans Referans Mektubu',
-    requestDate: '2026-07-30',
-    status: 'İnceleniyor',
-    urgency: 'Orta',
-    details: 'Münih Teknik Üniversitesi yüksek lisans başvurum için niyet mektubu kontrolü ve akademik referans mektubu desteği rica ediyorum.'
-  },
-  {
-    id: 'DNT-2026-103',
-    studentName: 'Gamze Çelik',
-    studentId: '20200305012',
-    dept: 'Endüstri Mühendisliği Bölümü',
-    advisor: 'Dr. Öğr. Üyesi Ali Serper',
-    subject: 'Kariyer Yönlendirme ve Çift Anadal (ÇAP)',
-    requestDate: '2026-07-28',
-    status: 'Tamamlandı',
-    urgency: 'Normal',
-    details: 'Bilgisayar mühendisliği ÇAP ders eşdeğerlikleri ve mezuniyet sonrası veri bilimi alanında uzmanlaşma rehberliği.'
-  },
-  {
-    id: 'DNT-2026-104',
-    studentName: 'Oğuzhan Tekin',
-    studentId: '20210101099',
-    dept: 'Elektrik ve Elektronik Mühendisliği (İngilizce) Bölümü',
-    advisor: 'Prof. Dr. Selim Öz',
-    subject: 'SGK Evrak Süreci & Geciken Onay',
-    requestDate: '2026-08-02',
-    status: 'Beklemede',
-    urgency: 'Acil',
-    details: 'Staj başlama tarihime 5 gün kaldı fakat SGK işe giriş belgem sistemde henüz onaylanmadı. Geçici muafiyet belgesi talep ediyorum.'
-  },
-  {
-    id: 'DNT-2026-105',
-    studentName: 'Melis Vural',
-    studentId: '20220504077',
-    dept: 'Yazılım Geliştirme Bölümü',
-    advisor: 'Doç. Dr. Seda Bulut',
-    subject: 'TÜBİTAK 2209-A Proje Danışmanlığı',
-    requestDate: '2026-07-25',
-    status: 'İnceleniyor',
-    urgency: 'Yüksek',
-    details: 'Öğrenci projeleri destekleme programına başvuracağız. Akademik danışman olarak projemize liderlik etmenizi rica ediyoruz.'
-  }
-];
 
-const facultyStatsData = [
-  {
-    id: 'iybf',
-    facultyName: 'İşletme ve Yönetim Bilimleri Fakültesi',
-    code: 'İYBF',
-    type: 'Fakülte',
-    activeCount: 112,
-    completedCount: 35,
-    pendingCount: 12,
-    successRate: '%96.4',
-    jobPlacementRate: '%84.2',
-    avgDuration: '30 Gün',
-    color: 'from-amber-600 to-orange-700',
-    departments: [
-      { name: 'Ekonomi ve Finans (İngilizce)', active: 22, completed: 8, pending: 2 },
-      { name: 'Elektronik Ticaret ve Yönetimi', active: 18, completed: 6, pending: 2 },
-      { name: 'Havacılık Yönetimi', active: 24, completed: 9, pending: 3 },
-      { name: 'İşletme', active: 42, completed: 14, pending: 5 },
-      { name: 'İşletme (İngilizce)', active: 20, completed: 7, pending: 2 },
-      { name: 'Siyaset Bilimi ve Uluslararası İlişkiler', active: 18, completed: 5, pending: 2 },
-      { name: 'Siyaset Bilimi ve Uluslararası İlişkiler (İngilizce)', active: 14, completed: 4, pending: 1 },
-      { name: 'Lojistik Yönetimi', active: 26, completed: 9, pending: 3 },
-      { name: 'Uluslararası Ticaret ve Finansman', active: 28, completed: 10, pending: 4 },
-      { name: 'Yönetim Bilişim Sistemleri', active: 38, completed: 12, pending: 4 }
-    ]
-  },
-  {
-    id: 'mmf',
-    facultyName: 'Mühendislik ve Mimarlık Fakültesi',
-    code: 'MMF',
-    type: 'Fakülte',
-    activeCount: 147,
-    completedCount: 42,
-    pendingCount: 17,
-    successRate: '%98.1',
-    jobPlacementRate: '%91.5',
-    avgDuration: '40 Gün',
-    color: 'from-[#990000] to-rose-800',
-    departments: [
-      { name: 'Bilgisayar Mühendisliği Bölümü', active: 45, completed: 18, pending: 5, placement: '%94', rate: '%98' },
-      { name: 'Elektrik ve Elektronik Mühendisliği (İngilizce) Bölümü', active: 28, completed: 10, pending: 4, placement: '%91', rate: '%97' },
-      { name: 'Endüstri Mühendisliği Bölümü', active: 24, completed: 8, pending: 3, placement: '%88', rate: '%96' },
-      { name: 'Endüstriyel Tasarım Bölümü', active: 16, completed: 5, pending: 2, placement: '%85', rate: '%95' },
-      { name: 'Mimarlık Bölümü', active: 22, completed: 7, pending: 3, placement: '%86', rate: '%96' },
-      { name: 'İç Mimarlık Bölümü', active: 20, completed: 6, pending: 2, placement: '%87', rate: '%95' },
-      { name: 'İç Mimarlık ve Çevre Tasarımı Bölümü', active: 18, completed: 5, pending: 2, placement: '%84', rate: '%94' },
-      { name: 'İnşaat Mühendisliği Bölümü', active: 26, completed: 9, pending: 3, placement: '%89', rate: '%96' },
-      { name: 'Makine Mühendisliği Bölümü', active: 24, completed: 8, pending: 3, placement: '%90', rate: '%97' },
-      { name: 'Yazılım Mühendisliği Bölümü', active: 40, completed: 15, pending: 5, placement: '%96', rate: '%99' }
-    ]
-  },
-  {
-    id: 'sbf',
-    facultyName: 'Sağlık Bilimleri Fakültesi',
-    code: 'SBF',
-    type: 'Fakülte',
-    activeCount: 130,
-    completedCount: 50,
-    pendingCount: 14,
-    successRate: '%99.2',
-    jobPlacementRate: '%89.0',
-    avgDuration: '45 Gün',
-    color: 'from-emerald-600 to-teal-700',
-    departments: [
-      { name: 'Beslenme ve Diyetetik Bölümü', active: 28, completed: 11, pending: 3 },
-      { name: 'Çocuk Gelişimi Bölümü', active: 22, completed: 8, pending: 2 },
-      { name: 'Fizyoterapi ve Rehabilitasyon Bölümü', active: 34, completed: 14, pending: 4 },
-      { name: 'Hemşirelik Bölümü', active: 58, completed: 22, pending: 6 },
-      { name: 'Sosyal Hizmet Bölümü', active: 18, completed: 6, pending: 2 }
-    ]
-  },
-  {
-    id: 'ssbf',
-    facultyName: 'Sanat ve Sosyal Bilimler Fakültesi',
-    code: 'SSBF',
-    type: 'Fakülte',
-    activeCount: 98,
-    completedCount: 30,
-    pendingCount: 10,
-    successRate: '%94.8',
-    jobPlacementRate: '%78.4',
-    avgDuration: '30 Gün',
-    color: 'from-indigo-600 to-purple-700',
-    departments: [
-      { name: 'Gastronomi ve Mutfak Sanatları Bölümü', active: 30, completed: 10, pending: 3 },
-      { name: 'Halkla İlişkiler ve Reklamcılık Bölümü', active: 22, completed: 7, pending: 2 },
-      { name: 'İngiliz Dili ve Edebiyatı (İngilizce) Bölümü', active: 18, completed: 5, pending: 2 },
-      { name: 'Psikoloji Bölümü', active: 44, completed: 14, pending: 4 },
-      { name: 'Psikoloji (İngilizce) Bölümü', active: 20, completed: 6, pending: 2 },
-      { name: 'Radyo, Televizyon ve Sinema Bölümü', active: 16, completed: 5, pending: 2 },
-      { name: 'Sosyoloji Bölümü', active: 14, completed: 4, pending: 1 },
-      { name: 'Yeni Medya ve İletişim Bölümü', active: 20, completed: 6, pending: 2 }
-    ]
-  },
-  {
-    id: 'spo',
-    facultyName: 'Spor Bilimleri Fakültesi',
-    code: 'SPO',
-    type: 'Fakülte',
-    activeCount: 48,
-    completedCount: 15,
-    pendingCount: 6,
-    successRate: '%95.0',
-    jobPlacementRate: '%82.0',
-    avgDuration: '30 Gün',
-    color: 'from-cyan-600 to-blue-700',
-    departments: [
-      { name: 'Antrenörlük Eğitimi Bölümü', active: 28, completed: 9, pending: 4 },
-      { name: 'Spor Yöneticiliği Bölümü', active: 20, completed: 6, pending: 2 }
-    ]
-  },
-  {
-    id: 'ubf',
-    facultyName: 'Uygulamalı Bilimler Fakültesi',
-    code: 'UBF',
-    type: 'Fakülte',
-    activeCount: 62,
-    completedCount: 20,
-    pendingCount: 7,
-    successRate: '%97.5',
-    jobPlacementRate: '%88.6',
-    avgDuration: '40 Gün',
-    color: 'from-rose-700 to-pink-800',
-    departments: [
-      { name: 'Bilişim Sistemleri ve Teknolojileri Bölümü', active: 28, completed: 9, pending: 3 },
-      { name: 'Veri Bilimi ve Analitiği Bölümü', active: 24, completed: 8, pending: 3 },
-      { name: 'Yazılım Geliştirme Bölümü', active: 32, completed: 11, pending: 4 }
-    ]
-  },
-  {
-    id: 'btmyo',
-    facultyName: 'Bilişim Teknolojileri Meslek Yüksekokulu',
-    code: 'BTMYO',
-    type: 'Meslek Yüksekokulu',
-    activeCount: 110,
-    completedCount: 45,
-    pendingCount: 15,
-    successRate: '%98.5',
-    jobPlacementRate: '%93.0',
-    avgDuration: '30 Gün',
-    color: 'from-[#990000] to-slate-900',
-    departments: [
-      { name: 'Bilgisayar Destekli Tasarım ve Animasyon', active: 22, completed: 8, pending: 3 },
-      { name: 'Bilişim Güvenliği Teknolojisi', active: 30, completed: 12, pending: 4 },
-      { name: 'Bilgisayar Programcılığı', active: 48, completed: 20, pending: 6 },
-      { name: 'Bilgisayar Teknolojisi', active: 24, completed: 9, pending: 3 },
-      { name: 'İnsansız Hava Aracı Teknolojisi ve Operatörlüğü', active: 18, completed: 6, pending: 2 },
-      { name: 'İnternet ve Ağ Teknolojileri', active: 20, completed: 7, pending: 2 },
-      { name: 'Oyun Geliştirme ve Programlama', active: 32, completed: 11, pending: 4 },
-      { name: 'Robotik ve Yapay Zeka', active: 26, completed: 9, pending: 3 }
-    ]
-  },
-  {
-    id: 'myo',
-    facultyName: 'Meslek Yüksekokulu',
-    code: 'MYO',
-    type: 'Meslek Yüksekokulu',
-    activeCount: 124,
-    completedCount: 52,
-    pendingCount: 18,
-    successRate: '%96.0',
-    jobPlacementRate: '%85.5',
-    avgDuration: '30 Gün',
-    color: 'from-slate-700 to-[#990000]',
-    departments: [
-      { name: 'Aşçılık', active: 28, completed: 10, pending: 3 },
-      { name: 'Dış Ticaret', active: 38, completed: 16, pending: 5 },
-      { name: 'Grafik Tasarımı', active: 30, completed: 12, pending: 4 },
-      { name: 'Lojistik', active: 32, completed: 14, pending: 5 },
-      { name: 'Sivil Havacılık Kabin Hizmetleri', active: 30, completed: 11, pending: 4 }
-    ]
-  },
-  {
-    id: 'shmyo',
-    facultyName: 'Sağlık Hizmetleri Meslek Yüksekokulu',
-    code: 'SHMYO',
-    type: 'Meslek Yüksekokulu',
-    activeCount: 165,
-    completedCount: 82,
-    pendingCount: 19,
-    successRate: '%99.0',
-    jobPlacementRate: '%90.2',
-    avgDuration: '45 Gün',
-    color: 'from-teal-700 to-[#990000]',
-    departments: [
-      { name: 'Ağız ve Diş Sağlığı Programı', active: 32, completed: 14, pending: 4 },
-      { name: 'Ameliyathane Hizmetleri Programı', active: 38, completed: 18, pending: 4 },
-      { name: 'Anestezi Programı', active: 35, completed: 16, pending: 4 },
-      { name: 'İlk ve Acil Yardım Programı', active: 52, completed: 28, pending: 6 },
-      { name: 'Tıbbi Görüntüleme Teknikleri Programı', active: 40, completed: 20, pending: 5 }
-    ]
-  }
-];
+const facultyStatsData = [];
 
-const defaultDocumentTracking = [
-  {
-    id: 'DOC-101',
-    studentName: 'Ahmet Yılmaz',
-    dept: 'Bilgisayar Mühendisliği Bölümü',
-    sgk: 'Yüklendi',
-    attendance: 'İnceleniyor',
-    notebook: 'Eksik',
-    evaluation: 'Eksik',
-    lastUpdate: '01.08.2026'
-  },
-  {
-    id: 'DOC-102',
-    studentName: 'Zeynep Kaya',
-    dept: 'İşletme',
-    sgk: 'Yüklendi',
-    attendance: 'Yüklendi',
-    notebook: 'İnceleniyor',
-    evaluation: 'Eksik',
-    lastUpdate: '30.07.2026'
-  },
-  {
-    id: 'DOC-103',
-    studentName: 'Caner Erkin',
-    dept: 'Endüstri Mühendisliği Bölümü',
-    sgk: 'Yüklendi',
-    attendance: 'Yüklendi',
-    notebook: 'Yüklendi',
-    evaluation: 'Yüklendi',
-    lastUpdate: '28.07.2026'
-  },
-  {
-    id: 'DOC-104',
-    studentName: 'Elif Şahin',
-    dept: 'Elektrik ve Elektronik Mühendisliği (İngilizce) Bölümü',
-    sgk: 'İnceleniyor',
-    attendance: 'Eksik',
-    notebook: 'Eksik',
-    evaluation: 'Eksik',
-    lastUpdate: '02.08.2026'
-  },
-  {
-    id: 'DOC-105',
-    studentName: 'Burak Özkan',
-    dept: 'Yazılım Geliştirme Bölümü',
-    sgk: 'Yüklendi',
-    attendance: 'Yüklendi',
-    notebook: 'Yüklendi',
-    evaluation: 'İnceleniyor',
-    lastUpdate: '01.08.2026'
-  },
-  {
-    id: 'DOC-106',
-    studentName: 'Ece Tekin',
-    dept: 'Mimarlık Bölümü',
-    sgk: 'Yüklendi',
-    attendance: 'Yüklendi',
-    notebook: 'Yüklendi',
-    evaluation: 'Yüklendi',
-    lastUpdate: '25.07.2026'
-  }
-];
 
 export default function CMSAcademicRadar() {
+  const storeApprovals = useAppStore(state => state.academicApprovals) || [];
   const [approvals, setApprovals] = useState(() => {
     try {
       const saved = localStorage.getItem('iesu_academic_radar_v1');
-      return saved ? JSON.parse(saved) : defaultApprovals;
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return defaultApprovals;
+      return [];
     }
   });
+  // Gerçek store kayıtları varsa onları kullan (hive akışını bozmadan)
+  useEffect(() => {
+    if (Array.isArray(storeApprovals) && storeApprovals.length > 0) {
+      setApprovals(storeApprovals);
+    }
+  }, [storeApprovals]);
 
   const [mentorshipRequests, setMentorshipRequests] = useState(() => {
     try {
       const saved = localStorage.getItem('iesu_mentorship_requests_v1');
-      return saved ? JSON.parse(saved) : defaultMentorshipRequests;
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return defaultMentorshipRequests;
+      return [];
     }
   });
 
   const [documentTracking, setDocumentTracking] = useState(() => {
     try {
       const saved = localStorage.getItem('iesu_document_tracking_v1');
-      return saved ? JSON.parse(saved) : defaultDocumentTracking;
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return defaultDocumentTracking;
+      return [];
     }
   });
 
@@ -581,10 +166,15 @@ export default function CMSAcademicRadar() {
   const [expandedDeptClasses, setExpandedDeptClasses] = useState({});
 
   const handleExportFacultyExcel = (faculty) => {
+    if (!faculty || !(faculty.departments||[]).length) {
+      showToast?.('Raporlanacak gerçek veri yok.');
+      window.toast?.error?.('Raporlanacak gerçek veri yok.');
+      return;
+    }
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-    csvContent += `FAKÜLTE / YÜKSEKOKUL: ${faculty.facultyName} (${faculty.code}) — ÖRNEK / ÖNİZLEME VERİ\n`;
+    csvContent += `FAKÜLTE / YÜKSEKOKUL: ${faculty.facultyName} (${faculty.code})\n`;
     csvContent += `Tür;Başarı Oranı;İstihdam Oranı;Ortalama Süre;Aktif Staj;Tamamlanan;Bekleyen\n`;
-    csvContent += `${faculty.type};${faculty.successRate || '%96'};${faculty.jobPlacementRate || '%85'};${faculty.avgDuration || '30 Gün'};${faculty.activeCount};${faculty.completedCount};${faculty.pendingCount}\n\n`;
+    csvContent += `${faculty.type};${faculty.successRate || '—'};${faculty.jobPlacementRate || '—'};${faculty.avgDuration || '30 Gün'};${faculty.activeCount};${faculty.completedCount};${faculty.pendingCount}\n\n`;
     
     csvContent += `Bölüm / Program Adı;1. Sınıf;2. Sınıf;3. Sınıf;4. Sınıf;Aktif Staj;Tamamlanan;Bekleyen;İstihdam Yüzdesi\n`;
 
@@ -595,7 +185,7 @@ export default function CMSAcademicRadar() {
       const g3 = maxGrade >= 3 ? Math.round(dept.active * 0.30) : '-';
       const g4 = maxGrade >= 4 ? (dept.active - (g1 + g2 + (typeof g3 === 'number' ? g3 : 0))) : '-';
 
-      csvContent += `"${dept.name}";${g1};${g2};${g3};${g4};${dept.active};${dept.completed};${dept.pending};${dept.placement || '%88'}\n`;
+      csvContent += `"${dept.name}";${g1};${g2};${g3};${g4};${dept.active};${dept.completed};${dept.pending};${dept.placement || '—'}\n`;
     });
 
     const encodedUri = encodeURI(csvContent);
@@ -609,14 +199,18 @@ export default function CMSAcademicRadar() {
   };
 
   const handleExportAllFacultiesExcel = () => {
+    if (!facultyStatsData.length) {
+      showToast?.('Raporlanacak gerçek veri yok.');
+      window.toast?.error?.('Raporlanacak gerçek veri yok.');
+      return;
+    }
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
     csvContent += `İSTANBUL ESENYURT ÜNİVERSİTESİ - TÜM AKADEMİK BİRİMLER STAJ & AKADEMİK RADAR RAPORU\n`;
     csvContent += `Tarih: ${new Date().toLocaleDateString('tr-TR')}\n\n`;
-    csvContent += `Not: Örnek / önizleme veri — resmi canlı istatistik değildir\n`;
     csvContent += `Fakülte Kodu;Fakülte/MYO Adı;Tür;Başarı Oranı;İstihdam Oranı;Ortalama Süre;Aktif Staj;Tamamlanan;Bekleyen;Toplam Program Sayısı\n`;
 
     facultyStatsData.forEach(fac => {
-      csvContent += `${fac.code};"${fac.facultyName}";${fac.type};${fac.successRate || '%96'};${fac.jobPlacementRate || '%85'};${fac.avgDuration || '30 Gün'};${fac.activeCount};${fac.completedCount};${fac.pendingCount};${fac.departments.length}\n`;
+      csvContent += `${fac.code};"${fac.facultyName}";${fac.type};${fac.successRate || '—'};${fac.jobPlacementRate || '—'};${fac.avgDuration || '30 Gün'};${fac.activeCount};${fac.completedCount};${fac.pendingCount};${fac.departments.length}\n`;
     });
 
     csvContent += `\n\nDETAYLI BÖLÜM VE SINIF DAĞILIMI:\n`;
@@ -912,20 +506,26 @@ export default function CMSAcademicRadar() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-[#990000]"></span> 2. Fakülte & Program Akademik Radarı (9 Akademik Birim) <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">Örnek veri</span>
+              <span className="w-3 h-3 rounded-full bg-[#990000]"></span> 2. Fakülte & Program Akademik Radarı (9 Akademik Birim)
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">Üniversitemize bağlı 6 fakülte ve 3 meslek yüksekokulunun staj yük dağılımı (önizleme — örnek veri).</p>
+            <p className="text-xs text-slate-500 mt-0.5">Üniversitemize bağlı 6 fakülte ve 3 meslek yüksekokulunun canlı staj yük dağılımı.</p>
           </div>
 
           <button
             onClick={handleExportAllFacultiesExcel}
             className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white rounded-2xl text-xs font-black transition flex items-center gap-2 shadow-md cursor-pointer self-start sm:self-auto"
           >
-            <Download size={15} /> Toplu Excel (.CSV) — örnek veri
+            <Download size={15} /> Tüm Birimleri Toplu Excele Aktar (.CSV)
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {facultyStatsData.length === 0 && (
+            <div className="col-span-full py-16 text-center bg-white rounded-3xl border border-slate-200">
+              <p className="text-sm font-black text-slate-800">Henüz veri yok</p>
+              <p className="text-xs text-slate-500 font-medium mt-1 max-w-md mx-auto">Fakülte staj / istihdam istatistikleri bağlandığında burada listelenir. Hive akışları etkilenmez.</p>
+            </div>
+          )}
           {facultyStatsData.map(fac => {
             const totalStaj = fac.activeCount + fac.completedCount + fac.pendingCount;
             const completedPercent = Math.round((fac.completedCount / totalStaj) * 100);
@@ -990,12 +590,12 @@ export default function CMSAcademicRadar() {
                 {/* Additional Statistical Analytics Footer */}
                 <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-3 gap-1 text-[10px] text-center font-bold text-slate-600">
                   <div className="bg-emerald-50 text-emerald-900 p-1.5 rounded-xl border border-emerald-100">
-                    <span className="block text-[8px] uppercase text-emerald-600">Başarı <span className="text-amber-600">· örnek</span></span>
-                    <span>{fac.successRate || '%97.0'}</span>
+                    <span className="block text-[8px] uppercase text-emerald-600">Başarı</span>
+                    <span>{fac.successRate || '—'}</span>
                   </div>
                   <div className="bg-blue-50 text-blue-900 p-1.5 rounded-xl border border-blue-100">
-                    <span className="block text-[8px] uppercase text-blue-600">İstihdam <span className="text-amber-600">· örnek</span></span>
-                    <span>{fac.jobPlacementRate || '%85.0'}</span>
+                    <span className="block text-[8px] uppercase text-blue-600">İstihdam</span>
+                    <span>{fac.jobPlacementRate || '—'}</span>
                   </div>
                   <div className="bg-purple-50 text-purple-900 p-1.5 rounded-xl border border-purple-100">
                     <span className="block text-[8px] uppercase text-purple-600">Ort. Süre</span>
@@ -1307,12 +907,12 @@ export default function CMSAcademicRadar() {
               {/* Analytics Header Summary */}
               <div className="grid grid-cols-3 gap-3 bg-red-50/70 p-4 rounded-2xl text-center border border-red-100">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Fakülte Başarı Oranı <span className="text-amber-600">(örnek)</span></span>
-                  <span className="text-base font-black text-emerald-600">{selectedFacultyModal.successRate || '%97.2'}</span>
+                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Fakülte Başarı Oranı</span>
+                  <span className="text-base font-black text-emerald-600">{selectedFacultyModal.successRate || '—'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Staj İle İstihdam <span className="text-amber-600">(örnek)</span></span>
-                  <span className="text-base font-black text-blue-600">{selectedFacultyModal.jobPlacementRate || '%88.5'}</span>
+                  <span className="text-[10px] font-bold text-slate-500 block uppercase">Staj İle İstihdam</span>
+                  <span className="text-base font-black text-blue-600">{selectedFacultyModal.jobPlacementRate || '—'}</span>
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-500 block uppercase">Ortalama Staj Süresi</span>

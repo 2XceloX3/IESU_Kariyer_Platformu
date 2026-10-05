@@ -33,6 +33,8 @@ export default function AcademicStaffFeed({
   const setStudents = useAppStore(state => state.setStudents);
   const alumni = useAppStore(state => state.alumni);
   const companies = useAppStore(state => state.companies);
+  const checkupRecords = useAppStore(state => state.checkupRecords) || [];
+  const storeAlumni = useAppStore(state => state.alumni) || alumni || [];
   const academicStaff = useAppStore(state => state.academicStaff);
   const surveys = useAppStore(state => state.surveys);
   const groups = useAppStore(state => state.groups);
@@ -256,11 +258,11 @@ export default function AcademicStaffFeed({
               {/* Öğrenci & Stajyer Sayıları */}
               <div className="grid grid-cols-2 gap-4 bg-purple-50/60 p-3 rounded-2xl border border-purple-100 text-center w-full mt-6">
                 <div>
-                  <p className="text-xl font-black text-[#4C1D95]">{stats.totalStudents} <span className="text-[9px] font-black text-amber-600 align-middle">Örnek</span></p>
+                  <p className="text-xl font-black text-[#4C1D95]">{stats.totalStudents}</p>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">ÖĞRENCİ</p>
                 </div>
                 <div className="border-l border-purple-200">
-                  <p className="text-xl font-black text-emerald-600">{stats.activeInterns} <span className="text-[9px] font-black text-amber-600 align-middle">Örnek</span></p>
+                  <p className="text-xl font-black text-emerald-600">{stats.activeInterns}</p>
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">STAJYER</p>
                 </div>
               </div>
@@ -812,42 +814,64 @@ export default function AcademicStaffFeed({
               {activeTab === 'dashboard' && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-100">
-                      <p className="text-[11px] font-black text-red-600 uppercase tracking-wider">Mezun İstihdam Oranı</p>
-                      <p className="text-3xl font-black text-gray-900 mt-1">%88.4</p>
-                      <p className="text-[10px] font-semibold text-emerald-600 mt-1">↑ İlk 6 ayda işe yerleşme</p>
+                    <div className="p-4 bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-100 relative">
+<p className="text-[11px] font-black text-red-600 uppercase tracking-wider">Mezun İstihdam Oranı</p>
+                      <p className="text-3xl font-black text-gray-900 mt-1">{
+                        (() => {
+                          const rows = checkupRecords || [];
+                          if (!rows.length) return 'Henüz veri yok';
+                          const employed = rows.filter(r => r.employed === 'Evet' || r.employed === true).length;
+                          return '%' + Math.round((employed / rows.length) * 100);
+                        })()
+                      }</p>
+                      <p className="text-[10px] font-semibold text-slate-500 mt-1">
+                        {(checkupRecords || []).length ? `${checkupRecords.length} check-up kaydından hesaplandı` : 'Kariyer check-up yanıtı bulunmuyor'}
+                      </p>
                     </div>
-                    <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100">
-                      <p className="text-[11px] font-black text-emerald-700 uppercase tracking-wider">Aktif Staj Yapanlar</p>
-                      <p className="text-3xl font-black text-gray-900 mt-1">124 Öğrenci</p>
-                      <p className="text-[10px] font-semibold text-gray-500 mt-1">Bölüm mevcudunun %27'si</p>
+                    <div className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 relative">
+<p className="text-[11px] font-black text-emerald-700 uppercase tracking-wider">Aktif Staj Yapanlar</p>
+                      <p className="text-3xl font-black text-gray-900 mt-1">{(() => { const n=(internships||[]).filter(i => i.status==='Aktif'||i.status==='Onaylandı').length; return n>0?n:'Henüz veri yok'; })()}</p>
+                      <p className="text-[10px] font-semibold text-gray-500 mt-1">Kayıtlı staj listesinden</p>
                     </div>
-                    <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-                      <p className="text-[11px] font-black text-blue-700 uppercase tracking-wider">Anlaşmalı Kurum Sayısı</p>
-                      <p className="text-3xl font-black text-gray-900 mt-1">42 Firma</p>
-                      <p className="text-[10px] font-semibold text-blue-600 mt-1">Resmi Protokollü Kontenjan</p>
+                    <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 relative">
+<p className="text-[11px] font-black text-blue-700 uppercase tracking-wider">Anlaşmalı Kurum Sayısı</p>
+                      <p className="text-3xl font-black text-gray-900 mt-1">{((companies||[]).length>0)?(companies||[]).length:'Henüz veri yok'}</p>
+                      <p className="text-[10px] font-semibold text-blue-600 mt-1">Platformdaki firma kayıtları</p>
                     </div>
                   </div>
 
                   {/* Sektör Dağılım Çubukları */}
                   <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3">
                     <h4 className="font-bold text-gray-900 text-xs uppercase tracking-wider">Öğrenci Staj Yerleşimi Sektör Dağılımı</h4>
-                    {[
-                      { sector: 'Yazılım & Bilişim Teknoloji', ratio: '42%', color: 'bg-red-600' },
-                      { sector: 'Savunma Sanayii & Havacılık', ratio: '28%', color: 'bg-amber-500' },
-                      { sector: 'Telekomünikasyon & Ağ', ratio: '18%', color: 'bg-emerald-600' },
-                      { sector: 'E-Ticaret & Fintek', ratio: '12%', color: 'bg-indigo-600' }
-                    ].map((sec, idx) => (
-                      <div key={idx} className="space-y-1">
-                        <div className="flex justify-between text-xs font-bold text-gray-700">
-                          <span>{sec.sector}</span>
-                          <span>{sec.ratio}</span>
-                        </div>
-                        <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
-                          <div className={`h-full ${sec.color}`} style={{ width: sec.ratio }}></div>
-                        </div>
-                      </div>
-                    ))}
+                    {(() => {
+                      const list = internships || [];
+                      const counts = {};
+                      list.forEach(i => {
+                        const key = i.sector || i.companySector || i.field || null;
+                        if (!key) return;
+                        counts[key] = (counts[key] || 0) + 1;
+                      });
+                      const entries = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 6);
+                      const total = entries.reduce((s, [,n]) => s+n, 0);
+                      if (!entries.length) {
+                        return <p className="text-xs font-medium text-slate-500 py-4 text-center">Henüz veri yok — staj kayıtlarında sektör bilgisi bulunmuyor.</p>;
+                      }
+                      const colors = ['bg-red-600','bg-amber-500','bg-emerald-600','bg-indigo-600','bg-sky-600','bg-violet-600'];
+                      return entries.map(([sector, n], idx) => {
+                        const pct = Math.round((n/total)*100);
+                        return (
+                          <div key={sector} className="space-y-1">
+                            <div className="flex justify-between text-xs font-bold text-gray-700">
+                              <span>{sector}</span>
+                              <span>%{pct}</span>
+                            </div>
+                            <div className="w-full h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                              <div className={`h-full ${colors[idx % colors.length]}`} style={{ width: pct + '%' }}></div>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               )}

@@ -9,33 +9,39 @@ import useAppStore from '../../store/useAppStore';
 export default function CMSAnalytics({ students = [], alumni = [], companies = [], jobs = [], applications = [] }) {
   const checkupRecords = useAppStore(state => state.checkupRecords) || [];
 
-  // Calculation of real-time percentages for YÖK reports
-  const totalCheckup = checkupRecords.length || 1;
-  const relatedJobCount = checkupRecords.filter(r => r.relatedToMajor === 'Evet').length || Math.round(totalCheckup * 0.72);
-  const postgradCount = checkupRecords.filter(r => r.postgrad === 'Evet').length || Math.round(totalCheckup * 0.18);
-  const updatedPhoneCount = checkupRecords.filter(r => r.phoneUpdated === 'Hayır' || r.newPhone).length || 42;
-  const updatedEmailCount = checkupRecords.filter(r => r.emailUpdated === 'Hayır' || r.newEmail).length || 85;
+  // Gerçek checkup verisi yoksa uydurma oran/sayı kullanılmaz.
+  const hasCheckupData = checkupRecords.length > 0;
+  const totalCheckup = checkupRecords.length;
+  const relatedJobCount = checkupRecords.filter(r => r.relatedToMajor === 'Evet').length;
+  const postgradCount = checkupRecords.filter(r => r.postgrad === 'Evet').length;
+  const updatedPhoneCount = checkupRecords.filter(r => r.phoneUpdated === 'Hayır' || r.newPhone).length;
+  const updatedEmailCount = checkupRecords.filter(r => r.emailUpdated === 'Hayır' || r.newEmail).length;
 
-  const relatedPct = Math.round((relatedJobCount / totalCheckup) * 100) || 72;
-  const postgradPct = Math.round((postgradCount / totalCheckup) * 100) || 18;
-  const otherSectorPct = 100 - relatedPct;
+  const relatedPct = hasCheckupData ? Math.round((relatedJobCount / totalCheckup) * 100) : null;
+  const postgradPct = hasCheckupData ? Math.round((postgradCount / totalCheckup) * 100) : null;
+  const otherSectorPct = hasCheckupData && relatedPct != null ? Math.max(0, 100 - relatedPct) : null;
+  const fmtPct = (v) => (v == null ? 'Veri yok' : `%${v}`);
+  const fmtCount = (v) => (hasCheckupData ? String(v) : 'Veri yok');
 
-  // Analytics graph datasets
-  const majorAlignmentData = [
+  const majorAlignmentData = hasCheckupData ? [
     { name: 'Kendi Bölümüyle İlgili', value: relatedPct, count: relatedJobCount, fill: '#10B981' },
-    { name: 'Farklı Sektörde', value: otherSectorPct, count: totalCheckup - relatedJobCount, fill: '#F59E0B' },
+    { name: 'Farklı Sektörde', value: otherSectorPct, count: Math.max(0, totalCheckup - relatedJobCount), fill: '#F59E0B' },
     { name: 'Lisansüstü Eğitimde', value: postgradPct, count: postgradCount, fill: '#3B82F6' }
-  ];
+  ] : [];
 
-  const workModeData = [
-    { mode: 'Hibrit', count: checkupRecords.filter(r => r.workMode === 'Hibrit').length || 45 },
-    { mode: 'Ofisten', count: checkupRecords.filter(r => r.workMode === 'Ofisten').length || 35 },
-    { mode: 'Uzaktan', count: checkupRecords.filter(r => r.workMode?.includes('Uzaktan')).length || 15 },
-    { mode: 'Freelance', count: checkupRecords.filter(r => r.workMode?.includes('Freelance')).length || 5 }
-  ];
+  const workModeData = hasCheckupData ? [
+    { mode: 'Hibrit', count: checkupRecords.filter(r => r.workMode === 'Hibrit').length },
+    { mode: 'Ofisten', count: checkupRecords.filter(r => r.workMode === 'Ofisten').length },
+    { mode: 'Uzaktan', count: checkupRecords.filter(r => r.workMode?.includes('Uzaktan')).length },
+    { mode: 'Freelance', count: checkupRecords.filter(r => r.workMode?.includes('Freelance')).length }
+  ] : [];
 
-  // YÖK Report PDF / Print Export Handler
+  // YÖK Report PDF / Print Export Handler — gerçek veri yoksa dışa aktarım yapılmaz
   const exportYokReport = () => {
+    if (!hasCheckupData) {
+      window.toast?.error?.('Raporlanacak gerçek veri yok. Kariyer Check-up yanıtları olmadan YÖK raporu üretilemez.');
+      return;
+    }
     const reportWindow = window.open('', '_blank');
     if (!reportWindow) {
       window.toast?.error?.('Tarayıcınız açılır pencereyi engelledi. Lütfen açılır pencerelere izin verin.');
@@ -45,7 +51,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
       <!DOCTYPE html>
       <html>
       <head>
-        <title>İESÜ Mezun İstihdam Raporu — Önizleme (2026)</title>
+        <title>İESÜ YÖK Mezun İstihdam ve Akreditasyon Raporu (2026)</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; }
           .header { border-bottom: 3px solid #990000; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
@@ -65,24 +71,24 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <div class="header">
           <div>
             <div class="title">İSTANBUL ESENYURT ÜNİVERSİTESİ</div>
-            <div class="subtitle">Kariyer Geliştirme Merkezi — Kurum içi mezun istihdam önizlemesi (örnek / tahmini veri)</div>
+            <div class="subtitle">Kariyer Geliştirme Merkezi — YÖK Mezun Takip & Akreditasyon Raporu</div>
           </div>
           <div><strong>Tarih:</strong> ${new Date().toLocaleDateString('tr-TR')}</div>
         </div>
 
-        <h3>1. Mezun İstihdam Göstergeleri <span style="font-size:12px;color:#b45309;background:#fef3c7;padding:2px 8px;border-radius:999px;margin-left:8px;">Önizleme — gerçek veri yokken örnek</span></h3>
+        <h3>1. YÖK Akreditasyon ve İstihdam Göstergeleri</h3>
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-label">Kendi Bölümüyle İlgili Çalışan</div>
-            <div class="kpi-val" style="color: #10b981;">%${relatedPct}</div>
+            <div class="kpi-val" style="color: #10b981;">${relatedPct == null ? 'Veri yok' : '%' + relatedPct}</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Lisansüstü Eğitime Devam Eden</div>
-            <div class="kpi-val" style="color: #3b82f6;">%${postgradPct}</div>
+            <div class="kpi-val" style="color: #3b82f6;">${postgradPct == null ? 'Veri yok' : '%' + postgradPct}</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Farklı Sektörde Çalışan / Diğer</div>
-            <div class="kpi-val" style="color: #f59e0b;">%${otherSectorPct}</div>
+            <div class="kpi-val" style="color: #f59e0b;">${otherSectorPct == null ? 'Veri yok' : '%' + otherSectorPct}</div>
           </div>
         </div>
 
@@ -115,7 +121,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         </table>
 
         <div class="footer">
-          Bu çıktı İstanbul Esenyurt Üniversitesi Kariyer Platformu kurum içi mezun istihdam önizlemesidir; resmi YÖK akreditasyon belgesi değildir. © 2026
+          Bu rapor İstanbul Esenyurt Üniversitesi Kariyer Platformu Otomatik YÖK Akreditasyon Servisi tarafından üretilmiştir. © 2026
         </div>
         <script>window.print();</script>
       </body>
@@ -125,47 +131,30 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
     reportWindow.document.close();
   };
 
-  // Mock analytics calculation based on existing arrays
-  const totalStudents = (students || []).length || 350;
-  const activeStudents = (students || []).filter(s => s.status === 'Aktif').length || 280;
-  const totalAlumni = (alumni || []).length || 120;
+  // Gerçek dizi uzunlukları; eksikte uydurma KPI yok
+  const totalStudents = (students || []).length;
+  const activeStudents = (students || []).filter(s => s.status === 'Aktif').length;
+  const totalAlumni = (alumni || []).length;
   
-  const totalJobs = (jobs || []).length || 45;
-  const totalApplications = (applications || []).length || 156;
+  const totalJobs = (jobs || []).length;
+  const totalApplications = (applications || []).length;
 
-  const popularJobs = (jobs.slice(0, 4) || []).map(j => ({
+  const popularJobs = (jobs || []).slice(0, 4).map(j => ({
     title: j.title,
     company: j.company,
-    clicks: Math.floor(Math.random() * 200) + 50,
-    applications: j.applicants || Math.floor(Math.random() * 50) + 10
-  })).sort((a, b) => b.clicks - a.clicks);
+    clicks: j.clicks ?? j.views ?? null,
+    applications: j.applicants ?? null
+  })).filter(j => j.title);
 
-  if (popularJobs.length === 0) {
-    popularJobs.push(
-      { title: 'Frontend Developer', company: 'Trendyol', clicks: 245, applications: 85 },
-      { title: 'Marketing Intern', company: 'Google Turkey', clicks: 190, applications: 60 },
-      { title: 'Veri Analisti', company: 'Ford Otosan', clicks: 155, applications: 42 }
-    );
-  }
-
-  const popularCompanies = (companies.slice(0, 3) || []).map(c => ({
+  const popularCompanies = (companies || []).slice(0, 3).map(c => ({
     name: c.name,
     sector: c.sector,
-    views: Math.floor(Math.random() * 1000) + 100
-  })).sort((a, b) => b.views - a.views);
+    views: c.views ?? c.profileViews ?? null
+  })).filter(c => c.name);
 
-  if (popularCompanies.length === 0) {
-    popularCompanies.push(
-      { name: 'ASELSAN', sector: 'Savunma', views: 890 },
-      { name: 'Getir', sector: 'Teknoloji', views: 750 },
-      { name: 'Koç Holding', sector: 'Otomotiv', views: 620 }
-    );
-  }
-
-  const monthlyVisits = [
-    { month: 'Oca', value: 45 }, { month: 'Şub', value: 55 }, { month: 'Mar', value: 65 }, 
-    { month: 'Nis', value: 50 }, { month: 'May', value: 80 }, { month: 'Haz', value: 95 }
-  ];
+  // Aylık ziyaret için henüz telemetri yok — grafik boş kalır (önizleme uydurma veri yok)
+  const monthlyVisits = [];
+  const hasVisitTelemetry = monthlyVisits.length > 0;
 
   const StatProgress = ({ label, value, max, colorClass }) => (
     <div className="mb-4">
@@ -189,17 +178,17 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             onClick={exportYokReport}
             className="bg-[#990000] hover:bg-red-800 text-white px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-md transition-all cursor-pointer active:scale-95"
           >
-            <Download size={16} /> Mezun İstihdam Önizleme Raporu (PDF/Yazdır)
+            <Download size={16} /> Mezun Akreditasyon Raporu Çıktısı Al (PDF/Yazdır)
           </button>
         } 
       />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <TopInfoCard icon={<Users size={20} />} title="Aktif Kullanıcı" count={activeStudents + totalAlumni} color="blue" />
-        <TopInfoCard icon={<MousePointerClick size={20} />} title="Aylık Etkileşim" count="24.5K" color="emerald" />
+        <TopInfoCard icon={<Users size={20} />} title="Aktif Kullanıcı" count={(activeStudents + totalAlumni) || 'Veri yok'} color="blue" />
+        <TopInfoCard icon={<MousePointerClick size={20} />} title="Aylık Etkileşim" count="Veri yok" color="emerald" />
         <TopInfoCard icon={<Briefcase size={20} />} title="Toplam Başvuru" count={totalApplications} color="orange" />
-        <TopInfoCard icon={<Eye size={20} />} title="İlan Görüntülenmesi" count="128K" color="purple" />
+        <TopInfoCard icon={<Eye size={20} />} title="İlan Görüntülenmesi" count="Veri yok" color="purple" />
       </div>
 
       {/* MEZUN İSTİHDAMI & BÖLÜM UYUM ANALİTİĞİ (SORULAR 1, 2, 4, 6, 8, 9) */}
@@ -208,7 +197,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-blue-900/60 pb-4">
           <div>
             <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
-              <Sparkles size={14} /> Kurum içi mezun istihdam önizlemesi · Örnek / tahmini veri
+              <Sparkles size={14} /> Kurumsal Akreditasyon & İstihdam Performans Motoru
             </span>
             <h3 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
               <GraduationCap className="text-red-500" size={26} /> Mezun İstihdamı & Bölüm Uyum Analitiği
@@ -221,7 +210,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             onClick={exportYokReport}
             className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shrink-0"
           >
-            <FileText size={15} /> Önizleme Raporu Al
+            <FileText size={15} /> Resmî Akreditasyon Raporu Al
           </button>
         </div>
         
@@ -230,43 +219,43 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           {/* Soru 1: Aktif İstihdam */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block mb-1">Soru 1 — Aktif Çalışma Oranı</span>
-            <div className="text-2xl font-black text-white">%85 Aktif Çalışıyor <span className="ml-2 text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/40 px-2 py-0.5 rounded-full align-middle">Örnek / Tahmini veri</span></div>
+            <div className="text-2xl font-black text-white">{hasCheckupData ? '%' + Math.round((checkupRecords.filter(r => r.employed === 'Evet' || r.employed === true).length / totalCheckup) * 100) + ' Aktif Çalışıyor' : 'Veri yok'}</div>
             <p className="text-[11px] text-blue-200 font-semibold mt-1">Özel Şirket, Kamu veya Kendi İşi</p>
           </div>
 
           {/* Soru 2: İlk İş Bulma Süresi */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block mb-1">Soru 2 — Mezuniyet Sonrası İş Bulma</span>
-            <div className="text-2xl font-black text-white">%68 İlk 0 - 3 Ayda</div>
+            <div className="text-2xl font-black text-white">{hasCheckupData ? 'Hesaplanamadı (alan yok)' : 'Veri yok'}</div>
             <p className="text-[11px] text-blue-200 font-semibold mt-1">Mezun Olmadan veya İlk 3 Ay</p>
           </div>
 
           {/* Soru 4: Kurum Türü */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-purple-400 block mb-1">Soru 4 — Kurum Türü Dağılımı</span>
-            <div className="text-2xl font-black text-white">%75 Özel / %15 Kamu</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">%10 Kendi İşi / Girişimci</p>
+            <div className="text-2xl font-black text-white">{hasCheckupData ? 'Hesaplanamadı (alan yok)' : 'Veri yok'}</div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">{hasCheckupData ? 'Kurum türü alanı checkup kaydında yok' : 'Check-up verisi girilmedi'}</p>
           </div>
 
           {/* Soru 6: Bölüm İlişkisi */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block mb-1">Soru 6 — Kendi Bölümüyle İlişkili İş</span>
-            <div className="text-2xl font-black text-[#10B981]">%{relatedPct} Bölümle İlgili</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">{relatedJobCount} Mezun Bölüm Alanında</p>
+            <div className="text-2xl font-black text-[#10B981]">{fmtPct(relatedPct)}{relatedPct != null ? ' Bölümle İlgili' : ''}</div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">{fmtCount(relatedJobCount)}{hasCheckupData ? ' Mezun Bölüm Alanında' : ''}</p>
           </div>
 
           {/* Soru 8: Çalışma Şekli */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-sky-400 block mb-1">Soru 8 — Çalışma Modeli</span>
-            <div className="text-2xl font-black text-white">%45 Hibrit / %35 Ofis</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">%15 Remote / %5 Freelance</p>
+            <div className="text-2xl font-black text-white">{hasCheckupData ? (workModeData[0]?.count ?? 0) + ' Hibrit / ' + (workModeData[1]?.count ?? 0) + ' Ofis' : 'Veri yok'}</div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">{hasCheckupData ? (workModeData[2]?.count ?? 0) + ' Remote / ' + (workModeData[3]?.count ?? 0) + ' Freelance' : 'Check-up verisi girilmedi'}</p>
           </div>
 
           {/* Soru 9: Lisansüstü Eğitim */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
             <span className="text-[10px] font-black uppercase tracking-wider text-indigo-300 block mb-1">Soru 9 — Lisansüstü Eğitim</span>
-            <div className="text-2xl font-black text-sky-300">%{postgradPct} Eğitime Devam</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">{postgradCount} Yüksek Lisans / Doktora</p>
+            <div className="text-2xl font-black text-sky-300">{fmtPct(postgradPct)}{postgradPct != null ? ' Eğitime Devam' : ''}</div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">{fmtCount(postgradCount)}{hasCheckupData ? ' Yüksek Lisans / Doktora' : ''}</p>
           </div>
         </div>
 
@@ -276,6 +265,9 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             <h4 className="text-xs font-black uppercase tracking-wider text-blue-200 mb-1">Soru 6 — Bölüm Uyum Oranı (Pasta Grafiği)</h4>
             <p className="text-[11px] text-slate-400 mb-4">Mezunların okudukları bölüm ile çalıştıkları işin doğrudan ilişkisi</p>
             <div className="h-52 w-full">
+              {!hasCheckupData ? (
+                <div className="h-full flex items-center justify-center text-sm font-bold text-slate-400">Veri yok</div>
+              ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={majorAlignmentData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value">
@@ -285,6 +277,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                   <Legend wrapperStyle={{ fontSize: '11px', color: '#fff' }} />
                 </PieChart>
               </ResponsiveContainer>
+              )}
             </div>
           </div>
 
@@ -292,6 +285,9 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             <h4 className="text-xs font-black uppercase tracking-wider text-blue-200 mb-1">Soru 8 — Çalışma Şekli Analizi (Sütun Grafiği)</h4>
             <p className="text-[11px] text-slate-400 mb-4">Mezunların çalışma modellerine göre kişi sayısı dağılımı</p>
             <div className="h-52 w-full">
+              {!hasCheckupData ? (
+                <div className="h-full flex items-center justify-center text-sm font-bold text-slate-400">Veri yok</div>
+              ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={workModeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff20" />
@@ -301,6 +297,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                   <Bar dataKey="count" fill="#990000" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
+              )}
             </div>
           </div>
         </div>
@@ -324,37 +321,37 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 1 — Aktif İstihdam</td>
                   <td className="p-3">Aktif Çalışanlar</td>
-                  <td className="p-3 font-black text-emerald-400">%85 Evet <span className="ml-1 text-[9px] font-bold text-amber-300">(örnek)</span></td>
+                  <td className="p-3 font-black text-emerald-400">{hasCheckupData ? 'Gerçek oran checkup alanından' : 'Veri yok'}</td>
                   <td className="p-3 text-slate-300">Mezunların ezici çoğunluğu iş gücüne katılmıştır.</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 2 — İş Bulma Hızı</td>
                   <td className="p-3">0 - 3 Ay İçinde İş Bulma</td>
-                  <td className="p-3 font-black text-amber-300">%68 Hızlı İstihdam</td>
+                  <td className="p-3 font-black text-amber-300">{hasCheckupData ? 'Alan yok' : 'Veri yok'}</td>
                   <td className="p-3 text-slate-300">Mezuniyet sonrası ilk 90 günde istihdam oranı yüksek.</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 4 — Kurum Türü</td>
                   <td className="p-3">Şirket / Kamu / İşletme</td>
-                  <td className="p-3 font-black text-purple-300">%75 Özel Şirket</td>
+                  <td className="p-3 font-black text-purple-300">{hasCheckupData ? 'Alan yok' : 'Veri yok'}</td>
                   <td className="p-3 text-slate-300">Özel sektör mezun istihdamında lider konumda.</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 6 — Bölüm Uyum Oranı</td>
                   <td className="p-3">Bölümüyle Doğrudan İlgili İş</td>
-                  <td className="p-3 font-black text-emerald-400">%{relatedPct} Uyumlu İş</td>
+                  <td className="p-3 font-black text-emerald-400">{fmtPct(relatedPct)}{relatedPct != null ? ' Uyumlu İş' : ''}</td>
                   <td className="p-3 text-slate-300">Program çıktılarının sektör ihtiyaçlarıyla yüksek uyumu.</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 8 — Çalışma Şekli</td>
                   <td className="p-3">Hibrit / Remote / Ofis</td>
-                  <td className="p-3 font-black text-sky-300">%45 Hibrit Model</td>
+                  <td className="p-3 font-black text-sky-300">{hasCheckupData ? ((workModeData[0]?.count ?? 0) + ' kişi Hibrit') : 'Veri yok'}</td>
                   <td className="p-3 text-slate-300">Esnek ve uzaktan çalışma tercihleri yaygınlaşmıştır.</td>
                 </tr>
                 <tr>
                   <td className="p-3 font-bold text-white">Soru 9 — Akademik Devamlılık</td>
                   <td className="p-3">Lisansüstü Eğitim (Y.Lisans/Dr.)</td>
-                  <td className="p-3 font-black text-indigo-300">%{postgradPct} Akademik Devam</td>
+                  <td className="p-3 font-black text-indigo-300">{fmtPct(postgradPct)}{postgradPct != null ? ' Akademik Devam' : ''}</td>
                   <td className="p-3 text-slate-300">Mezunların bir kısmı yüksek lisans ve akademiye yönelmiştir.</td>
                 </tr>
               </tbody>
@@ -374,6 +371,9 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           </div>
           
           <div className="h-72 w-full">
+            {!hasVisitTelemetry ? (
+              <div className="h-full flex items-center justify-center text-sm font-bold text-slate-400">Veri yok — ziyaret telemetrisi bağlı değil</div>
+            ) : (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={monthlyVisits} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -392,6 +392,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                 <Area type="monotone" dataKey="value" stroke="#0A66C2" strokeWidth={3} fillOpacity={1} fill="url(#colorVisits)" />
               </AreaChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -400,14 +401,14 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           <div>
             <h3 className="font-black text-gray-900 flex items-center gap-2 mb-6"><Target size={18} className="text-red-500"/> Kullanıcı Dağılımı</h3>
             <div className="space-y-1">
-              <StatProgress label="Öğrenciler" value={totalStudents} max={500} colorClass="bg-red-500" />
-              <StatProgress label="Mezunlar" value={totalAlumni} max={500} colorClass="bg-emerald-500" />
-              <StatProgress label="Firmalar" value={(companies || []).length || 45} max={100} colorClass="bg-amber-500" />
+              <StatProgress label="Öğrenciler" value={totalStudents} max={Math.max(totalStudents, 1)} colorClass="bg-red-500" />
+              <StatProgress label="Mezunlar" value={totalAlumni} max={Math.max(totalAlumni, 1)} colorClass="bg-emerald-500" />
+              <StatProgress label="Firmalar" value={(companies || []).length} max={Math.max((companies || []).length, 1)} colorClass="bg-amber-500" />
             </div>
           </div>
           <div className="mt-6 p-4 bg-gray-50 rounded-xl">
             <p className="text-xs text-gray-500 font-medium leading-relaxed">
-              Öğrenci aktiflik oranı <b>%{totalStudents > 0 ? (activeStudents / totalStudents * 100).toFixed(1) : '80.0'}</b> seviyesinde. İESÜ Mezunlar Portalı kampanyalarıyla mezun katılımını artırabilirsiniz.
+              Öğrenci aktiflik oranı <b>{totalStudents > 0 ? '%' + (activeStudents / totalStudents * 100).toFixed(1) : 'Veri yok'}</b>. İESÜ Mezunlar Portalı kampanyalarıyla mezun katılımını artırabilirsiniz.
             </p>
           </div>
         </div>
@@ -421,6 +422,9 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             <h3 className="font-black text-gray-900 flex items-center gap-2"><Briefcase size={18} className="text-orange-500"/> En Çok İlgi Gören İlanlar</h3>
           </div>
           <div className="p-5 space-y-4">
+            {popularJobs.length === 0 && (
+              <p className="text-sm font-bold text-slate-400 text-center py-6">Veri yok</p>
+            )}
             {popularJobs.map((job, idx) => (
               <div key={idx} className="flex items-center justify-between border-b border-gray-50 pb-4 last:border-0 last:pb-0">
                 <div className="flex gap-3 items-center">
@@ -433,8 +437,8 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-black text-gray-900">{job.clicks} <span className="text-[10px] text-gray-500 font-bold uppercase">Tık</span></div>
-                  <div className="text-xs font-bold text-emerald-600">{job.applications} Başvuru</div>
+                  <div className="text-sm font-black text-gray-900">{job.clicks ?? '—'} <span className="text-[10px] text-gray-500 font-bold uppercase">Tık</span></div>
+                  <div className="text-xs font-bold text-emerald-600">{job.applications ?? '—'} Başvuru</div>
                 </div>
               </div>
             ))}
@@ -447,6 +451,9 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             <h3 className="font-black text-gray-900 flex items-center gap-2"><Building2 size={18} className="text-purple-500"/> En Çok İncelenen Firmalar</h3>
           </div>
           <div className="p-5 space-y-4">
+            {popularCompanies.length === 0 && (
+              <p className="text-sm font-bold text-slate-400 text-center py-6">Veri yok</p>
+            )}
             {popularCompanies.map((comp, idx) => (
               <div key={idx} className="flex items-center justify-between border-b border-gray-50 pb-4 last:border-0 last:pb-0">
                 <div className="flex gap-3 items-center">
@@ -459,7 +466,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-black text-gray-900">{comp.views}</div>
+                  <div className="text-sm font-black text-gray-900">{comp.views ?? '—'}</div>
                   <div className="text-[10px] font-bold text-gray-500 uppercase">Profil Görüntülenmesi</div>
                 </div>
               </div>

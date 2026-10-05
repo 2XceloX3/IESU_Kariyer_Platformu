@@ -90,29 +90,37 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
   // Get all users
   const allUsers = [...(students || []), ...(alumni || [])].filter(u => u.source !== 'demo_seed');
 
-  // Add a fake SEM participation history to REAL users based on their ID for demo tracking
-  // In a real app this would come from a database relation
+  // Faz 0: sahte katılım geçmişi yok. Yalnızca course.enrollments / user.semHistory gerçek alanlarından.
   const getUserSemHistory = (userId) => {
-    const numChar = userId.charCodeAt(userId.length - 1);
-    if (numChar % 3 === 0) return []; // Some have none
-    
-    return activeCourses.slice(0, (numChar % 3) + 1).map((c, i) => ({
-      courseId: c.id,
-      courseTitle: c.title,
-      status: i === 0 ? 'Tamamlandı' : 'Devam Ediyor',
-      enrollDate: '12.05.2026'
-    }));
+    if (!userId) return [];
+    const fromCourses = (activeCourses || []).flatMap(c => {
+      const enrolledIds = c.enrolledUserIds || c.participantIds || [];
+      const rows = c.enrollments || [];
+      if (Array.isArray(rows) && rows.length) {
+        return rows.filter(r => (r.userId || r.id) === userId).map(r => ({
+          courseId: c.id,
+          courseTitle: c.title,
+          status: r.status || 'Devam Ediyor',
+          enrollDate: r.enrollDate || r.date || null,
+        }));
+      }
+      if (enrolledIds.includes(userId)) {
+        return [{ courseId: c.id, courseTitle: c.title, status: 'Devam Ediyor', enrollDate: null }];
+      }
+      return [];
+    });
+    return fromCourses;
   };
 
   const usersWithHistory = allUsers.map(u => {
-    const history = getUserSemHistory(u.id);
+    const history = Array.isArray(u.semHistory) && u.semHistory.length ? u.semHistory : getUserSemHistory(u.id);
     return {
       ...u,
       semHistory: history,
       totalEnrolled: history.length,
       totalCompleted: history.filter(h => h.status === 'Tamamlandı').length
     };
-  }).filter(u => u.totalEnrolled > 0); // Only show users who enrolled in at least 1 SEM course
+  }).filter(u => u.totalEnrolled > 0);
 
   const handleAddCoursePost = (e) => {
     e.preventDefault();
@@ -159,23 +167,38 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
 
   const exportToExcel = (tableId) => {
     let csv = [];
-    if (tableId === 'havuz') {
+    if (tableId === 'yok_raporu') {
+      const rows = (activeCourses || []).filter(c => (c.enrolled || 0) > 0 || (c.applicants || 0) > 0);
+      if (!rows.length) {
+        window.toast?.error?.('Raporlanacak gerçek veri yok. YÖK SEM raporu boş program listesiyle üretilmez.');
+        return;
+      }
+      csv.push(['Program Adı', 'Başvuran', 'Kayıtlı', 'Durum', 'Tür'].join(','));
+      rows.forEach(c => csv.push([`"${c.title || ''}"`, c.applicants || 0, c.enrolled || 0, c.status || '', c.contentType || c.type || ''].join(',')));
+    } else if (tableId === 'havuz') {
       csv.push(['Program Adı', 'Başvuran', 'Kayıtlı', 'Durum'].join(','));
       activeCourses.forEach(c => csv.push([`"${c.title}"`, c.applicants, c.enrolled, c.status].join(',')));
     } else if (tableId === 'katilimci') {
       csv.push(['Kullanıcı Adı', 'Kullanıcı Rolü', 'Kayıtlı Program Sayısı', 'Tamamlanan Program Sayısı'].join(','));
       usersWithHistory.forEach(u => csv.push([`"${u.name}"`, u.role, u.totalEnrolled, u.totalCompleted].join(',')));
     } else if (tableId === 'anket' || tableId === 'anket_sonuclar') {
-      // SPSS için sadeleştirilmiş dışa aktarım (Katılımcı ID ve Tarih olmadan sadece sorular)
       const headers = [...surveyForm.questions.map((q, i) => `S${i+1}: ${q}`)];
       if (surveyForm.kvkkConfirmed) headers.push('KVKK Onaylı');
       csv.push(headers.map(h => `"${h}"`).join(','));
-      // Veri olmadığı için boş bırakıyoruz, sadece kolon başlıkları iniyor.
+    } else if (tableId === 'analiz_raporu') {
+      csv.push(['Program Adı', 'Başvuran', 'Kayıtlı'].join(','));
+      (activeCourses || []).forEach(c => csv.push([`"${c.title}"`, c.applicants || 0, c.enrolled || 0].join(',')));
     }
     
+    if (csv.length <= 1 && tableId !== 'anket' && tableId !== 'anket_sonuclar') {
+      window.toast?.error?.('Raporlanacak gerçek veri yok.');
+      return;
+    }
+
     const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
+    // Dosya gerçekte CSV üretir; .CSV uzantısı yanıltıcıdır.
     link.download = `SEM_Raporu_${tableId}_${Date.now()}.csv`;
     link.click();
   };
@@ -738,7 +761,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
             <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
             <div className="relative z-10">
               <span className="bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-amber-300/30 inline-block mb-3">
-                Kurum içi performans merkezi (önizleme)
+                YÖK Akreditasyon & Kurumsal Performans Merkezi
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-white">Kariyer & Yetenek Akademisi İstatistik ve Rapor Merkezi</h3>
               <p className="text-xs sm:text-sm text-red-100 mt-2 max-w-xl font-medium leading-relaxed">
@@ -764,7 +787,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
               </div>
               <p className="text-2xl font-black text-slate-900">{semCourses.length} Eğitim</p>
               <p className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                <span>↑ %14 artış</span> <span className="text-slate-400 font-medium">bu dönem</span>
+                <span className="text-slate-400 font-medium">Gerçek dönem karşılaştırması yok</span>
               </p>
             </div>
 
@@ -777,7 +800,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                 {semCourses.reduce((acc, c) => acc + (c.applicants || 0), 0)} Aday
               </p>
               <p className="text-[11px] font-bold text-blue-600 flex items-center gap-1">
-                <span>%82 Kayıt Dönüşümü</span>
+                <span>{activeCourses.length ? `${activeCourses.reduce((s,c)=>s+(c.enrolled||0),0)} kayıt` : 'Henüz veri yok'}</span>
               </p>
             </div>
 
@@ -790,7 +813,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                 {semCourses.reduce((acc, c) => acc + (c.enrolled || 0), 0)} Katılımcı
               </p>
               <p className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                <span>%94 Başarı Oranı</span>
+                <span>{activeCourses.length ? 'Kayıtlı program verisinden' : 'Henüz veri yok'}</span>
               </p>
             </div>
 
@@ -857,12 +880,18 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                 <p className="text-xs text-slate-500 font-medium mb-4">Sertifika programlarının alanlara göre oranı</p>
 
                 <div className="space-y-3">
-                  {[
-                    { title: 'Yazılım & Bilişim', count: '12 Program', pct: '40%', color: 'bg-[#990000]' },
-                    { title: 'Sağlık & Psikoloji', count: '8 Program', pct: '28%', color: 'bg-emerald-600' },
-                    { title: 'Yönetim & Liderlik', count: '6 Program', pct: '20%', color: 'bg-blue-600' },
-                    { title: 'Yabancı Dil', count: '4 Program', pct: '12%', color: 'bg-amber-500' }
-                  ].map((cat, idx) => (
+                  {(() => {
+                    const cats = {};
+                    (activeCourses||[]).forEach(c => {
+                      const k = c.contentType || c.category || 'Diğer';
+                      cats[k] = (cats[k]||0)+1;
+                    });
+                    const entries = Object.entries(cats);
+                    const total = entries.reduce((s,[,n])=>s+n,0) || 1;
+                    const colors = ['bg-[#990000]','bg-emerald-600','bg-blue-600','bg-amber-500'];
+                    if (!entries.length) return [<p key="empty" className="text-xs text-slate-500 font-medium text-center py-4">Henüz veri yok</p>];
+                    return entries.map(([title, n], idx) => ({ title, count: n + ' Program', pct: Math.round(n/total*100)+'%', color: colors[idx%colors.length] }));
+                  })().map((cat, idx) => (
                     <div key={idx} className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
                         <div className={`w-3 h-3 rounded-full ${cat.color}`}></div>
@@ -879,6 +908,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
 
               <div className="p-4 bg-red-50 rounded-2xl border border-red-100 text-center">
                 <p className="text-xs font-black text-[#990000] mb-1">Resmî YÖK Dönemlik Raporu</p>
+                <span className="inline-block mb-2 text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Gerçek kayıt yoksa dışa aktarım engellenir</span>
                 <p className="text-[11px] text-slate-600 font-medium leading-relaxed mb-3">
                   Tüm SEM eğitim başvuru ve sertifikasyon verileri hazır durumdadır.
                 </p>
@@ -886,7 +916,7 @@ export default function CMSSEMCourses({ semCourses = [], setSemCourses, posts = 
                   onClick={() => exportToExcel('yok_raporu')}
                   className="w-full py-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer"
                 >
-                  Tam YÖK Formatında İndir (.XLSX)
+                  Tam YÖK Formatında İndir (.CSV)
                 </button>
               </div>
             </div>
