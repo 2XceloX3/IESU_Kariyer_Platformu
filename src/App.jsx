@@ -16,6 +16,7 @@ const UserProfile = lazy(() => import('./components/UserProfile')), PublicUserPr
 const NotificationsPanel = lazy(() => import('./components/NotificationsPanel')), CalendarView = lazy(() => import('./components/CalendarView')), MessagingInterface = lazy(() => import('./components/MessagingInterface'));
 const ContactPage = lazy(() => import('./components/ContactPage')), ServicesPage = lazy(() => import('./components/ServicesPage'));
 const AboutUsPage = lazy(() => import('./components/AboutUsPage')), EventsPage = lazy(() => import('./components/EventsPage'));
+const DynamicContentPage = lazy(() => import('./components/DynamicContentPage'));
 
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events', 'events_list', 'etkinliklerimiz']), ADMIN_CMS = new Set(['admin_cms', 'yonetim_konsolu', 'admin_console', 'audit_logs', 'idari_portal']);
@@ -33,6 +34,19 @@ const SHARED_ROUTES = new Set([
   'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard', 'global_map',
   'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services'
 ]);
+
+const LEGAL_PAGE_ALIASES = {
+  gizlilik: 'gizlilik',
+  kvkk: 'kvkk',
+  'aydinlatma-metni': 'kvkk',
+  aydinlatma: 'kvkk',
+  kullanim: 'kullanim',
+  cerez: 'cerez',
+  'cerez-politikasi': 'cerez',
+  'cerez-politikası': 'cerez',
+};
+const resolveLegalContentId = (view) => LEGAL_PAGE_ALIASES[view] || null;
+
 
 
 const NotFound = ({ setView, currentUser }) => (
@@ -54,17 +68,6 @@ const NotFound = ({ setView, currentUser }) => (
 
 const Spinner = () => (<div className="flex items-center justify-center min-h-screen bg-[#f8f9fc]"><div className="w-12 h-12 border-4 border-[#990000] border-t-transparent rounded-full animate-spin shadow-lg" /></div>);
 
-const hasValidAdminSession = () => {
-  try {
-    const raw = sessionStorage.getItem('iesu_admin_session');
-    if (!raw) return false;
-    const data = JSON.parse(raw);
-    return Boolean(data && data.authenticated);
-  } catch {
-    return false;
-  }
-};
-
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -74,13 +77,13 @@ export default function App() {
     try {
       const saved = localStorage.getItem('iesu_mock_user');
       let p = saved ? JSON.parse(saved) : null;
-      if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : 'admin_1513';
+      if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : (p.role === 'admin' ? (p.uid || 'self') : 'self');
       
-      // Admin claims from localStorage are only trusted if Firebase has an active session OR legitimate admin session exists
-      // This prevents the localStorage backdoor attack (e.g. manually injecting id: 'admin_1513' or role: 'admin')
-      if (!import.meta.env.DEV && p && (p.role === 'admin' || p.id === 'admin_1513')) {
-        if (!auth?.currentUser && !hasValidAdminSession()) {
+      // Admin asla localStorage/sessionStorage kısayolu ile verilmez — Firebase Auth zorunlu.
+      if (p && p.role === 'admin') {
+        if (!auth?.currentUser) {
           localStorage.removeItem('iesu_mock_user');
+          try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
           p = null;
         }
       }
@@ -104,20 +107,23 @@ export default function App() {
     }
   }, [storeCurrentUser, currentUser]);
 
-  // Admin claims from localStorage are only trusted if Firebase has an active session OR verified admin session
-  // This prevents the localStorage backdoor attack on mount
+  // Admin: yalnızca Firebase Auth oturumu + users doc / claim role === 'admin'
   useEffect(() => {
-    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || currentUser?.id === 'admin_1513')) {
-      if (!auth?.currentUser && !hasValidAdminSession()) {
+    if (currentUser?.role === 'admin') {
+      if (!(authenticatedUserId || auth?.currentUser)) {
         localStorage.removeItem('iesu_mock_user');
+        try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
         setCurrentUser(null);
         setUserRole(null);
       }
     }
-  }, [currentUser, setUserRole]);
+  }, [currentUser, setUserRole, authenticatedUserId]);
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
-  const isAdmin = !import.meta.env.DEV ? Boolean(((authenticatedUserId || auth?.currentUser) || hasValidAdminSession()) && (currentUser?.role === 'admin' || userRole === 'admin')) : Boolean(effectiveRole === 'admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513');
+  const isAdmin = Boolean(
+    (authenticatedUserId || auth?.currentUser) &&
+    (currentUser?.role === 'admin' || userRole === 'admin')
+  );
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
 
   const setView = useCallback((v) => {
@@ -171,9 +177,10 @@ export default function App() {
 
   useEffect(() => {
     if (!isAuthStateResolved) return;
-    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin' || currentUser?.id === 'admin_1513') && !authenticatedUserId && !auth?.currentUser && !hasValidAdminSession()) {
+    if ((currentUser?.role === 'admin' || userRole === 'admin') && !authenticatedUserId && !auth?.currentUser) {
       setCurrentUser(null); setUserRole(null);
       localStorage.removeItem('iesu_mock_user');
+      try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
       setView('login');
     }
   }, [isAuthStateResolved, currentUser, userRole, authenticatedUserId, setView, setUserRole]);
@@ -192,7 +199,7 @@ export default function App() {
     // Admin branch handling for shared / other views
     if (currentBranch === 'admin' && isAdmin) {
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" />;
-      if (pathView === 'user_profile') return <UserProfile userId={currentUser?.id || 'admin_1513'} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'user_profile') return <UserProfile userId={currentUser?.id || (currentUser?.uid || currentUser?.id || 'self')} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'public_profile') return <PublicUserProfile userId={s.selectedUserId} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'notifications') return <NotificationsPanel setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" />;
       if (pathView === 'calendar') return <CalendarView setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
@@ -235,6 +242,7 @@ export default function App() {
           : pathView === 'jobs' ? <JobsAndInternships setView={setView} currentUser={null} userRole={null} />
           : PUBLIC_NEWS.has(pathView) ? <PublicNewsView setView={setView} currentUser={null} userRole={null} />
           : (pathView === '' || pathView === 'landing') ? <LandingPage setView={setView} currentUser={null} userRole={userRole} setUserRole={setUserRole} />
+          : resolveLegalContentId(pathView) ? <DynamicContentPage contentId={resolveLegalContentId(pathView)} setView={setView} previousView="landing" currentUser={null} userRole={null} />
           : <NotFound setView={setView} currentUser={currentUser} />
         ) : (
           <>

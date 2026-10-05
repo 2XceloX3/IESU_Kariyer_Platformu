@@ -25,10 +25,14 @@ import { HiveProvider as CompanyHiveProvider, useHiveContext as useCompanyContex
 import { HiveProvider as AcademicHiveProvider, useHiveContext as useAcademicContext } from '../hives/academic/HiveContext';
 
 // Mocks for Firebase & external dependencies
-vi.mock('../utils/firebase', () => ({ auth: {}, db: {} }));
+const authState = vi.hoisted(() => ({ user: null }));
+vi.mock('../utils/firebase', () => ({
+  auth: { get currentUser() { return authState.user; } },
+  db: {},
+}));
 vi.mock('firebase/auth', () => ({
   onAuthStateChanged: (_auth, callback) => {
-    callback(null);
+    callback(authState.user);
     return () => {};
   },
 }));
@@ -51,6 +55,7 @@ vi.mock('../components/AcademicStaffFeed', () => ({ default: () => <div data-tes
 describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invariant R5 Verification', () => {
 
   beforeEach(() => {
+    authState.user = null;
     window.localStorage.clear();
     useAppStore.setState({
       userRole: null,
@@ -300,7 +305,8 @@ describe('Challenger M2-2: Adversarial Hive Isolation, Route Protection & Invari
     });
 
     it('routes authenticated admin to AdminDashboard when on ADMIN_CMS route', async () => {
-      const adminUser = { id: 'admin_1513', role: 'admin', name: 'Süper Yönetici' };
+      authState.user = { uid: 'firebase-admin-uid' };
+      const adminUser = { id: 'self', uid: 'firebase-admin-uid', role: 'admin', name: 'Süper Yönetici' };
       window.localStorage.setItem('iesu_mock_user', JSON.stringify(adminUser));
       useAppStore.setState({ currentUser: adminUser, userRole: 'admin' });
 

@@ -6,10 +6,10 @@ import { auth, db } from '../utils/firebase';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
-import EDevletObsModal from './modals/EDevletObsModal';
+const EDevletObsModal = import.meta.env.DEV ? React.lazy(() => import('./modals/EDevletObsModal')) : null;
 
 export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser }) {
-  const { students, alumni, companies, academicStaff, setRegisterAccountType } = useAppStore();
+  const { setRegisterAccountType } = useAppStore();
   const [loginRole, setLoginRole] = useState('alumni');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,54 +23,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
     setError(null);
     setIsLoading(true);
     
-    const cleanUser = (username || '').trim().toLowerCase();
-    const cleanPass = (password || '').trim();
-
-    const ADMIN_USER = import.meta.env.VITE_ADMIN_USER || 'Kariyer';
-    const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS || 'Z.s.1513';
-
-    // SUPER ADMIN CHECK (Works from ANY role tab, especially Akademik)
-    if (
-      (cleanUser === ADMIN_USER.toLowerCase() || 
-       cleanUser === 'kariyer' || 
-       cleanUser === 'admin' || 
-       cleanUser === 'admin_1513' || 
-       cleanUser === 'admin@esenyurt.edu.tr') && 
-      (cleanPass === ADMIN_PASS || cleanPass === 'Z.s.1513' || cleanPass === '123456')
-    ) {
-      const adminPayload = {
-        id: 'admin_1513',
-        name: 'Kariyer Geliştirme Koordinatörlüğü',
-        role: 'admin',
-        grade: 'Süper Yönetici',
-        avatar: '/iesu-logo.svg',
-        onboardingCompleted: true
-      };
-
-      try {
-        sessionStorage.setItem('iesu_admin_session', JSON.stringify({
-          authenticated: true,
-          timestamp: Date.now()
-        }));
-      } catch (e) { /* intentional */ }
-
-      try {
-        localStorage.setItem('iesu_mock_user', JSON.stringify(adminPayload));
-        localStorage.setItem('iesu_user_role_v1', 'admin');
-        const s = useAppStore.getState();
-        s.setUserRole?.('admin');
-        s.setCurrentUser?.(adminPayload);
-        s.setActivePortalBranch?.('admin');
-      } catch (e) { /* intentional */ }
-
-      setUserRole('admin');
-      if (setAcademicRole) setAcademicRole('super_admin');
-      if (setCurrentUser) setCurrentUser(adminPayload);
-      
-      setView('admin');
-      setIsLoading(false);
-      return;
-    }
+    // Süper admin yalnızca Firebase Auth + users/{uid}.role (veya custom claim) ile.
+    // İstemci tarafında sabit kimlik bilgisi / VITE_ADMIN_* ile giriş yoktur.
 
     try {
       // FIREBASE AUTHENTICATION (The New Way)
@@ -83,11 +37,11 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if ((userData.role === 'company' || userData.role === 'employer') && userData.status === 'Onay Bekliyor') {
+        if (userData.status === 'Onay Bekliyor') {
           if (typeof signOut === 'function') {
             await signOut(auth);
           }
-          setError('Firma hesabınız henüz onaylanmamıştır. Lütfen admin onayını bekleyin.');
+          setError('Hesabınız henüz onaylanmamıştır. Lütfen Kariyer Geliştirme Koordinatörlüğü onayını bekleyin.');
           setIsLoading(false);
           return;
         }
@@ -102,12 +56,6 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           const branchMap = { student: 'student', alumni: 'alumni', company: 'company', employer: 'company', academic: 'academic', admin: 'admin' };
           const targetBranch = branchMap[finalRole] || 'student';
           s.setActivePortalBranch?.(targetBranch);
-          if (finalRole === 'admin') {
-            sessionStorage.setItem('iesu_admin_session', JSON.stringify({
-              authenticated: true,
-              timestamp: Date.now()
-            }));
-          }
         } catch (e) { /* intentional */ }
         setUserRole(finalRole);
         if (setCurrentUser) setCurrentUser(loggedUser);
@@ -115,120 +63,25 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         setIsLoading(false);
         return; // Success!
       } else {
-        // If no Firestore document, fallback to basic auth info
-        const fallbackUser = { id: user.uid, email: user.email, name: user.displayName || 'Kullanıcı', role: loginRole, onboardingCompleted: true };
-        try {
-          localStorage.setItem('iesu_mock_user', JSON.stringify(fallbackUser));
-          localStorage.setItem('iesu_user_role_v1', loginRole);
-          const s = useAppStore.getState();
-          s.setUserRole?.(loginRole);
-          s.setCurrentUser?.(fallbackUser);
-          if (loginRole === 'admin') {
-            sessionStorage.setItem('iesu_admin_session', JSON.stringify({
-              authenticated: true,
-              timestamp: Date.now()
-            }));
-          }
-        } catch (e) { /* intentional */ }
-        setUserRole(loginRole);
-        if (setCurrentUser) setCurrentUser(fallbackUser);
-        setView(loginRole === 'employer' ? 'company' : loginRole);
+        // Firestore profili yoksa admin yükseltilmez; rol belirsiz kullanıcı reddedilir.
+        await signOut(auth);
+        setError('Hesap profiliniz bulunamadı. Lütfen kayıt olun veya Kariyer Geliştirme Koordinatörlüğü ile iletişime geçin.');
         setIsLoading(false);
         return;
       }
     } catch (err) {
-      console.log("Firebase Login Failed/Bypassed:", err.message);
-      if (!import.meta.env.DEV) {
+      console.warn('Firebase giriş başarısız:', err?.code || err?.message);
+      // Mock / yerel şifre yolu yok (DEV dahil). Yalnızca Firebase Auth.
+      const code = err?.code || '';
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-email') {
+        setError('E-posta veya şifre hatalı.');
+      } else if (loginRole === 'admin') {
+        setError('Yönetici girişi yalnızca Firebase Auth ve admin custom claim ile yapılabilir.');
+      } else {
         setError('Giriş servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.');
-        setIsLoading(false);
-        return;
       }
+      setIsLoading(false);
     }
-    
-    // Local / Mock verification fallback (works offline and when Firebase is not configured)
-    if (loginRole === 'academic' || loginRole === 'admin') {
-      const adminUser = academicStaff.find(a => (a.email === username || a.id === username || a.username === username) && (a.password === password || password === 'Z.s.1513' || password === '123456'));
-      if (adminUser) {
-        const acadPayload = { ...adminUser, role: 'academic', onboardingCompleted: true };
-        try {
-          localStorage.setItem('iesu_mock_user', JSON.stringify(acadPayload));
-          localStorage.setItem('iesu_user_role_v1', 'academic');
-          const s = useAppStore.getState();
-          s.setUserRole?.('academic');
-          s.setCurrentUser?.(acadPayload);
-          s.setActivePortalBranch?.('academic');
-        } catch (e) { /* intentional */ }
-        if (setAcademicRole) setAcademicRole(adminUser.role || 'standard_academic');
-        setUserRole('academic');
-        if (setCurrentUser) setCurrentUser(acadPayload);
-        setView('academic');
-      } else {
-        setError("Hatalı akademik personel kullanıcı adı veya şifresi!");
-      }
-    } else if (loginRole === 'alumni') {
-      const alumniUser = alumni.find(a => (a.studentId === username || a.email === username) && (a.password === password || password === '123456'));
-      
-      if (alumniUser) {
-        const aluPayload = { ...alumniUser, role: 'alumni', onboardingCompleted: true };
-        try {
-          localStorage.setItem('iesu_mock_user', JSON.stringify(aluPayload));
-          localStorage.setItem('iesu_user_role_v1', 'alumni');
-          const s = useAppStore.getState();
-          s.setUserRole?.('alumni');
-          s.setCurrentUser?.(aluPayload);
-          s.setActivePortalBranch?.('alumni');
-        } catch (e) { /* intentional */ }
-        setUserRole('alumni');
-        if (setCurrentUser) setCurrentUser(aluPayload);
-        setView('alumni');
-      } else {
-        setError("Hatalı mezun numarası veya şifresi!");
-      }
-    } else if (loginRole === 'employer') {
-      const companyUser = companies.find(c => (c.username === username || c.email === username) && (c.password === password || password === '123456'));
-      
-      if (companyUser) {
-        if (companyUser.status === 'Onay Bekliyor') {
-          setError('Firma hesabınız henüz onaylanmamıştır. Lütfen admin onayını bekleyin.');
-          setIsLoading(false);
-          return;
-        }
-        const compPayload = { ...companyUser, role: 'employer', avatar: companyUser.avatar || null, onboardingCompleted: true };
-        try {
-          localStorage.setItem('iesu_mock_user', JSON.stringify(compPayload));
-          localStorage.setItem('iesu_user_role_v1', 'company');
-          const s = useAppStore.getState();
-          s.setUserRole?.('company');
-          s.setCurrentUser?.(compPayload);
-          s.setActivePortalBranch?.('company');
-        } catch (e) { /* intentional */ }
-        setUserRole('employer');
-        if (setCurrentUser) setCurrentUser(compPayload);
-        setView('company');
-      } else {
-        setError("Hatalı firma kullanıcı adı veya şifresi!");
-      }
-    } else {
-      const studentUser = students.find(s => (s.studentId === username || s.email === username) && (s.password === password || password === '123456'));
-      
-      if (studentUser) {
-        const stuPayload = { ...studentUser, role: 'student', onboardingCompleted: true };
-        try {
-          localStorage.setItem('iesu_mock_user', JSON.stringify(stuPayload));
-          localStorage.setItem('iesu_user_role_v1', 'student');
-          const s = useAppStore.getState();
-          s.setUserRole?.('student');
-          s.setCurrentUser?.(stuPayload);
-          s.setActivePortalBranch?.('student');
-        } catch (e) { /* intentional */ }
-        setUserRole('student');
-        if (setCurrentUser) setCurrentUser(stuPayload);
-        setView('student');
-      } else {
-        setError("Hatalı öğrenci numarası veya şifresi!");
-      }
-    }
-    setIsLoading(false);
   };
 
   const handleEDevlet = () => {
@@ -236,17 +89,25 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   };
 
   const handleEDevletSuccessLogin = (profile) => {
+    if (!import.meta.env.DEV) return;
+    // Geliştirme: asla sahte yoksisVerified=true kalıcı yazılmaz.
+    const safe = {
+      ...profile,
+      yoksisVerified: profile?.yoksisVerified === true && profile?.verificationSource === 'api' ? true : false,
+      eDevletVerified: false,
+      obsVerified: false,
+    };
     try {
-      localStorage.setItem('iesu_mock_user', JSON.stringify(profile));
-      localStorage.setItem('iesu_user_role_v1', profile.role);
+      localStorage.setItem('iesu_mock_user', JSON.stringify(safe));
+      localStorage.setItem('iesu_user_role_v1', safe.role);
       const s = useAppStore.getState();
-      s.setUserRole?.(profile.role);
-      s.setCurrentUser?.(profile);
-      s.setActivePortalBranch?.(profile.role);
+      s.setUserRole?.(safe.role);
+      s.setCurrentUser?.(safe);
+      s.setActivePortalBranch?.(safe.role);
     } catch (e) { /* intentional */ }
-    setUserRole(profile.role);
-    if (setCurrentUser) setCurrentUser(profile);
-    setView(profile.role);
+    setUserRole(safe.role);
+    if (setCurrentUser) setCurrentUser(safe);
+    setView(safe.role);
     setIsEdevletModalOpen(false);
   };
 
@@ -412,8 +273,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
             </div>
           </div>
 
-          {/* e-Devlet Doğrulama Butonu */}
-          {(loginRole === 'student' || loginRole === 'alumni' || loginRole === 'academic') && (
+          {/* e-Devlet: üretimde gösterilmez (sahte doğrulama yok). */}
+          {import.meta.env.DEV && (loginRole === 'student' || loginRole === 'alumni' || loginRole === 'academic') && (
             <>
               <div className="relative flex items-center py-5">
                 <div className="flex-grow border-t border-slate-200"></div>
@@ -427,7 +288,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
                 className="w-full flex items-center justify-center gap-2 bg-white border border-slate-200 hover:border-red-300 text-slate-700 py-3 px-4 rounded-2xl hover:bg-red-50/40 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
               >
                 <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-4 w-auto object-contain" />
-                <span className="font-bold text-xs">e-Devlet ile Giriş</span>
+                <span className="font-bold text-xs">e-Devlet ile Giriş (yalnızca geliştirme)</span>
               </button>
             </>
           )}
@@ -439,12 +300,16 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         </p>
       </div>
 
-      <EDevletObsModal
-        isOpen={isEdevletModalOpen}
-        onClose={() => setIsEdevletModalOpen(false)}
-        initialRole={loginRole === 'alumni' ? 'alumni' : 'student'}
-        onSuccessLogin={handleEDevletSuccessLogin}
-      />
+      {import.meta.env.DEV && EDevletObsModal && (
+        <React.Suspense fallback={null}>
+          <EDevletObsModal
+            isOpen={isEdevletModalOpen}
+            onClose={() => setIsEdevletModalOpen(false)}
+            initialRole={loginRole === 'alumni' ? 'alumni' : 'student'}
+            onSuccessLogin={handleEDevletSuccessLogin}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 }

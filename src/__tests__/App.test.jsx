@@ -5,10 +5,14 @@ import { describe, it, expect, afterEach, beforeAll, beforeEach, vi } from 'vite
 import App from '../App';
 import useAppStore from '../store/useAppStore';
 
-vi.mock('../utils/firebase', () => ({ auth: {}, db: {} }));
+const authState = vi.hoisted(() => ({ user: null }));
+vi.mock('../utils/firebase', () => ({
+  auth: { get currentUser() { return authState.user; } },
+  db: {},
+}));
 vi.mock('firebase/auth', () => ({
   onAuthStateChanged: (_auth, callback) => {
-    callback(null);
+    callback(authState.user);
     return () => {};
   },
 }));
@@ -26,6 +30,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  authState.user = null;
   window.localStorage.clear();
   useAppStore.setState({ userRole: null });
 });
@@ -112,8 +117,10 @@ describe('App Component', () => {
   });
 
   it('renders Super Admin Portal with 3-column layout on /explore route when authenticated as admin', async () => {
+    authState.user = { uid: 'firebase-admin-uid' };
     window.localStorage.setItem('iesu_mock_user', JSON.stringify({
-      id: 'admin_1513',
+      id: 'self',
+      uid: 'firebase-admin-uid',
       name: 'Kariyer Geliştirme Merkezi',
       role: 'admin',
     }));
