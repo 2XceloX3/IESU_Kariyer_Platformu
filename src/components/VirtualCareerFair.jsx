@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Users, MapPin, Search, ChevronLeft, ArrowRight, Video, Briefcase, CalendarClock, MessageSquare, Target, Star, ExternalLink, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import Logo from './Logo';
@@ -60,7 +60,25 @@ const MOCK_COMPANIES = [
 
 export default function VirtualCareerFair({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [activeTab, setActiveTab] = useState('booths'); // booths, sessions, appointments
-  const [myAppointments, setMyAppointments] = useState([]);
+  const [myAppointments, setMyAppointments] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iesu_fair_appointments_v1');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleAddAppointment = (slot) => {
+    setMyAppointments(prev => {
+      const updated = [...prev, slot];
+      try {
+        localStorage.setItem('iesu_fair_appointments_v1', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+  };
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompany, setSelectedCompany] = useState(null);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
@@ -352,7 +370,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                   <button 
                     onClick={() => {
                       const slot = { id: Date.now(), company: selectedCompany?.name, date: 'Yaklaşan Fuar Günü', time: '14:30', status: 'Onaylandı' };
-                      setMyAppointments(prev => [...prev, slot]);
+                      handleAddAppointment(slot);
                       setSelectedCompany(null);
                       setActiveTab('appointments');
                       window.toast && window.toast.success(`"${selectedCompany?.name}" İK temsilcisiyle randevunuz oluşturuldu.`);
@@ -363,7 +381,11 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                     Birebir Görüşme Randevusu Al
                   </button>
                   <button onClick={() => {
-                    if (selectedCompany) window.toast && window.toast.success(`Mesajınız "${selectedCompany.name}" İK temsilcisine iletildi.`);
+                    if (selectedCompany) {
+                      window.toast && window.toast.success(`"${selectedCompany.name}" İK temsilcisi ile mesajlaşma oturumu başlatılıyor...`);
+                      setSelectedCompany(null);
+                      if (setView) setView('messaging');
+                    }
                   }} className="flex items-center justify-center gap-2 p-4 border-2 border-gray-200 bg-white text-gray-700 rounded-xl font-bold hover:border-gray-300 hover:bg-gray-50 transition cursor-pointer">
                     <MessageSquare size={20} />
                     İK Temsilcisine Mesaj Gönder
@@ -383,7 +405,13 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                             <span className="flex items-center gap-1"><Clock size={12} /> 2 gün önce</span>
                           </div>
                         </div>
-                        <button className="mt-3 sm:mt-0 text-sm font-bold text-[#990000] hover:underline flex items-center gap-1 cursor-pointer">
+                        <button 
+                          onClick={() => {
+                            setSelectedCompany(null);
+                            if (setView) setView('jobs');
+                          }}
+                          className="mt-3 sm:mt-0 text-sm font-bold text-[#990000] hover:underline flex items-center gap-1 cursor-pointer"
+                        >
                           İncele & Başvur <ExternalLink size={14} />
                         </button>
                       </div>

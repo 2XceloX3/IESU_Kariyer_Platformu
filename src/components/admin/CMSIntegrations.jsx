@@ -183,7 +183,7 @@ export default function CMSIntegrations() {
               </div>
               
               <p className="text-sm text-gray-600 mb-4">
-                Dernek veya dış sistemde kaydedilen yeni mezunları Esenyurt Kariyer veritabanına aktarmak için senkronizasyonu başlatın.
+                İESÜ Mezunlar Portalı veya dış sistemde kaydedilen yeni mezunları İESÜ Kariyer veritabanına aktarmak için senkronizasyonu başlatın.
               </p>
 
               <button 

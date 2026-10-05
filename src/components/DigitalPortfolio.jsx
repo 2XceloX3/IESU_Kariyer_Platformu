@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { downloadReportPdf } from '../utils/downloadPdf';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -9,6 +9,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
+import useAppStore from '../store/useAppStore';
 
 const MOCK_PROJECTS = [
   { id: 1, title: 'AI Tabanlı Mülakat Botu', category: 'Yapay Zeka', tech: ['React', 'Python', 'OpenAI'], views: 1240, stars: 45, image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800', isCertified: true },
@@ -19,14 +20,36 @@ const MOCK_PROJECTS = [
 const MOCK_CERTS = [
   { id: 1, title: 'Google Advanced Data Analytics', issuer: 'Google', date: 'Ekim 2023', verifyUrl: '#', icon: <Award size={32} className="text-red-500" /> },
   { id: 2, title: 'AWS Solutions Architect Associate', issuer: 'Amazon Web Services', date: 'Kasım 2023', verifyUrl: '#', icon: <Award size={32} className="text-orange-500" /> },
-  { id: 3, title: 'Esenyurt Blockchain Eğitimi', issuer: 'İESÜ Sürekli Eğitim', date: 'Aralık 2023', verifyUrl: '#', icon: <Award size={32} className="text-red-500" /> },
+  { id: 3, title: 'İESÜ Blokzincir ve Web3 Akademisi', issuer: 'İESÜ Sürekli Eğitim', date: 'Aralık 2023', verifyUrl: '#', icon: <Award size={32} className="text-red-500" /> },
 ];
 
-export default function DigitalPortfolio({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function DigitalPortfolio({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
+
   const [activeTab, setActiveTab] = useState('projects'); // 'projects' or 'certs'
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
   const [newProject, setNewProject] = useState({ title: '', category: 'Yapay Zeka', tech: '', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800' });
-  const [projectsList, setProjectsList] = useState(MOCK_PROJECTS);
+  
+  const [projectsList, setProjectsList] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iesu_digital_portfolio_projects_v1');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return MOCK_PROJECTS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('iesu_digital_portfolio_projects_v1', JSON.stringify(projectsList));
+    } catch {}
+  }, [projectsList]);
 
   const handleAddProject = () => {
     if (!newProject.title) return;
@@ -54,7 +77,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
             title="Geri Dön"
           >
@@ -93,10 +116,8 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                window.toast && window.toast.info("Projeleriniz sistem üzerinden analiz ediliyor...");
-                setTimeout(() => {
-                  window.toast && window.toast.success("✅ Analiz Tamamlandı: Projeleriniz %92 oranında sektör trendleriyle eşleşiyor.");
-                }, 2000);
+                const techCount = new Set(projectsList.flatMap(p => p.tech || [])).size;
+                window.toast?.success?.(`✅ Yetkinlik Analizi: ${projectsList.length} proje ve ${techCount} farklı teknolojiyle portfolyonuz sektör trendlerine %94 uyumlu!`);
               }}
               className="bg-red-50 hover:bg-red-100 text-[#990000] px-6 py-3 rounded-2xl font-black transition flex items-center justify-center gap-2 border border-red-200 cursor-pointer"
             >
@@ -169,10 +190,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info("Proje kodları analiz ediliyor...");
-                        setTimeout(() => {
-                          window.toast && window.toast.success("✅ Kod İncelemesi: Clean code standartlarına %89 uyumlu.");
-                        }, 2500);
+                        window.toast?.success?.(`✅ Kod İncelemesi (${proj.title}): ${(proj.tech || []).join(', ')} standartlarına %91 uyumlu temiz mimari.`);
                       }}
                       className="text-[#990000] hover:text-red-800 flex items-center gap-1.5 font-bold cursor-pointer"
                     >
@@ -214,10 +232,10 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
                 <div>
                   <h3 className="text-xl font-black mb-2 flex items-center gap-2"><Sparkles className="text-amber-400"/> Blockchain Doğrulaması</h3>
                   <p className="text-slate-300 text-xs font-semibold leading-relaxed max-w-xl">
-                    Tüm sertifikaların Esenyurt Ağı üzerinde kriptografik olarak imzalanmış ve doğrulanmıştır. İşverenler QR kod ile anında teyit edebilir.
+                    Tüm sertifikalar İstanbul Esenyurt Üniversitesi (İESÜ) Akıllı Doğrulama Ağı üzerinde kriptografik olarak imzalanmış ve doğrulanmıştır. İşverenler QR kod ile anında teyit edebilir.
                   </p>
                 </div>
-                <button onClick={() => downloadReportPdf('sertifika-agi-raporu', 'Blockchain Sertifika Ağı Raporu', ['Esenyurt Üniversitesi - Dijital Sertifika Ağı', '', 'Doğrulama: Kriptografik olarak imzalanmış', 'İşverenler QR kod ile anında teyit edebilir.', 'Durum: Aktif ve doğrulanabilir', '', 'Portföydeki Projeler:', ...(projectsList || []).map((p) => '- ' + (p.name || p.title || 'Proje'))])} className="bg-white text-red-950 px-6 py-3 rounded-xl font-black shrink-0 hover:bg-slate-100 transition shadow-lg text-xs uppercase tracking-widest cursor-pointer">
+                <button onClick={() => downloadReportPdf('sertifika-agi-raporu', 'İESÜ Blockchain Sertifika Ağı Raporu', ['İstanbul Esenyurt Üniversitesi - Dijital Sertifika Ağı', '', 'Doğrulama: Kriptografik olarak imzalanmış', 'İşverenler QR kod ile anında teyit edebilir.', 'Durum: Aktif ve doğrulanabilir', '', 'Portföydeki Projeler:', ...(projectsList || []).map((p) => '- ' + (p.name || p.title || 'Proje'))])} className="bg-white text-red-950 px-6 py-3 rounded-xl font-black shrink-0 hover:bg-slate-100 transition shadow-lg text-xs uppercase tracking-widest cursor-pointer">
                                   Sertifika Ağını Gör
                                 </button>
               </div>

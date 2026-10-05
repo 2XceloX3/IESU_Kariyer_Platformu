@@ -9,7 +9,7 @@ export default function AICareerWingman() {
   
   const [messages, setMessages] = useState([
     { 
-      text: "Selam! Ben Wingman, Esenyurt Kariyer Asistanın. 🚀\nBugün CV'ni ATS sistemlerine uygun hale getirebilir, yaklaşan mülakatın için pratik yapabilir veya sadece iş arama stresi hakkında dertleşebiliriz. Nereden başlayalım?", 
+      text: "Merhaba! Ben İESÜ Kariyer Geliştirme Koordinatörlüğü'nün yapay zekâ asistanıyım. 🚀\nBugün CV'nizi ATS sistemlerine uygun hale getirebilir, yaklaşan mülakatınız için STAR tekniğiyle pratik yapabilir veya kariyer hedeflerinizi planlayabiliriz. Nereden başlayalım?", 
       sender: 'ai' 
     }
   ]);
@@ -42,7 +42,7 @@ export default function AICareerWingman() {
     setInput('');
     setIsTyping(true);
     
-    const systemPrompt = `Sen Esenyurt Kariyer Platformu'nun Kariyer Asistanısın.
+    const systemPrompt = `Sen İstanbul Esenyurt Üniversitesi (İESÜ) Kariyer Geliştirme Koordinatörlüğü'nün resmi yapay zekâ kariyer danışmanısın.
 
 GÜVENLİK VE ROL KURALLARI (EN YÜKSEK ÖNCELİK):
 - Yalnızca kariyer danışmanlığı, CV hazırlama, mülakat hazırlığı, staj ve iş arama konularında destek ver.
@@ -167,7 +167,7 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
                 value={input} 
                 onChange={e=>setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSend()}
-                placeholder="Wingman'e sor..." 
+                placeholder="Kariyer Danışmanı'na sor..." 
                 maxLength={1000}
                 className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-5 pr-14 py-3.5 text-sm font-medium focus:ring-4 focus:ring-red-500/10 focus:border-red-400 outline-none transition-all placeholder-gray-400"
               />

@@ -21,7 +21,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
         }
 
         const prompt = `
-          Sen Esenyurt Üniversitesi kariyer danışmanı Anka'sın.
+          Sen İstanbul Esenyurt Üniversitesi (İESÜ) Kariyer Geliştirme Koordinatörlüğü yapay zekâ kariyer danışmanısın.
           Aşağıdaki ilana başvuran "${currentUser?.name}" adlı öğrenci için çok kısa (max 3 cümle), etkileyici ve doğrudan İK yöneticisine hitap eden bir ön yazı (cover letter) yaz.
           
           İlan: ${job.title} - ${job.company} (${job.type})
@@ -41,11 +41,11 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
             }
           } catch (e) {
             if (isMounted) {
-              setCoverLetter(`Sayın İlgili,\\n\\n${job.company} bünyesinde açılan ${job.title} pozisyonu ile yakından ilgileniyorum. ${currentUser?.department || ''} alanındaki eğitimim ve motivasyonumla şirketinize değer katacağıma inanıyorum. Özgeçmişimi ekte değerlendirmenize sunarım.\\n\\nSaygılarımla,\\n${currentUser?.name}`);
+              setCoverLetter(`Sayın İlgili,\n\n${job.company} bünyesinde açılan ${job.title} pozisyonu ile yakından ilgileniyorum. ${currentUser?.department || ''} alanındaki eğitimim ve motivasyonumla şirketinize değer katacağıma inanıyorum. Özgeçmişimi ekte değerlendirmenize sunarım.\n\nSaygılarımla,\n${currentUser?.name}`);
               setIsGenerating(false);
             }
           }
-        }, 1500);
+        }, 1200);
 
       } catch (e) {
         if (isMounted) {
@@ -84,7 +84,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
             <h2 className="text-xl font-black flex items-center gap-2 mb-1">
               <Sparkles size={20} className="text-amber-300" /> Ön Yazı Hazırlama Asistanı
             </h2>
-            <p className="text-indigo-200 text-sm font-medium">
+            <p className="text-red-100 text-sm font-medium">
               <span className="font-bold text-white">{job.company}</span> - {job.title} başvurusu için.
             </p>
           </div>
@@ -97,9 +97,9 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
           {isGenerating ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="relative w-20 h-20 mb-6">
-                <div className="absolute inset-0 bg-indigo-100 rounded-full animate-ping opacity-50" />
-                <div className="relative bg-white rounded-full p-4 border-4 border-indigo-50 shadow-sm flex items-center justify-center h-full">
-                  <Wand2 size={32} className="text-red-600 animate-pulse" />
+                <div className="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-50" />
+                <div className="relative bg-white rounded-full p-4 border-4 border-red-50 shadow-sm flex items-center justify-center h-full">
+                  <Wand2 size={32} className="text-[#990000] animate-pulse" />
                 </div>
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-2">Ön Yazınız Üretiliyor...</h3>
@@ -107,8 +107,8 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
             </div>
           ) : (
             <div className="animate-fade-in">
-              <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-5 mb-6 relative">
-                <div className="absolute -top-3 -right-3 bg-indigo-100 text-indigo-700 p-2 rounded-xl shadow-sm">
+              <div className="bg-red-50/30 border border-red-100 rounded-2xl p-5 mb-6 relative">
+                <div className="absolute -top-3 -right-3 bg-red-100 text-[#990000] p-2 rounded-xl shadow-sm">
                   <Wand2 size={16} />
                 </div>
                 <textarea 
@@ -120,7 +120,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
 
               <div className="flex items-center gap-3 bg-amber-50 text-amber-700 p-4 rounded-xl text-sm font-bold border border-amber-100 mb-8">
                 <CheckCircle size={18} className="shrink-0" />
-                <p>Anka'nın ürettiği taslağı dilediğiniz gibi düzenleyebilir, ardından başvurunuzu tamamlayabilirsiniz.</p>
+                <p>Yapay zekâ asistanının ürettiği taslağı dilediğiniz gibi düzenleyebilir, ardından başvurunuzu tamamlayabilirsiniz.</p>
               </div>
 
               <div className="flex justify-end gap-3">
@@ -129,7 +129,7 @@ export default function AnkaCoverLetterModal({ job, currentUser, onClose, onConf
                 </button>
                 <button 
                   onClick={() => onConfirm(coverLetter)}
-                  className="px-6 py-2.5 rounded-xl bg-[#990000] text-white font-bold hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-900/20 transition flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-[#990000] text-white font-bold hover:bg-red-800 hover:shadow-lg transition flex items-center gap-2 cursor-pointer"
                 >
                   <Send size={18} /> Başvuruyu Tamamla
                 </button>

@@ -37,6 +37,10 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
   // YÖK Report PDF / Print Export Handler
   const exportYokReport = () => {
     const reportWindow = window.open('', '_blank');
+    if (!reportWindow) {
+      window.toast?.error?.('Tarayıcınız açılır pencereyi engelledi. Lütfen açılır pencerelere izin verin.');
+      return;
+    }
     const content = `
       <!DOCTYPE html>
       <html>
@@ -192,10 +196,10 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <TopInfoCard icon={<Users size={20} />} title="Aktif Kullanıcı" value={activeStudents + totalAlumni} color="blue" />
-        <TopInfoCard icon={<MousePointerClick size={20} />} title="Aylık Etkileşim" value="24.5K" color="emerald" />
-        <TopInfoCard icon={<Briefcase size={20} />} title="Toplam Başvuru" value={totalApplications} color="orange" />
-        <TopInfoCard icon={<Eye size={20} />} title="İlan Görüntülenmesi" value="128K" color="purple" />
+        <TopInfoCard icon={<Users size={20} />} title="Aktif Kullanıcı" count={activeStudents + totalAlumni} color="blue" />
+        <TopInfoCard icon={<MousePointerClick size={20} />} title="Aylık Etkileşim" count="24.5K" color="emerald" />
+        <TopInfoCard icon={<Briefcase size={20} />} title="Toplam Başvuru" count={totalApplications} color="orange" />
+        <TopInfoCard icon={<Eye size={20} />} title="İlan Görüntülenmesi" count="128K" color="purple" />
       </div>
 
       {/* MEZUN İSTİHDAMI & BÖLÜM UYUM ANALİTİĞİ (SORULAR 1, 2, 4, 6, 8, 9) */}

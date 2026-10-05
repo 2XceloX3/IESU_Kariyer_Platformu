@@ -1,4 +1,4 @@
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import useAppStore from '../store/useAppStore';
 import React, { useState } from 'react';
@@ -15,6 +15,7 @@ import AnkaCoverLetterModal from './AnkaCoverLetterModal';
 import eventBus from '../brain/eventBus';
 import useAdminStore from '../brain/useAdminStore';
 import { getTenantConfig } from '../config/tenantConfig';
+import { downloadReportPdf } from '../utils/downloadPdf';
 
 export default function JobsAndInternships({ userRole, setView, currentUser, jobs: propsJobs }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -69,6 +70,23 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const [appForm, setAppForm] = useState({ coverLetter: '', phone: currentUser?.phone || '', cvType: 'KGM Akredite İESÜ Dijital CV' });
   const [showAnkaModal, setShowAnkaModal] = useState(false);
   const addNotification = (notif) => { setNotifications(prev => [notif, ...prev]); };
+
+  const getJobMatchScore = (job) => {
+    if (!job) return 80;
+    const userDept = (effectiveCurrentUser?.department || effectiveCurrentUser?.dept || '').toLowerCase();
+    const userSkills = (effectiveCurrentUser?.skills || []).map(s => (typeof s === 'string' ? s : s.name || '').toLowerCase());
+    const jobText = `${job.title || ''} ${job.company || ''} ${(job.tags || []).join(' ')} ${job.type || ''}`.toLowerCase();
+    
+    let base = 72;
+    if (userDept && jobText.includes(userDept.slice(0, 5))) base += 14;
+    if (userSkills.length > 0) {
+      const hits = userSkills.filter(s => s && jobText.includes(s));
+      base += Math.min(12, hits.length * 6);
+    } else {
+      base += Math.abs(((job.id || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % 15));
+    }
+    return Math.min(98, Math.max(70, base));
+  };
   const getFeedView = () => {
     if (effectiveRole === 'admin') return 'admin';
     if (effectiveRole === 'employer' || effectiveRole === 'company') return 'company';
@@ -131,20 +149,12 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     
     setApplications(prev => [...(prev || []), newApp]);
     try {
-      addDoc(collection(db, 'applications'), {
+      setDoc(doc(db, 'applications', newApp.id), {
         ...newApp,
         createdAt: serverTimestamp(),
         status: 'Onay Bekliyor',
-      });
-    } catch (e) {
-      console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
-    }
-
-    try {
-      addDoc(collection(db, 'applications'), {
-        ...newApp,
-        createdAt: serverTimestamp(),
-        status: 'Onay Bekliyor',
+      }).catch(e => {
+        console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
       });
     } catch (e) {
       console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
@@ -175,7 +185,11 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     setApplyModalJob(null);
     setAppForm({ coverLetter: '', phone: currentUser?.phone || '', cvType: `KGM Akredite ${tenant.institutionShortName} Dijital CV` });
   };
-  const activeJobs = (jobs||[]).filter(j => j.status === 'Aktif' || !j.status);
+  const activeJobs = (jobs||[]).filter(j => 
+    j.status === 'Aktif' || !j.status || 
+    (effectiveRole === 'company' && j.companyId === effectiveCurrentUser?.id) ||
+    isAdminUser
+  );
 
   const filteredJobs = (activeJobs || []).filter(job => {
     const q = searchQuery.toLocaleLowerCase('tr-TR');
@@ -428,8 +442,8 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                               <p className="text-sm font-medium text-gray-700 flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-100"><Calendar size={15} className="text-amber-500 shrink-0"/> Son: {currentJob.deadline}</p>
                             </div>
                             <div className="w-full mb-5">
-                              <div className="flex justify-between items-center mb-1"><span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Profil Eşleşme</span><span className={`text-sm font-black ${theme.matchText}`}>%{((currentJob.id.length*7+currentJob.title.length*3)%30)+70}</span></div>
-                              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${((currentJob.id.length*7+currentJob.title.length*3)%30)+70}%`}}></div></div>
+                              <div className="flex justify-between items-center mb-1"><span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Profil Eşleşme</span><span className={`text-sm font-black ${theme.matchText}`}>%{getJobMatchScore(currentJob)}</span></div>
+                              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${getJobMatchScore(currentJob)}%`}}></div></div>
                             </div>
                             <div className="mt-auto flex justify-center gap-6">
                               <button onClick={()=>setSwipedJobs([...swipedJobs,currentJob.id])} className="w-16 h-16 rounded-full bg-white border-2 border-red-100 flex items-center justify-center text-red-500 hover:bg-red-50 hover:scale-110 transition-transform shadow-sm"><X size={28} strokeWidth={3} /></button>
@@ -446,7 +460,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                   <div className="space-y-3">
                     {filteredJobs.map(job=>{
                       const hasApplied=applications.some(a=>a.jobId===job.id&&(a.applicantId===branchTargetId||a.applicantId===currentUser?.id));
-                      const matchScore=((job.id.length*7+job.title.length*3)%30)+70;
+                      const matchScore = getJobMatchScore(job);
                       return(
                         <div key={job.id} className={`bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group ${theme.hoverBorder}`}>
                           <div className="p-5">
@@ -561,7 +575,19 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                 <h4 className="font-extrabold text-[15px] text-gray-900 mb-4 flex items-center gap-2"><FileText size={18} className="text-[#990000]" /> İlgili Formlar</h4>
                 <div className="space-y-2.5">
                   {[{title:'Zorunlu Staj Formu',link:'/docs/zorunlu_staj.pdf'},{title:'Mesleki Eğitim Sözleşmesi (SHMYO-SBF)',link:'/docs/mesleki_egitim.pdf'},{title:'İş Sağlığı ve Güvenliği Belgesi (SHMYO)',link:'/docs/isg_shmyo.pdf'},{title:'İş Sağlığı ve Güvenliği Belgesi (SBF)',link:'/docs/isg_sbf.pdf'},{title:'Ulusal Staj Başvuru Formu',link:'/docs/ulusal_staj.pdf'}].map((doc,i)=>(
-                    <a key={i} href={doc.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition group cursor-pointer"><span className="font-semibold text-[13px] text-gray-700 group-hover:text-blue-700 transition">{doc.title}</span><Download size={16} className="text-gray-400 group-hover:text-blue-600 transition" /></a>
+                    <button key={i} type="button" onClick={() => {
+                      try {
+                        downloadReportPdf('staj_formu_' + (i + 1), doc.title, [
+                          'Kurum: Istanbul Esenyurt Universitesi - Kariyer Koordinatorlugu',
+                          'Belge: ' + doc.title,
+                          'Tarih: ' + new Date().toLocaleDateString('tr-TR'),
+                          'Durum: Resmi Staj ve Uygulamali Egitim Basvuru Formu'
+                        ]);
+                        (window.toast?.success || console.log)(doc.title + ' indirildi.');
+                      } catch {
+                        (window.toast?.info || console.log)('Belge indirilemedi.');
+                      }
+                    }} className="w-full flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition group cursor-pointer text-left"><span className="font-semibold text-[13px] text-gray-700 group-hover:text-blue-700 transition">{doc.title}</span><Download size={16} className="text-gray-400 group-hover:text-blue-600 transition" /></button>
                   ))}
                 </div>
                 <div className="mt-5 p-4 bg-amber-50 rounded-xl border border-amber-100 text-[12px] text-amber-800 font-medium"><strong>Not:</strong> İstenilen evrakların eksiksiz doldurulması zorunludur.</div>

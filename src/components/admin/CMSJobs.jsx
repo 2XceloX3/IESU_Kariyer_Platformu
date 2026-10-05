@@ -192,7 +192,15 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
             <option value="taslak">Taslak</option>
             <option value="kapalı">Kapalı</option>
           </select>
-          <button aria-label="İşlem Butonu" className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition"><Filter size={18}/></button>
+          <button 
+            type="button"
+            aria-label="Filtreleri Sıfırla" 
+            title="Filtreleri Sıfırla"
+            onClick={() => { setSearchQuery(''); setStatusFilter('all'); }}
+            className="p-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition cursor-pointer"
+          >
+            <Filter size={18}/>
+          </button>
         </div>
       </div>
 

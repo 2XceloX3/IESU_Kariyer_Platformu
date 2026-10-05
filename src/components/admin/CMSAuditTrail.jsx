@@ -523,8 +523,10 @@ export default function CMSAuditTrail() {
   // Date Filter Check helper
   const isDateInFilter = (isoString, filterRange) => {
     if (filterRange === 'Tümü') return true;
+    if (!isoString) return false;
     const logDate = new Date(isoString);
-    const now = new Date('2026-08-02T14:18:00'); // Consistent reference date
+    if (isNaN(logDate.getTime())) return false;
+    const now = new Date();
 
     const diffInTime = now.getTime() - logDate.getTime();
     const diffInDays = diffInTime / (1000 * 3600 * 24);
@@ -533,10 +535,10 @@ export default function CMSAuditTrail() {
       return logDate.toDateString() === now.toDateString();
     }
     if (filterRange === 'Son 7 Gün') {
-      return diffInDays <= 7;
+      return diffInDays >= 0 && diffInDays <= 7;
     }
     if (filterRange === 'Son 30 Gün') {
-      return diffInDays <= 30;
+      return diffInDays >= 0 && diffInDays <= 30;
     }
     return true;
   };

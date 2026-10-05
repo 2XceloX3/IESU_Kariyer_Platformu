@@ -7,7 +7,7 @@
     { "path": "/kariyer/ilanlar", "view": "kariyer_board", "label": "Staj ve İş İlanları" }
   ],
   "externalPortals": [
-    { "name": "OBİS", "url": "https://obis.gelisim.edu.tr", "tooltip": "Bu işlem sizi resmi OBİS öğrenci bilgi sistemine yönlendirecektir." },
+    { "name": "İESÜ OBS", "url": "https://obs.esenyurt.edu.tr", "tooltip": "Bu işlem sizi resmi İESÜ OBS öğrenci bilgi sistemine yönlendirecektir." },
     { "name": "E-Devlet Kapısı", "url": "https://www.turkiye.gov.tr", "tooltip": "Bu işlem sizi e-Devlet Kapısı resmi portalına yönlendirecektir." },
     { "name": "YÖK-SİS", "url": "https://yoksis.yok.gov.tr", "tooltip": "Bu işlem sizi YÖK-SİS sistemine yönlendirecektir." }
   ]

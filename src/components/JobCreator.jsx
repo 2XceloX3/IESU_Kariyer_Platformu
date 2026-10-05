@@ -9,6 +9,7 @@ import eventBus from '../brain/eventBus';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import { getTenantConfig } from '../config/tenantConfig';
+import { generateAIResponse } from '../lib/gemini';
 
 export default function JobCreator({ setView, currentUser: propsCurrentUser, addNotification: propsAddNotification, userRole: propsUserRole }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -82,7 +83,7 @@ export default function JobCreator({ setView, currentUser: propsCurrentUser, add
   };
 
   // 🤖 AI Career Wingman — Akıllı İlan Metni Üretici
-  const handleGenerateAIDescription = (e) => {
+  const handleGenerateAIDescription = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) {
       setError("Lütfen önce bir İlan Başlığı girin (örn: Frontend Developer Stajyeri).");
@@ -90,16 +91,26 @@ export default function JobCreator({ setView, currentUser: propsCurrentUser, add
     }
 
     setIsGeneratingAI(true);
-    if (window.toast?.info) {
-      window.toast.info("İlan taslak metni otomatik olarak hazırlanıyor...");
-    }
+    (window.toast?.info || console.log)("İlan taslak metni AI ile hazırlanıyor...");
 
-    setTimeout(() => {
-      const position = formData.title.trim();
-      const isIntern = formData.type === 'STAJ' || formData.type === 'CO-OP';
-      const companyName = currentUser?.name || 'Kurumsal Şirketimiz';
+    const position = formData.title.trim();
+    const isIntern = formData.type === 'STAJ' || formData.type === 'CO-OP';
+    const companyName = currentUser?.name || 'Kurumsal Şirketimiz';
 
-      const aiText = `${companyName} bünyesinde ${formData.location} lokasyonunda görev alacak, motivasyonu yüksek ve gelişime açık "${position}" takım arkadaşları arıyoruz.
+    try {
+      const prompt = `Şirket: ${companyName}, Pozisyon: ${position}, Lokasyon: ${formData.location || 'İstanbul'}, Model: ${formData.workModel || 'Hibrit'}, Tür: ${formData.type || 'Tam Zamanlı'}.
+Bu pozisyon için profesyonel bir iş/staj ilanı metni üret. Görev Tanımı, Aranan Nitelikler ve Sunduğumuz Olanaklar başlıklarını içersin.`;
+      const systemInstruction = "Sen üniversite kariyer merkezi için profesyonel iş ilanı yazarı bir yapay zekasın. Türkçe, kurumsal ve detaylı ilan metni üret.";
+      const res = await generateAIResponse(prompt, systemInstruction);
+      if (res && res.length > 60 && !res.includes("ulaşılamıyor") && !res.includes("yapılandırılmadı")) {
+        setFormData(prev => ({ ...prev, description: res }));
+        setIsGeneratingAI(false);
+        (window.toast?.success || console.log)("İlan Taslak Metni AI ile başarıyla oluşturuldu!");
+        return;
+      }
+    } catch { /* fallback to template */ }
+
+    const fallbackText = `${companyName} bünyesinde ${formData.location || 'İstanbul'} lokasyonunda görev alacak, motivasyonu yüksek ve gelişime açık "${position}" takım arkadaşları arıyoruz.
 
 Görev Tanımı & Sorumluluklar:
 • İlgili departman süreçlerinde aktif rol almak ve proje geliştirme adımlarına katkı sağlamak
@@ -116,15 +127,12 @@ Aranan Nitelikler:
 Sunduğumuz Olanaklar:
 • Üniversite onaylı staj/iş deneyimi ve İESÜ Kariyer Koordinatörlüğü onaylı sertifika
 • Birebir kıdemli uzman mentörlüğü ve profesyonel kariyer koçluğu
-• Esnek ve yenilikçi çalışma ortamı (${formData.workModel})
+• Esnek ve yenilikçi çalışma ortamı (${formData.workModel || 'Hibrit'})
 • Şirket içi eğitim programları ve sektörel networking fırsatları`;
 
-      setFormData(prev => ({ ...prev, description: aiText }));
-      setIsGeneratingAI(false);
-      if (window.toast?.success) {
-        window.toast.success("İlan Taslak Metni başarıyla oluşturuldu!");
-      }
-    }, 900);
+    setFormData(prev => ({ ...prev, description: fallbackText }));
+    setIsGeneratingAI(false);
+    (window.toast?.success || console.log)("İlan Taslak Metni başarıyla oluşturuldu!");
   };
 
   const handleSubmit = () => {

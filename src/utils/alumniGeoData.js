@@ -742,7 +742,7 @@ export const BASE_ALUMNI_HUBS = [
 
 export const REGION_PRESETS = [
   { id: 'all', label: '🌍 Tüm Dünya', center: [20, 40], zoom: 1 },
-  { id: 'duzce_corridor', label: '📍 Düzce Hattı (3.06z)', center: [10, 44], zoom: 3.06, origin: 'Düzce' },
+  { id: 'duzce_corridor', label: '📍 İESÜ Kariyer Hattı (3.06z)', center: [10, 44], zoom: 3.06, origin: 'İstanbul' },
   { id: 'turkey', label: '🇹🇷 Türkiye', center: [35.2, 39.0], zoom: 4.2 },
   { id: 'europe', label: '🇪🇺 Avrupa', center: [14.0, 52.0], zoom: 3.2 },
   { id: 'north_america', label: '🇺🇸 Kuzey Amerika', center: [-98.0, 40.0], zoom: 2.4 },
@@ -1110,7 +1110,7 @@ export const CAREER_ROUTES = [
     corridor: 'Almanya Otomotiv & İleri İmalat Koridoru',
     originHub: 'Düzce',
     title: 'Düzce ➔ Stuttgart Otomotiv Koridoru',
-    description: 'Düzce sanayi kümelenmesi ve otomotiv yan sanayi mühendislerinin Stuttgart merkezli küresel otomotiv devlerine (Porsche, Bosch, Mercedes) uzanan kariyer ve staj hattı.'
+    description: 'Düzce ve çevre sanayi kümelenmesi mühendislerinin Stuttgart merkezli küresel otomotiv devlerine uzanan kariyer ve staj hattı.'
   },
   {
     id: 'route_duzce_munich',
@@ -1125,7 +1125,7 @@ export const CAREER_ROUTES = [
     corridor: 'Bavyera Yüksek Teknoloji Hattı',
     originHub: 'Düzce',
     title: 'Düzce ➔ Münih Robotik & Makine Hattı',
-    description: 'İESÜ mühendislik ve teknoloji mezunlarının Bavyera endüstriyel otomasyon ve mekatronik ekosistemine transfer yolu.'
+    description: 'Mühendislik ve teknoloji mezunlarının Bavyera endüstriyel otomasyon ve mekatronik ekosistemine transfer yolu.'
   },
   {
     id: 'route_duzce_london',
@@ -1140,7 +1140,7 @@ export const CAREER_ROUTES = [
     corridor: 'Atlantik Ticaret & Dağıtım Hattı',
     originHub: 'Düzce',
     title: 'Düzce ➔ Londra Ticaret & Lojistik Rotası',
-    description: 'Düzce sanayi havzası ürünlerinin İngiltere ve Birleşik Krallık ticaret ve tedarik zinciri ağlarıyla entegrasyonu.'
+    description: 'Bölgesel sanayi havzası ürünlerinin İngiltere ve Birleşik Krallık ticaret ve tedarik zinciri ağlarıyla entegrasyonu.'
   },
   {
     id: 'route_duzce_detroit',
@@ -1155,7 +1155,7 @@ export const CAREER_ROUTES = [
     corridor: 'Transatlantik Otomotiv Koridoru',
     originHub: 'Düzce',
     title: 'Düzce ➔ Detroit Otomotiv Aksı',
-    description: 'Kuzey Amerika otomotiv merkezi Detroit ile Düzce otomotiv yan sanayii arasındaki mühendislik ve inovasyon köprüsü.'
+    description: 'Kuzey Amerika otomotiv merkezi Detroit ile otomotiv yan sanayii arasındaki inovasyon köprüsü.'
   },
   {
     id: 'route_duzce_tokyo',
@@ -1170,7 +1170,7 @@ export const CAREER_ROUTES = [
     corridor: 'Asya İleri İmalat Yolu',
     originHub: 'Düzce',
     title: 'Düzce ➔ Tokyo Hassas İmalat Hattı',
-    description: 'Japonya hassas mekanik üreticileri ile Düzce cam ve sanayi kuruluşları arasındaki mühendislik ortaklığı.'
+    description: 'Japonya hassas mekanik üreticileri ile cam ve sanayi kuruluşları arasındaki mühendislik ortaklığı.'
   },
   // İstanbul Routes
   {

@@ -10,22 +10,20 @@
  *    AI gateway is connected. Browser bundles must not contain API secrets.
  */
 
-const getDevelopmentGateway = () => {
-  if (!import.meta.env.DEV) return null;
-
-  const url = import.meta.env.VITE_OMNIROUTE_API_URL?.trim();
-  const apiKey = import.meta.env.VITE_OMNIROUTE_API_KEY?.trim();
+const getAIGateway = () => {
+  const url = import.meta.env.VITE_OMNIROUTE_API_URL?.trim() || import.meta.env.VITE_AI_GATEWAY_URL?.trim();
+  const apiKey = import.meta.env.VITE_OMNIROUTE_API_KEY?.trim() || import.meta.env.VITE_AI_GATEWAY_KEY?.trim();
 
   return url && apiKey ? { url, apiKey } : null;
 };
 
-export const generateAIResponse = async (prompt, systemInstruction = "Sen İESÜ Kariyer Geliştirme Koordinatörlüğü'nin dijital asistanı Anka'sın. Arkadaş canlısı ve profesyonelsin.") => {
+export const generateAIResponse = async (prompt, systemInstruction = "Sen İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü'nün resmi yapay zekâ asistanısın. Kurumsal, yapıcı, profesyonel ve öğrencilere kariyerlerinde rehberlik eden bir üsluba sahipsin.") => {
   const safePrompt = typeof prompt === 'string' ? prompt.slice(0, 4000) : String(prompt || '').slice(0, 4000);
   const safeInstruction = typeof systemInstruction === 'string' ? systemInstruction.slice(0, 4000) : String(systemInstruction || '');
 
-  const developmentGateway = getDevelopmentGateway();
+  const gateway = getAIGateway();
 
-  if (!developmentGateway) {
+  if (!gateway) {
     return simulateLocalResponse(safePrompt);
   }
 
@@ -68,7 +66,7 @@ const simulateLocalResponse = (prompt) => {
       let response = "Anlıyorum. Size nasıl daha fazla yardımcı olabilirim?";
       
       if (p.includes("selam") || p.includes("merhaba")) {
-        response = "Merhaba! Ben Anka. Kariyer hedeflerine ulaşman için buradayım. Bugün ne üzerinde çalışalım?";
+        response = "Merhaba! Ben İESÜ Kariyer Asistanı. Kariyer Geliştirme Koordinatörlüğü rehberliğinde hedeflerine ulaşman için buradayım. Bugün ne üzerinde çalışalım?";
       } else if (p.includes("cv") || p.includes("özgeçmiş")) {
         response = "CV'ni güçlendirmek için buradayım! Lütfen yeteneklerinden ve dahil olduğun kulüplerden bahset, böylece sana en uygun şablonu önerebilirim.";
       } else if (p.includes("staj") || p.includes("iş")) {

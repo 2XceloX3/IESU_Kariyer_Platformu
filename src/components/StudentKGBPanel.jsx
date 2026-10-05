@@ -316,9 +316,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       accreditationScore: score,
       verificationCode: effectiveCurrentUser?.verificationCode || profileData.verificationCode || `İESÜ-KGB-2026-${String(effectiveCurrentUser?.id || match?.id || '9941').replace(/[^0-9]/g, '').slice(-4).padStart(4, '0') || '9941'}`,
       avatar: effectiveCurrentUser?.avatar || profileData.avatar,
-      advisorName: effectiveCurrentUser?.advisorName || profileData.advisorName || 'Doç. Dr. Selin Kaya',
-      internships: profileData.internships,
-      certifications: profileData.certifications
+      advisorName: effectiveCurrentUser?.advisorName || profileData?.advisorName || 'Doç. Dr. Selin Kaya',
+      internships: Array.isArray(effectiveCurrentUser?.internships) ? effectiveCurrentUser.internships : (effectiveCurrentUser?.id && !DEFAULT_STUDENT_PROFILES[effectiveCurrentUser.id] ? [] : (Array.isArray(profileData.internships) ? profileData.internships : [])),
+      certifications: Array.isArray(effectiveCurrentUser?.certifications) ? effectiveCurrentUser.certifications : (effectiveCurrentUser?.id && !DEFAULT_STUDENT_PROFILES[effectiveCurrentUser.id] ? [] : (Array.isArray(profileData.certifications) ? profileData.certifications : []))
     };
   }, [isAdmin, currentStudentRecord, effectiveCurrentUser, DEFAULT_STUDENT_PROFILES]);
 
@@ -329,8 +329,8 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   const [newRequestOrg, setNewRequestOrg] = useState('');
   const [newRequestHours, setNewRequestHours] = useState('');
 
-  const internships = studentData.internships || DEFAULT_STUDENT_PROFILES['STU-01'].internships;
-  const certifications = studentData.certifications || DEFAULT_STUDENT_PROFILES['STU-01'].certifications;
+  const internships = Array.isArray(studentData.internships) ? studentData.internships : [];
+  const certifications = Array.isArray(studentData.certifications) ? studentData.certifications : [];
 
   const [workshops] = useState([
     { id: 'W1', title: 'Sektör Liderleriyle Yapay Zekâ Zirvesi 2026', category: 'Konferans', hours: 8, date: '15 Şubat 2026', speaker: 'Prof. Dr. Hakan Demir' },
@@ -725,10 +725,10 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-red-50 text-[#990000] flex items-center justify-center font-black text-sm border border-red-100">
-                      {studentData.advisorName.split(' ').map(n => n[0]).filter(Boolean).slice(-2).join('')}
+                      {(studentData.advisorName || 'Doç. Dr. Selin Kaya').split(' ').filter(Boolean).map(n => n[0]).slice(-2).join('')}
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-slate-900">{studentData.advisorName}</h4>
+                      <h4 className="text-xs font-black text-slate-900">{studentData.advisorName || 'Doç. Dr. Selin Kaya'}</h4>
                       <p className="text-[10px] text-slate-600 font-bold">Akademik & Kariyer Danışmanı</p>
                     </div>
                   </div>
@@ -760,8 +760,26 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {internships.map(intern => (
+            {internships.length === 0 ? (
+              <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-10 text-center flex flex-col items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mb-3">
+                  <Briefcase size={26} />
+                </div>
+                <h4 className="text-sm font-black text-slate-800 mb-1">Henüz Kayıtlı Stajınız Bulunmuyor</h4>
+                <p className="text-xs text-slate-500 max-w-sm mb-4">
+                  Zorunlu veya gönüllü staj süreçlerinizi tamamlayıp evraklarınızı onaylattıktan sonra resmi staj kaydınız burada listelenecektir.
+                </p>
+                <button 
+                  type="button"
+                  onClick={() => { setNewRequestType('staj'); setShowRequestModal(true); }}
+                  className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                >
+                  + Staj Onay Talebi Gönder
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {internships.map(intern => (
                 <div key={intern.id} className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs hover:border-red-200 transition space-y-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -807,6 +825,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 </div>
               ))}
             </div>
+            )}
           </div>
         )}
 

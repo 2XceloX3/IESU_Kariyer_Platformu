@@ -174,10 +174,33 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
     }
   ]);
 
+  const allCandidateApps = React.useMemo(() => {
+    const storeApps = (applications || []).filter(a => {
+      if (!effectiveCurrentUser) return true;
+      return a.companyId === effectiveCurrentUser?.id || 
+             a.company === effectiveCurrentUser?.name || 
+             a.companyName === effectiveCurrentUser?.name;
+    });
+    if (storeApps.length > 0) {
+      return storeApps.map(a => ({
+        id: a.id,
+        applicantName: a.applicantName || a.name || 'Öğrenci Adayı',
+        applicantDept: a.applicantDept || a.department || 'Bölüm Belirtilmemiş',
+        jobTitle: a.jobTitle || 'Başvuru Yapılan Pozisyon',
+        status: a.status || 'Beklemede',
+        applicantPhone: a.applicantPhone || '0555 000 0000',
+        applicantEmail: a.applicantEmail || a.email || '-',
+        cvType: a.cvType || 'İESÜ Dijital CV',
+        coverLetter: a.coverLetter || 'Ön yazı belirtilmedi.'
+      }));
+    }
+    return companyCandidateApps;
+  }, [applications, effectiveCurrentUser, companyCandidateApps]);
+
   const filteredCandidateApps = React.useMemo(() => {
-    if (atsStatusFilter === 'Tümü') return companyCandidateApps;
-    return companyCandidateApps.filter(a => a.status === atsStatusFilter);
-  }, [companyCandidateApps, atsStatusFilter]);
+    if (atsStatusFilter === 'Tümü') return allCandidateApps;
+    return allCandidateApps.filter(a => a.status === atsStatusFilter);
+  }, [allCandidateApps, atsStatusFilter]);
 
   const updateCandidateStatus = (appId, newStatus) => {
     setCompanyCandidateApps(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
@@ -561,7 +584,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               <div className="text-center border-r border-white/10 pr-1">
                 <p className="text-[9px] text-slate-300 font-black uppercase tracking-wider">Başvuru</p>
                 <p className="font-black text-white text-base mt-0.5">
-                  {(applications || []).length > 0 ? (applications || []).length : 5}
+                  {(applications || []).length}
                 </p>
               </div>
               <div className="text-center border-r border-white/10 px-1">
@@ -587,7 +610,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
               {/* SAĞ PANEL İÇİ ANLIK ADAY LİSTESİ AKIŞI (TEMİZ TEMPORARY BOX LAYOUT) */}
               <div className="space-y-2.5 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
-                {companyCandidateApps.slice(0, 4).map((app) => (
+                {allCandidateApps.slice(0, 4).map((app) => (
                   <div key={app.id} className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all space-y-2 shadow-xs">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5 min-w-0 flex-1">

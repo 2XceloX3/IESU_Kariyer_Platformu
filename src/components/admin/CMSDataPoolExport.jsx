@@ -302,15 +302,27 @@ export default function CMSDataPoolExport() {
     // Add Headers
     csvRows.push(headers.join(';'));
 
-    // Add Rows with KVKK TC Masking
+    // Add Rows with KVKK TC Masking & CWE-1236 Injection Defense
     for (const row of dataArray) {
       const values = headers.map(header => {
         let val = row[header] === null || row[header] === undefined ? '' : row[header];
+        if (typeof val === 'object') {
+          try {
+            val = JSON.stringify(val);
+          } catch {
+            val = '';
+          }
+        }
+        val = String(val);
         const lowerH = header.toLowerCase();
-        if ((lowerH.includes('tc') || lowerH.includes('tckimlik')) && typeof val === 'string' && val.length === 11) {
+        if ((lowerH.includes('tc') || lowerH.includes('tckimlik')) && val.length === 11) {
           val = val.slice(0, 4) + '*****' + val.slice(-2);
         }
-        const escaped = ('' + val).replace(/"/g, '""');
+        // Formula injection defense (CWE-1236)
+        if (/^[=+\-@\t\r]/.test(val)) {
+          val = "'" + val;
+        }
+        const escaped = val.replace(/"/g, '""');
         return `"${escaped}"`;
       });
       csvRows.push(values.join(';'));
@@ -1782,7 +1794,7 @@ export default function CMSDataPoolExport() {
                     <tr key={a.id} onClick={() => setSelectedGenericItem({ type: 'Mezun Kart Başvurusu', data: a })} className="hover:bg-indigo-50/50 transition cursor-pointer group">
                       <td className="p-3.5 font-mono text-indigo-900 font-black">{a.id}</td>
                       <td className="p-3.5 font-bold group-hover:text-indigo-900 flex items-center gap-1.5">{a.name} <ArrowUpRight size={13} className="opacity-0 group-hover:opacity-100 transition text-indigo-900"/></td>
-                      <td className="p-3.5 font-mono text-slate-600">{a.tcNo ? a.tcNo.slice(0, 4) + '*****' + a.tcNo.slice(-2) : '-'} / {a.studentId}</td>
+                      <td className="p-3.5 font-mono text-slate-600">{a.tcNo ? String(a.tcNo).slice(0, 4) + '*****' + String(a.tcNo).slice(-2) : '-'} / {a.studentId}</td>
                       <td className="p-3.5 text-slate-600">{a.dept} ({a.gradYear})</td>
                       <td className="p-3.5 font-bold text-indigo-900">{a.deliveryType === 'digital' ? 'Dijital Kart' : 'Fiziksel + Dijital'}</td>
                       <td className="p-3.5 text-slate-400 text-[10px]">{a.appliedAt || new Date().toLocaleDateString('tr-TR')}</td>

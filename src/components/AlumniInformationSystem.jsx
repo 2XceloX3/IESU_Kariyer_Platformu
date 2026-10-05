@@ -46,8 +46,16 @@ const CHECKUP_QUESTIONS = [
   { id: 12, text: "12. Üniversitemize veya Kariyer Merkezimize iletmek istediğiniz görüş ve önerileriniz var mı?", type: "textarea", placeholder: "Görüş, istek ve önerilerinizi buraya yazabilirsiniz..." }
 ];
 
-export default function AlumniInformationSystem({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function AlumniInformationSystem({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const addCheckupRecord = useAppStore(state => state.addCheckupRecord);
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'student' ? 'student' : userRole === 'academic' ? 'academic' : 'alumni')
+  );
   const [activeTab, setActiveTab] = useState('ozluk');
   const [cvTemplate, setCvTemplate] = useState('modern'); // 'modern' | 'academic' | 'creative'
   const [aiEnhancing, setAiEnhancing] = useState(false);
@@ -163,13 +171,14 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
   const handleAiEnhanceSummary = () => {
     setAiEnhancing(true);
     setTimeout(() => {
+      const deptName = currentUser?.department || profileData.education[0]?.major || 'üniversite';
       setProfileData(prev => ({
         ...prev,
-        summary: "Yazılım Mühendisliği son sınıf öğrencisi olarak modern web teknolojileri, yapay zeka entegrasyonları ve bulut bilişim alanlarında teorik altyapıyı pratik projelerle birleştiren hevesli bir mühendis adayıyım. Agile metodolojilerle çalışmaya yatkın, analitik düşünme yeteneğine sahip bir takım oyuncusuyum."
+        summary: `İstanbul Esenyurt Üniversitesi ${deptName} mezunu olarak, sektörel yetkinliklerimi çağdaş mesleki standartlar ve yenilikçi projelerle birleştirmeyi hedefliyorum. Analitik düşünme, takım çalışması ve sürekli gelişim vizyonuyla kurumsal değer üretmeye odaklıyım.`
       }));
       setAiEnhancing(false);
-      window.toast && window.toast.success("Özet metniniz profesyonel standartlara göre optimize edildi!");
-    }, 1500);
+      window.toast && window.toast.success("Özet metniniz bölümünüze ve profesyonel standartlara göre optimize edildi!");
+    }, 800);
   };
 
   const handleCheckupAnswer = (opt) => {
@@ -204,7 +213,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
       <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')} 
+            onClick={() => setView(backTarget)} 
             className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
           >
             <ChevronLeft size={20} />
@@ -225,7 +234,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
           {/* Top Profile Summary Bar */}
           <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <SafeAvatar src={currentUser?.avatar} name={currentUser?.name || "Kariyer Geliştirme Merkezi"} size="lg" rounded="rounded-2xl" className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-md border border-gray-100 shrink-0" />
+              <SafeAvatar src={currentUser?.avatar} name={currentUser?.name || "Kariyer Geliştirme Koordinatörlüğü"} size="lg" rounded="rounded-2xl" className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-md border border-gray-100 shrink-0" />
               <div>
                 <h2 className="font-black text-slate-900 text-base sm:text-lg leading-tight">{currentUser?.name || 'Mezun Adı'}</h2>
                 <div className="flex items-center gap-2 mt-1">

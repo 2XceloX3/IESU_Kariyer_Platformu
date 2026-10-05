@@ -239,7 +239,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
           city: r.fromCity,
           country: r.fromCountry,
           coords: r.fromCoords,
-          isDuzce: normalizeStr(r.originHub) === 'duzce' || normalizeStr(r.fromCity) === 'duzce',
+          isIesu: normalizeStr(r.originHub) === 'istanbul' || normalizeStr(r.fromCity) === 'istanbul',
           count: 0
         });
       }
@@ -983,7 +983,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                   </h2>
                   <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
                     Haritada parıldayan ülkelere tıklayarak şehirleri ve mezunları görüntüleyin; 
-                    veya Düzce ve Türkiye merkezli uluslararası kariyer koridorlarını doğrudan inceleyin.
+                    veya İstanbul ve Türkiye merkezli uluslararası kariyer koridorlarını doğrudan inceleyin.
                   </p>
                 </div>
 
@@ -1002,7 +1002,6 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                       CAREER_ROUTES.find(r => r.id === 'route_duzce_london'),
                       CAREER_ROUTES.find(r => r.id === 'route_ist_sf')
                     ].filter(Boolean).map(route => {
-                      const isDuzce = route.originHub === 'Düzce';
                       return (
                         <button
                           key={route.id}
@@ -1011,7 +1010,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                         >
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-xs">{isDuzce ? '🌲' : '🚀'}</span>
+                              <span className="text-xs">🚀</span>
                               <p className="text-xs font-bold text-slate-100 group-hover:text-cyan-300 transition truncate">
                                 {route.title}
                               </p>

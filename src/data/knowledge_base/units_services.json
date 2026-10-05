@@ -15,11 +15,11 @@
   "bidb": {
     "status": {
       "wifi": "Aktif (%99.8)",
-      "ibis_obis": "Aktif",
+      "obs": "Aktif",
       "lms": "Aktif",
       "email": "Aktif"
     },
-    "helpdeskEmail": "bidb@gelisim.edu.tr"
+    "helpdeskEmail": "bidb@esenyurt.edu.tr"
   },
   "kariyer": {
     "activeJobs": 128,

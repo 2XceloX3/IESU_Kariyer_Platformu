@@ -6,8 +6,16 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 
-export default function RewardStore({ setView, currentUser, userRole, setSelectedUserId }) {
+export default function RewardStore({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const { userBP, purchaseItem, purchasedItems } = useAppStore();
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch === 'student' ? 'student' :
+    activePortalBranch === 'alumni' ? 'alumni' :
+    activePortalBranch === 'academic' ? 'academic' :
+    activePortalBranch === 'company' ? 'company' :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
 
@@ -91,7 +99,7 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40 shadow-xs mb-6">
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => setView('feed')} 
+              onClick={() => setView(backTarget)} 
               className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shrink-0"
               title="Geri Dön"
             >
@@ -100,7 +108,7 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
             <div className="flex items-center gap-3">
               <Logo className="h-8 w-auto text-[#990000]" />
               <div>
-                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Esenyurt Ödül Mağazası</h1>
+                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">İESÜ Ödül Mağazası</h1>
                 <p className="text-[11px] font-bold text-gray-500">Kariyer Başarı Puanı (BP) Merkezi</p>
               </div>
             </div>
@@ -118,7 +126,7 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
         <div className="relative z-10 flex-1">
           <div className="flex items-center gap-3 mb-2">
             <ShoppingBag className="text-red-300" size={28} />
-            <h1 className="text-2xl md:text-3xl font-bold">Esenyurt Mağazası</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">İESÜ Kariyer & Ödül Mağazası</h1>
           </div>
           <p className="text-red-100 max-w-lg">
             Kazandığın BP (Başarı Puanı) değerlerini harca! Profilini özelleştir, kampüs avantajlarını yakala ve kariyer fırsatlarını hızlandır.

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Landmark, Check, X, Users, ArrowLeft, ArrowRight, BarChart3, 
@@ -14,8 +14,34 @@ const INITIAL_PROPOSALS = [
 ];
 
 export default function AlumniDAO({ setView, currentUser, userRole = 'alumni', setSelectedUserId, previousView = 'alumni' }) {
-  const [proposals, setProposals] = useState(INITIAL_PROPOSALS);
-  const [voted, setVoted] = useState({});
+  const [proposals, setProposals] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iesu_alumni_dao_proposals_v1');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return INITIAL_PROPOSALS;
+  });
+
+  const [voted, setVoted] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iesu_alumni_dao_voted_v1');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {};
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('iesu_alumni_dao_proposals_v1', JSON.stringify(proposals));
+    } catch {}
+  }, [proposals]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('iesu_alumni_dao_voted_v1', JSON.stringify(voted));
+    } catch {}
+  }, [voted]);
+
   const [showAddProposal, setShowAddProposal] = useState(false);
   const [newProposal, setNewProposal] = useState({ title: '', category: 'Girişim & Yatırım', budget: '', desc: '' });
 
@@ -129,7 +155,7 @@ export default function AlumniDAO({ setView, currentUser, userRole = 'alumni', s
               <Sparkles size={14} /> Şeffaf & Doğrulanmış
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Tüm oylamalar mezun kimlik kartı hash doğrulaması ile şeffaf biçimde İESÜMED sisteminde kayıt altına alınır.
+              Tüm oylamalar mezun kimlik kartı hash doğrulaması ile şeffaf biçimde İESÜ Mezunlar Portalı sisteminde kayıt altına alınır.
             </p>
           </div>
         </div>

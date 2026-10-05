@@ -73,7 +73,7 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
           <div className="relative z-10 max-w-xl">
             <h2 className="text-3xl font-black mb-3">Kariyerinde Fark Yaratanlar</h2>
             <p className="text-red-100 text-lg leading-relaxed">
-              Kariyer Geliştirme Merkezi verilerine göre yetenek onayları (endorsements) ve sektörel etkileşimleriyle bu ay en çok öne çıkan Esenyurtlular.
+              Kariyer Geliştirme Koordinatörlüğü verilerine göre yetenek onayları (endorsements) ve sektörel etkileşimleriyle bu ay en çok öne çıkan İESÜ öğrencileri ve mezunları.
             </p>
           </div>
         </div>
@@ -138,10 +138,12 @@ export default function LeaderboardPanel({ setView, currentUser, userRole, setSe
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
-                      window.toast && window.toast.info(`"${user.name}" kullanıcısının kariyer geçmişi analiz ediliyor...`);
-                      setTimeout(() => {
-                        window.toast && window.toast.success("✅ Analiz: Hedefinize ulaşmak için öğrenmeniz gereken 3 yeni yetkinlik haritanıza eklendi.");
-                      }, 2500);
+                      try {
+                        const existing = JSON.parse(localStorage.getItem('iesu_career_modeled_skills') || '[]');
+                        const newSkills = [...new Set([...existing, ...(user.skills || [])])];
+                        localStorage.setItem('iesu_career_modeled_skills', JSON.stringify(newSkills));
+                      } catch {}
+                      window.toast?.success?.(`🎯 "${user.name}" liderlik yetkinlikleri (${(user.skills || []).join(', ')}) başarıyla hedeflerinize eklendi!`);
                     }}
                     className="flex-1 sm:flex-none text-[11px] font-bold bg-red-50 text-[#990000] hover:bg-red-100 px-3 py-2 rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer border border-red-200"
                     title="Tersine Mühendislik (Kariyer Modelleme)"

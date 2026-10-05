@@ -192,7 +192,14 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
   const setApplications = useAppStore(state => state.setApplications);
 
   // Local overrides for initial static mock applicants (tracking their dragged moves)
-  const [mockApplicants, setMockApplicants] = useState(INITIAL_APPLICANTS);
+  const [mockApplicants, setMockApplicants] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iesu_company_ats_board_v1');
+      return saved ? JSON.parse(saved) : INITIAL_APPLICANTS;
+    } catch {
+      return INITIAL_APPLICANTS;
+    }
+  });
 
   // Combine static mock candidates with real-time Zustand applications
   const boardApplicants = useMemo(() => {
@@ -339,6 +346,9 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
           next[col] = next[col].filter(a => a.id !== item.id);
         });
         next[targetColId] = [item, ...(next[targetColId] || [])];
+        try {
+          localStorage.setItem('iesu_company_ats_board_v1', JSON.stringify(next));
+        } catch (e) {}
         return next;
       });
     }

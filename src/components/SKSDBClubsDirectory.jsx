@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Search, ChevronLeft, Plus, CheckCircle, X } from 'lucide-react';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
@@ -14,7 +14,19 @@ const CLUBS_DATA = [
 export default function SKSDBClubsDirectory({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [filter, setFilter] = useState('Tümü');
   const [search, setSearch] = useState('');
-  const [joinedClubs, setJoinedClubs] = useState([]);
+  const [joinedClubs, setJoinedClubs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('iesu_sksdb_joined_clubs_v1');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('iesu_sksdb_joined_clubs_v1', JSON.stringify(joinedClubs));
+    } catch {}
+  }, [joinedClubs]);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
   const backTarget = previousView || (

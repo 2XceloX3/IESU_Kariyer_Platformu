@@ -8,6 +8,7 @@ import SafeAvatar from './shared/SafeAvatar';
 import useAppStore from '../store/useAppStore';
 import useAdminStore from '../brain/useAdminStore';
 import { getTenantConfig } from '../config/tenantConfig';
+import { generateAIResponse } from '../services/aiService';
 
 const getInitialRooms = (tenant) => [
   {
@@ -240,9 +241,11 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                     {[...Array(12)].map((_, i) => (
                       <SafeAvatar key={i} name={`Dinleyici ${i+1}`} size="sm" className="w-12 h-12 rounded-full border-2 border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition" />
                     ))}
-                    <div className="w-12 h-12 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs font-bold">
-                      +{activeRoom.listenersCount - 12}
-                    </div>
+                    {activeRoom.listenersCount > 12 && (
+                      <div className="w-12 h-12 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs font-bold">
+                        +{activeRoom.listenersCount - 12}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -253,12 +256,18 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                       Sessizce Ayrıl
                     </button>
                     <button 
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.preventDefault();
-                        window.toast && window.toast.info("Odanın şu ana kadarki kaydı analiz ediliyor...");
-                        setTimeout(() => {
-                          window.toast && window.toast.success("✅ Oda Özeti: 'Kariyer mülakatlarında stres yönetimi üzerine konuşuluyor...' (Özet mesaj kutunuza iletildi)");
-                        }, 3000);
+                        window.toast?.info?.("Yapay zekâ oda akışını analiz ediyor...");
+                        try {
+                          const prompt = `"${activeRoom?.title}" başlıklı canlı kariyer odasında şu ana kadar konuşulan konuları özetle. Konuşmacılar: ${(activeRoom?.speakers || []).map(s => s.name).join(', ')}. Katılımcı: ${currentUser?.name || 'Öğrenci'}. 2 cümlelik net, ilham verici ve profesyonel bir özet çıkar.`;
+                          const summary = await generateAIResponse(prompt, "Sen canlı kariyer odası yapay zekâ moderatörüsün. Kısa ve net özet çıkar.");
+                          if (summary) {
+                            window.toast?.success?.(`🎙️ Canlı Oda Özeti: ${summary.slice(0, 180)}`);
+                            return;
+                          }
+                        } catch {}
+                        window.toast?.success?.("✅ Canlı Oda Özeti: 'Kariyer mülakatlarında stres yönetimi, STAR tekniği ve sektörel fırsatlar üzerine konuşuluyor...'");
                       }}
                       className="text-[#990000] font-bold text-sm px-6 py-3 rounded-full bg-red-50 hover:bg-red-100 transition flex items-center gap-2 cursor-pointer border border-red-200"
                     >
@@ -267,11 +276,37 @@ export default function LiveRoomsPanel({ setView, currentUser, userRole, setSele
                     </button>
                   </div>
                   <div className="flex gap-4">
-                    <button className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 shadow-sm transition cursor-pointer">
+                    <button 
+                      onClick={() => {
+                        try {
+                          navigator?.clipboard?.writeText?.(window.location.href);
+                          window.toast?.success?.("📋 Canlı oda davet bağlantısı panoya kopyalandı!");
+                        } catch {
+                          window.toast?.info?.("Oda davet bağlantısı kopyalandı.");
+                        }
+                      }}
+                      title="Arkadaşını Odaya Davet Et"
+                      className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 shadow-sm transition cursor-pointer"
+                    >
                       <Plus size={20} />
                     </button>
-                    <button className="px-6 py-3 rounded-full bg-[#990000] hover:bg-red-800 text-white font-bold text-sm shadow-xl shadow-red-900/20 hover:scale-105 transition flex items-center gap-2 cursor-pointer">
-                      <Hand size={18} /> Söz İste
+                    <button 
+                      onClick={() => {
+                        const userName = currentUser?.name || 'Öğrenci';
+                        const alreadySpeaker = (activeRoom.speakers || []).some(s => s.name === userName);
+                        if (!alreadySpeaker) {
+                          setActiveRoom(prev => ({
+                            ...prev,
+                            speakers: [...prev.speakers, { name: userName, avatar: currentUser?.avatar || '', role: 'Konuşmacı' }]
+                          }));
+                          window.toast?.success?.("🎙️ Sahneye davet edildiniz! Mikrofonunuz açıldı.");
+                        } else {
+                          window.toast?.info?.("Zaten konuşmacı panelindesiniz.");
+                        }
+                      }}
+                      className="px-6 py-3 rounded-full bg-[#990000] hover:bg-red-800 text-white font-bold text-sm shadow-xl shadow-red-900/20 hover:scale-105 transition flex items-center gap-2 cursor-pointer"
+                    >
+                      <Hand size={18} /> Söz İste / Sahneye Çık
                     </button>
                   </div>
                 </div>

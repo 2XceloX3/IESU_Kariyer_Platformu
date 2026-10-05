@@ -1,7 +1,8 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 
-export function TopInfoCard({ title, count, icon, trend, color = 'blue' }) {
+export function TopInfoCard({ title, count, value, icon, trend, color = 'blue' }) {
+  const displayCount = count !== undefined ? count : value;
   const gradients = {
     blue: 'from-red-500/10 to-red-500/5 hover:from-red-500/20 hover:to-red-500/10 border-red-100 text-red-600',
     red: 'from-iesu-navy/10 to-red-500/5 hover:from-iesu-navy/20 hover:to-red-500/10 border-red-100 text-[#990000]',
@@ -17,7 +18,7 @@ export function TopInfoCard({ title, count, icon, trend, color = 'blue' }) {
       <div>
         <p className="text-[11px] font-black text-gray-600 uppercase tracking-widest mb-1 opacity-80 group-hover:opacity-100 transition-opacity">{title}</p>
         <p className="text-3xl font-black text-gray-900 flex items-center gap-2 drop-shadow-sm">
-          {count}
+          {displayCount}
           {trend && <span className={`text-[11px] font-bold px-2 py-0.5 rounded-lg shadow-sm ${trend > 0 ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>{trend > 0 ? '+' : ''}{trend}</span>}
         </p>
       </div>

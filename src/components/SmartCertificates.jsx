@@ -4,6 +4,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
+import { downloadReportPdf } from '../utils/downloadPdf';
 
 export default function SmartCertificates({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
@@ -36,9 +37,9 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
     {
       id: 'CERT-102',
       title: 'Modern Özgeçmiş ve Mülakat Teknikleri',
-      issuer: 'Kariyer Geliştirme Merkezi',
+      issuer: 'Kariyer Geliştirme Koordinatörlüğü',
       date: '02 Şubat 2026',
-      instructor: 'Kariyer Geliştirme Merkezi Ekibi',
+      instructor: 'Kariyer Geliştirme Koordinatörlüğü Ekibi',
       status: 'Tamamlandı',
       code: 'IESU-2026-4512',
       edevletBarcode: 'EDV-2026-4512988',
@@ -60,19 +61,38 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
 
   const handleSearchVerify = (e) => {
     e.preventDefault();
-    if (!verifyCode.trim()) return;
+    const query = verifyCode.trim();
+    if (!query) return;
     
     setIsVerifying(true);
     setVerifyResult(null);
 
     setTimeout(() => {
       setIsVerifying(false);
-      if (verifyCode.toUpperCase().includes('IESU') || verifyCode.length >= 5) {
+      const cleanUpper = query.toUpperCase();
+      const matchedCert = mockUserCertificates.find(c => 
+        c.code.toUpperCase() === cleanUpper || 
+        c.edevletBarcode.toUpperCase() === cleanUpper ||
+        c.id.toUpperCase() === cleanUpper
+      );
+
+      if (matchedCert) {
         setVerifyResult({
           status: 'success',
-          code: verifyCode.toUpperCase(),
+          code: matchedCert.code,
           studentName: currentUser?.name || 'Ahmet Yılmaz',
-          tcNo: '123******89',
+          tcNo: currentUser?.tcKimlik ? `${currentUser.tcKimlik.slice(0, 3)}******${currentUser.tcKimlik.slice(-2)}` : '123******89',
+          programName: `${matchedCert.issuer} - ${matchedCert.title}`,
+          issueDate: matchedCert.date,
+          edevletSync: true,
+          barcode: matchedCert.edevletBarcode
+        });
+      } else if (cleanUpper.includes('IESU') || query.length >= 5) {
+        setVerifyResult({
+          status: 'success',
+          code: cleanUpper,
+          studentName: currentUser?.name || 'Ahmet Yılmaz',
+          tcNo: currentUser?.tcKimlik ? `${currentUser.tcKimlik.slice(0, 3)}******${currentUser.tcKimlik.slice(-2)}` : '123******89',
           programName: 'Kariyer ve Yetenek Akademisi - Resmî Yetkinlik Sertifikası',
           issueDate: '15 Mart 2026',
           edevletSync: true,
@@ -84,7 +104,7 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
           message: 'Girilen sertifika kodu veya e-Devlet barkod numarası bulunamadı. Lütfen kodu kontrol edin.'
         });
       }
-    }, 1000);
+    }, 600);
   };
 
   return (
@@ -221,7 +241,27 @@ export default function SmartCertificates({ setView, currentUser, userRole, setS
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                     <span className="text-[11px] font-bold text-slate-600">Doğrulanmış Dijital Belge</span>
                     <button 
-                      onClick={() => window.toast && window.toast.success(`PDF Sertifikası ve e-Devlet Barkodu indiriliyor: ${cert.code}`)}
+                      onClick={() => {
+                        downloadReportPdf(
+                          `${cert.code}_Sertifika`,
+                          `İSTANBUL ESENYURT ÜNİVERSİTESİ - RESMİ YETKİNLİK BELGESİ`,
+                          [
+                            `Belge Başlığı: ${cert.title}`,
+                            `Düzenleyen Birim: ${cert.issuer}`,
+                            `Eğitmen: ${cert.instructor}`,
+                            `Belge Sahibi: ${currentUser?.name || 'Ahmet Yılmaz'}`,
+                            `Öğrenci No: ${currentUser?.studentNo || '2023010482'}`,
+                            `Bölüm: ${currentUser?.department || 'Bilgisayar Mühendisliği'}`,
+                            `Sertifika Kodu: ${cert.code}`,
+                            `e-Devlet Barkod Numarası: ${cert.edevletBarcode}`,
+                            `Veriliş Tarihi: ${cert.date}`,
+                            `Durum: ${cert.status} (Resmi İESÜ & YÖK Akreditasyon Standardı)`,
+                            `Blokzincir Doğrulama Özeti: ${cert.hash}`,
+                            `Bu belge İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü ve e-Devlet Kapısı üzerinden doğrulanabilir.`
+                          ]
+                        );
+                        window.toast?.success?.(`Sertifika PDF olarak indirildi: ${cert.code}`);
+                      }}
                       className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md cursor-pointer"
                     >
                       <Download size={15} /> Belgeyi İndir (PDF)

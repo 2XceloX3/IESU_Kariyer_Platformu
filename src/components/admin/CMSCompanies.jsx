@@ -88,6 +88,7 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
   });
 
   const activeCount = safeCompanies.filter(c => c.status === 'Onaylı').length;
+  const paginatedCompanies = filtered;
   const pendingCount = safeCompanies.filter(c => c.status === 'Onay Bekliyor').length;
 
   const listView = (

@@ -181,10 +181,22 @@ export default function SkillTree({ setView, currentUser, userRole, setSelectedU
                       <button 
                         onClick={(e) => {
                           e.preventDefault();
-                          window.toast && window.toast.info(`"${node.title}" yetkinliğini kazanmanız için size özel çalışma planı oluşturuluyor...`);
-                          setTimeout(() => {
-                            window.toast && window.toast.success("✅ Çalışma Planı: '3 haftalık yoğunlaştırılmış eğitim programı' oluşturuldu.");
-                          }, 2500);
+                          try {
+                            const existing = JSON.parse(localStorage.getItem('iesu_career_study_plans') || '[]');
+                            const planItem = {
+                              id: 'PLAN-' + node.id + '-' + Date.now(),
+                              skillTitle: node.title,
+                              skillType: node.type,
+                              date: new Date().toLocaleDateString('tr-TR'),
+                              weeks: [
+                                '1. Hafta: Temel teorik kavramlar ve dokümantasyon incelemesi',
+                                '2. Hafta: Örnek vaka çalışmaları ve pratik proje geliştirme',
+                                '3. Hafta: Sektörel portfolyo projesi ve yetkinlik değerlendirmesi'
+                              ]
+                            };
+                            localStorage.setItem('iesu_career_study_plans', JSON.stringify([planItem, ...existing.filter(p => p.skillTitle !== node.title)]));
+                          } catch {}
+                          window.toast?.success?.(`📚 "${node.title}" için 3 haftalık kişiselleştirilmiş çalışma planı oluşturuldu ve profilinize kaydedildi!`);
                         }}
                         className="text-sm font-bold py-2 px-4 rounded-xl transition-colors border border-gray-200 text-gray-700 hover:bg-gray-50 flex-1 flex items-center justify-center gap-1 cursor-pointer"
                         title="Bu yetkinliği nasıl kazanabilirim?"

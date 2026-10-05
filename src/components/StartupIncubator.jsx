@@ -67,6 +67,38 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
   const [isGenerating, setIsGenerating] = useState(false);
   const [canvas, setCanvas] = useState(null);
   const [submittedToPool, setSubmittedToPool] = useState(false);
+  const [selectedGrantProgram, setSelectedGrantProgram] = useState(null);
+  const [grantForm, setGrantForm] = useState({ projectTitle: '', desc: '', phone: '' });
+
+  const handleGrantSubmit = (e) => {
+    e.preventDefault();
+    if (!grantForm.projectTitle.trim()) {
+      toast.error('Lütfen girişiminizin adını giriniz.');
+      return;
+    }
+    const effectiveUser = currentUser || useAppStore.getState().currentUser;
+    const projectItem = {
+      id: 'TTO-APP-' + Date.now(),
+      name: grantForm.projectTitle,
+      founderName: effectiveUser?.name || 'Girişimci Öğrenci',
+      founderDept: effectiveUser?.department || 'Mühendislik ve Doğa Bilimleri',
+      founderEmail: effectiveUser?.email || 'ogrenci@esenyurt.edu.tr',
+      founderPhone: grantForm.phone || '0555 000 0000',
+      category: selectedGrantProgram?.name || 'TTO Fonlama Desteği',
+      score: 85,
+      stage: 'Ön Kuluçka',
+      mentorName: 'TTO Girişim Danışmanı',
+      date: new Date().toLocaleDateString('tr-TR'),
+      pitch: grantForm.desc || (selectedGrantProgram?.name + ' hibe başvurusu.')
+    };
+    try {
+      const existing = JSON.parse(localStorage.getItem('iesu_incubator_projects_v1') || '[]');
+      localStorage.setItem('iesu_incubator_projects_v1', JSON.stringify([projectItem, ...existing]));
+    } catch {}
+    toast.success(`🚀 "${selectedGrantProgram?.name}" için TTO danışmanlık talebiniz başarıyla oluşturuldu!`);
+    setSelectedGrantProgram(null);
+    setGrantForm({ projectTitle: '', desc: '', phone: '' });
+  };
 
   // Restore saved active canvas from localStorage if present
   useEffect(() => {
@@ -696,9 +728,8 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
 
                   <div className="mt-6 pt-4 border-t border-gray-100">
                     <button 
-                      onClick={() => {
-                        toast.info(`"${prog.name}" rehberi ve TTO danışmanlık başvuru formu açıldı.`);
-                      }}
+                      type="button"
+                      onClick={() => setSelectedGrantProgram(prog)}
                       className="w-full py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <span>TTO Başvuru Desteği Al</span>
@@ -786,8 +817,81 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
             </div>
           </div>
         )}
-
       </main>
+
+      {/* TTO Grant Application Modal */}
+      {selectedGrantProgram && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div>
+                <span className="text-[10px] font-black uppercase text-[#990000] tracking-wider">{selectedGrantProgram.org}</span>
+                <h3 className="text-lg font-black text-slate-900">{selectedGrantProgram.name}</h3>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setSelectedGrantProgram(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleGrantSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Girişim / Proje Adı *</label>
+                <input 
+                  type="text"
+                  required
+                  placeholder="Örn: Akıllı Kampüs IoT & Enerji Ağı"
+                  value={grantForm.projectTitle}
+                  onChange={e => setGrantForm({ ...grantForm, projectTitle: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">İletişim Telefon Numarası</label>
+                <input 
+                  type="tel"
+                  placeholder="0543 000 00 00"
+                  value={grantForm.phone}
+                  onChange={e => setGrantForm({ ...grantForm, phone: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Proje Özeti & TTO'dan Beklenen Destek</label>
+                <textarea 
+                  rows={3}
+                  placeholder="Girişiminizin çözdüğü problem ve TTO kuluçka sürecinden beklediğiniz akademik/mali destekler..."
+                  value={grantForm.desc}
+                  onChange={e => setGrantForm({ ...grantForm, desc: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none resize-none"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button 
+                  type="button" 
+                  onClick={() => setSelectedGrantProgram(null)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
+                >
+                  Vazgeç
+                </button>
+                <button 
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-bold transition shadow-md flex items-center gap-1.5"
+                >
+                  <Rocket size={14} />
+                  <span>TTO Başvurusunu Tamamla</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* FLOATING BOTTOM DOCK */}
       <SubPanelFloatingDock 

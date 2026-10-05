@@ -72,11 +72,12 @@ export default function CMSMentorshipPool() {
   };
 
   const filteredRequests = requests.filter(req => {
-    const matchSearch = !searchQuery || 
-      req.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      req.mentorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      req.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      req.note.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = (searchQuery || '').toLowerCase();
+    const matchSearch = !q || 
+      (req.studentName || '').toLowerCase().includes(q) ||
+      (req.mentorName || '').toLowerCase().includes(q) ||
+      (req.topic || '').toLowerCase().includes(q) ||
+      (req.note || '').toLowerCase().includes(q);
     
     const matchStatus = statusFilter === 'Tümü' || req.status === statusFilter;
     return matchSearch && matchStatus;

@@ -290,17 +290,10 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
   };
 
   const handleDownloadTestPdf = () => {
-    const calculatedScores = calculateScores();
-    const sum = (calculatedScores.logic + calculatedScores.creative + calculatedScores.social + calculatedScores.practical) || 1;
-    const pScores = {
-      logic: Math.round((calculatedScores.logic / sum) * 100),
-      creative: Math.round((calculatedScores.creative / sum) * 100),
-      social: Math.round((calculatedScores.social / sum) * 100),
-      practical: Math.round((calculatedScores.practical / sum) * 100)
-    };
+    const { percent: pScores } = calculateScores();
     const lines = [
       `Universite: Istanbul Esenyurt Universitesi (IESU)`,
-      `Birim: Kariyer Gelistirme Merkezi (KGM)`,
+      `Birim: Kariyer Gelistirme Koordinatorlugu`,
       `Ogrenci: ${currentUser?.name || 'IESU Ogrencisi'}`,
       `Bolum: ${currentUser?.department || 'Muhendislik'}`,
       `Kariyer Kimligi: ${persona.title}`,
@@ -308,10 +301,10 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
       `Tarih: ${new Date().toLocaleDateString('tr-TR')}`,
       `------------------------------------------------------------------`,
       `YETKINLIK DAGILIMI:`,
-      ` - Mantik & Analitik Zeka: %${pScores.logic}`,
-      ` - Yaraticilik & Inovasyon: %${pScores.creative}`,
-      ` - Sosyal & Iletisim Liderligi: %${pScores.social}`,
-      ` - Pratik & Saha Cevikligi: %${pScores.practical}`,
+      ` - Mantik & Analitik Zeka: %${pScores.logic || 0}`,
+      ` - Yaraticilik & Inovasyon: %${pScores.creative || 0}`,
+      ` - Sosyal & Iletisim Liderligi: %${pScores.social || 0}`,
+      ` - Pratik & Saha Cevikligi: %${pScores.practical || 0}`,
       ` `,
       `ONERILEN KARIYER PATIKALARI:`,
       ...(persona.paths || []).map(p => ` - ${p}`),
@@ -324,6 +317,45 @@ export default function CareerTest({ setView, currentUser, userRole, setSelected
   };
 
   const handleSyncToKgb = () => {
+    const calculatedScores = calculateScores();
+    const calculatedPersona = getPersona();
+    const submission = {
+      id: 'TEST-' + Date.now().toString(),
+      studentId: currentUser?.id || 'STU-001',
+      studentName: currentUser?.name || 'Öğrenci',
+      studentDept: currentUser?.department || 'Bilgisayar Mühendisliği',
+      personaTitle: calculatedPersona.title,
+      personaBadge: calculatedPersona.badge,
+      scores: calculatedScores,
+      status: 'Değerlendirildi',
+      syncedAt: new Date().toISOString()
+    };
+
+    try {
+      // Store submission in local storage
+      const existing = JSON.parse(localStorage.getItem('iesu_career_test_submissions') || '[]');
+      localStorage.setItem('iesu_career_test_submissions', JSON.stringify([submission, ...existing.filter(s => s.studentId !== submission.studentId)]));
+      
+      // Update store careerTestSubmissions if setter exists
+      const setCareerTestSubmissions = useAppStore.getState().setCareerTestSubmissions;
+      if (setCareerTestSubmissions) {
+        setCareerTestSubmissions(prev => [submission, ...(Array.isArray(prev) ? prev.filter(s => s.studentId !== submission.studentId) : [])]);
+      }
+
+      // Update current user's profile with persona
+      const setCurrentUser = useAppStore.getState().setCurrentUser;
+      if (currentUser && setCurrentUser) {
+        setCurrentUser({
+          ...currentUser,
+          careerPersona: calculatedPersona.title,
+          careerBadge: calculatedPersona.badge,
+          careerScores: calculatedScores.percent
+        });
+      }
+    } catch (e) {
+      console.warn('KGB sync warning:', e);
+    }
+
     window.toast?.success?.("🎯 Yetkinlik profili ve kariyer kimliğiniz KGB Karnenize başarıyla işlendi!");
   };
 

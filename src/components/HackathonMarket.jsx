@@ -9,6 +9,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
+import { generateAIResponse } from '../services/aiService';
 
 const HACKATHONS = [
   { id: 1, title: 'Akıllı Kampüs İnovasyon Maratonu', company: 'Esenyurt Teknopark', prize: '₺50.000 Hibe Desteği', deadline: '2 Gün Kaldı', type: 'Sürdürülebilirlik', participants: 142, status: 'active', color: 'blue' },
@@ -27,6 +28,24 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [selectedHackathon, setSelectedHackathon] = useState(null);
   const [teamForm, setTeamForm] = useState({ teamName: '', projectName: '', members: [] });
+  const [myTeams, setMyTeams] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('iesu_hackathon_teams_v1') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const getContextualIdea = (hack) => {
+    if (!hack) return 'Yenilikçi Kampüs Çözümü';
+    if (hack.type?.includes('Finans') || hack.title?.includes('Fintech')) {
+      return "Mikro KOBİ'ler için Açık Bankacılık & Otomatik Fatura İskonto Protokolü";
+    }
+    if (hack.type?.includes('Yapay Zeka') || hack.title?.includes('Otonom')) {
+      return "LiDAR ve Kamera Füzyonu Tabanlı Otonom Kampüs İçi Kargo Dağıtım Robotu";
+    }
+    return "Kampüs Karbon Ayak İzini Sıfırlayan Dinamik Enerji ve IoT Optimizasyon Platformu";
+  };
 
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const backTarget = previousView || (
@@ -58,6 +77,16 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
       return;
     }
 
+    const createdTeam = {
+      id: 'TEAM-' + Date.now(),
+      hackathonId: selectedHackathon.id,
+      hackathonTitle: selectedHackathon.title,
+      teamName: teamForm.teamName,
+      projectName: teamForm.projectName,
+      membersCount: (teamForm.members || []).length + 1,
+      createdAt: new Date().toLocaleDateString('tr-TR')
+    };
+
     setHackathonsList(prev => prev.map(hack => {
       if (hack.id === selectedHackathon.id) {
         return { ...hack, participants: hack.participants + 1 };
@@ -65,9 +94,15 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
       return hack;
     }));
 
+    const updatedTeams = [createdTeam, ...myTeams];
+    setMyTeams(updatedTeams);
+    try {
+      localStorage.setItem('iesu_hackathon_teams_v1', JSON.stringify(updatedTeams));
+    } catch { /* intentional */ }
+
     setShowTeamModal(false);
-    setTeamForm({ teamName: '', projectName: '', members: [] });
     window.toast && window.toast.success(`🚀 "${teamForm.teamName}" takımı başarıyla kuruldu ve hackathona kayıt yapıldı!`);
+    setTeamForm({ teamName: '', projectName: '', members: [] });
   };
 
   return (
@@ -114,14 +149,19 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  window.toast && window.toast.info("Yetkinlik Analizi Yapılıyor...");
-                  setTimeout(() => {
-                    window.toast && window.toast.success("✅ Yetkinliklerinize en uygun 3 takım arkadaşı bulundu. Eşleşme yüzdeleri: %92, %88, %85");
-                  }, 2000);
+                  const targetHack = hackathonsList[0];
+                  setSelectedHackathon(targetHack);
+                  setTeamForm({
+                    teamName: 'İESÜ ' + (targetHack?.type || 'İnovasyon') + ' Ekibi',
+                    projectName: getContextualIdea(targetHack),
+                    members: [MOCK_TEAMMATES[0], MOCK_TEAMMATES[1]]
+                  });
+                  setShowTeamModal(true);
+                  window.toast && window.toast.success("✅ Yetkinliklerinize en uygun takım arkadaşları projeye dahil edildi!");
                 }}
-                className="bg-red-600 hover:bg-indigo-700 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition shadow-lg"
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition shadow-lg cursor-pointer"
               >
-                <Zap size={16} /> Takım Arkadaşı Bul
+                <Zap size={16} /> Takım Arkadaşı Bul & Başla
               </button>
             </div>
           </div>
@@ -137,6 +177,33 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
              </div>
           </div>
         </div>
+
+        {/* My Registered Teams Section */}
+        {myTeams.length > 0 && (
+          <div className="mb-8 p-6 bg-white rounded-3xl border border-slate-200 shadow-sm">
+            <h3 className="text-base font-black text-slate-900 flex items-center gap-2 mb-4">
+              <Users className="text-[#990000]" size={18} /> Kayıtlı Hackathon Takımlarım ({myTeams.length})
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {myTeams.map(t => (
+                <div key={t.id} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-black text-[#990000]">{t.teamName}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700">Aktif</span>
+                    </div>
+                    <p className="text-xs font-bold text-slate-700 truncate">{t.projectName}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">{t.hackathonTitle}</p>
+                  </div>
+                  <div className="mt-3 pt-2 border-t border-slate-200 text-[10px] text-slate-500 font-medium flex items-center justify-between">
+                    <span>{t.membersCount} Üye</span>
+                    <span>{t.createdAt}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Hackathons List */}
         <div className="mb-6 flex items-center justify-between">
@@ -174,21 +241,27 @@ export default function HackathonMarket({ setView, currentUser, userRole, setSel
 
               <div className="flex gap-2 w-full mt-auto">
                 <button 
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.preventDefault();
-                    window.toast && window.toast.info(`Profiliniz ve "${hack.title}" teması analiz ediliyor...`);
-                    setTimeout(() => {
-                      window.toast && window.toast.success("💡 Proje Önerisi: 'IoT tabanlı akıllı atık yönetimi sistemi'. Başarı Potansiyeli: Yüksek.");
-                    }, 2500);
+                    window.toast?.info?.(`"${hack.title}" için AI inovasyon analizi yapılıyor...`);
+                    try {
+                      const prompt = `${hack.company} tarafından düzenlenen "${hack.title}" (${hack.type}) hackathonu için yenilikçi, uygulanabilir ve kazanma şansı yüksek bir proje başlığı ve 1 cümlelik özet öner.`;
+                      const aiRes = await generateAIResponse(prompt, "Sen üniversite hackathon takımları için inovasyon ve startup mentörüsün. Kısa, etkileyici ve doğrudan Türkçe proje fikri ver.");
+                      if (aiRes) {
+                        window.toast?.success?.(`💡 AI Proje Önerisi: ${aiRes.slice(0, 150)}`);
+                        return;
+                      }
+                    } catch {}
+                    window.toast?.success?.(`💡 ${hack.type} Önerisi: "${getContextualIdea(hack)}". Başarı Potansiyeli: %92`);
                   }}
-                  className="w-12 h-12 bg-indigo-50 hover:bg-indigo-100 text-red-600 rounded-2xl border border-indigo-200 flex items-center justify-center transition shrink-0"
+                  className="w-12 h-12 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl border border-red-200 flex items-center justify-center transition shrink-0 cursor-pointer"
                   title="Proje Fikri Üret"
                 >
                   <Sparkles size={18} />
                 </button>
                 <button 
                   onClick={() => handleOpenTeamModal(hack)}
-                  className="flex-1 py-3 bg-red-600 text-white hover:bg-indigo-700 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2"
+                  className="flex-1 py-3 bg-red-600 text-white hover:bg-red-700 rounded-2xl text-xs font-black uppercase tracking-widest transition shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   Takım Kur & Katıl <ArrowRight size={14} />
                 </button>

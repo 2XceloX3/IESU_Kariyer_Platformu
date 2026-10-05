@@ -133,7 +133,7 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
 
       <main className="flex-1 w-full max-w-[1200px] mx-auto p-4 lg:py-8">
         <AIMatchmaker 
-          alumniList={MOCK_MENTORS} 
+          alumniList={combinedMentors} 
           setView={setView} 
           setSelectedUserId={setSelectedUserId} 
           currentUser={currentUser} 
@@ -155,10 +155,18 @@ export default function MentorMatch({ setView, currentUser, userRole, setSelecte
             <button 
               onClick={(e) => {
                 e.preventDefault();
-                window.toast && window.toast.info("Öğrenme stiliniz ve kariyer hedefleriniz analiz ediliyor...");
-                setTimeout(() => {
-                  window.toast && window.toast.success("✅ Eşleşme: Kariyer hedeflerinize %95 uyumlu 2 mentör bulundu.");
-                }, 2500);
+                const userDept = (currentUser?.department || '').toLowerCase();
+                const candidate = combinedMentors.find(m => 
+                  m.tags.some(t => userDept.includes(t.toLowerCase())) ||
+                  m.bio.toLowerCase().includes('yazılım') ||
+                  m.role.toLowerCase().includes('engineer')
+                );
+                if (candidate && candidate.tags && candidate.tags[0]) {
+                  setSelectedTag(candidate.tags[0]);
+                  window.toast?.success?.(`🎯 Hedeflerinize en uyumlu mentörler filtrelendi: "${candidate.tags[0]}"`);
+                } else {
+                  window.toast?.info?.("Tüm mentör profilleri ilgi alanlarınıza göre başarıyla sıralandı.");
+                }
               }}
               className="hidden sm:flex items-center gap-2 bg-[#990000] hover:bg-red-800 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-xs transition-all shrink-0 cursor-pointer"
             >
