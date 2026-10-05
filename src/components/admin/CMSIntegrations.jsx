@@ -51,7 +51,7 @@ export default function CMSIntegrations() {
 
   const handleAlumniSync = async () => {
     setAlumniLoading(true);
-    addLog('Mezun Derneği API ile bağlantı kuruluyor...', 'info');
+    addLog('İESÜ Mezunlar Portalı API ile bağlantı kuruluyor...', 'info');
     
     try {
       const data = await syncAlumniData();

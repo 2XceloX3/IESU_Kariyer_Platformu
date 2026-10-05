@@ -403,7 +403,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           </div>
           <div className="mt-6 p-4 bg-gray-50 rounded-xl">
             <p className="text-xs text-gray-500 font-medium leading-relaxed">
-              Öğrenci aktiflik oranı <b>%{totalStudents > 0 ? (activeStudents / totalStudents * 100).toFixed(1) : '80.0'}</b> seviyesinde. Mezun derneği kampanyalarıyla mezun katılımını artırabilirsiniz.
+              Öğrenci aktiflik oranı <b>%{totalStudents > 0 ? (activeStudents / totalStudents * 100).toFixed(1) : '80.0'}</b> seviyesinde. İESÜ Mezunlar Portalı kampanyalarıyla mezun katılımını artırabilirsiniz.
             </p>
           </div>
         </div>

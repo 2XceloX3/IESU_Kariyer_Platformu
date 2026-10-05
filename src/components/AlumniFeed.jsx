@@ -77,6 +77,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
+  const EMPTY_ARRAY = useMemo(() => [], []);
 
   const allFeedItems = useMemo(() => {
     return combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
@@ -449,7 +450,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             ) : (
               <>
                 {filteredFeedItems.slice(0, visibleFeedCount).map(post => (
-                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || []} alumni={alumni || []} setPosts={setPosts} />
+                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} />
                 ))}
 
                 {visibleFeedCount < filteredFeedItems.length && (

@@ -140,19 +140,15 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
       setCvData(prev => {
         const newData = { ...prev };
         
-        // Profesyonel ATS Optimizasyonu: Sektör standartlarına göre eksik anahtar kelimeleri ekle
+        // Profesyonel ATS Optimizasyonu: Sektör standartlarına göre anahtar kelimeleri zenginleştir
         if (!newData.skills) newData.skills = [];
-        const topATSKeywords = ["Agile Methodologies", "Data Analysis", "Project Management", "Problem Solving"];
+        const topATSKeywords = ["Agile Methodologies", "Data Analysis", "Project Management", "Problem Solving", "Cross-Functional Collaboration"];
         newData.skills = [...new Set([...newData.skills, ...topATSKeywords])];
         
-        // Deneyim açıklamalarını "Action Verb" formatına çevir (Etki odaklı)
-        if (newData.experience && newData.experience.length > 0) {
-          newData.experience[0].desc += ' [ATS Optimizasyonu: Performans metrikleri ve eylem fiilleri vurgulandı.]';
+        // Özet boşsa ATS uyumlu kurumsal bir taslak sun
+        if (!newData.summary || newData.summary.trim() === '') {
+          newData.summary = 'Sonuç odaklı, analitik düşünme yetkinliğine sahip ve takım çalışmasına yatkın kariyer hedefi doğrultusunda değer üretmeye odaklı aday.';
         }
-        
-        // Özeti ATS sistemleri için daha kurumsal bir yapıya büründür
-        if (!newData.summary) newData.summary = '';
-        newData.summary += ' (Kariyer profiliniz, sektördeki İK sistemlerinden (ATS) en yüksek eşleşme skorunu alacak şekilde profesyonel olarak optimize edilmiştir.)';
 
         return newData;
       });
@@ -186,7 +182,11 @@ export default function AICVBuilder({ currentUser, userRole, setView, setSelecte
     
     try {
       const generated = await generateAIResponse(prompt, "Sadece istenen özeti dön. Ekstra giriş veya çıkış cümlesi kurma.");
-      if (isMounted.current) {
+      if (typeof generated === 'string' && (generated.includes('ulaşılamıyor') || generated.includes('yapılandırılmadı'))) {
+        window.toast && window.toast.error(generated);
+        return;
+      }
+      if (isMounted.current && generated) {
         setCvData(prev => ({ ...prev, summary: generated }));
       }
     } catch (error) {

@@ -15,8 +15,8 @@ export const SYNCABLE_SLICES = [
   { key: 'newsletterSubscribers', label: 'E-Bülten Aboneleri' },
   { key: 'staffList', label: 'Personel Listesi' },
   { key: 'adminMessages', label: 'Firma İletişim Havuzu' },
-  { key: 'alumniAssocApplications', label: 'Mezun Derneği Başvuruları' },
-  { key: 'alumniAssocBoard', label: 'Mezun Derneği Yönetimi' },
+  { key: 'alumniAssocApplications', label: 'İESÜ Mezunlar Portalı Başvuruları' },
+  { key: 'alumniAssocBoard', label: 'İESÜ Mezunlar Ağı Yönetimi' },
   { key: 'institutionalStatsData', label: 'Kurumsal İstatistikler' },
 ];
 

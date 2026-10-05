@@ -288,23 +288,28 @@ export default function CMSDataPoolExport() {
     window.toast && window.toast.success("Çağrı sorusu kaldırıldı.");
   };
 
-  // UTF-8 BOM CSV / Excel Export Engine
+  // UTF-8 BOM CSV / Excel Export Engine with KVKK Masking & Security Shield
   const exportToExcel = (dataArray, filename) => {
     if (!dataArray || dataArray.length === 0) {
       window.toast && window.toast.error("Dışa aktarılacak veri bulunamadı.");
       return;
     }
 
-    const headers = Object.keys(dataArray[0]);
+    const sensitiveKeys = new Set(['password', 'pass', 'token', 'secret', 'hash']);
+    const headers = Object.keys(dataArray[0]).filter(k => !sensitiveKeys.has(k.toLowerCase()));
     const csvRows = [];
     
     // Add Headers
     csvRows.push(headers.join(';'));
 
-    // Add Rows
+    // Add Rows with KVKK TC Masking
     for (const row of dataArray) {
       const values = headers.map(header => {
-        const val = row[header] === null || row[header] === undefined ? '' : row[header];
+        let val = row[header] === null || row[header] === undefined ? '' : row[header];
+        const lowerH = header.toLowerCase();
+        if ((lowerH.includes('tc') || lowerH.includes('tckimlik')) && typeof val === 'string' && val.length === 11) {
+          val = val.slice(0, 4) + '*****' + val.slice(-2);
+        }
         const escaped = ('' + val).replace(/"/g, '""');
         return `"${escaped}"`;
       });
@@ -474,7 +479,7 @@ export default function CMSDataPoolExport() {
             subTab === 'alumni_assoc' ? 'bg-rose-800 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
-          <GraduationCap size={15} /> Mezun Derneği Başvuruları ({alumniAssocApplications.length})
+          <GraduationCap size={15} /> İESÜ Mezunlar Birliği Başvuruları ({alumniAssocApplications.length})
         </button>
 
         <button
@@ -1673,7 +1678,7 @@ export default function CMSDataPoolExport() {
           </div>
         )}
 
-        {/* SUB-PANEL: MEZUN DERNEĞİ BAŞVURULARI HAVUZU */}
+        {/* SUB-PANEL: İESÜ MEZUNLAR BİRLİĞİ BAŞVURULARI HAVUZU */}
         {subTab === 'alumni_assoc' && (
           <div className="space-y-5">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
@@ -1682,10 +1687,10 @@ export default function CMSDataPoolExport() {
                 <input type="text" placeholder="Ad, e-posta veya bölüm ara..." value={search} onChange={e => setSearch(e.target.value)} className="w-full bg-transparent text-xs font-bold text-slate-800 focus:outline-none" />
               </div>
               <button 
-                onClick={() => exportToExcel(alumniAssocApplications, 'IESU_Mezun_Dernegi_Basvurulari')}
+                onClick={() => exportToExcel(alumniAssocApplications, 'IESU_Mezunlar_Birligi_Basvurulari')}
                 className="px-6 py-3 bg-gradient-to-r from-red-800 to-rose-900 hover:from-red-900 hover:to-rose-950 text-white font-black text-xs rounded-2xl transition shadow-lg flex items-center gap-2 shrink-0 cursor-pointer"
               >
-                <Download size={16} /> Dernek Başvuruları Excel İndir
+                <Download size={16} /> Başvuruları Excel Olarak İndir
               </button>
             </div>
 
@@ -1704,7 +1709,7 @@ export default function CMSDataPoolExport() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-900">
                   {alumniAssocApplications.filter(a => (a.name||'').toLowerCase().includes(search.toLowerCase()) || (a.department||'').toLowerCase().includes(search.toLowerCase())).map(a => (
-                    <tr key={a.id} onClick={() => setSelectedGenericItem({ type: 'Mezun Derneği Başvurusu', data: a })} className="hover:bg-red-50/50 transition cursor-pointer group">
+                    <tr key={a.id} onClick={() => setSelectedGenericItem({ type: 'İESÜ Mezunlar Birliği Başvurusu', data: a })} className="hover:bg-red-50/50 transition cursor-pointer group">
                       <td className="p-3.5 font-mono text-[#990000] font-black">{a.id}</td>
                       <td className="p-3.5 font-bold group-hover:text-[#990000] flex items-center gap-1.5">{a.name} <ArrowUpRight size={13} className="opacity-0 group-hover:opacity-100 transition text-[#990000]"/></td>
                       <td className="p-3.5 font-bold text-red-900">{a.type}</td>

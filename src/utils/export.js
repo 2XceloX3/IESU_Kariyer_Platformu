@@ -9,16 +9,21 @@ export const exportToCSV = (data, filename) => {
   const validRows = data.filter(row => row && typeof row === 'object');
   if (!validRows.length) return;
 
-  const headers = Object.keys(validRows[0]);
+  const sensitiveKeys = new Set(['password', 'pass', 'token', 'secret', 'hash']);
+  const headers = Object.keys(validRows[0]).filter(k => !sensitiveKeys.has(k.toLowerCase()));
   const csvRows = [];
   
   // Headers
   csvRows.push(headers.join(','));
   
-  // Rows
+  // Rows with KVKK TC Masking
   for (const row of validRows) {
     const values = headers.map(header => {
-      const val = row[header];
+      let val = row[header];
+      const lowerH = header.toLowerCase();
+      if ((lowerH.includes('tc') || lowerH.includes('tckimlik')) && typeof val === 'string' && val.length === 11) {
+        val = val.slice(0, 4) + '*****' + val.slice(-2);
+      }
       const escaped = (typeof val === 'symbol' ? val.toString() : String(val ?? '')).replace(/"/g, '""');
       return `"${escaped}"`;
     });

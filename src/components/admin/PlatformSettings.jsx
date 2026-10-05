@@ -89,8 +89,8 @@ const PlatformSettings = ({
             />
 
             <Toggle 
-              label="Mezun Derneği Üyelik & Ekip Başvuru Dönemi"
-              description="Mezun Derneği üyelik ve yönetim ekibi başvurularını aktif/pasif eder. Kapalı olduğunda başvuru formu erişime kapanır."
+              label="İESÜ Mezunlar Birliği Üyelik & Ekip Başvuru Dönemi"
+              description="İESÜ Mezunlar Portalı üyelik ve yönetim ekibi başvurularını aktif/pasif eder. Kapalı olduğunda başvuru formu erişime kapanır."
               icon={Users}
               enabled={featureAlumniAssocToggle !== false}
               onChange={() => setFeatureAlumniAssocToggle && setFeatureAlumniAssocToggle(!featureAlumniAssocToggle)}

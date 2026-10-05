@@ -15,7 +15,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
         (alumniAssocApplications || []).map(a => a.id === appId ? { ...a, status: newStatus } : a)
       );
       if (window.toast?.success) window.toast.success(`Başvuru durumu '${newStatus}' olarak güncellendi.`);
-      logAction?.(currentUser?.name || 'Süper Admin', `Mezun Derneği Başvurusu: ${newStatus} (ID: ${appId})`, 'Mezun Derneği');
+      logAction?.(currentUser?.name || 'Kariyer Geliştirme Koordinatörlüğü', `İESÜ Mezunlar Portalı Başvurusu: ${newStatus} (ID: ${appId})`, 'İESÜ Mezunlar Portalı');
     }
   };
 
