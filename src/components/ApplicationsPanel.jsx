@@ -1,4 +1,5 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
+import { auth } from '../utils/firebase';
 import useAppStore from '../store/useAppStore';
 import eventBus from '../brain/eventBus';
 import {  Briefcase, CheckCircle2, Clock, XCircle, ChevronRight, UserCircle2 , ChevronLeft, Home, Compass, Users, MessageCircle, Bell, Search, Globe } from 'lucide-react';
@@ -75,60 +76,58 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
   // If student: show their applications
   // If company: show applications to their jobs
 
-  const myApplications = useMemo(() => {
-    if (effectiveRole === 'student' || effectiveRole === 'alumni') {
-      const userApps = (applications || []).filter(app => 
-        (effectiveCurrentUser?.id && app.applicantId === effectiveCurrentUser.id) || 
-        (effectiveCurrentUser?.id && app.userId === effectiveCurrentUser.id) || 
-        (effectiveCurrentUser?.name && app.applicantName === effectiveCurrentUser.name) ||
-        (effectiveCurrentUser?.email && app.applicantEmail === effectiveCurrentUser.email)
-      );
-      if (userApps.length > 0) return userApps;
-      return [
-        {
-          id: 'app_demo_1',
-          jobTitle: 'Aday Mühendis / Yazılım Geliştirici Stajyeri',
-          company: 'Aselsan',
-          type: 'Zorunlu Staj',
-          date: '02 Ağustos 2026',
-          status: 'Mülakat',
-          stage: 'Teknik Değerlendirme & Mülakat',
-          notes: 'Teknik mülakat tarihi 14 Ağustos 11:00 olarak belirlendi. Görüşme bağlantısı e-posta ile iletildi.'
-        },
-        {
-          id: 'app_demo_2',
-          jobTitle: 'Frontend Developer & UI Mühendisi',
-          company: 'Trendyol Tech',
-          type: 'Uzun Dönem Staj',
-          date: '28 Temmuz 2026',
-          status: 'İnceleniyor',
-          stage: 'İK & Portfolyo İnceleme',
-          notes: 'CV ve portfolyonuz İK yetkilisi tarafından inceleniyor.'
-        },
-        {
-          id: 'app_demo_3',
-          jobTitle: 'Veri Analitiği ve İş Zekası Asistanı',
-          company: 'Turkcell',
-          type: 'Yarı Zamanlı',
-          date: '15 Temmuz 2026',
-          status: 'Onaylandı',
-          stage: 'Kabul Edildi',
-          notes: 'Tebrikler! Staj kabul mektubunuz ve evrak listesi kayıtlı e-postanıza gönderilmiştir.'
+  // Load student/company applications from Firestore (no app_demo_* fallback)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const uid = auth?.currentUser?.uid || effectiveCurrentUser?.uid || effectiveCurrentUser?.id;
+      if (!uid) return;
+      try {
+        const mod = await import('../services/jobsApplicationsFs');
+        let remote = [];
+        if (effectiveRole === 'student' || effectiveRole === 'alumni') {
+          remote = await mod.fetchApplicationsForApplicant(uid);
+        } else if (effectiveRole === 'company' || effectiveRole === 'employer') {
+          remote = await mod.fetchApplicationsForCompany(uid);
+        } else {
+          return;
         }
-      ];
+        if (cancelled || !remote.length) return;
+        setApplications(prev => {
+          const map = new Map((prev || []).map(a => [a.id, a]));
+          remote.forEach(a => map.set(a.id, { ...map.get(a.id), ...a }));
+          return [...map.values()];
+        });
+      } catch (e) {
+        console.warn('ApplicationsPanel FS load failed', e?.message);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [effectiveRole, effectiveCurrentUser?.id, effectiveCurrentUser?.uid, setApplications]);
+
+  const myApplications = useMemo(() => {
+    const uid = auth?.currentUser?.uid || effectiveCurrentUser?.uid || effectiveCurrentUser?.id;
+    if (effectiveRole === 'student' || effectiveRole === 'alumni') {
+      return (applications || []).filter(app =>
+        uid && (app.applicantId === uid || app.userId === uid)
+      );
     }
-    if (userRole === 'admin' || effectiveCurrentUser?.role === 'admin') {
+    if (userRole === 'admin' || effectiveCurrentUser?.role === 'admin' || effectiveRole === 'admin') {
       return applications || [];
     }
-    const myCompanyName = (effectiveCurrentUser?.companyName || effectiveCurrentUser?.name || '').toLowerCase();
-    return (applications || []).filter(app => {
-      const appCompany = (app.company || '').toLowerCase();
-      return myCompanyName && appCompany === myCompanyName;
-    });
+    // Company: companyId only (F-ATS-008 — no name filter)
+    return (applications || []).filter(app => uid && app.companyId === uid);
   }, [applications, effectiveRole, userRole, effectiveCurrentUser]);
 
-  const handleStatusChange = (appId, newStatus) => {
-    setApplications((applications || []).map(app => 
+  const handleStatusChange = async (appId, newStatus) => {
+    try {
+      const { updateApplicationStatusFs } = await import('../services/jobsApplicationsFs');
+      await updateApplicationStatusFs(appId, newStatus);
+    } catch (e) {
+      window.toast?.error?.(e?.message || 'Durum güncellenemedi');
+      return;
+    }
+    setApplications((applications || []).map(app =>
       app.id === appId ? { ...app, status: newStatus } : app
     ));
 

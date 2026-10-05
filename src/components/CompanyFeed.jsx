@@ -86,126 +86,40 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   const [atsStatusFilter, setAtsStatusFilter] = useState('Tümü');
   const [selectedCandidateCvModal, setSelectedCandidateCvModal] = useState(null);
 
-  const [companyCandidateApps, setCompanyCandidateApps] = useState([
-    {
-      id: 'APP-CELIL-001',
-      applicantName: 'Celil Başaran',
-      applicantDept: 'Uluslararası Ticaret ve Finansman & Havacılık Yönetimi (ÇAP)',
-      jobTitle: 'Saha Operasyonu & Proje Yönetimi Uzmanı',
-      status: 'İletişime Geçildi',
-      applicantPhone: '0543-187-59-90',
-      applicantEmail: 'Celil.basaran23@gmail.com',
-      linkedin: 'Linkedin : Celilbasaran',
-      cvType: 'KGM Akredite İESÜ Dijital CV',
-      coverLetter: 'Uluslararası Ticaret ve Finansman bölümünden mezun oldum. İstanbul Esenyurt Üniversitesi Havacılık Yönetimi çift ana dal programında son sınıf öğrencisiyim. Zorunlu derslerimi tamamladığım için tam zamanlı çalışmaya uygunum. Yaklaşık 9,5 yıllık iş tecrübem boyunca saha operasyonları, ekip koordinasyonu ve kriz yönetimi alanlarında deneyim kazandım.',
-      experiences: [
-        { role: 'Stajyer', company: 'İstanbul Büyükşehir Belediyesi', date: '01.02.2013 – 01.02.2017' },
-        { role: 'Aşçı Yardımcısı', company: 'İSPER A.Ş.', date: '01.02.2017-22.09.2022' },
-        { role: 'Stajyer', company: 'Ziraat Bankası', date: '19.08.2024-16.09.2024' },
-        { role: 'Kütüphane Görevlisi', company: 'T.C. Gençlik ve Spor Bakanlığı', date: '01.02.2026-01.06.2026' }
-      ],
-      projects: [
-        { title: 'Fakülte Öğrenci Temsilciliği ve Üniversite Öğrenci Temsilciliği', date: '2023 - 2026' },
-        { title: 'Gençlik ve Spor Bakanlığı Üniversite Öğrenci Temsilciliği', date: '2024 - 2026' },
-        { title: 'Kalite Koordinatörlüğü Fakülte Öğrenci Temsilciliği', date: '2025 - 2026' },
-        { title: 'Kalite Koordinatörlüğü Üniversite Öğrenci Temsilciliği', date: '2025 - 2026' },
-        { title: 'Genç Yeşilay Kulüp Başkanlığı', date: '2025 - 2026' },
-        { title: 'Güneydoğu Anadolu İhracatçı Birlikleri Eğitimi', date: '09.07.2024', desc: 'Turquality® Dünyanın İlk ve Tek Devlet Destekli Markalaşma Programı / Excel\'de Kısa Yollar ve Pratik Uygulamalar' },
-        { title: 'TÜBİTAK 2209-A Araştırma Projesi Üniversite Öğrencileri Araştırma Projesi', date: '2024 -2024', subTitle: '"Dijital Dalgada Savrulanlar: Z Kuşağının İmtihanı"', desc: 'Proje ekibinde görev aldım. Araştırma ve raporlama süreçlerine katkı sağladım.' },
-        { title: 'STAR Akreditasyon', date: '2026', desc: 'İşletme ve Yönetimi Bilimleri Fakültesi Öğrenci Temsilcisi olarak görev aldım' },
-        { title: 'Medek Akreditasyon', desc: 'Kariyer Geliştirme Merkezi Fakülte Öğrenci Temsilcisi olarak görev aldım' },
-        { title: 'MayFest 26 Bahar Festivali', date: '2026', desc: 'Mayfest 26 Üniversite Öğrenci Temsilcisi olarak öğrenci organizasyon katılımı ve yönetimi süreçlerinde görev aldım' }
-      ],
-      skillsTech: ['MS Office', 'Excel', 'Yapay zekâ araçları (ChatGPT, Claude, Gemini, Codex)', 'Google Workspace'],
-      skillsPersonal: ['Analitik düşünme', 'Problem çözme', 'Takım çalışması', 'Organizasyon', 'Zaman yönetimi', 'Kriz yönetimi'],
-      interests: ['Gitar', 'Yapay zekâ teknolojileri', 'Dijital teknolojiler', 'Havacılık', 'Uluslararası ticaret ve lojistik', 'Kişisel gelişim', 'Dövüş Sporları'],
-      trainings: ['AFAD Temel Afet Farkındalık Eğitimi', 'AFAD Gönüllülük Eğitimi', 'Temel İlk Yardım Eğitimi', 'Kariyer ve Liderlik Seminerleri'],
-      language: 'İngilizce — Temel Seviye (A2)'
-    },
-    {
-      id: 'APP-DEMO-002',
-      applicantName: 'Zeynep Kaya',
-      applicantDept: 'Bilgisayar Mühendisliği & Yazılım Müh. (ÇAP)',
-      jobTitle: 'Veri Analisti Stajyeri',
-      status: 'Kabul Edildi',
-      applicantPhone: '0543 892 10 33',
-      applicantEmail: 'zeynep.kaya@ogrenci.esenyurt.edu.tr',
-      linkedin: 'Linkedin : zeynep-kaya-dev',
-      cvType: 'KGM Akredite İESÜ Dijital CV',
-      coverLetter: 'Python ve SQL ile veri analizi ve raporlama projeleri gerçekleştirdim. Makine öğrenimi algoritmaları ve veri görselleştirme araçları ile kurumsal staj hedefliyorum.',
-      experiences: [
-        { role: 'Veri Analitiği Stajyeri', company: 'ASELSAN Ar-Ge Merkezi', date: '01.06.2025 - 01.09.2025' },
-        { role: 'Yazılım Destek Asistanı', company: 'İESÜ Bilgi İşlem Daire Başk.', date: '15.10.2024 - 15.05.2025' }
-      ],
-      projects: [
-        { title: 'TÜBİTAK 2209-A "Büyük Veri İle Kampüs Enerji Verimliliği Modeli"', date: '2025', desc: 'Veri madenciliği metodolojisi ile kampüs enerji tüketim trend analizi yapıldı.' },
-        { title: 'İESÜ Siber Güvenlik ve Veri Kulübü Başkan Yardımcılığı', date: '2024 - 2026', desc: 'Veri analitiği workshop serisi koordine edildi.' }
-      ],
-      skillsTech: ['Python', 'SQL & PostgreSQL', 'Power BI & Tableau', 'Pandas & NumPy', 'Git & GitHub'],
-      skillsPersonal: ['Veri Odaklı Düşünme', 'Sistem Analizi', 'Sunum & Raporlama', 'Takım Çalışması'],
-      interests: ['Büyük Veri Teknolojileri', 'Yapay Zekâ Analitiği', 'Satranç', 'Veri Görselleştirme'],
-      trainings: ['İESÜ Veri Bilimi Akademisi Sertifikası', 'Google Data Analytics Sertifikası', 'AFAD Afet Gönüllüsü'],
-      language: 'İngilizce — İleri Seviye (B2)'
-    },
-    {
-      id: 'APP-DEMO-003',
-      applicantName: 'Mert Yıldız',
-      applicantDept: 'Endüstri Mühendisliği',
-      jobTitle: 'Proje Yönetim Asistanı',
-      status: 'İletişime Geçildi',
-      applicantPhone: '0555 123 45 67',
-      applicantEmail: 'mert.yildiz@ogrenci.esenyurt.edu.tr',
-      linkedin: 'Linkedin : mertyildiz-ie',
-      cvType: 'KGM Akredite İESÜ Dijital CV',
-      coverLetter: 'Süreç optimizasyonu ve Agile metodolojileri üzerine çalışmalar yapıyorum. Üretim ve hizmet sektöründe verimlilik projelerine katkı sunmak istiyorum.',
-      experiences: [
-        { role: 'Üretim Planlama Stajyeri', company: 'Arçelik A.Ş.', date: '01.07.2025 - 31.08.2025' },
-        { role: 'Kalite Güvence Görevlisi', company: 'İESÜ Kalite Koordinatörlüğü', date: '2024 - 2026' }
-      ],
-      projects: [
-        { title: 'Yalın Üretim ve Kaizen Süreç İyileştirme Projesi', date: '2025', desc: 'Montaj hattında %14 verimlilik artışı sağlayan simülasyon çalışması yapıldı.' },
-        { title: 'MÜDEK Akreditasyon Komitesi Öğrenci Üyesi', date: '2025 - 2026', desc: 'Bölüm müfredat ve çıktı değerlendirme süreçlerinde görev alındı.' }
-      ],
-      skillsTech: ['MS Project & Jira', 'SAP ERP Üretim Modülü', 'ARENA Simülasyon', 'Lean & Six Sigma'],
-      skillsPersonal: ['Süreç Optimizasyonu', 'Liderlik', 'Zaman Yönetimi', 'Probleme Hızlı Müdahale'],
-      interests: ['Tedarik Zinciri Yönetimi', 'Endüstri 4.0', 'Doğa Sporları', 'Yüzme'],
-      trainings: ['Yalın Altı Sigma Yeşil Kuşak Eğitimi', 'KGM Proje Yönetimi Sertifikası'],
-      language: 'İngilizce — Orta-İleri Seviye (B2)'
-    }
-  ]);
+  const [companyCandidateApps, setCompanyCandidateApps] = useState([]); // no demo/PII seed
 
   const allCandidateApps = React.useMemo(() => {
-    const storeApps = (applications || []).filter(a => {
-      if (!effectiveCurrentUser) return true;
-      return a.companyId === effectiveCurrentUser?.id || 
-             a.company === effectiveCurrentUser?.name || 
-             a.companyName === effectiveCurrentUser?.name ||
-             a.companyName === effectiveCurrentUser?.companyName ||
-             (effectiveCurrentUser?.companyName && a.company === effectiveCurrentUser?.companyName);
-    });
-    const formattedStoreApps = storeApps.map(a => ({
+    const uid = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null;
+    if (!uid) return [];
+    const storeApps = (applications || []).filter(a => a.companyId === uid);
+    return storeApps.map(a => ({
       id: a.id,
       applicantName: a.applicantName || a.name || 'Öğrenci Adayı',
       applicantDept: a.applicantDept || a.department || 'Bölüm Belirtilmemiş',
       jobTitle: a.jobTitle || 'Başvuru Yapılan Pozisyon',
       status: a.status || 'Beklemede',
-      applicantPhone: a.applicantPhone || '0555 000 0000',
-      applicantEmail: a.applicantEmail || a.email || '-',
+      applicantPhone: a.applicantPhone || null,
+      applicantEmail: a.applicantEmail || a.email || null,
       cvType: a.cvType || 'İESÜ Dijital CV',
-      coverLetter: a.coverLetter || 'Ön yazı belirtilmedi.'
+      coverLetter: a.coverLetter || null,
+      companyId: a.companyId,
     }));
-    return [...formattedStoreApps, ...companyCandidateApps];
-  }, [applications, effectiveCurrentUser, companyCandidateApps]);
+  }, [applications, effectiveCurrentUser]);
 
   const filteredCandidateApps = React.useMemo(() => {
     if (atsStatusFilter === 'Tümü') return allCandidateApps;
     return allCandidateApps.filter(a => a.status === atsStatusFilter);
   }, [allCandidateApps, atsStatusFilter]);
 
-  const updateCandidateStatus = (appId, newStatus) => {
-    setCompanyCandidateApps(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
+  const updateCandidateStatus = async (appId, newStatus) => {
     if (setApplications) {
       setApplications(prev => (prev || []).map(a => a.id === appId ? { ...a, status: newStatus } : a));
+    }
+    try {
+      const { updateApplicationStatusFs } = await import('../services/jobsApplicationsFs');
+      await updateApplicationStatusFs(appId, newStatus);
+    } catch (e) {
+      window.toast?.error?.(e?.message || 'Durum Firestore\'a yazılamadı');
     }
     const targetCandidate = allCandidateApps.find(a => a.id === appId);
     window.toast?.success?.(`Aday (${targetCandidate?.applicantName || 'Öğrenci'}) durumu "${newStatus}" olarak güncellendi.`);
@@ -219,7 +133,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
     e.preventDefault();
     const newApp = {
       id: 'CFA-' + Math.random().toString(36).substr(2, 9),
-      companyId: effectiveCurrentUser?.id || 'CMP-Unknown',
+      companyId: effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null,
       companyName: effectiveCurrentUser?.name || 'Firma Adı',
       status: 'Beklemede',
       appliedAt: new Date().toISOString(),
@@ -1240,17 +1154,17 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
             {/* Modal Body Container (A4 Printable Canvas Area) */}
             <div className="p-4 sm:p-8 overflow-y-auto flex-1 bg-slate-800/60 custom-scrollbar flex justify-center">
               
-              {/* ─── REALISTIC A4 SHEET CANVAS (210mm x 297mm Ratio - Celil Başaran Authentic Design) ─── */}
+              {/* ─── REALISTIC A4 SHEET CANVAS (210mm x 297mm Ratio - CV preview layout) ─── */}
               <div id="printable-a4-cv" className="w-full max-w-[210mm] bg-white text-slate-900 p-8 sm:p-10 shadow-2xl rounded-sm border border-slate-300 space-y-6 font-sans text-left relative min-h-[297mm]">
                 
-                {/* TOP NAME & CONTACT BAR (Celil Başaran Authentic Design - Contact Details Flush at Divider Line) */}
+                {/* TOP NAME & CONTACT BAR (CV preview layout - Contact Details Flush at Divider Line) */}
                 <div className="flex justify-between items-start border-b border-slate-300 pb-3 gap-4">
                   <div className="flex-1 flex flex-col justify-between min-h-[7rem]">
                     <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight pt-2">{selectedCandidateCvModal.applicantName}</h1>
                     <div className="flex items-center gap-4 text-xs font-semibold text-slate-700 flex-wrap pt-2">
                       <span>📱 {selectedCandidateCvModal.applicantPhone || '0543-187-59-90'}</span>
-                      <span>✉️ {selectedCandidateCvModal.applicantEmail || 'Celil.basaran23@gmail.com'}</span>
-                      <span>🔗 {selectedCandidateCvModal.linkedin || 'Linkedin : Celilbasaran'}</span>
+                      <span>✉️ {selectedCandidateCvModal.applicantEmail || '—'}</span>
+                      <span>🔗 {selectedCandidateCvModal.linkedin || '—'}</span>
                     </div>
                   </div>
 

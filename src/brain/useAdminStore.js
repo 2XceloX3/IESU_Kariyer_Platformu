@@ -27,56 +27,7 @@ import {
 } from '../data/mockClubsData';
 
 // Initial data pools
-const initialApplications = [
-  {
-    id: 'APP-101',
-    jobId: 'JOB-001',
-    jobTitle: 'Ulusal Staj Programı',
-    company: 'İESÜ Kariyer Geliştirme Koordinatörlüğü',
-    applicantId: 'STU-002',
-    applicantName: 'Zeynep Yılmaz',
-    applicantEmail: 'zeynep.y@esenyurt.edu.tr',
-    applicantPhone: '0532 111 2233',
-    applicantDept: 'Yazılım Mühendisliği',
-    coverLetter: 'Cumhurbaşkanlığı Ulusal Staj Programı kapsamında kamu ve savunma sanayii kurumlarında staj yapmak istiyorum.',
-    cvType: 'KGM Akredite İESÜ Dijital CV',
-    status: 'Beklemede',
-    companyContacted: false,
-    date: '11.09.2026'
-  },
-  {
-    id: 'APP-102',
-    jobId: 'JOB-002',
-    jobTitle: 'Frontend Developer Stajyeri',
-    company: 'Logo Yazılım',
-    applicantId: 'STU-003',
-    applicantName: 'Ahmet Kaya',
-    applicantEmail: 'ahmet.k@esenyurt.edu.tr',
-    applicantPhone: '0533 222 3344',
-    applicantDept: 'Bilgisayar Mühendisliği',
-    coverLetter: 'React ve modern web teknolojileri alanında geliştirdiğim projelerle değer üretmek istiyorum.',
-    cvType: 'İESÜ Kariyer Havuzundaki Yüklenmiş PDF CV',
-    status: 'Mülakat',
-    companyContacted: true,
-    date: '08.09.2026'
-  },
-  {
-    id: 'APP-103',
-    jobId: 'JOB-003',
-    jobTitle: 'Yapay Zeka & Veri Analitiği Stajyeri',
-    company: 'Trendyol',
-    applicantId: 'STU-004',
-    applicantName: 'Selin Öztürk',
-    applicantEmail: 'selin.o@esenyurt.edu.tr',
-    applicantPhone: '0536 555 6677',
-    applicantDept: 'Veri Bilimi ve Analitiği',
-    coverLetter: 'Python ve makine öğrenmesi algoritmaları üzerine staj deneyimi kazanmak istiyorum.',
-    cvType: 'KGM Akredite İESÜ Dijital CV',
-    status: 'Kabul Edildi',
-    companyContacted: true,
-    date: '05.09.2026'
-  }
-];
+const initialApplications = []; // F-ATS-010: no fake seed without companyId
 
 const initialStaffList = [
   {

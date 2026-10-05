@@ -136,7 +136,7 @@ Sunduğumuz Olanaklar:
     (window.toast?.success || console.log)("İlan Taslak Metni başarıyla oluşturuldu!");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError(null);
     if (!formData.title.trim() || !formData.location.trim() || !formData.description.trim()) {
       setError("Lütfen zorunlu alanları (İlan Başlığı, Lokasyon ve Açıklama) doldurun.");
@@ -176,6 +176,16 @@ Sunduğumuz Olanaklar:
 
     if (!newJob.companyId) {
       window.toast?.error?.('Firma kimliği (auth uid) olmadan ilan kaydedilemez.');
+      return;
+    }
+    // Prefer auth.uid as companyId (rules: create companyId == auth.uid)
+    const authUid = auth?.currentUser?.uid;
+    if (authUid) newJob.companyId = authUid;
+    try {
+      const { saveJobToFirestore } = await import('../services/jobsApplicationsFs');
+      await saveJobToFirestore(newJob);
+    } catch (e) {
+      window.toast?.error?.(e?.message || 'İlan Firestore\'a yazılamadı');
       return;
     }
     setJobs([newJob, ...(jobs || [])]);
@@ -815,7 +825,7 @@ Sunduğumuz Olanaklar:
               onClick={() => { 
                 const store = useAppStore.getState();
                 if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-                const compId = currentUser?.id || 'CMP-001';
+                const compId = currentUser?.id || currentUser?.uid || null;
                 if (setSelectedUserId) setSelectedUserId(compId); 
                 store.setSelectedUserId?.(compId);
                 if (setView) setView('user_profile'); 

@@ -1,7 +1,7 @@
 import { collection, addDoc, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../utils/firebase';
 import useAppStore from '../store/useAppStore';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink, Calendar, MapPin, Building2, Search, Briefcase, FileText, CheckCircle2, Download, Home, MessageCircle, Bell, Heart, X, Flame, Star, ArrowRight, Sparkles, Target, Users, TrendingUp, Clock, Crown, LayoutDashboard, ChevronRight, Scale } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -36,13 +36,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   );
 
   const branchTargetId = (
-    effectiveCurrentUser?.id ? effectiveCurrentUser.id :
-    isGuest ? null :
-    effectiveRole === 'student' ? 'STU-001' :
-    effectiveRole === 'alumni' ? 'ALU-001' :
-    effectiveRole === 'academic' ? 'ACAD-001' :
-    (effectiveRole === 'employer' || effectiveRole === 'company') ? 'CMP-001' :
-    (effectiveCurrentUser?.id || (currentUser?.uid || currentUser?.id || 'self'))
+    effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null
   );
 
   const requireLoginForApply = () => {
@@ -57,11 +51,11 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     setApplyModalJob(job);
   };
 
-  const branchName = effectiveCurrentUser?.name || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'Kullanıcı');
+  const branchName = effectiveCurrentUser?.name || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : (isGuest ? 'Misafir' : 'Kullanıcı'));
 
   const branchAvatar = effectiveCurrentUser?.avatar || (effectiveRole === 'admin' ? '/iesu-logo.svg' : '/iesu-logo.svg');
 
-  const branchDept = effectiveCurrentUser?.department || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Yazılım Mühendisliği');
+  const branchDept = effectiveCurrentUser?.department || (effectiveRole === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : (isGuest ? '' : ''));
 
   const setSelectedUserId = useAppStore(state => state.setSelectedUserId);
   const storeJobs = useAppStore(state => state.jobs);
@@ -88,21 +82,35 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
   const [showAnkaModal, setShowAnkaModal] = useState(false);
   const addNotification = (notif) => { setNotifications(prev => [notif, ...prev]); };
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { fetchJobsFromFirestore } = await import('../services/jobsApplicationsFs');
+        const remote = await fetchJobsFromFirestore();
+        if (cancelled || !Array.isArray(remote) || !remote.length) return;
+        // Prefer Firestore jobs in production; merge by id over store mocks
+        if (import.meta.env.PROD) {
+          setJobs?.(remote);
+        } else {
+          setJobs?.(prev => {
+            const map = new Map((prev || []).map(j => [j.id, j]));
+            remote.forEach(j => map.set(j.id, { ...map.get(j.id), ...j }));
+            return [...map.values()];
+          });
+        }
+      } catch (e) {
+        console.warn('Firestore jobs load failed', e?.message);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [setJobs]);
+
+
   const getJobMatchScore = (job) => {
-    if (!job) return 80;
-    const userDept = (effectiveCurrentUser?.department || effectiveCurrentUser?.dept || '').toLowerCase();
-    const userSkills = (effectiveCurrentUser?.skills || []).map(s => (typeof s === 'string' ? s : s.name || '').toLowerCase());
-    const jobText = `${job.title || ''} ${job.company || ''} ${(job.tags || []).join(' ')} ${job.type || ''}`.toLowerCase();
-    
-    let base = 72;
-    if (userDept && jobText.includes(userDept.slice(0, 5))) base += 14;
-    if (userSkills.length > 0) {
-      const hits = userSkills.filter(s => s && jobText.includes(s));
-      base += Math.min(12, hits.length * 6);
-    } else {
-      base += Math.abs(((job.id || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % 15));
-    }
-    return Math.min(98, Math.max(70, base));
+    if (typeof job?.matchScore === 'number') return job.matchScore;
+    if (typeof job?.match === 'number') return job.match;
+    return null; // no invented 76–84 scores
   };
   const getFeedView = () => {
     if (effectiveRole === 'admin') return 'admin';
@@ -126,16 +134,29 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     window.toast?.info?.("İlan reddedildi.");
   };
 
-  const handleToggleJobStatus = (jobId, currentStatus) => {
-    const newStatus = (currentStatus === 'Aktif' || !currentStatus) ? 'Pasif' : 'Aktif';
+  const handleToggleJobStatus = async (jobId, currentStatus) => {
+    const newStatus = currentStatus === 'Pasif' ? 'Aktif' : 'Pasif';
+    const uid = auth?.currentUser?.uid || effectiveCurrentUser?.id || effectiveCurrentUser?.uid;
+    const job = (jobs || []).find(j => j.id === jobId);
+    const canToggle = effectiveRole === 'admin' || (effectiveRole === 'company' && job && uid && job.companyId === uid);
+    if (!canToggle) {
+      window.toast?.error?.('Bu ilanı pasife alma yetkiniz yok.');
+      return;
+    }
+    try {
+      const { updateJobStatusFs } = await import('../services/jobsApplicationsFs');
+      await updateJobStatusFs(jobId, newStatus);
+    } catch (e) {
+      window.toast?.error?.(e?.message || 'İlan durumu güncellenemedi');
+      return;
+    }
     if (setJobs) {
       setJobs(prev => (prev || []).map(j => j.id === jobId ? { ...j, status: newStatus } : j));
     }
-    window.toast?.success?.(`İlan durumu "${newStatus}" olarak güncellendi.`);
   };
   if (isCreatingJob) return <JobCreator setView={() => setIsCreatingJob(false)} currentUser={effectiveCurrentUser} userRole={effectiveRole} jobs={jobs} setJobs={setJobs} addNotification={addNotification} />;
   
-  const handleCompleteApplication = (e) => {
+  const handleCompleteApplication = async (e) => {
     e.preventDefault();
     if (!applyModalJob) return;
     if (!requireLoginForApply()) return;
@@ -178,23 +199,22 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     
     
     
-    setApplications(prev => [...(prev || []), newApp]);
-    try {
-      if (!authUid) {
-        console.warn('Firestore başvuru atlandı: Firebase Auth oturumu yok (applicantId kuralları).');
-      } else {
-        setDoc(doc(db, 'applications', newApp.id), {
-          ...newApp,
-          applicantId: authUid,
-          createdAt: serverTimestamp(),
-          status: 'Onay Bekliyor',
-        }).catch(e => {
-          console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
-        });
-      }
-    } catch (e) {
-      console.warn('Firestore başvuru kaydı yapılamadı:', e.message);
+    if (!authUid) {
+      window.toast?.error?.('Başvuru için Firebase oturumu gerekli.');
+      return;
     }
+    try {
+      const { saveApplicationToFirestore } = await import('../services/jobsApplicationsFs');
+      await saveApplicationToFirestore({
+        ...newApp,
+        applicantId: authUid,
+        status: 'Onay Bekliyor',
+      });
+    } catch (e) {
+      window.toast?.error?.(e?.message || 'Başvuru kaydedilemedi');
+      return;
+    }
+    setApplications(prev => [...(prev || []), { ...newApp, applicantId: authUid, status: 'Onay Bekliyor' }]);
 
     try {
       eventBus.emit('application:status', { 
@@ -358,7 +378,7 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                   {unreadNotifCount > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>}
                 </div>
               </button>
-              <TopProfileMenu currentUser={currentUser || { name: 'Kullanici' }} userRole={effectiveRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="jobs" />
+              <TopProfileMenu currentUser={currentUser || { name: isGuest ? 'Misafir' : 'Kullanıcı' }} userRole={effectiveRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} currentView="jobs" />
             </div>
           ) : <div className="w-10"></div>}
         </div>
@@ -492,8 +512,10 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                               <p className="text-sm font-medium text-gray-700 flex items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-100"><Calendar size={15} className="text-amber-500 shrink-0"/> Son: {currentJob.deadline}</p>
                             </div>
                             <div className="w-full mb-5">
+                              {getJobMatchScore(currentJob) != null ? (<>
                               <div className="flex justify-between items-center mb-1"><span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Profil Eşleşme</span><span className={`text-sm font-black ${theme.matchText}`}>%{getJobMatchScore(currentJob)}</span></div>
                               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${getJobMatchScore(currentJob)}%`}}></div></div>
+                              </>) : null}
                             </div>
                             <div className="mt-auto flex justify-center gap-6">
                               <button onClick={()=>setSwipedJobs([...swipedJobs,currentJob.id])} className="w-16 h-16 rounded-full bg-white border-2 border-red-100 flex items-center justify-center text-red-500 hover:bg-red-50 hover:scale-110 transition-transform shadow-sm"><X size={28} strokeWidth={3} /></button>
@@ -532,12 +554,12 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
                                   <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                                   <span className="flex items-center gap-1 text-[12px] text-gray-500 font-medium"><Clock size={12} className="text-amber-500"/> Son: {job.deadline||'Belirtilmedi'}</span>
                                 </div>
-                                <div className="mt-3 flex items-center gap-2"><div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${matchScore}%`}}></div></div><span className={`text-[11px] font-black shrink-0 ${theme.matchText}`}>%{matchScore} eşleşme</span></div>
+                                {matchScore != null ? (<div className="mt-3 flex items-center gap-2"><div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${theme.matchBar} rounded-full`} style={{width:`${matchScore}%`}}></div></div><span className={`text-[11px] font-black shrink-0 ${theme.matchText}`}>%{matchScore} eşleşme</span></div>) : null}
                               </div>
                             </div>
                             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-50 gap-2 flex-wrap">
                               <button onClick={()=>setSelectedJob(job)} className={`text-[12px] font-bold text-gray-500 transition-colors flex items-center gap-1 ${theme.detailHover}`}>Detayları Gör <ChevronRight size={14} /></button>
-                              {effectiveRole === 'admin' ? (
+                              {(effectiveRole === 'admin' || (effectiveRole === 'company' && job.companyId && (job.companyId === (auth?.currentUser?.uid || effectiveCurrentUser?.id || effectiveCurrentUser?.uid)))) ? (
                                 <div className="flex items-center gap-2">
                                   <button onClick={() => setView('company_ats')} className="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-50 text-blue-900 border border-blue-200 hover:bg-blue-100 transition cursor-pointer flex items-center gap-1">
                                     <Briefcase size={13} /> ATS Adayları

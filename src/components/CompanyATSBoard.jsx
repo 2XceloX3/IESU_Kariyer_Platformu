@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Briefcase, Search, Plus, MoreHorizontal, ShieldCheck, 
   MessageSquare, FileText, Clock, X, Phone, Mail, GraduationCap, CheckCircle2,
@@ -21,122 +21,8 @@ const INITIAL_COLUMNS = [
 ];
 
 const INITIAL_APPLICANTS = {
-  'new': [
-    { 
-      id: 'app-1', 
-      name: 'Ahmet Yılmaz', 
-      role: 'Frontend Developer', 
-      uni: 'İstanbul Esenyurt Üniversitesi', 
-      dept: 'Bilgisayar Mühendisliği', 
-      gpa: '3.75',
-      date: 'Bugün', 
-      avatar: null, 
-      match: 94, 
-      coverLetter: 'React, Next.js ve Tailwind CSS ile kampüs içi ve freelance projeler geliştirdim. Firmanızın dinamik mühendislik ekibinde yer almak istiyorum.', 
-      email: 'ahmet.yilmaz@ogr.esenyurt.edu.tr', 
-      phone: '0532 111 2233',
-      experiences: [
-        { role: 'Stajyer Web Geliştirici', company: 'İESÜ BİDB', date: '2025 - 2026' }
-      ],
-      skills: ['React', 'JavaScript (ES6+)', 'Tailwind CSS', 'Next.js', 'Git']
-    },
-    { 
-      id: 'app-2', 
-      name: 'Ayşe Demir', 
-      role: 'UI/UX Tasarımcı', 
-      uni: 'İstanbul Esenyurt Üniversitesi', 
-      dept: 'Görsel İletişim Tasarımı', 
-      gpa: '3.82',
-      date: 'Dün', 
-      avatar: null, 
-      match: 89, 
-      coverLetter: 'Figma ile kullanıcı odaklı tasarım sistemleri ve interaktif prototipler geliştiriyorum. Tasarım ve ürün ekibinize katkı sağlayabilirim.', 
-      email: 'ayse.demir@ogr.esenyurt.edu.tr', 
-      phone: '0533 222 3344',
-      experiences: [
-        { role: 'UI/UX Stajyeri', company: 'Tasarım Ofisi', date: '2025' }
-      ],
-      skills: ['Figma', 'User Research', 'Design Systems', 'Prototyping', 'Adobe XD']
-    }
-  ],
-  'review': [
-    { 
-      id: 'app-3', 
-      name: 'Mehmet Can', 
-      role: 'Data Scientist', 
-      uni: 'İstanbul Esenyurt Üniversitesi', 
-      dept: 'Yazılım Mühendisliği', 
-      gpa: '3.68',
-      date: '2 gün önce', 
-      avatar: null, 
-      match: 86, 
-      coverLetter: 'Python, SQL ve Pandas ile veri madenciliği ve tahminleme modelleri üzerinde çalışıyorum. TÜBİTAK 2209-A projesi yürüttüm.', 
-      email: 'mehmet.can@ogr.esenyurt.edu.tr', 
-      phone: '0534 333 4455',
-      experiences: [
-        { role: 'Veri Analitiği Stajyeri', company: 'Teknopark Ar-Ge', date: '2025' }
-      ],
-      skills: ['Python', 'Pandas & NumPy', 'SQL', 'Scikit-Learn', 'Power BI']
-    }
-  ],
-  'interview': [
-    { 
-      id: 'app-4', 
-      name: 'Zeynep Kaya', 
-      role: 'Backend Engineer', 
-      uni: 'İstanbul Esenyurt Üniversitesi', 
-      dept: 'Bilgisayar Mühendisliği', 
-      gpa: '3.91',
-      date: 'Geçen hafta', 
-      avatar: null, 
-      match: 96, 
-      coverLetter: 'Node.js, PostgreSQL ve mikroservis mimarileri üzerine yoğunlaştım. Yüksek trafikli sistemlerde ölçeklenebilir backend çözümleri üretiyorum.', 
-      email: 'zeynep.kaya@ogr.esenyurt.edu.tr', 
-      phone: '0535 444 5566',
-      experiences: [
-        { role: 'Backend Geliştirici Stajyeri', company: 'Fintech Çözümleri', date: '2025' }
-      ],
-      skills: ['Node.js', 'Express', 'PostgreSQL', 'Docker', 'Redis']
-    }
-  ],
-  'offer': [
-    { 
-      id: 'app-5', 
-      name: 'Can Özkan', 
-      role: 'Product Manager Adayı', 
-      uni: 'İstanbul Esenyurt Üniversitesi', 
-      dept: 'İşletme', 
-      gpa: '3.70',
-      date: 'Geçen hafta', 
-      avatar: null, 
-      match: 91, 
-      coverLetter: 'Agile/Scrum metodolojileri ve ürün yaşam döngüsü yönetiminde aktifiz. Üniversite kulüp liderliği deneyimim bulunmaktadır.', 
-      email: 'can.ozkan@mezun.esenyurt.edu.tr', 
-      phone: '0536 555 6677',
-      experiences: [
-        { role: 'Proje Asistanı', company: 'Girişimcilik Merkezi', date: '2024 - 2025' }
-      ],
-      skills: ['Jira', 'Agile/Scrum', 'Pazar Analizi', 'KPI Takibi', 'Product Discovery']
-    }
-  ],
-  'rejected': [
-    { 
-      id: 'app-6', 
-      name: 'Elif Şahin', 
-      role: 'Frontend Developer', 
-      uni: 'İstanbul Esenyurt Üniversitesi', 
-      dept: 'Bilişim Teknolojileri MYO', 
-      gpa: '3.10',
-      date: '2 hafta önce', 
-      avatar: null, 
-      match: 55, 
-      coverLetter: 'HTML ve temel CSS bilgim var, staj ortamında kendimi geliştirmek istiyorum.', 
-      email: 'elif.sahin@ogr.esenyurt.edu.tr', 
-      phone: '0537 666 7788',
-      experiences: [],
-      skills: ['HTML5', 'CSS3', 'Temel JS']
-    }
-  ]
+  // F-ATS-006: intentionally empty — demo PII seeds removed from prod path
+  new: [], review: [], interview: [], offer: [], rejected: []
 };
 
 function statusToColumnId(status) {
@@ -191,14 +77,34 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
   const applications = useAppStore(state => state.applications) || [];
   const setApplications = useAppStore(state => state.setApplications);
 
+  // F-ATS: hydrate company applications from Firestore (companyId === auth uid)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const uid = currentUser?.uid || currentUser?.id;
+      if (!uid) return;
+      try {
+        const { fetchApplicationsForCompany } = await import('../services/jobsApplicationsFs');
+        const remote = await fetchApplicationsForCompany(uid);
+        if (cancelled || !Array.isArray(remote)) return;
+        if (!remote.length) return;
+        setApplications(prev => {
+          const map = new Map((prev || []).map(a => [a.id, a]));
+          remote.forEach(a => map.set(a.id, { ...map.get(a.id), ...a }));
+          return [...map.values()];
+        });
+      } catch (e) {
+        console.warn('CompanyATSBoard FS load failed', e?.message);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [currentUser?.id, currentUser?.uid, setApplications]);
+
   // Local overrides for initial static mock applicants (tracking their dragged moves)
   const [mockApplicants, setMockApplicants] = useState(() => {
     const empty = { new: [], review: [], interview: [], offer: [], rejected: [] };
-    // Demo INITIAL_APPLICANTS only for admin sandbox; company sees real store apps only.
-    try {
-      const saved = localStorage.getItem('iesu_company_ats_board_v1');
-      if (saved) return JSON.parse(saved);
-    } catch { /* ignore */ }
+    // F-ATS-006: clear stale localStorage key; never hydrate demo board
+    try { localStorage.removeItem('iesu_company_ats_board_v1'); } catch { /* ignore */ }
     return empty;
   });
 
@@ -325,18 +231,18 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const updateCandidateStatus = (item, targetColId) => {
+  const updateCandidateStatus = async (item, targetColId) => {
     const newStatus = columnIdToStatus(targetColId);
 
-    if (item.isStoreApp) {
-      setApplications(prev => (prev || []).map(a => a.id === item.id ? { ...a, status: newStatus } : a));
-      if (item.id && !String(item.id).startsWith('mock_')) {
-        import('../utils/firebase').then(({ db }) => {
-          import('firebase/firestore').then(({ doc, updateDoc }) => {
-            updateDoc(doc(db, 'applications', item.id), { status: newStatus }).catch(() => {});
-          }).catch(() => {});
-        }).catch(() => {});
+    if (item.isStoreApp || (item.id && !String(item.id).startsWith('mock_') && !String(item.id).startsWith('app-'))) {
+      try {
+        const { updateApplicationStatusFs } = await import('../services/jobsApplicationsFs');
+        await updateApplicationStatusFs(item.id, newStatus);
+      } catch (e) {
+        window.toast?.error?.(e?.message || 'Aday durumu Firestore\'a yazılamadı');
+        return;
       }
+      setApplications(prev => (prev || []).map(a => a.id === item.id ? { ...a, status: newStatus } : a));
     } else {
       setMockApplicants(prev => {
         const next = { ...prev };
@@ -344,18 +250,13 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
           next[col] = next[col].filter(a => a.id !== item.id);
         });
         next[targetColId] = [item, ...(next[targetColId] || [])];
-        try {
-          localStorage.setItem('iesu_company_ats_board_v1', JSON.stringify(next));
-        } catch (e) {}
+        try { localStorage.removeItem('iesu_company_ats_board_v1'); } catch (_) {}
         return next;
       });
     }
 
-    if (window.toast) {
-      window.toast.success(`${item.name} adlı adayın durumu "${newStatus}" olarak güncellendi.`);
-    }
+    window.toast?.success?.(`${item.name} adlı adayın durumu "${newStatus}" olarak güncellendi.`);
 
-    // Cross-hive event broadcasting (Student, Alumni & Admin notification)
     if (eventBus && typeof eventBus.emit === 'function') {
       eventBus.emit('application:status', {
         applicationId: item.id,
@@ -372,7 +273,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
         `Aday Durumu Güncellendi: ${item.name} -> ${newStatus}`,
         'ATS & Başvuru',
         'info',
-        { applicantId: item.id, newStatus, companyId: currentUser?.id }
+        { applicantId: item.id, newStatus, companyId: currentUser?.id || currentUser?.uid }
       );
     } catch { /* intentional */ }
   };
@@ -834,7 +735,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
                               {app.dept}
                             </span>
                             <span className="text-[11px] font-bold text-slate-500">
-                              GPA: <strong className="text-slate-800">{app.gpa || '3.70'}</strong>
+                              GPA: <strong className="text-slate-800">{app.gpa || '—'}</strong>
                             </span>
                           </div>
 
@@ -988,7 +889,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
                 </div>
                 <div className="flex items-center gap-2 text-slate-700 col-span-2">
                   <GraduationCap size={14} className="text-blue-900 shrink-0" />
-                  <span className="font-bold">{selectedCandidate.uni} — Not Ortalaması (GPA): {selectedCandidate.gpa || '3.75'}</span>
+                  <span className="font-bold">{selectedCandidate.uni} — Not Ortalaması (GPA): {selectedCandidate.gpa || '—'}</span>
                 </div>
               </div>
 

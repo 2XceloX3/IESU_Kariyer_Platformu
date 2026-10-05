@@ -119,3 +119,66 @@ describe.skipIf(!EMU)('applications applicant binding', () => {
     }));
   });
 });
+
+
+describe.skipIf(!EMU)('jobs companyId create binding', () => {
+  beforeEach(async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await setDoc(doc(db, 'users/co1'), { role: 'company' });
+      await setDoc(doc(db, 'users/co2'), { role: 'company' });
+      await setDoc(doc(db, 'users/stu1'), { role: 'student' });
+    });
+  });
+
+  it('allows company create with companyId == auth.uid', async () => {
+    const db = authed('co1', { role: 'company' });
+    await assertSucceeds(setDoc(doc(db, 'jobs/j-own'), {
+      companyId: 'co1',
+      title: 'Staj',
+      status: 'Aktif',
+    }));
+  });
+
+  it('denies company create with foreign companyId', async () => {
+    const db = authed('co1', { role: 'company' });
+    await assertFails(setDoc(doc(db, 'jobs/j-other'), {
+      companyId: 'co2',
+      title: 'Staj',
+      status: 'Aktif',
+    }));
+  });
+
+  it('denies student create job', async () => {
+    const db = authed('stu1');
+    await assertFails(setDoc(doc(db, 'jobs/j-stu'), {
+      companyId: 'stu1',
+      title: 'Staj',
+      status: 'Aktif',
+    }));
+  });
+
+  it('allows owner company to update status', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'jobs/j-upd'), {
+        companyId: 'co1',
+        title: 'Staj',
+        status: 'Aktif',
+      });
+    });
+    const db = authed('co1', { role: 'company' });
+    await assertSucceeds(updateDoc(doc(db, 'jobs/j-upd'), { status: 'Pasif' }));
+  });
+
+  it('denies other company update', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'jobs/j-upd2'), {
+        companyId: 'co1',
+        title: 'Staj',
+        status: 'Aktif',
+      });
+    });
+    const db = authed('co2', { role: 'company' });
+    await assertFails(updateDoc(doc(db, 'jobs/j-upd2'), { status: 'Pasif' }));
+  });
+});
