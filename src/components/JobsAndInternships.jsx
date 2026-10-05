@@ -965,6 +965,14 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
       {footerModal&&<FooterModals type={footerModal} onClose={()=>setFooterModal(null)}/>}
 
       {/* FLOATING BOTTOM DOCK - HER KOVANA ÖZGÜ BAĞLAMSAL DOCK */}
+      {(effectiveRole === 'student' || effectiveRole === 'alumni') && (
+        <div className="fixed bottom-36 right-4 z-[70]">
+          <button type="button" data-testid="jobs-cvbuilder-link" onClick={() => setView?.('cvbuilder')} className="text-xs font-black text-[#990000] hover:underline px-3 py-2 rounded-xl border border-red-100 bg-white shadow-md">
+            CV Oluşturucu
+          </button>
+        </div>
+      )}
+
       {effectiveRole === 'admin' ? null : (
         <SubPanelFloatingDock 
           currentUser={effectiveCurrentUser} 
@@ -977,9 +985,3 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     </div>
   );
 }
-              {(effectiveRole === 'student' || effectiveRole === 'alumni') && (
-                <button type="button" data-testid="jobs-cvbuilder-link" onClick={() => setView?.('cvbuilder')} className="text-xs font-black text-[#990000] hover:underline px-2 py-1 rounded-lg border border-red-100 bg-red-50">
-                  CV Oluşturucu
-                </button>
-              )}
-

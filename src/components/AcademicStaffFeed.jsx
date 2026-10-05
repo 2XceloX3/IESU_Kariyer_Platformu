@@ -526,6 +526,7 @@ export default function AcademicStaffFeed({
                             <FileText size={14} /> Evrakı İncele
                           </button>
                           {item.status !== 'Onaylandı' ? (
+                            <>
                             <button 
                               onClick={() => handleApproveInternship(item.id, 'Onaylandı')}
                               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl shadow-sm transition flex items-center gap-1.5 cursor-pointer"
@@ -538,6 +539,7 @@ export default function AcademicStaffFeed({
                             >
                               Reddet
                             </button>
+                            </>
                           ) : (
                             <span className="px-3 py-1.5 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-xl flex items-center gap-1">
                               <CheckCircle2 size={14} /> Onaylandı
