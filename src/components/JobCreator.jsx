@@ -10,6 +10,7 @@ import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import { getTenantConfig } from '../config/tenantConfig';
 import { generateAIResponse } from '../lib/gemini';
+import { auth, db } from '../utils/firebase';
 
 export default function JobCreator({ setView, currentUser: propsCurrentUser, addNotification: propsAddNotification, userRole: propsUserRole }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -154,7 +155,7 @@ Sunduğumuz Olanaklar:
     const newJob = {
       id: 'JOB-' + Date.now(),
       tenantId: tenant.id || 'iesu',
-      companyId: currentUser?.id || (isAdmin ? 'admin_1513' : 'company'),
+      companyId: auth?.currentUser?.uid || currentUser?.uid || currentUser?.id || null,
       title: formData.title.trim(),
       company: companyName,
       location: formData.location.trim(),
@@ -173,6 +174,10 @@ Sunduğumuz Olanaklar:
       createdAt: new Date().toISOString()
     };
 
+    if (!newJob.companyId) {
+      window.toast?.error?.('Firma kimliği (auth uid) olmadan ilan kaydedilemez.');
+      return;
+    }
     setJobs([newJob, ...(jobs || [])]);
 
     // Cross-hive event broadcasting (Beehive Brain & useSharedStore)

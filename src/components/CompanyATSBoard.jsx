@@ -193,12 +193,13 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
 
   // Local overrides for initial static mock applicants (tracking their dragged moves)
   const [mockApplicants, setMockApplicants] = useState(() => {
+    const empty = { new: [], review: [], interview: [], offer: [], rejected: [] };
+    // Demo INITIAL_APPLICANTS only for admin sandbox; company sees real store apps only.
     try {
       const saved = localStorage.getItem('iesu_company_ats_board_v1');
-      return saved ? JSON.parse(saved) : INITIAL_APPLICANTS;
-    } catch {
-      return INITIAL_APPLICANTS;
-    }
+      if (saved) return JSON.parse(saved);
+    } catch { /* ignore */ }
+    return empty;
   });
 
   // Combine static mock candidates with real-time Zustand applications
@@ -217,13 +218,10 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
     const companyApps = (applications || []).filter(app => {
       if (app.tenantId && app.tenantId !== tenant.id) return false;
       if (isAdmin) return true;
-      return (
-        app.companyId === currentUser?.id || 
-        app.companyName === currentUser?.name ||
-        app.companyName === currentUser?.companyName ||
-        app.company === currentUser?.name ||
-        (currentUser?.companyName && app.company === currentUser?.companyName)
-      );
+      // Strict: only applications whose companyId matches auth/company uid (rules-aligned).
+      const uid = currentUser?.id || currentUser?.uid;
+      if (!uid) return false;
+      return app.companyId === uid;
     });
 
     companyApps.forEach(app => {
@@ -234,13 +232,13 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
         role: app.jobTitle || 'Açık Pozisyon Başvurusu',
         uni: tenant.institutionName,
         dept: app.applicantDept || 'Üniversite Adayı',
-        gpa: app.gpa || '3.70',
+        gpa: app.gpa || null,
         date: app.date || 'Bugün',
         avatar: app.applicantAvatar || null,
-        match: app.match || 92,
+        match: app.match ?? null,
         coverLetter: app.coverLetter || 'İlanınızla yakından ilgileniyorum.',
-        email: app.applicantEmail || 'aday@esenyurt.edu.tr',
-        phone: app.applicantPhone || '0555 000 0000',
+        email: app.applicantEmail || null,
+        phone: app.applicantPhone || null,
         cvType: app.cvType || `KGM Akredite ${tenant.institutionShortName} Dijital CV`,
         isStoreApp: true,
         company: app.company,
@@ -1125,7 +1123,7 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
             onClick={() => { 
               const store = useAppStore.getState();
               if (store.setActivePortalBranch) store.setActivePortalBranch('company');
-              const compId = currentUser?.id || 'CMP-001';
+              const compId = currentUser?.id || currentUser?.uid || null;
               if (setSelectedUserId) setSelectedUserId(compId); 
               store.setSelectedUserId?.(compId);
               if (setView) setView('user_profile'); 
