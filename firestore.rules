@@ -1,24 +1,25 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper functions
+
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
+
+    // CRITICAL: admin is claim-only. Doc role alone must NOT grant admin
+    // (prevents self-elevation via users/{uid}.role = 'admin').
+    // WARNING: existing admins with only users/{uid}.role == 'admin' and no
+    // custom claim will be locked out of admin rule paths until a claim is set
+    // (see patches/ADMIN-CLAIMS.PLAN.md).
     function isAdmin() {
-      return isAuthenticated() && (
-        request.auth.token.role == 'admin' ||
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
-      );
+      return isAuthenticated() && request.auth.token.role == 'admin';
     }
-    
+
+    // Non-admin roles: prefer claim, allow users doc fallback.
     function isCompany() {
       return isAuthenticated() && (
         request.auth.token.role == 'company' ||
@@ -28,15 +29,45 @@ service cloud.firestore {
       );
     }
 
-    // Kullanıcı profilleri
+    function isAcademic() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'academic' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'academic')
+      );
+    }
+
+    function selfSelectableRole(role) {
+      return role in ['student', 'alumni', 'company', 'employer'];
+    }
+
+    function noPrivilegedUserFields() {
+      return !request.resource.data.keys().hasAny(['isAdmin', 'customClaims', 'claims'])
+        && request.resource.data.get('isAdmin', false) == false;
+    }
+
     match /users/{userId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && request.auth.uid == userId;
-      allow update: if isOwner(userId) || isAdmin();
+
+      // Self-create: only signup roles. Never admin/academic (admin assigns those).
+      allow create: if isAuthenticated()
+        && request.auth.uid == userId
+        && selfSelectableRole(request.resource.data.role)
+        && noPrivilegedUserFields();
+
+      // Owner may update profile but cannot change role / privilege fields.
+      // Role changes (incl. academic promotion) require isAdmin() claim.
+      allow update: if isAdmin()
+        || (
+          isOwner(userId)
+          && noPrivilegedUserFields()
+          && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['role', 'isAdmin', 'customClaims', 'claims'])
+        );
+
       allow delete: if isAdmin();
     }
 
-    // İş ve Staj İlanları
     match /jobs/{jobId} {
       allow read: if true;
       allow create: if isAuthenticated() && (isCompany() || isAdmin());
@@ -48,21 +79,59 @@ service cloud.firestore {
       );
     }
 
-    // İş / Staj Başvuruları
+    function applicationJobExists() {
+      return request.resource.data.jobId is string
+        && exists(/databases/$(database)/documents/jobs/$(request.resource.data.jobId));
+    }
+
+    function applicationCompanyMatchesJob() {
+      return applicationJobExists()
+        && get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.companyId
+           == request.resource.data.companyId;
+    }
+
+    function applicantCreateStatusOk() {
+      return request.resource.data.status in ['Beklemede', 'Onay Bekliyor'];
+    }
+
+    function noCompanyReservedApplicationFields() {
+      return !request.resource.data.keys().hasAny([
+        'employerDecision', 'companyDecision', 'reviewedBy', 'hired',
+        'hiredAt', 'companyInternalStatus', 'adminNotes', 'interviewScore'
+      ]);
+    }
+
     match /applications/{applicationId} {
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.applicantId == request.auth.uid
+        && applicationCompanyMatchesJob()
+        && applicantCreateStatusOk()
+        && noCompanyReservedApplicationFields();
+
       allow read: if isAuthenticated() && (
         resource.data.applicantId == request.auth.uid ||
         resource.data.companyId == request.auth.uid ||
-        isAdmin()
+        isAdmin() ||
+        isAcademic()
       );
+
+      // Company may update only applications for its own jobs; cannot reassign applicant/jobId.
       allow update: if isAuthenticated() && (
-        resource.data.companyId == request.auth.uid || isAdmin()
+        isAdmin() ||
+        (
+          isCompany()
+          && resource.data.companyId == request.auth.uid
+          && exists(/databases/$(database)/documents/jobs/$(resource.data.jobId))
+          && get(/databases/$(database)/documents/jobs/$(resource.data.jobId)).data.companyId == request.auth.uid
+          && request.resource.data.applicantId == resource.data.applicantId
+          && request.resource.data.jobId == resource.data.jobId
+          && request.resource.data.companyId == resource.data.companyId
+        )
       );
+
       allow delete: if isAdmin();
     }
 
-    // Gönderiler / Feed
     match /posts/{postId} {
       allow read: if true;
       allow create: if isAuthenticated();
@@ -78,7 +147,6 @@ service cloud.firestore {
       );
     }
 
-    // Kulüpler ve Topluluklar
     match /clubs/{clubId} {
       allow read: if true;
       allow create, delete: if isAdmin();
@@ -88,18 +156,44 @@ service cloud.firestore {
       );
     }
 
-    // Bildirimler
     match /notifications/{notifId} {
       allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated();
     }
 
-    // Sistem Denetim İzleri (Audit Logs)
     match /audit_logs/{logId} {
       allow read, write: if isAdmin();
     }
 
-    // Genel Güvenlik Kuralı: Tanımlanmamış koleksiyonlara erişim yalnızca adminlere açık
+    match /academicApprovals/{docId} {
+      allow read: if isAuthenticated() && (isAcademic() || isAdmin());
+      allow create, update: if isAuthenticated() && (isAcademic() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    match /mentorshipRequests/{docId} {
+      allow read: if isAuthenticated() && (
+        isAcademic() || isAdmin() ||
+        resource.data.studentId == request.auth.uid ||
+        resource.data.applicantId == request.auth.uid
+      );
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (isAcademic() || isAdmin() || resource.data.studentId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    match /researchLabs/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (isAcademic() || isAdmin());
+    }
+
+    match /counselingRequests/{docId} {
+      allow read: if isAuthenticated() && (isAcademic() || isAdmin() || resource.data.studentId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (isAcademic() || isAdmin());
+      allow delete: if isAdmin();
+    }
+
     match /{document=**} {
       allow read, write: if isAdmin();
     }

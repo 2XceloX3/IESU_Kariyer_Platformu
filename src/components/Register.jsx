@@ -8,7 +8,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 import useAdminStore from '../brain/useAdminStore';
 import { getTenantConfig } from '../config/tenantConfig';
-import EDevletObsModal from './modals/EDevletObsModal';
+const EDevletObsModal = import.meta.env.DEV ? React.lazy(() => import('./modals/EDevletObsModal')) : null;
 
 const REGISTRATION_UNAVAILABLE_MESSAGE = 'Kayıt servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.';
 const PROFILE_SAVE_FAILED_MESSAGE = 'Profil bilgileriniz kaydedilemedi. Lütfen tekrar deneyin veya Kariyer Geliştirme Merkezi ile iletişime geçin.';
@@ -19,10 +19,11 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   const [accountType, setAccountType] = useState(registerAccountType || 'alumni'); // 'alumni', 'student', 'employer', 'academic'
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [kvkkConsent, setKvkkConsent] = useState(true);
+  const [kvkkConsent, setKvkkConsent] = useState(false);
   const [registeredUser, setRegisteredUser] = useState(null);
   const [companyLogoData, setCompanyLogoData] = useState(null);
   const [isEdevletModalOpen, setIsEdevletModalOpen] = useState(false);
+  const showEdevletUi = import.meta.env.DEV;
   const [isVerifiedByGov, setIsVerifiedByGov] = useState(false);
   const tenant = getTenantConfig();
 
@@ -144,7 +145,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           internshipStatus: 'Arıyor',
           avatar: null,
           onboardingCompleted: false,
-          kvkkConsent: true,
+          kvkkConsent: kvkkConsent,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
@@ -185,7 +186,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           role: 'employer',
           status: 'Onay Bekliyor',
           avatar: companyLogoData || null,
-          kvkkConsent: true,
+          kvkkConsent: kvkkConsent,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
@@ -205,17 +206,19 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         const academicUid = await createAccount(formData.academicEmail, formData.password, 'mock_acad');
 
         // [FİREBASE FIRESTORE] - Akademik Detayları Veritabanına Kaydet
+        // role=academic is NOT self-selectable (firestore.rules); admin claim promotes later.
         const newAcademic = {
           id: academicUid,
           tenantId,
           name: formData.academicName || 'Yeni Akademisyen',
           email: formData.academicEmail,
           title: formData.academicTitle || 'Akademisyen',
-          role: 'academic',
+          role: 'alumni',
+          requestedRole: 'academic',
           department: formData.academicDepartment || 'Belirtilmedi',
-          status: 'Aktif',
+          status: 'Onay Bekliyor',
           avatar: null,
-          kvkkConsent: true,
+          kvkkConsent: kvkkConsent,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
@@ -247,7 +250,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
           role: 'alumni',
           status: 'Aktif',
           avatar: null,
-          kvkkConsent: true,
+          kvkkConsent: kvkkConsent,
           kvkkConsentDate: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
@@ -423,12 +426,14 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <input 
                         type="checkbox" 
                         id="kvkk-check-employer" 
-                        checked={kvkkConsent} 
-                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        checked={kvkkConsent}
+                        onChange={(e) => setKvkkConsent(e.target.checked)}
+                        required
+                        aria-required="true" 
                         className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
                       />
                       <label htmlFor="kvkk-check-employer" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
-                        6698 sayılı KVKK Aydınlatma Metni'ni ve Platform Kullanım Koşulları'nı okudum, kurumsal verilerimizin işlenmesini onaylıyorum.
+                        6698 sayılı <button type="button" onClick={() => setView?.('kvkk')} className="text-[#990000] font-bold underline cursor-pointer">KVKK Aydınlatma Metni</button>'ni ve Platform Kullanım Koşulları'nı okudum, kurumsal verilerimizin işlenmesini onaylıyorum.
                       </label>
                     </div>
 
@@ -490,12 +495,14 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <input 
                         type="checkbox" 
                         id="kvkk-check-academic" 
-                        checked={kvkkConsent} 
-                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        checked={kvkkConsent}
+                        onChange={(e) => setKvkkConsent(e.target.checked)}
+                        required
+                        aria-required="true" 
                         className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
                       />
                       <label htmlFor="kvkk-check-academic" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
-                        6698 sayılı KVKK Aydınlatma Metni'ni okudum, akademik verilerimin ve danışmanlık kayıtlarımın işlenmesini onaylıyorum.
+                        6698 sayılı <button type="button" onClick={() => setView?.('kvkk')} className="text-[#990000] font-bold underline cursor-pointer">KVKK Aydınlatma Metni</button>'ni okudum, akademik verilerimin ve danışmanlık kayıtlarımın işlenmesini onaylıyorum.
                       </label>
                     </div>
 
@@ -514,14 +521,13 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                     Mezuniyet bilgilerinizle hesabınızı oluşturun ve Esenyurt Kariyer Ağına katılın.
                   </p>
 
-                  {/* e-Devlet & YÖKSİS Otomatik Doldurma Butonu */}
-                  <div className="mb-6 p-4 bg-red-50/80 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+                  {showEdevletUi && (<div className="mb-6 p-4 bg-red-50/80 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-white border border-red-200 flex items-center justify-center shrink-0">
-                        <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-5 w-auto object-contain" />
+                        <img src="/edevlet-vector.svg" data-edevlet-ui="1" alt="e-Devlet" className="h-5 w-auto object-contain" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-black text-slate-900">e-Devlet ile hızlı doldur (önizleme)</h4>
+                        <h4 className="text-xs font-black text-slate-900">e-Devlet & YÖKSİS ile Hızlı Doldur</h4>
                         <p className="text-[11px] text-slate-600 font-medium">Mezuniyet ve bölüm bilgilerinizi resmî kütükten tek tıkla çekin.</p>
                       </div>
                     </div>
@@ -530,9 +536,9 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       onClick={() => setIsEdevletModalOpen(true)}
                       className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-red-50 text-[#990000] border border-red-200 rounded-xl font-extrabold text-xs shadow-xs transition active:scale-95 cursor-pointer whitespace-nowrap"
                     >
-                      Örnek bilgileri doldur (önizleme)
+                      YÖKSİS'ten Bilgileri Çek
                     </button>
-                  </div>
+                  </div>)}
 
                   <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 gap-4">
@@ -584,12 +590,14 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <input 
                         type="checkbox" 
                         id="kvkk-check-alumni" 
-                        checked={kvkkConsent} 
-                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        checked={kvkkConsent}
+                        onChange={(e) => setKvkkConsent(e.target.checked)}
+                        required
+                        aria-required="true" 
                         className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
                       />
                       <label htmlFor="kvkk-check-alumni" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
-                        6698 sayılı KVKK Aydınlatma Metni'ni okudum, mezun bilgi havuzunda profilimin işlenmesini onaylıyorum.
+                        6698 sayılı <button type="button" onClick={() => setView?.('kvkk')} className="text-[#990000] font-bold underline cursor-pointer">KVKK Aydınlatma Metni</button>'ni okudum, mezun bilgi havuzunda profilimin işlenmesini onaylıyorum.
                       </label>
                     </div>
 
@@ -612,7 +620,7 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                   <div className="mb-6 p-4 bg-red-50/80 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-white border border-red-200 flex items-center justify-center shrink-0">
-                        <img src="/edevlet-vector.svg" alt="e-Devlet" className="h-5 w-auto object-contain" />
+                        <img src="/edevlet-vector.svg" data-edevlet-ui="1" alt="e-Devlet" className="h-5 w-auto object-contain" />
                       </div>
                       <div>
                         <h4 className="text-xs font-black text-slate-900">e-Devlet & İESÜ OBS ile Hızlı Doldur</h4>
@@ -685,12 +693,14 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                       <input 
                         type="checkbox" 
                         id="kvkk-check-student" 
-                        checked={kvkkConsent} 
-                        onChange={(e) => setKvkkConsent(e.target.checked)} 
+                        checked={kvkkConsent}
+                        onChange={(e) => setKvkkConsent(e.target.checked)}
+                        required
+                        aria-required="true" 
                         className="mt-0.5 rounded border-gray-300 text-[#990000] focus:ring-[#990000] cursor-pointer" 
                       />
                       <label htmlFor="kvkk-check-student" className="text-xs text-gray-500 font-medium cursor-pointer leading-tight">
-                        6698 sayılı KVKK Aydınlatma Metni'ni okudum, kişisel ve akademik verilerimin staj ve kariyer olanakları kapsamında işlenmesini onaylıyorum.
+                        6698 sayılı <button type="button" onClick={() => setView?.('kvkk')} className="text-[#990000] font-bold underline cursor-pointer">KVKK Aydınlatma Metni</button>'ni okudum, kişisel ve akademik verilerimin staj ve kariyer olanakları kapsamında işlenmesini onaylıyorum.
                       </label>
                     </div>
 
@@ -756,13 +766,17 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
         </div>
       </div>
 
-      <EDevletObsModal
-        isOpen={isEdevletModalOpen}
-        onClose={() => setIsEdevletModalOpen(false)}
-        initialRole={accountType === 'alumni' ? 'alumni' : 'student'}
-        mode="autofill"
-        onVerifiedData={handleVerifiedData}
-      />
+      {import.meta.env.DEV && EDevletObsModal && (
+        <React.Suspense fallback={null}>
+          <EDevletObsModal
+            isOpen={isEdevletModalOpen}
+            onClose={() => setIsEdevletModalOpen(false)}
+            initialRole={accountType === 'alumni' ? 'alumni' : 'student'}
+            mode="autofill"
+            onVerifiedData={handleVerifiedData}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 }
