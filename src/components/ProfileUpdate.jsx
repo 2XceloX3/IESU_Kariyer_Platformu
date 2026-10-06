@@ -271,8 +271,8 @@ export default function ProfileUpdate({
     ];
     if (effectiveBranch === 'academic') return [
       { id: 'personal', label: 'Kişisel & İletişim', icon: User },
-      { id: 'academic_staff_info', label: 'Dersler, Yayınlar & Ofis Saatleri', icon: BookOpen },
-      { id: 'academic', label: 'Üniversite & Unvan', icon: GraduationCap }
+      { id: 'academic', label: 'Üniversite & Unvan', icon: GraduationCap },
+      { id: 'academic_staff_info', label: 'Dersler, Yayınlar & Ofis Saatleri', icon: BookOpen }
     ];
     if (effectiveBranch === 'admin') return [
       { id: 'personal', label: 'Yönetici Kimliği & İletişim', icon: User },
@@ -1748,135 +1748,320 @@ export default function ProfileUpdate({
               </div>
             )}
 
-            {/* TAB 2: ACADEMIC EDUCATION (ÖĞRENCİ VE AKADEMİK İÇİN) */}
+            {/* TAB 2: ACADEMIC EDUCATION / STAFF INFO */}
             {activeTab === 'academic' && (
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Fakülte / Yüksekokul *</label>
-                    <select 
-                      value={selectedFaculty} 
-                      onChange={(e) => {
-                        setSelectedFaculty(e.target.value);
-                        setSelectedDept('');
-                        handleInputChange('faculty', e.target.value);
-                      }} 
-                      className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
-                    >
-                      <option value="">Fakülte Seçiniz</option>
-                      {activeFaculties.map(f => (
-                        <option key={f.id} value={f.name}>{f.name}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Bölüm / Program *</label>
-                    <select 
-                      value={selectedDept} 
-                      onChange={(e) => {
-                        setSelectedDept(e.target.value);
-                        handleInputChange('department', e.target.value);
-                      }} 
-                      disabled={!selectedFaculty} 
-                      className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all disabled:opacity-50`}
-                    >
-                      <option value="">Bölüm Seçiniz</option>
-                      {availableDepts.map(d => (
-                        <option key={d.id} value={d.name}>{d.name}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Sınıf Düzeyi</label>
-                    <select 
-                      value={formData.classLevel || '1. Sınıf'} 
-                      onChange={(e) => handleInputChange('classLevel', e.target.value)} 
-                      className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
-                    >
-                      <option>Hazırlık</option>
-                      <option>1. Sınıf</option>
-                      <option>2. Sınıf</option>
-                      <option>3. Sınıf</option>
-                      <option>4. Sınıf</option>
-                      <option>Mezun</option>
-                      <option>Yüksek Lisans</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Akademik Ortalama (AGNO / GPA)</label>
-                    <input 
-                      type="text" 
-                      value={formData.gpa || ''} 
-                      onChange={(e) => handleInputChange('gpa', e.target.value)} 
-                      className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`} 
-                      placeholder="Örn: 3.45 / 4.00" 
-                    />
-                  </div>
-
-                </div>
-
-                {/* ÇİFT ANADAL / YANDAL (ÇAP) AYARLARI */}
-                <div className="p-6 bg-gray-50 rounded-3xl border border-gray-200 space-y-4">
-                  <div className="flex items-center justify-between">
+              effectiveBranch === 'academic' ? (
+                <div className="space-y-8">
+                  {/* Akademik Bilgilendirme Banner */}
+                  <div className="p-5 bg-purple-50/70 rounded-2xl border border-purple-200/80 flex items-start gap-4">
+                    <GraduationCap className="text-purple-700 shrink-0 mt-1" size={24} />
                     <div>
-                      <h4 className="text-base font-black text-gray-900">Çift Anadal / Yandal (ÇAP) Programı</h4>
-                      <p className="text-xs text-gray-500">Üniversitemizde ikinci bir anadal veya yandal eğitimi alıyorsanız işaretleyiniz.</p>
+                      <h4 className="text-sm font-black text-purple-900">Üniversite, Fakülte & Akademik Unvan</h4>
+                      <p className="text-xs text-purple-700 mt-0.5 leading-relaxed">
+                        İstanbul Esenyurt Üniversitesi bünyesindeki fakülte/enstitü, anabilim dalı, akademik unvan ve resmi idari görevlerinizi bu alandan yönetin.
+                      </p>
                     </div>
-                    <input 
-                      type="checkbox" 
-                      id="isDoubleMajor" 
-                      checked={formData.isDoubleMajor || false} 
-                      onChange={(e) => handleInputChange('isDoubleMajor', e.target.checked)} 
-                      className={`w-5 h-5 ${cfg.primaryBg} rounded cursor-pointer accent-red-600`} 
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Fakülte / Yüksekokul / Enstitü */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Fakülte / Yüksekokul / Enstitü *</label>
+                      <select 
+                        value={selectedFaculty} 
+                        onChange={(e) => {
+                          setSelectedFaculty(e.target.value);
+                          setSelectedDept('');
+                          handleInputChange('faculty', e.target.value);
+                        }} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
+                      >
+                        <option value="">Fakülte / Enstitü Seçiniz</option>
+                        {activeFaculties.map(f => (
+                          <option key={f.id} value={f.name}>{f.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Bölüm / Anabilim Dalı */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Bölüm / Anabilim Dalı *</label>
+                      <select 
+                        value={selectedDept} 
+                        onChange={(e) => {
+                          setSelectedDept(e.target.value);
+                          handleInputChange('department', e.target.value);
+                        }} 
+                        disabled={!selectedFaculty} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all disabled:opacity-50`}
+                      >
+                        <option value="">Bölüm / Anabilim Dalı Seçiniz</option>
+                        {availableDepts.map(d => (
+                          <option key={d.id} value={d.name}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Akademik Unvan */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Akademik Unvan *</label>
+                      <select 
+                        value={formData.academicTitle || formData.title || 'Dr. Öğr. Üyesi'} 
+                        onChange={(e) => {
+                          handleInputChange('academicTitle', e.target.value);
+                          handleInputChange('title', e.target.value);
+                        }} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
+                      >
+                        <option value="Prof. Dr.">Prof. Dr.</option>
+                        <option value="Doç. Dr.">Doç. Dr.</option>
+                        <option value="Dr. Öğr. Üyesi">Dr. Öğr. Üyesi</option>
+                        <option value="Öğr. Gör. Dr.">Öğr. Gör. Dr.</option>
+                        <option value="Öğr. Gör.">Öğr. Gör.</option>
+                        <option value="Arş. Gör. Dr.">Arş. Gör. Dr.</option>
+                        <option value="Arş. Gör.">Arş. Gör.</option>
+                        <option value="Uzman">Uzman</option>
+                      </select>
+                    </div>
+
+                    {/* Resmi İdari Görev */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Resmi İdari Görev</label>
+                      <select 
+                        value={formData.administrativeDuty || 'Görev Yok / Öğretim Üyesi'} 
+                        onChange={(e) => handleInputChange('administrativeDuty', e.target.value)} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
+                      >
+                        <option value="Görev Yok / Öğretim Üyesi">Görev Yok / Öğretim Üyesi</option>
+                        <option value="Bölüm Başkanı">Bölüm Başkanı</option>
+                        <option value="Bölüm Başkan Yardımcısı">Bölüm Başkan Yardımcısı</option>
+                        <option value="Dekan">Dekan</option>
+                        <option value="Dekan Yardımcısı">Dekan Yardımcısı</option>
+                        <option value="Anabilim Dalı Başkanı">Anabilim Dalı Başkanı</option>
+                        <option value="Yüksekokul / MYO Müdürü">Yüksekokul / MYO Müdürü</option>
+                        <option value="Enstitü Müdürü">Enstitü Müdürü</option>
+                        <option value="Merkez Müdürü / Koordinatör">Merkez Müdürü / Koordinatör</option>
+                        <option value="Rektör / Rektör Yardımcısı">Rektör / Rektör Yardımcısı</option>
+                      </select>
+                    </div>
+
+                    {/* Kadro & İstihdam Türü */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Kadro & İstihdam Türü</label>
+                      <select 
+                        value={formData.academicEmploymentType || 'Kadrolu / Tam Zamanlı'} 
+                        onChange={(e) => handleInputChange('academicEmploymentType', e.target.value)} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
+                      >
+                        <option value="Kadrolu / Tam Zamanlı">Kadrolu / Tam Zamanlı</option>
+                        <option value="Yarı Zamanlı / Saat Ücretli">Yarı Zamanlı / Saat Ücretli</option>
+                        <option value="Misafir Öğretim Üyesi">Misafir Öğretim Üyesi</option>
+                        <option value="Sözleşmeli Akademik Personel">Sözleşmeli Akademik Personel</option>
+                      </select>
+                    </div>
+
+                    {/* Dahili Telefon No */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Dahili Telefon (Ofis / Santral)</label>
+                      <input 
+                        type="text" 
+                        value={formData.internalPhone || formData.extension || ''} 
+                        onChange={(e) => {
+                          handleInputChange('internalPhone', e.target.value);
+                          handleInputChange('extension', e.target.value);
+                        }} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`} 
+                        placeholder="Örn: 1245 veya +90 212 444 0000 / 1234" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Araştırma & Uzmanlık Alanları */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Araştırma & Uzmanlık Alanları</label>
+                    <textarea 
+                      rows={2}
+                      value={formData.researchAreas || formData.specialization || ''} 
+                      onChange={(e) => {
+                        handleInputChange('researchAreas', e.target.value);
+                        handleInputChange('specialization', e.target.value);
+                      }} 
+                      className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl p-4 text-sm font-medium text-gray-700 outline-none ${cfg.primaryFocusRing} resize-none`} 
+                      placeholder="Virgülle ayırarak çalışma alanlarınızı yazınız (Örn: Yapay Zeka, Derin Öğrenme, Siber Güvenlik, Veri Madenciliği)..." 
                     />
                   </div>
 
-                  {formData.isDoubleMajor && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 animate-fade-in">
+                  {/* Akademik Kimlikler & İndeksler (YÖKSİS, ORCID, Scholar) */}
+                  <div className="p-6 bg-gray-50 rounded-3xl border border-gray-200 space-y-4">
+                    <div>
+                      <h4 className="text-base font-black text-gray-900">Akademik Kimlikler & Ağ Bağlantıları</h4>
+                      <p className="text-xs text-gray-500">Ulusal ve uluslararası akademik araştırmacı profil bağlantılarınız.</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">2. Fakülte (ÇAP)</label>
-                        <select 
-                          value={selectedCapFaculty} 
-                          onChange={(e) => {
-                            setSelectedCapFaculty(e.target.value);
-                            setSelectedCapDept('');
-                            handleInputChange('capFaculty', e.target.value);
-                          }} 
-                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
-                        >
-                          <option value="">Fakülte Seçiniz</option>
-                          {activeFaculties.map(f => (
-                            <option key={f.id} value={f.name}>{f.name}</option>
-                          ))}
-                        </select>
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">YÖKSİS No</label>
+                        <input 
+                          type="text" 
+                          value={formData.yoksisId || ''} 
+                          onChange={(e) => handleInputChange('yoksisId', e.target.value)} 
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`} 
+                          placeholder="Örn: 104928" 
+                        />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">2. Bölüm (ÇAP)</label>
-                        <select 
-                          value={selectedCapDept} 
-                          onChange={(e) => {
-                            setSelectedCapDept(e.target.value);
-                            handleInputChange('capDept', e.target.value);
-                          }} 
-                          disabled={!selectedCapFaculty} 
-                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} disabled:opacity-50`}
-                        >
-                          <option value="">Bölüm Seçiniz</option>
-                          {availableCapDepts.map(d => (
-                            <option key={d.id} value={d.name}>{d.name}</option>
-                          ))}
-                        </select>
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">ORCID ID</label>
+                        <input 
+                          type="text" 
+                          value={formData.orcid || ''} 
+                          onChange={(e) => handleInputChange('orcid', e.target.value)} 
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`} 
+                          placeholder="Örn: 0000-0002-XXXX-XXXX" 
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Google Scholar / AVESİS</label>
+                        <input 
+                          type="url" 
+                          value={formData.scholarUrl || ''} 
+                          onChange={(e) => handleInputChange('scholarUrl', e.target.value)} 
+                          className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`} 
+                          placeholder="https://scholar.google.com/..." 
+                        />
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                {renderSaveActionBar(false)}
-              </div>
+                  {renderSaveActionBar(false)}
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Fakülte / Yüksekokul *</label>
+                      <select 
+                        value={selectedFaculty} 
+                        onChange={(e) => {
+                          setSelectedFaculty(e.target.value);
+                          setSelectedDept('');
+                          handleInputChange('faculty', e.target.value);
+                        }} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
+                      >
+                        <option value="">Fakülte Seçiniz</option>
+                        {activeFaculties.map(f => (
+                          <option key={f.id} value={f.name}>{f.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Bölüm / Program *</label>
+                      <select 
+                        value={selectedDept} 
+                        onChange={(e) => {
+                          setSelectedDept(e.target.value);
+                          handleInputChange('department', e.target.value);
+                        }} 
+                        disabled={!selectedFaculty} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all disabled:opacity-50`}
+                      >
+                        <option value="">Bölüm Seçiniz</option>
+                        {availableDepts.map(d => (
+                          <option key={d.id} value={d.name}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Sınıf Düzeyi</label>
+                      <select 
+                        value={formData.classLevel || '1. Sınıf'} 
+                        onChange={(e) => handleInputChange('classLevel', e.target.value)} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`}
+                      >
+                        <option>Hazırlık</option>
+                        <option>1. Sınıf</option>
+                        <option>2. Sınıf</option>
+                        <option>3. Sınıf</option>
+                        <option>4. Sınıf</option>
+                        <option>Mezun</option>
+                        <option>Yüksek Lisans</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Akademik Ortalama (AGNO / GPA)</label>
+                      <input 
+                        type="text" 
+                        value={formData.gpa || ''} 
+                        onChange={(e) => handleInputChange('gpa', e.target.value)} 
+                        className={`w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} transition-all`} 
+                        placeholder="Örn: 3.45 / 4.00" 
+                      />
+                    </div>
+
+                  </div>
+
+                  {/* ÇİFT ANADAL / YANDAL (ÇAP) AYARLARI */}
+                  <div className="p-6 bg-gray-50 rounded-3xl border border-gray-200 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-base font-black text-gray-900">Çift Anadal / Yandal (ÇAP) Programı</h4>
+                        <p className="text-xs text-gray-500">Üniversitemizde ikinci bir anadal veya yandal eğitimi alıyorsanız işaretleyiniz.</p>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        id="isDoubleMajor" 
+                        checked={formData.isDoubleMajor || false} 
+                        onChange={(e) => handleInputChange('isDoubleMajor', e.target.checked)} 
+                        className={`w-5 h-5 ${cfg.primaryBg} rounded cursor-pointer accent-red-600`} 
+                      />
+                    </div>
+
+                    {formData.isDoubleMajor && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 animate-fade-in">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">2. Fakülte (ÇAP)</label>
+                          <select 
+                            value={selectedCapFaculty} 
+                            onChange={(e) => {
+                              setSelectedCapFaculty(e.target.value);
+                              setSelectedCapDept('');
+                              handleInputChange('capFaculty', e.target.value);
+                            }} 
+                            className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 outline-none ${cfg.primaryFocusRing}`}
+                          >
+                            <option value="">Fakülte Seçiniz</option>
+                            {activeFaculties.map(f => (
+                              <option key={f.id} value={f.name}>{f.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">2. Bölüm (ÇAP)</label>
+                          <select 
+                            value={selectedCapDept} 
+                            onChange={(e) => {
+                              setSelectedCapDept(e.target.value);
+                              handleInputChange('capDept', e.target.value);
+                            }} 
+                            disabled={!selectedCapFaculty} 
+                            className={`w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-700 outline-none ${cfg.primaryFocusRing} disabled:opacity-50`}
+                          >
+                            <option value="">Bölüm Seçiniz</option>
+                            {availableCapDepts.map(d => (
+                              <option key={d.id} value={d.name}>{d.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {renderSaveActionBar(false)}
+                </div>
+              )
             )}
 
             {/* TAB 3: CAREER & SKILLS (ÖĞRENCİ) */}

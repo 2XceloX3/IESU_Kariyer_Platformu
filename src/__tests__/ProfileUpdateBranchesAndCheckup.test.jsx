@@ -147,4 +147,47 @@ describe('ProfileUpdate - Branch Customization & 12 Soru & Alt Panel', () => {
       unmount();
     });
   });
+
+  it('6. Akademik portalda Üniversite & Unvan sekmesinde öğrenci bilgileri (Sınıf, GPA, ÇAP) ASLA yer almamalı; akademik kadro alanları yer almalıdır', () => {
+    useAppStore.setState({
+      activePortalBranch: 'academic',
+      previousView: 'academic',
+      currentUser: {
+        id: 'mock-academic-1',
+        name: 'Doç. Dr. Ahmet Yılmaz',
+        email: 'ahmet.yilmaz@esenyurt.edu.tr',
+        role: 'academic',
+        faculty: 'Mühendislik ve Doğa Bilimleri Fakültesi',
+        department: 'Bilgisayar Mühendisliği'
+      }
+    });
+
+    render(
+      <ProfileUpdate 
+        setView={vi.fn()} 
+        currentUser={useAppStore.getState().currentUser}
+        setCurrentUser={vi.fn()}
+        userRole="academic"
+      />
+    );
+
+    const academicTab = screen.getByText(/Üniversite & Unvan/i);
+    expect(academicTab).toBeDefined();
+    fireEvent.click(academicTab);
+
+    // Akademik personele ait alanlar görünmeli:
+    expect(screen.getByText(/Resmi İdari Görev/i)).toBeDefined();
+    expect(screen.getByText(/Kadro & İstihdam Türü/i)).toBeDefined();
+    expect(screen.getByText(/Dahili Telefon \(Ofis \/ Santral\)/i)).toBeDefined();
+    expect(screen.getByText(/Araştırma & Uzmanlık Alanları/i)).toBeDefined();
+    expect(screen.getByText(/Akademik Kimlikler & Ağ Bağlantıları/i)).toBeDefined();
+    expect(screen.getByText(/YÖKSİS No/i)).toBeDefined();
+    expect(screen.getByText(/ORCID ID/i)).toBeDefined();
+
+    // Öğrenciye ait alanlar KESİNLİKLE OLMAMALI:
+    expect(screen.queryByText(/Sınıf Düzeyi/i)).toBeNull();
+    expect(screen.queryByText(/Akademik Ortalama \(AGNO \/ GPA\)/i)).toBeNull();
+    expect(screen.queryByText(/Çift Anadal \/ Yandal \(ÇAP\) Programı/i)).toBeNull();
+  });
 });
+
