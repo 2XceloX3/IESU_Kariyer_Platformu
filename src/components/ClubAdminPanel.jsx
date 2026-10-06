@@ -297,7 +297,7 @@ export default function ClubAdminPanel({
               </div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight">{selectedClub.name}</h1>
               <p className="text-red-100/90 mt-2 font-medium text-xs sm:text-sm max-w-2xl">
-                Kulüp üyelerini, etkinlikleri, resmi başvuru belgelerini ve SKS bildirimlerini tek merkezden yönetin.
+                Kulüp üyelerini, etkinlikleri, resmi başvuru belgelerini ve resmî üniversite bildirimlerini tek merkezden yönetin.
               </p>
             </div>
             
@@ -516,7 +516,7 @@ export default function ClubAdminPanel({
                     </div>
                     <div>
                       <h2 className="text-lg font-black text-slate-900">Belge Deposu</h2>
-                      <p className="text-xs text-slate-600 font-medium">SKS Daire Başkanlığına iletilen onaylı resmi belgeler.</p>
+                      <p className="text-xs text-slate-600 font-medium">Öğrenci Dekanlığına iletilen onaylı resmi belgeler.</p>
                     </div>
                   </div>
                   <button 
@@ -561,8 +561,8 @@ export default function ClubAdminPanel({
                     <FileText size={20} />
                   </div>
                   <div>
-                    <h2 className="text-lg font-black text-slate-900">Resmi Başvuru Formları (SKS Mevzuatı)</h2>
-                    <p className="text-xs text-slate-600 font-medium">Öğrenci Dekanlığı ve SKS Başkanlığına sunulması gereken EK-2, EK-3 ve EK-4 belgelerini doldurun.</p>
+                    <h2 className="text-lg font-black text-slate-900">Resmi Başvuru Formları (Kulüpler Mevzuatı)</h2>
+                    <p className="text-xs text-slate-600 font-medium">Öğrenci Dekanlığına sunulması gereken EK-2, EK-3 ve EK-4 belgelerini doldurun.</p>
                   </div>
                 </div>
 

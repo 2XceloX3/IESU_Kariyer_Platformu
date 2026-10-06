@@ -54,14 +54,14 @@ describe('Student Clubs & SKS Governance Workflow Suite', () => {
 
     // Detail page rendered
     expect(screen.getByText(/Kulüp Hakkında/i)).toBeInTheDocument();
-    expect(screen.getByText(/SKS Etkinlik & Yer Talepleri/i)).toBeInTheDocument();
+    expect(screen.getByText(/Etkinlik & Yer Talepleri/i)).toBeInTheDocument();
 
     // Switch to venue requests tab
-    const venueTab = screen.getByText(/SKS Etkinlik & Yer Talepleri/i);
+    const venueTab = screen.getByText(/Etkinlik & Yer Talepleri/i);
     fireEvent.click(venueTab);
 
     // Student should see venue requests, but NOT currency balance cards
-    expect(screen.getByText(/SKS Etkinlik & Yer Tahsis Başvuruları/i)).toBeInTheDocument();
+    expect(screen.getByText(/Etkinlik & Yer Tahsis Başvuruları/i)).toBeInTheDocument();
     expect(screen.queryByText(/45\.000 ₺/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/16\.500 ₺/i)).not.toBeInTheDocument();
   });
@@ -86,7 +86,7 @@ describe('Student Clubs & SKS Governance Workflow Suite', () => {
     expect(screen.getAllByText(/Kulüp Başkanı/i).length).toBeGreaterThan(0);
   });
 
-  it('allows authorized officer (President) to open SKS venue and equipment form', () => {
+  it('allows authorized officer (President) to open venue and equipment form', () => {
     render(
       <StudentClubPortal 
         currentUser={mockPresident}
@@ -101,8 +101,8 @@ describe('Student Clubs & SKS Governance Workflow Suite', () => {
     const reqButtons = screen.getAllByText(/Etkinlik & Yer Tahsis Talebi/i);
     fireEvent.click(reqButtons[0]);
 
-    // SKS Venue form modal must open with venue dropdown and hours
-    expect(screen.getByText(/SKS Daire Başkanlığı Mekan & Donanım Formu/i)).toBeInTheDocument();
+    // Venue form modal must open with venue dropdown and hours
+    expect(screen.getByText(/Etkinlik Mekan & Donanım Formu/i)).toBeInTheDocument();
     expect(screen.getByText(/Talep Edilen Yer \/ Salon/i)).toBeInTheDocument();
     expect(screen.getByText(/Başlangıç Saati/i)).toBeInTheDocument();
     expect(screen.getByText(/Bitiş Saati/i)).toBeInTheDocument();

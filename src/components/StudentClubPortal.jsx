@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import SafeAvatar from './shared/SafeAvatar';
 import { 
   Users, Trophy, FileText, ChevronRight, CheckCircle2, 
@@ -6,7 +6,8 @@ import {
   Wallet, ShieldCheck, MapPin, Activity, ArrowLeft, X, Bell,
   Zap, Heart, MessageCircle, Share2, Play, Pause, Download, Sparkles,
   Filter, ExternalLink, Mail, Phone, Check, Award, Lock, Music,
-  Sliders, Camera, ChevronLeft, Bookmark, CornerDownRight, Send, UserCheck
+  Sliders, Camera, ChevronLeft, Bookmark, CornerDownRight, Send, UserCheck,
+  UploadCloud, Video, Film, Trash2, Link as LinkIcon, Image as ImageIcon
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -101,11 +102,17 @@ export default function StudentClubPortal({
   const [postForm, setPostForm] = useState({
     caption: '',
     location: 'İESÜ Ömer Halisdemir Konferans Salonu',
+    mediaType: 'image', // 'image' | 'video'
     images: ['https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=1000&q=80'],
+    video: null,
     filter: 'vibrant',
     musicTitle: 'Campus Synthwave & Tech Beats',
     musicArtist: 'İESÜ Sound Studio'
   });
+  const mediaFileInputRef = useRef(null);
+  const [mediaTab, setMediaTab] = useState('image'); // 'image' | 'video'
+  const [urlInputVal, setUrlInputVal] = useState('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
 
   const isAdmin = currentUser?.role === 'admin';
   const isDean = currentUser?.title?.toLowerCase().includes('dekan');
@@ -163,7 +170,7 @@ export default function StudentClubPortal({
     (club.memberApplications || []).some(a => (a.studentId === currentUser?.id || a.email === currentUser?.email) && a.status === 'pending')
   );
 
-  // Trigger SKS Venue & Request Modal (with permission gate)
+  // Trigger Venue & Request Modal (with permission gate)
   const handleOpenVenueModal = () => {
     if (!selectedClub) return;
     if (isAuthorizedOfficer(selectedClub)) {
@@ -307,7 +314,7 @@ export default function StudentClubPortal({
     toast.success(`${assignRoleModalMember.name} öğrencisine "${newAssignedRole}" yetkisi atandı.`);
   };
 
-  // Submit SKS Venue & Request Form (NO MONEY INPUT)
+  // Submit Venue & Request Form (NO MONEY INPUT)
   const handleVenueSubmit = (e) => {
     e.preventDefault();
     const finalVenue = venueForm.venue === 'Diğer (Özel Alan)' ? venueForm.customVenue : venueForm.venue;
@@ -336,7 +343,7 @@ export default function StudentClubPortal({
       date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
       requestedDate: new Date().toLocaleDateString('tr-TR'),
       description: venueForm.description || venueForm.purpose || '',
-      approvalNote: 'SKS Daire Başkanlığı salon ve ekipman incelemesinde.'
+      approvalNote: 'Mekan ve donanım inceleme sürecinde.'
     };
 
     const updatedApps = [newApp, ...(clubApplications || [])];
@@ -371,13 +378,92 @@ export default function StudentClubPortal({
       description: ''
     });
 
-    toast.success('Salon ve etkinlik tahsis talebiniz SKS Daire Başkanlığına iletildi! Bütçe ve teknik onay birim tarafından verilecektir.');
+    toast.success('Salon ve etkinlik tahsis talebiniz Öğrenci Dekanlığına iletildi! Teknik onay birim tarafından verilecektir.');
+  };
+
+  // File upload handler for club media post (Photos & Videos)
+  const handleMediaFileChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    files.forEach(file => {
+      const isVideo = file.type.startsWith('video/');
+      const isImage = file.type.startsWith('image/');
+
+      if (!isVideo && !isImage) {
+        toast.error('Lütfen geçerli bir görsel veya video dosyası seçin.');
+        return;
+      }
+
+      if (isVideo && file.size > 50 * 1024 * 1024) {
+        toast.error('Video boyutu maksimum 50 MB olabilir.');
+        return;
+      }
+      if (isImage && file.size > 10 * 1024 * 1024) {
+        toast.error('Fotoğraf boyutu maksimum 10 MB olabilir.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target.result;
+        if (isVideo) {
+          setPostForm(prev => ({
+            ...prev,
+            mediaType: 'video',
+            video: dataUrl
+          }));
+          setMediaTab('video');
+          toast.success(`🎬 "${file.name}" videosu başarıyla yüklendi!`);
+        } else {
+          setPostForm(prev => {
+            const currentImages = (prev.images || []).filter(img => !img.includes('unsplash.com/photo-1544928147'));
+            return {
+              ...prev,
+              mediaType: 'image',
+              images: [...currentImages, dataUrl]
+            };
+          });
+          setMediaTab('image');
+          toast.success(`📸 "${file.name}" fotoğrafı eklendi!`);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if (e.target) e.target.value = '';
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setPostForm(prev => ({
+      ...prev,
+      images: (prev.images || []).filter((_, idx) => idx !== indexToRemove)
+    }));
+  };
+
+  const handleRemoveVideo = () => {
+    setPostForm(prev => ({
+      ...prev,
+      video: null,
+      mediaType: 'image'
+    }));
   };
 
   // Create New Instagram-Style Post
   const handleCreatePost = (e) => {
     e.preventDefault();
     if (!selectedClub) return;
+
+    const hasImages = Array.isArray(postForm.images) && postForm.images.some(Boolean);
+    const hasVideo = !!postForm.video;
+
+    if (!hasImages && !hasVideo && !postForm.caption.trim()) {
+      toast.error('Lütfen en az bir fotoğraf veya video ekleyin ya da bir açıklama yazın.');
+      return;
+    }
+
+    const resolvedMediaType = postForm.video ? 'video' : 'image';
+    const cleanImages = (postForm.images || []).filter(Boolean);
 
     const newPost = {
       id: 'POST-CLB-' + Date.now().toString(),
@@ -387,9 +473,11 @@ export default function StudentClubPortal({
         logo: selectedClub.logo || 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=250&q=80',
         verified: true
       },
-      location: postForm.location,
-      images: postForm.images.filter(Boolean),
-      filter: postForm.filter,
+      location: postForm.location || 'İESÜ Kampüsü',
+      mediaType: resolvedMediaType,
+      images: cleanImages.length > 0 ? cleanImages : (postForm.video ? [] : ['https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=1000&q=80']),
+      video: postForm.video || null,
+      filter: postForm.filter || 'normal',
       music: {
         title: postForm.musicTitle,
         artist: postForm.musicArtist,
@@ -419,11 +507,15 @@ export default function StudentClubPortal({
     setPostForm({
       caption: '',
       location: 'İESÜ Ömer Halisdemir Konferans Salonu',
+      mediaType: 'image',
       images: ['https://images.unsplash.com/photo-1544928147-79a2dbc1f389?auto=format&fit=crop&w=1000&q=80'],
+      video: null,
       filter: 'vibrant',
       musicTitle: 'Campus Synthwave & Tech Beats',
       musicArtist: 'İESÜ Sound Studio'
     });
+    setUrlInputVal('');
+    setShowUrlInput(false);
 
     toast.success('Kulüp etkinliği Instagram formatında başarıyla paylaşıldı!');
   };
@@ -576,7 +668,7 @@ export default function StudentClubPortal({
                       <Users size={13} /> {selectedClub.memberCount || (selectedClub.members?.length || 45)} Üye
                     </span>
                     <span className="text-xs font-bold text-emerald-200 bg-emerald-500/20 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-emerald-300/30">
-                      <CheckCircle2 size={13} /> SKS Tescilli
+                      <CheckCircle2 size={13} /> Resmî Kulüp
                     </span>
                     {authorized && (
                       <span className="text-xs font-bold text-amber-200 bg-amber-400/20 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-300/30">
@@ -607,7 +699,7 @@ export default function StudentClubPortal({
                   </button>
                 )}
 
-                {/* SKS Venue Request Action Button */}
+                {/* Venue Request Action Button */}
                 <button
                   onClick={handleOpenVenueModal}
                   className="px-5 py-2.5 bg-white hover:bg-red-50 text-[#990000] font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
@@ -624,7 +716,7 @@ export default function StudentClubPortal({
               { id: 'overview', label: 'Genel Bakış & Medya Akışı', icon: Activity },
               { id: 'events', label: `Etkinlikler (${selectedClub.events?.length || 0})`, icon: Calendar },
               { id: 'board', label: `Yönetim Kurulu (${selectedClub.boardMembers?.length || 0})`, icon: Users },
-              { id: 'venue_requests', label: `SKS Etkinlik & Yer Talepleri (${selectedClub.budgetRequests?.length || 0})`, icon: Building2 },
+              { id: 'venue_requests', label: `Etkinlik & Yer Talepleri (${selectedClub.budgetRequests?.length || 0})`, icon: Building2 },
               { id: 'members', label: `Üyeler & Başvurular (${selectedClub.memberCount || selectedClub.members?.length || 0})`, icon: FileText }
             ].map(tab => {
               const Icon = tab.icon;
@@ -699,7 +791,7 @@ export default function StudentClubPortal({
                 {/* Authorized Officers Badge Box */}
                 <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200/80">
                   <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block mb-1">
-                    SKS Yetkili Temsilcileri ({((selectedClub.authorizedOfficers && selectedClub.authorizedOfficers.length > 0) ? selectedClub.authorizedOfficers : [{ name: selectedClub.president?.name || 'Mehmet Kerem Yılmaz', role: 'Kulüp Başkanı' }, { name: 'Zeynep Kaya', role: 'Başkan Yardımcısı' }]).length})
+                    Yetkili Kulüp Temsilcileri ({((selectedClub.authorizedOfficers && selectedClub.authorizedOfficers.length > 0) ? selectedClub.authorizedOfficers : [{ name: selectedClub.president?.name || 'Mehmet Kerem Yılmaz', role: 'Kulüp Başkanı' }, { name: 'Zeynep Kaya', role: 'Başkan Yardımcısı' }]).length})
                   </span>
                   <div className="space-y-1">
                     {((selectedClub.authorizedOfficers && selectedClub.authorizedOfficers.length > 0) ? selectedClub.authorizedOfficers : [{ name: selectedClub.president?.name || 'Mehmet Kerem Yılmaz', role: 'Kulüp Başkanı' }, { name: 'Zeynep Kaya', role: 'Başkan Yardımcısı' }]).map((off, idx) => (
@@ -819,40 +911,53 @@ export default function StudentClubPortal({
                             <span className="text-xs text-slate-600 font-mono font-bold">•••</span>
                           </div>
 
-                          {/* Post Media Carousel Container */}
-                          <div className="relative aspect-4/3 bg-slate-100 overflow-hidden group select-none">
-                            <SafeAvatar src={currentImg} name="Club Post" size={400} className={`w-full h-full object-cover transition-all duration-500 ${getFilterClass(post.filter)}`} onDoubleClick={() => handleToggleLike(post.id)} />
-
-                            {/* Floating Animated Heart on Double Tap */}
-                            {heartAnimId === post.id && (
-                              <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-ping">
-                                <Heart size={84} className="text-rose-500 fill-rose-500 drop-shadow-2xl" />
+                          {/* Post Media Carousel / Video Container */}
+                          <div className="relative aspect-4/3 bg-slate-900 overflow-hidden group select-none flex items-center justify-center">
+                            {(post.video || post.mediaType === 'video') ? (
+                              <div className="relative w-full h-full bg-black flex items-center justify-center">
+                                <video 
+                                  src={post.video || post.images?.[0]} 
+                                  controls 
+                                  playsInline 
+                                  className="w-full h-full object-contain"
+                                />
                               </div>
-                            )}
-
-                            {/* Multiple Images Slider Navigation */}
-                            {totalImgs > 1 && (
+                            ) : (
                               <>
-                                <button 
-                                  onClick={() => handleSlideImage(post.id, totalImgs, -1)}
-                                  className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                >
-                                  <ChevronLeft size={18} />
-                                </button>
-                                <button 
-                                  onClick={() => handleSlideImage(post.id, totalImgs, 1)}
-                                  className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                >
-                                  <ChevronRight size={18} />
-                                </button>
-                                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full">
-                                  {post.images.map((_, idx) => (
-                                    <div 
-                                      key={idx} 
-                                      className={`w-1.5 h-1.5 rounded-full transition-all ${idx === activeImgIdx ? 'w-3 bg-white' : 'bg-white/50'}`} 
-                                    />
-                                  ))}
-                                </div>
+                                <SafeAvatar src={currentImg} name="Club Post" size={400} className={`w-full h-full object-cover transition-all duration-500 ${getFilterClass(post.filter)}`} onDoubleClick={() => handleToggleLike(post.id)} />
+
+                                {/* Floating Animated Heart on Double Tap */}
+                                {heartAnimId === post.id && (
+                                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-ping">
+                                    <Heart size={84} className="text-rose-500 fill-rose-500 drop-shadow-2xl" />
+                                  </div>
+                                )}
+
+                                {/* Multiple Images Slider Navigation */}
+                                {totalImgs > 1 && (
+                                  <>
+                                    <button 
+                                      onClick={() => handleSlideImage(post.id, totalImgs, -1)}
+                                      className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                    >
+                                      <ChevronLeft size={18} />
+                                    </button>
+                                    <button 
+                                      onClick={() => handleSlideImage(post.id, totalImgs, 1)}
+                                      className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                    >
+                                      <ChevronRight size={18} />
+                                    </button>
+                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full">
+                                      {post.images.map((_, idx) => (
+                                        <div 
+                                          key={idx} 
+                                          className={`w-1.5 h-1.5 rounded-full transition-all ${idx === activeImgIdx ? 'w-3 bg-white' : 'bg-white/50'}`} 
+                                        />
+                                      ))}
+                                    </div>
+                                  </>
+                                )}
                               </>
                             )}
 
@@ -1045,7 +1150,7 @@ export default function StudentClubPortal({
                 </div>
               )}
 
-              {/* TAB 4: SKS VENUE & ALLOCATION REQUESTS (NO MONEY COLUMN FOR STUDENT) */}
+              {/* TAB 4: VENUE & ALLOCATION REQUESTS (NO MONEY COLUMN FOR STUDENT) */}
               {clubDetailTab === 'venue_requests' && (
                 <div className="space-y-6 animate-fade-in">
                   
@@ -1061,7 +1166,7 @@ export default function StudentClubPortal({
                       <h4 className="text-xl font-black text-emerald-700">
                         {(selectedClub.budgetRequests || []).filter(r => r.status === 'approved').length} Etkinlik
                       </h4>
-                      <span className="text-[11px] text-emerald-700 font-bold">SKS Onaylı Rezervasyon</span>
+                      <span className="text-[11px] text-emerald-700 font-bold">Onaylı Rezervasyon</span>
                     </div>
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                       <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">İncelemedeki Başvurular</p>
@@ -1072,12 +1177,12 @@ export default function StudentClubPortal({
                     </div>
                   </div>
 
-                  {/* SKS Venue Requests Pool */}
+                  {/* Venue Requests Pool */}
                   <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-5">
                       <div>
-                        <h3 className="font-bold text-gray-900 text-base">SKS Etkinlik & Yer Tahsis Başvuruları</h3>
-                        <p className="text-xs text-slate-600 font-medium">Öğrenci Dekanlığı ve SKS Daire Başkanlığına iletilen resmî mekan ve teknik altyapı talepleri.</p>
+                        <h3 className="font-bold text-gray-900 text-base">Etkinlik & Yer Tahsis Başvuruları</h3>
+                        <p className="text-xs text-slate-600 font-medium">Öğrenci Dekanlığı ve Kariyer Merkezine iletilen resmî mekan ve teknik altyapı talepleri.</p>
                       </div>
                       <button
                         onClick={handleOpenVenueModal}
@@ -1096,7 +1201,7 @@ export default function StudentClubPortal({
                             <th className="pb-3 px-3">Tarih & Saat Aralığı</th>
                             <th className="pb-3 px-3">Yetkili Başvuran</th>
                             <th className="pb-3 px-3">Durum</th>
-                            <th className="pb-3 px-3">SKS Karar Notu</th>
+                            <th className="pb-3 px-3">Karar / Onay Notu</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 font-medium">
@@ -1115,7 +1220,7 @@ export default function StudentClubPortal({
                                   {req.status === 'approved' ? 'Tahsis Onaylandı' : req.status === 'rejected' ? 'Reddedildi' : 'İnceleniyor'}
                                 </span>
                               </td>
-                              <td className="py-3 px-3 text-slate-700 font-medium">{req.approvalNote || 'SKS salon inceleme sürecinde.'}</td>
+                              <td className="py-3 px-3 text-slate-700 font-medium">{req.approvalNote || 'Salon ve mekan inceleme sürecinde.'}</td>
                             </tr>
                           ))}
                           {(!selectedClub.budgetRequests || selectedClub.budgetRequests.length === 0) && (
@@ -1274,10 +1379,10 @@ export default function StudentClubPortal({
                     <div>
                       <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
                         <FileText size={18} className="text-[#990000]" />
-                        İESÜ SKS Onaylı Resmî Kulüp Tüzüğü
+                        İESÜ Resmî Öğrenci Kulübü Tüzüğü
                       </h4>
                       <p className="text-xs text-slate-600 mt-1">
-                        Bu kulüp Sağlık Kültür ve Spor Daire Başkanlığı Kulüp Kuruluş ve İşleyiş Yönergesi doğrultusunda {selectedClub.constitutionApprovedDate || '2021'} tarihinde akredite edilmiştir.
+                        Bu kulüp Öğrenci Dekanlığı Kulüp Kuruluş ve İşleyiş Yönergesi doğrultusunda {selectedClub.constitutionApprovedDate || '2021'} tarihinde akredite edilmiştir.
                       </p>
                     </div>
                     <button
@@ -1296,7 +1401,7 @@ export default function StudentClubPortal({
         </div>
 
         {/* ============================================================== */}
-        {/* MODAL 1: SKS VENUE & EQUIPMENT REQUEST MODAL (NO MONEY INPUT)   */}
+        {/* MODAL 1: VENUE & EQUIPMENT REQUEST MODAL (NO MONEY INPUT)        */}
         {/* ============================================================== */}
         {showVenueModal && (
           <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
@@ -1306,7 +1411,7 @@ export default function StudentClubPortal({
               <div className="p-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-4 shrink-0 bg-white">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-[#990000] bg-red-50 px-2.5 py-1 rounded-md inline-block mb-1">
-                    SKS Daire Başkanlığı Mekan & Donanım Formu
+                    Etkinlik Mekan & Donanım Formu
                   </span>
                   <h3 className="text-xl font-black text-gray-900">Etkinlik & Yer Tahsis Talebi</h3>
                   <p className="text-xs text-slate-600 font-medium mt-1">
@@ -1452,7 +1557,7 @@ export default function StudentClubPortal({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Etkinlik Amacı ve SKS Karar Açıklaması *</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Etkinlik Amacı ve Tahsis Açıklaması *</label>
                     <textarea 
                       rows={2} 
                       required 
@@ -1463,9 +1568,9 @@ export default function StudentClubPortal({
                     />
                   </div>
 
-                  {/* SKS Notice */}
+                  {/* Allocation Notice */}
                   <div className="p-3 bg-red-50 rounded-xl border border-red-100 text-xs text-red-900 leading-relaxed">
-                    ℹ️ <strong>SKS Dairesi Notu:</strong> Öğrenci kulüp taleplerinde parasal maliyet gösterilmez. Gerekli teknik malzeme ve salon tahsisi SKS Daire Başkanlığı tarafından doğrudan tahsis edilir ve bütçelendirilir.
+                    ℹ️ <strong>Öğrenci Dekanlığı Notu:</strong> Öğrenci kulüp taleplerinde parasal maliyet gösterilmez. Gerekli teknik malzeme ve salon tahsisi Öğrenci Dekanlığı & Koordinatörlük tarafından doğrudan tahsis edilir ve bütçelendirilir.
                   </div>
                 </div>
 
@@ -1482,7 +1587,7 @@ export default function StudentClubPortal({
                     type="submit" 
                     className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
                   >
-                    <CheckCircle2 size={16} /> Talebi SKS'ye İlet
+                    <CheckCircle2 size={16} /> Talebi İlet
                   </button>
                 </div>
               </form>
@@ -1505,7 +1610,7 @@ export default function StudentClubPortal({
                   </span>
                   <h3 className="text-xl font-black text-gray-900">{selectedClub.name} Başvurusu</h3>
                   <p className="text-xs text-slate-600 font-medium mt-1">
-                    Kulüp yönetmeliği gereği T.C. Kimlik ve Öğrenci No bilgileriniz kulüp başkanlığı ve SKS tarafından doğrulanacaktır.
+                    Kulüp yönetmeliği gereği T.C. Kimlik ve Öğrenci No bilgileriniz kulüp başkanlığı ve üniversite yönetimi tarafından doğrulanacaktır.
                   </p>
                 </div>
                 <button 
@@ -1669,7 +1774,7 @@ export default function StudentClubPortal({
               </div>
               <h3 className="text-xl font-black text-gray-900 mb-2">Yetkili Yönetici Kısıtlaması</h3>
               <p className="text-xs text-slate-600 leading-relaxed mb-6">
-                Üniversite SKS yönergesi uyarınca, etkinlik oluşturma ve yer tahsis talepleri yalnızca <strong>Kulüp Başkanı</strong>, <strong>Başkan Yardımcısı</strong>, <strong>Genel Sekreter</strong> veya <strong>Mali Sorumlu</strong> tarafından yapılabilmektedir.
+                Üniversite kulüpler yönergesi uyarınca, etkinlik oluşturma ve yer tahsis talepleri yalnızca <strong>Kulüp Başkanı</strong>, <strong>Başkan Yardımcısı</strong>, <strong>Genel Sekreter</strong> veya <strong>Mali Sorumlu</strong> tarafından yapılabilmektedir.
               </p>
               <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-left text-xs text-slate-700 mb-6">
                 <span className="font-bold block mb-1">Mevcut Kulüp Yetkilisi:</span>
@@ -1716,16 +1821,190 @@ export default function StudentClubPortal({
               {/* Scrollable Form Body */}
               <form onSubmit={handleCreatePost} className="flex flex-col flex-1 overflow-hidden">
                 <div className="p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Fotoğraf URL (Görsel Bağlantısı) *</label>
-                    <input 
-                      type="url" 
-                      required 
-                      value={postForm.images[0]} 
-                      onChange={(e) => setPostForm({ ...postForm, images: [e.target.value] })} 
-                      placeholder="https://images.unsplash.com/..." 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 outline-none focus:border-[#990000] focus:bg-white" 
-                    />
+                  {/* MEDYA TÜRÜ SEÇİMİ (FOTOĞRAF / VİDEO) */}
+                  <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-2xl">
+                    <button
+                      type="button"
+                      onClick={() => setMediaTab('image')}
+                      className={`flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer ${
+                        mediaTab === 'image' 
+                          ? 'bg-white text-slate-900 shadow-xs' 
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <ImageIcon size={15} className={mediaTab === 'image' ? 'text-[#990000]' : ''} />
+                      Fotoğraf / Galeri ({postForm.images?.filter(Boolean).length || 0})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMediaTab('video')}
+                      className={`flex-1 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer ${
+                        mediaTab === 'video' 
+                          ? 'bg-white text-slate-900 shadow-xs' 
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Video size={15} className={mediaTab === 'video' ? 'text-[#990000]' : ''} />
+                      Video / Reels {postForm.video && '✓'}
+                    </button>
+                  </div>
+
+                  {/* DOSYA YÜKLEME ALANI (DRAG & DROP / DOSYA SEÇ) */}
+                  <input 
+                    type="file" 
+                    ref={mediaFileInputRef} 
+                    onChange={handleMediaFileChange} 
+                    accept={mediaTab === 'video' ? "video/mp4,video/webm,video/*" : "image/jpeg,image/png,image/webp,image/*"} 
+                    multiple={mediaTab === 'image'} 
+                    className="hidden" 
+                  />
+
+                  {mediaTab === 'video' ? (
+                    /* VİDEO YÜKLEME VE ÖNİZLEME */
+                    <div className="space-y-3">
+                      {postForm.video ? (
+                        <div className="relative rounded-2xl overflow-hidden bg-black border border-slate-200">
+                          <video 
+                            src={postForm.video} 
+                            controls 
+                            className="w-full max-h-56 object-contain mx-auto" 
+                          />
+                          <button
+                            type="button"
+                            onClick={handleRemoveVideo}
+                            className="absolute top-2 right-2 p-1.5 bg-black/70 hover:bg-red-600 text-white rounded-full transition cursor-pointer"
+                            title="Videoyu Kaldır"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                          <div className="p-2.5 bg-slate-900/90 text-white flex items-center justify-between text-xs font-semibold px-3">
+                            <span className="flex items-center gap-1.5 text-emerald-400">
+                              <CheckCircle2 size={13} /> Video Başarıyla Yüklendi
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => mediaFileInputRef.current?.click()}
+                              className="text-xs text-sky-400 hover:underline cursor-pointer"
+                            >
+                              Videoyu Değiştir
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={() => mediaFileInputRef.current?.click()}
+                          className="border-2 border-dashed border-red-200 hover:border-[#990000] bg-red-50/40 hover:bg-red-50/70 rounded-2xl p-6 text-center cursor-pointer transition group"
+                        >
+                          <div className="w-12 h-12 rounded-2xl bg-white shadow-xs text-[#990000] flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform border border-red-100">
+                            <Film size={24} />
+                          </div>
+                          <h4 className="text-sm font-bold text-slate-800">Cihazınızdan Video Seçin</h4>
+                          <p className="text-xs text-slate-500 mt-1">MP4 veya WebM formatında kulüp etkinlik videosu yükleyin (Maks 50MB)</p>
+                          <button 
+                            type="button" 
+                            className="mt-3 px-4 py-2 bg-[#990000] text-white text-xs font-bold rounded-xl shadow-xs group-hover:bg-red-800 transition"
+                          >
+                            Video Dosyası Seç (Gözat)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* FOTOĞRAF YÜKLEME VE GALERİ ÖNİZLEMESİ */
+                    <div className="space-y-3">
+                      {/* Upload Box */}
+                      <div 
+                        onClick={() => mediaFileInputRef.current?.click()}
+                        className="border-2 border-dashed border-slate-200 hover:border-[#990000] bg-slate-50 hover:bg-red-50/30 rounded-2xl p-5 text-center cursor-pointer transition group"
+                      >
+                        <div className="w-11 h-11 rounded-2xl bg-white shadow-xs text-[#990000] flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform border border-slate-100">
+                          <UploadCloud size={22} />
+                        </div>
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-800">Fotoğraf(ları) Seçin veya Sürükleyin</h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">JPEG, PNG, WebP (Birden fazla fotoğraf yükleyebilirsiniz)</p>
+                        <button 
+                          type="button" 
+                          className="mt-2.5 px-3.5 py-1.5 bg-[#990000] text-white text-xs font-bold rounded-xl shadow-xs group-hover:bg-red-800 transition"
+                        >
+                          Fotoğraf Yükle
+                        </button>
+                      </div>
+
+                      {/* Thumbnails List */}
+                      {postForm.images && postForm.images.length > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
+                            <span>Seçilen Görseller ({postForm.images.length})</span>
+                            <button
+                              type="button"
+                              onClick={() => mediaFileInputRef.current?.click()}
+                              className="text-[11px] text-[#990000] hover:underline flex items-center gap-1 cursor-pointer"
+                            >
+                              <Plus size={12} /> Görsel Ekle
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-4 gap-2">
+                            {postForm.images.map((img, idx) => (
+                              <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group">
+                                <img src={img} alt={`Preview ${idx}`} className={`w-full h-full object-cover ${getFilterClass(postForm.filter)}`} />
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); handleRemoveImage(idx); }}
+                                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 hover:bg-red-600 text-white flex items-center justify-center transition cursor-pointer"
+                                  title="Sil"
+                                >
+                                  <X size={11} />
+                                </button>
+                                {idx === 0 && (
+                                  <span className="absolute bottom-1 left-1 bg-black/70 text-[9px] text-white font-bold px-1.5 py-0.5 rounded-md">
+                                    Kapak
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* İSTEĞE BAĞLI DIŞ BAĞLANTI (URL) EKLEME */}
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowUrlInput(!showUrlInput)}
+                      className="text-[11px] font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1 cursor-pointer transition"
+                    >
+                      <LinkIcon size={12} />
+                      {showUrlInput ? 'Bağlantı Girişini Gizle' : 'veya Web Bağlantısı (URL) ile Görsel Ekle'}
+                    </button>
+                    {showUrlInput && (
+                      <div className="mt-2 flex gap-2">
+                        <input
+                          type="url"
+                          value={urlInputVal}
+                          onChange={(e) => setUrlInputVal(e.target.value)}
+                          placeholder="https://images.unsplash.com/... veya https://..."
+                          className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 outline-none focus:border-[#990000]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (urlInputVal.trim()) {
+                              setPostForm(prev => ({
+                                ...prev,
+                                images: [...(prev.images || []).filter(img => !img.includes('unsplash.com/photo-1544928147')), urlInputVal.trim()]
+                              }));
+                              setUrlInputVal('');
+                              toast.success('Görsel bağlantısı eklendi!');
+                            }
+                          }}
+                          className="px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl hover:bg-black transition cursor-pointer"
+                        >
+                          Ekle
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1917,7 +2196,7 @@ export default function StudentClubPortal({
               <Logo className="h-8 w-auto text-[#990000]" />
               <div>
                 <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Öğrenci Kulüpleri Portalı</h1>
-                <p className="text-[11px] font-bold text-gray-500">Sağlık, Kültür ve Spor Daire Başkanlığı (SKSDB)</p>
+                <p className="text-[11px] font-bold text-gray-500">Öğrenci Dekanlığı & Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
           </div>
@@ -2049,11 +2328,11 @@ export default function StudentClubPortal({
           </div>
         )}
 
-        {/* DEAN / SKS APPLICATION APPROVALS */}
+        {/* DEAN APPLICATION APPROVALS */}
         {activeTab === 'admin' && (isAdmin || isDean) && (
           <div className="animate-fade-in space-y-6">
              <div className="bg-white rounded-xl p-6 md:p-8 border border-slate-200 shadow-sm">
-               <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2"><ShieldCheck className="text-amber-500"/> SKS & Dekanlık Onay Bekleyenler</h2>
+               <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2"><ShieldCheck className="text-amber-500"/> Dekanlık Onay Bekleyenler</h2>
                {(() => {
                  const pendingApps = applications.filter(a => a.status === 'pending' || a.status === 'Beklemede' || !a.status);
                  if (pendingApps.length === 0) {
@@ -2150,7 +2429,7 @@ export default function StudentClubPortal({
                   EK-1 Resmî Başvuru Formu
                 </span>
                 <h2 className="text-xl font-black text-gray-900">Yeni Öğrenci Kulübü Kurma</h2>
-                <p className="text-xs text-slate-600 font-medium mt-1">SKS Daire Başkanlığı Kulüp Kuruluş ve İşleyiş Yönergesi başvuru protokolü.</p>
+                <p className="text-xs text-slate-600 font-medium mt-1">Öğrenci Kulüpleri Kuruluş ve İşleyiş Yönergesi başvuru protokolü.</p>
               </div>
               <button 
                 onClick={() => setShowCreateModal(false)}
@@ -2189,7 +2468,7 @@ export default function StudentClubPortal({
               }
               setShowCreateModal(false);
               setCreateForm({ name: '', category: 'Bilim ve Teknoloji', description: '', purpose: '', advisor: '' });
-              toast.success('EK-1 Kulüp kurma başvurunuz SKS Daire Başkanlığına iletildi!');
+              toast.success('EK-1 Kulüp kurma başvurunuz Öğrenci Dekanlığına iletildi!');
             }} className="flex flex-col flex-1 overflow-hidden">
               <div className="p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
                 <div>
