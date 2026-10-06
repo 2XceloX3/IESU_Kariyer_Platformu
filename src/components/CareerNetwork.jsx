@@ -2,10 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { 
   Building2, Calendar, Users, Briefcase, ExternalLink, ShieldCheck, 
   ChevronRight, BookOpen, X, Search, CheckCircle2, MapPin, Sparkles, 
-  ArrowLeft, GraduationCap, Award, MessageCircle, Filter, Star, Check 
+  ArrowLeft, GraduationCap, Award, MessageCircle, Filter, Star, Check,
+  Building, Phone, Mail, FileCheck2, Handshake, Eye, Info
 } from 'lucide-react';
 import SafeAvatar from './shared/SafeAvatar';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import TopProfileMenu from './TopProfileMenu';
+import Logo from './Logo';
 import useAppStore from '../store/useAppStore';
 import { generateStudents, generateAlumni } from '../utils/mockData';
 
@@ -33,6 +36,9 @@ export default function CareerNetwork({
 
   // Modals for protocols tab
   const [activeModal, setActiveModal] = useState(null); // 'companies', 'participants', 'internships'
+  const [selectedParticipantModal, setSelectedParticipantModal] = useState(null);
+  const [selectedCompanyModal, setSelectedCompanyModal] = useState(null);
+  const [selectedInternshipModal, setSelectedInternshipModal] = useState(null);
   const [showAllAcademics, setShowAllAcademics] = useState(false);
   const [modalSearch, setModalSearch] = useState('');
 
@@ -46,52 +52,52 @@ export default function CareerNetwork({
 
   const bannerGradient = 
     isAlumni ? 'bg-gradient-to-br from-[#065F46] via-[#059669] to-[#047857] border-emerald-900' :
-    isAcademic ? 'bg-gradient-to-br from-[#4C1D95] via-[#7c3aed] to-[#5B21B6] border-purple-900' :
+    isAcademic ? 'bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#1e1b4b] border-indigo-950' :
     isCompany ? 'bg-gradient-to-br from-[#0A2342] via-[#163B65] to-[#0F172A] border-blue-900' :
     isAdmin ? 'bg-gradient-to-br from-[#78350F] via-[#b45309] to-[#92400E] border-amber-900' :
     'bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] border-red-900';
 
   const backBtnHoverClass = 
     isAlumni ? 'hover:bg-emerald-50 text-gray-700 hover:text-[#059669]' :
-    isAcademic ? 'hover:bg-purple-50 text-gray-700 hover:text-[#7c3aed]' :
+    isAcademic ? 'hover:bg-indigo-50 text-gray-700 hover:text-[#312e81]' :
     isCompany ? 'hover:bg-blue-50 text-gray-700 hover:text-[#1e3a5f]' :
     isAdmin ? 'hover:bg-amber-50 text-gray-700 hover:text-[#b45309]' :
     'hover:bg-red-50 text-gray-700 hover:text-[#990000]';
 
   const titleColor = 
     isAlumni ? 'text-[#059669]' :
-    isAcademic ? 'text-[#7c3aed]' :
+    isAcademic ? 'text-[#312e81]' :
     isCompany ? 'text-[#1e3a5f]' :
     isAdmin ? 'text-[#b45309]' :
     'text-[#990000]';
 
   const actionBtnTextClass = 
     isAlumni ? 'text-[#059669]' :
-    isAcademic ? 'text-[#7c3aed]' :
+    isAcademic ? 'text-[#312e81]' :
     isCompany ? 'text-[#1e3a5f]' :
     isAdmin ? 'text-[#b45309]' :
     'text-[#990000]';
 
   const primaryBtnClass = 
     isAlumni ? 'bg-[#059669] hover:bg-emerald-700' :
-    isAcademic ? 'bg-[#7c3aed] hover:bg-purple-700' :
+    isAcademic ? 'bg-[#312e81] hover:bg-indigo-900' :
     isCompany ? 'bg-[#1e3a5f] hover:bg-slate-900' :
     isAdmin ? 'bg-[#b45309] hover:bg-amber-700' :
     'bg-[#990000] hover:bg-red-800';
 
   const cardIconBg = 
     isAlumni ? 'bg-emerald-50 text-[#059669]' :
-    isAcademic ? 'bg-purple-50 text-[#7c3aed]' :
+    isAcademic ? 'bg-indigo-50 text-[#312e81]' :
     isCompany ? 'bg-blue-50 text-[#1e3a5f]' :
     isAdmin ? 'bg-amber-50 text-[#b45309]' :
     'bg-red-50 text-[#990000]';
 
   const cardHoverBorder = 
     isAlumni ? 'hover:border-emerald-200' :
-    isAcademic ? 'hover:border-purple-200' :
+    isAcademic ? 'hover:border-indigo-200' :
     isCompany ? 'hover:border-blue-200' :
     isAdmin ? 'hover:border-amber-200' :
-    'hover:border-red-100';
+    'hover:border-red-200';
 
   // ─── TALENT POOL CANDIDATES DATA ───
   const storeStudents = useAppStore(state => state.students);
@@ -212,25 +218,214 @@ export default function CareerNetwork({
   const networkAcademics = (academicStaff || []).filter(a => a.source !== 'demo_seed');
 
   const defaultStitchCompanies = [
-    { id: 'cmp_p_1', name: 'Aselsan A.Ş.', sector: 'Savunma Sanayi & Bilişim', location: 'Ankara / İstanbul', protocolDate: '2025-2027', openPositions: 14, logo: 'https://ui-avatars.com/api/?name=Aselsan&background=990000&color=fff' },
-    { id: 'cmp_p_2', name: 'Baykar Teknoloji', sector: 'Havacılık & İHA', location: 'İstanbul / Özdemir Bayraktar Kampüsü', protocolDate: '2025-2028', openPositions: 22, logo: 'https://ui-avatars.com/api/?name=Baykar&background=0A2342&color=fff' },
-    { id: 'cmp_p_3', name: 'Trendyol Tech', sector: 'E-Ticaret & Yazılım', location: 'İstanbul Maslak', protocolDate: '2026-2027', openPositions: 8, logo: 'https://ui-avatars.com/api/?name=Trendyol&background=990000&color=fff' },
-    { id: 'cmp_p_4', name: 'Turkcell Teknoloji', sector: 'Telekomünikasyon', location: 'İstanbul Küçükyalı', protocolDate: '2024-2027', openPositions: 19, logo: 'https://ui-avatars.com/api/?name=Turkcell&background=059669&color=fff' }
+    { 
+      id: 'cmp_p_1', 
+      name: 'Aselsan A.Ş.', 
+      sector: 'Savunma Sanayii & Bilişim', 
+      location: 'Ankara / İstanbul', 
+      protocolDate: '2025-2027', 
+      openPositions: 14, 
+      scope: 'Zorunlu Mühendislik & Aday Mühendislik Protokolü',
+      badge: 'Savunma Sanayii',
+      logo: 'https://ui-avatars.com/api/?name=Aselsan&background=990000&color=fff',
+      desc: 'Haberleşme, radar ve elektronik harp sistemleri üzerine aday mühendislik ve staj kontenjanı tahsis edilmiştir.'
+    },
+    { 
+      id: 'cmp_p_2', 
+      name: 'Baykar Teknoloji', 
+      sector: 'Havacılık, Uzay & İHA', 
+      location: 'İstanbul / Özdemir Bayraktar Kampüsü', 
+      protocolDate: '2025-2028', 
+      openPositions: 22, 
+      scope: 'İnsansız Sistemler & Gömülü Yazılım Stajı',
+      badge: 'Havacılık & İHA',
+      logo: 'https://ui-avatars.com/api/?name=Baykar&background=0A2342&color=fff',
+      desc: 'İHA aviyonik sistemleri, yapay zeka ve kompozit imalat alanında yıllık kontenjan tahsisi bulunmaktadır.'
+    },
+    { 
+      id: 'cmp_p_3', 
+      name: 'Trendyol Tech', 
+      sector: 'E-Ticaret & Büyük Veri', 
+      location: 'İstanbul Maslak', 
+      protocolDate: '2026-2027', 
+      openPositions: 8, 
+      scope: 'Bulut Bilişim & Backend Geliştirici Protokolü',
+      badge: 'Teknoloji',
+      logo: 'https://ui-avatars.com/api/?name=Trendyol&background=990000&color=fff',
+      desc: 'Mikroservis mimarileri, DevOps ve mobil yazılım geliştirmede üstün başarılı öğrencilere staj hakkı.'
+    },
+    { 
+      id: 'cmp_p_4', 
+      name: 'Turkcell Teknoloji', 
+      sector: 'Telekomünikasyon & Bulut', 
+      location: 'İstanbul Küçükyalı', 
+      protocolDate: '2024-2027', 
+      openPositions: 19, 
+      scope: '5G, Siber Güvenlik & Ağ Altyapı Protokolü',
+      badge: 'Telekom',
+      logo: 'https://ui-avatars.com/api/?name=Turkcell&background=059669&color=fff',
+      desc: 'Veri merkezleri, fiber altyapı ve ağ güvenliği alanında teknik staj ve istihdam köprüsü.'
+    },
+    { 
+      id: 'cmp_p_5', 
+      name: 'ESİDER Üye Sanayi Tesisleri', 
+      sector: 'Üretim, Otomasyon & Kimya', 
+      location: 'İstanbul Esenyurt Sanayi Bölgesi', 
+      protocolDate: '2025-2028', 
+      openPositions: 35, 
+      scope: 'Fabrika İçi Saha & Kalite Kontrol Stajı',
+      badge: 'Bölgesel Sanayi',
+      logo: 'https://ui-avatars.com/api/?name=ESIDER&background=1e3a5f&color=fff',
+      desc: 'Esenyurt sanayi bölgesindeki tesislerde mühendislik ve işletme öğrencilerine servis ve yemek imkânlı staj tahsisi.'
+    },
+    { 
+      id: 'cmp_p_6', 
+      name: 'Havelsan A.Ş.', 
+      sector: 'Yazılım, Komuta Kontrol & Simülasyon', 
+      location: 'Ankara / İstanbul Bilişim Vadisi', 
+      protocolDate: '2024-2026', 
+      openPositions: 12, 
+      scope: 'Siber Güvenlik & Sanal Gerçeklik Protokolü',
+      badge: 'Savunma & Yazılım',
+      logo: 'https://ui-avatars.com/api/?name=Havelsan&background=b45309&color=fff',
+      desc: 'Savunma yazılımları, siber tatbikatlar ve yapay zeka tabanlı komuta kontrol projelerinde yer alma olanağı.'
+    }
   ];
 
   const allCompanies = networkCompanies.length > 0 ? networkCompanies : defaultStitchCompanies;
 
   const defaultParticipants = [
-    { id: 'part_1', name: 'Prof. Dr. Süleyman Özdemir', title: 'Rektör / Kurul Başkanı', unit: 'İESÜ Rektörlük', status: 'Katılımcı' },
-    { id: 'part_2', name: 'Kariyer Geliştirme Merkezi', title: 'Resmî Merkez', unit: 'İESÜ KGM', status: 'Düzenleyen' },
-    { id: 'part_3', name: 'Mühendislik & Mimarlık Fakültesi Dekanlığı', title: 'Fakülte Temsilcisi', unit: 'İESÜ MMF', status: 'Katılımcı' },
-    { id: 'part_4', name: 'Esenyurt Sanayici ve İş İnsanları Derneği', title: 'Sektör Temsilcisi', unit: 'ESİDER', status: 'Protokol Ortağı' }
+    { 
+      id: 'part_1', 
+      name: 'Prof. Dr. Süleyman Özdemir', 
+      title: 'Rektör / Kurul Başkanı', 
+      unit: 'İESÜ Rektörlük', 
+      status: 'Kurul Başkanı',
+      roleType: 'rector',
+      email: 'rektorluk@esenyurt.edu.tr',
+      desc: 'Üniversite-sanayi iş birliği ve akademik protokollerin en üst düzeyde koordinasyonunu ve resmî onay süreçlerini yürütür.',
+      initiatives: ['Cumhurbaşkanlığı İK Ofisi Entegrasyonu', 'Sanayi Protokolleri Onay Mercii', 'Akademik Danışma Kurulu']
+    },
+    { 
+      id: 'part_2', 
+      name: 'Kariyer Geliştirme Koordinatörlüğü', 
+      title: 'Resmî Koordinatörlük Birimi', 
+      unit: 'İESÜ KGK', 
+      status: 'Yürütücü & Düzenleyen',
+      roleType: 'career_center',
+      email: 'kariyer@esenyurt.edu.tr',
+      desc: 'Öğrenci ve mezunların staj, istihdam, mentorluk ve yetenek havuzu süreçlerini yöneten ana merkezdir.',
+      initiatives: ['Yetenek Kapısı Entegrasyonu', 'Ulusal Staj Programı Koordinasyonu', 'Sektör Buluşmaları']
+    },
+    { 
+      id: 'part_3', 
+      name: 'Mühendislik & Mimarlık Fakültesi Dekanlığı', 
+      title: 'Fakülte Temsilciliği', 
+      unit: 'İESÜ MMF', 
+      status: 'Akademik Kurul',
+      roleType: 'faculty',
+      email: 'mmf@esenyurt.edu.tr',
+      desc: 'Bilgisayar, Yazılım, Elektrik-Elektronik ve Endüstri Mühendisliği zorunlu ve aday mühendislik staj protokollerini onaylar.',
+      initiatives: ['Savunma Sanayii Ar-Ge Protokolü', 'Aday Mühendislik Programı', 'Bitirme Projeleri Sanayi Eşleşmesi']
+    },
+    { 
+      id: 'part_4', 
+      name: 'Esenyurt Sanayici ve İş İnsanları Derneği (ESİDER)', 
+      title: 'Sanayi & Üretim Sektörü Temsilcisi', 
+      unit: 'ESİDER Yönetim Kurulu', 
+      status: 'Stratejik Protokol Ortağı',
+      roleType: 'industry',
+      email: 'iletisim@esider.org.tr',
+      desc: 'Bölgedeki 300+ sanayi kuruluşu ve üretim tesisinde İESÜ öğrencilerine öncelikli staj ve istihdam kotası sağlar.',
+      initiatives: ['Bölgesel Sanayi Staj Havuzu', 'Mühendislik İstihdam Garantisi', 'Fabrika Teknik Gezileri']
+    },
+    { 
+      id: 'part_5', 
+      name: 'İktisadi, İdari ve Sosyal Bilimler Fakültesi Dekanlığı', 
+      title: 'Fakülte Temsilciliği', 
+      unit: 'İESÜ İİSBF', 
+      status: 'Akademik Kurul',
+      roleType: 'faculty',
+      email: 'iisbf@esenyurt.edu.tr',
+      desc: 'İşletme, Uluslararası Ticaret ve Finans alanında kurumsal ortaklıklar ve denetim firmaları staj protokollerini yürütür.',
+      initiatives: ['Finans & Denetim Staj Kotası', 'Dış Ticaret Protokolleri', 'Borsa İstanbul Ziyaretleri']
+    },
+    { 
+      id: 'part_6', 
+      name: 'İstanbul Ticaret Odası (İTO) Üniversite Masası', 
+      title: 'İş Dünyası & Ticaret Temsilcisi', 
+      unit: 'İTO Girişimcilik & İK', 
+      status: 'Protokol Ortağı',
+      roleType: 'commerce',
+      email: 'kariyer@ito.org.tr',
+      desc: 'Ticari işletmeler ve KOBİ ölçeğindeki ihracatçı firmalarda staj ve dış ticaret uzmanlığı kontenjanlarını koordine eder.',
+      initiatives: ['İhracat Danışmanlığı Stajı', 'Genç Girişimcilik Desteği', 'KOBİ Mentorluk Ağı']
+    },
+    { 
+      id: 'part_7', 
+      name: 'Teknoloji Transfer Ofisi (TTO) & Girişimcilik', 
+      title: 'Ar-Ge ve İnovasyon Koordinatörlüğü', 
+      unit: 'İESÜ TTO', 
+      status: 'Teknoloji Ortağı',
+      roleType: 'tto',
+      email: 'tto@esenyurt.edu.tr',
+      desc: 'TÜBİTAK, Teknofest ve patent odaklı öğrenci projelerinin sanayi şirketleriyle ticarileşme protokollerini yönetir.',
+      initiatives: ['Teknopark Ön Kuluçka Ofisi', 'TÜBİTAK 2244 Sanayi Doktora & Lisans', 'Patent Masası']
+    },
+    { 
+      id: 'part_8', 
+      name: 'İŞKUR & Kamu İstihdam İrtibat Noktası', 
+      title: 'Kamu Kurumu Temsilciliği', 
+      unit: 'İŞKUR Kampüs İrtibat', 
+      status: 'Resmî Kurum',
+      roleType: 'public',
+      email: 'esenyurt@iskur.gov.tr',
+      desc: 'Öğrencilerin mezuniyet öncesi İş Kulübü eğitimleri almasını ve kamu istihdam teşviklerinden faydalanmasını sağlar.',
+      initiatives: ['İş Kulübü Sertifika Programı', 'Kamu İstihdam Danışmanlığı', 'İşbaşı Eğitim Teşvikleri']
+    }
   ];
 
   const defaultInternships = [
-    { id: 'int_p_1', title: 'Zorunlu Mühendislik Yaz Stajı Protokolü', company: 'Aselsan & Baykar Teknoloji', quota: '45 Öğrenci', deadline: '15 Mayıs 2026', type: 'Zorunlu / Gönüllü' },
-    { id: 'int_p_2', title: 'Yazılım ve Yapay Zeka Aday Mühendislik', company: 'Trendyol & Turkcell', quota: '30 Öğrenci', deadline: '30 Nisan 2026', type: 'Aday Mühendislik' },
-    { id: 'int_p_3', title: 'İktisadi ve İdari Bilimler Kurumsal Stajı', company: 'ESİDER Üye Firmaları', quota: '60 Öğrenci', deadline: '01 Haziran 2026', type: 'Kurumsal Staj' }
+    { 
+      id: 'int_p_1', 
+      title: 'Zorunlu Mühendislik Yaz Stajı Protokolü', 
+      company: 'Aselsan & Baykar Teknoloji', 
+      quota: '45 Öğrenci', 
+      deadline: '15 Mayıs 2026', 
+      type: 'Zorunlu / Gönüllü',
+      department: 'Bilgisayar, Yazılım, Elektrik-Elektronik, Endüstri Müh.',
+      requirements: '3. veya 4. sınıf öğrencisi olmak, GNO en az 2.50'
+    },
+    { 
+      id: 'int_p_2', 
+      title: 'Yazılım ve Yapay Zeka Aday Mühendislik', 
+      company: 'Trendyol, Turkcell & Havelsan', 
+      quota: '30 Öğrenci', 
+      deadline: '30 Nisan 2026', 
+      type: 'Aday Mühendislik',
+      department: 'Bilgisayar Müh., Yazılım Müh., Yönetim Bilişim Sistemleri',
+      requirements: '4. sınıf öğrencisi olmak, haftada en az 3 gün devam'
+    },
+    { 
+      id: 'int_p_3', 
+      title: 'İktisadi ve İdari Bilimler Kurumsal Stajı', 
+      company: 'ESİDER Üye Firmaları & İTO', 
+      quota: '60 Öğrenci', 
+      deadline: '01 Haziran 2026', 
+      type: 'Kurumsal Staj',
+      department: 'İşletme, Uluslararası Ticaret ve Lojistik, İktisat',
+      requirements: '2., 3. veya 4. sınıf öğrencisi olmak'
+    },
+    { 
+      id: 'int_p_4', 
+      title: 'Sağlık Yönetimi & Klinik Destek Stajı', 
+      company: 'Protokollü Şehir Hastaneleri & Medikal Merkezler', 
+      quota: '40 Öğrenci', 
+      deadline: '20 Mayıs 2026', 
+      type: 'Klinik / Saha Stajı',
+      department: 'Sağlık Yönetimi, Hemşirelik, Beslenme ve Diyetetik',
+      requirements: '3. veya 4. sınıf öğrencisi olmak'
+    }
   ];
 
   const content = (
@@ -530,92 +725,272 @@ export default function CareerNetwork({
           
           {/* Hero Card */}
           <div className={`rounded-3xl p-6 sm:p-8 shadow-xl text-white relative overflow-hidden ${bannerGradient}`}>
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/25 rounded-full blur-2xl pointer-events-none"></div>
             
             <div className="relative z-10">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 border border-white/20 text-[10px] font-black uppercase tracking-widest text-amber-300 mb-3 shadow-md">
-                <ShieldCheck size={13} className="text-emerald-400" /> Resmî Protokol Ağı
+                <ShieldCheck size={13} className="text-emerald-400" /> Resmî Üniversite Protokol Ekosistemi
               </div>
               
               <h2 className="text-2xl sm:text-[28px] font-black text-white mb-2 leading-tight tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
                 Akademik & Katılımcı Ağı
               </h2>
               
-              <p className="text-white font-semibold text-[13px] leading-relaxed mb-5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-                Üniversitemiz kurul üyeleri, akademisyenler ve resmi staj kontenjanı süreçlerine buradan ulaşabilirsiniz.
+              <p className="text-white font-medium text-[13px] leading-relaxed mb-6 max-w-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                İstanbul Esenyurt Üniversitesi Rektörlüğü, fakülte dekanlıkları, sanayi odaları ve savunma sanayii ortaklığıyla akredite staj ve istihdam protokolü süreçleri.
               </p>
 
               {/* Internal Action Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-1">
                 <button 
                   onClick={() => { setModalSearch(''); setActiveModal('participants'); }}
-                  className={`flex items-center justify-between bg-white ${actionBtnTextClass} hover:bg-slate-100 p-3 rounded-xl transition-all text-xs font-black uppercase tracking-wider w-full shadow-md border border-white cursor-pointer group`}
+                  className={`flex items-center justify-between bg-white text-slate-900 hover:bg-slate-100 p-3 rounded-xl transition-all text-xs font-black uppercase tracking-wider w-full shadow-md border border-white cursor-pointer group`}
                 >
-                  <span className="flex items-center gap-2.5"><Calendar size={16} /> Katılımcılar & Kurullar</span>
-                  <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  <span className="flex items-center gap-2"><Users size={16} className="text-[#990000]" /> Katılımcılar & Kurullar</span>
+                  <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform text-slate-400" />
                 </button>
+
+                <button 
+                  onClick={() => { setModalSearch(''); setActiveModal('companies'); }}
+                  className="flex items-center justify-between bg-white/15 hover:bg-white/25 border border-white/30 p-3 rounded-xl transition-all text-white text-xs font-black uppercase tracking-wider w-full shadow-sm backdrop-blur-md cursor-pointer group"
+                >
+                  <span className="flex items-center gap-2"><Building2 size={16} className="text-amber-300" /> Sanayi Ortakları</span>
+                  <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform text-white/70" />
+                </button>
+
                 <button 
                   onClick={() => { setModalSearch(''); setActiveModal('internships'); }}
-                  className="flex items-center justify-between bg-white/15 hover:bg-white/25 border border-white/30 p-3 rounded-xl transition-all text-white text-xs font-bold w-full shadow-sm backdrop-blur-md cursor-pointer group"
+                  className="flex items-center justify-between bg-white/15 hover:bg-white/25 border border-white/30 p-3 rounded-xl transition-all text-white text-xs font-black uppercase tracking-wider w-full shadow-sm backdrop-blur-md cursor-pointer group"
                 >
-                  <span className="flex items-center gap-2.5"><Briefcase size={16} /> Staj İmkânları & Kontenjanlar</span>
-                  <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                  <span className="flex items-center gap-2"><Briefcase size={16} className="text-emerald-300" /> Staj & Kontenjanlar</span>
+                  <ChevronRight size={15} className="group-hover:translate-x-1 transition-transform text-white/70" />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Compact Participants List */}
-          <div className="flex flex-col gap-4">
+          {/* 1. RESMİ KURUL & KATILIMCILAR BÖLÜMÜ */}
+          <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between px-1">
-              <h3 className="font-black text-gray-900 text-sm">Resmi Kurul & Katılımcılar ({defaultParticipants.length})</h3>
-              <button onClick={() => { setModalSearch(''); setActiveModal('participants'); }} className={`text-xs font-bold ${actionBtnTextClass} hover:underline cursor-pointer`}>Tümünü Gör</button>
+              <div>
+                <h3 className="font-black text-gray-900 text-sm sm:text-base flex items-center gap-2">
+                  <ShieldCheck size={18} className="text-[#990000]" />
+                  Resmî Kurul & Protokol Katılımcıları ({defaultParticipants.length})
+                </h3>
+                <p className="text-[11px] text-slate-500 font-medium">Yetkili kurullar, birim başkanları ve üniversite-sanayi protokol temsilcileri.</p>
+              </div>
+              <button 
+                onClick={() => { setModalSearch(''); setActiveModal('participants'); }} 
+                className="text-xs font-bold text-[#990000] hover:underline cursor-pointer shrink-0"
+              >
+                Tümünü Gör ({defaultParticipants.length})
+              </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {defaultParticipants.map(participant => (
-                <div key={participant.id} className={`bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md ${cardHoverBorder} transition-all group`}>
-                  <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 ${cardIconBg} rounded-xl flex items-center justify-center shrink-0 font-black text-sm`}>
-                      <ShieldCheck size={20} />
+                <div 
+                  key={participant.id} 
+                  onClick={() => setSelectedParticipantModal(participant)}
+                  className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:shadow-md hover:border-red-200 transition-all group cursor-pointer flex flex-col justify-between"
+                >
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-11 h-11 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center shrink-0 border border-red-100 font-black shadow-2xs group-hover:scale-105 transition-transform">
+                      {participant.roleType === 'rector' ? <GraduationCap size={22} /> :
+                       participant.roleType === 'career_center' ? <Award size={22} /> :
+                       participant.roleType === 'industry' ? <Building2 size={22} /> :
+                       <ShieldCheck size={22} />}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <h4 className="font-bold text-gray-900 text-sm truncate">{participant.name}</h4>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        <h4 className="font-bold text-gray-900 text-sm group-hover:text-[#990000] transition-colors truncate">
+                          {participant.name}
+                        </h4>
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
                           {participant.status}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 font-medium mt-0.5">{participant.title} • {participant.unit}</p>
+                      <p className="text-xs text-slate-600 font-semibold mt-0.5 truncate">
+                        {participant.title} • {participant.unit}
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium mt-1.5 line-clamp-2 leading-relaxed">
+                        {participant.desc}
+                      </p>
                     </div>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-600">
+                    <span className="flex items-center gap-1 text-[#990000]">
+                      <Info size={13} /> Protokol İnisiyatiflerini İncele
+                    </span>
+                    <span className="text-slate-400 group-hover:text-[#990000] group-hover:translate-x-0.5 transition-all">
+                      Detay &rarr;
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Compact Academic List */}
-          <div className="flex flex-col gap-4 mt-2">
+          {/* 2. RESMÎ SANAYİ & TEKNOLOJİ PROTOKOL ORTAKLARI (DEV KURUMLAR) */}
+          <div className="flex flex-col gap-3 pt-2">
             <div className="flex items-center justify-between px-1">
-              <h3 className="font-black text-gray-900 text-sm">Akademik Kadro ({networkAcademics.length})</h3>
+              <div>
+                <h3 className="font-black text-gray-900 text-sm sm:text-base flex items-center gap-2">
+                  <Building2 size={18} className="text-[#990000]" />
+                  Resmî Protokollü Sanayi & Teknoloji Ortakları ({allCompanies.length})
+                </h3>
+                <p className="text-[11px] text-slate-500 font-medium">İESÜ öğrencilerine öncelikli kontenjan ve istihdam garantisi sunan akredite kurumlar.</p>
+              </div>
+              <button 
+                onClick={() => { setModalSearch(''); setActiveModal('companies'); }} 
+                className="text-xs font-bold text-[#990000] hover:underline cursor-pointer shrink-0"
+              >
+                Tüm Ortakları Gör
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {allCompanies.map(company => (
+                <div 
+                  key={company.id} 
+                  onClick={() => setSelectedCompanyModal(company)}
+                  className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:shadow-md hover:border-red-200 transition-all group cursor-pointer flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-3 mb-2.5">
+                      <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
+                        {company.logo ? (
+                          <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Building2 size={20} className="text-slate-600" />
+                        )}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-50 text-[#990000] border border-red-200">
+                        {company.openPositions ? `${company.openPositions} Kontenjan` : 'Protokollü'}
+                      </span>
+                    </div>
+
+                    <h4 className="font-black text-gray-900 text-sm group-hover:text-[#990000] transition-colors truncate">
+                      {company.name}
+                    </h4>
+                    <p className="text-[11px] font-bold text-slate-500 truncate mt-0.5">
+                      {company.sector}
+                    </p>
+                    <p className="text-[11px] text-slate-600 font-medium mt-1.5 line-clamp-2">
+                      {company.scope || company.desc || 'Staj ve istihdam protokolü çerçevesinde akredite edilmiştir.'}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500">
+                    <span className="flex items-center gap-1 text-slate-400">
+                      <Calendar size={12} /> {company.protocolDate || '2025-2027'}
+                    </span>
+                    <span className="text-[#990000] group-hover:translate-x-0.5 transition-transform">
+                      Protokol Detayı &rarr;
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. STAJ İMKÂNLARI & RESMÎ KONTENJAN HAVUZU */}
+          <div className="flex flex-col gap-3 pt-2">
+            <div className="flex items-center justify-between px-1">
+              <div>
+                <h3 className="font-black text-gray-900 text-sm sm:text-base flex items-center gap-2">
+                  <Briefcase size={18} className="text-[#990000]" />
+                  Staj İmkânları & Protokol Kontenjanları ({defaultInternships.length})
+                </h3>
+                <p className="text-[11px] text-slate-500 font-medium">Bölümlere göre ayrılmış zorunlu ve aday mühendislik staj tahsisleri.</p>
+              </div>
+              <button 
+                onClick={() => { setModalSearch(''); setActiveModal('internships'); }} 
+                className="text-xs font-bold text-[#990000] hover:underline cursor-pointer shrink-0"
+              >
+                Tümünü Listele
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {defaultInternships.map(internship => (
+                <div 
+                  key={internship.id}
+                  onClick={() => setSelectedInternshipModal(internship)}
+                  className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:shadow-md hover:border-red-200 transition-all group cursor-pointer flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                        {internship.type}
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+                        <Calendar size={12} /> Son Başvuru: {internship.deadline}
+                      </span>
+                    </div>
+
+                    <h4 className="font-black text-gray-900 text-sm sm:text-base group-hover:text-[#990000] transition-colors">
+                      {internship.title}
+                    </h4>
+                    <p className="text-xs font-bold text-slate-700 mt-1">
+                      Ortaklar: <span className="text-slate-900 font-black">{internship.company}</span>
+                    </p>
+                    <p className="text-[11px] font-medium text-slate-500 mt-1 line-clamp-1">
+                      Uygun Bölümler: {internship.department}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-xs font-black text-[#990000] bg-red-50 px-2.5 py-1 rounded-lg border border-red-100">
+                      Kontenjan: {internship.quota}
+                    </span>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedInternshipModal(internship);
+                      }}
+                      className="px-3 py-1.5 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                    >
+                      <Sparkles size={13} /> Başvur & İncele
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. DANIŞMAN AKADEMİK KADRO */}
+          <div className="flex flex-col gap-3 pt-2">
+            <div className="flex items-center justify-between px-1">
+              <div>
+                <h3 className="font-black text-gray-900 text-sm sm:text-base flex items-center gap-2">
+                  <GraduationCap size={18} className="text-[#990000]" />
+                  Danışman Akademik Kadro ({networkAcademics.length})
+                </h3>
+                <p className="text-[11px] text-slate-500 font-medium">Bölüm başkanları ve staj koordinatörü öğretim üyeleri.</p>
+              </div>
               {networkAcademics.length > 0 && (
-                <button onClick={() => setShowAllAcademics((v) => !v)} className={`text-xs font-bold ${actionBtnTextClass} hover:underline cursor-pointer`}>
+                <button 
+                  onClick={() => setShowAllAcademics((v) => !v)} 
+                  className="text-xs font-bold text-[#990000] hover:underline cursor-pointer shrink-0"
+                >
                   {showAllAcademics ? 'Daralt' : 'Tümünü Gör'}
                 </button>
               )}
             </div>
 
             {networkAcademics.length === 0 ? (
-              <div className="text-center p-6 bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center">
-                <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                  <BookOpen size={24} className="text-gray-400" />
+              <div className="text-center p-6 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-center">
+                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2.5">
+                  <BookOpen size={22} className="text-slate-400" />
                 </div>
-                <p className="text-[13px] font-bold text-gray-500 mb-1">Henüz akademik personel bulunmuyor.</p>
+                <p className="text-xs font-bold text-slate-600 mb-0.5">Henüz akademik personel listelenmedi.</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {networkAcademics.slice(0, showAllAcademics ? networkAcademics.length : 5).map(academic => {
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {networkAcademics.slice(0, showAllAcademics ? networkAcademics.length : 4).map(academic => {
                   const isSelf = !academic.id || academic.id === 'self' || academic.id === 'me' || (effectiveCurrentUser && (
                     String(academic.id) === String(effectiveCurrentUser.id) ||
                     String(academic.id) === String(effectiveCurrentUser.uid) ||
@@ -625,40 +1000,38 @@ export default function CareerNetwork({
                   return (
                     <div 
                       key={academic.id} 
-                      className={`bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md ${cardHoverBorder} transition-all group cursor-pointer`} 
+                      className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:shadow-md hover:border-red-200 transition-all group cursor-pointer flex items-center justify-between gap-3" 
                       onClick={() => handleViewTalentProfile(targetId)}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         <SafeAvatar 
                           name={academic.name} 
                           src={academic.avatar} 
                           isAdmin={false} 
-                          size="lg" 
-                          rounded="rounded-full" 
-                          className="w-12 h-12 shrink-0" 
+                          size="md" 
+                          rounded="rounded-2xl" 
+                          className="w-11 h-11 shrink-0" 
                         />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-black text-gray-900 text-sm truncate transition-colors">{academic.name}</h4>
-                          <p className="text-[11px] font-bold text-gray-500 truncate mb-1">{academic.title || 'Akademisyen'} / {academic.department}</p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-100">
-                              Danışman
-                            </span>
-                          </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-gray-900 text-sm truncate group-hover:text-[#990000] transition-colors">{academic.name}</h4>
+                          <p className="text-[11px] font-bold text-slate-500 truncate">{academic.title || 'Akademisyen'} • {academic.department}</p>
+                          <span className="inline-block mt-1 text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-200">
+                            Staj Koordinatörü & Danışman
+                          </span>
                         </div>
-                        <button 
-                          className={`w-8 h-8 rounded-full ${cardIconBg} flex items-center justify-center hover:${primaryBtnClass} hover:text-white transition-colors cursor-pointer`} 
-                          title="Mesaj Gönder" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (setSelectedUserId) setSelectedUserId(academic.id);
-                            useAppStore.getState().setSelectedUserId?.(academic.id);
-                            if (setView) setView('messaging');
-                          }}
-                        >
-                          <ChevronRight size={16} />
-                        </button>
                       </div>
+                      <button 
+                        className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-[#990000] hover:text-white hover:border-[#990000] transition-colors cursor-pointer shrink-0" 
+                        title="Mesaj Gönder" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (setSelectedUserId) setSelectedUserId(academic.id);
+                          useAppStore.getState().setSelectedUserId?.(academic.id);
+                          if (setView) setView('messaging');
+                        }}
+                      >
+                        <MessageCircle size={16} />
+                      </button>
                     </div>
                   );
                 })}
@@ -669,31 +1042,253 @@ export default function CareerNetwork({
         </div>
       )}
 
-      {/* ─── PROTOCOL MODALS ─── */}
+      {/* ─── MODAL: KURUL & KATILIMCI DETAYI ─── */}
+      {selectedParticipantModal && (
+        <div className="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl relative animate-scale-up space-y-5">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center shrink-0 border border-red-100 font-black">
+                  <ShieldCheck size={26} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 inline-block mb-1">
+                    {selectedParticipantModal.status}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-gray-900 leading-tight">
+                    {selectedParticipantModal.name}
+                  </h3>
+                  <p className="text-xs text-slate-600 font-bold">{selectedParticipantModal.title} • {selectedParticipantModal.unit}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedParticipantModal(null)} 
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1">Görev & Protokol Tanımı</label>
+                <p className="text-xs text-slate-700 leading-relaxed font-medium bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  {selectedParticipantModal.desc}
+                </p>
+              </div>
+
+              {selectedParticipantModal.initiatives && (
+                <div>
+                  <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1.5">Yürütülen Resmî İnisiyatifler</label>
+                  <div className="space-y-1.5">
+                    {selectedParticipantModal.initiatives.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-xs font-semibold text-slate-800 bg-red-50/50 p-2 rounded-lg border border-red-100">
+                        <CheckCircle2 size={14} className="text-[#990000] shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedParticipantModal.email && (
+                <div className="flex items-center justify-between text-xs font-bold text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <span className="flex items-center gap-1.5"><Mail size={14} className="text-slate-400" /> Resmî İletişim:</span>
+                  <a href={`mailto:${selectedParticipantModal.email}`} className="text-[#990000] hover:underline font-black">{selectedParticipantModal.email}</a>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2.5">
+              <button 
+                onClick={() => setSelectedParticipantModal(null)}
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+              >
+                Kapat
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedParticipantModal(null);
+                  if (setView) setView('messaging');
+                }}
+                className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <MessageCircle size={14} /> İletişime Geç
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL: SANAYİ PROTOKOL ORTAĞI DETAYI ─── */}
+      {selectedCompanyModal && (
+        <div className="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl relative animate-scale-up space-y-5">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                  {selectedCompanyModal.logo ? (
+                    <img src={selectedCompanyModal.logo} alt={selectedCompanyModal.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <Building2 size={24} className="text-slate-700" />
+                  )}
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#990000] bg-red-50 px-2 py-0.5 rounded border border-red-200 inline-block mb-1">
+                    {selectedCompanyModal.badge || 'Resmî Protokol'}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-gray-900 leading-tight">
+                    {selectedCompanyModal.name}
+                  </h3>
+                  <p className="text-xs text-slate-600 font-bold">{selectedCompanyModal.sector}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedCompanyModal(null)} 
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <span className="text-[10px] font-bold text-slate-400 block uppercase">Protokol Süresi</span>
+                  <span className="font-black text-slate-800">{selectedCompanyModal.protocolDate || '2025-2028'}</span>
+                </div>
+                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <span className="text-[10px] font-bold text-slate-400 block uppercase">Tahsis Kontenjan</span>
+                  <span className="font-black text-[#990000]">{selectedCompanyModal.openPositions || 15} Öğrenci / Dönem</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1">Protokol Kapsamı</label>
+                <p className="text-xs text-slate-700 leading-relaxed font-medium bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  {selectedCompanyModal.desc || selectedCompanyModal.scope}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                <span className="flex items-center gap-1.5"><MapPin size={14} className="text-slate-400" /> Yerleşke / Tesis:</span>
+                <span className="font-bold text-slate-800">{selectedCompanyModal.location}</span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2.5">
+              <button 
+                onClick={() => setSelectedCompanyModal(null)}
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+              >
+                Kapat
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedCompanyModal(null);
+                  if (setView) setView('jobs');
+                }}
+                className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Briefcase size={14} /> İlanları & Kontenjanları İncele
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL: STAJ KONTENJANI DETAYI ─── */}
+      {selectedInternshipModal && (
+        <div className="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl relative animate-scale-up space-y-5">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200 inline-block mb-1">
+                  {selectedInternshipModal.type}
+                </span>
+                <h3 className="text-base sm:text-lg font-black text-gray-900 leading-tight">
+                  {selectedInternshipModal.title}
+                </h3>
+                <p className="text-xs text-slate-600 font-bold mt-0.5">Kurumlar: {selectedInternshipModal.company}</p>
+              </div>
+              <button 
+                onClick={() => setSelectedInternshipModal(null)} 
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-bold">Ayrılan Kontenjan:</span>
+                  <span className="font-black text-[#990000]">{selectedInternshipModal.quota}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-bold">Son Başvuru Tarihi:</span>
+                  <span className="font-black text-slate-800">{selectedInternshipModal.deadline}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-bold">Hedef Bölümler:</span>
+                  <span className="font-bold text-slate-800 text-right max-w-[240px]">{selectedInternshipModal.department}</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-1">Başvuru Koşulları</label>
+                <p className="text-slate-700 font-medium bg-red-50/40 p-3 rounded-xl border border-red-100 leading-relaxed">
+                  {selectedInternshipModal.requirements || 'Öğrenci belgesi, transkript ve bölüm staj komisyonu uygunluk onayı aranmaktadır.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2.5">
+              <button 
+                onClick={() => setSelectedInternshipModal(null)}
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
+              >
+                Kapat
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedInternshipModal(null);
+                  if (setView) setView('jobs');
+                }}
+                className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Sparkles size={14} /> Yetenek Kapısı Üzerinden Başvur
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── GENEL LİSTE MODALLARI (Tümünü Gör) ─── */}
       {activeModal && (
-        <div className="fixed inset-0 z-[120] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in font-sans">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-3xl w-full p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
+        <div className="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in font-sans">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-3xl w-full p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-5 animate-scale-up">
             
             {/* Header */}
             <div className="flex items-center justify-between border-b pb-4 border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-red-50 text-[#990000] rounded-2xl">
+                <div className="p-3 bg-red-50 text-[#990000] rounded-2xl border border-red-100">
                   {activeModal === 'companies' && <Building2 size={24} />}
                   {activeModal === 'participants' && <Users size={24} />}
                   {activeModal === 'internships' && <Briefcase size={24} />}
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-slate-900">
-                    {activeModal === 'companies' && 'Resmi Protokol Ortakları'}
-                    {activeModal === 'participants' && 'Katılımcılar & Resmî Kurullar'}
-                    {activeModal === 'internships' && 'Staj İmkânları ve Kontenjanlar'}
+                  <h3 className="text-lg sm:text-xl font-black text-slate-900">
+                    {activeModal === 'companies' && 'Resmî Protokollü Sanayi & Teknoloji Ortakları'}
+                    {activeModal === 'participants' && 'Katılımcılar & Resmî Protokol Kurulları'}
+                    {activeModal === 'internships' && 'Staj İmkânları ve Kontenjan Havuzu'}
                   </h3>
-                  <p className="text-xs text-slate-500 font-medium">İstanbul Esenyurt Üniversitesi Kariyer Ağı</p>
+                  <p className="text-xs text-slate-500 font-medium">İstanbul Esenyurt Üniversitesi Kariyer & Protokol Ağı</p>
                 </div>
               </div>
               <button 
                 onClick={() => setActiveModal(null)}
-                className="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-full transition cursor-pointer"
+                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -707,29 +1302,69 @@ export default function CareerNetwork({
                 placeholder="Listede arama yapın..."
                 value={modalSearch}
                 onChange={(e) => setModalSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#990000]"
               />
             </div>
 
-            {/* Modal Body */}
+            {/* Modal Body: Participants */}
             {activeModal === 'participants' && (
               <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                 {defaultParticipants
-                  .filter(p => p.name.toLowerCase().includes(modalSearch.toLowerCase()) || p.title.toLowerCase().includes(modalSearch.toLowerCase()))
+                  .filter(p => p.name.toLowerCase().includes(modalSearch.toLowerCase()) || p.title.toLowerCase().includes(modalSearch.toLowerCase()) || p.unit.toLowerCase().includes(modalSearch.toLowerCase()))
                   .map(p => (
-                    <div key={p.id} className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-900">{p.name}</h4>
-                        <p className="text-xs text-slate-500">{p.title} • {p.unit}</p>
+                    <div 
+                      key={p.id} 
+                      onClick={() => {
+                        setActiveModal(null);
+                        setSelectedParticipantModal(p);
+                      }}
+                      className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between hover:bg-red-50/30 hover:border-red-200 transition cursor-pointer group"
+                    >
+                      <div className="min-w-0 flex-1 mr-3">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-sm text-slate-900 group-hover:text-[#990000] transition-colors">{p.name}</h4>
+                          <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">{p.status}</span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium mt-0.5">{p.title} • {p.unit}</p>
                       </div>
-                      <span className={`text-[11px] font-black ${actionBtnTextClass} bg-slate-100 px-3 py-1 rounded-full border border-slate-200`}>
-                        {p.status}
+                      <span className="text-xs font-bold text-[#990000] shrink-0">Detay &rarr;</span>
+                    </div>
+                  ))}
+              </div>
+            )}
+
+            {/* Modal Body: Companies */}
+            {activeModal === 'companies' && (
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                {allCompanies
+                  .filter(c => c.name.toLowerCase().includes(modalSearch.toLowerCase()) || (c.sector || '').toLowerCase().includes(modalSearch.toLowerCase()))
+                  .map(c => (
+                    <div 
+                      key={c.id} 
+                      onClick={() => {
+                        setActiveModal(null);
+                        setSelectedCompanyModal(c);
+                      }}
+                      className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between hover:bg-red-50/30 hover:border-red-200 transition cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
+                        <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                          {c.logo ? <img src={c.logo} alt={c.name} className="w-full h-full object-cover" /> : <Building2 size={18} className="text-slate-600" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-sm text-slate-900 group-hover:text-[#990000] transition-colors">{c.name}</h4>
+                          <p className="text-xs text-slate-500 font-medium">{c.sector} • {c.location}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-black text-[#990000] bg-red-50 px-2.5 py-1 rounded-lg border border-red-100 shrink-0">
+                        {c.openPositions ? `${c.openPositions} Kontenjan` : 'İncele'}
                       </span>
                     </div>
                   ))}
               </div>
             )}
 
+            {/* Modal Body: Internships */}
             {activeModal === 'internships' && (
               <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                 {defaultInternships
@@ -745,14 +1380,14 @@ export default function CareerNetwork({
                       <h4 className="font-black text-sm text-slate-900">{i.title}</h4>
                       <p className="text-xs text-slate-600 font-medium flex items-center justify-between">
                         <span>Anlaşmalı Firmalar: <strong>{i.company}</strong></span>
-                        <span className={`${titleColor} font-black`}>Kontenjan: {i.quota}</span>
+                        <span className="text-[#990000] font-black">Kontenjan: {i.quota}</span>
                       </p>
                       <button 
                         onClick={() => {
                           setActiveModal(null);
                           if (setView) setView('jobs');
                         }}
-                        className={`w-full mt-2 py-2 ${primaryBtnClass} text-white text-xs font-bold rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5`}
+                        className="w-full mt-2 py-2.5 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                       >
                         <Sparkles size={14} /> Yetenek Kapısı Üzerinden Başvur
                       </button>
@@ -793,25 +1428,52 @@ export default function CareerNetwork({
     : 'Resmî Kurullar & İş Birlikleri';
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8 pb-32 font-sans">
-      <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setView ? setView(homeView) : null} 
-            className={`w-10 h-10 rounded-full bg-white border border-gray-200 ${backBtnHoverClass} flex items-center justify-center shadow-xs transition cursor-pointer`}
-            title="Geri Dön"
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div>
-            <h1 className={`text-xl font-black ${titleColor} tracking-tight leading-tight`}>{pageTitle}</h1>
-            <p className="text-[11px] font-bold text-slate-400">{pageSubtitle}</p>
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col pb-40">
+      {/* ─── CORPORATE STICKY TOP NAVBAR ─── */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button 
+              onClick={() => setView ? setView(homeView) : null} 
+              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs shrink-0"
+              title="Geri Dön"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div 
+              role="button" 
+              tabIndex={0} 
+              onClick={() => setView ? setView(homeView) : null} 
+              className="flex items-center gap-3 cursor-pointer"
+            >
+              <Logo className="h-8 w-auto text-[#990000] shrink-0" />
+              <div>
+                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">
+                  {pageTitle}
+                </h1>
+                <p className="text-[11px] font-bold text-gray-500">
+                  {pageSubtitle}
+                </p>
+              </div>
+            </div>
           </div>
+
+          <TopProfileMenu 
+            currentUser={currentUser} 
+            userRole={effectiveRole} 
+            setView={setView} 
+            setSelectedUserId={setSelectedUserId} 
+            currentView="career_network" 
+          />
         </div>
-      </div>
-      <div className="max-w-5xl mx-auto">
+      </header>
+
+      {/* Main Content Container */}
+      <main className="max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-1">
         {content}
-      </div>
+      </main>
+
+      {/* Persistent Bottom Floating Dock */}
       <SubPanelFloatingDock 
         currentUser={currentUser} 
         setView={setView} 
