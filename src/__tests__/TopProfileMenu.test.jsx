@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import TopProfileMenu from '../components/TopProfileMenu';
@@ -50,5 +50,32 @@ describe('TopProfileMenu Component', () => {
     expect(menuItems.length).toBeGreaterThan(0);
     fireEvent.click(menuItems[1]);
     expect(setView).toHaveBeenCalledWith('admin');
+  });
+
+  it('handles logout properly, clearing all storage and session data', async () => {
+    const dummyUser = { id: 'usr-1', name: 'John Doe' };
+    localStorage.setItem('iesu_mock_user', JSON.stringify(dummyUser));
+    localStorage.setItem('iesu_user_role_v1', 'student');
+    localStorage.setItem('iesu_admin_messages_v1', '[]');
+
+    render(
+      <MemoryRouter>
+        <TopProfileMenu currentUser={dummyUser} userRole="student" setView={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    // Open menu
+    fireEvent.click(screen.getByRole('button'));
+
+    const logoutBtn = screen.getByText(/Çıkış Yap/i);
+    expect(logoutBtn).toBeInTheDocument();
+
+    fireEvent.click(logoutBtn);
+
+    await waitFor(() => {
+      expect(localStorage.getItem('iesu_mock_user')).toBeNull();
+      expect(localStorage.getItem('iesu_user_role_v1')).toBeNull();
+      expect(localStorage.getItem('iesu_admin_messages_v1')).toBeNull();
+    });
   });
 });

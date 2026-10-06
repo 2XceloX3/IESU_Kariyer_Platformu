@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react';
 const PLACEHOLDER_SRCS = ['logo.png', 'ui-avatars.com', 'gravatar.com', 'pravatar.cc'];
 
 function isPlaceholder(src) {
-  if (!src) return true;
+  if (!src || typeof src !== 'string') return true;
   return PLACEHOLDER_SRCS.some(p => src.includes(p));
 }
 
 function getInitials(name) {
-  if (!name) return '?';
+  if (!name || typeof name !== 'string') return '?';
   const parts = name.trim().split(' ');
   if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   return name.charAt(0).toUpperCase();
@@ -20,7 +20,7 @@ const BG_COLORS = [
 ];
 
 function getBgColor(name) {
-  if (!name) return BG_COLORS[0];
+  if (!name || typeof name !== 'string') return BG_COLORS[0];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return BG_COLORS[Math.abs(hash) % BG_COLORS.length];
@@ -50,21 +50,25 @@ export default function SafeAvatar({
     '2xl': 'w-20 h-20 text-xl font-black',
     full: 'w-full h-full text-2xl font-black',
   };
-  const sizeClass = sizeClasses[size] || sizeClasses.md;
+  const sizeClass = sizeClasses[size] || (typeof size === 'string' && sizeClasses[size]) || sizeClasses.md;
   
-  const isInstitutional = isAdmin || (typeof name === 'string' && (
-    name.toLowerCase().includes('kariyer') ||
-    name.toLowerCase().includes('esenyurt') ||
-    name.toLowerCase().includes('kgm') ||
-    name.toLowerCase().includes('yönetici') ||
-    name.toLowerCase().includes('admin') ||
-    name.toLowerCase().includes('kurumsal') ||
-    name.toLowerCase().includes('rektör')
+  const safeName = typeof name === 'string' ? name : '';
+  const safeClassName = typeof className === 'string' ? className : '';
+  const safeSrc = typeof src === 'string' ? src : '';
+
+  const isInstitutional = isAdmin || (safeName && (
+    safeName.toLowerCase().includes('kariyer') ||
+    safeName.toLowerCase().includes('esenyurt') ||
+    safeName.toLowerCase().includes('kgm') ||
+    safeName.toLowerCase().includes('yönetici') ||
+    safeName.toLowerCase().includes('admin') ||
+    safeName.toLowerCase().includes('kurumsal') ||
+    safeName.toLowerCase().includes('rektör')
   ));
 
-  if (isInstitutional && (!src || isPlaceholder(src) || imgError)) {
+  if (isInstitutional && (!safeSrc || isPlaceholder(safeSrc) || imgError)) {
     return (
-      <div className={`${sizeClass} ${rounded} bg-white flex items-center justify-center shrink-0 border border-gray-200 p-1 shadow-sm overflow-hidden ${className}`}>
+      <div className={`${sizeClass} ${rounded} bg-white flex items-center justify-center shrink-0 border border-gray-200 p-1 shadow-sm overflow-hidden ${safeClassName}`}>
         <img 
           src="/iesu-logo.svg" 
           alt={alt || "IESU Logo"} 
@@ -75,18 +79,18 @@ export default function SafeAvatar({
     );
   }
 
-  const bg = getBgColor(name);
-  const initials = getInitials(name);
-  const showImage = src && !isPlaceholder(src) && !imgError;
-  const isWhiteContainer = className.includes('bg-white');
+  const bg = getBgColor(safeName);
+  const initials = getInitials(safeName);
+  const showImage = safeSrc && !isPlaceholder(safeSrc) && !imgError;
+  const isWhiteContainer = safeClassName.includes('bg-white');
   const textColorClass = isWhiteContainer ? 'text-slate-900 font-black' : 'text-white font-bold';
 
   return (
-    <div className={`${sizeClass} ${rounded} shrink-0 overflow-hidden flex items-center justify-center ${showImage ? 'bg-gray-100' : `${bg} ${textColorClass}`} ${className}`}>
+    <div className={`${sizeClass} ${rounded} shrink-0 overflow-hidden flex items-center justify-center ${showImage ? 'bg-gray-100' : `${bg} ${textColorClass}`} ${safeClassName}`}>
       {showImage ? (
         <img 
-          src={src} 
-          alt={alt || name || 'Avatar'} 
+          src={safeSrc} 
+          alt={alt || safeName || 'Avatar'} 
           className="w-full h-full object-cover" 
           loading="lazy"
           onError={() => setImgError(true)} 

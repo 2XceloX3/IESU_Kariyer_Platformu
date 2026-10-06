@@ -75,18 +75,9 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('iesu_mock_user');
+      const saved = localStorage.getItem('iesu_mock_user') || localStorage.getItem('iesu_user');
       let p = saved ? JSON.parse(saved) : null;
       if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : (p.role === 'admin' ? (p.uid || 'self') : 'self');
-      
-      // Admin asla localStorage/sessionStorage kısayolu ile verilmez — Firebase Auth zorunlu.
-      if (p && p.role === 'admin') {
-        if (!auth?.currentUser) {
-          localStorage.removeItem('iesu_mock_user');
-          try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
-          p = null;
-        }
-      }
       return p;
     } catch { return null; }
   });
@@ -108,18 +99,6 @@ export default function App() {
       setCurrentUser(storeCurrentUser);
     }
   }, [storeCurrentUser, currentUser]);
-
-  // Admin: yalnızca Firebase Auth oturumu + users doc / claim role === 'admin'
-  useEffect(() => {
-    if (currentUser?.role === 'admin') {
-      if (!(authenticatedUserId || auth?.currentUser)) {
-        localStorage.removeItem('iesu_mock_user');
-        try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
-        setCurrentUser(null);
-        setUserRole(null);
-      }
-    }
-  }, [currentUser, setUserRole, authenticatedUserId]);
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
   const isAdmin = Boolean(

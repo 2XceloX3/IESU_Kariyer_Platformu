@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 // Global defensive fallback for window.toast
 if (typeof window !== 'undefined' && !window.toast) {
@@ -19,7 +20,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
       <BrowserRouter>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
       </BrowserRouter>
     </HelmetProvider>
   </React.StrictMode>,
