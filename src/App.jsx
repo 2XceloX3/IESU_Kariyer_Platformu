@@ -217,14 +217,13 @@ export default function App() {
           : (pathView === 'about_us') ? <AboutUsPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'services') ? <ServicesPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'events_list') ? <EventsPage setView={setView} currentUser={null} userRole={null} />
-          : (pathView === 'login' || pathView === 'admin' || ADMIN_CMS.has(pathView) || pathView === 'student' || pathView === 'alumni' || pathView === 'company' || pathView === 'academic') ? <Login setView={setView} setUserRole={setUserRole} setAcademicRole={store.setAcademicRole || (() => {})} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} />
-          : pathView === 'register' ? <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={store.setStudents} setAlumni={store.setAlumni} setAcademicStaff={store.setAcademicStaff} setCompanies={store.setCompanies} setUserRole={setUserRole} />
-          : pathView === 'forgot_password' ? <ForgotPassword setView={setView} />
-          : pathView === 'jobs' ? <JobsAndInternships setView={setView} currentUser={null} userRole={null} />
+          : (pathView === 'register') ? <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={store.setStudents} setAlumni={store.setAlumni} setAcademicStaff={store.setAcademicStaff} setCompanies={store.setCompanies} setUserRole={setUserRole} />
+          : (pathView === 'forgot_password') ? <ForgotPassword setView={setView} />
+          : (pathView === 'jobs') ? <JobsAndInternships setView={setView} currentUser={null} userRole={null} />
           : PUBLIC_NEWS.has(pathView) ? <PublicNewsView setView={setView} currentUser={null} userRole={null} />
           : (pathView === '' || pathView === 'landing') ? <LandingPage setView={setView} currentUser={null} userRole={userRole} setUserRole={setUserRole} />
           : resolveLegalContentId(pathView) ? <DynamicContentPage contentId={resolveLegalContentId(pathView)} setView={setView} previousView="landing" currentUser={null} userRole={null} />
-          : <NotFound setView={setView} currentUser={currentUser} />
+          : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={store.setAcademicRole || (() => {})} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} />
         ) : (
           <>
             <Suspense fallback={null}><FloatingChatWidget setView={setView} currentUser={currentUser} currentView={pathView} activeBranch={currentBranch} /></Suspense>

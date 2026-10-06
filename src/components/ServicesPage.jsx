@@ -13,6 +13,15 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
   const [activeCategory, setActiveCategory] = useState('Tümü');
   const [selectedServicePreview, setSelectedServicePreview] = useState(null);
 
+  const handleServiceClick = (targetView) => {
+    if (currentUser) {
+      if (setView) setView(targetView);
+    } else {
+      // Portala giriş yapılmamışsa, kullanıcı doğrudan Portala Giriş ekranına yönlendirilir
+      if (setView) setView('login');
+    }
+  };
+
   // Resmî esenyurt.edu.tr Hizmet Kataloğu
   const OFFICIAL_SERVICES = [
     {
@@ -242,7 +251,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
                   <Eye size={15} /> Detaylı İncele
                 </button>
                 <button
-                  onClick={() => setView && setView(srv.view)}
+                  onClick={() => handleServiceClick(srv.view)}
                   className={`w-full py-3 bg-gradient-to-r ${srv.gradient} hover:opacity-95 text-white font-black rounded-xl text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-md cursor-pointer`}
                 >
                   Hizmete Git <ArrowRight size={16} />
@@ -331,7 +340,7 @@ export default function ServicesPage({ setView, currentUser, userRole, setSelect
               onClick={() => {
                 const targetView = selectedServicePreview.view;
                 setSelectedServicePreview(null);
-                setView && setView(targetView);
+                handleServiceClick(targetView);
               }}
               className="w-full py-3.5 bg-[#990000] hover:bg-red-800 text-white font-black rounded-2xl text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-xl cursor-pointer"
             >
