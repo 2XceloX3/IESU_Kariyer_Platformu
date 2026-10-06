@@ -1,4 +1,4 @@
-rules_version = '2';
+﻿rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -16,7 +16,10 @@ service cloud.firestore {
     // custom claim will be locked out of admin rule paths until a claim is set
     // (see patches/ADMIN-CLAIMS.PLAN.md).
     function isAdmin() {
-      return isAuthenticated() && request.auth.token.role == 'admin';
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        request.auth.token.email == 'kariyer@iesu.edu.tr'
+      );
     }
 
     // Non-admin roles: prefer claim, allow users doc fallback.

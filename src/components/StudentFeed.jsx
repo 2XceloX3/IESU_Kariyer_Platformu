@@ -1,7 +1,7 @@
 import useAppStore from '../store/useAppStore';
 import { computeCareerProgress, gradeFromPercent } from '../utils/careerProgress';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, ChevronRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap } from 'lucide-react';
 
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -27,6 +27,7 @@ import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
 import MentorRequestModal from './modals/MentorRequestModal';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
+import { initialClubs } from '../data/mockClubsData';
 
 export default function StudentFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
   const [footerModal, setFooterModal] = useState(null);
@@ -95,12 +96,84 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const studentId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
   const [visibleFeedCount, setVisibleFeedCount] = useState(12);
 
+  const clubList = useMemo(() => (clubs && clubs.length > 0) ? clubs : initialClubs, [clubs]);
+
+  const clubFeedItems = useMemo(() => {
+    const items = [];
+    (clubList || []).forEach(club => {
+      // 1. Kulüp Duyuruları
+      if (Array.isArray(club.announcements)) {
+        club.announcements.forEach(ann => {
+          items.push({
+            id: `club-ann-${club.id}-${ann.id}`,
+            clubId: club.id,
+            clubName: club.name,
+            isClubPost: true,
+            author: {
+              name: club.name,
+              role: 'club',
+              avatar: club.logo || '/iesu-logo.svg',
+              title: `Öğrenci Kulübü • ${club.category || 'Topluluk'}`
+            },
+            content: `📢 ${ann.title || ''}\n\n${ann.content || ''}\n\n👤 Duyuran: ${ann.author || club.president?.name || 'Kulüp Yönetimi'}`,
+            image: club.coverImage || null,
+            time: ann.date || 'Yakın Zamanda',
+            createdAt: ann.date ? new Date().toISOString() : new Date().toISOString(),
+            likes: 18,
+            comments: 3,
+            likedBy: [],
+            status: 'Yayında',
+          });
+        });
+      }
+
+      // 2. Kulüp Etkinlikleri & Hackathonlar
+      if (Array.isArray(club.events)) {
+        club.events.forEach(evt => {
+          items.push({
+            id: `club-evt-${club.id}-${evt.id}`,
+            clubId: club.id,
+            clubName: club.name,
+            isClubPost: true,
+            author: {
+              name: club.name,
+              role: 'club',
+              avatar: club.logo || '/iesu-logo.svg',
+              title: `🎉 ${club.shortName || 'Kulüp'} Etkinliği • ${evt.category || 'Etkinlik'}`
+            },
+            content: `🎉 ${evt.title || ''}\n\n${evt.description || ''}\n\n📅 Tarih: ${evt.date || ''} • ${evt.time || ''}\n📍 Mekan: ${evt.location || 'Kampüs'}\n👥 Kontenjan: ${evt.quota || 'Açık'} (Kayıtlı: ${evt.registeredCount || 0})${evt.speaker ? `\n🎙️ Konuşmacı: ${evt.speaker}` : ''}${evt.certificate ? '\n📜 Katılım Sertifikalı' : ''}`,
+            image: club.coverImage || null,
+            time: evt.date || 'Yakın Zamanda',
+            createdAt: new Date().toISOString(),
+            likes: 29,
+            comments: 7,
+            likedBy: [],
+            status: 'Yayında',
+          });
+        });
+      }
+    });
+
+    const regularClubPosts = (posts || []).filter(p => p.isClubPost || p.clubId || p.author?.role === 'club');
+    return [...items, ...regularClubPosts];
+  }, [clubList, posts]);
+
   const allFeedItems = useMemo(() => {
     return combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
   }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities]);
 
   const filteredFeedItems = useMemo(() => {
     const q = searchQuery ? searchQuery.trim().toLocaleLowerCase('tr-TR') : '';
+
+    if (feedFilter === 'clubs') {
+      return clubFeedItems.filter(post => {
+        if (!q) return true;
+        const c = (post.content || '').toLocaleLowerCase('tr-TR');
+        const a = (post.author?.name || '').toLocaleLowerCase('tr-TR');
+        return c.includes(q) || a.includes(q);
+      });
+    }
+
     return allFeedItems.filter(post => {
       if (q) {
         const c = (post.content || '').toLocaleLowerCase('tr-TR');
@@ -113,7 +186,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
       }
       return true;
     });
-  }, [allFeedItems, searchQuery, feedFilter, followedUserIds, effectiveCurrentUser?.id]);
+  }, [allFeedItems, clubFeedItems, searchQuery, feedFilter, followedUserIds, effectiveCurrentUser?.id]);
 
 
   // Removed mock stories and defaultPosts
@@ -365,27 +438,100 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
           <div className="flex items-center gap-6 border-b border-gray-200 mb-4 px-2 overflow-x-auto">
             <button 
               onClick={() => setFeedFilter('for_you')} 
-              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 ${feedFilter === 'for_you' ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 cursor-pointer ${feedFilter === 'for_you' ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Senin İçin
               {feedFilter === 'for_you' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-red-600 rounded-t-full"></div>}
             </button>
             <button 
               onClick={() => setFeedFilter('following')} 
-              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 ${feedFilter === 'following' ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 cursor-pointer ${feedFilter === 'following' ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'}`}
             >
               Ağım
               {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-red-600 rounded-t-full"></div>}
             </button>
+            <button 
+              onClick={() => setFeedFilter('clubs')} 
+              className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 flex items-center gap-2 cursor-pointer ${feedFilter === 'clubs' ? 'text-[#990000] font-bold' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <Users size={16} className={feedFilter === 'clubs' ? 'text-[#990000]' : 'text-gray-400'} />
+              <span>Öğrenci Kulüpleri</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${feedFilter === 'clubs' ? 'bg-red-100 text-[#990000]' : 'bg-gray-100 text-gray-500'}`}>
+                {clubList.length}
+              </span>
+              {feedFilter === 'clubs' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-[#990000] rounded-t-full"></div>}
+            </button>
           </div>
+
+          {/* ÖĞRENCİ KULÜPLERİ VİTRİNİ & HIZLI KEŞİF */}
+          {feedFilter === 'clubs' && (
+            <div className="bg-gradient-to-r from-red-50/70 via-white to-amber-50/60 rounded-2xl p-4 sm:p-5 border border-red-100/80 shadow-2xs mb-2 animate-fade-in">
+              <div className="flex items-center justify-between mb-3.5 px-1">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center shadow-2xs">
+                    <Users size={17} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-gray-900 leading-tight">Aktif Öğrenci Kulüpleri</h4>
+                    <p className="text-[11px] text-gray-500 font-medium">Topluluklara katıl, etkinlik ve projelerde rol al</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setView('club_portal')}
+                  className="text-xs font-black text-[#990000] hover:text-red-800 flex items-center gap-1.5 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-red-200/80 shadow-2xs hover:shadow-xs transition active:scale-95"
+                >
+                  <span>Kulüpler Portalı</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {clubList.slice(0, 3).map(club => (
+                  <div key={club.id} className="bg-white rounded-xl p-3.5 border border-gray-200/70 shadow-2xs flex flex-col justify-between hover:border-red-200 hover:shadow-xs transition-all">
+                    <div className="flex items-start gap-3 mb-2.5">
+                      <SafeAvatar src={club.logo} alt={club.name} name={club.name} size="md" className="shrink-0 rounded-xl" />
+                      <div className="min-w-0 flex-1">
+                        <h5 className="text-xs font-bold text-gray-900 truncate leading-snug">{club.name}</h5>
+                        <span className="text-[10px] text-gray-400 font-semibold block truncate">{club.category}</span>
+                        <span className="inline-block mt-1 text-[10px] font-bold text-[#990000] bg-red-50 px-2 py-0.5 rounded-full">
+                          👥 {club.memberCount || 100}+ Üye
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setView('club_portal')}
+                      className="w-full mt-1 py-1.5 px-2 bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-[#990000] rounded-lg text-[11px] font-bold transition flex items-center justify-center gap-1 cursor-pointer border border-slate-100"
+                    >
+                      <span>Kulüp Detayları</span>
+                      <ChevronRight size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* FEED POSTS (5M Ölçekli Sayfalamalı ve Optimize) */}
           <div className="space-y-6">
             {filteredFeedItems.length === 0 ? (
               <div className="p-10 text-center bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
                 <div className="w-16 h-16 bg-red-50 text-[#990000] rounded-2xl flex items-center justify-center mb-6 shadow-sm"><FileText size={32} /></div>
-                <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">Henüz görüntülenecek yayın bulunmuyor.</h3>
-                <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed">Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.</p>
+                <h3 className="text-lg sm:text-xl font-black text-gray-900 mb-2">
+                  {feedFilter === 'clubs' ? 'Henüz kulüp yayını bulunmuyor.' : 'Henüz görüntülenecek yayın bulunmuyor.'}
+                </h3>
+                <p className="text-sm text-gray-500 font-medium max-w-sm leading-relaxed mb-4">
+                  {feedFilter === 'clubs'
+                    ? 'Öğrenci kulüpleri tarafından paylaşılan duyuru, hackathon ve etkinlikler burada listelenecektir.'
+                    : 'Duyuru, etkinlik, staj ve mentorluk içerikleri yayınlandığında burada görünecek.'}
+                </p>
+                {feedFilter === 'clubs' && (
+                  <button
+                    onClick={() => setView('club_portal')}
+                    className="px-4 py-2 bg-[#990000] text-white rounded-xl text-xs font-bold hover:bg-red-800 transition cursor-pointer"
+                  >
+                    Kulüpler Portalına Git
+                  </button>
+                )}
               </div>
             ) : (
               <>

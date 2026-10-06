@@ -1,6 +1,6 @@
-import React, { Suspense, lazy, useCallback, useEffect } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { HiveProvider } from './HiveContext';
 import useStudentStore from './store/useStudentStore';
 import useAppStore from '../../store/useAppStore';
@@ -86,6 +86,8 @@ export default function StudentHive({ currentUser, setView }) {
   const selectedUserId = useAppStore((state) => state.selectedUserId);
   const setSelectedUserId = useAppStore((state) => state.setSelectedUserId);
   const setSelectedGroupId = useAppStore((state) => state.setSelectedGroupId);
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const posts = useAppStore((state) => state.posts);
   const groups = useAppStore((state) => state.groups) || [];
   const selectedGroupId = useAppStore((state) => state.selectedGroupId);
@@ -318,12 +320,46 @@ export default function StudentHive({ currentUser, setView }) {
 
   return (
     <HiveProvider>
-      {!effectiveCurrentUser?.onboardingCompleted && currentView !== 'student_onboarding' && currentView !== 'onboarding' ? (
-        <div data-testid="onboarding-banner" className="sticky top-0 z-[60] bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-bold text-amber-900">Profil onboarding tamamlanmadı — kariyer ilerlemesi için bilgilerinizi tamamlayın.</p>
-          <button type="button" onClick={() => handleSetView('student_onboarding')} className="shrink-0 px-3 py-1.5 rounded-lg bg-[#990000] text-white text-[11px] font-black cursor-pointer">Başla</button>
+      {!isBannerDismissed && !effectiveCurrentUser?.onboardingCompleted && currentView !== 'student_onboarding' && currentView !== 'onboarding' ? (
+        <div data-testid="onboarding-banner" className="sticky top-0 z-[60] bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+            <p className="text-xs font-bold text-amber-900 truncate sm:overflow-visible">
+              Profil onboarding tamamlanmadı — kariyer ilerlemesi için bilgilerinizi tamamlayın.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowOnboardingModal(true)}
+              className="px-3.5 py-1.5 rounded-lg bg-[#990000] hover:bg-red-800 transition text-white text-[11px] font-black cursor-pointer shadow-xs active:scale-95"
+            >
+              Başla
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsBannerDismissed(true)}
+              className="p-1 rounded-md text-amber-700/60 hover:text-amber-900 hover:bg-amber-200/50 transition cursor-pointer"
+              title="Kapat"
+            >
+              <X size={15} />
+            </button>
+          </div>
         </div>
       ) : null}
+
+      {showOnboardingModal && (
+        <StudentOnboarding
+          isModal={true}
+          onClose={() => setShowOnboardingModal(false)}
+          onComplete={() => {
+            setShowOnboardingModal(false);
+          }}
+          currentUser={effectiveCurrentUser}
+          setView={handleSetView}
+        />
+      )}
+
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="w-10 h-10 border-4 border-[#990000] border-t-transparent rounded-full animate-spin" /></div>}>
         {renderActiveView()}
       </Suspense>

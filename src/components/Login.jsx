@@ -30,14 +30,24 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       // FIREBASE AUTHENTICATION (The New Way)
       const userCredential = await signInWithEmailAndPassword(auth, username, password);
       const user = userCredential.user;
-      
-      // Fetch user role and data from Firestore
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-      
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        if (userData.status === 'Onay Bekliyor') {
+      const isKovanAdmin = (user.email && user.email.toLowerCase() === 'kariyer@iesu.edu.tr');
+
+      let userData = null;
+      try {
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) userData = userDoc.data();
+      } catch (fsErr) {
+        console.warn('Firestore profil okunamadı:', fsErr?.code || fsErr?.message);
+        if (!isKovanAdmin) {
+          setError('Profil servisine ulaşılamıyor. Lütfen bağlantınızı kontrol edip tekrar deneyin.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      if (userData) {
+        if (userData.status === 'Onay Bekliyor' && !isKovanAdmin) {
           if (typeof signOut === 'function') {
             await signOut(auth);
           }
@@ -45,8 +55,8 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
           setIsLoading(false);
           return;
         }
-        const finalRole = userData.role || loginRole;
-        const loggedUser = { id: user.uid, ...userData, role: finalRole };
+        const finalRole = isKovanAdmin ? 'admin' : (userData.role || loginRole);
+        const loggedUser = { id: user.uid, ...userData, role: finalRole, email: user.email };
         try {
           localStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
           localStorage.setItem('iesu_user_role_v1', finalRole);
@@ -61,9 +71,24 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         if (setCurrentUser) setCurrentUser(loggedUser);
         setView(finalRole === 'employer' ? 'company' : finalRole);
         setIsLoading(false);
-        return; // Success!
+        return;
+      } else if (isKovanAdmin) {
+        const finalRole = 'admin';
+        const loggedUser = { id: user.uid, email: user.email, role: finalRole, name: 'Süper Admin' };
+        try {
+          localStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
+          localStorage.setItem('iesu_user_role_v1', finalRole);
+          const s = useAppStore.getState();
+          s.setUserRole?.(finalRole);
+          s.setCurrentUser?.(loggedUser);
+          s.setActivePortalBranch?.('admin');
+        } catch (e) { /* intentional */ }
+        setUserRole(finalRole);
+        if (setCurrentUser) setCurrentUser(loggedUser);
+        setView('admin');
+        setIsLoading(false);
+        return;
       } else {
-        // Firestore profili yoksa admin yükseltilmez; rol belirsiz kullanıcı reddedilir.
         await signOut(auth);
         setError('Hesap profiliniz bulunamadı. Lütfen kayıt olun veya Kariyer Geliştirme Koordinatörlüğü ile iletişime geçin.');
         setIsLoading(false);
@@ -71,16 +96,21 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       }
     } catch (err) {
       console.warn('Firebase giriş başarısız:', err?.code || err?.message);
-      // Mock / yerel şifre yolu yok (DEV dahil). Yalnızca Firebase Auth.
       const code = err?.code || '';
       if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-email') {
         setError('E-posta veya şifre hatalı.');
+      } else if (code === 'auth/too-many-requests') {
+        setError('Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.');
+      } else if (code === 'auth/network-request-failed') {
+        setError('Ağ hatası: Firebase’e bağlanılamadı. İnternet/VPN veya engeli kontrol edin.');
+      } else if (code === 'auth/unauthorized-domain') {
+        setError('Bu alan adı Firebase’de yetkili değil (localhost eklenmeli).');
       } else if (loginRole === 'admin') {
-        setError('Yönetici girişi yalnızca Firebase Auth ve admin custom claim ile yapılabilir.');
+        setError('Yönetici girişi başarısız' + (code ? ' (' + code + ')' : '') + '.');
       } else {
-        setError('Giriş servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.');
+        setError('Giriş servisine şu anda ulaşılamıyor' + (code ? ' (' + code + ')' : '') + '. Lütfen daha sonra tekrar deneyin.');
       }
-      setIsLoading(false);
+            setIsLoading(false);
     }
   };
 

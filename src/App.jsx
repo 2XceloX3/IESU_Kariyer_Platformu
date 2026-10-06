@@ -104,6 +104,8 @@ export default function App() {
       if (!lsUser) {
         setCurrentUser(null);
       }
+    } else if (storeCurrentUser && currentUser && storeCurrentUser.onboardingCompleted !== currentUser.onboardingCompleted) {
+      setCurrentUser(storeCurrentUser);
     }
   }, [storeCurrentUser, currentUser]);
 
