@@ -989,7 +989,7 @@ groups={groups}
                   } catch (err) {}
                 }
 
-                window.toast.success("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Merkezi yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
+                window.toast?.success?.("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Koordinatörlüğü yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");
                 setShowMentorshipModal(false);
                 setMentorshipForm({ title: '', hours: '', mode: 'Online', motivation: '' });
               }} className="p-5 space-y-4">

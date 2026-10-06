@@ -775,7 +775,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                     <input required type="number" min="1" max="20" value={mentorshipForm.hours} onChange={e => setMentorshipForm({...mentorshipForm, hours: e.target.value})} placeholder="Örn: 2" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Çalışma Åekli</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Çalışma Şekli</label>
                     <select value={mentorshipForm.mode} onChange={e => setMentorshipForm({...mentorshipForm, mode: e.target.value})} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-orange-500">
                       <option value="Online">Online</option>
                       <option value="Yüz Yüze">Yüz Yüze</option>
