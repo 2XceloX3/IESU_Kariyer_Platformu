@@ -526,7 +526,7 @@ export default function UserProfile({
         return;
       }
 
-      if (targetUserId.startsWith('ACAD-') || targetUserId.startsWith('ACD-')) {
+      if (targetUserId.startsWith('ACAD-') || targetUserId.startsWith('ACD-') || targetUserId.startsWith('ACM-')) {
         let found = (academicStaff || []).find(a => a.id === targetUserId);
         if (!found) {
           const allStaff = generateAcademicStaff ? generateAcademicStaff() : [];
@@ -551,7 +551,25 @@ export default function UserProfile({
           avatar: effectiveCurrentUser?.avatar || (effectiveCurrentUser?.role === 'admin' ? '/iesu-logo.svg' : (found?.avatar || null)),
           badges: effectiveCurrentUser?.badges || (effectiveCurrentUser?.role === 'admin' ? ['verified', 'top_voice'] : (found?.badges || ['verified'])),
           isSelf: true
-        } : (found || {
+        } : (found || (targetUserId === 'ACM-001' ? {
+          id: 'ACM-001',
+          name: 'Dr. Öğr. Üyesi Mehmet Selim',
+          role: 'academic',
+          title: 'Dr. Öğr. Üyesi',
+          department: 'Mühendislik Fakültesi',
+          email: 'mehmet.selim@esenyurt.edu.tr',
+          avatar: null,
+          badges: ['verified']
+        } : (targetUserId === 'ACM-002' ? {
+          id: 'ACM-002',
+          name: 'Prof. Dr. Ayşe Yılmaz',
+          role: 'academic',
+          title: 'Prof. Dr.',
+          department: 'Bilgisayar Mühendisliği',
+          email: 'ayse.yilmaz@esenyurt.edu.tr',
+          avatar: null,
+          badges: ['verified']
+        } : {
           id: targetUserId || 'ACAD-001',
           name: 'Prof. Dr. Ahmet Yılmaz',
           role: 'academic',
@@ -560,7 +578,7 @@ export default function UserProfile({
           email: 'ahmet.yilmaz@esenyurt.edu.tr',
           avatar: null,
           badges: ['verified']
-        });
+        })));
         setUser(academicData);
         setUserType('academic');
         setIsLoading(false);

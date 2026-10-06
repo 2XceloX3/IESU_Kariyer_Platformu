@@ -15,10 +15,15 @@ function getInitials(name) {
     .replace(/^(Prof\.|Dr\.|Doç\.|Öğr\.|Gör\.|Arş\.|Uzm\.|Av\.|Yrd\.|Müh\.|Üyesi)\s+/gi, '')
     .replace(/^Üyesi\s+/gi, '')
     .trim();
-  const target = cleanedName.length > 0 ? cleanedName : name;
-  const parts = target.trim().split(/\s+/);
-  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  return target.charAt(0).toUpperCase();
+  const target = (cleanedName && cleanedName.trim().length > 0) ? cleanedName.trim() : name.trim();
+  if (!target) return '?';
+  const parts = target.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2 && parts[0] && parts[parts.length - 1]) {
+    const first = parts[0][0] || '';
+    const last = parts[parts.length - 1][0] || '';
+    return (first + last).toUpperCase() || '?';
+  }
+  return target.charAt(0).toUpperCase() || '?';
 }
 
 const BG_COLORS = [
