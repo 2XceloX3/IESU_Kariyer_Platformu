@@ -16,6 +16,38 @@ if (typeof window !== 'undefined' && !window.toast) {
   };
 }
 
+// Otomatik surum guncellemesi ve kirik chunk kurtarma (ChunkLoadError / vite:preloadError)
+if (typeof window !== 'undefined') {
+  window.addEventListener('vite:preloadError', (event) => {
+    event.preventDefault();
+    const reloadKey = 'iesu_chunk_reload_ts';
+    const lastReload = parseInt(sessionStorage.getItem(reloadKey) || '0', 10);
+    const now = Date.now();
+    if (now - lastReload > 8000) {
+      sessionStorage.setItem(reloadKey, String(now));
+      window.location.reload();
+    }
+  });
+
+  window.addEventListener('error', (event) => {
+    const msg = event?.message || '';
+    if (
+      msg.includes('dynamically imported module') ||
+      msg.includes('Loading chunk') ||
+      msg.includes('ChunkLoadError') ||
+      msg.includes('Failed to fetch')
+    ) {
+      const reloadKey = 'iesu_chunk_reload_ts';
+      const lastReload = parseInt(sessionStorage.getItem(reloadKey) || '0', 10);
+      const now = Date.now();
+      if (now - lastReload > 8000) {
+        sessionStorage.setItem(reloadKey, String(now));
+        window.location.reload();
+      }
+    }
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider>
