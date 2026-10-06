@@ -20,7 +20,8 @@ export default function CareerNetwork({
   currentUser, 
   userRole = 'student', 
   previousView, 
-  embedded = false 
+  embedded = false,
+  hideHeader = false
 }) {
   const store = useAppStore?.getState ? useAppStore.getState() : {};
   const effectiveCurrentUser = currentUser || store.currentUser;
@@ -1419,7 +1420,7 @@ export default function CareerNetwork({
     </div>
   );
 
-  if (embedded) {
+  if (embedded || hideHeader) {
     return content;
   }
 
@@ -1438,39 +1439,69 @@ export default function CareerNetwork({
       {/* ─── CORPORATE STICKY TOP NAVBAR ─── */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <button 
-              onClick={() => setView ? setView(homeView) : null} 
-              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs shrink-0"
-              title="Geri Dön"
-            >
-              <ArrowLeft size={18} />
-            </button>
-            <div 
-              role="button" 
-              tabIndex={0} 
-              onClick={() => setView ? setView(homeView) : null} 
-              className="flex items-center gap-3 cursor-pointer"
-            >
-              <Logo className="h-8 w-auto text-[#990000] shrink-0" />
-              <div>
-                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">
-                  {pageTitle}
-                </h1>
-                <p className="text-[11px] font-bold text-gray-500">
-                  {pageSubtitle}
-                </p>
-              </div>
+          
+          {/* Sol: Resmî Kurumsal Logo + Üniversite & Koordinatörlük Unvanı */}
+          <div 
+            role="button" 
+            tabIndex={0} 
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} 
+            onClick={() => setView ? setView(homeView) : null} 
+            className="flex items-center gap-3 cursor-pointer group"
+            title="Ana Sayfaya Dön"
+          >
+            <Logo 
+              color={isAcademic ? 'indigo' : isAlumni ? 'emerald' : isCompany ? 'blue' : isAdmin ? 'amber' : 'red'} 
+              className="h-10 w-auto hover:scale-105 transition-transform shrink-0" 
+            />
+            <div className="hidden sm:block text-left">
+              <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${
+                isAcademic ? 'text-indigo-900' :
+                isAlumni ? 'text-emerald-800' :
+                isCompany ? 'text-blue-900' :
+                isAdmin ? 'text-amber-800' :
+                'text-[#990000]'
+              }`}>
+                İstanbul Esenyurt Üniversitesi
+              </h1>
+              <p className="text-[10px] font-bold text-gray-500 tracking-wider">
+                Kariyer Geliştirme Koordinatörlüğü
+              </p>
             </div>
           </div>
 
-          <TopProfileMenu 
-            currentUser={currentUser} 
-            userRole={effectiveRole} 
-            setView={setView} 
-            setSelectedUserId={setSelectedUserId} 
-            currentView="career_network" 
-          />
+          {/* Orta: Sayfa & Dal Rozeti (Pill Badge) */}
+          <div className="hidden md:flex items-center justify-center pointer-events-none">
+            <div className={`px-4 py-1.5 rounded-full text-white font-black text-xs shadow-md border border-white/40 flex items-center gap-2 tracking-wider uppercase whitespace-nowrap shrink-0 ${
+              isAcademic ? 'bg-gradient-to-r from-purple-950 via-[#4C1D95] to-indigo-900 border-purple-400/40' :
+              isAlumni ? 'bg-gradient-to-r from-emerald-950 via-emerald-800 to-teal-900 border-emerald-400/40' :
+              isCompany ? 'bg-gradient-to-r from-blue-950 via-[#1e3a5f] to-slate-900 border-blue-400/40' :
+              isAdmin ? 'bg-gradient-to-r from-amber-950 via-amber-800 to-yellow-900 border-amber-400/40' :
+              'bg-gradient-to-r from-red-950 via-[#990000] to-rose-900 border-red-400/40'
+            }`}>
+              <span className={`w-2 h-2 rounded-full shrink-0 ${isAcademic ? 'bg-amber-400' : 'bg-white'} animate-pulse`} />
+              {isAcademic ? '🏛️ ' : isAlumni ? '🎓 ' : isCompany ? '🏢 ' : isAdmin ? '👑 ' : '🤝 '}
+              {pageTitle}
+            </div>
+          </div>
+
+          {/* Sağ: Geri Dön Butonu ve TopProfileMenu */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <button 
+              onClick={() => setView ? setView(homeView) : null} 
+              className={`px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${backBtnHoverClass}`}
+              title="Geri Dön"
+            >
+              <ArrowLeft size={14} />
+              <span className="hidden sm:inline">Geri</span>
+            </button>
+            <TopProfileMenu 
+              currentUser={currentUser} 
+              userRole={effectiveRole} 
+              setView={setView} 
+              setSelectedUserId={setSelectedUserId} 
+              currentView="career_network" 
+            />
+          </div>
         </div>
       </header>
 
@@ -1479,14 +1510,16 @@ export default function CareerNetwork({
         {content}
       </main>
 
-      {/* Persistent Bottom Floating Dock */}
-      <SubPanelFloatingDock 
-        currentUser={currentUser} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId} 
-        userRole={effectiveRole} 
-        activeTab="network"
-      />
+      {/* Persistent Bottom Floating Dock (Yalnızca Yönetici Olmayan Dallar İçin) */}
+      {!isAdmin && effectiveCurrentUser?.role !== 'admin' && (
+        <SubPanelFloatingDock 
+          currentUser={currentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId} 
+          userRole={effectiveRole} 
+          activeTab="network"
+        />
+      )}
     </div>
   );
 }

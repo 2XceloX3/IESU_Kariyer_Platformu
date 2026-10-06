@@ -12,7 +12,6 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 import JobMatchScoreCard from './JobMatchScoreCard';
 import SafeAvatar from './shared/SafeAvatar';
 import AnkaCoverLetterModal from './AnkaCoverLetterModal';
-import AdminOmniDock from './AdminOmniDock';
 import eventBus from '../brain/eventBus';
 import useAdminStore from '../brain/useAdminStore';
 import { getTenantConfig } from '../config/tenantConfig';
@@ -762,9 +761,7 @@ export default function JobsAndInternships({
           </div>
         </div>
       </div>
-      {effectiveRole === 'admin' ? (
-        <AdminOmniDock setView={setView} currentUser={effectiveCurrentUser} theme="amber" />
-      ) : effectiveRole && (
+      {effectiveRole === 'admin' ? null : effectiveRole && (
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
           <div className={`bg-white/95 backdrop-blur-2xl p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-gray-800 border-2 ${
             effectiveRole === 'alumni' ? 'border-emerald-100 shadow-[0_15px_40px_rgba(5,150,105,0.18)]' :

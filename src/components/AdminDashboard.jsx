@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
-import AdminOmniDock from './AdminOmniDock';
 
 import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
@@ -626,15 +625,6 @@ export default function AdminDashboard({
           </React.Suspense>
         </main>
       </div>
-
-      {/* 👑 KGM SÜPER YÖNETİCİ DOCK */}
-      <AdminOmniDock 
-        currentUser={currentUser} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId} 
-        activeTab="cms"
-        theme="amber" 
-      />
     </div>
   );
 }
