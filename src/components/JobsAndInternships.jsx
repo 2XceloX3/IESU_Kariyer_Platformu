@@ -12,28 +12,62 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 import JobMatchScoreCard from './JobMatchScoreCard';
 import SafeAvatar from './shared/SafeAvatar';
 import AnkaCoverLetterModal from './AnkaCoverLetterModal';
+import AdminOmniDock from './AdminOmniDock';
 import eventBus from '../brain/eventBus';
 import useAdminStore from '../brain/useAdminStore';
 import { getTenantConfig } from '../config/tenantConfig';
 import { downloadReportPdf } from '../utils/downloadPdf';
 
-export default function JobsAndInternships({ userRole, setView, currentUser, jobs: propsJobs }) {
+export default function JobsAndInternships({ 
+  userRole, 
+  setView, 
+  currentUser, 
+  jobs: propsJobs, 
+  previousView: propsPreviousView 
+}) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
-  const previousView = useAppStore(state => state.previousView);
+  const storePreviousView = useAppStore(state => state.previousView);
+  const effectivePreviousView = propsPreviousView || storePreviousView;
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const isAdminUser = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   // Misafir (giriş yok): mock öğrenci kimliğine düşülmez; başvuru login ister.
   const isGuest = !effectiveCurrentUser?.id;
 
-  const effectiveRole = (
-    (['admin', 'admin_cms', 'yonetim_konsolu', 'admin_console'].includes(previousView) || activePortalBranch === 'admin' || (isAdminUser && previousView !== 'student' && previousView !== 'alumni' && activePortalBranch !== 'student' && activePortalBranch !== 'alumni')) ? 'admin' :
-    (previousView === 'alumni' || activePortalBranch === 'alumni' || userRole === 'alumni') ? 'alumni' :
-    (previousView === 'academic' || activePortalBranch === 'academic' || userRole === 'academic') ? 'academic' :
-    (previousView === 'company' || activePortalBranch === 'company' || userRole === 'company' || userRole === 'employer') ? 'company' :
-    (previousView === 'student' || activePortalBranch === 'student' || userRole === 'student') ? 'student' :
-    (userRole || effectiveCurrentUser?.role || (isGuest ? 'guest' : 'student'))
-  );
+  const effectiveRole = (() => {
+    // 1. Caller bileşenden açıkça iletilen spesifik rol (admin harici) her zaman önceliklidir
+    if (userRole && userRole !== 'admin') {
+      if (['student', 'alumni', 'academic', 'company', 'employer'].includes(userRole)) {
+        return userRole === 'employer' ? 'company' : userRole;
+      }
+    }
+
+    // 2. Caller bileşenden iletilen veya store'daki previousView
+    if (effectivePreviousView) {
+      if (effectivePreviousView === 'student') return 'student';
+      if (effectivePreviousView === 'alumni') return 'alumni';
+      if (effectivePreviousView === 'academic') return 'academic';
+      if (effectivePreviousView === 'company') return 'company';
+      if (['admin', 'admin_cms', 'yonetim_konsolu', 'admin_console'].includes(effectivePreviousView)) return 'admin';
+    }
+
+    // 3. Aktif portal dalı (Her dal kendi yaprağını ve temasını korur)
+    if (activePortalBranch) {
+      if (activePortalBranch === 'student') return 'student';
+      if (activePortalBranch === 'alumni') return 'alumni';
+      if (activePortalBranch === 'academic') return 'academic';
+      if (activePortalBranch === 'company') return 'company';
+      if (activePortalBranch === 'admin' && isAdminUser) return 'admin';
+    }
+
+    // 4. Kullanıcının kendi birincil rolü
+    const r = effectiveCurrentUser?.role || userRole;
+    if (r === 'employer') return 'company';
+    if (r === 'admin') return 'admin';
+    if (r && ['student', 'alumni', 'academic', 'company'].includes(r)) return r;
+
+    return isGuest ? 'guest' : 'student';
+  })();
 
   const branchTargetId = (
     effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null
@@ -113,6 +147,12 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
     return null; // no invented 76–84 scores
   };
   const getFeedView = () => {
+    if (effectivePreviousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(effectivePreviousView)) {
+      return effectivePreviousView;
+    }
+    if (activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch)) {
+      return activePortalBranch;
+    }
     if (effectiveRole === 'admin') return 'admin';
     if (effectiveRole === 'employer' || effectiveRole === 'company') return 'company';
     if (effectiveRole === 'alumni') return 'alumni';
@@ -722,7 +762,9 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
           </div>
         </div>
       </div>
-      {effectiveRole === 'admin' ? null : effectiveRole && (
+      {effectiveRole === 'admin' ? (
+        <AdminOmniDock setView={setView} currentUser={effectiveCurrentUser} theme="amber" />
+      ) : effectiveRole && (
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
           <div className={`bg-white/95 backdrop-blur-2xl p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-gray-800 border-2 ${
             effectiveRole === 'alumni' ? 'border-emerald-100 shadow-[0_15px_40px_rgba(5,150,105,0.18)]' :
@@ -973,15 +1015,6 @@ export default function JobsAndInternships({ userRole, setView, currentUser, job
         </div>
       )}
 
-      {effectiveRole === 'admin' ? null : (
-        <SubPanelFloatingDock 
-          currentUser={effectiveCurrentUser} 
-          setView={setView} 
-          setSelectedUserId={setSelectedUserId}
-          activeTab="jobs" 
-          userRole={effectiveRole} 
-        />
-      )}
     </div>
   );
 }

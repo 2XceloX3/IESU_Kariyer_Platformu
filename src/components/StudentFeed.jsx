@@ -789,7 +789,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
           )}
 
           {activeTab === 'career_network' && (
-            <CareerNetwork companies={companies} events={events} academicStaff={academicStaff} setView={setView} setSelectedUserId={setSelectedUserId} />
+            <CareerNetwork companies={companies} events={events} academicStaff={academicStaff} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} userRole="student" previousView="student" />
           )}
 
 

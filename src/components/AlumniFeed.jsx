@@ -574,7 +574,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           )}
 
           {activeTab === 'career_network' && (
-            <CareerNetwork companies={companies} events={events} academicStaff={academicStaff} setView={setView} setSelectedUserId={setSelectedUserId} />
+            <CareerNetwork companies={companies} events={events} academicStaff={academicStaff} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} userRole="alumni" previousView="alumni" />
           )}
 
 

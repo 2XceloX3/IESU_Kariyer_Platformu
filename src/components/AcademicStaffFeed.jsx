@@ -969,7 +969,7 @@ export default function AcademicStaffFeed({
         {!isRadarOpen && activeTab === 'career_network' && (
           <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fade-in">
             <h2 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2"><Compass className="text-red-600" /> Kariyer Ağı</h2>
-            <CareerNetwork companies={companies} students={students} alumni={alumni} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} hideHeader={true} />
+            <CareerNetwork companies={companies} students={students} alumni={alumni} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} userRole="academic" previousView="academic" hideHeader={true} />
           </div>
         )}
         

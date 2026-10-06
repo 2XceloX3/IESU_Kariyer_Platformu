@@ -106,11 +106,11 @@ export default function CompanyHive({ currentUser, setView }) {
       case 'create_job':
         return <JobCreator setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'jobs':
-        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="company" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'user_profile':
-        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="company" setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
-        return <PublicUserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+        return <PublicUserProfile userId={selectedUserId} viewerHive="company" setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
         return <ProfileUpdate setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'applications':
@@ -125,7 +125,7 @@ export default function CompanyHive({ currentUser, setView }) {
         return <MessagingInterface setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
+        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView={previousView || 'company'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'group_profile': {

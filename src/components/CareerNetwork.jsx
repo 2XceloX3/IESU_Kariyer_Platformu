@@ -48,7 +48,13 @@ export default function CareerNetwork({
   const [selectedDeptFilter, setSelectedDeptFilter] = useState('all');
   const [minGpaFilter, setMinGpaFilter] = useState('all');
 
-  const homeView = previousView || (isAdmin ? 'admin' : isAlumni ? 'alumni' : isAcademic ? 'academic' : isCompany ? 'company' : 'student');
+  const homeView = previousView || (isAcademic ? 'academic' : isAlumni ? 'alumni' : isCompany ? 'company' : isAdmin ? 'admin' : 'student');
+
+  const handleNavigateToJobs = () => {
+    const targetBranch = isAcademic ? 'academic' : isAlumni ? 'alumni' : isCompany ? 'company' : isAdmin ? 'admin' : 'student';
+    useAppStore.getState().setActivePortalBranch?.(targetBranch);
+    if (setView) setView('jobs');
+  };
 
   const bannerGradient = 
     isAlumni ? 'bg-gradient-to-br from-[#065F46] via-[#059669] to-[#047857] border-emerald-900' :
@@ -1186,7 +1192,7 @@ export default function CareerNetwork({
               <button 
                 onClick={() => {
                   setSelectedCompanyModal(null);
-                  if (setView) setView('jobs');
+                  handleNavigateToJobs();
                 }}
                 className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
               >
@@ -1253,7 +1259,7 @@ export default function CareerNetwork({
               <button 
                 onClick={() => {
                   setSelectedInternshipModal(null);
-                  if (setView) setView('jobs');
+                  handleNavigateToJobs();
                 }}
                 className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer"
               >
@@ -1385,7 +1391,7 @@ export default function CareerNetwork({
                       <button 
                         onClick={() => {
                           setActiveModal(null);
-                          if (setView) setView('jobs');
+                          handleNavigateToJobs();
                         }}
                         className="w-full mt-2 py-2.5 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                       >

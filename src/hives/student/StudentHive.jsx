@@ -148,7 +148,7 @@ export default function StudentHive({ currentUser, setView }) {
       case 'onboarding':
         return <StudentOnboarding setView={handleSetView} onComplete={() => handleSetView('feed')} currentUser={effectiveCurrentUser} />;
       case 'jobs':
-        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="student" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView || 'student'} currentUser={effectiveCurrentUser} userRole="student" />;
       case 'user_profile':
         return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self'} viewerHive="student" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
@@ -202,7 +202,7 @@ export default function StudentHive({ currentUser, setView }) {
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
+        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView={previousView || 'student'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'global_map':
         return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" onBack={() => handleSetView('student')} />;
       case 'groups':

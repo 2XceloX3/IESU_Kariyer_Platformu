@@ -47,4 +47,44 @@ describe('JobsAndInternships Component', () => {
     if (gonulluTab) fireEvent.click(gonulluTab);
     expect(screen.getAllByText(/Kariyer|Staj|İlan/i).length).toBeGreaterThan(0);
   });
+
+  it('renders Academic role with dedicated Indigo theme and routes back to academic without admin trap', () => {
+    mockSetView.mockClear();
+    const academicProps = {
+      ...mockProps,
+      userRole: 'academic',
+      previousView: 'academic',
+      currentUser: { id: 'acad_1', name: 'Dr. Zeynep Çelik', role: 'academic' }
+    };
+
+    render(<JobsAndInternships {...academicProps} />);
+
+    // Header title should have indigo styling
+    const uniTitle = screen.getByText('İstanbul Esenyurt Üniversitesi');
+    expect(uniTitle.className).toContain('text-indigo-900');
+    expect(uniTitle.className).not.toContain('text-amber-800');
+
+    // Should NOT show Super Admin coordinator card
+    expect(screen.queryByText(/👑 KGM MASTER/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/SÜPER YÖNETİCİ & KOORDİNATÖR/i)).not.toBeInTheDocument();
+
+    // Clicking top logo should navigate back to academic, NOT admin
+    const logoButton = uniTitle.closest('[role="button"]');
+    fireEvent.click(logoButton);
+    expect(mockSetView).toHaveBeenCalledWith('academic');
+    expect(mockSetView).not.toHaveBeenCalledWith('admin');
+  });
+
+  it('renders Student role with Crimson theme and routes back to student', () => {
+    mockSetView.mockClear();
+    render(<JobsAndInternships {...mockProps} userRole="student" previousView="student" />);
+
+    const uniTitle = screen.getByText('İstanbul Esenyurt Üniversitesi');
+    expect(uniTitle.className).toContain('text-[#990000]');
+
+    const logoButton = uniTitle.closest('[role="button"]');
+    fireEvent.click(logoButton);
+    expect(mockSetView).toHaveBeenCalledWith('student');
+    expect(mockSetView).not.toHaveBeenCalledWith('admin');
+  });
 });

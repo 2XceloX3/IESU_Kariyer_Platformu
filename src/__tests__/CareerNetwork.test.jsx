@@ -34,4 +34,45 @@ describe('CareerNetwork Component', () => {
     render(<CareerNetwork {...mockProps} companies={[]} academicStaff={[]} />);
     expect(screen.getAllByText(/Akademik & Katılımcı Ağı|Katılımcılar & Kurullar/i).length).toBeGreaterThan(0);
   });
+
+  it('clicking İlanları & Kontenjanları İncele sets activePortalBranch and navigates to jobs', () => {
+    mockSetView.mockClear();
+    render(<CareerNetwork {...mockProps} userRole="academic" previousView="academic" />);
+    
+    // Find and click a company card to open modal
+    const companyCard = screen.getAllByText(/Aselsan|Baykar|Protokol Detayı/i)[0];
+    fireEvent.click(companyCard);
+
+    // Modal button should exist
+    const inspectBtn = screen.getByText(/İlanları & Kontenjanları İncele/i);
+    expect(inspectBtn).toBeInTheDocument();
+
+    fireEvent.click(inspectBtn);
+    expect(mockSetView).toHaveBeenCalledWith('jobs');
+  });
+
+  it('clicking Yetenek Kapısı Üzerinden Başvur sets activePortalBranch and navigates to jobs', () => {
+    mockSetView.mockClear();
+    render(<CareerNetwork {...mockProps} userRole="academic" previousView="academic" />);
+    
+    // Open internship modal
+    const applyModalTrigger = screen.getAllByText(/Başvur & İncele/i)[0];
+    fireEvent.click(applyModalTrigger);
+
+    const applyBtn = screen.getByText(/Yetenek Kapısı Üzerinden Başvur/i);
+    expect(applyBtn).toBeInTheDocument();
+
+    fireEvent.click(applyBtn);
+    expect(mockSetView).toHaveBeenCalledWith('jobs');
+  });
+
+  it('back button in Academic role navigates to academic and does not trap in admin', () => {
+    mockSetView.mockClear();
+    render(<CareerNetwork {...mockProps} userRole="academic" previousView="academic" />);
+    
+    const backBtn = screen.getByTitle('Geri Dön');
+    fireEvent.click(backBtn);
+    expect(mockSetView).toHaveBeenCalledWith('academic');
+    expect(mockSetView).not.toHaveBeenCalledWith('admin');
+  });
 });

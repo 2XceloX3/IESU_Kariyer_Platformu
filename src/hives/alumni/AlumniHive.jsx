@@ -124,11 +124,11 @@ export default function AlumniHive({ currentUser, setView }) {
       case 'global_map':
         return <GlobalAlumniMap setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} previousView={previousView} />;
       case 'jobs':
-        return <JobsAndInternships setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} userRole="alumni" />;
+        return <JobsAndInternships setView={handleSetView} previousView={previousView || 'alumni'} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'user_profile':
-        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="alumni" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+        return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="alumni" setView={handleSetView} previousView={previousView || 'alumni'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
-        return <PublicUserProfile userId={selectedUserId} viewerHive="alumni" setView={handleSetView} previousView={previousView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+        return <PublicUserProfile userId={selectedUserId} viewerHive="alumni" setView={handleSetView} previousView={previousView || 'alumni'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'profile_update':
         return <ProfileUpdate setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'cvbuilder':
@@ -137,7 +137,7 @@ export default function AlumniHive({ currentUser, setView }) {
         return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'network':
       case 'career_network':
-        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
+        return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView={previousView || 'alumni'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" setSelectedUserId={setSelectedUserId} />;
       case 'group_profile': {
