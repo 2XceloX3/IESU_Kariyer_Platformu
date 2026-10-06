@@ -56,7 +56,10 @@ export default function SafeAvatar({
     name.toLowerCase().includes('kariyer') ||
     name.toLowerCase().includes('esenyurt') ||
     name.toLowerCase().includes('kgm') ||
-    name.toLowerCase().includes('yönetici')
+    name.toLowerCase().includes('yönetici') ||
+    name.toLowerCase().includes('admin') ||
+    name.toLowerCase().includes('kurumsal') ||
+    name.toLowerCase().includes('rektör')
   ));
 
   if (isInstitutional && (!src || isPlaceholder(src) || imgError)) {
@@ -66,7 +69,7 @@ export default function SafeAvatar({
           src="/iesu-logo.svg" 
           alt={alt || "IESU Logo"} 
           className="w-full h-full object-contain"
-          onError={(e) => { e.target.onerror = null; e.target.src = '/logo.png'; }} 
+          onError={(e) => { e.target.onerror = null; e.target.src = '/iesu-logo.svg'; }} 
         />
       </div>
     );
@@ -75,9 +78,11 @@ export default function SafeAvatar({
   const bg = getBgColor(name);
   const initials = getInitials(name);
   const showImage = src && !isPlaceholder(src) && !imgError;
+  const isWhiteContainer = className.includes('bg-white');
+  const textColorClass = isWhiteContainer ? 'text-slate-900 font-black' : 'text-white font-bold';
 
   return (
-    <div className={`${sizeClass} ${rounded} shrink-0 overflow-hidden flex items-center justify-center ${showImage ? 'bg-gray-100' : `${bg} text-white font-bold`} ${className}`}>
+    <div className={`${sizeClass} ${rounded} shrink-0 overflow-hidden flex items-center justify-center ${showImage ? 'bg-gray-100' : `${bg} ${textColorClass}`} ${className}`}>
       {showImage ? (
         <img 
           src={src} 

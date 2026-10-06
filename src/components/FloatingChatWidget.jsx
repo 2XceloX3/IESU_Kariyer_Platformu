@@ -2010,10 +2010,11 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2.5 min-w-0">
-                                <img 
+                                <SafeAvatar 
                                   src={chat.candidateAvatar} 
-                                  alt={chat.candidateName} 
-                                  className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0" 
+                                  name={chat.candidateName} 
+                                  size="sm" 
+                                  className="w-9 h-9 border border-slate-200 shrink-0" 
                                 />
                                 <div className="min-w-0">
                                   <h4 className="font-black text-xs text-slate-900 truncate leading-tight">{chat.candidateName}</h4>
@@ -2063,10 +2064,11 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       >
                         <ChevronLeft size={16} />
                       </button>
-                      <img 
+                      <SafeAvatar 
                         src={selectedCandidateChat.candidateAvatar} 
-                        alt={selectedCandidateChat.candidateName} 
-                        className="w-8 h-8 rounded-full object-cover border border-blue-200 shrink-0" 
+                        name={selectedCandidateChat.candidateName} 
+                        size="sm" 
+                        className="w-8 h-8 border border-blue-200 shrink-0" 
                       />
                       <div className="min-w-0">
                         <h4 className="font-black text-xs text-slate-900 truncate leading-tight">{selectedCandidateChat.candidateName}</h4>
@@ -2212,10 +2214,11 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2.5 min-w-0">
-                                <img 
+                                <SafeAvatar 
                                   src={chat.candidateAvatar} 
-                                  alt={chat.candidateName} 
-                                  className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0" 
+                                  name={chat.candidateName} 
+                                  size="sm" 
+                                  className="w-9 h-9 border border-slate-200 shrink-0" 
                                 />
                                 <div className="min-w-0">
                                   <h4 className="font-black text-xs text-slate-900 truncate leading-tight">{chat.candidateName}</h4>
@@ -2249,10 +2252,11 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                   {/* Candidate Profile Bar */}
                   <div className="p-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <img 
+                      <SafeAvatar 
                         src={selectedCandidateChat.candidateAvatar} 
-                        alt={selectedCandidateChat.candidateName} 
-                        className="w-8 h-8 rounded-full object-cover border border-blue-200 shrink-0" 
+                        name={selectedCandidateChat.candidateName} 
+                        size="sm" 
+                        className="w-8 h-8 border border-blue-200 shrink-0" 
                       />
                       <div className="min-w-0">
                         <h4 className="font-black text-xs text-slate-900 truncate leading-tight">{selectedCandidateChat.candidateName}</h4>

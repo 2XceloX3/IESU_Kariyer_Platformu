@@ -220,7 +220,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         {/* LEFT PANEL: Corporate Profile & Quick ATS Actions */}
         <div className="hidden lg:block w-[300px] shrink-0">
           <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg sticky top-24 space-y-4 p-5">
-            {userRole === 'admin' ? (
+            {(userRole === 'admin' || effectiveCurrentUser?.role === 'admin') ? (
               <div className="text-center">
                 <div className="relative inline-block mb-2">
                   <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-gray-200 shadow-sm mx-auto p-2">
@@ -230,7 +230,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     <Crown size={14} />
                   </div>
                 </div>
-                <h2 className="text-[16px] font-black text-gray-900 mt-3 leading-tight">Kariyer Geliştirme Merkezi</h2>
+                <h2 className="text-[16px] font-black text-gray-900 mt-3 leading-tight">Kariyer Geliştirme Koordinatörlüğü</h2>
                 <p className="text-[12px] font-bold text-orange-600 mt-1 uppercase tracking-wider">SÜPER YÖNETİCİ</p>
                 
                 <div className="mt-4 flex flex-col gap-2 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">

@@ -1,5 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
+import AdminOmniDock from './AdminOmniDock';
 import { 
   Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, 
   UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, 
@@ -803,6 +804,16 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
         </div>
 
       </div>
+
+      <AdminOmniDock 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        currentUser={currentUser} 
+        theme="amber" 
+        homeView="admin" 
+      />
 
       <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} />
     </div>

@@ -37,8 +37,7 @@ export default function SubPanelFloatingDock({
   const isAdmin = currentHive === 'admin';
   const isStudent = !isAlumni && !isAcademic && !isCompany && !isAdmin;
 
-  // Yönetim paneli (6. kovan) masaüstü kontrol odasıdır; alt yüzen dock render edilmez
-  if (isAdmin || effectiveCurrentUser?.role === 'admin' || storeCurrentUser?.role === 'admin') return null;
+  // Alt yüzen dock tüm kovanlarda ve alt panellerde kurumsal navigasyonu sunar
 
   const userName = effectiveCurrentUser?.name || (isAlumni ? 'Mezun' : isAcademic ? 'Akademik' : isCompany ? 'Kurumsal Firma' : isAdmin ? 'KGM Yönetici' : 'Öğrenci');
   const userAvatar = effectiveCurrentUser?.avatar || effectiveCurrentUser?.logo || '/iesu-logo.svg';

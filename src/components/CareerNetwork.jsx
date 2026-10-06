@@ -64,13 +64,6 @@ export default function CareerNetwork({
     isAdmin ? 'bg-gradient-to-br from-[#78350F] via-[#b45309] to-[#92400E] border-amber-900' :
     'bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] border-red-900';
 
-  const backBtnHoverClass = 
-    isAlumni ? 'hover:bg-emerald-50 text-gray-700 hover:text-[#059669]' :
-    isAcademic ? 'hover:bg-indigo-50 text-gray-700 hover:text-[#312e81]' :
-    isCompany ? 'hover:bg-blue-50 text-gray-700 hover:text-[#1e3a5f]' :
-    isAdmin ? 'hover:bg-amber-50 text-gray-700 hover:text-[#b45309]' :
-    'hover:bg-red-50 text-gray-700 hover:text-[#990000]';
-
   const titleColor = 
     isAlumni ? 'text-[#059669]' :
     isAcademic ? 'text-[#312e81]' :
@@ -1438,20 +1431,21 @@ export default function CareerNetwork({
     <div className="min-h-screen bg-slate-50 font-sans flex flex-col pb-40">
       {/* ─── CORPORATE STICKY TOP NAVBAR ─── */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           
-          {/* Sol: Resmî Kurumsal Logo + Üniversite & Koordinatörlük Unvanı */}
+          {/* Sol: Resmî Kurumsal Logo + Üniversite & Koordinatörlük Unvanı (Tıklanınca Geri Döner) */}
           <div 
             role="button" 
             tabIndex={0} 
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} 
             onClick={() => setView ? setView(homeView) : null} 
             className="flex items-center gap-3 cursor-pointer group"
-            title="Ana Sayfaya Dön"
+            title="Geri Dön"
           >
             <Logo 
               color={isAcademic ? 'indigo' : isAlumni ? 'emerald' : isCompany ? 'blue' : isAdmin ? 'amber' : 'red'} 
-              className="h-10 w-auto hover:scale-105 transition-transform shrink-0" 
+              size="sm"
+              className="hover:scale-105 transition-transform shrink-0" 
             />
             <div className="hidden sm:block text-left">
               <h1 className={`text-[13px] font-black tracking-tight leading-none mb-0.5 ${
@@ -1484,16 +1478,8 @@ export default function CareerNetwork({
             </div>
           </div>
 
-          {/* Sağ: Geri Dön Butonu ve TopProfileMenu */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <button 
-              onClick={() => setView ? setView(homeView) : null} 
-              className={`px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${backBtnHoverClass}`}
-              title="Geri Dön"
-            >
-              <ArrowLeft size={14} />
-              <span className="hidden sm:inline">Geri</span>
-            </button>
+          {/* Sağ: Profil Menüsü */}
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <TopProfileMenu 
               currentUser={currentUser} 
               userRole={effectiveRole} 
@@ -1510,16 +1496,14 @@ export default function CareerNetwork({
         {content}
       </main>
 
-      {/* Persistent Bottom Floating Dock (Yalnızca Yönetici Olmayan Dallar İçin) */}
-      {!isAdmin && effectiveCurrentUser?.role !== 'admin' && (
-        <SubPanelFloatingDock 
-          currentUser={currentUser} 
-          setView={setView} 
-          setSelectedUserId={setSelectedUserId} 
-          userRole={effectiveRole} 
-          activeTab="network"
-        />
-      )}
+      {/* Persistent Bottom Floating Dock */}
+      <SubPanelFloatingDock 
+        currentUser={currentUser} 
+        setView={setView} 
+        setSelectedUserId={setSelectedUserId} 
+        userRole={effectiveRole} 
+        activeTab="network"
+      />
     </div>
   );
 }
