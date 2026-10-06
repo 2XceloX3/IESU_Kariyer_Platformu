@@ -11,7 +11,17 @@ vi.mock('../utils/firebase', () => ({ auth: {}, db: {} }));
 vi.mock('firebase/auth', () => ({
   createUserWithEmailAndPassword: firebaseAuthMocks.createUserWithEmailAndPassword,
 }));
-vi.mock('firebase/firestore', () => ({ doc: vi.fn(), setDoc: vi.fn() }));
+vi.mock('firebase/firestore', () => ({
+  doc: vi.fn(),
+  getDoc: vi.fn().mockResolvedValue({ exists: () => false, data: () => ({}) }),
+  getDocs: vi.fn().mockResolvedValue({ forEach: () => {}, docs: [] }),
+  collection: vi.fn(),
+  query: vi.fn(),
+  where: vi.fn(),
+  setDoc: vi.fn().mockResolvedValue(undefined),
+  updateDoc: vi.fn().mockResolvedValue(undefined),
+  serverTimestamp: vi.fn(() => new Date().toISOString()),
+}));
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -52,3 +62,4 @@ describe('Register production safety', () => {
     expect(screen.getByRole('button', { name: 'Mezun Hesabımı Aktifleştir' })).toBeEnabled();
   });
 });
+

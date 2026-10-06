@@ -16,7 +16,17 @@ vi.mock('firebase/auth', () => ({
     return () => {};
   },
 }));
-vi.mock('firebase/firestore', () => ({ doc: vi.fn(), getDoc: vi.fn() }));
+vi.mock('firebase/firestore', () => ({
+  doc: vi.fn(),
+  getDoc: vi.fn().mockResolvedValue({ exists: () => false, data: () => ({}) }),
+  getDocs: vi.fn().mockResolvedValue({ forEach: () => {}, docs: [] }),
+  collection: vi.fn(),
+  query: vi.fn(),
+  where: vi.fn(),
+  setDoc: vi.fn().mockResolvedValue(undefined),
+  updateDoc: vi.fn().mockResolvedValue(undefined),
+  serverTimestamp: vi.fn(() => new Date().toISOString()),
+}));
 vi.mock('../components/LandingPage', () => ({ default: () => <div>Giriş Yap Kariyer Platformu</div> }));
 vi.mock('../components/Login', () => ({ default: () => <div>Giriş Yap Login</div> }));
 vi.mock('../components/Register', () => ({ default: () => <div>Kayıt Ol Register</div> }));

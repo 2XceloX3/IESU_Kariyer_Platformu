@@ -36,7 +36,17 @@ vi.mock('firebase/auth', () => ({
     return () => {};
   },
 }));
-vi.mock('firebase/firestore', () => ({ doc: vi.fn(), getDoc: vi.fn() }));
+vi.mock('firebase/firestore', () => ({
+  doc: vi.fn(),
+  getDoc: vi.fn().mockResolvedValue({ exists: () => false, data: () => ({}) }),
+  getDocs: vi.fn().mockResolvedValue({ forEach: () => {}, docs: [] }),
+  collection: vi.fn(),
+  query: vi.fn(),
+  where: vi.fn(),
+  setDoc: vi.fn().mockResolvedValue(undefined),
+  updateDoc: vi.fn().mockResolvedValue(undefined),
+  serverTimestamp: vi.fn(() => new Date().toISOString()),
+}));
 
 // Mock sub-views for App.test / Hive tests to prevent heavy DOM rendering
 vi.mock('../components/LandingPage', () => ({ default: () => <div data-testid="landing-page">Landing Page</div> }));
