@@ -1079,14 +1079,23 @@ export default function UserProfile({
                   { id: 'ACM-001', name: 'Dr. Öğr. Üyesi Mehmet Selim', title: 'Mühendislik Fakültesi', avatar: null },
                   { id: 'ACM-002', name: 'Prof. Dr. Ayşe Yılmaz', title: 'Bilgisayar Mühendisliği', avatar: null }
                 ].map(academic => (
-                  <div key={academic.id} className="p-2.5 bg-blue-50/40 hover:bg-blue-50 rounded-2xl border border-blue-100/60 flex items-center gap-3 transition">
-                    <img 
+                  <div 
+                    key={academic.id} 
+                    onClick={() => {
+                      if (setSelectedUserId) setSelectedUserId(academic.id);
+                      if (setView) setView('user_profile');
+                    }}
+                    className="p-2.5 bg-blue-50/40 hover:bg-blue-50 rounded-2xl border border-blue-100/60 flex items-center gap-3 transition cursor-pointer"
+                  >
+                    <SafeAvatar 
+                      name={academic.name} 
                       src={academic.avatar} 
-                      alt={academic.name} 
-                      className="w-9 h-9 rounded-xl object-cover border border-blue-200"
+                      size="sm" 
+                      rounded="rounded-xl" 
+                      className="shrink-0 border border-blue-200/80 shadow-xs" 
                     />
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-xs text-gray-900 truncate">{academic.name}</h4>
+                      <h4 className="font-bold text-xs text-gray-900 truncate hover:text-blue-800 transition">{academic.name}</h4>
                       <p className="text-[10px] text-blue-700 font-medium truncate">{academic.title}</p>
                     </div>
                   </div>

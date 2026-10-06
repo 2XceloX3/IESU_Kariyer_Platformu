@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
@@ -294,14 +295,48 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   }, [liked, post?.id, post?.authorId, post?.author?.id, effectiveCurrentUser?.id, setPosts]);
 
   useEffect(() => {
-    if (isShareModalOpen && availableUsers.length === 0) {
+    if (isShareModalOpen) {
       try {
-        const students = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]');
-        const alumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || '[]');
-        setAvailableUsers([...students, ...alumni].filter(u => u.source !== 'demo_seed'));
-      } catch (e) { console.error(e); }
+        const storeStudents = useAppStore.getState().students || [];
+        const storeAlumni = useAppStore.getState().alumni || [];
+        const storeStaff = useAppStore.getState().academicStaff || [];
+        let localStudents = [];
+        let localAlumni = [];
+        try { localStudents = JSON.parse(localStorage.getItem('iesu_students_v3') || '[]'); } catch (e) {}
+        try { localAlumni = JSON.parse(localStorage.getItem('iesu_alumni_v3') || '[]'); } catch (e) {}
+
+        const combined = [...storeStudents, ...storeAlumni, ...storeStaff, ...localStudents, ...localAlumni];
+        const myId = effectiveCurrentUser?.id;
+        const myName = effectiveCurrentUser?.name;
+        const userMap = new Map();
+
+        combined.forEach(u => {
+          if (!u) return;
+          const uid = u.id || u.name;
+          if (!uid || uid === myId || u.name === myName) return;
+          if (!userMap.has(uid)) {
+            userMap.set(uid, {
+              id: uid,
+              name: u.name || 'Kullanıcı',
+              role: u.role || 'student',
+              title: u.title || u.department || u.companyName || (u.role === 'academic' ? 'Akademisyen' : u.role === 'alumni' ? 'Mezun' : 'Öğrenci')
+            });
+          }
+        });
+
+        // Eger bos ise guvenli tanimli ornek kisiler ekle
+        if (userMap.size === 0) {
+          userMap.set('ACM-001', { id: 'ACM-001', name: 'Dr. Öğr. Üyesi Mehmet Selim', role: 'academic', title: 'Bilgisayar Mühendisliği' });
+          userMap.set('ACM-002', { id: 'ACM-002', name: 'Prof. Dr. Ayşe Yılmaz', role: 'academic', title: 'Yazılım Mühendisliği' });
+          userMap.set('ALU-001', { id: 'ALU-001', name: 'Seda Çelik', role: 'alumni', title: 'Endüstri Mühendisliği Mezunu' });
+        }
+
+        setAvailableUsers(Array.from(userMap.values()));
+      } catch (e) {
+        console.error('Error fetching available users for share:', e);
+      }
     }
-  }, [isShareModalOpen, availableUsers.length]);
+  }, [isShareModalOpen, effectiveCurrentUser?.id, effectiveCurrentUser?.name]);
 
   const handleAddComment = useCallback(() => {
     const trimmed = newComment.trim();
@@ -599,12 +634,18 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       
       
       {/* Repost Modal */}
-      {isRepostModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100">
-            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+      {isRepostModalOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => setIsRepostModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-gray-100 animate-scale-up"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-slate-50/50">
               <h3 className="font-black text-gray-900 flex items-center gap-2"><Share2 size={18} className="text-[#990000]" /> Yorumla Paylaş</h3>
-              <button aria-label="Kapat" onClick={() => setIsRepostModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition active:scale-95"><X size={20} /></button>
+              <button type="button" aria-label="Kapat" onClick={() => setIsRepostModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition active:scale-95 cursor-pointer"><X size={20} /></button>
             </div>
             
             <div className="p-5">
@@ -612,7 +653,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                 value={repostComment}
                 onChange={e => setRepostComment(e.target.value)}
                 placeholder="Bu gönderi hakkında ne düşünüyorsunuz?"
-                className="w-full h-24 resize-none bg-transparent text-sm focus:outline-none mb-4"
+                className="w-full h-24 resize-none bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 mb-4"
                 autoFocus
               />
               
@@ -623,19 +664,20 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
-                    <SafeAvatar src={post.author?.logo} name={post.author?.logo?.name} size={40} className="w-full h-full object-cover" />
+                    <SafeAvatar src={post.author?.logo} name={post.author?.logo?.name || (typeof post.author === 'string' ? post.author : post?.author?.name)} size={40} className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div>
-                  <p className="text-xs font-bold text-gray-900">{post.author?.name}</p>
+                  <p className="text-xs font-bold text-gray-900">{typeof post.author === 'string' ? post.author : (post.author?.name || 'Kullanıcı')}</p>
                   <p className="text-[10px] text-gray-500 line-clamp-1">{post.content}</p>
                 </div>
               </div>
             </div>
 
             <div className="p-4 border-t border-gray-100 flex justify-end gap-2 bg-gray-50/50">
-              <button onClick={() => setIsRepostModalOpen(false)} className="px-5 py-2.5 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-200 transition active:scale-95">İptal</button>
+              <button type="button" onClick={() => setIsRepostModalOpen(false)} className="px-5 py-2.5 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-200 transition active:scale-95 cursor-pointer">İptal</button>
               <button 
+                type="button"
                 onClick={() => {
                   if (setPosts) {
                     const newPost = {
@@ -653,81 +695,144 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   setIsRepostModalOpen(false);
                   setRepostComment('');
                 }}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-[#990000] text-white hover:bg-indigo-900 transition shadow-md active:scale-95"
+                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-[#990000] text-white hover:bg-red-800 transition shadow-md active:scale-95 cursor-pointer"
               >
                 Paylaş
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Share Modal */}
-      {isShareModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100 max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b border-gray-100 shrink-0">
-              <h3 className="font-black text-gray-900 flex items-center gap-2"><Send size={18} className="text-[#990000]" /> Gönderiyi Paylaş</h3>
-              <button aria-label="Kapat" onClick={() => setIsShareModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition active:scale-95"><X size={20} /></button>
+      {isShareModalOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => setIsShareModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-gray-100 max-h-[90vh] flex flex-col animate-scale-up"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center p-4 border-b border-gray-100 shrink-0 bg-slate-50/50">
+              <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
+                <Send size={16} className="text-[#990000]" /> Gönderiyi Paylaş
+              </h3>
+              <button 
+                type="button"
+                aria-label="Kapat" 
+                onClick={() => setIsShareModalOpen(false)} 
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition active:scale-95 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
             </div>
+            
             <div className="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
               {/* Social Buttons */}
-              <div className="grid grid-cols-3 gap-3 mb-2">
-                <button aria-label="WhatsApp" onClick={handleWhatsappShare} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-green-50 text-green-600 hover:bg-green-100 transition-colors active:scale-95">
-                  <FaWhatsapp size={24} />
-                  <span className="text-[10px] font-bold">WhatsApp</span>
+              <div className="grid grid-cols-3 gap-2.5">
+                <button 
+                  type="button"
+                  aria-label="WhatsApp" 
+                  onClick={handleWhatsappShare} 
+                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 transition border border-green-200/50 cursor-pointer active:scale-95"
+                >
+                  <FaWhatsapp size={22} className="text-green-600" />
+                  <span className="text-[11px] font-bold">WhatsApp</span>
                 </button>
-                <button aria-label="Discord" onClick={handleDiscordShare} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-[#5865F2]/10 text-[#5865F2] hover:bg-[#5865F2]/20 transition-colors active:scale-95">
-                  <FaDiscord size={24} />
-                  <span className="text-[10px] font-bold">Discord</span>
+                <button 
+                  type="button"
+                  aria-label="Discord" 
+                  onClick={handleDiscordShare} 
+                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-[#5865F2]/10 hover:bg-[#5865F2]/20 text-[#5865F2] transition border border-[#5865F2]/20 cursor-pointer active:scale-95"
+                >
+                  <FaDiscord size={22} />
+                  <span className="text-[11px] font-bold">Discord</span>
                 </button>
-                <button aria-label="Kopyala" onClick={handleCopyLink} className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors active:scale-95">
-                  <Copy size={24} />
-                  <span className="text-[10px] font-bold">Linki Kopyala</span>
+                <button 
+                  type="button"
+                  aria-label="Kopyala" 
+                  onClick={handleCopyLink} 
+                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 transition border border-slate-200 cursor-pointer active:scale-95"
+                >
+                  <Copy size={20} className="text-slate-600" />
+                  <span className="text-[11px] font-bold">Linki Kopyala</span>
                 </button>
               </div>
 
-              <div className="relative flex items-center py-2">
+              <div className="relative flex items-center py-1">
                 <div className="flex-grow border-t border-gray-100"></div>
-                <span className="flex-shrink-0 mx-4 text-xs font-medium text-gray-500">veya platform içi</span>
+                <span className="flex-shrink-0 mx-3 text-[11px] font-semibold text-gray-400">veya platform içi mesaj</span>
                 <div className="flex-grow border-t border-gray-100"></div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1.5">Kime Göndermek İstiyorsunuz?</label>
-                <select value={shareTarget} onChange={e=>setShareTarget(e.target.value)} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
+                <label className="text-xs font-bold text-gray-700 block mb-1.5">Kime Göndermek İstiyorsunuz?</label>
+                <select 
+                  value={shareTarget} 
+                  onChange={e => setShareTarget(e.target.value)} 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                >
                   <option value="">Kişi Seçin...</option>
                   {availableUsers.map(u => (
-                    <option key={u.id} value={u.id}>{u.name} ({u.department || u.companyName || u.title})</option>
+                    <option key={u.id} value={u.id}>
+                      {u.name} ({u.title || u.department || u.companyName || (u.role === 'academic' ? 'Akademisyen' : u.role === 'alumni' ? 'Mezun' : 'Öğrenci')})
+                    </option>
                   ))}
                 </select>
               </div>
+
               <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1.5">Mesajınız (İsteğe Bağlı)</label>
+                <label className="text-xs font-bold text-gray-700 block mb-1.5">Mesajınız (İsteğe Bağlı)</label>
                 <textarea 
-                  value={shareText} onChange={e=>setShareText(e.target.value)}
+                  value={shareText} 
+                  onChange={e => setShareText(e.target.value)}
                   placeholder="Bu gönderi ilgini çekebilir..."
                   rows={2}
-                  className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:outline-none resize-none"
                 />
               </div>
               
-              <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex gap-3 opacity-70">
-                <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
-                  {post.image ? <img src={post.image} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gray-200 flex items-center justify-center"><FileText size={16} className="text-gray-500" /></div>}
+              {/* Gönderi Önizleme */}
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex gap-3 opacity-80">
+                <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-200 flex items-center justify-center">
+                  {post.image ? (
+                    <img src={post.image} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <FileText size={16} className="text-slate-500" />
+                  )}
                 </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900">{post.author?.name}</p>
-                  <p className="text-[10px] font-medium text-gray-500 line-clamp-1 break-words">{post.content}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-gray-900 truncate">
+                    {typeof post.author === 'string' ? post.author : (post.author?.name || 'Gönderi Sahibi')}
+                  </p>
+                  <p className="text-[11px] font-medium text-gray-500 line-clamp-1 break-words">{post.content}</p>
                 </div>
               </div>
+            </div>
 
-              <button aria-label="Paylaş" onClick={handleShare} disabled={!shareTarget} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50 active:scale-95 cursor-pointer">
-                Mesaj Olarak Gönder
+            <div className="p-4 border-t border-gray-100 bg-slate-50/50 flex items-center justify-end gap-2 shrink-0">
+              <button 
+                type="button"
+                onClick={() => setIsShareModalOpen(false)} 
+                className="px-4 py-2.5 rounded-xl font-bold text-xs text-gray-600 hover:bg-gray-200 transition cursor-pointer"
+              >
+                İptal
+              </button>
+              <button 
+                type="button"
+                aria-label="Mesaj Olarak Gönder" 
+                onClick={handleShare} 
+                disabled={!shareTarget} 
+                className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md cursor-pointer flex items-center gap-1.5"
+              >
+                <Send size={13} /> Mesaj Olarak Gönder
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       
       {/* Fast Action for Jobs */}
@@ -798,9 +903,15 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       )}
 
       {/* ─── KGM İŞ & STAJ BAŞVURU FORMU MODALI (Z-[9999] OVERLAY) ─── */}
-      {isApplyModalOpen && (
-        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] relative">
+      {isApplyModalOpen && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setIsApplyModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] relative animate-scale-up"
+            onClick={e => e.stopPropagation()}
+          >
             
             {/* Header */}
             <div className="p-5 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white flex items-center justify-between shrink-0">
@@ -917,7 +1028,8 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Fast Action for Surveys */}
@@ -930,12 +1042,18 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       )}
 
       {/* Survey Modal */}
-      {isSurveyModalOpen && post.surveyData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-gray-100 overflow-hidden">
+      {isSurveyModalOpen && post.surveyData && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+          onClick={() => setIsSurveyModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-gray-100 overflow-hidden animate-scale-up"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-red-50/50">
               <h3 className="font-black text-red-900 flex items-center gap-2"><ClipboardList size={20} className="text-red-600" /> {post.surveyData.title}</h3>
-              <button aria-label="Kapat" onClick={() => setIsSurveyModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1.5 rounded-lg hover:bg-white transition bg-gray-50 active:scale-95"><X size={20} /></button>
+              <button type="button" aria-label="Kapat" onClick={() => setIsSurveyModalOpen(false)} className="text-gray-500 hover:text-gray-600 p-1.5 rounded-lg hover:bg-white transition bg-gray-50 active:scale-95 cursor-pointer"><X size={20} /></button>
             </div>
             
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
@@ -969,6 +1087,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                               {[1, 2, 3, 4, 5].map(score => (
                                 <button
                                   key={score}
+                                  type="button"
                                   aria-label={`Puan ${score}`}
                                   onClick={() => setSurveyAnswers({...surveyAnswers, [q.id]: score})}
                                   className={`w-10 h-10 rounded-full font-bold transition-all active:scale-95 ${
@@ -998,10 +1117,11 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                   
                   <div className="pt-6 border-t border-gray-100">
                     <button 
+                      type="button"
                       aria-label="Gönder"
                       onClick={handleSurveySubmit}
                       disabled={Object.keys(surveyAnswers).length === 0}
-                      className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl transition-all shadow-md active:scale-95"
+                      className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
                     >
                       Anketi Tamamla ve Gönder
                     </button>
@@ -1010,7 +1130,8 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Comments Section */}

@@ -9,9 +9,16 @@ function isPlaceholder(src) {
 
 function getInitials(name) {
   if (!name || typeof name !== 'string') return '?';
-  const parts = name.trim().split(' ');
+  // Strip academic / professional titles so real person name initials are shown (e.g. Dr. Öğr. Üyesi Mehmet Selim -> MS)
+  const cleanedName = name
+    .replace(/^(Prof\.|Dr\.|Doç\.|Öğr\.|Gör\.|Arş\.|Uzm\.|Av\.|Yrd\.|Müh\.)\s+/gi, '')
+    .replace(/^(Prof\.|Dr\.|Doç\.|Öğr\.|Gör\.|Arş\.|Uzm\.|Av\.|Yrd\.|Müh\.|Üyesi)\s+/gi, '')
+    .replace(/^Üyesi\s+/gi, '')
+    .trim();
+  const target = cleanedName.length > 0 ? cleanedName : name;
+  const parts = target.trim().split(/\s+/);
   if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  return name.charAt(0).toUpperCase();
+  return target.charAt(0).toUpperCase();
 }
 
 const BG_COLORS = [
