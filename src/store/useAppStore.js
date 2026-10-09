@@ -5,7 +5,7 @@
  */
 
 import { create, useStore } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import DOMPurify from 'dompurify';
 import { useSharedStore } from '../brain/useSharedStore';
 import { useAdminStore } from '../brain/useAdminStore';
@@ -174,6 +174,35 @@ export const coreStore = create(
     }),
     {
       name: 'iesu_app_session_v1',
+      storage: createJSONStorage(() => ({
+        getItem: (name) => {
+          if (typeof window === 'undefined') return null;
+          const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+          const isRemembered = localStorage.getItem('iesu_remember_me') === 'true' || isTest;
+          const sessionVal = sessionStorage.getItem(name);
+          if (sessionVal) return sessionVal;
+          if (isRemembered) {
+            return localStorage.getItem(name);
+          }
+          return null;
+        },
+        setItem: (name, value) => {
+          if (typeof window === 'undefined') return;
+          const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+          const isRemembered = localStorage.getItem('iesu_remember_me') === 'true' || isTest;
+          try { sessionStorage.setItem(name, value); } catch (_) {}
+          if (isRemembered) {
+            try { localStorage.setItem(name, value); } catch (_) {}
+          } else {
+            try { localStorage.removeItem(name); } catch (_) {}
+          }
+        },
+        removeItem: (name) => {
+          if (typeof window === 'undefined') return;
+          try { sessionStorage.removeItem(name); } catch (_) {}
+          try { localStorage.removeItem(name); } catch (_) {}
+        }
+      })),
       partialize: (state) => ({
         userRole: state.userRole,
         currentUser: state.currentUser,

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 const EDevletObsModal = import.meta.env.DEV ? React.lazy(() => import('./modals/EDevletObsModal')) : null;
@@ -14,6 +14,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEdevletModalOpen, setIsEdevletModalOpen] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -28,6 +29,14 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
     try {
       // FIREBASE AUTHENTICATION (The New Way)
+      try {
+        if (typeof setPersistence === 'function') {
+          await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+        }
+      } catch (pErr) {
+        console.warn('Persistence config warning:', pErr?.message);
+      }
+
       const userCredential = await signInWithEmailAndPassword(auth, username, password);
       const user = userCredential.user;
       const isKovanAdmin = (user.email && user.email.toLowerCase() === 'kariyer@iesu.edu.tr');
@@ -58,8 +67,17 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         const finalRole = isKovanAdmin ? 'admin' : (userData.role || loginRole);
         const loggedUser = { id: user.uid, ...userData, role: finalRole, email: user.email };
         try {
-          localStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
-          localStorage.setItem('iesu_user_role_v1', finalRole);
+          if (rememberMe) {
+            localStorage.setItem('iesu_remember_me', 'true');
+            localStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
+            localStorage.setItem('iesu_user_role_v1', finalRole);
+          } else {
+            localStorage.removeItem('iesu_remember_me');
+            localStorage.removeItem('iesu_mock_user');
+            localStorage.removeItem('iesu_user_role_v1');
+          }
+          sessionStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
+          sessionStorage.setItem('iesu_user_role_v1', finalRole);
           const s = useAppStore.getState();
           s.setUserRole?.(finalRole);
           s.setCurrentUser?.(loggedUser);
@@ -76,8 +94,18 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         const finalRole = 'admin';
         const loggedUser = { id: user.uid, email: user.email, role: finalRole, name: 'Süper Admin' };
         try {
-          localStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
-          localStorage.setItem('iesu_user_role_v1', finalRole);
+          if (rememberMe) {
+            localStorage.setItem('iesu_remember_me', 'true');
+            localStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
+            localStorage.setItem('iesu_user_role_v1', finalRole);
+          } else {
+            localStorage.removeItem('iesu_remember_me');
+            localStorage.removeItem('iesu_mock_user');
+            localStorage.removeItem('iesu_user_role_v1');
+          }
+          sessionStorage.setItem('iesu_mock_user', JSON.stringify(loggedUser));
+          sessionStorage.setItem('iesu_user_role_v1', finalRole);
+          sessionStorage.setItem('iesu_admin_session', 'active');
           const s = useAppStore.getState();
           s.setUserRole?.(finalRole);
           s.setCurrentUser?.(loggedUser);
@@ -128,8 +156,17 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       obsVerified: false,
     };
     try {
-      localStorage.setItem('iesu_mock_user', JSON.stringify(safe));
-      localStorage.setItem('iesu_user_role_v1', safe.role);
+      if (rememberMe) {
+        localStorage.setItem('iesu_remember_me', 'true');
+        localStorage.setItem('iesu_mock_user', JSON.stringify(safe));
+        localStorage.setItem('iesu_user_role_v1', safe.role);
+      } else {
+        localStorage.removeItem('iesu_remember_me');
+        localStorage.removeItem('iesu_mock_user');
+        localStorage.removeItem('iesu_user_role_v1');
+      }
+      sessionStorage.setItem('iesu_mock_user', JSON.stringify(safe));
+      sessionStorage.setItem('iesu_user_role_v1', safe.role);
       const s = useAppStore.getState();
       s.setUserRole?.(safe.role);
       s.setCurrentUser?.(safe);
@@ -260,7 +297,13 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
             <div className="flex items-center justify-between text-xs pt-1">
               <label htmlFor="rememberMe" className="flex items-center gap-2 text-slate-600 font-bold cursor-pointer">
-                <input id="rememberMe" type="checkbox" className="rounded border-slate-300 text-red-600 focus:ring-red-500" />
+                <input 
+                  id="rememberMe" 
+                  type="checkbox" 
+                  checked={rememberMe} 
+                  onChange={(e) => setRememberMe(e.target.checked)} 
+                  className="rounded border-slate-300 text-red-600 focus:ring-red-500 cursor-pointer" 
+                />
                 Beni Hatırla
               </label>
               <button type="button" onClick={() => setView('forgot_password')} className="text-red-600 font-extrabold hover:underline transition">

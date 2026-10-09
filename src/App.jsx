@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './utils/firebase';
 import useAppStore from './store/useAppStore';
@@ -75,7 +75,28 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('iesu_mock_user') || localStorage.getItem('iesu_user');
+      const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+      const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
+      // Oturum Güvenliği (OWASP Session Management):
+      // 1. Sekme/Oturum verisi (sessionStorage) aktif sekmedeki oturumu temsil eder.
+      // 2. Kalıcı oturum (localStorage) yalnızca kullanıcı açıkça 'Beni Hatırla' işaretlediyse veya test modunda geçerlidir.
+      // 3. Sıfırdan giriş yapıldığında (tarayıcı kapatılıp açıldığında) kullanıcı açık kalmaz.
+      const savedSession = typeof window !== 'undefined' ? (sessionStorage.getItem('iesu_mock_user') || sessionStorage.getItem('iesu_user')) : null;
+      const savedLocal = (isRemembered || isTest) && typeof window !== 'undefined'
+        ? (localStorage.getItem('iesu_mock_user') || localStorage.getItem('iesu_user')) 
+        : null;
+      
+      // Eski sahipsiz kalıntıları temizle (Beni Hatırla seçilmemişse localStorage'da açık oturum kalmamalı)
+      if (!isRemembered && !isTest && typeof window !== 'undefined') {
+        try {
+          localStorage.removeItem('iesu_mock_user');
+          localStorage.removeItem('iesu_user');
+          localStorage.removeItem('iesu_user_role_v1');
+          localStorage.removeItem('iesu_app_session_v1');
+        } catch (_) {}
+      }
+
+      const saved = savedSession || savedLocal;
       let p = saved ? JSON.parse(saved) : null;
       if (p && !p.id) p.id = p.role === 'academic' ? 'ACAD-001' : p.role === 'student' ? 'STU-' + Date.now() : p.role === 'alumni' ? 'ALU-' + Date.now() : (p.role === 'employer' || p.sector) ? 'EMP-' + Date.now() : (p.role === 'admin' ? (p.uid || 'self') : 'self');
       return p;
@@ -88,11 +109,13 @@ export default function App() {
   const storeCurrentUser = useAppStore((state) => state.currentUser);
 
   // Zustand store'daki currentUser null'a düştüğünde (logout) React local state'i de senkronize et.
-  // SADECE localStorage'da da kullanıcı kalmamışsa tetikle — ilk yüklemede race condition önlenir.
   useEffect(() => {
     if (storeCurrentUser === null && currentUser !== null) {
-      const lsUser = localStorage.getItem('iesu_mock_user');
-      if (!lsUser) {
+      const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+      const isRemembered = typeof window !== 'undefined' && (localStorage.getItem('iesu_remember_me') === 'true' || isTest);
+      const hasSession = typeof window !== 'undefined' && (sessionStorage.getItem('iesu_mock_user') || sessionStorage.getItem('iesu_user'));
+      const hasValidLocal = isRemembered && typeof window !== 'undefined' && (localStorage.getItem('iesu_mock_user') || localStorage.getItem('iesu_user'));
+      if (!hasSession && !hasValidLocal) {
         setCurrentUser(null);
       }
     } else if (storeCurrentUser && currentUser && storeCurrentUser.onboardingCompleted !== currentUser.onboardingCompleted) {
@@ -120,8 +143,17 @@ export default function App() {
   }, [navigate, pathView, currentUser]);
 
   useEffect(() => {
+    const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+    const isRemembered = typeof window !== 'undefined' && (localStorage.getItem('iesu_remember_me') === 'true' || isTest);
     if (currentUser) {
-      localStorage.setItem('iesu_mock_user', JSON.stringify(currentUser));
+      try {
+        sessionStorage.setItem('iesu_mock_user', JSON.stringify(currentUser));
+        if (isRemembered) {
+          localStorage.setItem('iesu_mock_user', JSON.stringify(currentUser));
+        } else {
+          localStorage.removeItem('iesu_mock_user');
+        }
+      } catch (_) {}
       try { useAppStore.getState().setCurrentUser(currentUser); } catch { /* store may not be ready */ }
       if (!userRole && currentUser.role) setUserRole(currentUser.role);
       const targetBranch = currentUser.role === 'admin' ? 'admin' : (currentUser.role === 'company' || currentUser.role === 'employer' ? 'company' : currentUser.role);
@@ -129,7 +161,10 @@ export default function App() {
         setActivePortalBranch?.(targetBranch);
       }
     } else {
-      ['iesu_mock_user', 'iesu_user_role_v1'].forEach(k => localStorage.removeItem(k));
+      ['iesu_mock_user', 'iesu_user_role_v1', 'iesu_remember_me'].forEach(k => {
+        try { sessionStorage.removeItem(k); } catch (_) {}
+        try { localStorage.removeItem(k); } catch (_) {}
+      });
       try { useAppStore.getState().setCurrentUser(null); } catch { /* store may not be ready */ }
     }
   }, [currentUser, userRole, setUserRole, setActivePortalBranch]);
@@ -146,7 +181,31 @@ export default function App() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       setAuthenticatedUserId(u?.uid || null);
-      if (!u) { setIsAuthStateResolved(true); return; }
+      if (!u) { 
+        setIsAuthStateResolved(true); 
+        const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+        const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
+        const hasSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_mock_user');
+        if (!hasSession && !isRemembered && !isTest) {
+          setCurrentUser(null);
+          setUserRole(null);
+        }
+        return; 
+      }
+
+      // Güvenlik Kontrolü: Eğer Firebase'de açık oturum kalmışsa ama bu yeni bir tarayıcı sekmesiyse
+      // ve kullanıcı 'Beni Hatırla' dememişse, eski Firebase oturumu derhal kapatılır.
+      const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+      const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
+      const hasSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_mock_user');
+      if (!hasSession && !isRemembered && !isTest) {
+        try { await signOut(auth); } catch (_) {}
+        setCurrentUser(null);
+        setUserRole(null);
+        setIsAuthStateResolved(true);
+        return;
+      }
+
       try {
         const snap = await getDoc(doc(db, 'users', u.uid));
         if (snap.exists()) { const data = snap.data(); setCurrentUser({ id: u.uid, ...data }); if (data.role) setUserRole(data.role); }
@@ -161,6 +220,7 @@ export default function App() {
     if ((currentUser?.role === 'admin' || userRole === 'admin') && !authenticatedUserId && !auth?.currentUser) {
       setCurrentUser(null); setUserRole(null);
       localStorage.removeItem('iesu_mock_user');
+      try { sessionStorage.removeItem('iesu_mock_user'); } catch (_) {}
       try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
       setView('login');
     }
@@ -225,15 +285,19 @@ export default function App() {
           : resolveLegalContentId(pathView) ? <DynamicContentPage contentId={resolveLegalContentId(pathView)} setView={setView} previousView="landing" currentUser={null} userRole={null} />
           : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={store.setAcademicRole || (() => {})} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} />
         ) : (
-          <>
-            <Suspense fallback={null}><FloatingChatWidget setView={setView} currentUser={currentUser} currentView={pathView} activeBranch={currentBranch} /></Suspense>
-            {renderHive()}
-            <Suspense fallback={null}>
-              <SurveyPopupModal currentUser={currentUser} userRole={effectiveRole} currentView={pathView} activePortalBranch={currentBranch} />
-              <PWAInstallPrompt /><CommandPalette isOpen={isCommandPaletteOpen} setIsOpen={setIsCommandPaletteOpen} currentUser={currentUser} setView={setView} />
-              <GlobalSearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} setView={setView} />
-            </Suspense>
-          </>
+          (pathView === 'landing') ? (
+            <LandingPage setView={setView} currentUser={currentUser} userRole={userRole} setUserRole={setUserRole} />
+          ) : (
+            <>
+              <Suspense fallback={null}><FloatingChatWidget setView={setView} currentUser={currentUser} currentView={pathView} activeBranch={currentBranch} /></Suspense>
+              {renderHive()}
+              <Suspense fallback={null}>
+                <SurveyPopupModal currentUser={currentUser} userRole={effectiveRole} currentView={pathView} activePortalBranch={currentBranch} />
+                <PWAInstallPrompt /><CommandPalette isOpen={isCommandPaletteOpen} setIsOpen={setIsCommandPaletteOpen} currentUser={currentUser} setView={setView} />
+                <GlobalSearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} setView={setView} />
+              </Suspense>
+            </>
+          )
         )}
       </Suspense>
     </ErrorBoundary>
