@@ -232,7 +232,9 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
   const currentUser = propsCurrentUser || storeCurrentUser || localCurrentUser;
 
-  // 1. Detect which portal the user is explicitly viewing right now:
+  // 1. Yalnızca KENDİNE ÖZEL (müstakil) portal kök rotalarını tespit et:
+  // NOT: 'jobs', 'feed', 'virtual_fair', 'messaging', 'calendar' gibi sayfalar TÜM roller için
+  // ORTAK sayfalardır. Bunlar asla sabit bir role (özellikle 'student') zorlanamaz!
   const activePortal = useMemo(() => {
     let v = propsCurrentView;
     if (!v && typeof window !== 'undefined') {
@@ -240,11 +242,11 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
       v = parts.length > 0 ? parts[parts.length - 1] : '';
     }
     if (!v) return null;
-    if (v === 'academic' || v === 'research_hub' || v === 'academic_onboarding' || v.startsWith('academic')) return 'academic';
-    if (v === 'company' || v === 'company_ats' || v === 'create_job' || v.startsWith('company')) return 'company';
-    if (v === 'alumni' || v === 'mezun_dernek' || v === 'alumni_assoc_portal' || v === 'alumni_card' || v === 'alumni_dao' || v.startsWith('alumni')) return 'alumni';
-    if (v === 'admin' || v === 'admin_cms' || v === 'yonetim_konsolu' || v === 'admin_console' || v === 'audit_logs') return 'admin';
-    if (v === 'student' || v === 'feed' || v === 'jobs' || v === 'club_portal' || v === 'student_analytics' || v === 'digital_portfolio' || v === 'virtual_fair' || v === 'career_roadmap' || v === 'startup_incubator' || v === 'sem' || v === 'staj' || v === 'career_test') return 'student';
+    if (v === 'academic' || v === 'research_hub' || v === 'academic_onboarding' || v.startsWith('academic_')) return 'academic';
+    if (v === 'company' || v === 'company_ats' || v === 'create_job' || v.startsWith('company_')) return 'company';
+    if (v === 'alumni' || v === 'mezun_dernek' || v === 'alumni_assoc_portal' || v === 'alumni_card' || v === 'alumni_dao' || v.startsWith('alumni_')) return 'alumni';
+    if (v === 'admin' || v === 'admin_cms' || v === 'yonetim_konsolu' || v === 'admin_console' || v === 'audit_logs' || v.startsWith('cms_') || v.startsWith('admin_')) return 'admin';
+    if (v === 'student' || v === 'student_exclusive' || v.startsWith('student_')) return 'student';
     return null;
   }, [propsCurrentView]);
 
@@ -255,20 +257,32 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
   const userRole = currentUser?.role || resolvedRole;
   const isSuperAdmin = currentUser?.role === 'admin' || currentUser?.id === 'admin_1513' || resolvedRole === 'admin';
 
-  // Branch Context Retention:
-  // Eğer kullanıcı doğrudan bir portal dalındaysa (ör: /academic), activePortal o daldır.
-  // Eğer kullanıcı ortak/nötr bir sayfadaysa (ör: user_profile, profile_update, calendar, notifications),
-  // kullanıcının geldiği aktif dal bağlamı (activePortalBranch) korunur.
-  // Böylece Akademik panelden profil sayfasına giden Süper Admin, yine Akademik mesaj/danışmanlık kutusunu görür.
+  // Branch Context Retention & Kovan İzolasyonu (AGENTS.md Kural 4):
+  // 1. Müstakil bir portal dalındaysa (ör: /admin, /academic, /company, /alumni), o dal esastır.
+  // 2. Ortak/paylaşılan sayfalardaysa (/jobs, /feed, /user_profile, /calendar, /notifications vb.):
+  //    Kullanıcının o an bulunduğu kovan dalı (propsActiveBranch / preservedBranch) esastır.
+  // 3. Kullanıcı Süper Admin ise ve kasten başka bir kovan dalına geçmemişse dalı KESİNLİKLE 'admin'dir.
+  //    Öğrenci mesaj kutusu süper admin sayfasına ASLA sızamaz!
   const preservedBranch = propsActiveBranch || storeActiveBranch || localBranch;
-  const branchContext = activePortal || preservedBranch || (isSuperAdmin ? 'admin' : (currentUser?.role || userRole || 'student'));
+  const branchContext = (() => {
+    if (activePortal) return activePortal;
+    if (preservedBranch && ['admin', 'student', 'alumni', 'academic', 'company'].includes(preservedBranch)) {
+      if (isSuperAdmin && preservedBranch === 'admin') return 'admin';
+      return preservedBranch;
+    }
+    if (isSuperAdmin) return 'admin';
+    const r = currentUser?.role || userRole;
+    if (r === 'employer') return 'company';
+    if (r === 'academic_staff') return 'academic';
+    return r || 'student';
+  })();
 
   const isCompany = branchContext === 'company' || branchContext === 'employer';
   const isAcademic = branchContext === 'academic' || branchContext === 'academic_staff';
   const isAlumni = branchContext === 'alumni';
-  const isStudent = branchContext === 'student';
-  const isAdmin = branchContext === 'admin';
-  const effectiveRole = branchContext;
+  const isAdmin = branchContext === 'admin' || (isSuperAdmin && !['student', 'alumni', 'academic', 'company'].includes(branchContext));
+  const isStudent = (branchContext === 'student' || (!isCompany && !isAcademic && !isAlumni && !isAdmin)) && !isAdmin && !isSuperAdmin && currentUser?.role !== 'admin';
+  const effectiveRole = isAdmin ? 'admin' : branchContext;
 
   // Mode:
   // - Super Admin: 'admin_eval' (Değerlendirme Havuzu - Kök Masası), 'admin_company', 'admin_academic', 'admin_ats'

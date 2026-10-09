@@ -9,6 +9,7 @@ import JobCreator from './JobCreator';
 import FooterModals from './FooterModals';
 import StudentDocumentSubmitModal from './StudentDocumentSubmitModal';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import AdminOmniDock from './AdminOmniDock';
 import JobMatchScoreCard from './JobMatchScoreCard';
 import SafeAvatar from './shared/SafeAvatar';
 import AnkaCoverLetterModal from './AnkaCoverLetterModal';
@@ -1004,6 +1005,23 @@ export default function JobsAndInternships({
       {footerModal&&<FooterModals type={footerModal} onClose={()=>setFooterModal(null)}/>}
 
       {/* FLOATING BOTTOM DOCK - HER KOVANA ÖZGÜ BAĞLAMSAL DOCK */}
+      {effectiveRole === 'admin' ? (
+        <AdminOmniDock 
+          currentUser={effectiveCurrentUser} 
+          setView={setView} 
+          activeTab="jobs" 
+          theme="amber" 
+          homeView="admin" 
+        />
+      ) : (
+        <SubPanelFloatingDock 
+          currentUser={effectiveCurrentUser} 
+          setView={setView} 
+          activeTab="jobs" 
+          userRole={effectiveRole} 
+        />
+      )}
+
       {(effectiveRole === 'student' || effectiveRole === 'alumni') && (
         <div className="fixed bottom-36 right-4 z-[70]">
           <button type="button" data-testid="jobs-cvbuilder-link" onClick={() => setView?.('cvbuilder')} className="text-xs font-black text-[#990000] hover:underline px-3 py-2 rounded-xl border border-red-100 bg-white shadow-md">
