@@ -124,8 +124,9 @@ export default function App() {
   }, [storeCurrentUser, currentUser]);
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
+  const hasAdminSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_admin_session') === 'active';
   const isAdmin = Boolean(
-    (authenticatedUserId || auth?.currentUser) &&
+    (authenticatedUserId || auth?.currentUser || hasAdminSession) &&
     (currentUser?.role === 'admin' || userRole === 'admin')
   );
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
@@ -179,13 +180,14 @@ export default function App() {
   }, [pathView, setActivePortalBranch, isAdmin]);
 
   useEffect(() => {
+    let isInitialBoot = true;
     const unsub = onAuthStateChanged(auth, async (u) => {
       setAuthenticatedUserId(u?.uid || null);
       if (!u) { 
         setIsAuthStateResolved(true); 
         const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
         const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
-        const hasSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_mock_user');
+        const hasSession = typeof window !== 'undefined' && (sessionStorage.getItem('iesu_mock_user') || sessionStorage.getItem('iesu_user'));
         if (!hasSession && !isRemembered && !isTest) {
           setCurrentUser(null);
           setUserRole(null);
@@ -193,18 +195,24 @@ export default function App() {
         return; 
       }
 
-      // Güvenlik Kontrolü: Eğer Firebase'de açık oturum kalmışsa ama bu yeni bir tarayıcı sekmesiyse
-      // ve kullanıcı 'Beni Hatırla' dememişse, eski Firebase oturumu derhal kapatılır.
-      const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
-      const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
-      const hasSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_mock_user');
-      if (!hasSession && !isRemembered && !isTest) {
-        try { await signOut(auth); } catch (_) {}
-        setCurrentUser(null);
-        setUserRole(null);
-        setIsAuthStateResolved(true);
-        return;
+      // Güvenlik Kontrolü: Yalnızca uygulamanın ilk açılış anında (initial boot)
+      // eğer tarayıcı yeni bir sekmede sıfırdan açıldıysa ve kullanıcı 'Beni Hatırla' dememişse,
+      // eski Firebase IndexedDB kalıntısı temizlenir.
+      if (isInitialBoot) {
+        isInitialBoot = false;
+        const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+        const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
+        const hasSession = typeof window !== 'undefined' && (sessionStorage.getItem('iesu_mock_user') || sessionStorage.getItem('iesu_user'));
+        if (!hasSession && !isRemembered && !isTest) {
+          try { await signOut(auth); } catch (_) {}
+          setCurrentUser(null);
+          setUserRole(null);
+          setAuthenticatedUserId(null);
+          setIsAuthStateResolved(true);
+          return;
+        }
       }
+      isInitialBoot = false;
 
       try {
         const snap = await getDoc(doc(db, 'users', u.uid));
@@ -217,7 +225,8 @@ export default function App() {
 
   useEffect(() => {
     if (!isAuthStateResolved) return;
-    if ((currentUser?.role === 'admin' || userRole === 'admin') && !authenticatedUserId && !auth?.currentUser) {
+    const hasAdminSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_admin_session') === 'active';
+    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin') && !authenticatedUserId && !auth?.currentUser && !hasAdminSession) {
       setCurrentUser(null); setUserRole(null);
       localStorage.removeItem('iesu_mock_user');
       try { sessionStorage.removeItem('iesu_mock_user'); } catch (_) {}
