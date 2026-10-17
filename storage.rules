@@ -1,0 +1,68 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Yardımcı güvenlik fonksiyonları
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        (request.auth.token.email != null && request.auth.token.email.matches('.*@iesu\\.edu\\.tr$') && request.auth.token.email == 'kariyer@iesu.edu.tr')
+      );
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 5 * 1024 * 1024; // 5 MB max
+    }
+
+    function isDocument() {
+      return (request.resource.contentType == 'application/pdf' ||
+              request.resource.contentType == 'application/msword' ||
+              request.resource.contentType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') &&
+             request.resource.size < 10 * 1024 * 1024; // 10 MB max
+    }
+
+    // Profil avatarları: Kullanıcı kendi avatarını yükleyebilir, herkes okuyabilir
+    match /avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if (isOwner(userId) || isAdmin()) && isImage();
+    }
+
+    // Özgeçmiş / CV belgeleri: Kullanıcı kendi CV'sini yükleyebilir/okuyabilir, firma ve admin okuyabilir
+    match /resumes/{userId}/{fileName} {
+      allow read: if isOwner(userId) || isAdmin() || (isAuthenticated() && request.auth.token.role == 'company');
+      allow write: if (isOwner(userId) || isAdmin()) && isDocument();
+    }
+
+    // İş başvurusu ekleri
+    match /applications/{applicationId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (isDocument() || isImage());
+    }
+
+    // Kulüp ve etkinlik medyaları
+    match /clubs/{clubId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isImage();
+    }
+
+    // Kurumsal ve sistem belgeleri
+    match /system/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Varsayılan kural: Güvenli kapalı mimari
+    match /{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

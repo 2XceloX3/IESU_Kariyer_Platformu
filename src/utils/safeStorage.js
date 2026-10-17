@@ -38,12 +38,13 @@ export const safeStorage = {
         // 1. Düşük öncelikli / geçici anahtarları temizle
         const ephemeralPrefixes = ['iesu_temp_', 'iesu_cache_', 'iesu_audit_log_', 'iesu_search_history_'];
         try {
-          for (let i = 0; i < localStorage.length; i++) {
-            const k = localStorage.key(i);
+          // Snapshot alarak döngü — removeItem çağrısı length'i azaltıp indis kaymasına neden olmasın
+          const keysSnapshot = Object.keys(localStorage);
+          keysSnapshot.forEach(k => {
             if (k && ephemeralPrefixes.some(prefix => k.startsWith(prefix))) {
               localStorage.removeItem(k);
             }
-          }
+          });
           // Temizlik sonrası tekrar dene
           localStorage.setItem(key, value);
           memoryFallback.set(key, value);

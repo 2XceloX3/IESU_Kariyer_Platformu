@@ -25,7 +25,9 @@ export const exportToCSV = (data, filename) => {
         val = val.slice(0, 4) + '*****' + val.slice(-2);
       }
       const escaped = (typeof val === 'symbol' ? val.toString() : String(val ?? '')).replace(/"/g, '""');
-      return `"${escaped}"`;
+      // CSV Formula Injection koruması: =, +, -, @, Tab, CR ile başlayan değerler Excel'de formül olarak işlenebilir
+      const safeEscaped = /^[=+\-@\t\r]/.test(escaped) ? "'" + escaped : escaped;
+      return `"${safeEscaped}"`;
     });
     csvRows.push(values.join(','));
   }

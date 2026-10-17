@@ -55,6 +55,17 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
     { mode: 'Freelance', count: checkupRecords.filter(r => r.workMode?.includes('Freelance')).length }
   ] : [];
 
+  // Güvenli HTML kaçırma fonksiyonu (Stored XSS Kalkanı)
+  const escapeHtml = (val) => {
+    if (val == null) return '';
+    return String(val)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+
   // YÖK Report PDF / Print Export Handler — gerçek veri yoksa dışa aktarım yapılmaz
   const exportYokReport = () => {
     if (!hasExportableKpis) {
@@ -90,7 +101,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <div class="header">
           <div>
             <div class="title">İSTANBUL ESENYURT ÜNİVERSİTESİ</div>
-            <div class="subtitle">Kariyer Geliştirme Merkezi — YÖK Mezun Takip & Akreditasyon Raporu</div>
+            <div class="subtitle">Kariyer Geliştirme Koordinatörlüğü — YÖK Mezun Takip & Akreditasyon Raporu</div>
           </div>
           <div><strong>Tarih:</strong> ${new Date().toLocaleDateString('tr-TR')}</div>
         </div>
@@ -127,13 +138,13 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
           <tbody>
             ${checkupRecords.map(r => `
               <tr>
-                <td>${r.id}</td>
-                <td><strong>${r.name}</strong></td>
-                <td>${r.department}</td>
-                <td>${r.graduationYear}</td>
-                <td>${r.employed} (${r.sector})</td>
-                <td>${r.relatedToMajor} ${r.relatedToMajor === 'Hayır' ? `(${r.newJobTitleIfNo})` : ''}</td>
-                <td>${r.postgrad}</td>
+                <td>${escapeHtml(r.id)}</td>
+                <td><strong>${escapeHtml(r.name)}</strong></td>
+                <td>${escapeHtml(r.department)}</td>
+                <td>${escapeHtml(r.graduationYear)}</td>
+                <td>${escapeHtml(r.employed)} (${escapeHtml(r.sector)})</td>
+                <td>${escapeHtml(r.relatedToMajor)} ${r.relatedToMajor === 'Hayır' ? `(${escapeHtml(r.newJobTitleIfNo)})` : ''}</td>
+                <td>${escapeHtml(r.postgrad)}</td>
               </tr>
             `).join('')}
           </tbody>

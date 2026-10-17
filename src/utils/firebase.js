@@ -14,16 +14,29 @@ const firebaseConfig = {
 };
 
 let app;
+let _db = null;
+let _auth = null;
+let _storage = null;
+
 try {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 } catch (e) {
   console.warn('[Firebase] Initialization fallback warning:', e);
-  app = initializeApp(firebaseConfig);
+  try {
+    app = initializeApp(firebaseConfig, 'iesu-fallback-' + Date.now());
+  } catch (e2) {
+    console.error('[Firebase] Fatal: app initialization failed', e2);
+    app = null;
+  }
 }
+
+try { _db = app ? getFirestore(app) : null; } catch (e) { console.warn('[Firebase] Firestore init failed:', e?.message); }
+try { _auth = app ? getAuth(app) : null; } catch (e) { console.warn('[Firebase] Auth init failed:', e?.message); }
+try { _storage = app ? getStorage(app) : null; } catch (e) { console.warn('[Firebase] Storage init failed:', e?.message); }
 
 // Analytics is intentionally opt-in.
 export const analytics = null;
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+export const db = _db;
+export const auth = _auth;
+export const storage = _storage;
 export default app;

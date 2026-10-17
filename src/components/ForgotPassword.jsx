@@ -18,11 +18,11 @@ export default function ForgotPassword({ setView }) {
       await sendPasswordResetEmail(auth, email.trim());
       setStep(2);
     } catch (err) {
-      if (err.code === 'auth/user-not-found') {
-        setError('Bu e-posta adresiyle kayıtlı hesap bulunamadı.');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Geçersiz e-posta adresi.');
+      if (err.code === 'auth/invalid-email') {
+        setError('Geçersiz e-posta adresi formatı.');
       } else {
+        // Güvenlik: 'auth/user-not-found' durumunda bile generic mesaj göster
+        // Saldırganların e-posta listesi çıkarmasını önler (User Enumeration koruması)
         setError('Bir hata oluştu. Lütfen tekrar deneyin.');
       }
     } finally {

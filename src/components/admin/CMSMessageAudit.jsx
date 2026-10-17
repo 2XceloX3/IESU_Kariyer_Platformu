@@ -181,12 +181,13 @@ export default function CMSMessageAudit({ currentUser, setView }) {
 
   // Filtering users
   const filteredUsers = useMemo(() => {
+    const q = (searchQuery || '').toLowerCase();
     return aggregatedUsers.filter(u => {
-      const matchesSearch = 
-        u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.id.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = !q ||
+        (u.name || '').toLowerCase().includes(q) ||
+        (u.dept || u.department || '').toLowerCase().includes(q) ||
+        (u.email || '').toLowerCase().includes(q) ||
+        (u.id || '').toLowerCase().includes(q);
       
       const matchesRole = roleFilter === 'all' || u.role === roleFilter;
 

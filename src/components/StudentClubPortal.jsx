@@ -89,8 +89,8 @@ export default function StudentClubPortal({
 
   const [applyMemberForm, setApplyMemberForm] = useState({
     name: currentUser?.name || '',
-    studentNo: currentUser?.studentNo || '2024010891',
-    tcKimlik: currentUser?.tcKimlik || '39281749102',
+    studentNo: currentUser?.studentNo || '',
+    tcKimlik: currentUser?.tcKimlik || '',
     department: currentUser?.department || 'Bilgisayar Mühendisliği',
     grade: currentUser?.year || currentUser?.grade || '2. Sınıf',
     phone: currentUser?.phone || '0532 000 1122',

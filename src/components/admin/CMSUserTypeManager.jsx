@@ -14,12 +14,12 @@ const DEFAULT_USER_TYPES = [
   { id: '5', name: 'Gözlemci / Raporcu', desc: 'Sadece okuma ve dışa aktarma', color: 'bg-gray-500', text: 'text-gray-600', bgSoft: 'bg-gray-50', icon: 'Eye', permissionCount: 5 }
 ];
 
-// Gerçek şifreler Firebase Admin SDK üzerinden yönetilmelidir
+// Personel hesapları (Güvenlik gereği parolalar localStorage'da düz metin tutulmaz)
 const DEFAULT_ACCOUNTS = [
-  { id: '101', name: 'Zuhal ŞAHİN', email: 'zuhal.sahin@iesu.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '1', typeName: 'Süper Admin', lastLogin: '2026-08-02 09:30', status: 'Aktif' },
-  { id: '104', name: 'Mutlu Gülsev YAĞIZ', email: 'myagiz@esenyurt.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '6', typeName: 'Admin', lastLogin: '2026-08-02 10:15', status: 'Aktif' },
-  { id: '102', name: 'Ahmet Yıldız', email: 'ahmet.yildiz@iesu.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '2', typeName: 'İçerik Editörü', lastLogin: '2026-08-01 14:15', status: 'Aktif' },
-  { id: '103', name: 'Dr. Elif Kaya', email: 'elif.kaya@iesu.edu.tr', pass: 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR', typeId: '3', typeName: 'Akademik Koordinatör', lastLogin: '2026-08-02 11:45', status: 'Aktif' }
+  { id: '101', name: 'Zuhal ŞAHİN', email: 'zuhal.sahin@iesu.edu.tr', typeId: '1', typeName: 'Süper Admin', lastLogin: '2026-08-02 09:30', status: 'Aktif' },
+  { id: '104', name: 'Mutlu Gülsev YAĞIZ', email: 'myagiz@esenyurt.edu.tr', typeId: '6', typeName: 'Admin', lastLogin: '2026-08-02 10:15', status: 'Aktif' },
+  { id: '102', name: 'Ahmet Yıldız', email: 'ahmet.yildiz@iesu.edu.tr', typeId: '2', typeName: 'İçerik Editörü', lastLogin: '2026-08-01 14:15', status: 'Aktif' },
+  { id: '103', name: 'Dr. Elif Kaya', email: 'elif.kaya@iesu.edu.tr', typeId: '3', typeName: 'Akademik Koordinatör', lastLogin: '2026-08-02 11:45', status: 'Aktif' }
 ];
 
 const MODULES = [
@@ -78,7 +78,6 @@ export default function CMSUserTypeManager() {
       if (a.id === targetStaffForPassChange.id) {
         return { 
           ...a, 
-          pass: newPasswordInput,
           lastPassChange: new Date().toLocaleString('tr-TR')
         };
       }
@@ -136,8 +135,13 @@ export default function CMSUserTypeManager() {
   };
 
   const saveAccounts = (newAccs) => {
-    setAccounts(newAccs);
-    localStorage.setItem('iesu_staff_accounts_v1', JSON.stringify(newAccs));
+    // KVKK & Güvenlik Kalkanı: Parolaları localStorage'da asla düz metin depolama
+    const sanitized = (newAccs || []).map(({ pass, password, ...rest }) => ({
+      ...rest,
+      hasPassword: true
+    }));
+    setAccounts(sanitized);
+    localStorage.setItem('iesu_staff_accounts_v1', JSON.stringify(sanitized));
   };
 
   const openPermModal = (type) => {
@@ -198,7 +202,6 @@ export default function CMSUserTypeManager() {
       id: Date.now().toString(),
       name: staffForm.name,
       email: staffForm.email,
-      pass: staffForm.password || 'ŞIFRE_ADMIN_TARAFINDAN_BELIRLENIR',
       typeId: staffForm.typeId,
       typeName: type?.name || 'Bilinmiyor',
       lastLogin: 'Hiç giriş yapmadı',

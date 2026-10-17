@@ -82,7 +82,7 @@ export default function CMSApplicationsPool({
     const total = applications.length;
     const pending = applications.filter(a => a.status === 'Beklemede' || !a.status).length;
     const interview = applications.filter(a => a.status === 'Mülakat').length;
-    const accepted = applications.filter(a => a.status === 'Kabul Edildi' || a.status === 'Onaylandı').length;
+    const accepted = applications.filter(a => a.status === 'Kabul Edildi' || a.status === 'Onaylandı' || a.status === 'Onaylanıdı').length;
     const rejected = applications.filter(a => a.status === 'Reddedildi').length;
     return { total, pending, interview, accepted, rejected };
   }, [applications]);

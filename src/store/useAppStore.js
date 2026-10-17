@@ -166,7 +166,8 @@ export const coreStore = create(
           sharedBrainDictionary: {},
           liveRooms: [],
           focusMode: false,
-          ghostMode: false
+          ghostMode: false,
+          followedUserIds: []
         });
         try { useSharedStore.getState().reset?.(); } catch { /* intentional */ }
         try { useAdminStore.getState().reset?.(); } catch { /* intentional */ }
@@ -177,14 +178,18 @@ export const coreStore = create(
       storage: createJSONStorage(() => ({
         getItem: (name) => {
           if (typeof window === 'undefined') return null;
-          const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
-          const isRemembered = localStorage.getItem('iesu_remember_me') === 'true' || isTest;
-          const sessionVal = sessionStorage.getItem(name);
-          if (sessionVal) return sessionVal;
-          if (isRemembered) {
-            return localStorage.getItem(name);
+          try {
+            const isTest = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+            const isRemembered = localStorage.getItem('iesu_remember_me') === 'true' || isTest;
+            const sessionVal = sessionStorage.getItem(name);
+            if (sessionVal) return sessionVal;
+            if (isRemembered) {
+              return localStorage.getItem(name);
+            }
+            return null;
+          } catch {
+            return null;
           }
-          return null;
         },
         setItem: (name, value) => {
           if (typeof window === 'undefined') return;
@@ -203,13 +208,21 @@ export const coreStore = create(
           try { localStorage.removeItem(name); } catch (_) {}
         }
       })),
-      partialize: (state) => ({
-        userRole: state.userRole,
-        currentUser: state.currentUser,
-        activePortalBranch: state.activePortalBranch,
-        activeHive: state.activeHive,
-        followedUserIds: state.followedUserIds
-      })
+      partialize: (state) => {
+        // KVKK & Veri Koruma: Hassas TC ve şifre alanlarını yerel depolama oturumundan arındır
+        let safeUser = state.currentUser;
+        if (safeUser && typeof safeUser === 'object') {
+          const { tcKimlik, tc, tcNo, password, pass, token, ...userRest } = safeUser;
+          safeUser = userRest;
+        }
+        return {
+          userRole: state.userRole,
+          currentUser: safeUser,
+          activePortalBranch: state.activePortalBranch,
+          activeHive: state.activeHive,
+          followedUserIds: state.followedUserIds || []
+        };
+      }
     }
   )
 );

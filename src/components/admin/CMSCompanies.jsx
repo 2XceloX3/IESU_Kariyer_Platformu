@@ -61,22 +61,48 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
     setIsEditing(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Bu firmayı silmek istediğinize emin misiniz?")) {
-      setCompanies(prev => (prev || []).filter(c => c.id !== id));
+  const handleQuickStatus = async (comp, newStatus) => {
+    setCompanies(prev => (prev || []).map(c => c.id === comp.id ? { ...c, status: newStatus } : c));
+    if (selectedCompany?.id === comp.id) {
+      setSelectedCompany(prev => prev ? { ...prev, status: newStatus } : null);
+    }
+    window.toast?.success?.(`Firma durumu "${newStatus}" olarak güncellendi.`);
+    if (db && comp.id) {
+      try {
+        await updateDoc(doc(db, 'users', comp.id), { status: newStatus, updatedAt: new Date().toISOString() });
+      } catch (err) {
+        console.warn('Firestore firma durumu güncellenemedi:', err?.message);
+      }
     }
   };
 
-  const handleSave = (e) => {
+  const handleDelete = (id) => {
+    if (window.confirm("Bu firmayı silmek istediğinize emin misiniz?")) {
+      setCompanies(prev => (prev || []).filter(c => c.id !== id));
+      if (selectedCompany?.id === id) setSelectedCompany(null);
+      window.toast?.info?.("Firma kaydı silindi.");
+    }
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email) return (window.toast?.info || console.info)("Firma Adı ve E-Posta zorunludur.");
 
     if (currentId) {
-      setCompanies(prev => (prev || []).map(c => c.id === currentId ? { ...c, ...form, updatedAt: new Date().toISOString() } : c));
+      const updatedItem = { ...form, updatedAt: new Date().toISOString() };
+      setCompanies(prev => (prev || []).map(c => c.id === currentId ? { ...c, ...updatedItem } : c));
+      if (db) {
+        try {
+          await updateDoc(doc(db, 'users', currentId), updatedItem);
+        } catch (err) {
+          console.warn('Firestore firma güncellemesi senkronize edilemedi:', err?.message);
+        }
+      }
     } else {
       setCompanies(prev => [{ ...form, id: 'CMP-' + Date.now(), activeJobs: 0, createdAt: new Date().toISOString() }, ...(prev || [])]);
     }
     setIsEditing(false);
+    window.toast?.success?.("Firma bilgileri kaydedildi.");
   };
 
   const safeCompanies = companies || [];
@@ -341,8 +367,20 @@ export default function CMSCompanies({ companies = [], setCompanies }) {
             </div>
 
             {/* Footer */}
-            <div className="p-4 bg-slate-50 border-t border-gray-100 flex justify-between items-center shrink-0">
-              <button onClick={() => { handleEdit(selectedCompany); setSelectedCompany(null); }} className="px-4 py-2 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition">Profil Düzenle</button>
+            <div className="p-4 bg-slate-50 border-t border-gray-100 flex flex-wrap justify-between items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2">
+                <button onClick={() => { handleEdit(selectedCompany); setSelectedCompany(null); }} className="px-4 py-2 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition">Profil Düzenle</button>
+                {selectedCompany.status !== 'Onaylı' && (
+                  <button onClick={() => handleQuickStatus(selectedCompany, 'Onaylı')} className="px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm">
+                    <CheckCircle2 size={14} /> Firmayı Onayla
+                  </button>
+                )}
+                {selectedCompany.status === 'Onaylı' && (
+                  <button onClick={() => handleQuickStatus(selectedCompany, 'Pasif')} className="px-4 py-2 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition">
+                    Askıya Al
+                  </button>
+                )}
+              </div>
               <button onClick={() => setSelectedCompany(null)} className="px-5 py-2 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition">Kapat</button>
             </div>
           </div>

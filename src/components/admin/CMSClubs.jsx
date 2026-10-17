@@ -117,19 +117,23 @@ export default function CMSClubs({
 
   // ACTION: Export Members CSV
   const handleExportMembersCSV = () => {
+    const safeCell = (val) => {
+      const s = String(val ?? '');
+      return /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+    };
     const headers = ['Ogrenci No', 'TC Kimlik No', 'Ad Soyad', 'Kulup', 'Kulup Rolu', 'Bolum', 'Sinif', 'Telefon', 'E-Posta', 'Kayit Tarihi', 'Durum'];
     const rows = filteredMembers.map(m => [
-      m.studentNo || '',
-      m.tcKimlik ? m.tcKimlik.slice(0, 4) + '*****' + m.tcKimlik.slice(-2) : '',
-      m.name || '',
-      m.clubName || '',
-      m.role || 'Aktif Üye',
-      m.department || '',
-      m.grade || '',
-      m.phone || '',
-      m.email || '',
-      m.joinedDate || '',
-      m.status || 'Aktif'
+      safeCell(m.studentNo || ''),
+      safeCell(m.tcKimlik ? m.tcKimlik.slice(0, 4) + '*****' + m.tcKimlik.slice(-2) : ''),
+      safeCell(m.name || ''),
+      safeCell(m.clubName || ''),
+      safeCell(m.role || 'Aktif Üye'),
+      safeCell(m.department || ''),
+      safeCell(m.grade || ''),
+      safeCell(m.phone || ''),
+      safeCell(m.email || ''),
+      safeCell(m.joinedDate || ''),
+      safeCell(m.status || 'Aktif')
     ]);
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
     const encodedUri = encodeURI(csvContent);

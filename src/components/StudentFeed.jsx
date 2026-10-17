@@ -98,6 +98,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
   const clubList = useMemo(() => (clubs && clubs.length > 0) ? clubs : initialClubs, [clubs]);
 
+  // KGB Kariyer Karnesi İlerleme Hesaplaması (Render içi 3x IIFE yerine tek useMemo)
+  const careerProgress = useMemo(() => {
+    return computeCareerProgress({ user: effectiveCurrentUser || currentUser, applications: applications || [] });
+  }, [effectiveCurrentUser, currentUser, applications]);
+
+  const careerGrade = useMemo(() => {
+    return gradeFromPercent(careerProgress.percent);
+  }, [careerProgress.percent]);
+
   const clubFeedItems = useMemo(() => {
     const items = [];
     (clubList || []).forEach(club => {
@@ -308,10 +317,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 </div>
               </div>
               <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-black">
-                {(() => {
-                  const p = computeCareerProgress({ user: currentUser, applications: useAppStore.getState().applications || [] });
-                  return p.percent == null ? 'Veri yok' : `Aktif • %${p.percent}`;
-                })()}
+                {careerProgress.percent == null ? 'Veri yok' : `Aktif • %${careerProgress.percent}`}
               </span>
             </div>
 
@@ -319,13 +325,10 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             <div className="mb-2.5">
               <div className="flex justify-between text-[10px] font-bold text-gray-500 mb-1">
                 <span>YÖK Kariyer Standartları</span>
-                <span className="text-[#990000] font-black">{(() => {
-                  const p = computeCareerProgress({ user: currentUser, applications: useAppStore.getState().applications || [] });
-                  return gradeFromPercent(p.percent).letter === '—' ? 'Veri yok' : gradeFromPercent(p.percent).letter;
-                })()}</span>
+                <span className="text-[#990000] font-black">{careerGrade.letter === '—' ? 'Veri yok' : careerGrade.letter}</span>
               </div>
               <div className="h-1.5 w-full bg-red-50 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-amber-500 via-[#990000] to-emerald-500 rounded-full" style={{ width: `${(() => { const p = computeCareerProgress({ user: currentUser, applications: useAppStore.getState().applications || [] }); return p.percent == null ? 0 : p.percent; })()}%` }} />
+                <div className="h-full bg-gradient-to-r from-amber-500 via-[#990000] to-emerald-500 rounded-full" style={{ width: `${careerProgress.percent == null ? 0 : careerProgress.percent}%` }} />
               </div>
             </div>
 

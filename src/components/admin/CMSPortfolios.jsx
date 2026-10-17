@@ -33,7 +33,8 @@ export default function CMSPortfolios() {
   };
 
   const filteredCVs = cvPool.filter(cv => {
-    const matchesSearch = cv.name.toLowerCase().includes(searchTerm.toLowerCase()) || (cv?.dept || cv?.department || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const q = (searchTerm || '').toLowerCase();
+    const matchesSearch = !q || (cv?.name || '').toLowerCase().includes(q) || (cv?.dept || cv?.department || '').toLowerCase().includes(q);
     const matchesFilter = selectedDegree === 'Hepsi' || cv.status === selectedDegree;
     return matchesSearch && matchesFilter;
   });
