@@ -79,6 +79,12 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
     try {
       // FIREBASE AUTHENTICATION
+      if (!auth) {
+        // Firebase Auth servisi başlatılamadı (gizli mod veya init hatası)
+        setError('Kimlik doğrulama servisi şu an kullanılamıyor. Lütfen normal tarayıcı penceresi kullanın veya daha sonra tekrar deneyin.');
+        setIsLoading(false);
+        return;
+      }
       try {
         if (typeof setPersistence === 'function') {
           await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);

@@ -181,6 +181,11 @@ export default function App() {
 
   useEffect(() => {
     let isInitialBoot = true;
+    if (!auth) {
+      // Firebase Auth başlatılamadı (gizli mod / init hatası): session/storage tabanlı oturumu koru
+      setIsAuthStateResolved(true);
+      return;
+    }
     const unsub = onAuthStateChanged(auth, async (u) => {
       setAuthenticatedUserId(u?.uid || null);
       if (!u) { 
@@ -226,7 +231,15 @@ export default function App() {
   useEffect(() => {
     if (!isAuthStateResolved) return;
     const hasAdminSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_admin_session') === 'active';
-    if (!import.meta.env.DEV && (currentUser?.role === 'admin' || userRole === 'admin') && !authenticatedUserId && !auth?.currentUser && !hasAdminSession) {
+    const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
+    // Oturum kapatma kriteri: admin rolü VAR, Firebase auth YOK, sessionStorage da YOK ve localStorage da YOK
+    if (
+      (currentUser?.role === 'admin' || userRole === 'admin') &&
+      !authenticatedUserId &&
+      !(auth?.currentUser) &&
+      !hasAdminSession &&
+      !isRemembered
+    ) {
       setCurrentUser(null); setUserRole(null);
       localStorage.removeItem('iesu_mock_user');
       try { sessionStorage.removeItem('iesu_mock_user'); } catch (_) {}
