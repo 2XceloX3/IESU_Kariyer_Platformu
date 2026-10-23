@@ -1,7 +1,7 @@
 import useAppStore from '../store/useAppStore';
 import { computeCareerProgress, gradeFromPercent } from '../utils/careerProgress';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, ChevronRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, ChevronRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap, Radar, Coffee } from 'lucide-react';
 
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -26,6 +26,8 @@ import FooterModals from './FooterModals';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
 import MentorRequestModal from './modals/MentorRequestModal';
+import CareerReadinessWidget from './student/CareerReadinessWidget';
+import AlumniCoffeeChatModal from './student/AlumniCoffeeChatModal';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
 import { initialClubs } from '../data/mockClubsData';
 
@@ -82,6 +84,8 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
   const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
+  const [showCoffeeChatModal, setShowCoffeeChatModal] = useState(false);
+  const [selectedAlumnusForChat, setSelectedAlumnusForChat] = useState(null);
   const followedUserIds = useAppStore(state => state.followedUserIds) || [];
   const EMPTY_ARRAY = useMemo(() => [], []);
 
@@ -392,7 +396,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               <span className="text-xs font-semibold text-gray-400">Merkezi Hizmetler</span>
             </div>
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {/* 1. Kariyer Haritası */}
               <button
                 onClick={() => setView('career_roadmap')}
@@ -439,6 +443,21 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 </div>
                 <span className="text-xs font-bold text-gray-900 group-hover:text-[#990000] transition-colors leading-tight">Kulüpler Portalı</span>
                 <span className="text-[11px] text-gray-500 mt-1 line-clamp-1">Öğrenci kulüpleri & topluluk</span>
+              </button>
+
+              {/* 5. Canlı Başvuru Radarı */}
+              <button
+                onClick={() => setView('radar')}
+                className="group flex flex-col items-start p-3.5 rounded-xl border border-red-200 bg-gradient-to-b from-red-50/70 to-white hover:border-red-400 hover:shadow-md transition-all text-left cursor-pointer col-span-2 sm:col-span-1"
+                data-testid="student-feed-quick-radar-btn"
+              >
+                <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs">
+                  <Radar size={18} />
+                </div>
+                <span className="text-xs font-bold text-gray-900 group-hover:text-[#990000] transition-colors leading-tight flex items-center gap-1">
+                  Başvuru Radarı
+                </span>
+                <span className="text-[11px] text-gray-500 mt-1 line-clamp-1">İK inceleme & %15 havuz</span>
               </button>
             </div>
           </div>
@@ -586,6 +605,44 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
         {/* RIGHT PANEL: Dynamic Data */}
         <div className="hidden xl:block w-[300px] shrink-0 space-y-7">
+          {/* 0. KİŞİSELLEŞTİRİLMİŞ KARİYER HAZIRLIK SKORU & AKILLI TAVSİYE MOTORU */}
+          <CareerReadinessWidget
+            currentUser={effectiveCurrentUser}
+            setView={setView}
+            onOpenCoffeeChat={(alumnus) => {
+              setSelectedAlumnusForChat(alumnus || null);
+              setShowCoffeeChatModal(true);
+            }}
+          />
+
+          {/* 0.1 CANLI BAŞVURU RADARI & MİKRO-GERİ BİLDİRİM KARTI */}
+          <div
+            className="bg-gradient-to-br from-slate-900 via-red-950 to-slate-900 text-white rounded-3xl p-6 shadow-xl border border-red-800/40 relative overflow-hidden"
+            data-testid="student-radar-banner-widget"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="bg-red-500/20 text-red-300 border border-red-500/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                <Radar size={11} className="animate-spin text-red-400" /> Canlı Başvuru Radarı
+              </span>
+              <span className="text-[10px] font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                VIP Protokol
+              </span>
+            </div>
+
+            <h3 className="font-black text-lg text-white leading-tight mb-1">Başvuru Radarı</h3>
+            <p className="text-xs text-slate-300 font-medium mb-4 leading-relaxed">
+              Kara delik başvuru sendromuna son. İK inceleme süresi ve %15 ön eleme aşamalarını anlık takip edin.
+            </p>
+
+            <button
+              onClick={() => setView('radar')}
+              className="w-full py-2.5 bg-white text-[#990000] hover:bg-red-50 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Radara Git</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
+
           {/* 1. ÖĞRENCİ DALI ÖZEL GÜNDEM & HABERLER WIDGET'I */}
           <BranchNewsWidget branch="student" currentUser={effectiveCurrentUser} setView={setView} />
 
@@ -725,6 +782,17 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                           className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl text-xs font-black transition cursor-pointer shadow-md"
                         >
                           Mentörlük İste
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowMentorsModal(false);
+                            setSelectedAlumnusForChat(mentorItem);
+                            setShowCoffeeChatModal(true);
+                          }}
+                          className="px-3.5 py-2 bg-amber-600 text-white hover:bg-amber-700 rounded-xl text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1"
+                        >
+                          <Coffee size={13} /> 15 Dk Kahve
                         </button>
                       </div>
                     </div>
@@ -1136,6 +1204,19 @@ groups={groups}
         mentor={selectedMentorForRequest}
         currentUser={effectiveCurrentUser}
       />
+
+      {/* 15 DAKİKA KAHVE & MİKRO-MENTORLUK MODALI */}
+      {showCoffeeChatModal && (
+        <AlumniCoffeeChatModal
+          isOpen={showCoffeeChatModal}
+          onClose={() => {
+            setShowCoffeeChatModal(false);
+            setSelectedAlumnusForChat(null);
+          }}
+          currentUser={effectiveCurrentUser}
+          selectedAlumnus={selectedAlumnusForChat}
+        />
+      )}
     </div>
   );
 }

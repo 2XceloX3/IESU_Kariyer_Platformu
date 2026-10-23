@@ -2,7 +2,7 @@ import { collection, addDoc, setDoc, doc, serverTimestamp } from 'firebase/fires
 import { auth, db } from '../utils/firebase';
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, Calendar, MapPin, Building2, Search, Briefcase, FileText, CheckCircle2, Download, Home, MessageCircle, Bell, Heart, X, Flame, Star, ArrowRight, Sparkles, Target, Users, TrendingUp, Clock, Crown, LayoutDashboard, ChevronRight, Scale } from 'lucide-react';
+import { ExternalLink, Calendar, MapPin, Building2, Search, Briefcase, FileText, CheckCircle2, Download, Home, MessageCircle, Bell, Heart, X, Flame, Star, ArrowRight, Sparkles, Target, Users, TrendingUp, Clock, Crown, LayoutDashboard, ChevronRight, Scale, ShieldCheck } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import JobCreator from './JobCreator';
@@ -105,6 +105,7 @@ export default function JobsAndInternships({
   const [swipeIndex, setSwipeIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [guaranteeFilter, setGuaranteeFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('ilanlar');
   const [isCreatingJob, setIsCreatingJob] = useState(false);
   const [showDocSubmitModal, setShowDocSubmitModal] = useState(false);
@@ -297,6 +298,16 @@ export default function JobsAndInternships({
       (job.location || job.city || '').toLocaleLowerCase('tr-TR').includes(q);
     const matchesType = filterType === 'all' || 
       (job.type || job.jobType || '').toLocaleLowerCase('tr-TR').includes(filterType);
+
+    const isStaj = (job.type || '').toUpperCase().includes('STAJ') || (job.title || '').toLocaleLowerCase('tr-TR').includes('staj');
+    const is3308 = job.isLaw3308Guaranteed !== undefined ? Boolean(job.isLaw3308Guaranteed) : isStaj;
+    const hasMeal = job.hasMealAndTransport !== undefined ? Boolean(job.hasMealAndTransport) : isStaj;
+    const hasSgk = job.isUniversitySgkApproved !== undefined ? Boolean(job.isUniversitySgkApproved) : isStaj;
+
+    if (guaranteeFilter === 'law3308' && !is3308) return false;
+    if (guaranteeFilter === 'meal_transport' && !hasMeal) return false;
+    if (guaranteeFilter === 'sgk_approved' && !hasSgk) return false;
+
     return matchesSearch && matchesType;
   });
 
@@ -524,8 +535,46 @@ export default function JobsAndInternships({
 
           {activeTab==='ilanlar'&&(
             <div className="space-y-4 animate-fade-in">
+              {/* 3308 Sayılı Kanun Şeffaf Stajyer Güvencesi Bannerı & Filtresi */}
+              <div className="bg-gradient-to-r from-blue-900/10 via-slate-900/5 to-emerald-900/10 p-4 rounded-2xl border border-blue-200/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" data-testid="law-3308-guarantee-banner">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-900 text-white flex items-center justify-center font-black shrink-0">
+                    <ShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900">
+                      3308 Sayılı Kanun Şeffaf Stajyer Güvencesi
+                    </h4>
+                    <p className="text-[11px] text-slate-600 font-medium">
+                      Bedava ve güvencesiz staj sömürüsüne son. SGK onaylı, yasal ücret ve yol/yemek garantili ilanlar.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap w-full sm:w-auto">
+                  {[
+                    { id: 'all', label: 'Tümü' },
+                    { id: 'law3308', label: '⚖️ 3308 Güvenceli' },
+                    { id: 'sgk_approved', label: '🏛️ SGK Onaylı' },
+                    { id: 'meal_transport', label: '🍽️ Yol & Yemek' }
+                  ].map((gf) => (
+                    <button
+                      key={gf.id}
+                      type="button"
+                      onClick={() => setGuaranteeFilter(gf.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                        guaranteeFilter === gf.id
+                          ? 'bg-blue-900 text-white shadow-xs'
+                          : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      {gf.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm">
-                <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{activeJobs.length} güncel fırsat</p>
+                <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{filteredJobs.length} güncel fırsat listeleniyor</p>
               </div>
               {(()=>{
                 if(filteredJobs.length===0) return(<div className="flex flex-col items-center justify-center p-16 bg-white border border-gray-100 border-dashed rounded-2xl"><Briefcase size={44} className="text-gray-300 mb-4" /><p className="text-gray-900 font-black text-lg mb-1">Henüz ilan yok</p><p className="text-gray-500 font-medium text-center text-sm">Yeni ilanlar eklendiğinde burada görünecek.</p></div>);
@@ -585,6 +634,19 @@ export default function JobsAndInternships({
                                     <p className="text-[13px] font-bold text-[#990000] mt-0.5">{job.company}</p>
                                   </div>
                                   <div className="flex items-center gap-1.5 flex-wrap">
+                                    {((job.type || '').toUpperCase().includes('STAJ') || (job.title || '').toLocaleLowerCase('tr-TR').includes('staj') || job.isLaw3308Guaranteed) && (
+                                      <>
+                                        <span className="px-2 py-0.5 bg-blue-50 text-blue-800 border border-blue-200/80 rounded-md text-[10px] font-black" title="3308 Sayılı Kanun Kapsamında Ücret Güvenceli: Net asgari ücretin %30'u yasal güvencede">
+                                          ⚖️ 3308 Kanun Ücret Güvenceli
+                                        </span>
+                                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-md text-[10px] font-black" title="İş kazası ve meslek hastalığı primleri İESÜ Rektörlüğü tarafından ödenir">
+                                          🏛️ Üniversite SGK Onaylı
+                                        </span>
+                                        <span className="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-md text-[10px] font-black" title="İşveren yol ve yemek masraflarını karşılamaktadır">
+                                          🍽️ Yol & Yemek Karşılanıyor
+                                        </span>
+                                      </>
+                                    )}
                                     <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-md text-[10px] font-extrabold">🎓 Öğrenci Dostu</span>
                                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shrink-0 ${typeColors[job.type]||'bg-gray-100 text-gray-600'}`}>{job.type||'Ilan'}</span>
                                   </div>
@@ -777,6 +839,19 @@ export default function JobsAndInternships({
                 <span className="bg-red-50 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><MapPin size={13}/> {selectedJob.location}</span>
                 <span className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 ${typeColors[selectedJob.type]||'bg-gray-100 text-gray-700'}`}><Briefcase size={13}/> {selectedJob.type}</span>
                 <span className="bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5"><Calendar size={13}/> {selectedJob.deadline}</span>
+                {((selectedJob.type || '').toUpperCase().includes('STAJ') || (selectedJob.title || '').toLocaleLowerCase('tr-TR').includes('staj') || selectedJob.isLaw3308Guaranteed) && (
+                  <div className="w-full flex items-center gap-2 flex-wrap pt-1" data-testid="selected-job-3308-guarantee">
+                    <span className="px-2.5 py-1 bg-blue-50 text-blue-900 border border-blue-200 rounded-lg text-xs font-black shadow-xs flex items-center gap-1">
+                      ⚖️ 3308 Kanun Ücret Güvenceli
+                    </span>
+                    <span className="px-2.5 py-1 bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-lg text-xs font-black shadow-xs flex items-center gap-1">
+                      🏛️ Üniversite SGK Onaylı
+                    </span>
+                    <span className="px-2.5 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-lg text-xs font-black shadow-xs flex items-center gap-1">
+                      🍽️ Yol & Yemek Karşılanıyor
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Handshake-Style AI Job Matchmaker Score Card */}
@@ -839,9 +914,16 @@ export default function JobsAndInternships({
                     <p className="text-[11px] text-slate-500 font-semibold truncate">{applyModalJob.company} • {applyModalJob.location}</p>
                   </div>
                 </div>
-                <span className="bg-purple-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
-                  {applyModalJob.type || 'İlan'}
-                </span>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className="bg-purple-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    {applyModalJob.type || 'İlan'}
+                  </span>
+                  {((applyModalJob.type || '').toUpperCase().includes('STAJ') || (applyModalJob.title || '').toLocaleLowerCase('tr-TR').includes('staj') || applyModalJob.isLaw3308Guaranteed) && (
+                    <span className="bg-blue-100 text-blue-900 text-[9px] font-black px-2 py-0.5 rounded-md border border-blue-200">
+                      ⚖️ 3308 Güvenceli
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Student Identity Overview */}

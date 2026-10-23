@@ -24,6 +24,7 @@ const AICVBuilder = lazy(() => import('../../components/AICVBuilder'));
 const GlobalAlumniMap = lazy(() => import('../../components/GlobalAlumniMap'));
 const InterviewSimulator = lazy(() => import('../../components/InterviewSimulator'));
 const ApplicationsPanel = lazy(() => import('../../components/ApplicationsPanel'));
+const StudentApplicationRadar = lazy(() => import('../../components/student/StudentApplicationRadar'));
 const CareerTest = lazy(() => import('../../components/CareerTest'));
 const CareerRoadmap = lazy(() => import('../../components/CareerRoadmap'));
 const StartupIncubator = lazy(() => import('../../components/StartupIncubator'));
@@ -167,6 +168,10 @@ export default function StudentHive({ currentUser, setView }) {
         return <InterviewSimulator setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'applications':
         return <ApplicationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" />;
+      case 'radar':
+      case 'application_radar':
+      case 'student_radar':
+        return <StudentApplicationRadar setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" />;
       case 'career_test':
         return <CareerTest setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'career_roadmap':

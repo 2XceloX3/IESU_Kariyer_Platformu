@@ -4,13 +4,14 @@ import {
   ChevronLeft, Globe2, MapPin, Users, Briefcase, ExternalLink, Star, 
   Building2, Search, ZoomIn, ZoomOut, RotateCcw, Compass, Sparkles,
   ChevronRight, Navigation, CheckCircle2, Route, Eye, EyeOff, Layers,
-  ArrowRight, Activity, Filter, Award
+  ArrowRight, Activity, Filter, Award, Coffee
 } from 'lucide-react';
 import * as RSM from "react-simple-maps";
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
+import AlumniCoffeeChatModal from './student/AlumniCoffeeChatModal';
 import useAppStore from '../store/useAppStore';
 import { 
   aggregateAlumniHubs, 
@@ -96,6 +97,8 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
 
   // Map viewport control (zoom and center) with NaN/undefined defense
   const [position, setPosition] = useState({ coordinates: [20, 40], zoom: 1 });
+  const [showCoffeeChatModal, setShowCoffeeChatModal] = useState(false);
+  const [selectedAlumnusForChat, setSelectedAlumnusForChat] = useState(null);
 
   const safeCenter = useMemo(() => {
     if (
@@ -1246,6 +1249,16 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                                 >
                                   Bağlan
                                 </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedAlumnusForChat(alumnus);
+                                    setShowCoffeeChatModal(true);
+                                  }}
+                                  className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
+                                  title="15 Dakika Kahve Sohbeti & Mikro-Mentorluk İste"
+                                >
+                                  <Coffee size={11} /> Kahve
+                                </button>
                               </div>
                             </div>
                           );
@@ -1458,6 +1471,19 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
         setView={setView}
         setSelectedUserId={setSelectedUserId}
       />
+
+      {/* 15 Dakika Kahve & Mikro-Mentorluk Modalı */}
+      {showCoffeeChatModal && (
+        <AlumniCoffeeChatModal
+          isOpen={showCoffeeChatModal}
+          onClose={() => {
+            setShowCoffeeChatModal(false);
+            setSelectedAlumnusForChat(null);
+          }}
+          currentUser={currentUser}
+          selectedAlumnus={selectedAlumnusForChat}
+        />
+      )}
     </div>
   );
 }

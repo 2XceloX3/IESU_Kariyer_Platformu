@@ -255,6 +255,44 @@ export const getInitialAdminState = () => ({
   academicCatalog: Array.isArray(initialAcademicCatalog) ? [...initialAcademicCatalog] : [],
   academicApprovals: Array.isArray(initialAcademicApprovals) ? [...initialAcademicApprovals] : [],
   eventRegistrations: [],
+  coffeeChats: [
+    {
+      id: 'CHAT-MOCK-1',
+      studentId: 'STU-001',
+      studentName: 'Alperen Yılmaz',
+      studentDept: 'Yazılım Mühendisliği',
+      alumnusId: 'ALU-001',
+      alumnusName: 'Caner Öztürk',
+      alumnusCompany: 'Trendyol',
+      alumnusTitle: 'Frontend Developer',
+      topicId: 'cv_review',
+      topicTitle: 'CV & Portfolyo İnceleme (15 Dk)',
+      date: '2026-10-26',
+      timeSlot: '18:00 - 18:15',
+      note: 'Frontend portfolyom ve React projelerimi incelemenizi rica ederim.',
+      status: 'CONFIRMED',
+      meetingLink: 'https://meet.google.com/iesu-coffee-trendyol',
+      createdAt: '2026-10-22 14:00'
+    },
+    {
+      id: 'CHAT-MOCK-2',
+      studentId: 'STU-002',
+      studentName: 'Zeynep Kaya',
+      studentDept: 'Endüstri Mühendisliği',
+      alumnusId: 'ALU-002',
+      alumnusName: 'Seda Çelik',
+      alumnusCompany: 'Delivery Hero',
+      alumnusTitle: 'Üretim ve Operasyon Yöneticisi',
+      topicId: 'abroad_master',
+      topicTitle: 'Yurt Dışı / Yüksek Lisans Deneyimi',
+      date: '2026-10-27',
+      timeSlot: '19:00 - 19:15',
+      note: 'Almanya yüksek lisans başvuru süreci hakkında görüşmek isterim.',
+      status: 'PENDING',
+      meetingLink: null,
+      createdAt: '2026-10-23 09:30'
+    }
+  ],
   swarmMetrics: { activeAgents: 25, dataNodesProcessed: 84392, evolutionCycle: 1 },
 
   // Communication Pools
@@ -617,6 +655,19 @@ export const useAdminStore = create(
         setAcademicApprovals: setter('academicApprovals'),
         setEventRegistrations: setter('eventRegistrations'),
 
+        // Mezunla 15 Dakika Kahve & Mikro-Mentorluk Randevuları
+        setCoffeeChats: setter('coffeeChats'),
+        addCoffeeChat: (chat) =>
+          set((s) => ({
+            coffeeChats: [chat, ...(s.coffeeChats || []).filter((c) => c?.id !== chat?.id)]
+          })),
+        updateCoffeeChatStatus: (chatId, newStatus, extraData = {}) =>
+          set((s) => ({
+            coffeeChats: (s.coffeeChats || []).map((c) =>
+              c.id === chatId ? { ...c, status: newStatus, ...extraData } : c
+            )
+          })),
+
         incrementSwarmData: () =>
           set((s) => ({
             swarmMetrics: {
@@ -720,6 +771,7 @@ export const useAdminStore = create(
         showInstitutionalStats: state.showInstitutionalStats,
         messages: Array.isArray(state.messages) ? state.messages.slice(-100) : [],
         mentorships: state.mentorships,
+        coffeeChats: Array.isArray(state.coffeeChats) ? state.coffeeChats.slice(0, 50) : [],
         notifications: Array.isArray(state.notifications) ? state.notifications.slice(0, 50) : []
       };
     }
@@ -761,7 +813,19 @@ export function initAdminStoreSubscriptions() {
     }
   });
 
-  adminStoreUnsubscribers = [unsubError];
+  const unsubCoffeeRequested = eventBus.on('coffee_chat:requested', (payload) => {
+    if (payload && payload.chat) {
+      useAdminStore.getState().addCoffeeChat(payload.chat);
+    }
+  });
+
+  const unsubCoffeeStatus = eventBus.on('coffee_chat:status_changed', (payload) => {
+    if (payload && payload.chatId && payload.status) {
+      useAdminStore.getState().updateCoffeeChatStatus(payload.chatId, payload.status, payload.extraData || {});
+    }
+  });
+
+  adminStoreUnsubscribers = [unsubError, unsubCoffeeRequested, unsubCoffeeStatus];
 
   return () => {
     adminStoreUnsubscribers.forEach((unsub) => {

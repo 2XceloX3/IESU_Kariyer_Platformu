@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap, BookOpen } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap, BookOpen, Coffee } from 'lucide-react';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
 import JobsAndInternships from './JobsAndInternships';
@@ -22,6 +22,7 @@ import ClubsDirectory from './ClubsDirectory';
 import ExploreFeed from './ExploreFeed';
 import SafeAvatar from './shared/SafeAvatar';
 import FooterModals from './FooterModals';
+import AlumniCoffeeChatModal from './student/AlumniCoffeeChatModal';
 
 export default function AlumniFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab = 'feed' }) {
   const posts = useAppStore(state => state.posts);
@@ -78,6 +79,9 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const [stories, setStories] = useState([]);
   const setMentorships = useAppStore(state => state.setMentorships) || null;
   const followedUserIds = useAppStore(state => state.followedUserIds) || [];
+  const coffeeChats = useAppStore(state => state.coffeeChats) || [];
+  const updateCoffeeChatStatus = useAppStore(state => state.updateCoffeeChatStatus);
+  const [showCoffeeChatModal, setShowCoffeeChatModal] = useState(false);
   const [visibleFeedCount, setVisibleFeedCount] = useState(12);
 
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -500,6 +504,67 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             setSelectedUserId={setSelectedUserId}
             maxSuggestions={4}
           />
+
+          {/* 15 DAKİKA KAHVE & MİKRO-MENTORLUK RANDEVULARI (ALUMNI PANEL) */}
+          <div
+            className="bg-white/90 backdrop-blur-xl rounded-2xl border border-amber-200/90 p-5 shadow-sm space-y-3"
+            data-testid="alumni-coffee-chat-widget"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-black">
+                  <Coffee size={16} />
+                </div>
+                <div>
+                  <h3 className="font-black text-sm text-slate-900 leading-tight">
+                    15 Dk Kahve Sohbeti
+                  </h3>
+                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">
+                    Öğrenci Mikro-Mentorluk
+                  </p>
+                </div>
+              </div>
+
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">
+                {coffeeChats.filter(c => c.status === 'PENDING').length} Bekleyen
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-600 font-medium leading-relaxed">
+              İESÜ öğrencileriyle 15 dakikalık hızlı kariyer provası, CV incelemesi ve sektör tecrübesi paylaşımı.
+            </p>
+
+            {/* Quick status counters */}
+            <div className="grid grid-cols-3 gap-2 py-1 text-center">
+              <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="text-[10px] font-bold text-slate-400 uppercase">Bekleyen</p>
+                <p className="text-base font-black text-amber-700 mt-0.5">
+                  {coffeeChats.filter(c => c.status === 'PENDING').length}
+                </p>
+              </div>
+              <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="text-[10px] font-bold text-slate-400 uppercase">Onaylanan</p>
+                <p className="text-base font-black text-emerald-700 mt-0.5">
+                  {coffeeChats.filter(c => c.status === 'CONFIRMED').length}
+                </p>
+              </div>
+              <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="text-[10px] font-bold text-slate-400 uppercase">Tamamlanan</p>
+                <p className="text-base font-black text-blue-700 mt-0.5">
+                  {coffeeChats.filter(c => c.status === 'COMPLETED').length}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowCoffeeChatModal(true)}
+              className="w-full py-2.5 bg-gradient-to-r from-amber-700 to-amber-800 hover:from-amber-800 hover:to-amber-900 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Coffee size={14} />
+              <span>Randevuları Yönet</span>
+            </button>
+          </div>
 
           <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] p-6 shadow-[var(--shadow-soft)]">
             <h3 className="font-black text-gray-900 mb-2">Mentor Olun</h3>
@@ -938,6 +1003,16 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
       {/* INTERACTIVE FOOTER MODALS */}
       <FooterModals activeModal={footerModal} onClose={() => setFooterModal(null)} setView={setView} />
+
+      {/* 15 DAKİKA KAHVE & MİKRO-MENTORLUK MODALI (ALUMNI GÖRÜNÜMÜ) */}
+      {showCoffeeChatModal && (
+        <AlumniCoffeeChatModal
+          isOpen={showCoffeeChatModal}
+          onClose={() => setShowCoffeeChatModal(false)}
+          currentUser={effectiveCurrentUser}
+          userRole="alumni"
+        />
+      )}
     </div>
   );
 }

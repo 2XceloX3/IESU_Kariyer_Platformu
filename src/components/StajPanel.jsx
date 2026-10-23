@@ -553,6 +553,40 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
                 </div>
               </div>
 
+              {/* 3308 Sayılı Kanun Şeffaf Stajyer Güvencesi Rozetleri & Bilgilendirme */}
+              <div className="bg-gradient-to-r from-blue-900/10 via-slate-900/5 to-emerald-900/10 p-5 rounded-2xl border border-blue-200/80 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4" data-testid="staj-panel-3308-banner">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-blue-900 text-white flex items-center justify-center font-black shrink-0">
+                    <ShieldCheck size={22} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-xs font-black text-slate-900">
+                        3308 Sayılı Kanun Şeffaf Stajyer Güvencesi
+                      </h4>
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-900 rounded-md text-[10px] font-black">
+                        Mevzuat Koruma Kalkanı
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                      Öğrencilerimiz bedava ve güvencesiz staj sömürüsünden yasal olarak korunmaktadır.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 py-1 bg-white text-blue-900 border border-blue-200 rounded-lg text-xs font-black shadow-xs flex items-center gap-1">
+                    ⚖️ 3308 Ücret Güvenceli
+                  </span>
+                  <span className="px-2.5 py-1 bg-white text-emerald-900 border border-emerald-200 rounded-lg text-xs font-black shadow-xs flex items-center gap-1">
+                    🏛️ Üniversite SGK Onaylı
+                  </span>
+                  <span className="px-2.5 py-1 bg-white text-amber-900 border border-amber-200 rounded-lg text-xs font-black shadow-xs flex items-center gap-1">
+                    🍽️ Yol & Yemek Karşılanıyor
+                  </span>
+                </div>
+              </div>
+
               {/* Status Bento Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm space-y-4">
