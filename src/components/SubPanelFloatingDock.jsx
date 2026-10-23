@@ -20,13 +20,22 @@ export default function SubPanelFloatingDock({
   const storeUserRole = useAppStore(state => state.userRole);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   
+  const isActualAdmin = Boolean(
+    storeUserRole === 'admin' || 
+    userRole === 'admin' ||
+    effectiveCurrentUser?.role === 'admin'
+  );
+
+  const safeBranch = (activeBranch === 'admin' && !isActualAdmin) ? null : activeBranch;
+  const safePropRole = (userRole === 'admin' && !isActualAdmin) ? null : userRole;
+
   // Kovan Dalı Egemenliği (Her kovan kendi temasını ve geri dönüş hedefini mutlak korur):
-  // 1. activeBranch varsa (kullanıcı şu anda hangi kovan peteğindeyse o kovanın dock'u ve geri dönüşü geçerlidir)
+  // 1. safeBranch varsa (kullanıcı şu anda hangi kovan peteğindeyse o kovanın dock'u ve geri dönüşü geçerlidir)
   // 2. userRole prop (eğer özel olarak iletilmişse)
   // 3. effectiveCurrentUser.role
   const currentHive = (
-    (activeBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activeBranch)) ? activeBranch :
-    (userRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(userRole)) ? userRole :
+    (safeBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(safeBranch)) ? safeBranch :
+    (safePropRole && ['student', 'alumni', 'academic', 'company', 'admin'].includes(safePropRole)) ? safePropRole :
     (effectiveCurrentUser?.role && ['student', 'alumni', 'academic', 'company', 'admin', 'employer', 'academic_staff'].includes(effectiveCurrentUser.role)) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role === 'academic_staff' ? 'academic' : effectiveCurrentUser.role) :
     'student'
   );

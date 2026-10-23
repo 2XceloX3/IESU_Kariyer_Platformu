@@ -117,9 +117,11 @@ export default function CMSStaff() {
           <div key={staff.id} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition">
             <div>
               <div className="h-64 bg-slate-100 relative overflow-hidden flex items-center justify-center">
-                <img
+                <SafeAvatar
                   src={staff.photo}
-                  alt={staff.name}
+                  name={staff.name}
+                  size="full"
+                  rounded="rounded-none"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 right-3 flex items-center gap-1.5">
@@ -314,13 +316,12 @@ export default function CMSStaff() {
                 <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-100">
                   <div className="h-56 bg-slate-100 relative overflow-hidden flex items-center justify-center">
                     {formData.photo ? (
-                      <img
+                      <SafeAvatar
                         src={formData.photo}
-                        alt="Önizleme"
+                        name={formData.name || 'Önizleme'}
+                        size="full"
+                        rounded="rounded-none"
                         className="w-full h-full object-cover object-top"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center text-slate-300 gap-2">

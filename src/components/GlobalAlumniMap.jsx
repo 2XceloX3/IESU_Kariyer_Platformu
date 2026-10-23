@@ -450,13 +450,22 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
               if (onBack) { onBack(); return; }
               const allowedBranches = ['student', 'company', 'academic', 'alumni', 'admin'];
               const store = useAppStore.getState();
-              const target = (previousView && allowedBranches.includes(previousView)) 
-                ? previousView 
-                : (userRole === 'admin' || activePortalBranch === 'admin') 
-                  ? 'admin' 
-                  : (activePortalBranch && allowedBranches.includes(activePortalBranch)) 
-                    ? activePortalBranch 
-                    : 'alumni';
+              const isActualAdmin = userRole === 'admin' || currentUser?.role === 'admin' || store.userRole === 'admin' || store.currentUser?.role === 'admin';
+              const roleFallback = currentUser?.role === 'student' ? 'student' 
+                : (currentUser?.role === 'company' || currentUser?.role === 'employer') ? 'company'
+                : (currentUser?.role === 'academic' || currentUser?.role === 'academic_staff') ? 'academic'
+                : 'alumni';
+
+              const safeBranch = (activePortalBranch === 'admin' && !isActualAdmin) ? null : activePortalBranch;
+              const safePrevious = (previousView === 'admin' && !isActualAdmin) ? null : previousView;
+
+              const target = (safePrevious && allowedBranches.includes(safePrevious)) 
+                ? safePrevious 
+                : (isActualAdmin && (safeBranch === 'admin' || userRole === 'admin'))
+                  ? 'admin'
+                  : (safeBranch && allowedBranches.includes(safeBranch))
+                    ? safeBranch
+                    : roleFallback;
               if (store.setActivePortalBranch) store.setActivePortalBranch(target);
               setView(target);
             }} 

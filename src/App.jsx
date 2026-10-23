@@ -129,7 +129,7 @@ export default function App() {
     (authenticatedUserId || auth?.currentUser || hasAdminSession) &&
     (currentUser?.role === 'admin' || userRole === 'admin')
   );
-  const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch || 'student'));
+  const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch && activePortalBranch !== 'admin' ? activePortalBranch : 'student'));
 
   const setView = useCallback((v) => {
     const raw = typeof v === 'function' ? v(pathView) : v;

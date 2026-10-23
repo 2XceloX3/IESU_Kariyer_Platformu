@@ -166,16 +166,19 @@ export default function StudentProfileUpdate({
   }, [formData]);
 
   // Save handler with deep two-way synchronization
-  const handleSave = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
+  const handleSave = (showToast = true) => {
+    if (showToast && typeof showToast === 'object' && showToast.preventDefault) {
+      showToast.preventDefault();
+      showToast = true;
+    }
 
     // Validation
     if (!formData.name || formData.name.trim().length < 2) {
-      toast.error('Lütfen geçerli bir Ad Soyad giriniz.');
+      if (showToast) toast.error('Lütfen geçerli bir Ad Soyad giriniz.');
       return;
     }
     if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error('Lütfen geçerli bir e-posta adresi giriniz.');
+      if (showToast) toast.error('Lütfen geçerli bir e-posta adresi giriniz.');
       return;
     }
 
@@ -239,7 +242,9 @@ export default function StudentProfileUpdate({
     } catch (_) {}
 
     setHasChanges(false);
-    toast.success('Öğrenci profil bilgileriniz başarıyla kaydedildi ve senkronize edildi.');
+    if (showToast) {
+      toast.success('Öğrenci profil bilgileriniz başarıyla kaydedildi ve senkronize edildi.');
+    }
   };
 
   const TABS = [
@@ -259,7 +264,10 @@ export default function StudentProfileUpdate({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => setView('student')} 
+              onClick={() => {
+                if (hasChanges) handleSave(false);
+                setView('student');
+              }} 
               className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
               title="Öğrenci Akışına Dön"
             >
@@ -268,9 +276,18 @@ export default function StudentProfileUpdate({
             <div 
               role="button" 
               tabIndex={0} 
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setView('student'); } }} 
+              onKeyDown={(e) => { 
+                if (e.key === 'Enter' || e.key === ' ') { 
+                  e.preventDefault(); 
+                  if (hasChanges) handleSave(false);
+                  setView('student'); 
+                } 
+              }} 
               className="flex items-center gap-3 cursor-pointer" 
-              onClick={() => setView('student')}
+              onClick={() => {
+                if (hasChanges) handleSave(false);
+                setView('student');
+              }}
             >
               <Logo className="h-8 w-auto text-[#990000]" />
               <div className="border-l-2 border-slate-200 pl-3">
@@ -281,18 +298,17 @@ export default function StudentProfileUpdate({
           </div>
 
           <div className="flex items-center gap-3">
-            {hasChanges && (
-              <span className="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full animate-pulse hidden sm:inline-block">
-                Kaydedilmemiş Değişiklikler Var
+            {hasChanges ? (
+              <span className="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                <span>Bekleyen Değişiklik</span>
+              </span>
+            ) : (
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full flex items-center gap-1.5 hidden sm:inline-flex">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span>Güncel ve Senkron</span>
               </span>
             )}
-            <button 
-              onClick={handleSave}
-              className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-sm cursor-pointer"
-            >
-              <Save size={16} />
-              <span>Kaydet</span>
-            </button>
           </div>
         </div>
       </header>
@@ -372,7 +388,10 @@ export default function StudentProfileUpdate({
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      if (hasChanges) handleSave(false);
+                      setActiveTab(tab.id);
+                    }}
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all ${
                       isActive 
                         ? 'bg-[#990000] text-white shadow-sm' 
@@ -998,7 +1017,10 @@ export default function StudentProfileUpdate({
               <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
                 <button
                   type="button"
-                  onClick={() => setView('student')}
+                  onClick={() => {
+                    if (hasChanges) handleSave(false);
+                    setView('student');
+                  }}
                   className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition"
                 >
                   İptal & Geri Dön

@@ -44,16 +44,17 @@ export default function UserProfile({
   const adminMessages = useAppStore(state => state.adminMessages) || [];
 
   // Aktif Portal Dalı (CRITICAL INVARIANT: Follows VIEWER, never profile subject)
+  const isViewerAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   const currentBranch = 
-    (viewerHive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(viewerHive)) ? viewerHive :
+    (viewerHive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(viewerHive) && (viewerHive !== 'admin' || isViewerAdmin)) ? viewerHive :
     (previousView === 'student' || activePortalBranch === 'student') ? 'student' :
     (previousView === 'alumni' || previousView === 'mbs' || previousView === 'mezun_dernek' || activePortalBranch === 'alumni') ? 'alumni' :
     (previousView === 'academic' || previousView === 'research_hub' || activePortalBranch === 'academic') ? 'academic' :
     (previousView === 'company' || previousView === 'company_ats' || previousView === 'create_job' || activePortalBranch === 'company') ? 'company' :
-    (previousView === 'admin' || previousView === 'admin_cms' || previousView === 'yonetim_konsolu' || activePortalBranch === 'admin') ? 'admin' :
-    (effectiveCurrentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(effectiveCurrentUser.hive) ? effectiveCurrentUser.hive :
+    (isViewerAdmin && (previousView === 'admin' || previousView === 'admin_cms' || previousView === 'yonetim_konsolu' || activePortalBranch === 'admin')) ? 'admin' :
+    (effectiveCurrentUser?.hive && ['student', 'alumni', 'academic', 'company', 'admin'].includes(effectiveCurrentUser.hive) && (effectiveCurrentUser.hive !== 'admin' || isViewerAdmin) ? effectiveCurrentUser.hive :
     (effectiveCurrentUser?.role && ['academic', 'alumni', 'student', 'company', 'admin', 'employer'].includes(effectiveCurrentUser.role) ? (effectiveCurrentUser.role === 'employer' ? 'company' : effectiveCurrentUser.role) :
-    (['academic', 'alumni', 'student', 'company', 'admin'].includes(userRole) ? userRole : 'student')));
+    (['academic', 'alumni', 'student', 'company'].includes(userRole) ? userRole : 'student')));
 
   const getViewerActionBtnClass = () => {
     switch (currentBranch) {
@@ -2463,8 +2464,8 @@ export default function UserProfile({
           
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => {
             const target = (previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView))
-              ? previousView
-              : currentBranch || (userRole === 'admin' ? 'admin' : userRole === 'academic' ? 'academic' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student');
+              ? (previousView === 'admin' && !isViewerAdmin ? (currentBranch || 'student') : previousView)
+              : currentBranch || (isViewerAdmin ? 'admin' : userRole === 'academic' ? 'academic' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : 'student');
             setView(target);
           }}>
             <Logo 

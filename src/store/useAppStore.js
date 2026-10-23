@@ -22,7 +22,7 @@ const mapRoleToHive = (role) => {
 // ── Core Zustand Store (Strictly Session / Routing & App Context) ───────────────
 export const coreStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       // 1. userRole
       userRole: null,
       setUserRole: (role) => {
@@ -67,10 +67,15 @@ export const coreStore = create(
       activePortalBranch: 'student',
       setActivePortalBranch: (branch) => {
         if (!branch || branch === 'undefined') return;
-        try {
-          if (typeof window !== 'undefined') localStorage.setItem('iesu_active_portal_branch', branch);
-        } catch { /* intentional */ }
-        set({ activePortalBranch: branch });
+        set((state) => {
+          const currentRole = state.userRole || state.currentUser?.role;
+          // Strict branch isolation: non-admin users can never switch branch to 'admin'
+          const safeBranch = (branch === 'admin' && currentRole !== 'admin') ? 'student' : branch;
+          try {
+            if (typeof window !== 'undefined') localStorage.setItem('iesu_active_portal_branch', safeBranch);
+          } catch { /* intentional */ }
+          return { activePortalBranch: safeBranch };
+        });
       },
 
       followedUserIds: [],
@@ -150,6 +155,11 @@ export const coreStore = create(
 
       // Store reset helper
       reset: () => {
+        try {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('iesu_active_portal_branch');
+          }
+        } catch { /* intentional */ }
         set({
           userRole: null,
           currentUser: null,
@@ -215,10 +225,14 @@ export const coreStore = create(
           const { tcKimlik, tc, tcNo, password, pass, token, ...userRest } = safeUser;
           safeUser = userRest;
         }
+        const isAdminUser = state.userRole === 'admin' || state.currentUser?.role === 'admin';
+        const safeBranch = isAdminUser 
+          ? state.activePortalBranch 
+          : (state.activePortalBranch === 'admin' ? 'student' : (state.activePortalBranch || 'student'));
         return {
           userRole: state.userRole,
           currentUser: safeUser,
-          activePortalBranch: state.activePortalBranch,
+          activePortalBranch: safeBranch,
           activeHive: state.activeHive,
           followedUserIds: state.followedUserIds || []
         };
