@@ -16,10 +16,10 @@ const DEFAULT_USER_TYPES = [
 
 // Personel hesapları (Güvenlik gereği parolalar localStorage'da düz metin tutulmaz)
 const DEFAULT_ACCOUNTS = [
-  { id: '101', name: 'Zuhal ŞAHİN', email: 'zuhal.sahin@iesu.edu.tr', typeId: '1', typeName: 'Süper Admin', lastLogin: '2026-08-02 09:30', status: 'Aktif' },
-  { id: '104', name: 'Mutlu Gülsev YAĞIZ', email: 'myagiz@esenyurt.edu.tr', typeId: '6', typeName: 'Admin', lastLogin: '2026-08-02 10:15', status: 'Aktif' },
-  { id: '102', name: 'Ahmet Yıldız', email: 'ahmet.yildiz@iesu.edu.tr', typeId: '2', typeName: 'İçerik Editörü', lastLogin: '2026-08-01 14:15', status: 'Aktif' },
-  { id: '103', name: 'Dr. Elif Kaya', email: 'elif.kaya@iesu.edu.tr', typeId: '3', typeName: 'Akademik Koordinatör', lastLogin: '2026-08-02 11:45', status: 'Aktif' }
+  { id: '101', name: 'Kariyer Geliştirme Koordinatörlüğü', email: 'kariyer@iesu.edu.tr', typeId: '1', typeName: 'Süper Admin', lastLogin: '2026-10-18 09:30', status: 'Aktif' },
+  { id: '104', name: 'Kariyer Geliştirme Merkezi Birim Yöneticisi', email: 'admin@iesu.edu.tr', typeId: '6', typeName: 'Admin', lastLogin: '2026-10-18 10:15', status: 'Aktif' },
+  { id: '102', name: 'Kurumsal İletişim & İçerik Birimi', email: 'editor@iesu.edu.tr', typeId: '2', typeName: 'İçerik Editörü', lastLogin: '2026-10-18 14:15', status: 'Aktif' },
+  { id: '103', name: 'Akademik Staj Koordinatörlüğü', email: 'staj@iesu.edu.tr', typeId: '3', typeName: 'Akademik Koordinatör', lastLogin: '2026-10-18 11:45', status: 'Aktif' }
 ];
 
 const MODULES = [
@@ -147,18 +147,31 @@ export default function CMSUserTypeManager() {
   const openPermModal = (type) => {
     setSelectedType(type);
     
-    // Simulate loading existing permissions
+    if (type?.matrix && Object.keys(type.matrix).length > 0) {
+      setMatrix(type.matrix);
+      setIsPermModalOpen(true);
+      return;
+    }
+
+    // Role-based deterministic permission initialization
     const initialMatrix = {};
     MODULES.forEach(mod => {
       initialMatrix[mod] = {};
       ACTIONS.forEach(act => {
-        // Super Admin gets all true, others randomized based on logic for demo
         if (type.id === '1') {
           initialMatrix[mod][act] = true;
-        } else if (type.id === '5' && act === 'Okuma') {
-          initialMatrix[mod][act] = true;
+        } else if (type.id === '6') {
+          initialMatrix[mod][act] = !(mod === 'Sistem Ayarları' && act === 'Silme');
+        } else if (type.id === '2') {
+          initialMatrix[mod][act] = mod === 'İçerik Yönetimi' || act === 'Okuma';
+        } else if (type.id === '3') {
+          initialMatrix[mod][act] = mod === 'Akademik İşlemler' || act === 'Okuma' || act === 'Onaylama';
+        } else if (type.id === '4') {
+          initialMatrix[mod][act] = mod === 'İlan Yönetimi' || mod === 'Kullanıcı Yönetimi' || act === 'Okuma';
+        } else if (type.id === '5') {
+          initialMatrix[mod][act] = act === 'Okuma';
         } else {
-          initialMatrix[mod][act] = Math.random() > 0.5;
+          initialMatrix[mod][act] = act === 'Okuma';
         }
       });
     });
@@ -188,7 +201,7 @@ export default function CMSUserTypeManager() {
     });
     
     const updatedTypes = userTypes.map(t => 
-      t.id === selectedType.id ? { ...t, permissionCount: count } : t
+      t.id === selectedType.id ? { ...t, permissionCount: count, matrix } : t
     );
     saveTypes(updatedTypes);
     setIsPermModalOpen(false);

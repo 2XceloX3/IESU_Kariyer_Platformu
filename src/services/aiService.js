@@ -28,11 +28,11 @@ export const generateAIResponse = async (prompt, systemInstruction = "Sen İstan
   }
 
   try {
-    const response = await fetch(developmentGateway.url, {
+    const response = await fetch(gateway.url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${developmentGateway.apiKey}`
+        "Authorization": `Bearer ${gateway.apiKey}`
       },
       body: JSON.stringify({
         model: "auto/best-coding",

@@ -448,15 +448,17 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
           <button 
             onClick={() => {
               if (onBack) { onBack(); return; }
-              const allowedBranches = ['student', 'company', 'academic', 'alumni'];
+              const allowedBranches = ['student', 'company', 'academic', 'alumni', 'admin'];
               const store = useAppStore.getState();
-              if (previousView && allowedBranches.includes(previousView)) {
-                if (store.setActivePortalBranch) store.setActivePortalBranch(previousView);
-                setView(previousView);
-              } else {
-                if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
-                setView('alumni');
-              }
+              const target = (previousView && allowedBranches.includes(previousView)) 
+                ? previousView 
+                : (userRole === 'admin' || activePortalBranch === 'admin') 
+                  ? 'admin' 
+                  : (activePortalBranch && allowedBranches.includes(activePortalBranch)) 
+                    ? activePortalBranch 
+                    : 'alumni';
+              if (store.setActivePortalBranch) store.setActivePortalBranch(target);
+              setView(target);
             }} 
             className="w-9 h-9 rounded-full bg-white/5 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 border border-white/10 hover:border-cyan-400/40 flex items-center justify-center transition shadow-sm shrink-0"
             title="Geri Dön"

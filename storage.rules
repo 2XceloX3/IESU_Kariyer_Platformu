@@ -18,6 +18,14 @@ service firebase.storage {
       );
     }
 
+    function isCompany() {
+      return isAuthenticated() && (request.auth.token.role == 'company' || request.auth.token.role == 'employer');
+    }
+
+    function isAcademic() {
+      return isAuthenticated() && request.auth.token.role == 'academic';
+    }
+
     function isImage() {
       return request.resource.contentType.matches('image/.*') &&
              request.resource.size < 5 * 1024 * 1024; // 5 MB max
@@ -42,9 +50,9 @@ service firebase.storage {
       allow write: if (isOwner(userId) || isAdmin()) && isDocument();
     }
 
-    // İş başvurusu ekleri
+    // İş başvurusu ekleri: başvuru sahibi, firma, akademik koordinatör veya admin okuyabilir
     match /applications/{applicationId}/{fileName} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() && (isAdmin() || isCompany() || isAcademic() || fileName.matches('.*' + request.auth.uid + '.*'));
       allow write: if isAuthenticated() && (isDocument() || isImage());
     }
 

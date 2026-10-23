@@ -146,8 +146,8 @@ export default function CMSAcademicStaff({ academicStaff = [], setAcademicStaff 
                 <tr key={s.id} className="hover:bg-gray-50/50 transition group">
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
-                        {s.avatar ? <img src={s.avatar} className="w-full h-full object-cover" /> : <UserCircle2 size={20} className="text-gray-500"/>}
+                      <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+                        <SafeAvatar user={s} src={s.avatar} alt={s.name} size="sm" className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-gray-900 flex items-center gap-1.5">

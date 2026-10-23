@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Users, ChevronRight } from 'lucide-react';
 import Logo from './Logo';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 
 export default function OrganizationChart({ setView, userRole = 'student', currentUser, setSelectedUserId, previousView }) {
+  const [imageError, setImageError] = useState(false);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
   const backTarget = previousView || (
@@ -56,20 +57,19 @@ export default function OrganizationChart({ setView, userRole = 'student', curre
           </p>
 
           <div className="w-full bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden flex items-center justify-center p-4 hover:border-[#990000]/40 transition-colors duration-300">
-             <img 
-              src="https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/fbbb6373704b482eb73b8956301a06f6_cae86cbcd5a54dd985e6e8ec2b899645.jpg" 
-              alt="Organizasyon Şeması" 
-              className="w-full max-w-4xl h-auto object-contain rounded-lg hover:scale-[1.02] transition-transform duration-500 cursor-zoom-in shadow-sm"
-              onError={(e) => {
-                // Fallback handling if subagent hallucinates the URL month/year
-                if(e.target.src.includes('2024/01')) {
-                  e.target.src = 'https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/be71ba02764646fc8f14a9bb97c5b9a8_(375_300).jpg';
-                } else {
-                  e.target.src = '/kariyer_logo.png';
-                  e.target.parentElement.innerHTML = '<div class="text-center py-20"><p class="text-[#990000] font-bold text-lg">Organizasyon Şeması Görseli Güncellenmektedir.</p><p class="text-gray-500 mt-2">Daha fazla bilgi için Kariyer Geliştirme Merkezimize ulaşabilirsiniz.</p></div>';
-                }
-              }}
-            />
+            {imageError ? (
+              <div className="text-center py-20">
+                <p className="text-[#990000] font-bold text-lg">Organizasyon Şeması Görseli Güncellenmektedir.</p>
+                <p className="text-gray-500 mt-2">Daha fazla bilgi için Kariyer Geliştirme Merkezimize ulaşabilirsiniz.</p>
+              </div>
+            ) : (
+              <img 
+                src="https://panel.esenyurt.edu.tr/assets/2026/resimler/hitm/fbbb6373704b482eb73b8956301a06f6_cae86cbcd5a54dd985e6e8ec2b899645.jpg" 
+                alt="Organizasyon Şeması" 
+                className="w-full max-w-4xl h-auto object-contain rounded-lg hover:scale-[1.02] transition-transform duration-500 cursor-zoom-in shadow-sm"
+                onError={() => setImageError(true)}
+              />
+            )}
           </div>
           
           <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-6">
