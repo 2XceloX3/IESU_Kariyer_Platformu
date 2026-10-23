@@ -126,7 +126,17 @@ export default function SurveyPopupModal({ currentUser, userRole, currentView, a
         }
 
         const filledKey = `survey_filled_${activeSurvey.id}_${currentUser?.id || 'guest'}`;
-        sessionStorage.setItem(filledKey, 'true');
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(filledKey, 'true');
+            localStorage.setItem(`survey_filled_${activeSurvey.id}`, 'true');
+            localStorage.setItem('iesu_survey_popup_dismissed', 'true');
+          }
+          if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem(filledKey, 'true');
+            sessionStorage.setItem('iesu_survey_popup_dismissed', 'true');
+          }
+        } catch (_) {}
 
         if (window.toast) window.toast.success("✅ Değerlendirme yanıtlarınız otomatik olarak kaydedildi. Teşekkür ederiz!");
         setIsOpen(false);
@@ -135,8 +145,20 @@ export default function SurveyPopupModal({ currentUser, userRole, currentView, a
   };
 
   const handleDismiss = () => {
-    const dismissedKey = `survey_dismissed_${activeSurvey.id}_${currentUser?.id || 'guest'}`;
-    sessionStorage.setItem(dismissedKey, 'true');
+    const surveyId = activeSurvey?.id || 'SRV-101';
+    const userId = currentUser?.id || 'guest';
+    const dismissedKey = `survey_dismissed_${surveyId}_${userId}`;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(dismissedKey, 'true');
+        localStorage.setItem(`survey_dismissed_${surveyId}`, 'true');
+        localStorage.setItem('iesu_survey_popup_dismissed', 'true');
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem(dismissedKey, 'true');
+        sessionStorage.setItem('iesu_survey_popup_dismissed', 'true');
+      }
+    } catch (_) {}
     setIsOpen(false);
   };
 
@@ -180,13 +202,23 @@ export default function SurveyPopupModal({ currentUser, userRole, currentView, a
             </div>
           </div>
           
-          <button 
-            onClick={handleDismiss}
-            className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center font-bold transition shrink-0 cursor-pointer"
-            title="Kapat"
-          >
-            <X size={16} />
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button 
+              onClick={handleDismiss}
+              className="text-[11px] font-bold text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+              title="Kapat ve bir daha otomatik açma"
+            >
+              Bir daha gösterme
+            </button>
+            <button 
+              onClick={handleDismiss}
+              className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center font-bold transition shrink-0 cursor-pointer"
+              title="Kapat"
+              aria-label="Kapat"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
 
         {activeSurvey.description && (
@@ -234,7 +266,13 @@ export default function SurveyPopupModal({ currentUser, userRole, currentView, a
         {/* Footer info */}
         <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400">
           <span className="flex items-center gap-1 text-emerald-600"><Sparkles size={13} /> Seçtiğiniz anda otomatik kaydedilir</span>
-          <span>{theme.brandName}</span>
+          <button 
+            type="button" 
+            onClick={handleDismiss} 
+            className="text-slate-400 hover:text-slate-600 underline cursor-pointer text-[10px]"
+          >
+            Kapat ve Bir Daha Gösterme
+          </button>
         </div>
 
       </div>

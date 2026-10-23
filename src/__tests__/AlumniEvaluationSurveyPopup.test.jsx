@@ -108,4 +108,49 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
     expect(mockSetView).not.toHaveBeenCalledWith('admin');
     expect(useAppStore.getState().activePortalBranch).toBe('alumni');
   });
+
+  it('does not re-open after user dismisses it (persists in localStorage and stays closed)', async () => {
+    const { unmount } = render(
+      <SurveyPopupModal 
+        currentUser={{ id: 'alumni_101', name: 'Caner Öztürk', role: 'alumni' }}
+        userRole="alumni"
+        currentView="alumni"
+        activePortalBranch="alumni"
+      />
+    );
+
+    // Initial open
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 650));
+    });
+
+    const closeBtn = screen.getByRole('button', { name: /^Bir daha gösterme$/i });
+    expect(closeBtn).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(closeBtn);
+    });
+
+    expect(screen.queryByText(/Resmî Değerlendirme Anketi/i)).not.toBeInTheDocument();
+    expect(localStorage.getItem('iesu_survey_popup_dismissed')).toBe('true');
+
+    unmount();
+
+    // Re-render SurveyPopupModal to simulate re-visiting the page
+    render(
+      <SurveyPopupModal 
+        currentUser={{ id: 'alumni_101', name: 'Caner Öztürk', role: 'alumni' }}
+        userRole="alumni"
+        currentView="alumni"
+        activePortalBranch="alumni"
+      />
+    );
+
+    await act(async () => {
+      await new Promise(r => setTimeout(r, 650));
+    });
+
+    // Should NOT re-open
+    expect(screen.queryByText(/Resmî Değerlendirme Anketi/i)).not.toBeInTheDocument();
+  });
 });

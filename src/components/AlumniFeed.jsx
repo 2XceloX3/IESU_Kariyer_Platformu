@@ -104,11 +104,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     const store = useAppStore.getState();
     if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
 
-    // Automatically trigger evaluation questions popup when entering the alumni panel
-    const timer = setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('open-survey-popup'));
-    }, 700);
-    return () => clearTimeout(timer);
+
   }, []);
 
 
