@@ -271,6 +271,7 @@ export default function App() {
       if (pathView === 'about_us') return <AboutUsPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'services') return <ServicesPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'events_list' || pathView === 'events' || pathView === 'etkinlikler') return <EventsPage setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
+      if (pathView === 'explore') return <AdminFeed initialTab="search" setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
       const BENTO_MODULES = new Set(['cvbuilder', 'interview_sim', 'career_test', 'career_roadmap', 'startup_incubator', 'club_portal', 'sem', 'applications']);
       if (BENTO_MODULES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
       return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;

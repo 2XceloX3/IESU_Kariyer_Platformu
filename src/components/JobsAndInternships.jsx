@@ -762,57 +762,6 @@ export default function JobsAndInternships({
           </div>
         </div>
       </div>
-      {effectiveRole === 'admin' ? null : effectiveRole && (
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-          <div className={`bg-white/95 backdrop-blur-2xl p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-gray-800 border-2 ${
-            effectiveRole === 'alumni' ? 'border-emerald-100 shadow-[0_15px_40px_rgba(5,150,105,0.18)]' :
-            effectiveRole === 'academic' ? 'border-purple-100 shadow-[0_15px_40px_rgba(79,70,229,0.18)]' :
-            (effectiveRole === 'employer' || effectiveRole === 'company') ? 'border-sky-100 shadow-[0_15px_40px_rgba(14,165,233,0.18)]' :
-            'border-red-100 shadow-[0_15px_40px_rgba(153,0,0,0.18)]'
-          }`}>
-            {/* HOME / AKIŞ */}
-            <button onClick={()=>setView(getFeedView())} className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${
-              effectiveRole === 'alumni' ? 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50' :
-              effectiveRole === 'academic' ? 'text-slate-600 hover:text-purple-600 hover:bg-purple-50' :
-              (effectiveRole === 'employer' || effectiveRole === 'company') ? 'text-slate-600 hover:text-sky-600 hover:bg-sky-50' :
-              'text-slate-600 hover:text-[#990000] hover:bg-red-50'
-            }`} title="Ana Akışa Dön">
-              <Home size={24} strokeWidth={2.2}/>
-            </button>
-
-            {/* JOBS - DYNAMIC VIBRANT GRADIENT BASED ON ROLE */}
-            <button onClick={()=>setView('jobs')} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer ${
-              effectiveRole === 'alumni' ? 'bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-800 shadow-emerald-500/40' :
-              effectiveRole === 'academic' ? 'bg-gradient-to-tr from-indigo-900 via-purple-900 to-slate-900 shadow-purple-950/40' :
-              (effectiveRole === 'employer' || effectiveRole === 'company') ? 'bg-gradient-to-tr from-blue-950 via-indigo-900 to-sky-900 shadow-blue-950/40' :
-              'bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 shadow-red-900/40'
-            }`} title="İş & Staj Olanakları">
-              <Briefcase size={22} strokeWidth={2.5}/>
-            </button>
-
-            {/* SEARCH / KEŞFET - DYNAMIC VIBRANT GRADIENT BASED ON ROLE */}
-            <button onClick={()=>setView(getFeedView())} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer ${
-              effectiveRole === 'alumni' ? 'bg-gradient-to-tr from-teal-500 via-emerald-500 to-emerald-700 shadow-teal-500/40' :
-              effectiveRole === 'academic' ? 'bg-gradient-to-tr from-purple-700 via-indigo-600 to-indigo-900 shadow-purple-500/40' :
-              (effectiveRole === 'employer' || effectiveRole === 'company') ? 'bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-900 shadow-sky-500/40' :
-              'bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 shadow-red-900/40'
-            }`} title="Keşfet'e Dön">
-              <Search size={22} strokeWidth={2.8}/>
-            </button>
-
-            {/* PROFILE AVATAR */}
-            <button onClick={()=>{ if (setSelectedUserId) setSelectedUserId(branchTargetId); useAppStore.getState().setSelectedUserId?.(branchTargetId); setView('user_profile'); }} className={`w-9 h-9 rounded-full flex items-center justify-center bg-white border-2 shadow-sm hover:scale-105 transition-all shrink-0 p-0.5 overflow-hidden cursor-pointer ${
-              effectiveRole === 'alumni' ? 'border-emerald-500' :
-              effectiveRole === 'academic' ? 'border-purple-600' :
-              (effectiveRole === 'employer' || effectiveRole === 'company') ? 'border-sky-600' :
-              'border-[#990000]'
-            }`} title="Profilim">
-              <SafeAvatar src={branchAvatar} name={branchName} size="xs" alt="Profile"/>
-            </button>
-          </div>
-        </div>
-      )}
-
       {selectedJob&&(
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div role="button" tabIndex={0} onKeyDown={(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.currentTarget.click();}}} className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={()=>setSelectedJob(null)}></div>

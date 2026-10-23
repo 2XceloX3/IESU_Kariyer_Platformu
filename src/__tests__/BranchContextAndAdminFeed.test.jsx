@@ -522,7 +522,7 @@ describe('Branch Context Retention & Super Admin Root Command Center', () => {
     expect(screen.queryByText(/SÜPER YÖNETİCİ & KOORDİNATÖR/i)).not.toBeInTheDocument();
 
     // Dock search button should NOT have amber-600 gradient
-    const dockSearchBtn = screen.getByTitle("Keşfet'e Dön");
+    const dockSearchBtn = screen.getByTitle(/Keşfet & Sosyal Ağ Portalı|Keşfet'e Dön/i);
     expect(dockSearchBtn.className).not.toContain('to-amber-600');
     expect(dockSearchBtn.className).toContain('to-rose-700');
   });

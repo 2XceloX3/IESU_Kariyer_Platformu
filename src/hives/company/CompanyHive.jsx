@@ -100,7 +100,14 @@ export default function CompanyHive({ currentUser, setView }) {
   const renderActiveView = () => {
     switch (currentView) {
       case 'explore':
-        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+        return (
+          <CompanyFeed
+            initialTab="search"
+            setView={handleSetView}
+            setSelectedUserId={setSelectedUserId}
+            currentUser={effectiveCurrentUser}
+          />
+        );
       case 'company_ats':
         return <CompanyATSBoard setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'create_job':

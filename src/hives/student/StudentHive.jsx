@@ -199,7 +199,17 @@ export default function StudentHive({ currentUser, setView }) {
       case 'staj':
         return <StajPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'explore':
-        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+        return (
+          <StudentFeed
+            initialTab="search"
+            setView={handleSetView}
+            setSelectedUserId={setSelectedUserId}
+            currentUser={effectiveCurrentUser}
+            userRole="student"
+            academicRole="student"
+            setSelectedGroupId={setSelectedGroupId}
+          />
+        );
       case 'network':
       case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView={previousView || 'student'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;

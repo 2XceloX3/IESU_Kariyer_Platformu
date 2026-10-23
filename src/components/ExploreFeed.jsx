@@ -6,7 +6,7 @@ import PostCard from './PostCard';
 import TrendingHashtags from './TrendingHashtags';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 
-export default function ExploreFeed({ posts: propPosts, setView, setSelectedUserId, currentUser }) {
+export default function ExploreFeed({ posts: propPosts, setView, setSelectedUserId, currentUser, hideDock = false, onBack }) {
   const storePosts = useAppStore(state => state.posts);
   const posts = (propPosts && propPosts.length) ? propPosts : storePosts;
 
@@ -78,7 +78,10 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
       <div className="flex items-center justify-between gap-3 mb-6 border-b border-gray-100 pb-4">
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setView && setView('student')} 
+            onClick={() => {
+              if (onBack) onBack();
+              else if (setView) setView(effectiveCurrentUser?.role === 'alumni' ? 'alumni' : effectiveCurrentUser?.role === 'admin' ? 'admin' : (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer') ? 'company' : 'student');
+            }} 
             className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shrink-0 shadow-xs"
             title="Geri Dön"
           >
@@ -271,13 +274,15 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
       )}
 
       {/* FLOATING BOTTOM DOCK */}
-      <SubPanelFloatingDock 
-        currentUser={effectiveCurrentUser} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId}
-        activeTab="explore"
-        userRole={effectiveCurrentUser?.role || 'student'}
-      />
+      {!hideDock && (
+        <SubPanelFloatingDock 
+          currentUser={effectiveCurrentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          activeTab="explore"
+          userRole={effectiveCurrentUser?.role || 'student'}
+        />
+      )}
     </div>
   );
 }

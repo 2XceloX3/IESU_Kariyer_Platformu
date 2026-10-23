@@ -440,6 +440,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
               setView={setView} 
               setSelectedUserId={setSelectedUserId} 
               currentUser={currentUser} 
+              hideDock={true}
+              onBack={() => setActiveTabState('feed')}
             />
           )}
 

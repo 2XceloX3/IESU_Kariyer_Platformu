@@ -134,7 +134,17 @@ export default function AlumniHive({ currentUser, setView }) {
       case 'cvbuilder':
         return <AICVBuilder setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'explore':
-        return <ExploreFeed posts={posts} setView={handleSetView} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
+        return (
+          <AlumniFeed
+            initialTab="search"
+            setView={handleSetView}
+            setSelectedUserId={setSelectedUserId}
+            currentUser={effectiveCurrentUser}
+            userRole="alumni"
+            academicRole="alumni"
+            setSelectedGroupId={setSelectedGroupId}
+          />
+        );
       case 'network':
       case 'career_network':
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView={previousView || 'alumni'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;

@@ -23,7 +23,7 @@ import ExploreFeed from './ExploreFeed';
 import SafeAvatar from './shared/SafeAvatar';
 import FooterModals from './FooterModals';
 
-export default function AlumniFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
+export default function AlumniFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab = 'feed' }) {
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
   const notifications = useAppStore(state => state.notifications);
@@ -59,7 +59,12 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const alumniCardApplications = useAppStore(state => state.alumniCardApplications);
   const setAlumniCardApplications = useAppStore(state => state.setAlumniCardApplications);
   const alumniCardForms = useAppStore(state => state.alumniCardForms);
-  const [activeTab, setActiveTab] = useState('feed'); 
+  const [activeTab, setActiveTab] = useState(() => initialTab || 'feed');
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]); 
   const [footerModal, setFooterModal] = useState(null);
   const [feedFilter, setFeedFilter] = useState('for_you'); // for_you, following // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
@@ -312,7 +317,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
         )}
 
         {activeTab === 'search' && (
-          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} />
+          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} hideDock={true} onBack={() => setActiveTab('feed')} />
         )}
 
         {activeTab === 'feed' && (
@@ -807,7 +812,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           </button>
           
           {/* CENTER: SEARCH ICON (VIBRANT GRADIENT TEAL/EMERALD - KEŞFET & SOSYAL AĞ PORTALI) */}
-          <button onClick={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-emerald-700 text-white shadow-lg shadow-teal-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer" title="Keşfet & Sosyal Ağ Portalı">
+          <button onClick={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-emerald-700 text-white shadow-lg shadow-teal-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-white/50 cursor-pointer ${activeTab === 'search' ? 'ring-2 ring-white/80 ring-offset-2' : ''}`} title="Keşfet & Sosyal Ağ Portalı">
             <Search size={22} strokeWidth={2.8} />
           </button>
           

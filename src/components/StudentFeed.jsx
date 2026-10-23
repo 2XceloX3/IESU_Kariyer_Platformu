@@ -29,7 +29,7 @@ import MentorRequestModal from './modals/MentorRequestModal';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
 import { initialClubs } from '../data/mockClubsData';
 
-export default function StudentFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
+export default function StudentFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab = 'feed' }) {
   const [footerModal, setFooterModal] = useState(null);
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
@@ -67,7 +67,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const messages = useAppStore(state => state.messages);
   const setMessages = useAppStore(state => state.setMessages);
   const featureSurveys = useAppStore(state => state.featureSurveys);
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState(() => initialTab || 'feed');
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
   const [feedFilter, setFeedFilter] = useState('for_you'); // for_you, following // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -371,7 +376,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
         {/* Explore Native View */}
         {activeTab === 'search' && (
-          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} />
+          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} hideDock={true} onBack={() => setActiveTab('feed')} />
         )}
 
         {/* FEED TAB */}
@@ -1042,7 +1047,7 @@ groups={groups}
           </button>
           
           {/* CENTER: SEARCH ICON (VIBRANT CRIMSON GRADIENT - KEŞFET & SOSYAL AĞ PORTALI) */}
-          <button onClick={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer" title="Keşfet & Sosyal Ağ Portalı">
+          <button onClick={() => { setActiveTab('search'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`w-12 h-10 sm:w-14 sm:h-11 rounded-2xl bg-gradient-to-tr from-red-900 via-[#990000] to-rose-700 text-white shadow-lg shadow-red-900/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all mx-1 shrink-0 border border-red-300/40 cursor-pointer ${activeTab === 'search' ? 'ring-2 ring-white/80 ring-offset-2' : ''}`} title="Keşfet & Sosyal Ağ Portalı">
             <Search size={22} strokeWidth={2.8} />
           </button>
           

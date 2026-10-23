@@ -87,4 +87,17 @@ describe('JobsAndInternships Component', () => {
     expect(mockSetView).toHaveBeenCalledWith('student');
     expect(mockSetView).not.toHaveBeenCalledWith('admin');
   });
+
+  it('renders single contextual dock and routes directly to explore without duplicate docks', () => {
+    mockSetView.mockClear();
+    render(<JobsAndInternships {...mockProps} userRole="student" previousView="student" />);
+
+    // Exactly one Search/Explore button in the dock
+    const searchBtns = screen.getAllByTitle(/Keşfet & Sosyal Ağ Portalı/i);
+    expect(searchBtns.length).toBe(1);
+
+    // Clicking it navigates to 'explore'
+    fireEvent.click(searchBtns[0]);
+    expect(mockSetView).toHaveBeenCalledWith('explore');
+  });
 });

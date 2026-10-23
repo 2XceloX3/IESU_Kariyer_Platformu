@@ -26,7 +26,7 @@ import JobCreator from './JobCreator';
 import { exportPDF } from '../lib/pdfExporter';
 import SafeAvatar from './shared/SafeAvatar';
 
-export default function CompanyFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId }) {
+export default function CompanyFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab = 'feed' }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   const [footerModal, setFooterModal] = useState(null);
@@ -144,7 +144,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
     window.toast?.success?.('Başvurunuz başarıyla alındı! İlgili birim dönüş yapacaktır.');
   };
 
-  const [activeTab, setActiveTab] = useState('feed'); 
+  const [activeTab, setActiveTab] = useState(() => initialTab || 'feed');
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]); 
   const [feedFilter, setFeedFilter] = useState('for_you'); // for_you, following // feed, jobs, network
   const [showShorts, setShowShorts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
