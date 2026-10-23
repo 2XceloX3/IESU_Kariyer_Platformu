@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
-import AdminOmniDock from './AdminOmniDock';
 
 import { Megaphone, Star, Trophy, BookOpen as BookOpenKgb } from 'lucide-react';
 import CMSEvents from './admin/CMSEvents';
@@ -285,7 +284,7 @@ const PANEL_CATEGORIES = [
     id: 'sistem', 
     label: 'Sistem & Analiz', 
     icon: <Settings size={14}/>, 
-    panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'cms_message_audit', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] 
+    panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] 
   }
 ];
 
@@ -384,6 +383,51 @@ export default function AdminDashboard({
   
   const [showMore,   setShowMore]        = useState(false);
 
+  // 389834 Gizli Güvenlik Protokolü (İletişim & Mesajlaşma Denetimi)
+  const [isAuditUnlocked, setIsAuditUnlocked] = useState(false);
+  const [showSecretModal, setShowSecretModal] = useState(false);
+  const [secretInput, setSecretInput] = useState('');
+  const [secretError, setSecretError] = useState(false);
+
+  // 389834 Klavye dizilimi dinleyicisi: Yönetici panelindeyken 389834 yazıldığında aktifleşir / tekrar yazıldığında kilitlenir
+  useEffect(() => {
+    let digitBuffer = '';
+    const handleKeySequence = (e) => {
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+
+      if (e.key === 'Escape') {
+        setIsAuditUnlocked(false);
+        setShowSecretModal(false);
+        setSecretInput('');
+        return;
+      }
+
+      if (isInputFocused) return;
+
+      if (e.key >= '0' && e.key <= '9') {
+        digitBuffer = (digitBuffer + e.key).slice(-6);
+        if (digitBuffer === '389834') {
+          setIsAuditUnlocked(prev => {
+            const next = !prev;
+            if (next) {
+              setActiveTab('cms_message_audit');
+              if (window.toast) window.toast.success('🔒 Gizli İletişim Denetim Protokolü Açıldı (389834)');
+            } else {
+              setActiveTab('overview');
+              if (window.toast) window.toast.info('🔒 İletişim Denetim Protokolü Kilitlendi ve Gizlendi');
+            }
+            return next;
+          });
+          digitBuffer = '';
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeySequence);
+    return () => window.removeEventListener('keydown', handleKeySequence);
+  }, []);
+
   const messages = useAppStore(state => state.messages);
   const unread  = useMemo(() => (messages || []).filter(m=>!m?.read).length, [messages]);
   const pending = useMemo(() => (jobs || []).filter(j=>j?.status==='Beklemede').length + (voluntaryInternships || []).filter(v=>v.status==='Taslak').length, [jobs, voluntaryInternships]);
@@ -442,7 +486,54 @@ export default function AdminDashboard({
       case 'cms_portfolios': return <CMSPortfolios />;
       case 'cms_clubs': return <CMSClubs clubs={clubs || []} setClubs={setClubs} clubApplications={clubApplications || []} setClubApplications={setClubApplications} currentUser={currentUser} />;
       case 'cms_incubator': return <CMSIncubator />;
-      case 'cms_message_audit': return <CMSMessageAudit currentUser={currentUser} setView={setView} />;
+      case 'cms_message_audit': 
+        if (!isAuditUnlocked) {
+          return (
+            <div className="p-12 text-center bg-white rounded-3xl border border-gray-100 shadow-sm max-w-md mx-auto my-12 space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center mx-auto">
+                <ShieldCheck size={24} />
+              </div>
+              <h3 className="text-sm font-bold text-slate-800">Yetkilendirilmemiş Güvenli Alan</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">Bu denetim masası özel güvenlik yetki protokolü ile korunmaktadır.</p>
+              <button
+                onClick={() => setShowSecretModal(true)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Güvenlik Kodunu Gir (389834)
+              </button>
+            </div>
+          );
+        }
+        return (
+          <div className="space-y-4 animate-fade-in">
+            <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950 border border-amber-500/30 text-white px-5 py-3 rounded-2xl flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                  <ShieldCheck size={18} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-black text-xs text-amber-400 tracking-wider">GİZLİ İLETİŞİM DENETİM MASASI (389834)</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  </div>
+                  <p className="text-[11px] text-slate-400 hidden sm:block">Panelden çıktığınızda veya sayfayı yenilediğinizde bu alan otomatik kilitlenecektir.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setIsAuditUnlocked(false);
+                  setActiveTab('overview');
+                  if (window.toast) window.toast.info('🔒 İletişim Denetim Masası Kilitlendi ve Gizlendi');
+                }}
+                className="px-3.5 py-1.5 bg-red-600/90 hover:bg-red-600 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow cursor-pointer shrink-0"
+                title="Şimdi Kilitle ve Gizle"
+              >
+                <span>Kilitle & Gizle</span>
+              </button>
+            </div>
+            <CMSMessageAudit currentUser={currentUser} setView={setView} />
+          </div>
+        );
       case 'site_editor': return <CMSSiteEditor />;
       case 'world_map': return <CMSWorldMap />;
       default:            return <OverviewPanel {...p}/>;
@@ -510,6 +601,7 @@ export default function AdminDashboard({
   const isSuperAdmin = academicRole === 'super_admin' || userRole === 'admin' || currentUser?.role === 'admin';
 
   const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
+    if (tab.id === 'cms_message_audit') return isAuditUnlocked;
     if (tab.id === 'anket' && !featureSurveys) return false;
     if (tab.id === 'kart' && !featureAlumniCard) return false;
     if (tab.id === 'cms_ssp' && !sspEnabled) return false;
@@ -518,13 +610,19 @@ export default function AdminDashboard({
     return true;
   });
 
-  // Arama filtresi
+  // Arama filtresi (cms_message_audit asla standart kategori listesinde görünmez, yalnızca 389834 koduyla açıldığında aktif görünümdeyse listelenir)
   const filteredPanels = searchQuery 
     ? ALL_TABS.filter(t => t.label.toLowerCase().includes(searchQuery.toLowerCase()))
-    : ALL_TABS.filter(t => {
-        const cat = PANEL_CATEGORIES.find(c => c.id === activeCategory);
-        return cat ? cat.panels.includes(t.id) : false;
-      });
+    : [
+        ...ALL_TABS.filter(t => {
+          if (t.id === 'cms_message_audit') return false;
+          const cat = PANEL_CATEGORIES.find(c => c.id === activeCategory);
+          return cat ? cat.panels.includes(t.id) : false;
+        }),
+        ...(isAuditUnlocked && activeTab === 'cms_message_audit' ? [
+          { id: 'cms_message_audit', icon: <MessageSquare size={14}/>, label: '🔒 İletişim Denetim Masası (389834)' }
+        ] : [])
+      ];
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans relative">
@@ -534,9 +632,19 @@ export default function AdminDashboard({
         
         <div className="flex items-center gap-3 pr-4 border-r border-gray-100 shrink-0">
           <Logo className="w-9 h-9 text-amber-700 bg-amber-50 rounded-xl p-1.5" />
-          <div className="hidden sm:block">
-            <h1 className="text-[14px] font-black text-gray-900 leading-tight">Yönetici Paneli</h1>
-            <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider">{academicRole === 'super_admin' ? 'SÜPER ADMİN' : 'KARİYER OFİSİ'}</p>
+          <div 
+            role="button"
+            tabIndex={0}
+            onClick={() => setShowSecretModal(true)}
+            onKeyDown={(e) => { if (e.key === 'Enter') setShowSecretModal(true); }}
+            className="hidden sm:block cursor-pointer select-none group"
+            title="Güvenlik Doğrulama Kodu"
+          >
+            <h1 className="text-[14px] font-black text-gray-900 leading-tight group-hover:text-amber-800 transition">Yönetici Paneli</h1>
+            <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <span>{academicRole === 'super_admin' ? 'SÜPER ADMİN' : 'KARİYER OFİSİ'}</span>
+              {isAuditUnlocked && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" title="Denetim Masası Aktif" />}
+            </p>
           </div>
         </div>
 
@@ -615,7 +723,7 @@ export default function AdminDashboard({
       </div>
 
       {/* ── İÇERİK ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-24">
+      <div className="flex-1 flex flex-col max-w-[1400px] mx-auto w-full p-3 sm:p-4 lg:p-6 pb-8">
         <main className="flex-1 bg-transparent">
           <React.Suspense fallback={
             <div className="flex items-center justify-center h-64">
@@ -627,15 +735,77 @@ export default function AdminDashboard({
         </main>
       </div>
 
-      <AdminOmniDock 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        setView={setView} 
-        setSelectedUserId={setSelectedUserId} 
-        currentUser={currentUser} 
-        theme="amber" 
-        homeView="admin" 
-      />
+      {/* ── COVERT PROTOCOL MODAL (389834) ── */}
+      {showSecretModal && (
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-slate-950 border border-slate-800 text-white rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-red-600" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <ShieldCheck size={18} />
+                </div>
+                <div>
+                  <h3 className="text-xs font-mono font-bold tracking-wider text-slate-200">GÜVENLİK YETKİ PROTOKOLÜ</h3>
+                  <p className="text-[10px] text-slate-500 font-mono">DENETİM MASASI KİLİDİ</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => { setShowSecretModal(false); setSecretInput(''); setSecretError(false); }}
+                className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs transition"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+              Özel denetim protokolünü etkinleştirmek için 6 haneli güvenlik yetki kodunu tuşlayınız:
+            </p>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (secretInput.trim() === '389834') {
+                setIsAuditUnlocked(true);
+                setActiveTab('cms_message_audit');
+                setShowSecretModal(false);
+                setSecretInput('');
+                setSecretError(false);
+                if (window.toast) window.toast.success('🔒 Yetki Doğrulandı: İletişim Denetim Merkezi Açıldı');
+              } else {
+                setSecretError(true);
+              }
+            }} className="space-y-3">
+              <input
+                type="password"
+                autoFocus
+                maxLength={8}
+                placeholder="••••••"
+                value={secretInput}
+                onChange={(e) => { setSecretInput(e.target.value); setSecretError(false); }}
+                className="w-full bg-slate-900 border border-slate-700 focus:border-amber-500 rounded-xl px-4 py-2.5 text-center font-mono text-base tracking-[0.3em] text-amber-400 placeholder-slate-600 focus:outline-none transition"
+              />
+              {secretError && (
+                <p className="text-[11px] font-bold text-rose-400 text-center animate-shake">Geçersiz güvenlik kodu.</p>
+              )}
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => { setShowSecretModal(false); setSecretInput(''); setSecretError(false); }}
+                  className="flex-1 py-2 text-xs font-bold bg-white/5 hover:bg-white/10 text-slate-300 rounded-xl transition"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white rounded-xl transition shadow-lg shadow-amber-600/30 cursor-pointer"
+                >
+                  Yetkilendir
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -78,4 +78,52 @@ describe('AdminDashboard Component', () => {
     // Default primary tab in Genel Bakış must be overview
     expect(screen.getAllByRole('button', { name: /Genel Bakış/i }).length).toBeGreaterThan(0);
   });
+
+  it('does NOT render bottom dock in AdminDashboard', () => {
+    render(<AdminDashboard {...mockProps} />);
+    expect(screen.queryByTitle(/Akış & Ana Sayfa/i)).not.toBeInTheDocument();
+  });
+
+  it('hides Mesajlaşma & İletişim Denetimi from Sistem & Analiz tabs by default and unlocks with code 389834', async () => {
+    render(<AdminDashboard {...mockProps} />);
+
+    // Go to Sistem & Analiz category
+    const systemCatBtn = screen.getByRole('button', { name: /Sistem & Analiz/i });
+    fireEvent.click(systemCatBtn);
+
+    // Verify "Mesajlaşma & İletişim Denetimi" is completely hidden/invisible
+    expect(screen.queryByRole('button', { name: /Mesajlaşma & İletişim Denetimi/i })).not.toBeInTheDocument();
+
+    // Type secret code 389834 on keyboard
+    for (const char of '389834') {
+      fireEvent.keyDown(window, { key: char });
+    }
+
+    // Now it should be unlocked and display the covert audit protocol
+    expect(await screen.findByText(/GİZLİ İLETİŞİM DENETİM/i)).toBeInTheDocument();
+
+    // Clicking Kilitle & Gizle locks and hides it again
+    const lockBtn = screen.getByRole('button', { name: /Kilitle & Gizle/i });
+    fireEvent.click(lockBtn);
+
+    expect(screen.queryByText(/GİZLİ İLETİŞİM DENETİM/i)).not.toBeInTheDocument();
+  });
+
+  it('unlocks Mesajlaşma & İletişim Denetimi via covert security code modal with 389834', async () => {
+    render(<AdminDashboard {...mockProps} />);
+
+    // Click on the title badge to open covert protocol modal
+    const badge = screen.getByTitle('Güvenlik Doğrulama Kodu');
+    fireEvent.click(badge);
+
+    expect(screen.getByText('GÜVENLİK YETKİ PROTOKOLÜ')).toBeInTheDocument();
+
+    const input = screen.getByPlaceholderText('••••••');
+    fireEvent.change(input, { target: { value: '389834' } });
+
+    const submitBtn = screen.getByRole('button', { name: /^Yetkilendir$/i });
+    fireEvent.click(submitBtn);
+
+    expect(await screen.findByText(/GİZLİ İLETİŞİM DENETİM/i)).toBeInTheDocument();
+  });
 });
