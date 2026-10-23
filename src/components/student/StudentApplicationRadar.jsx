@@ -9,6 +9,8 @@ import Logo from '../Logo';
 import TopProfileMenu from '../TopProfileMenu';
 import SubPanelFloatingDock from '../SubPanelFloatingDock';
 import SafeAvatar from '../shared/SafeAvatar';
+import LanguageSwitcher from '../shared/LanguageSwitcher';
+import { useTranslation } from '../../i18n';
 import useAppStore from '../../store/useAppStore';
 import AlumniCoffeeChatModal from './AlumniCoffeeChatModal';
 import {
@@ -28,6 +30,7 @@ export default function StudentApplicationRadar({
   previousView = 'feed',
   onOpenCoffeeChat
 }) {
+  const { t, isEn } = useTranslation();
   const storeCurrentUser = useAppStore((state) => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   const storeApplications = useAppStore((state) => state.applications) || [];
@@ -132,10 +135,10 @@ export default function StudentApplicationRadar({
             <Logo className="h-9 w-auto" />
             <div className="hidden sm:block border-l border-slate-200 pl-3">
               <h1 className="text-xs font-black text-slate-900 leading-tight">
-                İstanbul Esenyurt Üniversitesi (İESÜ)
+                {t('common.appName')}
               </h1>
               <p className="text-[10px] font-bold text-red-700 tracking-wide uppercase">
-                Kariyer Geliştirme Koordinatörlüğü • Canlı Başvuru Radarı
+                {t('common.coordinatorTitle')} • {t('radar.title')}
               </p>
             </div>
           </div>
@@ -143,8 +146,9 @@ export default function StudentApplicationRadar({
           <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-red-50 border border-red-200/80 rounded-full text-xs font-black text-[#990000]">
               <Radar size={14} className="animate-spin text-red-600" />
-              <span>Kara Delik Başvuru Sendromu Önleme Sistemi</span>
+              <span>{isEn ? 'Anti-Black-Hole Transparency Engine' : 'Kara Delik Başvuru Sendromu Önleme Sistemi'}</span>
             </div>
+            <LanguageSwitcher variant="pill" />
             <TopProfileMenu
               currentUser={effectiveCurrentUser}
               userRole={userRole}
@@ -163,41 +167,41 @@ export default function StudentApplicationRadar({
           
           <div className="relative z-10 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[11px] font-black text-red-200 border border-white/20 uppercase tracking-widest mb-3">
-              <Radar size={13} className="text-red-400" /> Şeffaf Başvuru Takip Ağı
+              <Radar size={13} className="text-red-400" /> {isEn ? 'Transparent Application Network' : 'Şeffaf Başvuru Takip Ağı'}
             </div>
             <h2 className="text-2xl sm:text-4xl font-black tracking-tight mb-2">
-              Canlı Başvuru Radarı & Mikro-Geri Bildirim
+              {t('radar.heroTitle')}
             </h2>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-medium">
-              Özgeçmişinizin İK tarafından ne zaman açıldığını, ilk %15 ön eleme havuzuna girip girmediğinizi ve gerekçeli geri bildirimleri canlı takip edin. Üniversitemizle resmî protokolü bulunan sanayi hamisi şirketlerde başvurularınız <strong>VIP Protokol Kontenjanı</strong> ile öncelikli incelenir.
+              {t('radar.heroSubtitle')}
             </p>
           </div>
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-6 pt-6 border-t border-white/10">
             <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
-              <p className="text-[10px] text-slate-400 font-bold uppercase">Toplam Başvuru</p>
+              <p className="text-[10px] text-slate-400 font-bold uppercase">{t('radar.totalApplications')}</p>
               <p className="text-xl font-black text-white mt-1">{stats.totalApplications}</p>
             </div>
             <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
-              <p className="text-[10px] text-amber-300 font-bold uppercase">İK İnceledi</p>
+              <p className="text-[10px] text-amber-300 font-bold uppercase">{t('radar.hrViewed')}</p>
               <p className="text-xl font-black text-amber-400 mt-1">{stats.hrViewedCount}</p>
             </div>
             <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
-              <p className="text-[10px] text-purple-300 font-bold uppercase">İlk %15 Havuz</p>
+              <p className="text-[10px] text-purple-300 font-bold uppercase">{t('radar.shortlisted')}</p>
               <p className="text-xl font-black text-purple-400 mt-1">{stats.shortlistedCount}</p>
             </div>
             <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
-              <p className="text-[10px] text-emerald-300 font-bold uppercase">Mülakat Daveti</p>
+              <p className="text-[10px] text-emerald-300 font-bold uppercase">{t('radar.interview')}</p>
               <p className="text-xl font-black text-emerald-400 mt-1">{stats.interviewCount}</p>
             </div>
             <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
-              <p className="text-[10px] text-rose-300 font-bold uppercase">Geri Bildirimli</p>
+              <p className="text-[10px] text-rose-300 font-bold uppercase">{t('radar.feedback')}</p>
               <p className="text-xl font-black text-rose-400 mt-1">{stats.feedbackCount}</p>
             </div>
             <div className="bg-amber-500/20 rounded-2xl p-3 border border-amber-400/30">
               <p className="text-[10px] text-amber-200 font-black uppercase flex items-center gap-1">
-                <Sparkles size={11} /> VIP Protokol
+                <Sparkles size={11} /> VIP
               </p>
               <p className="text-xl font-black text-amber-300 mt-1">{stats.protocolVIPCount}</p>
             </div>
@@ -209,12 +213,12 @@ export default function StudentApplicationRadar({
           {/* Tab Filter Chips */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
             {[
-              { id: 'all', label: `Tümü (${stats.totalApplications})` },
-              { id: 'active', label: `Süreçte (${stats.activeProcessCount})` },
-              { id: 'shortlisted', label: `Ön Eleme %15 (${stats.shortlistedCount})` },
-              { id: 'interview', label: `Mülakat (${stats.interviewCount})` },
-              { id: 'feedback', label: `Geri Bildirim (${stats.feedbackCount})` },
-              { id: 'vip', label: `⭐ VIP Protokol (${stats.protocolVIPCount})` }
+              { id: 'all', label: `${t('radar.filterAll')} (${stats.totalApplications})` },
+              { id: 'active', label: `${t('radar.filterActive')} (${stats.activeProcessCount})` },
+              { id: 'shortlisted', label: `${t('radar.filterShortlisted')} (${stats.shortlistedCount})` },
+              { id: 'interview', label: `${t('radar.filterInterview')} (${stats.interviewCount})` },
+              { id: 'feedback', label: `${t('radar.filterFeedback')} (${stats.feedbackCount})` },
+              { id: 'vip', label: `${t('radar.filterVip')} (${stats.protocolVIPCount})` }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -235,7 +239,7 @@ export default function StudentApplicationRadar({
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Şirket veya pozisyon ara..."
+              placeholder={isEn ? "Search company or position..." : "Şirket veya pozisyon ara..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-700/20 focus:border-red-700 transition"
@@ -329,13 +333,13 @@ export default function StudentApplicationRadar({
                     <div className="mt-6 pt-6 border-t border-slate-100">
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 relative">
                         {[
-                          { key: 'SUBMITTED', num: 1, label: '1. Başvuru İletildi' },
-                          { key: 'HR_VIEWED', num: 2, label: '2. İK Açtı & İnceledi' },
-                          { key: 'SHORTLISTED_TOP_15', num: 3, label: '3. İlk %15 Havuzu' },
+                          { key: 'SUBMITTED', num: 1, label: t('radar.step1') },
+                          { key: 'HR_VIEWED', num: 2, label: t('radar.step2') },
+                          { key: 'SHORTLISTED_TOP_15', num: 3, label: t('radar.step3') },
                           {
                             key: app.radarStage === 'DETAILED_FEEDBACK' ? 'DETAILED_FEEDBACK' : 'INTERVIEW_INVITE',
                             num: 4,
-                            label: app.radarStage === 'DETAILED_FEEDBACK' ? '4. Gerekçeli Geri Bildirim' : '4. Mülakat Daveti'
+                            label: app.radarStage === 'DETAILED_FEEDBACK' ? t('radar.step4Feedback') : t('radar.step4Interview')
                           }
                         ].map((step, idx) => {
                           const currentStepNum = stage.stepNumber;
@@ -367,10 +371,10 @@ export default function StudentApplicationRadar({
                               </div>
                               <p className="text-[10px] font-medium opacity-80 truncate">
                                 {isDone
-                                  ? 'Tamamlandı'
+                                  ? t('radar.stageCompleted')
                                   : isCurrent
-                                  ? 'Aktif Değerlendirmede'
-                                  : 'Sırada'}
+                                  ? t('radar.stageActive')
+                                  : t('radar.stagePending')}
                               </p>
                             </div>
                           );
@@ -387,10 +391,10 @@ export default function StudentApplicationRadar({
                           </div>
                           <div>
                             <h4 className="text-sm font-black text-emerald-950">
-                              Resmî Mülakat Daveti Aldınız! 🎉
+                              {t('radar.interviewInviteBanner')}
                             </h4>
                             <p className="text-xs text-emerald-800 font-semibold mt-0.5">
-                              Tarih: {app.interviewDetails.date} • Saat: {app.interviewDetails.time} • Platform: {app.interviewDetails.platform}
+                              {isEn ? 'Date:' : 'Tarih:'} {app.interviewDetails.date} • {isEn ? 'Time:' : 'Saat:'} {app.interviewDetails.time} • {isEn ? 'Platform:' : 'Platform:'} {app.interviewDetails.platform}
                             </p>
                           </div>
                         </div>
@@ -401,7 +405,7 @@ export default function StudentApplicationRadar({
                           rel="noreferrer"
                           className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition flex items-center gap-1.5 shadow-sm whitespace-nowrap cursor-pointer"
                         >
-                          <Video size={14} /> Mülakat Odasına Katıl
+                          <Video size={14} /> {t('radar.joinInterview')}
                         </a>
                       </div>
                     )}
@@ -412,7 +416,7 @@ export default function StudentApplicationRadar({
                         <div className="flex items-center gap-2">
                           <AlertCircle size={18} className="text-rose-600" />
                           <h4 className="text-sm font-black text-rose-950">
-                            Gerekçeli İK Değerlendirmesi & Gelişim Rotası
+                            {isEn ? 'Constructive HR Evaluation & Growth Route' : 'Gerekçeli İK Değerlendirmesi & Gelişim Rotası'}
                           </h4>
                         </div>
 
@@ -420,7 +424,7 @@ export default function StudentApplicationRadar({
                           {/* Strengths */}
                           <div className="bg-white p-4 rounded-xl border border-rose-100 shadow-xs">
                             <h5 className="text-xs font-black text-emerald-800 flex items-center gap-1 mb-2">
-                              <CheckCircle2 size={14} className="text-emerald-600" /> Güçlü Görülen Yönleriniz
+                              <CheckCircle2 size={14} className="text-emerald-600" /> {t('radar.strengthsTitle')}
                             </h5>
                             <ul className="text-xs text-slate-700 font-medium space-y-1.5">
                               {app.feedback.strengths?.map((item, i) => (
@@ -435,7 +439,7 @@ export default function StudentApplicationRadar({
                           {/* Missing / Development Areas */}
                           <div className="bg-white p-4 rounded-xl border border-rose-100 shadow-xs">
                             <h5 className="text-xs font-black text-amber-800 flex items-center gap-1 mb-2">
-                              <AlertCircle size={14} className="text-amber-600" /> Geliştirilmesi Gereken Alanlar
+                              <AlertCircle size={14} className="text-amber-600" /> {t('radar.missingAreasTitle')}
                             </h5>
                             <ul className="text-xs text-slate-700 font-medium space-y-1.5">
                               {app.feedback.missingSkills?.map((item, i) => (
@@ -452,7 +456,7 @@ export default function StudentApplicationRadar({
                         <div className="bg-white p-4 rounded-xl border border-rose-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                           <div>
                             <p className="text-xs font-black text-slate-900">
-                              🎯 Akıllı Öneri: {app.feedback.actionableAdvice}
+                              🎯 {t('radar.actionableAdvice')}: {app.feedback.actionableAdvice}
                             </p>
                             <p className="text-[11px] text-slate-600 mt-0.5">
                               {app.feedback.suggestedMentorAction}
@@ -465,16 +469,16 @@ export default function StudentApplicationRadar({
                                 onClick={() => setView?.(app.feedback.suggestedSemView)}
                                 className="px-3 py-1.5 bg-[#990000] text-white rounded-xl text-xs font-black hover:bg-red-800 transition cursor-pointer"
                               >
-                                İESÜ SEM Kursu
+                                {t('radar.semCourse')}
                               </button>
                             )}
                             <button
                               type="button"
                               onClick={() => handleCoffeeChatClick({ company: app.company, topic: 'interview_mock' })}
                               className="px-3 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-black transition cursor-pointer flex items-center gap-1 shadow-xs"
-                              title="İlgili şirkette çalışan bir mezunla 15 Dk Kahve Sohbeti randevusu al"
+                              title={isEn ? "Book a 15-min coffee chat with an alumnus at this company" : "İlgili şirkette çalışan bir mezunla 15 Dk Kahve Sohbeti randevusu al"}
                             >
-                              <Coffee size={13} /> 15 Dk Kahve Sohbeti
+                              <Coffee size={13} /> {t('radar.coffeeChat')}
                             </button>
                           </div>
                         </div>
@@ -488,11 +492,11 @@ export default function StudentApplicationRadar({
                         className="text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1 cursor-pointer"
                       >
                         {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-                        <span>{isExpanded ? 'Detaylı Zaman Kütüğünü Gizle' : 'İK İnceleme Zaman Kütüğü & Audit Log'}</span>
+                        <span>{isExpanded ? t('radar.hideAuditLog') : t('radar.auditLog')}</span>
                       </button>
 
                       <div className="text-[11px] text-slate-400 font-medium">
-                        Aday Sıralaması: <strong>İlk %{app.percentileRank || 15}</strong> Havuzunda
+                        {t('radar.candidateRanking')}: <strong>{isEn ? `Top ${app.percentileRank || 15}% Pool` : `İlk %${app.percentileRank || 15} Havuzunda`}</strong>
                       </div>
                     </div>
 

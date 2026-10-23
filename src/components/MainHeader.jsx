@@ -4,12 +4,15 @@ import Logo from './Logo';
 import { Search, LogIn, Menu, X } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { getTenantConfig } from '../config/tenantConfig';
+import LanguageSwitcher from './shared/LanguageSwitcher';
+import { useTranslation } from '../i18n';
 
 export default function MainHeader({ setView, currentUser, userRole }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const siteConfig = useAppStore(state => state.siteConfig);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const tenant = getTenantConfig();
+  const { t } = useTranslation();
 
   const getDestination = () => {
     if (!currentUser) return 'landing';
@@ -45,7 +48,7 @@ export default function MainHeader({ setView, currentUser, userRole }) {
               <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight drop-shadow-md">
                 İstanbul Esenyurt Üniversitesi
               </h1>
-              <p className="text-[10px] font-bold text-red-100 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
+              <p className="text-[10px] font-bold text-red-100 tracking-wider">{t('common.coordinatorTitle')}</p>
             </div>
           </div>
 
@@ -56,8 +59,8 @@ export default function MainHeader({ setView, currentUser, userRole }) {
               <Search className="absolute left-3 top-2.5 text-white/60" size={14} />
               <input
                 type="text"
-                placeholder="İçerik veya Bölüm Ara..."
-                aria-label="İçerik veya bölüm ara"
+                placeholder={t('common.searchPlaceholder')}
+                aria-label={t('common.searchPlaceholder')}
                 className="w-full bg-white/10 text-white placeholder-white/60 text-xs font-medium pl-9 pr-3 py-1.5 rounded-xl border border-white/20 focus:outline-none focus:bg-white/20 transition shadow-inner"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && e.target.value) {
@@ -69,11 +72,16 @@ export default function MainHeader({ setView, currentUser, userRole }) {
 
             {/* Nav Links (Desktop) */}
             <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
-              <button onClick={() => setView && setView('about_us')} className="hover:text-white hover:scale-105 transition-all">Hakkımızda</button>
-              <button onClick={() => setView && setView('services')} className="hover:text-white hover:scale-105 transition-all">Hizmetlerimiz</button>
-              <button onClick={() => setView && setView('events_list')} className="hover:text-white hover:scale-105 transition-all">Etkinliklerimiz</button>
-              <button onClick={() => setView && setView('contact_us')} className="hover:text-white hover:scale-105 transition-all">İletişim</button>
-              <button onClick={() => setView && setView('haberler')} className="hover:text-white hover:scale-105 transition-all">Neler Oluyor?</button>
+              <button onClick={() => setView && setView('about_us')} className="hover:text-white hover:scale-105 transition-all">{t('nav.aboutUs')}</button>
+              <button onClick={() => setView && setView('services')} className="hover:text-white hover:scale-105 transition-all">{t('nav.services')}</button>
+              <button onClick={() => setView && setView('events_list')} className="hover:text-white hover:scale-105 transition-all">{t('nav.events')}</button>
+              <button onClick={() => setView && setView('contact_us')} className="hover:text-white hover:scale-105 transition-all">{t('nav.contact')}</button>
+              <button onClick={() => setView && setView('haberler')} className="hover:text-white hover:scale-105 transition-all">{t('nav.news')}</button>
+            </div>
+
+            {/* Language Switcher */}
+            <div className="hidden sm:block flex-shrink-0">
+              <LanguageSwitcher />
             </div>
 
             {/* FAR RIGHT: User Avatar or Portala Giriş Button */}
@@ -83,15 +91,15 @@ export default function MainHeader({ setView, currentUser, userRole }) {
                 className="flex items-center gap-2 bg-white text-[#990000] hover:bg-red-50 px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all shadow-lg hover:scale-105 whitespace-nowrap flex-shrink-0"
               >
                 <SafeAvatar src={currentUser.avatar || '/iesu-logo.svg'} name={currentUser.name || 'U'} size={20} className="w-5 h-5 rounded-full object-cover border border-[#990000]" />
-                <span className="hidden sm:inline">Panelime Dön ({currentUser.name?.split(' ')[0]})</span>
-                <span className="sm:hidden">Panel</span>
+                <span className="hidden sm:inline">{t('nav.backToDashboard')} ({currentUser.name?.split(' ')[0]})</span>
+                <span className="sm:hidden">{t('nav.panel')}</span>
               </button>
             ) : (
               <button 
                 onClick={() => setView && setView('login')}
                 className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-3 sm:px-4 py-2 rounded-xl text-xs font-black transition-all shadow-lg hover:shadow-xl whitespace-nowrap flex-shrink-0 hover:scale-105"
               >
-                <LogIn size={15} strokeWidth={2.5} /> <span>Giriş</span>
+                <LogIn size={15} strokeWidth={2.5} /> <span>{t('nav.signIn')}</span>
               </button>
             )}
 
@@ -109,36 +117,39 @@ export default function MainHeader({ setView, currentUser, userRole }) {
         {/* Mobile Dropdown Navigation Drawer */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-slate-900/95 backdrop-blur-xl border-t border-white/10 px-6 py-4 space-y-3 animate-fade-in shadow-2xl">
+            <div className="flex justify-end pb-1 border-b border-white/10">
+              <LanguageSwitcher variant="pill" />
+            </div>
             <div className="flex flex-col space-y-2 text-sm font-bold text-white/90">
               <button 
                 onClick={() => { if (setView) setView('about_us'); setIsMobileMenuOpen(false); }} 
                 className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
               >
-                Hakkımızda
+                {t('nav.aboutUs')}
               </button>
               <button 
                 onClick={() => { if (setView) setView('services'); setIsMobileMenuOpen(false); }} 
                 className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
               >
-                Hizmetlerimiz
+                {t('nav.services')}
               </button>
               <button 
                 onClick={() => { if (setView) setView('events_list'); setIsMobileMenuOpen(false); }} 
                 className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
               >
-                Etkinliklerimiz
+                {t('nav.events')}
               </button>
               <button 
                 onClick={() => { if (setView) setView('contact_us'); setIsMobileMenuOpen(false); }} 
                 className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
               >
-                İletişim
+                {t('nav.contact')}
               </button>
               <button 
                 onClick={() => { if (setView) setView('haberler'); setIsMobileMenuOpen(false); }} 
                 className="text-left py-2 px-3 rounded-lg hover:bg-white/10 transition"
               >
-                Neler Oluyor?
+                {t('nav.news')}
               </button>
             </div>
           </div>

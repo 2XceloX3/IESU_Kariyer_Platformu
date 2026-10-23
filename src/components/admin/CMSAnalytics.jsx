@@ -21,6 +21,7 @@ import {
 } from '../../services/accreditationWorkflow';
 import EmploymentPyramids from '../accreditation/EmploymentPyramids';
 import PUKOCaliteKarnesi from '../accreditation/PUKOCaliteKarnesi';
+import QSWorldRankingReportCard from '../accreditation/QSWorldRankingReportCard';
 
 export default function CMSAnalytics({ students = [], alumni = [], companies = [], jobs = [], applications = [] }) {
   const [accreditationTab, setAccreditationTab] = useState('pyramids'); // 'pyramids' | 'puko' | 'audit_log'
@@ -37,12 +38,12 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
 
   // Merge direct surveyResponses and responses embedded in survey templates
   const surveyResponses = useMemo(() => {
-    const fromSurveys = rawSurveys.flatMap(s => (s.responses || []).map(r => ({
+    const fromSurveys = (Array.isArray(rawSurveys) ? rawSurveys : []).flatMap(s => (Array.isArray(s?.responses) ? s.responses : []).map(r => ({
       ...r,
       surveyId: s.id,
       targetAudience: s.targetAudience
     })));
-    return [...directSurveyResponses, ...fromSurveys];
+    return [...(Array.isArray(directSurveyResponses) ? directSurveyResponses : []), ...fromSurveys];
   }, [directSurveyResponses, rawSurveys]);
 
   // Gerçek beyanlar veya örnek akreditasyon havuzu (boş veri çökmesini engeller)
@@ -337,6 +338,16 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
             >
               Denetim Kütüğü
             </button>
+            <button
+              type="button"
+              data-testid="tab-qs-the-ranking"
+              onClick={() => setAccreditationTab('qs_ranking')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                accreditationTab === 'qs_ranking' ? 'bg-[#003399] text-white shadow' : 'text-blue-200 hover:text-white'
+              }`}
+            >
+              QS & THE Sıralaması
+            </button>
           </div>
         </div>
         
@@ -495,6 +506,17 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {accreditationTab === 'qs_ranking' && (
+          <div className="text-slate-900" data-testid="qs-ranking-content">
+            <QSWorldRankingReportCard
+              alumni={alumni}
+              students={students}
+              corporateProtocols={yokakIndicators.corporateProtocols || []}
+              employerRatings={computedPukoScorecards || []}
+            />
           </div>
         )}
       </div>

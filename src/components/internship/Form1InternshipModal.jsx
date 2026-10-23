@@ -16,6 +16,8 @@ import {
   LAW_REFERENCES 
 } from '../../services/internshipWorkflow';
 import { downloadReportPdf } from '../../utils/downloadPdf';
+import { useTranslation } from '../../i18n';
+import LanguageSwitcher from '../shared/LanguageSwitcher';
 
 export default function Form1InternshipModal({ 
   isOpen, 
@@ -24,6 +26,7 @@ export default function Form1InternshipModal({
   onSaveInternship,
   initialData = null 
 }) {
+  const { t, isEn } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
 
   const [formData, setFormData] = useState(() => ({
@@ -214,36 +217,41 @@ export default function Form1InternshipModal({
         
         {/* Top Header */}
         <div className="bg-gradient-to-r from-[#990000] via-red-900 to-slate-900 text-white p-6 sm:p-8 relative">
-          <button 
-            onClick={onClose}
-            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition cursor-pointer"
-          >
-            <X size={20} />
-          </button>
+          <div className="absolute top-6 right-6 flex items-center gap-3">
+            <LanguageSwitcher variant="pill" />
+            <button 
+              onClick={onClose}
+              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition cursor-pointer"
+            >
+              <X size={20} />
+            </button>
+          </div>
           
           <div className="flex items-center gap-3 mb-2">
             <span className="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-[11px] font-black uppercase tracking-wider border border-amber-400/30">
-              Form-1 • Resmî Başvuru
+              {isEn ? 'Form-1 • Official Application' : 'Form-1 • Resmî Başvuru'}
             </span>
             <span className="px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-[11px] font-black uppercase tracking-wider border border-emerald-400/30">
-              3308 / 5510 Sayılı Kanun
+              {isEn ? 'Law No. 3308 / 5510' : '3308 / 5510 Sayılı Kanun'}
             </span>
           </div>
           
           <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-            Staj Kabul ve Resmî SGK Taahhüt Formu (Form-1)
+            {t('internship.form1Title')}
           </h2>
           <p className="text-xs sm:text-sm text-red-100/90 mt-1 max-w-2xl">
-            İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü ve Bölüm Staj Komisyonu resmi staj onay iş akışı.
+            {isEn
+              ? 'Istanbul Esenyurt University Career Development Coordination Office & Academic Internship Commission official approval workflow.'
+              : 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü ve Bölüm Staj Komisyonu resmi staj onay iş akışı.'}
           </p>
 
           {/* Stepper Wizard Bar */}
           <div className="grid grid-cols-4 gap-2 mt-6 pt-5 border-t border-white/20">
             {[
-              { num: 1, label: 'Öğrenci Bilgileri' },
-              { num: 2, label: 'İşyeri & Tarihler' },
-              { num: 3, label: 'SGK Beyannamesi' },
-              { num: 4, label: 'Onay & Belge' }
+              { num: 1, label: t('internship.step1') },
+              { num: 2, label: t('internship.step2') },
+              { num: 3, label: t('internship.step3') },
+              { num: 4, label: t('internship.step4') }
             ].map(step => (
               <div 
                 key={step.num}
@@ -706,9 +714,13 @@ export default function Form1InternshipModal({
               {/* Form-1 Belge Özeti ve PDF İndirme Butonu */}
               <div className="bg-slate-900 text-white rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
                 <div>
-                  <h4 className="text-sm font-black text-white">Resmî Form-1 Belgesi Hazırlandı</h4>
+                  <h4 className="text-sm font-black text-white">
+                    {isEn ? 'Official Form-1 Document Ready' : 'Resmî Form-1 Belgesi Hazırlandı'}
+                  </h4>
                   <p className="text-xs text-slate-300 mt-0.5">
-                    İstanbul Esenyurt Üniversitesi antetli resmi Form-1 çıktısını PDF olarak indirebilir veya doğrudan komisyon onayına iletebilirsiniz.
+                    {isEn
+                      ? 'You can download the official Istanbul Esenyurt University headed Form-1 PDF or submit directly for commission review.'
+                      : 'İstanbul Esenyurt Üniversitesi antetli resmi Form-1 çıktısını PDF olarak indirebilir veya doğrudan komisyon onayına iletebilirsiniz.'}
                   </p>
                 </div>
                 <button 
@@ -716,7 +728,7 @@ export default function Form1InternshipModal({
                   onClick={handleDownloadPdf}
                   className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-black transition flex items-center gap-2 shrink-0 cursor-pointer"
                 >
-                  <Download size={15} /> Form-1 PDF İndir
+                  <Download size={15} /> {t('internship.downloadPdf')}
                 </button>
               </div>
             </div>
@@ -733,7 +745,7 @@ export default function Form1InternshipModal({
                 onClick={handlePrevStep}
                 className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-white text-xs font-black transition flex items-center gap-2 cursor-pointer shadow-sm"
               >
-                <ArrowLeft size={15} /> Geri
+                <ArrowLeft size={15} /> {t('common.back')}
               </button>
             )}
           </div>
@@ -744,7 +756,7 @@ export default function Form1InternshipModal({
               onClick={onClose}
               className="px-5 py-2.5 rounded-xl text-slate-600 hover:text-slate-900 text-xs font-bold transition cursor-pointer"
             >
-              Vazgeç
+              {t('common.cancel')}
             </button>
 
             {currentStep < 4 ? (
@@ -753,7 +765,7 @@ export default function Form1InternshipModal({
                 onClick={handleNextStep}
                 className="px-6 py-2.5 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-black transition flex items-center gap-2 shadow-lg shadow-red-900/20 cursor-pointer"
               >
-                <span>İlerle</span>
+                <span>{isEn ? 'Next' : 'İlerle'}</span>
                 <ArrowRight size={15} />
               </button>
             ) : (
@@ -764,7 +776,7 @@ export default function Form1InternshipModal({
                 className="px-7 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-black transition flex items-center gap-2 shadow-lg shadow-emerald-700/25 cursor-pointer disabled:opacity-50"
               >
                 <Send size={15} />
-                <span>{submitting ? 'Gönderiliyor...' : 'Komisyon Onayına Gönder'}</span>
+                <span>{submitting ? t('internship.submitting') : t('internship.submitToCommission')}</span>
               </button>
             )}
           </div>

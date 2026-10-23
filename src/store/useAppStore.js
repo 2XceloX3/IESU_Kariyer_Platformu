@@ -7,6 +7,7 @@
 import { create, useStore } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import DOMPurify from 'dompurify';
+import eventBus from '../brain/eventBus';
 import { useSharedStore } from '../brain/useSharedStore';
 import { useAdminStore } from '../brain/useAdminStore';
 
@@ -82,6 +83,15 @@ export const coreStore = create(
       setFollowedUserIds: (ids) => set({ followedUserIds: ids }),
       addFollowedUserId: (id) => set(state => ({ followedUserIds: [...new Set([...state.followedUserIds, id])] })),
       removeFollowedUserId: (id) => set(state => ({ followedUserIds: state.followedUserIds.filter(fid => fid !== id) })),
+
+      // Internationalization (TR / EN)
+      language: (typeof window !== 'undefined' && localStorage.getItem('iesu_preferred_language')) || 'tr',
+      setLanguage: (lang) => {
+        const safe = lang === 'en' ? 'en' : 'tr';
+        try { if (typeof window !== 'undefined') localStorage.setItem('iesu_preferred_language', safe); } catch (_) {}
+        try { eventBus.emit('language:changed', { language: safe }); } catch (_) {}
+        set({ language: safe });
+      },
 
       // 9. logAction (audit logger with DOMPurify sanitization & circular ref defense)
       logAction: (actionOrUser, userOrAction, moduleOrDetails = 'Genel', severityOrLevel = 'info', metadata = null) => {
@@ -234,7 +244,8 @@ export const coreStore = create(
           currentUser: safeUser,
           activePortalBranch: safeBranch,
           activeHive: state.activeHive,
-          followedUserIds: state.followedUserIds || []
+          followedUserIds: state.followedUserIds || [],
+          language: state.language || 'tr'
         };
       }
     }

@@ -4,7 +4,7 @@ import {
   ChevronLeft, Globe2, MapPin, Users, Briefcase, ExternalLink, Star, 
   Building2, Search, ZoomIn, ZoomOut, RotateCcw, Compass, Sparkles,
   ChevronRight, Navigation, CheckCircle2, Route, Eye, EyeOff, Layers,
-  ArrowRight, Activity, Filter, Award, Coffee
+  ArrowRight, Activity, Filter, Award, Coffee, Calculator
 } from 'lucide-react';
 import * as RSM from "react-simple-maps";
 import TopProfileMenu from './TopProfileMenu';
@@ -12,6 +12,9 @@ import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
 import AlumniCoffeeChatModal from './student/AlumniCoffeeChatModal';
+import GlobalCareerCostCalculator from './global/GlobalCareerCostCalculator';
+import LanguageSwitcher from './shared/LanguageSwitcher';
+import { useTranslation } from '../i18n';
 import useAppStore from '../store/useAppStore';
 import { 
   aggregateAlumniHubs, 
@@ -76,6 +79,7 @@ class MapErrorBoundary extends React.Component {
 }
 
 export default function GlobalAlumniMap({ setView, currentUser, userRole, setSelectedUserId, previousView, onBack }) {
+  const { t, isEn } = useTranslation();
   const alumni = useAppStore(state => state.alumni);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
@@ -99,6 +103,23 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
   const [position, setPosition] = useState({ coordinates: [20, 40], zoom: 1 });
   const [showCoffeeChatModal, setShowCoffeeChatModal] = useState(false);
   const [selectedAlumnusForChat, setSelectedAlumnusForChat] = useState(null);
+  const [showPppModal, setShowPppModal] = useState(false);
+
+  const mapCityToKey = (cityName = '') => {
+    const norm = normalizeStr(cityName || '');
+    if (norm.includes('berlin')) return 'berlin';
+    if (norm.includes('amsterdam')) return 'amsterdam';
+    if (norm.includes('london')) return 'london';
+    if (norm.includes('dublin')) return 'dublin';
+    if (norm.includes('zurich') || norm.includes('zurih')) return 'zurich';
+    if (norm.includes('munih') || norm.includes('munchen') || norm.includes('munich')) return 'munich';
+    if (norm.includes('york')) return 'new_york';
+    if (norm.includes('tokyo')) return 'tokyo';
+    if (norm.includes('dubai')) return 'dubai';
+    if (norm.includes('varsova') || norm.includes('warsaw')) return 'warsaw';
+    if (norm.includes('singapur') || norm.includes('singapore')) return 'singapore';
+    return 'berlin';
+  };
 
   const safeCenter = useMemo(() => {
     if (
@@ -483,9 +504,11 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
             <div className="h-6 w-px bg-white/15 hidden sm:block" />
             <div>
               <h1 className="font-black text-white tracking-tight text-base sm:text-lg flex items-center gap-2">
-                Küresel Mezun Haritası
+                {t('map.title') || 'Küresel Mezun Haritası'}
               </h1>
-              <p className="text-[11px] text-slate-400 hidden sm:block">İESÜ Mezunlarının Dünya Çapındaki Dağılımı ve Kariyer Merkezleri</p>
+              <p className="text-[11px] text-slate-400 hidden sm:block">
+                {isEn ? 'Worldwide Distribution of IESU Alumni & Career Hubs' : 'İESÜ Mezunlarının Dünya Çapındaki Dağılımı ve Kariyer Merkezleri'}
+              </p>
             </div>
           </div>
         </div>
@@ -494,8 +517,10 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
         <div className="flex items-center gap-3">
           <div className="flex bg-cyan-950/40 text-cyan-300 px-3.5 py-1.5 rounded-full items-center gap-2 text-xs font-bold border border-cyan-500/30 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
             <Users size={14} className="text-cyan-400" /> 
-            <span>{totalCount.toLocaleString()}+ Mezun Dünya Çapında</span>
+            <span>{totalCount.toLocaleString()}+ {isEn ? 'Alumni Worldwide' : 'Mezun Dünya Çapında'}</span>
           </div>
+
+          <LanguageSwitcher variant="pill" />
 
           <TopProfileMenu 
             currentUser={currentUser} 
@@ -999,6 +1024,15 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                     Haritada parıldayan ülkelere tıklayarak şehirleri ve mezunları görüntüleyin; 
                     veya İstanbul ve Türkiye merkezli uluslararası kariyer koridorlarını doğrudan inceleyin.
                   </p>
+                  <button
+                    type="button"
+                    data-testid="open-global-ppp-calc"
+                    onClick={() => setShowPppModal(true)}
+                    className="mt-3.5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition shadow-sm cursor-pointer hover:scale-105"
+                  >
+                    <Calculator size={15} className="text-cyan-400" />
+                    <span>{t('costCalc.title') || (isEn ? 'Purchasing Power Parity (PPP) Calculator' : 'Satın Alma Gücü (PPP) Hesaplayıcı')}</span>
+                  </button>
                 </div>
 
                 {/* Featured Career Corridors (Google Maps Diaspora Routes) */}
@@ -1169,6 +1203,18 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                     }`}
                   >
                     <Briefcase size={14} /> Kurum & Roller
+                  </button>
+
+                  <button
+                    data-testid="sidebar-tab-ppp"
+                    onClick={() => setSidebarTab('ppp')}
+                    className={`pb-2.5 px-2.5 flex items-center gap-1.5 border-b-2 transition-all whitespace-nowrap ${
+                      sidebarTab === 'ppp' 
+                        ? 'border-cyan-400 text-cyan-300 shadow-[0_2px_10px_rgba(34,211,238,0.3)]' 
+                        : 'border-transparent text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Calculator size={14} /> {isEn ? 'PPP & Living Cost' : 'PPP & Maliyet'}
                   </button>
                 </div>
 
@@ -1427,6 +1473,16 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
                   </div>
                 )}
 
+                {/* Tab 5: Purchasing Power Parity (PPP) & Cost of Living */}
+                {sidebarTab === 'ppp' && (
+                  <div className="space-y-4" data-testid="ppp-calculator-tab-content">
+                    <GlobalCareerCostCalculator
+                      initialCityKey={mapCityToKey(activeHub?.city || activeHub?.country)}
+                      isModal={false}
+                    />
+                  </div>
+                )}
+
                 {/* Action Buttons */}
                 <div className="pt-4 border-t border-cyan-500/20 space-y-2.5 mt-auto">
                   <button 
@@ -1482,6 +1538,16 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
           }}
           currentUser={currentUser}
           selectedAlumnus={selectedAlumnusForChat}
+        />
+      )}
+
+      {/* Küresel Satın Alma Gücü (PPP) Yaşam Maliyeti Hesaplayıcı Modalı */}
+      {showPppModal && (
+        <GlobalCareerCostCalculator
+          isOpen={showPppModal}
+          onClose={() => setShowPppModal(false)}
+          isModal={true}
+          initialCityKey={activeHub ? mapCityToKey(activeHub.city || activeHub.country) : 'berlin'}
         />
       )}
     </div>

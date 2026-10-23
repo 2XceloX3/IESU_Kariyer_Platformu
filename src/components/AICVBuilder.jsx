@@ -7,9 +7,10 @@ import NavIcon from './shared/NavIcon';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import { generateAIResponse } from '../lib/gemini';
 import { exportPDF } from '../lib/pdfExporter';
-
+import EuroPassExportModal from './global/EuroPassExportModal';
 
 export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId, onUpdateProfile }) {
+  const [showEuroPassModal, setShowEuroPassModal] = useState(false);
   const messages = useAppStore(state => state.messages);
   const setMessages = useAppStore(state => state.setMessages);
 
@@ -413,6 +414,15 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
           </div>
 
           <div className="flex items-center gap-2">
+            <button 
+              type="button"
+              onClick={() => setShowEuroPassModal(true)} 
+              className="bg-gradient-to-r from-[#003399] to-[#002266] hover:from-[#002b80] text-white px-3.5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer text-xs font-bold"
+              title="EuroPass JSON-LD & Bologna Diploma Eki"
+            >
+              <Award size={15} className="text-amber-300" />
+              <span>EuroPass İhracı</span>
+            </button>
             <button onClick={() => window.print()} className="bg-white text-gray-700 hover:text-red-600 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md border border-gray-200 transition flex items-center gap-2 cursor-pointer" title="Yazdır">
               <Printer size={16} /> <span className="text-xs font-bold">Yazdır</span>
             </button>
@@ -584,6 +594,26 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
           />
         </div>
       )}
+
+      {/* EuroPass & Bologna Diploma Supplement Export Modal */}
+      <EuroPassExportModal
+        isOpen={showEuroPassModal}
+        onClose={() => setShowEuroPassModal(false)}
+        studentProfile={{
+          name: cvData.name,
+          department: cvData.title?.replace(/ (Öğrencisi|Mezunu)$/, '') || currentUser?.department,
+          faculty: currentUser?.faculty,
+          email: cvData.email,
+          phone: cvData.phone,
+          skills: cvData.skills,
+          internships: (cvData.experience || []).map(e => ({
+            company: e.company,
+            position: e.role,
+            date: e.date,
+            summary: e.desc
+          }))
+        }}
+      />
     </div>
   );
 }

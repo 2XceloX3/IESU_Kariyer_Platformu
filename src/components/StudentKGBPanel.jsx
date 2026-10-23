@@ -14,6 +14,7 @@ import useAppStore from '../store/useAppStore';
 import { computeCareerProgress, gradeFromPercent } from '../utils/careerProgress';
 import { toast } from './shared/Toast';
 import eventBus from '../brain/eventBus';
+import EuroPassExportModal from './global/EuroPassExportModal';
 import {
   generateOfficialKgbDocument,
   exportKgbDocumentAsJson,
@@ -22,6 +23,7 @@ import {
 } from '../services/obsVerificationWorkflow';
 
 export default function StudentKGBPanel({ setView, currentUser, userRole, previousView }) {
+  const [showEuroPassModal, setShowEuroPassModal] = useState(false);
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const applications = useAppStore(state => state.applications) || [];
   const effectiveCurrentUser = currentUser || storeCurrentUser;
@@ -469,6 +471,16 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
               <Printer size={14} />
               <span className="hidden md:inline">Resmi KGB Çıktısı (PDF)</span>
               <span className="md:hidden">PDF</span>
+            </button>
+
+            <button
+              onClick={() => setShowEuroPassModal(true)}
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#003399] to-[#002266] hover:from-[#002b80] text-white font-black text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer border border-blue-400/20"
+              title="EuroPass Standartlarında CV & Bologna Uyumlu Diploma Eki"
+            >
+              <Award size={14} className="text-amber-300" />
+              <span className="hidden md:inline">EuroPass & Bologna Eki</span>
+              <span className="md:hidden">EuroPass</span>
             </button>
 
             <TopProfileMenu
@@ -1292,6 +1304,13 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
           </div>
         </div>
       )}
+
+      {/* EuroPass & Bologna Diploma Supplement Export Modal */}
+      <EuroPassExportModal
+        isOpen={showEuroPassModal}
+        onClose={() => setShowEuroPassModal(false)}
+        studentProfile={studentData}
+      />
 
     </div>
   );
