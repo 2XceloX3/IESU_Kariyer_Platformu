@@ -132,9 +132,9 @@ export default function ExploreFeed({ posts: propPosts, setView, setSelectedUser
         ))}
       </div>
 
-      {/* Trending Hashtags Section */}
-      <div className="mb-6">
-        <TrendingHashtags posts={posts} onTagClick={(tag) => setSearchQuery(tag)} limit={8} />
+      {/* Trending Hashtags Section — Compact */}
+      <div className="mb-4">
+        <TrendingHashtags posts={posts} onTagClick={(tag) => setSearchQuery(tag)} activeTag={searchQuery} limit={8} />
       </div>
 
       {/* Live Content Masonry Grid */}

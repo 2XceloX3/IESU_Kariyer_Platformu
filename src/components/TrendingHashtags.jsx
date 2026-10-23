@@ -20,7 +20,7 @@ const DEFAULT_TRENDS = [
   { tag: 'network', count: 4, category: '🤝 Sosyal' },
 ];
 
-export default function TrendingHashtags({ posts = [], onTagClick, limit = 6 }) {
+export default function TrendingHashtags({ posts = [], onTagClick, limit = 8, activeTag = '' }) {
   // Extract hashtags from post content
   const trendingTags = useMemo(() => {
     if (!posts || posts.length === 0) return DEFAULT_TRENDS.slice(0, limit);
@@ -67,60 +67,75 @@ export default function TrendingHashtags({ posts = [], onTagClick, limit = 6 }) 
 
   const handleClick = (tag) => {
     if (onTagClick) {
-      onTagClick(tag);
+      if (activeTag === tag || activeTag === `#${tag}`) {
+        onTagClick('');
+      } else {
+        onTagClick(tag);
+      }
     } else if (window.toast) {
       window.toast.info(`🔍 #${tag} etiketli içerikler aranıyor...`);
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-slate-50">
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden group">
+      {/* Header - Compact */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-slate-50/60">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-gradient-to-br from-red-50 to-red-100 rounded-lg">
-            <TrendingUp size={14} className="text-[#990000]" />
+          <div className="p-1 bg-red-50 text-[#990000] rounded-md">
+            <TrendingUp size={13} />
           </div>
-          <h3 className="text-sm font-black text-slate-800 tracking-tight">Trend Konular</h3>
+          <h3 className="text-xs font-black text-slate-800 tracking-tight">Trend Konular</h3>
+          <span className="text-[10px] text-slate-400 font-semibold hidden sm:inline">• Popüler Etiketler</span>
         </div>
-        <Sparkles size={14} className="text-amber-400" />
+        <div className="flex items-center gap-1.5">
+          <Sparkles size={12} className="text-amber-500" />
+          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60">Gündem</span>
+        </div>
       </div>
 
-      {/* Trending list */}
-      <div className="divide-y divide-slate-50">
-        {trendingTags.map((item, i) => (
-          <button
-            key={item.tag}
-            onClick={() => handleClick(item.tag)}
-            className="w-full flex items-center gap-3 px-5 py-3 hover:bg-slate-50 transition-colors text-left group/item cursor-pointer"
-          >
-            {/* Rank */}
-            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
-              i === 0 ? 'bg-amber-50 text-amber-700' :
-              i === 1 ? 'bg-slate-100 text-slate-500' :
-              i === 2 ? 'bg-orange-50 text-orange-600' :
-              'bg-slate-50 text-slate-400'
-            }`}>
-              {i + 1}
-            </span>
+      {/* Compact Multi-Column Grid Layout */}
+      <div className="p-2.5 sm:p-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2">
+          {trendingTags.map((item, i) => {
+            const isSelected = Boolean(activeTag && (activeTag === item.tag || activeTag === `#${item.tag}`));
+            return (
+              <button
+                key={item.tag}
+                onClick={() => handleClick(item.tag)}
+                className={`flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 text-left group/item cursor-pointer border ${
+                  isSelected
+                    ? 'bg-[#990000] text-white border-[#990000] shadow-sm ring-2 ring-red-300'
+                    : 'bg-slate-50/80 hover:bg-red-50/60 border-slate-200/70 hover:border-red-200 text-slate-700'
+                }`}
+                title={`#${item.tag} (${item.count} gönderi - ${item.category})`}
+              >
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 ${
+                    isSelected
+                      ? 'bg-white/20 text-white'
+                      : i === 0
+                        ? 'bg-amber-100 text-amber-800'
+                        : i === 1
+                          ? 'bg-slate-200 text-slate-700'
+                          : i === 2
+                            ? 'bg-orange-100 text-orange-700'
+                            : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    {i + 1}
+                  </span>
+                  <span className={`text-xs font-bold truncate ${isSelected ? 'text-white' : 'group-hover/item:text-[#990000]'}`}>
+                    #{item.tag}
+                  </span>
+                </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <Hash size={11} className="text-slate-400 shrink-0" />
-                <span className="text-sm font-bold text-slate-800 truncate group-hover/item:text-[#990000] transition-colors">
-                  {item.tag}
+                <span className={`text-[10px] font-semibold shrink-0 ml-1 ${isSelected ? 'text-white/90' : 'text-slate-400 group-hover/item:text-slate-600'}`}>
+                  {item.count}
                 </span>
-              </div>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[10px] font-semibold text-slate-400">{item.count} gönderi</span>
-                <span className="text-[9px] text-slate-300">•</span>
-                <span className="text-[10px] font-medium text-slate-400">{item.category}</span>
-              </div>
-            </div>
-
-            <ChevronRight size={14} className="text-slate-300 group-hover/item:text-[#990000] transition-colors shrink-0" />
-          </button>
-        ))}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
