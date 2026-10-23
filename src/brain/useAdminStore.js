@@ -25,6 +25,13 @@ import {
   initialClubApplications,
   initialCareerTestSubmissions
 } from '../data/mockClubsData';
+import {
+  SAMPLE_CORPORATE_PROTOCOLS,
+  SAMPLE_SECTOR_MENTORS,
+  SAMPLE_ESBIM_EVENTS,
+  SAMPLE_ISKUR_JOB_CLUB_COHORTS,
+  PROTOCOL_STATUS
+} from '../services/protocolWorkflow';
 
 // Initial data pools
 const initialApplications = []; // F-ATS-010: no fake seed without companyId
@@ -214,9 +221,16 @@ export const getInitialAdminState = () => ({
 
   // Specialized Data Pools
   checkupRecords: [],
+  employmentDeclarations: [],
+  pukoScorecards: [],
+  surveyResponses: [],
   newsletterSubscribers: [],
   bmiRecords: [],
   helpdeskTickets: [],
+  corporateProtocols: Array.isArray(SAMPLE_CORPORATE_PROTOCOLS) ? [...SAMPLE_CORPORATE_PROTOCOLS] : [],
+  sectorMentors: Array.isArray(SAMPLE_SECTOR_MENTORS) ? [...SAMPLE_SECTOR_MENTORS] : [],
+  esbimEvents: Array.isArray(SAMPLE_ESBIM_EVENTS) ? [...SAMPLE_ESBIM_EVENTS] : [],
+  iskurJobClubCohorts: Array.isArray(SAMPLE_ISKUR_JOB_CLUB_COHORTS) ? [...SAMPLE_ISKUR_JOB_CLUB_COHORTS] : [],
   clubApplications: Array.isArray(initialClubApplications) ? [...initialClubApplications] : [],
   careerTestSubmissions: Array.isArray(initialCareerTestSubmissions) ? [...initialCareerTestSubmissions] : [],
   alumniCardApplications: [],
@@ -494,6 +508,34 @@ export const useAdminStore = create(
         setCheckupRecords: setter('checkupRecords'),
         addCheckupRecord: (rec) => set((s) => ({ checkupRecords: [rec, ...(s.checkupRecords || [])] })),
 
+        setEmploymentDeclarations: setter('employmentDeclarations'),
+        addEmploymentDeclaration: (decl) => set((s) => ({ employmentDeclarations: [decl, ...(s.employmentDeclarations || [])] })),
+
+        setPukoScorecards: setter('pukoScorecards'),
+        updatePukoScorecard: (card) => set((s) => {
+          const list = s.pukoScorecards || [];
+          const exists = list.some(sc => sc.department === card.department);
+          const updateItem = (item) => {
+            const merged = { ...item, ...card };
+            if (card.alumniScore != null || card.employerScore != null) {
+              const aScore = Number(merged.alumniScore || 4.0);
+              const eScore = Number(merged.employerScore || 4.0);
+              const empRate = Number(merged.employmentRate || 80);
+              const inRate = Number(merged.inFieldRate || 80);
+              merged.pukoIndex = Math.min(100, Math.round(
+                ((aScore / 5 * 30) + (eScore / 5 * 30) + (empRate * 0.25) + (inRate * 0.15)) * 10
+              ) / 10);
+            }
+            return merged;
+          };
+          return {
+            pukoScorecards: exists ? list.map(sc => sc.department === card.department ? updateItem(sc) : sc) : [updateItem(card), ...list]
+          };
+        }),
+
+        setSurveyResponses: setter('surveyResponses'),
+        addSurveyResponse: (resp) => set((s) => ({ surveyResponses: [resp, ...(s.surveyResponses || [])] })),
+
         setNewsletterSubscribers: setter('newsletterSubscribers'),
         addNewsletterSubscriber: (sub) => set((s) => ({ newsletterSubscribers: [sub, ...(s.newsletterSubscribers || [])] })),
 
@@ -502,6 +544,50 @@ export const useAdminStore = create(
 
         setHelpdeskTickets: setter('helpdeskTickets'),
         addHelpdeskTicket: (tkt) => set((s) => ({ helpdeskTickets: [tkt, ...(s.helpdeskTickets || [])] })),
+
+        // Corporate Protocols & Industry CRM Actions
+        setCorporateProtocols: setter('corporateProtocols'),
+        addCorporateProtocol: (prot) => set((s) => ({ corporateProtocols: [prot, ...(s.corporateProtocols || [])] })),
+        updateCorporateProtocol: (prot) => set((s) => ({
+          corporateProtocols: (s.corporateProtocols || []).map(p =>
+            (p.id === prot.id || p.protocolCode === prot.protocolCode) ? { ...p, ...prot } : p
+          )
+        })),
+        renewCorporateProtocol: (id, newValidUntil, additionalQuota = 0) => set((s) => ({
+          corporateProtocols: (s.corporateProtocols || []).map(p => {
+            if (p.id === id || p.protocolCode === id) {
+              return {
+                ...p,
+                validUntil: newValidUntil,
+                committedQuota: Number(p.committedQuota || 0) + Number(additionalQuota),
+                status: PROTOCOL_STATUS.ACTIVE
+              };
+            }
+            return p;
+          })
+        })),
+        terminateCorporateProtocol: (id, reason) => set((s) => ({
+          corporateProtocols: (s.corporateProtocols || []).map(p => {
+            if (p.id === id || p.protocolCode === id) {
+              return {
+                ...p,
+                status: PROTOCOL_STATUS.TERMINATED,
+                terminationReason: reason,
+                terminatedAt: new Date().toISOString()
+              };
+            }
+            return p;
+          })
+        })),
+
+        setSectorMentors: setter('sectorMentors'),
+        addSectorMentor: (mentor) => set((s) => ({ sectorMentors: [mentor, ...(s.sectorMentors || [])] })),
+
+        setEsbimEvents: setter('esbimEvents'),
+        addEsbimEvent: (evt) => set((s) => ({ esbimEvents: [evt, ...(s.esbimEvents || [])] })),
+
+        setIskurJobClubCohorts: setter('iskurJobClubCohorts'),
+        addIskurCohort: (cohort) => set((s) => ({ iskurJobClubCohorts: [cohort, ...(s.iskurJobClubCohorts || [])] })),
 
         setClubApplications: setter('clubApplications'),
         addClubApplication: (app) => set((s) => ({ clubApplications: [app, ...(s.clubApplications || [])] })),
@@ -609,9 +695,16 @@ export const useAdminStore = create(
         labReservations: state.labReservations,
         researchCallApplications: state.researchCallApplications,
         checkupRecords: Array.isArray(state.checkupRecords) ? state.checkupRecords.slice(0, 50) : [],
+        employmentDeclarations: Array.isArray(state.employmentDeclarations) ? state.employmentDeclarations.slice(0, 100) : [],
+        pukoScorecards: Array.isArray(state.pukoScorecards) ? state.pukoScorecards : [],
+        surveyResponses: Array.isArray(state.surveyResponses) ? state.surveyResponses.slice(0, 100) : [],
         newsletterSubscribers: Array.isArray(state.newsletterSubscribers) ? state.newsletterSubscribers.slice(0, 50) : [],
         bmiRecords: Array.isArray(state.bmiRecords) ? state.bmiRecords.slice(0, 50) : [],
         helpdeskTickets: Array.isArray(state.helpdeskTickets) ? state.helpdeskTickets.slice(0, 50) : [],
+        corporateProtocols: state.corporateProtocols,
+        sectorMentors: state.sectorMentors,
+        esbimEvents: state.esbimEvents,
+        iskurJobClubCohorts: state.iskurJobClubCohorts,
         clubs: state.clubs,
         clubApplications: state.clubApplications,
         careerTestSubmissions: state.careerTestSubmissions,

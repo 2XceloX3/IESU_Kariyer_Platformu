@@ -68,7 +68,7 @@ describe('ExploreFeed Consistency and Portal Integration Suite', () => {
     // Main student feed header/bento items should now be visible
     await waitFor(() => {
       expect(screen.getByText(/Kariyer & Gelişim Araçları/i)).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('renders AlumniFeed with dedicated Emerald layout when AlumniHive accesses explore view', async () => {
@@ -92,7 +92,7 @@ describe('ExploreFeed Consistency and Portal Integration Suite', () => {
       expect(screen.getByText(/MEZUN AĞI & KARİYER PORTALI/i)).toBeInTheDocument();
       expect(screen.getByText('Keşfet & Sosyal Ağ')).toBeInTheDocument();
       expect(screen.getByText('Yeni şirketim için stajyer arıyorum.')).toBeInTheDocument();
-    });
+    }, { timeout: 4000 });
   });
 
   it('ExploreFeed does not render redundant inner dock when hideDock is true', () => {

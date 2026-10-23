@@ -41,6 +41,7 @@ const CMSCompanyEducationRequests = React.lazy(() => import('./admin/CMSCompanyE
 const CMSCompanyEventMessages = React.lazy(() => import('./admin/CMSCompanyEventMessages'));
 const CMSCareerCounseling = React.lazy(() => import('./admin/CMSCareerCounseling'));
 const CMSCorporatePartnerships = React.lazy(() => import('./admin/CMSCorporatePartnerships'));
+import { calculateProtocolStatus } from '../services/protocolWorkflow';
 const CMSAcademicRadar = React.lazy(() => import('./admin/CMSAcademicRadar'));
 const CMSCandidatePool = React.lazy(() => import('./admin/CMSCandidatePool'));
 const CMSApplicationsPool = React.lazy(() => import('./admin/CMSApplicationsPool'));
@@ -81,6 +82,7 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
   const messages = useAppStore(state => state.messages);
   const companies = useAppStore(state => state.companies) || [];
   const academicStaff = useAppStore(state => state.academicStaff) || [];
+  const corporateProtocols = useAppStore(state => state.corporateProtocols) || [];
   
   return (
     <div className="animate-fade-in space-y-6">
@@ -97,6 +99,7 @@ function OverviewPanel({ students = [], alumni = [], jobs = [], events = [], ann
               { label:'Staj Onay Bekliyor',        val: (voluntaryInternships || []).filter(v=>v.status==='Taslak').length, color:'orange' },
               { label:'Akademik Profil Onayı',    val: (academicApprovals || []).filter(a=>a.status==='Beklemede').length, color:'red' },
               { label:'Mentor Eşleşme Bekliyor',  val: (mentorships || []).filter(m=>m.status==='Eşleştirme Bekliyor').length, color:'sky'  },
+              { label:'Süresi Yaklaşan Protokol', val: (corporateProtocols || []).filter(p => { const st = calculateProtocolStatus(p); return st === 'EXPIRING_SOON' || st === 'RENEWAL_REQUESTED'; }).length, color:'rose', tab:'cms_corporate_partnerships' },
               { label:'Aktif Anket',               val: (surveys || []).filter(s=>s?.status==='Aktif').length,                color:'green'  },
             ].map(item => (
               <div 

@@ -25,6 +25,8 @@ import FooterModals from './FooterModals';
 import JobCreator from './JobCreator';
 import { exportPDF } from '../lib/pdfExporter';
 import SafeAvatar from './shared/SafeAvatar';
+import CorporateProtocolCRM from './protocol/CorporateProtocolCRM';
+import { maskPhone, maskEmail, maskSensitiveData } from '../services/obsVerificationWorkflow';
 
 export default function CompanyFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab = 'feed' }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -87,23 +89,36 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   const [selectedCandidateCvModal, setSelectedCandidateCvModal] = useState(null);
 
   const [companyCandidateApps, setCompanyCandidateApps] = useState([]); // no demo/PII seed
+  const corporateProtocols = useAppStore(state => state.corporateProtocols) || [];
 
   const allCandidateApps = React.useMemo(() => {
     const uid = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null;
     if (!uid) return [];
     const storeApps = (applications || []).filter(a => a.companyId === uid);
-    return storeApps.map(a => ({
-      id: a.id,
-      applicantName: a.applicantName || a.name || 'Öğrenci Adayı',
-      applicantDept: a.applicantDept || a.department || 'Bölüm Belirtilmemiş',
-      jobTitle: a.jobTitle || 'Başvuru Yapılan Pozisyon',
-      status: a.status || 'Beklemede',
-      applicantPhone: a.applicantPhone || null,
-      applicantEmail: a.applicantEmail || a.email || null,
-      cvType: a.cvType || 'İESÜ Dijital CV',
-      coverLetter: a.coverLetter || null,
-      companyId: a.companyId,
-    }));
+    return storeApps.map(a => {
+      const hasConsent = a.kvkkConsentAccepted === true || a.explicitConsent === true;
+      const rawPhone = a.applicantPhone || a.phone || null;
+      const rawEmail = a.applicantEmail || a.email || null;
+      const maskedPhone = hasConsent ? rawPhone : (rawPhone ? maskPhone(rawPhone) : null);
+      const maskedEmail = hasConsent ? rawEmail : (rawEmail ? maskEmail(rawEmail) : null);
+
+      return {
+        id: a.id,
+        applicantName: a.applicantName || a.name || 'Öğrenci Adayı',
+        applicantDept: a.applicantDept || a.department || 'Bölüm Belirtilmemiş',
+        jobTitle: a.jobTitle || 'Başvuru Yapılan Pozisyon',
+        status: a.status || 'Beklemede',
+        applicantPhone: maskedPhone,
+        applicantEmail: maskedEmail,
+        rawPhone,
+        rawEmail,
+        isMasked: !hasConsent && Boolean(rawPhone || rawEmail),
+        kvkkConsentAccepted: hasConsent,
+        cvType: a.cvType || 'İESÜ Dijital CV',
+        coverLetter: a.coverLetter || null,
+        companyId: a.companyId,
+      };
+    });
   }, [applications, effectiveCurrentUser]);
 
   const filteredCandidateApps = React.useMemo(() => {
@@ -319,6 +334,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                       <Briefcase size={15} /> ATS Aday Takip Panosu
                     </button>
                     <button 
+                      onClick={() => setActiveTab(activeTab === 'protocols' ? 'feed' : 'protocols')}
+                      className="w-full py-2.5 bg-blue-900 hover:bg-blue-950 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Building2 size={15} /> Kurumsal Protokol Masası
+                    </button>
+                    <button 
                       onClick={() => setView('create_job')}
                       className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                     >
@@ -450,6 +471,13 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               ));
             })()}
           </div>
+          </div>
+        )}
+
+        {/* PROTOCOLS TAB */}
+        {activeTab === 'protocols' && (
+          <div className="w-full shrink-0 animate-fade-in mb-6">
+            <CorporateProtocolCRM currentUser={effectiveCurrentUser} />
           </div>
         )}
 
@@ -1043,9 +1071,14 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     {/* Contact Info & Cover Letter Box */}
                     <div className="p-3 bg-slate-50/90 rounded-xl space-y-2 text-[11px] text-slate-700 border border-slate-200/70">
                       <div className="flex items-center gap-3 flex-wrap font-medium text-slate-800 text-[11px]">
-                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">📱 Tel: {app.applicantPhone}</span>
-                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">✉️ E-Posta: {app.applicantEmail}</span>
+                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">📱 Tel: {app.applicantPhone || '05** *** ** **'}</span>
+                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">✉️ E-Posta: {app.applicantEmail || '***@***.***'}</span>
                         <span className="text-purple-800 font-extrabold bg-purple-50 px-2.5 py-0.5 rounded border border-purple-100 shadow-2xs">📄 {app.cvType}</span>
+                        {app.isMasked && (
+                          <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shadow-2xs" title="6698 Sayılı KVKK ve CBDO BİGR uyarınca üçüncü şahıslara karşı maskelenmiştir">
+                            🔒 KVKK Korumalı
+                          </span>
+                        )}
                       </div>
 
                       {app.coverLetter && (

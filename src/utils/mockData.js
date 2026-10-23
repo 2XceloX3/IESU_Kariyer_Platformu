@@ -1,4 +1,5 @@
 import { IESU_FACULTIES, IESU_MYO, IESU_YUKSEKOKUL, IESU_ENSTITU } from './universityData';
+import { SAMPLE_ENTERPRISE_INTERNSHIPS } from '../services/internshipWorkflow';
 
 export const generateStudents = () => {
   return [
@@ -652,7 +653,7 @@ export const initialGeneralEvents = [
 export const initialMentorships = [];
 export const initialVoluntaryInternships = [];
 export const initialAcademicCatalog = [];
-export const initialInternships = [];
+export const initialInternships = Array.isArray(SAMPLE_ENTERPRISE_INTERNSHIPS) ? [...SAMPLE_ENTERPRISE_INTERNSHIPS] : [];
 export const initialAcademicApprovals = [];
 
 export const initialGroups = [

@@ -14,6 +14,12 @@ import useAppStore from '../store/useAppStore';
 import { computeCareerProgress, gradeFromPercent } from '../utils/careerProgress';
 import { toast } from './shared/Toast';
 import eventBus from '../brain/eventBus';
+import {
+  generateOfficialKgbDocument,
+  exportKgbDocumentAsJson,
+  OBS_STANDARDS,
+  getObsVerificationBadge
+} from '../services/obsVerificationWorkflow';
 
 export default function StudentKGBPanel({ setView, currentUser, userRole, previousView }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -339,6 +345,14 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   const internships = Array.isArray(studentData.internships) ? studentData.internships : [];
   const certifications = Array.isArray(studentData.certifications) ? studentData.certifications : [];
 
+  const kgbDocument = useMemo(() => {
+    return generateOfficialKgbDocument({
+      ...studentData,
+      internships,
+      certifications,
+    });
+  }, [studentData, internships, certifications]);
+
   const [workshops] = useState([
     { id: 'W1', title: 'Sektör Liderleriyle Yapay Zekâ Zirvesi 2026', category: 'Konferans', hours: 8, date: '15 Şubat 2026', speaker: 'Prof. Dr. Hakan Demir' },
     { id: 'W2', title: 'TÜBİTAK 2209-A Proje Hazırlama & Ar-Ge Metodolojisi', category: 'Araştırma', hours: 6, date: '22 Ocak 2026', speaker: 'Dr. Öğr. Üyesi Caner Kurt' },
@@ -363,6 +377,21 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         logAction(studentData.name, 'Resmi KGB Kariyer Karnesi PDF olarak yazdırıldı/indirildi.', 'KGB');
       }
     }, 400);
+  };
+
+  const handleExportJSON = () => {
+    try {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(exportKgbDocumentAsJson(kgbDocument));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `${kgbDocument.documentId || 'IESU-KGB'}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      toast.success('Resmî KGB Belge Verisi (JSON) İndirildi');
+    } catch (_) {
+      toast.error('İndirme sırasında bir hata oluştu');
+    }
   };
 
   const handleSubmitRequest = (e) => {
@@ -482,6 +511,9 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                     </h2>
                     <span className="px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-xs font-black shadow-xs flex items-center gap-1">
                       <CheckCircle2 size={13} className="text-emerald-300" /> KGB Onaylı
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 backdrop-blur-md text-emerald-100 border border-emerald-400/50 text-xs font-black shadow-xs flex items-center gap-1">
+                      <ShieldCheck size={13} className="text-emerald-300" /> {OBS_STANDARDS.BADGE_LABEL}
                     </span>
                   </div>
 
@@ -948,17 +980,27 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         {/* SEKME 5: RESMİ TRANSKRİPT ÖNİZLEMESİ */}
         {activeTab === 'transkript' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex items-center justify-between">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-black text-slate-900">Resmi Kariyer Gelişim Belgesi (KGB Transkripti)</h3>
                 <p className="text-xs text-slate-600 font-medium">Mezuniyette diplomanın yanında verilecek YÖK uyumlu kariyer eki formatı.</p>
               </div>
-              <button
-                onClick={handleExportPDF}
-                className="px-4 py-2 bg-[#990000] text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-red-800 transition cursor-pointer shadow-xs"
-              >
-                <Printer size={14} /> Resmi Belgeyi Yazdır
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportJSON}
+                  className="px-3.5 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-slate-900 transition cursor-pointer shadow-xs"
+                >
+                  <Download size={14} /> Resmî KGB Verisi (JSON)
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportPDF}
+                  className="px-4 py-2 bg-[#990000] text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-red-800 transition cursor-pointer shadow-xs"
+                >
+                  <Printer size={14} /> Resmi Belgeyi Yazdır
+                </button>
+              </div>
             </div>
 
             {/* Resmi Belge Tasarımı */}
@@ -981,7 +1023,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                   RESMİ KARİYER GELİŞİM BELGESİ (KGB) VE YETENEK KARNESİ
                 </h3>
                 <p className="text-[11px] text-slate-600 font-mono font-semibold">
-                  Belge Kayıt No: İESÜ-KGB-2026/0941 • Kurum içi referans (önizleme)
+                  Belge Kayıt No: {kgbDocument.verification.kgbCode} • Kriptografik OBS Doğrulama Kodu: {kgbDocument.verification.obsVerificationCode}
                 </p>
               </div>
 
@@ -1001,63 +1043,115 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 </div>
                 <div>
                   <span className="block text-[10px] text-slate-700 font-bold uppercase">Genel Başarı Seviyesi</span>
-                  <span className="font-black text-emerald-800">{gradeFromPercent(studentData.accreditationScore).letter}{studentData.accreditationScore == null ? '' : ` (%${studentData.accreditationScore})`}</span>
+                  <span className="font-black text-emerald-800">{gradeFromPercent(studentData.accreditationScore).letter}{studentData.accreditationScore == null ? '' : ` (%${studentData.accreditationScore})`} • GANO: {kgbDocument.student.gano}</span>
                 </div>
               </div>
 
               {/* Özet Faaliyet Listesi */}
               <div className="space-y-4 text-xs">
-                <h4 className="font-black text-slate-900 text-sm border-b border-slate-200 pb-1">
-                  1. Tamamlanan Kurumsal ve Ar-Ge Stajları
-                </h4>
+                <div className="flex items-center justify-between border-b border-slate-200 pb-1">
+                  <h4 className="font-black text-slate-900 text-sm">
+                    1. Tamamlanan Kurumsal ve Ar-Ge Stajları
+                  </h4>
+                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">3308 & 5510 SGK Tescilli</span>
+                </div>
                 <div className="space-y-2">
-                  {internships.map((int, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1 border-b border-slate-100 text-slate-700 font-medium">
-                      <span>• <strong className="text-slate-900 font-bold">{int.company}</strong> — {int.position} ({int.duration})</span>
+                  {(kgbDocument.sections.internships.items || []).map((int, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-1.5 border-b border-slate-100 text-slate-700 font-medium">
+                      <span>• <strong className="text-slate-900 font-bold">{int.company}</strong> — {int.position} ({int.duration}) {int.sgkNumber && <span className="text-[10px] font-mono text-slate-500 font-bold">[{int.sgkNumber}]</span>}</span>
                       <span className="font-bold text-emerald-800">{int.score}</span>
                     </div>
                   ))}
+                  <p className="text-[11px] text-slate-500 italic pt-1">{kgbDocument.sections.internships.summary}</p>
                 </div>
 
-                <h4 className="font-black text-slate-900 text-sm border-b border-slate-200 pb-1 pt-2">
-                  2. Kazanılan Akredite Mesleki Sertifikalar
-                </h4>
+                <div className="flex items-center justify-between border-b border-slate-200 pb-1 pt-2">
+                  <h4 className="font-black text-slate-900 text-sm">
+                    2. Kazanılan Akredite Mesleki Sertifikalar
+                  </h4>
+                  <span className="text-[10px] text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">SEM & Kurumsal Akrediteli</span>
+                </div>
                 <div className="space-y-2">
-                  {certifications.map((crt, idx) => (
-                    <div key={idx} className="flex justify-between items-center py-1 border-b border-slate-100 text-slate-700 font-medium">
+                  {(kgbDocument.sections.certifications.items || []).map((crt, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-1.5 border-b border-slate-100 text-slate-700 font-medium">
                       <span>• <strong className="text-slate-900 font-bold">{crt.title}</strong> ({crt.issuer})</span>
                       <span className="font-mono text-slate-700 font-semibold">{crt.hours} • Onaylı</span>
                     </div>
                   ))}
+                  <p className="text-[11px] text-slate-500 italic pt-1">{kgbDocument.sections.certifications.summary}</p>
                 </div>
 
-                <h4 className="font-black text-slate-900 text-sm border-b border-slate-200 pb-1 pt-2">
-                  3. Mesleki Atölye, Seminer ve Vaka Çalışmaları
-                </h4>
-                <p className="text-slate-700 font-medium leading-relaxed">
-                  Öğrenci eğitim süresince toplam <strong className="text-slate-900 font-bold">{studentData.workshopsCount} adet</strong> resmi atölye ve seminer programına katılmış, <strong className="text-slate-900 font-bold">{studentData.workshopsCount * 4} saatlik</strong> mesleki yetkinlik kazanımını tamamlamıştır.
-                </p>
+                <div className="flex items-center justify-between border-b border-slate-200 pb-1 pt-2">
+                  <h4 className="font-black text-slate-900 text-sm">
+                    3. SKS Onaylı Kulüp Başkanlıkları & Sosyal Sorumluluk Liderliği
+                  </h4>
+                  <span className="text-[10px] text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">SKS Tescilli</span>
+                </div>
+                <div className="space-y-2">
+                  {(kgbDocument.sections.clubs.items || []).map((club, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-1.5 border-b border-slate-100 text-slate-700 font-medium">
+                      <span>• <strong className="text-slate-900 font-bold">{club.name}</strong> — {club.role} ({club.year})</span>
+                      <span className="font-bold text-indigo-700">SKS Tescilli</span>
+                    </div>
+                  ))}
+                  <p className="text-[11px] text-slate-500 italic pt-1">{kgbDocument.sections.clubs.summary}</p>
+                </div>
+
+                <div className="flex items-center justify-between border-b border-slate-200 pb-1 pt-2">
+                  <h4 className="font-black text-slate-900 text-sm">
+                    4. Mesleki Atölye, Seminer ve Vaka Çalışmaları
+                  </h4>
+                  <span className="text-[10px] text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">Kariyer & Yetenek Karnesi</span>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-slate-700 font-medium leading-relaxed">
+                    {kgbDocument.sections.workshops.summary}
+                  </p>
+                </div>
               </div>
 
               {/* İmza ve Mühür Alanı */}
-              <div className="pt-8 border-t-2 border-red-900/30 flex flex-col sm:flex-row items-center justify-between gap-6 text-center">
-                <div>
-                  <p className="text-xs font-black text-slate-900">{studentData.advisorName}</p>
-                  <p className="text-[10px] text-slate-600 font-bold">Kariyer Danışmanı & Bölüm Temsilcisi</p>
-                  <p className="text-[9px] text-emerald-700 font-bold mt-1">✓ E-İmzalanmıştır</p>
+              <div className="pt-8 border-t-2 border-red-900/30 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
+                {/* Doğrulanabilir QR Kod ve Güvenlik Kutusu */}
+                <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 text-left">
+                  <div 
+                    className="w-20 h-20 bg-white p-1 rounded-xl border border-slate-200 shrink-0 flex items-center justify-center overflow-hidden shadow-xs"
+                    dangerouslySetInnerHTML={{ __html: kgbDocument.verification.qrSvg }}
+                  />
+                  <div className="text-[10px] space-y-0.5">
+                    <p className="font-mono font-bold text-slate-900">{kgbDocument.verification.kgbCode}</p>
+                    <p className="text-slate-500 font-semibold">T.C. İESÜ Kariyer & Doğrulama</p>
+                    <p className="text-emerald-700 font-black">✓ YÖK / TYYÇ 6. Düzey Uyumlu</p>
+                  </div>
                 </div>
 
+                {/* Resmî Kurumsal Mühür */}
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 border-2 border-dashed border-[#990000] rounded-full flex items-center justify-center p-1 text-[9px] font-black text-[#990000] text-center">
-                    İESÜ MÜHÜR & ONAY
+                  <div className="w-20 h-20 border-2 border-dashed border-[#990000] rounded-full flex flex-col items-center justify-center p-1 text-[9px] font-black text-[#990000] text-center leading-tight">
+                    <span>İESÜ MÜHÜR & ONAY</span>
                   </div>
                   <span className="text-[8px] text-slate-600 font-bold mt-1">2026 Resmî İESÜ Damgası</span>
                 </div>
 
-                <div>
-                  <p className="text-xs font-black text-slate-900">Kariyer Geliştirme Koordinatörlüğü</p>
-                  <p className="text-[10px] text-slate-600 font-bold">İstanbul Esenyurt Üniversitesi Rektörlüğü</p>
-                  <p className="text-[9px] text-emerald-700 font-bold mt-1">✓ Resmi Belge Olarak Tescillidir</p>
+                {/* 3'lü Kurumsal İmza Blokları (Danışman, Koordinatörlük, Rektörlük) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+                  <div>
+                    <p className="text-xs font-black text-slate-900">{kgbDocument.verification.signatures.advisor.name}</p>
+                    <p className="text-[10px] text-slate-600 font-bold">Kariyer Danışmanı & Bölüm Temsilcisi</p>
+                    <p className="text-[9px] text-emerald-700 font-bold mt-0.5">✓ E-İmzalanmıştır</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-black text-slate-900">Kariyer Geliştirme Koordinatörlüğü</p>
+                    <p className="text-[10px] text-slate-600 font-bold">İstanbul Esenyurt Üniversitesi</p>
+                    <p className="text-[9px] text-emerald-700 font-bold mt-0.5">✓ Resmî Tescillidir</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-black text-slate-900">{kgbDocument.verification.signatures.rectorate.name}</p>
+                    <p className="text-[10px] text-slate-600 font-bold">Rektörlük Makamı & Tasdik Mercii</p>
+                    <p className="text-[9px] text-emerald-700 font-bold mt-0.5">✓ Rektörlük Tasdiklidir</p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, BarChart, Bar } from 'recharts';
-import { BarChart3, TrendingUp, Users, Eye, MousePointerClick, Briefcase, GraduationCap, Building2, Calendar, Target, PhoneCall, MailCheck, CheckCircle2, FileText, Download, Award, ShieldCheck, Sparkles } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, Eye, MousePointerClick, Briefcase, GraduationCap, Building2, Calendar, Target, PhoneCall, MailCheck, CheckCircle2, FileText, Download, Award, ShieldCheck, Sparkles, RefreshCw, Layers } from 'lucide-react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
 import CMSWorldMap from './CMSWorldMap';
@@ -8,15 +8,76 @@ import useAppStore from '../../store/useAppStore';
 import { computeKpi } from '../../kpi/compute';
 import KpiStatusView from '../../kpi/KpiStatusView';
 import { checkupToEmploymentDeclarations } from '../../kpi/adapters';
+import { 
+  calculateYokakIndicators, 
+  calculatePukoScorecards, 
+  exportYokakAuditPdf, 
+  downloadYokakAuditCsv, 
+  SAMPLE_ACCREDITATION_DECLARATIONS, 
+  ACCREDITATION_STANDARDS,
+  maskTCKN,
+  isEmploymentInField,
+  isPlacementUnder6m
+} from '../../services/accreditationWorkflow';
+import EmploymentPyramids from '../accreditation/EmploymentPyramids';
+import PUKOCaliteKarnesi from '../accreditation/PUKOCaliteKarnesi';
 
 export default function CMSAnalytics({ students = [], alumni = [], companies = [], jobs = [], applications = [] }) {
+  const [accreditationTab, setAccreditationTab] = useState('pyramids'); // 'pyramids' | 'puko' | 'audit_log'
   const checkupRecords = useAppStore(state => state.checkupRecords) || [];
   const employmentDeclarations = useAppStore(state => state.employmentDeclarations) || [];
+  const pukoScorecardsStore = useAppStore(state => state.pukoScorecards) || [];
+  const updatePukoScorecard = useAppStore(state => state.updatePukoScorecard);
   const internships = useAppStore(state => state.internships) || [];
   const surveyInvites = useAppStore(state => state.surveyInvites) || [];
-  const surveyResponses = useAppStore(state => state.surveyResponses) || [];
+  const directSurveyResponses = useAppStore(state => state.surveyResponses) || [];
+  const rawSurveys = useAppStore(state => state.surveys) || [];
   const eventRegistrations = useAppStore(state => state.eventRegistrations) || [];
   const period = '2026-H1';
+
+  // Merge direct surveyResponses and responses embedded in survey templates
+  const surveyResponses = useMemo(() => {
+    const fromSurveys = rawSurveys.flatMap(s => (s.responses || []).map(r => ({
+      ...r,
+      surveyId: s.id,
+      targetAudience: s.targetAudience
+    })));
+    return [...directSurveyResponses, ...fromSurveys];
+  }, [directSurveyResponses, rawSurveys]);
+
+  // Gerçek beyanlar veya örnek akreditasyon havuzu (boş veri çökmesini engeller)
+  const effectiveDeclarations = useMemo(() => {
+    if (employmentDeclarations && employmentDeclarations.length > 0) return employmentDeclarations;
+    if (checkupRecords && checkupRecords.length > 0) return checkupToEmploymentDeclarations(checkupRecords);
+    return SAMPLE_ACCREDITATION_DECLARATIONS;
+  }, [employmentDeclarations, checkupRecords]);
+
+  // YÖK / YÖKAK Göstergeleri ve Piramitleri
+  const yokakIndicators = useMemo(() => {
+    return calculateYokakIndicators({
+      declarations: effectiveDeclarations,
+      checkupRecords,
+      period
+    });
+  }, [effectiveDeclarations, checkupRecords, period]);
+
+  // PUKÖ Kalite Karneleri (Mağduriyet/silinme olmadan birleştirilir)
+  const computedPukoScorecards = useMemo(() => {
+    const baseCards = calculatePukoScorecards({
+      declarations: effectiveDeclarations,
+      alumniSurveyResponses: surveyResponses,
+      employerSurveyResponses: surveyResponses,
+    });
+    if (!pukoScorecardsStore || pukoScorecardsStore.length === 0) {
+      return baseCards;
+    }
+    const storeMap = new Map(pukoScorecardsStore.map(c => [c.department, c]));
+    return baseCards.map(base => {
+      const saved = storeMap.get(base.department);
+      return saved ? { ...base, ...saved } : base;
+    });
+  }, [pukoScorecardsStore, effectiveDeclarations, surveyResponses]);
+
   const decl = (employmentDeclarations.length ? employmentDeclarations : checkupToEmploymentDeclarations(checkupRecords));
   const kpiEmployment = computeKpi('alumni_employment_rate', decl, { period });
   const kpiRelevance = computeKpi('major_relevance_rate', decl, { period });
@@ -26,7 +87,7 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
   const kpiEvents = computeKpi('event_attendance_rate', eventRegistrations, { period });
   const kpiSurvey = computeKpi('survey_response_rate', surveyInvites, { period, responses: surveyResponses });
   const kpisOk = [kpiEmployment, kpiRelevance, kpiPlacement90, kpiInternship, kpiPerJob, kpiEvents, kpiSurvey].filter(k => k.status === 'ok');
-  const hasExportableKpis = kpisOk.length > 0;
+  const hasExportableKpis = kpisOk.length > 0 || (effectiveDeclarations && effectiveDeclarations.length > 0);
 
   // Legacy checkup charts: only when raw checkup rows exist (non-KPI decorative); never invent % 
   const hasCheckupData = checkupRecords.length > 0;
@@ -202,14 +263,24 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
     <div className="animate-fade-in space-y-6">
       <PanelHeader 
         title="Sistem Analitiği" 
-        sub="Platformun kullanım istatistiklerini ve Kariyer Check-up mezun analizlerini inceleyin." 
+        sub="Platformun kullanım istatistiklerini, YÖK/YÖKAK akreditasyon göstergelerini ve PUKÖ karne analizlerini inceleyin." 
         action={
-          <button 
-            onClick={exportYokReport}
-            className="bg-[#990000] hover:bg-red-800 text-white px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-md transition-all cursor-pointer active:scale-95"
-          >
-            <Download size={16} /> Mezun Akreditasyon Raporu Çıktısı Al (PDF/Yazdır)
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button 
+              type="button"
+              onClick={() => exportYokakAuditPdf({ indicators: yokakIndicators, pukoScorecards: computedPukoScorecards, period })}
+              className="bg-[#990000] hover:bg-red-800 text-white px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-md transition-all cursor-pointer active:scale-95"
+            >
+              <Download size={15} /> Resmî YÖKAK Raporu Al (PDF/Yazdır)
+            </button>
+            <button 
+              type="button"
+              onClick={() => downloadYokakAuditCsv({ indicators: yokakIndicators, pukoScorecards: computedPukoScorecards, period })}
+              className="bg-[#0A2342] hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-md transition-all cursor-pointer active:scale-95 border border-slate-700"
+            >
+              <FileText size={15} /> Resmî Excel/CSV İndir
+            </button>
+          </div>
         } 
       />
 
@@ -221,166 +292,211 @@ export default function CMSAnalytics({ students = [], alumni = [], companies = [
         <TopInfoCard icon={<Eye size={20} />} title="İlan Görüntülenmesi" count="Veri yok" color="purple" />
       </div>
 
-      {/* MEZUN İSTİHDAMI & BÖLÜM UYUM ANALİTİĞİ (SORULAR 1, 2, 4, 6, 8, 9) */}
+      {/* YÖK / YÖKAK AKREDİTASYON, İSTİHDAM VE PUKÖ PERFORMANS MOTORU */}
       <div className="bg-gradient-to-br from-[#0A2342] to-slate-900 text-white rounded-3xl border border-blue-900/50 shadow-xl p-6 sm:p-8 mb-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-blue-900/60 pb-4">
           <div>
             <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
-              <Sparkles size={14} /> Kurumsal Akreditasyon & İstihdam Performans Motoru
+              <Sparkles size={14} /> Kurumsal Akreditasyon & İstihdam Performans Motoru (YÖKAK KAP A.1.1 & B.2.2)
             </span>
             <h3 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-              <GraduationCap className="text-red-500" size={26} /> Mezun İstihdamı & Bölüm Uyum Analitiği
+              <GraduationCap className="text-red-500" size={26} /> Mezun İstihdamı & YÖKAK Akreditasyon Analitiği
             </h3>
             <p className="text-xs text-blue-200 mt-1">
-              Mezunların 1, 2, 4, 6, 8 ve 9. sorulara verdikleri yanıtlar doğrultusunda oluşturulan istihdam, sektör ve eğitim istatistikleri.
+              {ACCREDITATION_STANDARDS.INSTITUTION_NAME} — {ACCREDITATION_STANDARDS.COORDINATOR_UNIT} Resmî Göstergeleri
             </p>
           </div>
-          <button
-            onClick={exportYokReport}
-            className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shrink-0"
-          >
-            <FileText size={15} /> Resmî Akreditasyon Raporu Al
-          </button>
+
+          {/* Akreditasyon Alt Sekme Seçici */}
+          <div className="flex items-center bg-white/10 p-1 rounded-2xl border border-white/10 shrink-0">
+            <button
+              type="button"
+              onClick={() => setAccreditationTab('pyramids')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                accreditationTab === 'pyramids' ? 'bg-[#990000] text-white shadow' : 'text-blue-200 hover:text-white'
+              }`}
+            >
+              Maaş & Sektör Piramidi
+            </button>
+            <button
+              type="button"
+              onClick={() => setAccreditationTab('puko')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                accreditationTab === 'puko' ? 'bg-[#990000] text-white shadow' : 'text-blue-200 hover:text-white'
+              }`}
+            >
+              PUKÖ Kalite Karneleri
+            </button>
+            <button
+              type="button"
+              onClick={() => setAccreditationTab('audit_log')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                accreditationTab === 'audit_log' ? 'bg-[#990000] text-white shadow' : 'text-blue-200 hover:text-white'
+              }`}
+            >
+              Denetim Kütüğü
+            </button>
+          </div>
         </div>
         
-        {/* Odak Sorular (1, 2, 4, 6, 8, 9) KPI Kartları */}
+        {/* Resmî YÖKAK Ölçüt A.1.1 İstihdam Gösterge Kartları */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <KpiStatusView kpi={kpiEmployment} title="Mezun istihdam oranı" formHref="/alumni_information" formLabel="Mezun istihdam beyan formu" />
-          <KpiStatusView kpi={kpiPlacement90} title="İlk 90 gün yerleşme" formHref="/alumni_information" formLabel="Mezun beyan formu" />
-          <KpiStatusView kpi={kpiRelevance} title="Bölüm uyum oranı" formHref="/alumni_information" formLabel="Mezun beyan formu" />
-          <KpiStatusView kpi={kpiInternship} title="Staj tamamlama oranı" formHref="/academic" formLabel="Staj onay protokolü" />
-          <KpiStatusView kpi={kpiPerJob} title="İlan başına yerleşme" formHref="/jobs" formLabel="İlanlar" />
-          <KpiStatusView kpi={kpiSurvey} title="Anket yanıt oranı" formHref="/admin_cms" formLabel="Anket modülü" />
-
-          {/* Soru 4: Kurum Türü */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
-            <span className="text-[10px] font-black uppercase tracking-wider text-purple-400 block mb-1">Soru 4 — Kurum Türü Dağılımı</span>
-            <div className="text-2xl font-black text-white">{hasCheckupData ? 'Hesaplanamadı (alan yok)' : 'Veri yok'}</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">{hasCheckupData ? 'Kurum türü alanı checkup kaydında yok' : 'Check-up verisi girilmedi'}</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block mb-1">
+              Genel Mezun İstihdamı (A.1.1.0)
+            </span>
+            <div className="text-2xl font-black text-emerald-300">
+              %{yokakIndicators.generalEmploymentRate ?? '0.0'}
+            </div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">
+              {yokakIndicators.employedCount} / {yokakIndicators.totalAudited} Mezun İstihdamda
+            </p>
           </div>
 
-          {/* Soru 6: Bölüm İlişkisi */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
-            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 block mb-1">Soru 6 — Kendi Bölümüyle İlişkili İş</span>
-            <div className="text-2xl font-black text-[#10B981]">{fmtPct(relatedPct)}{relatedPct != null ? ' Bölümle İlgili' : ''}</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">{fmtCount(relatedJobCount)}{hasCheckupData ? ' Mezun Bölüm Alanında' : ''}</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-sky-400 block mb-1">
+              İlk 6 Ayda İstihdam (YÖK A.1.1.1)
+            </span>
+            <div className="text-2xl font-black text-sky-300">
+              %{yokakIndicators.placement6mRate ?? '0.0'}
+            </div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">
+              {yokakIndicators.placement6mCount} Mezun ilk 180 gün içinde başladı
+            </p>
           </div>
 
-          {/* Soru 8: Çalışma Şekli */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
-            <span className="text-[10px] font-black uppercase tracking-wider text-sky-400 block mb-1">Soru 8 — Çalışma Modeli</span>
-            <div className="text-2xl font-black text-white">{hasCheckupData ? (workModeData[0]?.count != null ? workModeData[0].count : '—') + ' Hibrit / ' + (workModeData[1]?.count != null ? workModeData[1].count : '—') + ' Ofis' : 'Veri yok'}</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">{hasCheckupData ? (workModeData[2]?.count != null ? workModeData[2].count : '—') + ' Remote / ' + (workModeData[3]?.count != null ? workModeData[3].count : '—') + ' Freelance' : 'Check-up verisi girilmedi'}</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-indigo-300 block mb-1">
+              İlk 1 Yılda İstihdam (YÖK A.1.1.2)
+            </span>
+            <div className="text-2xl font-black text-indigo-200">
+              %{yokakIndicators.placement1yRate ?? '0.0'}
+            </div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">
+              {yokakIndicators.placement1yCount} Mezun ilk 365 gün içinde başladı
+            </p>
           </div>
 
-          {/* Soru 9: Lisansüstü Eğitim */}
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
-            <span className="text-[10px] font-black uppercase tracking-wider text-indigo-300 block mb-1">Soru 9 — Lisansüstü Eğitim</span>
-            <div className="text-2xl font-black text-sky-300">{fmtPct(postgradPct)}{postgradPct != null ? ' Eğitime Devam' : ''}</div>
-            <p className="text-[11px] text-blue-200 font-semibold mt-1">{fmtCount(postgradCount)}{hasCheckupData ? ' Yüksek Lisans / Doktora' : ''}</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block mb-1">
+              Sektörel Alan İçi Uyum Katsayısı
+            </span>
+            <div className="text-2xl font-black text-amber-300">
+              {yokakIndicators.sectoralAlignmentCoefficient ?? '0.00'} / 1.00
+            </div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">
+              %{yokakIndicators.inFieldRate ?? '0.0'} Alan İçi İstihdam
+            </p>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
+            <span className="text-[10px] font-black uppercase tracking-wider text-purple-400 block mb-1">
+              İlk 90 Günde Hızlı Yerleşme
+            </span>
+            <div className="text-2xl font-black text-purple-300">
+              %{yokakIndicators.placement90dRate ?? '0.0'}
+            </div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">
+              {yokakIndicators.placement90dCount} Mezun ilk çeyrekte yerleşti
+            </p>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
+            <span className="text-[10px] font-black uppercase tracking-wider text-rose-400 block mb-1">
+              Lisansüstü Eğitime Devam
+            </span>
+            <div className="text-2xl font-black text-rose-300">
+              %{yokakIndicators.postgradRate ?? '0.0'}
+            </div>
+            <p className="text-[11px] text-blue-200 font-semibold mt-1">
+              {yokakIndicators.postgradCount} Mezun Yüksek Lisans / Doktora
+            </p>
           </div>
         </div>
 
-        {/* Detaylı Grafikler Grid (Soru 6 ve Soru 8) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white/5 p-5 rounded-2xl border border-white/10">
-            <h4 className="text-xs font-black uppercase tracking-wider text-blue-200 mb-1">Soru 6 — Bölüm Uyum Oranı (Pasta Grafiği)</h4>
-            <p className="text-[11px] text-slate-400 mb-4">Mezunların okudukları bölüm ile çalıştıkları işin doğrudan ilişkisi</p>
-            <div className="h-52 w-full">
-              {!hasCheckupData ? (
-                <div className="h-full flex items-center justify-center text-sm font-bold text-slate-400">Veri yok</div>
-              ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={majorAlignmentData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value">
-                    {majorAlignmentData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
-                  </Pie>
-                  <Tooltip wrapperStyle={{ fontSize: '12px' }} />
-                  <Legend wrapperStyle={{ fontSize: '11px', color: '#fff' }} />
-                </PieChart>
-              </ResponsiveContainer>
-              )}
+        {/* AKTİF AKREDİTASYON GÖRÜNÜMÜ */}
+        {accreditationTab === 'pyramids' && (
+          <div className="text-slate-900">
+            <EmploymentPyramids
+              salaryPyramid={yokakIndicators.salaryPyramid}
+              sectorPyramid={yokakIndicators.sectorPyramid}
+              inFieldRate={yokakIndicators.inFieldRate}
+              outOfFieldRate={yokakIndicators.outOfFieldRate}
+              sectoralAlignmentCoefficient={yokakIndicators.sectoralAlignmentCoefficient}
+              totalEmployed={yokakIndicators.employedCount}
+            />
+          </div>
+        )}
+
+        {accreditationTab === 'puko' && (
+          <div className="text-slate-900">
+            <PUKOCaliteKarnesi
+              scorecards={computedPukoScorecards}
+              onUpdateScorecard={updatePukoScorecard}
+              period={period}
+            />
+          </div>
+        )}
+
+        {accreditationTab === 'audit_log' && (
+          <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <h4 className="font-black text-slate-900 text-base">
+                  Resmî YÖKAK Denetim Mezun İstihdam Kütüğü
+                </h4>
+                <p className="text-xs text-slate-500 font-medium">
+                  KVKK 6698 Sayılı Kanun gereğince T.C. Kimlik Numaraları maskelenmiştir.
+                </p>
+              </div>
+              <span className="text-xs font-black bg-slate-100 text-slate-800 px-3 py-1 rounded-xl self-start">
+                Toplam Kayıt: {yokakIndicators.records?.length || 0}
+              </span>
+            </div>
+
+            <div className="overflow-x-auto rounded-2xl border border-slate-200">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-600 uppercase text-[10px] font-black tracking-wider">
+                  <tr>
+                    <th className="p-3">Sıra</th>
+                    <th className="p-3">Mezun Adı</th>
+                    <th className="p-3">Maskeli TCKN</th>
+                    <th className="p-3">Bölüm</th>
+                    <th className="p-3">Şirket / Kurum</th>
+                    <th className="p-3">Pozisyon / Ünvan</th>
+                    <th className="p-3">Sektör</th>
+                    <th className="p-3 text-center">Alan Uyum</th>
+                    <th className="p-3 text-center">İlk 6 Ay</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {(yokakIndicators.records || []).slice(0, 15).map((r, i) => (
+                    <tr key={r.id || i} className="hover:bg-slate-50">
+                      <td className="p-3 text-slate-400 font-bold">{i + 1}</td>
+                      <td className="p-3 font-bold text-slate-900">{r.name || 'Mezun'}</td>
+                      <td className="p-3 font-mono text-[11px]">{maskTCKN(r.tcNo || r.studentId)}</td>
+                      <td className="p-3">{r.department || 'Bölüm'}</td>
+                      <td className="p-3 font-bold">{r.company || r.companyName || 'Kurumsal Firma'}</td>
+                      <td className="p-3">{r.title || 'Uzman'}</td>
+                      <td className="p-3 text-slate-500">{r.sector || 'Teknoloji'}</td>
+                      <td className="p-3 text-center">
+                        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${isEmploymentInField(r) ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}`}>
+                          {isEmploymentInField(r) ? 'Alan İçi' : 'Alan Dışı'}
+                        </span>
+                      </td>
+                      <td className="p-3 text-center">
+                        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${isPlacementUnder6m(r) ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                          {isPlacementUnder6m(r) ? 'Evet' : 'Hayır'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-
-          <div className="bg-white/5 p-5 rounded-2xl border border-white/10">
-            <h4 className="text-xs font-black uppercase tracking-wider text-blue-200 mb-1">Soru 8 — Çalışma Şekli Analizi (Sütun Grafiği)</h4>
-            <p className="text-[11px] text-slate-400 mb-4">Mezunların çalışma modellerine göre kişi sayısı dağılımı</p>
-            <div className="h-52 w-full">
-              {!hasCheckupData ? (
-                <div className="h-full flex items-center justify-center text-sm font-bold text-slate-400">Veri yok</div>
-              ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={workModeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff20" />
-                  <XAxis dataKey="mode" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#cbd5e1' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#cbd5e1' }} />
-                  <Tooltip wrapperStyle={{ fontSize: '12px' }} />
-                  <Bar dataKey="count" fill="#990000" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Odak Sorular (1, 2, 4, 6, 8, 9) Derinlikli Özet Rapor Tablosu */}
-        <div className="mt-8 border-t border-blue-900/60 pt-6 space-y-4">
-          <h4 className="text-sm font-black uppercase tracking-wider text-amber-300 flex items-center gap-2">
-            <CheckCircle2 size={16} className="text-emerald-400" /> Mezun İstihdamı Odaklı Soru Analiz Paneli (Sorular 1, 2, 4, 6, 8, 9)
-          </h4>
-          <div className="overflow-x-auto rounded-2xl border border-white/10">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-white/10 text-blue-200 uppercase text-[10px] font-black tracking-wider">
-                <tr>
-                  <th className="p-3">Soru No & Konu</th>
-                  <th className="p-3">Odak Veri</th>
-                  <th className="p-3">Yüzdesel Dağılım</th>
-                  <th className="p-3">Önemli Çıkarım / Durum</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10 font-medium text-slate-200">
-                <tr>
-                  <td className="p-3 font-bold text-white">Soru 1 — Aktif İstihdam</td>
-                  <td className="p-3">Aktif Çalışanlar</td>
-                  <td className="p-3 font-black text-emerald-400">{hasCheckupData ? 'Gerçek oran checkup alanından' : 'Veri yok'}</td>
-                  <td className="p-3 text-slate-300">Mezunların ezici çoğunluğu iş gücüne katılmıştır.</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Soru 2 — İş Bulma Hızı</td>
-                  <td className="p-3">0 - 3 Ay İçinde İş Bulma</td>
-                  <td className="p-3 font-black text-amber-300">{hasCheckupData ? 'Alan yok' : 'Veri yok'}</td>
-                  <td className="p-3 text-slate-300">Mezuniyet sonrası ilk 90 günde istihdam oranı yüksek.</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Soru 4 — Kurum Türü</td>
-                  <td className="p-3">Şirket / Kamu / İşletme</td>
-                  <td className="p-3 font-black text-purple-300">{hasCheckupData ? 'Alan yok' : 'Veri yok'}</td>
-                  <td className="p-3 text-slate-300">Özel sektör mezun istihdamında lider konumda.</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Soru 6 — Bölüm Uyum Oranı</td>
-                  <td className="p-3">Bölümüyle Doğrudan İlgili İş</td>
-                  <td className="p-3 font-black text-emerald-400">{fmtPct(relatedPct)}{relatedPct != null ? ' Uyumlu İş' : ''}</td>
-                  <td className="p-3 text-slate-300">Program çıktılarının sektör ihtiyaçlarıyla yüksek uyumu.</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Soru 8 — Çalışma Şekli</td>
-                  <td className="p-3">Hibrit / Remote / Ofis</td>
-                  <td className="p-3 font-black text-sky-300">{hasCheckupData ? (workModeData[0]?.count != null ? workModeData[0].count + ' kişi Hibrit' : 'Veri yok') : 'Veri yok'}</td>
-                  <td className="p-3 text-slate-300">Esnek ve uzaktan çalışma tercihleri yaygınlaşmıştır.</td>
-                </tr>
-                <tr>
-                  <td className="p-3 font-bold text-white">Soru 9 — Akademik Devamlılık</td>
-                  <td className="p-3">Lisansüstü Eğitim (Y.Lisans/Dr.)</td>
-                  <td className="p-3 font-black text-indigo-300">{fmtPct(postgradPct)}{postgradPct != null ? ' Akademik Devam' : ''}</td>
-                  <td className="p-3 text-slate-300">Mezunların bir kısmı yüksek lisans ve akademiye yönelmiştir.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

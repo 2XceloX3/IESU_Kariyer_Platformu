@@ -8,9 +8,28 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState([]);
 
+  const defaultAlumniSurveys = useMemo(() => [
+    {
+      id: 'ALU-PUKO-2026-1',
+      title: 'İESÜ Mezun Memnuniyet & Program Çıktısı Değerlendirme Anketi',
+      description: 'YÖKAK Ölçüt A.1.1 ve B.2.2 kapsamında lisans programı öğrenme kazanımları, mesleki formasyon ve PUKÖ kalite döngüsü değerlendirmesi.',
+      targetAudience: 'Mezunlar',
+      reward: 'PUKÖ Kalite Katkı Teşekkürü',
+      deadline: '31 Aralık 2026',
+      questions: [
+        { id: 'pc1', text: 'PÇ-1: Bölümümde aldığım teorik ve uygulamalı mesleki eğitim, iş hayatım için yeterli düzeydeydi.', type: 'likert' },
+        { id: 'pc2', text: 'PÇ-2: Lisans programı süresince analitik düşünme ve karmaşık problemleri çözme yetkinliği kazandım.', type: 'likert' },
+        { id: 'pc3', text: 'PÇ-3: Alanımla ilgili sektörel yazılımları, dijital teknolojileri ve modern araçları etkin kullanabiliyorum.', type: 'likert' },
+        { id: 'pc4', text: 'PÇ-4: Çok disiplinli takımlarda çalışma, iletişim ve profesyonel sorumluluk alma becerim gelişti.', type: 'likert' },
+        { id: 'pc5', text: 'PÇ-5: İstanbul Esenyurt Üniversitesi (İESÜ) mezunu olmaktan genel olarak memnunum ve bölümümü öneririm.', type: 'likert' },
+      ]
+    }
+  ], []);
+
   const alumniSurveys = useMemo(() => {
-    return (surveys || []).filter(s => s.targetAudience === 'Mezunlar' || s.targetAudience === 'Tümü');
-  }, [surveys]);
+    const list = (surveys || []).filter(s => s.targetAudience === 'Mezunlar' || s.targetAudience === 'Tümü');
+    return list.length > 0 ? list : defaultAlumniSurveys;
+  }, [surveys, defaultAlumniSurveys]);
 
   const handleStart = (survey) => {
     setActiveSurvey(survey);
@@ -19,22 +38,54 @@ export default function AlumniSurveys({ surveys, currentUser, addNotification })
 
   const handleSubmit = () => {
     if (Object.keys(answers).length < activeSurvey.questions.length) {
-      window.toast.error("Lütfen tüm soruları yanıtlayın.");
+      if (window.toast?.error) window.toast.error("Lütfen tüm soruları yanıtlayın.");
       return;
     }
     
+    // PUKÖ Ortalama Puanı Hesabı
+    const scoreVals = Object.values(answers).map(Number).filter(n => !isNaN(n));
+    const avgScore = scoreVals.length > 0 ? (scoreVals.reduce((a, b) => a + b, 0) / scoreVals.length).toFixed(2) : 4.2;
+
     if (setSurveys) {
       setSurveys(prev => (prev || []).map(s => {
         if (s.id === activeSurvey.id) {
           const newResponses = [...(s.responses || []), {
              userId: currentUser?.id || 'anonymous',
+             department: currentUser?.department || null,
              answers: answers,
+             averageScore: Number(avgScore),
              date: new Date().toISOString()
           }];
           return { ...s, responses: newResponses };
         }
         return s;
       }));
+    }
+
+    // PUKÖ Kalite Karnesi Güncelleme (bölüm bazlı karneye işleme)
+    const store = useAppStore.getState();
+    const updatePukoScorecard = store.updatePukoScorecard;
+    if (updatePukoScorecard && currentUser?.department) {
+      updatePukoScorecard({
+        department: currentUser.department,
+        alumniScore: Number(avgScore),
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    if (store.addSurveyResponse) {
+      store.addSurveyResponse({
+        id: 'ALU-RES-' + Date.now(),
+        surveyId: activeSurvey.id,
+        userId: currentUser?.id || 'anonymous',
+        department: currentUser?.department || null,
+        answers: answers,
+        averageScore: Number(avgScore),
+        targetAudience: 'Mezunlar',
+        completed: true,
+        status: 'submitted',
+        date: new Date().toISOString()
+      });
     }
 
     setSubmitted(prev => [...prev, activeSurvey.id]);

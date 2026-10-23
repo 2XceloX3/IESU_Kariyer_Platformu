@@ -80,6 +80,8 @@ export const useSharedStore = create(
         setSwipedJobs: setter('swipedJobs'),
 
         setInternships: setter('internships'),
+        addInternship: (item) => set((s) => ({ internships: [item, ...(s.internships || []).filter(i => i?.id !== item?.id)] })),
+        updateInternship: (item) => set((s) => ({ internships: (s.internships || []).map(i => i?.id === item?.id ? item : i) })),
 
         setVoluntaryInternships: setter('voluntaryInternships'),
 

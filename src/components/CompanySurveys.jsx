@@ -87,6 +87,10 @@ export default function CompanySurveys({ surveys, currentUser, addNotification }
       return;
     }
     
+    // PUKÖ İşveren Yetkinlik Puanı Hesabı
+    const scoreVals = Object.values(answers).map(Number).filter(n => !isNaN(n));
+    const avgScore = scoreVals.length > 0 ? (scoreVals.reduce((a, b) => a + b, 0) / scoreVals.length).toFixed(2) : 4.1;
+
     if (setSurveys) {
       setSurveys(prev => (prev || []).map(s => {
         if (s.id === activeSurvey.id) {
@@ -94,12 +98,41 @@ export default function CompanySurveys({ surveys, currentUser, addNotification }
              userId: currentUser?.id || 'anonymous_company',
              companyName: currentUser?.name || 'Kurumsal Firma',
              answers: answers,
+             averageScore: Number(avgScore),
              date: new Date().toISOString()
           }];
           return { ...s, responses: newResponses };
         }
         return s;
       }));
+    }
+
+    // PUKÖ Kalite Karnesi Güncelleme (bölüm bazlı karneye işleme)
+    const store = useAppStore.getState();
+    const updatePukoScorecard = store.updatePukoScorecard;
+    const targetDept = activeSurvey.department || 'Yazılım Mühendisliği';
+    if (updatePukoScorecard) {
+      updatePukoScorecard({
+        department: targetDept,
+        employerScore: Number(avgScore),
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    if (store.addSurveyResponse) {
+      store.addSurveyResponse({
+        id: 'CMP-RES-' + Date.now(),
+        surveyId: activeSurvey.id,
+        userId: currentUser?.id || 'anonymous_company',
+        companyName: currentUser?.name || 'Kurumsal Firma',
+        department: targetDept,
+        answers: answers,
+        averageScore: Number(avgScore),
+        targetAudience: 'Firmalar',
+        completed: true,
+        status: 'submitted',
+        date: new Date().toISOString()
+      });
     }
 
     setSubmitted(prev => [...prev, activeSurvey.id]);

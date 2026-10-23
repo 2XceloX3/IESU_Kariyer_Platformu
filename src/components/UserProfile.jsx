@@ -10,6 +10,7 @@ import useAppStore from '../store/useAppStore';
 import SafeAvatar from './shared/SafeAvatar';
 import AdminOmniDock from './AdminOmniDock';
 import { generateStudents, generateAlumni, generateCompanies, generateAcademicStaff } from '../utils/mockData';
+import { maskSensitiveData, maskEmail, OBS_STANDARDS, getObsVerificationBadge } from '../services/obsVerificationWorkflow';
 
 export default function UserProfile({ 
   userId, 
@@ -363,6 +364,13 @@ export default function UserProfile({
           if (badge === 'top_voice' || badge === 'Top Voice') return <Crown key={idx} size={20} className="text-amber-500" title="Top Voice" />;
           if (badge === 'president' || badge === 'Kulüp Başkanı') return <Crown key={idx} size={20} className="text-purple-600" title="Kulüp Başkanı" />;
           if (badge === 'rep' || badge === 'Sınıf Temsilcisi') return <Award key={idx} size={20} className="text-emerald-500" title="Sınıf Temsilcisi" />;
+          if (badge === OBS_STANDARDS.BADGE_LABEL || badge === 'obs_verified' || badge === 'İESÜ OBS & YÖKSİS Doğrulanmış') {
+            return (
+              <span key={idx} className="inline-flex items-center gap-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-xs border border-emerald-400" title={`İESÜ OBS & YÖKSİS Doğrulanmış (${user?.obsVerificationCode || user?.verificationCode || 'IESU-OBS-VERIFIED-9941A'})`}>
+                <ShieldCheck size={12} className="text-white" /> İESÜ OBS & YÖKSİS Doğrulanmış
+              </span>
+            );
+          }
           return <span key={idx} className="bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200 uppercase">{badge}</span>;
         })}
       </div>
@@ -940,6 +948,11 @@ export default function UserProfile({
                   <span>🎓 Sınıf: <b>{user?.grade || user?.year || '3. Sınıf'}</b></span>
                   <span> GPA: <b className="text-emerald-600">{user?.gpa ? `${user.gpa} / 4.00` : '3.78 / 4.00'}</b></span>
                   {user?.doubleMajor && <span>• ÇAP: <b className="text-purple-600">{user.doubleMajor}</b></span>}
+                  {(user?.obsVerified || user?.yoksisVerified || (user?.badges && user.badges.includes(OBS_STANDARDS.BADGE_LABEL))) && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-lg text-[11px] font-bold shadow-2xs" title="Resmî OBS & YÖKSİS Doğrulaması">
+                      <ShieldCheck size={13} className="text-emerald-600" /> OBS Doğrulandı: <code className="font-mono text-[10px] text-emerald-950 font-black">{user?.obsVerificationCode || user?.verificationCode || 'IESU-OBS-VERIFIED-9941A'}</code>
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -1504,7 +1517,11 @@ export default function UserProfile({
 
                   <div className="p-3 bg-gray-50 rounded-xl space-y-1">
                     <p className="font-bold text-gray-800 flex items-center gap-1.5 truncate text-[11px]">
-                      <Mail size={12} className="text-gray-400 shrink-0" /> {activeUser?.email || (activeUser?.name ? `${activeUser.name.toLowerCase().replace(/\s+/g, '.')}@mezun.esenyurt.edu.tr` : 'mezun@esenyurt.edu.tr')}
+                      <Mail size={12} className="text-gray-400 shrink-0" /> {
+                        isSelf || userRole === 'admin'
+                          ? (activeUser?.email || (activeUser?.name ? `${activeUser.name.toLowerCase().replace(/\s+/g, '.')}@mezun.esenyurt.edu.tr` : 'mezun@esenyurt.edu.tr'))
+                          : maskEmail(activeUser?.email || (activeUser?.name ? `${activeUser.name.toLowerCase().replace(/\s+/g, '.')}@mezun.esenyurt.edu.tr` : 'mezun@esenyurt.edu.tr'))
+                      }
                     </p>
                     <p className="font-bold text-gray-800 flex items-center gap-1.5 truncate text-[11px]">
                       <Link2 size={12} className="text-blue-500 shrink-0" /> linkedin.com/in/{(activeUser?.name || 'mezun').toLowerCase().replace(/\s+/g, '-')}

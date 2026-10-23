@@ -17,6 +17,8 @@ import eventBus from '../brain/eventBus';
 import { computeKpi } from '../kpi/compute';
 import { KpiStatusViewLight } from '../kpi/KpiStatusView';
 import { checkupToEmploymentDeclarations } from '../kpi/adapters';
+import InternshipCommissionPanel from './internship/InternshipCommissionPanel';
+import { SAMPLE_ENTERPRISE_INTERNSHIPS } from '../services/internshipWorkflow';
 
 export default function AcademicStaffFeed({ 
   setView, setSelectedUserId, currentUser, userRole, academicRole
@@ -463,6 +465,7 @@ export default function AcademicStaffFeed({
             {/* Nav Tabs */}
             <div className="flex items-center gap-2 overflow-x-auto py-4 hide-scrollbar border-b border-gray-100">
               {[
+                { id: 'commission', label: 'Bölüm Staj Komisyonu (3308/5510)', icon: <ShieldCheck size={15} /> },
                 { id: 'approvals', label: `Onay Havuzu (${stats.pendingApprovals})`, icon: <FileText size={15} /> },
                 { id: 'counseling', label: `Danışmanlık & Randevular (${counselingRequests.filter(r => r.status === 'Beklemede').length})`, icon: <UserCheck size={15} /> },
                 { id: 'radar', label: 'Stajyer Radarı & Canlı Takip', icon: <Radar size={15} /> },
@@ -486,6 +489,22 @@ export default function AcademicStaffFeed({
             {/* Content Body */}
             <div className="pt-5">
               
+              {/* 0. BÖLÜM STAJ KOMİSYONU (3308 / 5510 SAYILI KANUN) */}
+              {activeTab === 'commission' && (
+                <div className="animate-fade-in">
+                  <InternshipCommissionPanel 
+                    internships={Array.isArray(internships) && internships.length > 0 ? internships : SAMPLE_ENTERPRISE_INTERNSHIPS}
+                    onUpdateInternship={(up) => {
+                      const currentList = Array.isArray(internships) && internships.length > 0 ? internships : SAMPLE_ENTERPRISE_INTERNSHIPS;
+                      const updated = currentList.map(i => i.id === up.id ? up : i);
+                      if (setInternships) setInternships(updated);
+                    }}
+                    currentUser={effectiveCurrentUser}
+                    reviewerRole={effectiveCurrentUser?.title || 'Bölüm Staj Komisyonu'}
+                  />
+                </div>
+              )}
+
               {/* 1. ONAY HAVUZU */}
               {activeTab === 'approvals' && (
                 <div className="space-y-4 animate-fade-in">

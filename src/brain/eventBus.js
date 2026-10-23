@@ -13,7 +13,12 @@ export const SUPPORTED_EVENTS = [
   'feature:toggled',
   'user:connected',
   'hive:error',
-  'audit:logged'
+  'audit:logged',
+  'internship:created',
+  'internship:commission_decision',
+  'internship:sgk_exported',
+  'internship:notebook_submitted',
+  'internship:graded'
 ];
 
 class EventBus {

@@ -5,6 +5,9 @@ const MIN_N = {
   alumni_employment_rate: 10,
   major_relevance_rate: 10,
   placement_90d_rate: 10,
+  placement_6m_rate: 10,
+  placement_1y_rate: 10,
+  sectoral_alignment_rate: 10,
   internship_completion_rate: 5,
   placements_per_job: 3,
   event_attendance_rate: 5,
@@ -160,6 +163,76 @@ function computePlacement90dRate(records, opts) {
   });
 }
 
+/**
+ * placement_6m: YÖK A.1.1.1 indicator (placement within first 6 months <= 180 days or jobTiming).
+ */
+function computePlacement6mRate(records, opts) {
+  const minN = MIN_N.placement_6m_rate;
+  const usersById = opts.usersById || {};
+  let rows = (records || []).filter(isEligibleRecord);
+  rows = filterDept(rows, opts.departmentId);
+  rows = filterPeriod(rows, opts.period);
+  rows = dedupeLatestByPerson(rows, (r) => r.alumniId);
+  rows = rows.filter((r) => r.employed === true && (r.startDate || r.jobTiming));
+  const withGrad = [];
+  for (const r of rows) {
+    let d = null;
+    const grad = r.graduationDate || usersById[r.alumniId]?.graduationDate;
+    if (grad && r.startDate) {
+      d = daysBetween(grad, r.startDate);
+    }
+    const timingStr = String(r.jobTiming || '');
+    const isTiming6m = timingStr.includes('0 - 3 Ay') || timingStr.includes('3 - 6 Ay') || timingStr.includes('Mezun Olmadan') || timingStr.includes('0-6 Ay');
+    if (d == null && !isTiming6m) continue;
+    withGrad.push({ ...r, _days: d, _isTiming6m: isTiming6m });
+  }
+  const denominator = withGrad.length;
+  const numerator = withGrad.filter((r) => (r._days != null && r._days <= 180) || r._isTiming6m).length;
+  return result({
+    kpiKey: 'placement_6m_rate',
+    departmentId: opts.departmentId,
+    period: opts.period,
+    numerator,
+    denominator,
+    minN,
+  });
+}
+
+/**
+ * placement_1y: YÖK A.1.1.2 indicator (placement within first 1 year <= 365 days or jobTiming).
+ */
+function computePlacement1yRate(records, opts) {
+  const minN = MIN_N.placement_1y_rate;
+  const usersById = opts.usersById || {};
+  let rows = (records || []).filter(isEligibleRecord);
+  rows = filterDept(rows, opts.departmentId);
+  rows = filterPeriod(rows, opts.period);
+  rows = dedupeLatestByPerson(rows, (r) => r.alumniId);
+  rows = rows.filter((r) => r.employed === true && (r.startDate || r.jobTiming));
+  const withGrad = [];
+  for (const r of rows) {
+    let d = null;
+    const grad = r.graduationDate || usersById[r.alumniId]?.graduationDate;
+    if (grad && r.startDate) {
+      d = daysBetween(grad, r.startDate);
+    }
+    const timingStr = String(r.jobTiming || '');
+    const isTiming1y = timingStr.includes('0 - 3 Ay') || timingStr.includes('3 - 6 Ay') || timingStr.includes('6 Ay - 1 Yıl') || timingStr.includes('Mezun Olmadan') || timingStr.includes('6-12 Ay');
+    if (d == null && !isTiming1y) continue;
+    withGrad.push({ ...r, _days: d, _isTiming1y: isTiming1y });
+  }
+  const denominator = withGrad.length;
+  const numerator = withGrad.filter((r) => (r._days != null && r._days <= 365) || r._isTiming1y).length;
+  return result({
+    kpiKey: 'placement_1y_rate',
+    departmentId: opts.departmentId,
+    period: opts.period,
+    numerator,
+    denominator,
+    minN,
+  });
+}
+
 function computeInternshipCompletionRate(records, opts) {
   const minN = MIN_N.internship_completion_rate;
   let rows = (records || []).filter((r) => r && r.status !== 'rejected');
@@ -275,6 +348,12 @@ export function computeKpi(kpiKey, records, options = {}) {
       return computeMajorRelevanceRate(records, opts);
     case 'placement_90d_rate':
       return computePlacement90dRate(records, opts);
+    case 'placement_6m_rate':
+      return computePlacement6mRate(records, opts);
+    case 'placement_1y_rate':
+      return computePlacement1yRate(records, opts);
+    case 'sectoral_alignment_rate':
+      return computeMajorRelevanceRate(records, opts);
     case 'internship_completion_rate':
       return computeInternshipCompletionRate(records, opts);
     case 'placements_per_job':
