@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚑 112 EMSTrack Açık Dünya — Simülasyon & Murf AI Dispatch</title>
+<style>
+/* ===== SIFIRLAMA & EMSTRACK SİBER-MEDİKAL TEMA ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red:        #ef4444;
+  --red-dark:   #991b1b;
+  --red-glow:   rgba(239, 68, 68, 0.45);
+  --blue:       #38bdf8;
+  --blue-dark:  #0284c7;
+  --blue-glow:  rgba(56, 189, 248, 0.4);
+  --emerald:    #10b981;
+  --emerald-glow: rgba(16, 185, 129, 0.4);
+  --purple:     #c084fc;
+  --purple-glow:rgba(192, 132, 252, 0.4);
+  --amber:      #fbbf24;
+  --bg-deep:    #050811;
+  --bg-card:    #0c1324;
+  --bg-surface: #131d36;
+  --border:     #1e2d4d;
+  --text:       #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  user-select: none;
+}
+
+button { cursor: pointer; border: none; font-family: inherit; outline: none; }
+
+.grid-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+  background-size: 36px 36px;
+  z-index: 999;
+}
+
+/* ===== ÜST STATUS: EMSTRACK KOMUTA VE TELEMETRİ HUD ===== */
+#top-hud {
+  display: grid;
+  grid-template-columns: 280px 1.4fr 340px auto;
+  gap: 12px;
+  background: #090e1c;
+  padding: 8px 16px;
+  border-bottom: 2px solid var(--border);
+  align-items: center;
+  height: 74px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
+  position: relative;
+  z-index: 20;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-icon-badge {
+  background: linear-gradient(135deg, #ef4444, #991b1b);
+  color: white;
+  font-weight: 900;
+  font-size: 1.25rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px var(--red-glow);
+}
+.brand-text-box h1 {
+  font-size: 0.92rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #fff, #7dd3fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.brand-text-box span {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+/* EMSTrack Döngü ve Kapsama Çubuğu */
+.emstrack-lifecycle-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.lifecycle-step {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 90px;
+  text-align: center;
+  transition: all 0.2s;
+}
+.lifecycle-step.active-step {
+  border-color: #38bdf8;
+  background: #1e3a8a;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+.step-num { font-size: 0.55rem; color: #7dd3fc; font-weight: 800; text-transform: uppercase; }
+.step-name { font-size: 0.68rem; font-weight: 800; color: #fff; }
+
+/* Murf AI Kutusu */
+#murf-box {
+  background: #101026;
+  border: 1px solid #7c3aed;
+  border-radius: 10px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.25);
+}
+.murf-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.murf-meta { flex-grow: 1; overflow: hidden; }
+.murf-meta h4 { font-size: 0.75rem; font-weight: 800; color: #d8b4fe; display: flex; justify-content: space-between; }
+.murf-quote { font-size: 0.68rem; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Kontrol Butonları */
+.top-btns { display: flex; gap: 6px; }
+.btn-pill {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+.btn-pill:hover { background: #1e293b; border-color: #64748b; }
+.btn-pill.siren-active { background: #1e3a8a; border-color: #60a5fa; animation: pulseSiren 0.8s infinite alternate; }
+@keyframes pulseSiren { from { box-shadow: 0 0 4px #38bdf8; } to { box-shadow: 0 0 16px #ef4444; } }
+
+/* ===== ANA ÇALIŞMA ALANI ===== */
+#main-container {
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 12px;
+  padding: 10px 14px;
+  height: calc(100vh - 74px);
+  position: relative;
+}
+
+/* SOL PANEL: AÇIK DÜNYA VE HARİTA */
+#map-panel {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+.map-header {
+  background: linear-gradient(90deg, #0f172a, #1e293b);
+  padding: 8px 14px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.map-tags { display: flex; gap: 6px; align-items: center; }
+.badge-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+#map-canvas {
+  background: #080d1a;
+  flex-grow: 1;
+  width: 100%;
+  display: block;
+}
+
+/* Harita Üstü Telemetri Kartı */
+.telemetry-card {
+  position: absolute;
+  top: 48px;
+  left: 14px;
+  background: rgba(12, 19, 36, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+.telemetry-row { display: flex; justify-content: space-between; font-size: 0.72rem; }
+.telemetry-lbl { color: var(--text-muted); }
+.telemetry-val { font-weight: 800; color: #fff; }
+
+/* Olay Yeri Banner Butonu */
+#action-banner {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  border: 2px solid #f87171;
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  z-index: 10;
+  animation: bounce 0.8s infinite alternate;
+}
+@keyframes bounce { from { transform: translate(-50%, 0); } to { transform: translate(-50%, -6px); } }
+
+/* SAĞ PANEL: EMSTRACK FİLO & TRİAJ & KABİN */
+#sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Sekmeler */
+.tab-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  background: var(--bg-card);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.tab-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 6px 2px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  transition: all 0.2s;
+  text-align: center;
+}
+.tab-btn.active {
+  background: var(--blue-dark);
+  color: #fff;
+  box-shadow: 0 0 10px var(--blue-glow);
+}
+
+.panel-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+/* SEKME 1: ÇAĞRILAR (CASES) */
+.case-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.case-card:hover { border-color: var(--blue); transform: translateX(3px); background: #172445; }
+.case-card.active-case { border-color: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.3); }
+.case-header-row { display: flex; justify-content: space-between; align-items: center; }
+.badge-priority-1 { background: #7f1d1d; color: #fca5a5; font-size: 0.62rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+.badge-priority-2 { background: #78350f; color: #fde68a; font-size: 0.62rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+.badge-capability { background: #1e3a8a; color: #93c5fd; font-size: 0.62rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
+.case-title { font-size: 0.82rem; font-weight: 800; color: #fff; }
+.case-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.35; }
+.case-meta { display: flex; justify-content: space-between; font-size: 0.68rem; color: #7dd3fc; margin-top: 4px; }
+
+/* SEKME 2: EMSTRACK FİLO VE KAPSAMA (FLEET & COVERAGE) */
+.fleet-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.fleet-info h5 { font-size: 0.78rem; font-weight: 800; color: #fff; }
+.fleet-info span { font-size: 0.65rem; color: var(--text-muted); }
+.fleet-status-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.status-avail { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.status-deploy { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+.status-trans { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+
+/* Kapsama Kartı */
+.coverage-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px;
+}
+.cov-title { font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
+.cov-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; margin: 4px 0; }
+.cov-bar-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #10b981); transition: width 0.3s; }
+
+/* SEKME 3: ARKA KABİN & EKG */
+.icu-card {
+  background: #020617;
+  border: 2px solid var(--emerald);
+  border-radius: 10px;
+  padding: 10px;
+  color: #4ade80;
+}
+.icu-hdr { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; margin-bottom: 6px; }
+#ecg-canvas { width: 100%; height: 50px; display: block; }
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+  border-top: 1px dashed rgba(74, 222, 128, 0.2);
+  padding-top: 6px;
+  text-align: center;
+}
+.vital-cell .l { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; }
+.vital-cell .v { font-size: 1.05rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+.cpr-box {
+  background: #111827;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cpr-track { width: 100%; height: 12px; background: #1e293b; border-radius: 6px; position: relative; overflow: hidden; }
+.cpr-green { position: absolute; left: 38%; width: 24%; height: 100%; background: #10b981; opacity: 0.6; }
+#cpr-thumb { position: absolute; top: 0; width: 8px; height: 100%; background: #fff; border-radius: 4px; left: 0%; }
+
+.med-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.act-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: #fff;
+  padding: 9px 8px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.act-btn:hover:not(:disabled) { background: #1e293b; border-color: var(--blue); transform: translateY(-1px); }
+.act-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* SEKME 4: HASTANELER */
+.hosp-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: all 0.2s;
+}
+.hosp-item:hover { border-color: #38bdf8; background: #19274a; }
+.hosp-name { font-size: 0.8rem; font-weight: 800; color: #fff; }
+.hosp-specs { font-size: 0.68rem; color: #38bdf8; }
+.hosp-eta { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; }
+
+/* Toast */
+#toast-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1000;
+  pointer-events: none;
+}
+.toast-msg {
+  background: #0f172a;
+  border-left: 4px solid var(--blue);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: #f1f5f9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  animation: tIn 0.3s ease, tOut 0.3s 2.7s ease forwards;
+  max-width: 320px;
+}
+.toast-msg.danger { border-color: var(--red); }
+.toast-msg.success { border-color: var(--emerald); }
+.toast-msg.warn { border-color: var(--amber); }
+.toast-msg.purple { border-color: var(--purple); }
+@keyframes tIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes tOut { to { opacity: 0; transform: translateX(40px); } }
+</style>
+</head>
+<body>
+
+<div class="grid-overlay"></div>
+
+<!-- ===== ÜST STATUS: EMSTRACK KOMUTA VE TELEMETRİ HUD ===== -->
+<header id="top-hud">
+  <div class="brand-section">
+    <div class="brand-icon-badge">112</div>
+    <div class="brand-text-box">
+      <h1>EMSTRACK AÇIK DÜNYA</h1>
+      <span>Ambulans Dağıtım & Kriz Simülasyonu</span>
+    </div>
+  </div>
+
+  <!-- EMSTrack Olay Yaşam Döngüsü (EventType: TO_INCIDENT -> AT_INCIDENT -> TO_HOSPITAL -> AT_HOSPITAL -> TO_BASE) -->
+  <div class="emstrack-lifecycle-bar">
+    <div class="lifecycle-step active-step" id="step-to-inc">
+      <span class="step-num">Aşama 1</span>
+      <span class="step-name">TO_INCIDENT</span>
+    </div>
+    <div class="lifecycle-step" id="step-at-inc">
+      <span class="step-num">Aşama 2</span>
+      <span class="step-name">AT_INCIDENT</span>
+    </div>
+    <div class="lifecycle-step" id="step-to-hosp">
+      <span class="step-num">Aşama 3</span>
+      <span class="step-name">TO_HOSPITAL</span>
+    </div>
+    <div class="lifecycle-step" id="step-at-hosp">
+      <span class="step-num">Aşama 4</span>
+      <span class="step-name">AT_HOSPITAL</span>
+    </div>
+    <div class="lifecycle-step" id="step-to-base">
+      <span class="step-num">Aşama 5</span>
+      <span class="step-name">TO_BASE</span>
+    </div>
+  </div>
+
+  <!-- Murf AI Kriz Masası -->
+  <div id="murf-box">
+    <div class="murf-avatar">🎙️</div>
+    <div class="murf-meta">
+      <h4><span>Murf AI Dispatcher</span> <span style="font-size:0.6rem;color:#c084fc">EMSTrack Core</span></h4>
+      <div class="murf-quote" id="murf-speech-text">"Sistem aktif. En yakın uygun ambulans vakaya tahsis edildi..."</div>
+    </div>
+  </div>
+
+  <!-- Butonlar -->
+  <div class="top-btns">
+    <button class="btn-pill" id="siren-btn" onclick="toggleSiren()">
+      <span>🚨 Siren: Kapalı</span>
+    </button>
+    <button class="btn-pill" id="voice-btn" onclick="toggleVoice()">
+      <span>🗣️ Murf AI: Açık</span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== ANA ALAN ===== -->
+<main id="main-container">
+
+  <!-- SOL: AÇIK DÜNYA HARİTASI -->
+  <section id="map-panel">
+    <div class="map-header">
+      <span>🗺️ İSTANBUL 112 AÇIK DÜNYA GPS SİSTEMİ</span>
+      <div class="map-tags">
+        <span class="badge-tag" style="color:#38bdf8">WASD: Sürüş</span>
+        <span class="badge-tag" style="color:#fbbf24">SPACE: Siren</span>
+        <span class="badge-tag" id="coverage-tag">Kapsama: %88 (R1: 10dk)</span>
+      </div>
+    </div>
+
+    <canvas id="map-canvas"></canvas>
+
+    <!-- Telemetri Kartı (Sol Üst) -->
+    <div class="telemetry-card">
+      <div class="telemetry-row">
+        <span class="telemetry-lbl">Aktif Ambulans:</span>
+        <span class="telemetry-val" style="color:#38bdf8">AMB-101 (ALS)</span>
+      </div>
+      <div class="telemetry-row">
+        <span class="telemetry-lbl">Hız:</span>
+        <span class="telemetry-val" id="tele-speed">0 km/s</span>
+      </div>
+      <div class="telemetry-row">
+        <span class="telemetry-lbl">Bölge:</span>
+        <span class="telemetry-val" id="tele-district">Avcılar E-5</span>
+      </div>
+      <div class="telemetry-row">
+        <span class="telemetry-lbl">Hedef:</span>
+        <span class="telemetry-val" id="tele-target" style="color:#fbbf24">—</span>
+      </div>
+      <div class="telemetry-row">
+        <span class="telemetry-lbl">Mesafe:</span>
+        <span class="telemetry-val" id="tele-dist">—</span>
+      </div>
+    </div>
+
+    <!-- Olay Yeri / Hastane Eylem Butonu -->
+    <button id="action-banner" onclick="handleBannerAction()">
+      <span id="banner-text">🚨 OLAY YERİNE ULAŞILDI — TRİAJA BAŞLA!</span>
+    </button>
+  </section>
+
+  <!-- SAĞ: EMSTRACK FİLO & TRİAJ & KABİN -->
+  <aside id="sidebar-panel">
+    <div class="tab-row">
+      <button class="tab-btn active" id="btn-tab-cases" onclick="showTab('cases')">⚠️ Çağrılar</button>
+      <button class="tab-btn" id="btn-tab-fleet" onclick="showTab('fleet')">🚑 Filo</button>
+      <button class="tab-btn" id="btn-tab-cabin" onclick="showTab('cabin')">🏥 Kabin</button>
+      <button class="tab-btn" id="btn-tab-hosp" onclick="showTab('hosp')">🏢 Hastane</button>
+    </div>
+
+    <!-- SEKME 1: ÇAĞRILAR (CASES) -->
+    <div class="panel-content" id="tab-cases">
+      <div style="font-size:0.75rem;font-weight:800;color:var(--text-muted);display:flex;justify-content:space-between">
+        <span>EMSTRACK DİNAMİK VAKA LİSTESİ</span>
+        <span style="color:#ef4444" id="case-count-tag">5 Aktif Kriz</span>
+      </div>
+      <div id="cases-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- SEKME 2: FİLO VE KAPSAMA (FLEET & COVERAGE METRIC) -->
+    <div class="panel-content" id="tab-fleet" style="display:none">
+      <div class="coverage-card">
+        <div class="cov-title">📊 EMSTRACK ÇİFT KAPSAMA METRİĞİ (R1: 600s / R2: 840s)</div>
+        <div class="cov-bar-bg"><div class="cov-bar-fill" id="cov-bar" style="width:88%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--text-muted)">
+          <span>Birincil Kapsama: <b style="color:#34d399" id="primary-cov-val">%88</b></span>
+          <span>İkincil Kapsama: <b style="color:#38bdf8">%94</b></span>
+        </div>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:800;color:var(--text-muted);margin-top:6px">
+        🚑 FİLO AMBULANSLARI (CAPABILITY & STATUS)
+      </div>
+      <div id="fleet-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
+    <!-- SEKME 3: ARKA KABİN & EKG -->
+    <div class="panel-content" id="tab-cabin" style="display:none">
+      <div class="icu-card">
+        <div class="icu-hdr">
+          <span>❤️ EKG HASTA MONİTÖRÜ</span>
+          <span id="icu-rhythm" style="color:#4ade80">SİNÜS RİTMİ</span>
+        </div>
+        <canvas id="ecg-canvas"></canvas>
+        <div class="vitals-grid">
+          <div class="vital-cell"><div class="l">NABIZ</div><div class="v" id="vit-bpm" style="color:#4ade80">76</div></div>
+          <div class="vital-cell"><div class="l">SpO₂</div><div class="v" id="vit-spo2" style="color:#38bdf8">98%</div></div>
+          <div class="vital-cell"><div class="l">TANSİYON</div><div class="v" id="vit-bp" style="color:#fbbf24">120/80</div></div>
+          <div class="vital-cell"><div class="l">CAN (HP)</div><div class="v" id="vit-hp" style="color:#ef4444">100</div></div>
+        </div>
+      </div>
+
+      <!-- KPR Ritim Oyunu Barı -->
+      <div class="cpr-box">
+        <div style="font-size:0.7rem;font-weight:800;color:#f87171;display:flex;justify-content:space-between">
+          <span>🫀 KPR KOMPRESYON RİTMİ</span>
+          <span id="cpr-msg">BOŞLUK / BUTONLA BAS!</span>
+        </div>
+        <div class="cpr-track">
+          <div class="cpr-green"></div>
+          <div id="cpr-thumb"></div>
+        </div>
+      </div>
+
+      <!-- Medikal Müdahale Butonları -->
+      <div class="med-grid">
+        <button class="act-btn" onclick="applyTreatment('oxy')"><span>💨</span><span>O2 Maskesi (%100)</span></button>
+        <button class="act-btn" onclick="applyTreatment('cpr')"><span>🫀</span><span>Göğüs Kompresyonu</span></button>
+        <button class="act-btn" onclick="applyTreatment('iv')"><span>💉</span><span>IV Serum Fizyolojik</span></button>
+        <button class="act-btn" onclick="applyTreatment('defib')" id="defib-btn"><span>⚡</span><span id="defib-txt">Defibrilatör (Şok)</span></button>
+        <button class="act-btn" onclick="applyTreatment('epi')"><span>🧪</span><span>Adrenalin (1mg IV)</span></button>
+        <button class="act-btn" onclick="applyTreatment('tourniquet')"><span>🩹</span><span>Basınçlı Turnike</span></button>
+      </div>
+    </div>
+
+    <!-- SEKME 4: HASTANELER -->
+    <div class="panel-content" id="tab-hosp" style="display:none">
+      <div style="font-size:0.75rem;font-weight:800;color:var(--text-muted)">
+        🏥 EMSTRACK HASTANE SEÇİM ALGORİTMASI (FASTEST HOSPITAL)
+      </div>
+      <div id="hosp-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+  </aside>
+
+</main>
+
+<div id="toast-box"></div>
+
+<!-- ===== EMSTRACK JAVASCRIPT MOTORU ===== -->
+<script>
+// ============================================================
+// 1. SES SENTEZLEYİCİSİ (WEB AUDIO API)
+// ============================================================
+class AudioCore {
+  constructor() {
+    this.ctx = null;
+    this.enabled = true;
+    this.sirenOsc = null;
+    this.sirenGain = null;
+    this.sirenTimer = null;
+    this.isSirenPlaying = false;
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AudioCtx();
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  }
+  playBeep(freq = 880) {
+    if (!this.enabled || !this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.08);
+    } catch(e){}
+  }
+  playRadioChirp() {
+    if (!this.enabled || !this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1300, now);
+      osc.frequency.setValueAtTime(1700, now + 0.05);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } catch(e){}
+  }
+  startSiren() {
+    if (!this.enabled || !this.ctx || this.isSirenPlaying) return;
+    try {
+      this.isSirenPlaying = true;
+      this.sirenOsc = this.ctx.createOscillator();
+      this.sirenGain = this.ctx.createGain();
+      this.sirenOsc.type = 'sawtooth';
+      const now = this.ctx.currentTime;
+      this.sirenGain.gain.setValueAtTime(0.04, now);
+      this.sirenOsc.connect(this.sirenGain);
+      this.sirenGain.connect(this.ctx.destination);
+      this.sirenOsc.start();
+
+      let toggle = false;
+      this.sirenTimer = setInterval(() => {
+        if (!this.ctx || !this.sirenOsc) return;
+        const cur = this.ctx.currentTime;
+        this.sirenOsc.frequency.exponentialRampToValueAtTime(toggle ? 650 : 960, cur + 0.4);
+        toggle = !toggle;
+      }, 450);
+    } catch(e){}
+  }
+  stopSiren() {
+    this.isSirenPlaying = false;
+    clearInterval(this.sirenTimer);
+    if (this.sirenGain && this.ctx) {
+      try {
+        this.sirenGain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.1);
+        setTimeout(() => {
+          if (this.sirenOsc) {
+            try { this.sirenOsc.stop(); this.sirenOsc.disconnect(); } catch(e){}
+            this.sirenOsc = null;
+          }
+        }, 120);
+      } catch(e){}
+    }
+  }
+  playShock() {
+    if (!this.enabled || !this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(55, now);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } catch(e){}
+  }
+}
+
+const audio = new AudioCore();
+
+// ============================================================
+// 2. MURF AI SES ANONS MOTORU
+// ============================================================
+class MurfDispatcher {
+  constructor() {
+    this.enabled = true;
+    this.synth = window.speechSynthesis || null;
+    this.voice = null;
+    this.initVoice();
+  }
+  initVoice() {
+    if (!this.synth) return;
+    const load = () => {
+      const voices = this.synth.getVoices();
+      this.voice = voices.find(v => v.lang.startsWith('tr')) || voices[0];
+    };
+    load();
+    if (this.synth.onvoiceschanged !== undefined) this.synth.onvoiceschanged = load;
+  }
+  speak(text) {
+    audio.playRadioChirp();
+    const el = document.getElementById('murf-speech-text');
+    if (el) el.textContent = `"${text}"`;
+
+    if (!this.enabled || !this.synth) return;
+    this.synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if (this.voice) u.voice = this.voice;
+    u.lang = 'tr-TR';
+    u.rate = 1.05;
+    u.pitch = 1.0;
+    this.synth.speak(u);
+  }
+}
+
+const murf = new MurfDispatcher();
+
+// ============================================================
+// 3. EMSTRACK VERİ MODELLERİ (CAPABILITY, AMBULANCE, CASE, HOSPITAL)
+// ============================================================
+// Capability Enum (from ems.models.capability)
+const Capability = {
+  BASIC: 'BLS (Temel Yaşam Desteği)',
+  ADVANCED: 'ALS (İleri Yaşam Desteği)'
+};
+
+// EventType Enum (from ems.models.event)
+const EventType = {
+  TO_INCIDENT: 'TO_INCIDENT',
+  AT_INCIDENT: 'AT_INCIDENT',
+  TO_HOSPITAL: 'TO_HOSPITAL',
+  AT_HOSPITAL: 'AT_HOSPITAL',
+  TO_BASE:     'TO_BASE'
+};
+
+// EMSTrack Filo Ambulansları (from ems.models.ambulance)
+const FLEET_AMBULANCES = [
+  {
+    id: 'AMB-101',
+    capability: Capability.ADVANCED,
+    baseName: 'Avcılar İstasyonu',
+    deployed: true,
+    status: 'TO_INCIDENT',
+    isPlayer: true,
+    x: 340, y: 340
+  },
+  {
+    id: 'AMB-102',
+    capability: Capability.ADVANCED,
+    baseName: 'Başakşehir İstasyonu',
+    deployed: false,
+    status: 'AVAILABLE (Hazır)',
+    isPlayer: false,
+    x: 680, y: 140
+  },
+  {
+    id: 'AMB-103',
+    capability: Capability.BASIC,
+    baseName: 'Esenyurt İstasyonu',
+    deployed: false,
+    status: 'AVAILABLE (Hazır)',
+    isPlayer: false,
+    x: 260, y: 140
+  },
+  {
+    id: 'AMB-104',
+    capability: Capability.ADVANCED,
+    baseName: 'Bakırköy İstasyonu',
+    deployed: false,
+    status: 'AVAILABLE (Hazır)',
+    isPlayer: false,
+    x: 940, y: 340
+  }
+];
+
+// EMSTrack Hastaneleri (from ems.datasets.hospital)
+const HOSPITALS = [
+  {
+    id: 'sakura',
+    name: 'Başakşehir Çam ve Sakura Şehir Hastanesi',
+    x: 740, y: 130,
+    specialties: 'Ağır Travma, Yanık, Yoğun Bakım, Pediatri',
+    capacity: '100% Hazır',
+    bestCapability: Capability.ADVANCED,
+    bestFor: ['burn', 'trauma', 'pediatric']
+  },
+  {
+    id: 'cerrahpasa',
+    name: 'Cerrahpaşa Tıp Fakültesi Hastanesi',
+    x: 940, y: 340,
+    specialties: 'Kardiyovasküler Cerrahi, Akut İnme (FAST)',
+    capacity: 'Kırmızı Alan Müsait',
+    bestCapability: Capability.ADVANCED,
+    bestFor: ['cardiac', 'stroke']
+  },
+  {
+    id: 'esenyurt_devlet',
+    name: 'Esenyurt Necmi Kadıoğlu Devlet Hastanesi',
+    x: 220, y: 160,
+    specialties: 'Genel Acil, Travma Stabilizasyonu',
+    capacity: 'Orta Yoğunluk',
+    bestCapability: Capability.BASIC,
+    bestFor: ['trauma', 'intox']
+  },
+  {
+    id: 'sadi_konuk',
+    name: 'Bakırköy Dr. Sadi Konuk EAH',
+    x: 980, y: 400,
+    specialties: 'Zehirlenme, Solunum Yolları, Toksikoloji',
+    capacity: 'Kırmızı Alan Hazır',
+    bestCapability: Capability.ADVANCED,
+    bestFor: ['respiratory', 'intox']
+  }
+];
+
+// EMSTrack Kriz Vakaları (from ems.models.case)
+let CASES = [
+  {
+    id: 1,
+    title: 'Zincirleme Kaza & Sıkışma',
+    district: 'Avcılar E-5 Metrobüs Yanı',
+    priority: 1, // Kırmızı Kod
+    requiredCapability: Capability.ADVANCED,
+    x: 350, y: 340,
+    type: 'trauma',
+    prompt: 'Avcılar E-5 mevkiinde zincirleme kaza! Çoklu yaralı ve yoğun kanama var, ALS ambulans atandı!',
+    vitals: { bpm: 135, spo2: 89, bp: '85/55', hp: 60, rhythm: 'SİNÜS TAŞİKARDİSİ' },
+    active: true
+  },
+  {
+    id: 2,
+    title: 'Fabrika Gaz Sızıntısı & İnhalasyon',
+    district: 'Esenyurt Organize Sanayi',
+    priority: 2, // Sarı Kod
+    requiredCapability: Capability.BASIC,
+    x: 260, y: 140,
+    type: 'respiratory',
+    prompt: 'Esenyurt fabrikasında kimyasal gaz sızıntısı! 2 işçide solunum yetmezliği!',
+    vitals: { bpm: 110, spo2: 78, bp: '140/90', hp: 72, rhythm: 'HİPOKSİK BRONKOSPAZM' },
+    active: true
+  },
+  {
+    id: 3,
+    title: 'Akut Miyokard Enfarktüsü (Kalp)',
+    district: 'Beylikdüzü Son Durak AVM',
+    priority: 1,
+    requiredCapability: Capability.ADVANCED,
+    x: 180, y: 420,
+    type: 'cardiac',
+    prompt: 'Beylikdüzü AVM önünde göğüs sıkışmasıyla yere yığılan 62 yaş hasta!',
+    vitals: { bpm: 155, spo2: 87, bp: '180/110', hp: 45, rhythm: 'VENTRİKÜLER TAŞİKARDİ' },
+    active: true
+  },
+  {
+    id: 4,
+    title: 'Göl Kenarı Boğulma & Kardiyak Arrest',
+    district: 'Küçükçekmece Sahil Parkı',
+    priority: 1,
+    requiredCapability: Capability.ADVANCED,
+    x: 680, y: 380,
+    type: 'arrest',
+    prompt: 'Küçükçekmece gölden çıkarılan vatandaş bilincini kaybetti, nabız yok!',
+    vitals: { bpm: 0, spo2: 45, bp: '0/0', hp: 30, rhythm: 'VENTRİKÜLER FİBRİLASYON (ARREST)' },
+    active: true
+  },
+  {
+    id: 5,
+    title: 'Şantiye İskele Çökmesi & Kafa Travması',
+    district: 'Başakşehir Şantiye Alanı',
+    priority: 1,
+    requiredCapability: Capability.ADVANCED,
+    x: 640, y: 140,
+    type: 'trauma',
+    prompt: 'Başakşehir şantiyesinde yüksekten düşme, anizokori ve bilinç kaybı!',
+    vitals: { bpm: 52, spo2: 92, bp: '195/115', hp: 50, rhythm: 'CUSHING TRİADI (KAFA TRAVMASI)' },
+    active: true
+  }
+];
+
+// Otoyollar ve İlçeler
+const CITY_DISTRICTS = [
+  { name: 'Avcılar E-5 Yan Yol', x: 280, y: 320, w: 260, h: 180, color: '#132144' },
+  { name: 'Esenyurt Meydan',    x: 180, y: 120, w: 280, h: 160, color: '#172752' },
+  { name: 'Beylikdüzü Son Durak',x: 120, y: 360, w: 260, h: 200, color: '#142347' },
+  { name: 'Küçükçekmece Sahil',  x: 580, y: 320, w: 260, h: 220, color: '#16284f' },
+  { name: 'Başakşehir Şehir Mrk',x: 500, y: 100, w: 320, h: 180, color: '#192b56' },
+  { name: 'Bakırköy İskele',     x: 880, y: 300, w: 240, h: 240, color: '#1b3060' }
+];
+
+const HIGHWAYS = [
+  { x1: 50, y1: 340, x2: 1150, y2: 340, width: 22, name: 'E-5 Karayolu' },
+  { x1: 50, y1: 140, x2: 1150, y2: 140, width: 26, name: 'TEM Otoyolu' },
+  { x1: 340, y1: 50, x2: 340, y2: 550, width: 16, name: 'Haramidere Bağlantısı' },
+  { x1: 680, y1: 50, x2: 680, y2: 550, width: 18, name: 'Basın Ekspres Yolu' },
+  { x1: 960, y1: 50, x2: 960, y2: 550, width: 16, name: 'Sahil Kordonu' }
+];
+
+// ============================================================
+// 4. OYUN & SİMÜLASYON DURUMU (GLOBAL STATE)
+// ============================================================
+const SimState = {
+  // Oyuncu Ambulansı (AMB-101)
+  ambX: 340,
+  ambY: 340,
+  speed: 0,
+  angle: 0,
+  siren: false,
+
+  // Aktif Vaka & EMSTrack Durumu
+  currentEventType: EventType.TO_INCIDENT,
+  activeCase: null,
+  assignedHospital: null,
+  patientVitals: { bpm: 76, spo2: 98, bp: '120/80', hp: 100, rhythm: 'SİNÜS RİTMİ' },
+
+  // Kapsama Metriği
+  primaryCoverage: 88, // %88
+  score: 0,
+  defibCooldown: 0,
+  cprPhase: 0,
+
+  // EKG Dalgası
+  ecgData: new Array(120).fill(25),
+  ecgTimer: 0,
+
+  // Trafik Araçları
+  trafficCars: []
+};
+
+// ============================================================
+// 5. BAŞLATMA
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  initTraffic();
+  renderCasesList();
+  renderFleetList();
+  renderHospitalList();
+  selectCase(CASES[0]);
+
+  setTimeout(() => {
+    murf.speak('EMSTrack simülatörü devrede. AMB-101 TO_INCIDENT durumuna geçti. En yakın vakaya intikal edin.');
+  }, 800);
+
+  requestAnimationFrame(simMainLoop);
+});
+
+function initTraffic() {
+  for (let i = 0; i < 26; i++) {
+    const hw = HIGHWAYS[Math.floor(Math.random() * HIGHWAYS.length)];
+    const isH = hw.y1 === hw.y2;
+    SimState.trafficCars.push({
+      highway: hw,
+      x: isH ? hw.x1 + Math.random() * (hw.x2 - hw.x1) : hw.x1 + (Math.random() - 0.5) * 8,
+      y: isH ? hw.y1 + (Math.random() - 0.5) * 8 : hw.y1 + Math.random() * (hw.y2 - hw.y1),
+      speed: 1.2 + Math.random() * 1.6,
+      dir: Math.random() > 0.5 ? 1 : -1,
+      isH: isH,
+      color: ['#eab308', '#f8fafc', '#dc2626', '#3b82f6'][Math.floor(Math.random() * 4)]
+    });
+  }
+}
+
+// ============================================================
+// 6. KLAVYE GİRDİLERİ & SÜRÜŞ FİZİĞİ
+// ============================================================
+const keys = { w: false, s: false, a: false, d: false };
+
+window.addEventListener('keydown', (e) => {
+  audio.init();
+  if (e.code === 'KeyW' || e.code === 'ArrowUp')    keys.w = true;
+  if (e.code === 'KeyS' || e.code === 'ArrowDown')  keys.s = true;
+  if (e.code === 'KeyA' || e.code === 'ArrowLeft')  keys.a = true;
+  if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = true;
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (SimState.patientVitals.bpm === 0) performCprTap();
+    else toggleSiren();
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  if (e.code === 'KeyW' || e.code === 'ArrowUp')    keys.w = false;
+  if (e.code === 'KeyS' || e.code === 'ArrowDown')  keys.s = false;
+  if (e.code === 'KeyA' || e.code === 'ArrowLeft')  keys.a = false;
+  if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.d = false;
+});
+
+function toggleSiren() {
+  audio.init();
+  SimState.siren = !SimState.siren;
+  const btn = document.getElementById('siren-btn');
+  if (SimState.siren) {
+    audio.startSiren();
+    btn.innerHTML = '<span>🚨 Siren: AÇIK</span>';
+    btn.classList.add('siren-active');
+    showToast('🚨 Siren açıldı! Trafik fermuar sistemiyle yolu açıyor!', 'purple');
+  } else {
+    audio.stopSiren();
+    btn.innerHTML = '<span>🚨 Siren: Kapalı</span>';
+    btn.classList.remove('siren-active');
+  }
+}
+
+function toggleVoice() {
+  murf.enabled = !murf.enabled;
+  const btn = document.getElementById('voice-btn');
+  btn.innerHTML = murf.enabled ? '<span>🗣️ Murf AI: Açık</span>' : '<span>🤐 Murf AI: Kapalı</span>';
+}
+
+function updatePhysics() {
+  const maxSpd = SimState.siren ? 5.8 : 3.8;
+  if (keys.w) SimState.speed = Math.min(maxSpd, SimState.speed + 0.15);
+  else SimState.speed = Math.max(0, SimState.speed - 0.08);
+  if (keys.s) SimState.speed = Math.max(-1.8, SimState.speed - 0.2);
+
+  if (keys.a) SimState.angle -= 0.05 * (SimState.speed >= 0 ? 1 : -1);
+  if (keys.d) SimState.angle += 0.05 * (SimState.speed >= 0 ? 1 : -1);
+
+  SimState.ambX += Math.cos(SimState.angle) * SimState.speed;
+  SimState.ambY += Math.sin(SimState.angle) * SimState.speed;
+
+  SimState.ambX = Math.max(40, Math.min(1160, SimState.ambX));
+  SimState.ambY = Math.max(40, Math.min(560, SimState.ambY));
+
+  // Trafik Araçları
+  SimState.trafficCars.forEach(car => {
+    if (car.isH) {
+      car.x += car.speed * car.dir;
+      if (car.x > car.highway.x2) car.x = car.highway.x1;
+      if (car.x < car.highway.x1) car.x = car.highway.x2;
+      if (SimState.siren) car.y += (car.highway.y1 + 8 - car.y) * 0.05;
+    } else {
+      car.y += car.speed * car.dir;
+      if (car.y > car.highway.y2) car.y = car.highway.y1;
+      if (car.y < car.highway.y1) car.y = car.highway.y2;
+      if (SimState.siren) car.x += (car.highway.x1 + 8 - car.x) * 0.05;
+    }
+
+    const d = Math.hypot(car.x - SimState.ambX, car.y - SimState.ambY);
+    if (d < 18) {
+      SimState.speed *= 0.3;
+      if (SimState.currentEventType === EventType.TO_HOSPITAL) {
+        SimState.patientVitals.hp = Math.max(0, SimState.patientVitals.hp - 8);
+        showToast('💥 Kaza! Hasta sarsıldı!', 'danger');
+      }
+    }
+  });
+
+  // Hız ve Bölge
+  const kmh = Math.round(Math.abs(SimState.speed) * 24);
+  document.getElementById('tele-speed').textContent = `${kmh} km/s`;
+
+  const curDist = CITY_DISTRICTS.find(d => 
+    SimState.ambX >= d.x && SimState.ambX <= d.x + d.w &&
+    SimState.ambY >= d.y && SimState.ambY <= d.y + d.h
+  );
+  if (curDist) document.getElementById('tele-district').textContent = curDist.name;
+
+  checkProximity();
+}
+
+// ============================================================
+// 7. HARİTA CANVAS ÇİZİMİ
+// ============================================================
+function renderMap() {
+  const canvas = document.getElementById('map-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Arka plan
+  ctx.fillStyle = '#060a17';
+  ctx.fillRect(0, 0, W, H);
+
+  // Marmara Denizi
+  ctx.fillStyle = '#031124';
+  ctx.beginPath();
+  ctx.moveTo(0, 480);
+  ctx.bezierCurveTo(300, 470, 700, 520, W, 490);
+  ctx.lineTo(W, H);
+  ctx.lineTo(0, H);
+  ctx.closePath();
+  ctx.fill();
+
+  // İlçeler
+  CITY_DISTRICTS.forEach(dist => {
+    ctx.fillStyle = dist.color;
+    ctx.strokeStyle = '#1e2d4d';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(dist.x, dist.y, dist.w, dist.h, 12);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.font = '900 12px sans-serif';
+    ctx.fillText(dist.name.toUpperCase(), dist.x + 14, dist.y + 24);
+  });
+
+  // Otoyollar
+  HIGHWAYS.forEach(hw => {
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = hw.width;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(hw.x1, hw.y1);
+    ctx.lineTo(hw.x2, hw.y2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(hw.x1, hw.y1);
+    ctx.lineTo(hw.x2, hw.y2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Trafik Araçları
+  SimState.trafficCars.forEach(car => {
+    ctx.fillStyle = car.color;
+    ctx.beginPath();
+    ctx.arc(car.x, car.y, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Hastaneler
+  HOSPITALS.forEach(hosp => {
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(hosp.x, hosp.y, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(hosp.x - 2, hosp.y - 7, 4, 14);
+    ctx.fillRect(hosp.x - 7, hosp.y - 2, 14, 4);
+
+    ctx.fillStyle = '#7dd3fc';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.fillText(hosp.name.substring(0, 16) + '..', hosp.x - 20, hosp.y + 22);
+  });
+
+  // Kriz Vakaları (Pulsing)
+  CASES.forEach(cr => {
+    if (!cr.active) return;
+    const pulse = Math.sin(performance.now() * 0.006) * 6;
+    ctx.fillStyle = cr.priority === 1 ? 'rgba(239, 68, 68, 0.35)' : 'rgba(251, 191, 36, 0.35)';
+    ctx.beginPath();
+    ctx.arc(cr.x, cr.y, 18 + pulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = cr.priority === 1 ? '#ef4444' : '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(cr.x, cr.y, 9, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.fillText('!', cr.x - 2.5, cr.y + 4);
+  });
+
+  // GPS Rota Çizgisi
+  let target = null;
+  if (SimState.currentEventType === EventType.TO_HOSPITAL && SimState.assignedHospital) {
+    target = SimState.assignedHospital;
+  } else if (SimState.activeCase && SimState.activeCase.active) {
+    target = SimState.activeCase;
+  }
+
+  if (target) {
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(SimState.ambX, SimState.ambY);
+    ctx.lineTo(target.x, target.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // AMBULANS (Oyuncu Aracı)
+  ctx.save();
+  ctx.translate(SimState.ambX, SimState.ambY);
+  ctx.rotate(SimState.angle);
+
+  // Farlar
+  const headlight = ctx.createRadialGradient(25, 0, 5, 60, 0, 45);
+  headlight.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+  headlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = headlight;
+  ctx.beginPath();
+  ctx.moveTo(10, -8);
+  ctx.lineTo(60, -25);
+  ctx.lineTo(60, 25);
+  ctx.lineTo(10, 8);
+  ctx.closePath();
+  ctx.fill();
+
+  // Gövde
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(-14, -8, 28, 16, 4);
+  ctx.fill();
+
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect(-14, -3, 28, 6);
+
+  if (SimState.siren) {
+    const flash = Math.floor(performance.now() / 100) % 2 === 0;
+    ctx.fillStyle = flash ? '#ef4444' : '#38bdf8';
+    ctx.beginPath(); ctx.arc(-2, -5, 3.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = flash ? '#38bdf8' : '#ef4444';
+    ctx.beginPath(); ctx.arc(-2, 5, 3.5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ============================================================
+// 8. EMSTRACK YAŞAM DÖNGÜSÜ & EVENT YÖNETİMİ
+// ============================================================
+function updateLifecycleDisplay(currentEvent) {
+  SimState.currentEventType = currentEvent;
+  const steps = [
+    { id: 'step-to-inc', type: EventType.TO_INCIDENT },
+    { id: 'step-at-inc', type: EventType.AT_INCIDENT },
+    { id: 'step-to-hosp', type: EventType.TO_HOSPITAL },
+    { id: 'step-at-hosp', type: EventType.AT_HOSPITAL },
+    { id: 'step-to-base', type: EventType.TO_BASE }
+  ];
+
+  steps.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (el) {
+      if (s.type === currentEvent) el.classList.add('active-step');
+      else el.classList.remove('active-step');
+    }
+  });
+
+  // Oyuncu ambulansı durumunu güncelle
+  FLEET_AMBULANCES[0].status = currentEvent;
+  renderFleetList();
+}
+
+function checkProximity() {
+  const banner = document.getElementById('action-banner');
+  const bannerTxt = document.getElementById('banner-text');
+
+  // TO_HOSPITAL aşamasında hastaneye yaklaşım
+  if (SimState.currentEventType === EventType.TO_HOSPITAL && SimState.assignedHospital) {
+    const dist = Math.hypot(SimState.ambX - SimState.assignedHospital.x, SimState.ambY - SimState.assignedHospital.y);
+    document.getElementById('tele-dist').textContent = `${Math.round(dist * 5)} m`;
+    document.getElementById('tele-target').textContent = SimState.assignedHospital.name.substring(0, 18);
+
+    if (dist < 32) {
+      banner.style.display = 'flex';
+      bannerTxt.textContent = '🏥 HASTANEYE ULAŞILDI — HASTAYI KIRMIZI ALANA TESLİM ET (AT_HOSPITAL)';
+      banner.onclick = handleHospitalHandover;
+    } else {
+      banner.style.display = 'none';
+    }
+    return;
+  }
+
+  // TO_INCIDENT aşamasında vakaya yaklaşım
+  if (SimState.currentEventType === EventType.TO_INCIDENT && SimState.activeCase && SimState.activeCase.active) {
+    const dist = Math.hypot(SimState.ambX - SimState.activeCase.x, SimState.ambY - SimState.activeCase.y);
+    document.getElementById('tele-dist').textContent = `${Math.round(dist * 5)} m`;
+    document.getElementById('tele-target').textContent = SimState.activeCase.title;
+
+    if (dist < 32) {
+      banner.style.display = 'flex';
+      bannerTxt.textContent = '🚨 OLAY YERİNE ULAŞILDI — TRİAJA VE MÜDAHALEYE BAŞLA (AT_INCIDENT)';
+      banner.onclick = handleSceneArrival;
+    } else {
+      banner.style.display = 'none';
+    }
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function selectCase(c) {
+  SimState.activeCase = c;
+  updateLifecycleDisplay(EventType.TO_INCIDENT);
+
+  document.querySelectorAll('.case-card').forEach(card => card.classList.remove('active-case'));
+  const el = document.getElementById(`case-card-${c.id}`);
+  if (el) el.classList.add('active-case');
+
+  // EMSTrack En Hızlı Hastane Algoritmasıyla Ön Seçim Yap
+  recommendFastestHospital(c);
+
+  murf.speak(`${c.district} bölgesinde ${c.title}. EMSTrack algoritması AMB-101 aracını tahsis etti. İntikale geçin.`);
+}
+
+// EMSTrack FastestHospitalSelector Algoritması
+function recommendFastestHospital(incident) {
+  let bestHosp = null;
+  let minDist = Infinity;
+
+  HOSPITALS.forEach(hosp => {
+    // Hem mesafe hem de uzmanlık uyumu (capability matching)
+    let dist = Math.hypot(incident.x - hosp.x, incident.y - hosp.y);
+    if (hosp.bestFor.includes(incident.type)) dist *= 0.7; // Uzmanlık indirimi
+    if (dist < minDist) {
+      minDist = dist;
+      bestHosp = hosp;
+    }
+  });
+
+  SimState.assignedHospital = bestHosp;
+}
+
+function handleSceneArrival() {
+  const c = SimState.activeCase;
+  if (!c) return;
+
+  updateLifecycleDisplay(EventType.AT_INCIDENT);
+  SimState.patientVitals = { ...c.vitals };
+  c.active = false;
+
+  showTab('cabin');
+  showToast(`🚨 Olay yerine ulaşıldı! Hasta ambülansa alındı.`, 'danger');
+  murf.speak('Olay yerindesiniz. Hasta kabine alındı. Triaj müdahalesini başlatın ve en uygun hastaneye sevk rotasını seçin.');
+
+  renderCasesList();
+
+  // 2 saniye sonra otomatik TO_HOSPITAL aşamasına hazırla
+  setTimeout(() => {
+    updateLifecycleDisplay(EventType.TO_HOSPITAL);
+    showTab('hosp');
+    showToast(`🏥 EMSTrack Önerisi: ${SimState.assignedHospital.name}`, 'purple');
+  }, 2200);
+}
+
+function handleHospitalHandover() {
+  updateLifecycleDisplay(EventType.AT_HOSPITAL);
+  showToast('🏥 Hasta kırmızı alan ekibine teslim edildi (AT_HOSPITAL)!', 'success');
+  murf.speak('Hasta acil servise teslim edildi. Harika iş çıkardınız!');
+
+  SimState.score += 500;
+
+  setTimeout(() => {
+    updateLifecycleDisplay(EventType.TO_BASE);
+    showToast('🔄 Görev tamamlandı. İstasyon kapsama alanına dönülüyor (TO_BASE).', 'info');
+    SimState.patientVitals = { bpm: 76, spo2: 98, bp: '120/80', hp: 100, rhythm: 'SİNÜS RİTMİ' };
+
+    // Kapsamayı güncelle
+    SimState.primaryCoverage = Math.min(100, SimState.primaryCoverage + 6);
+    document.getElementById('primary-cov-val').textContent = `%${SimState.primaryCoverage}`;
+    document.getElementById('cov-bar').style.width = `${SimState.primaryCoverage}%`;
+    document.getElementById('coverage-tag').textContent = `Kapsama: %${SimState.primaryCoverage} (R1: 10dk)`;
+
+    showTab('cases');
+    const remaining = CASES.filter(c => c.active);
+    if (remaining.length > 0) selectCase(remaining[0]);
+  }, 2000);
+}
+
+// ============================================================
+// 9. ARKA KABİN MEDİKAL MÜDAHALE SİSTEMİ
+// ============================================================
+function applyTreatment(type) {
+  const v = SimState.patientVitals;
+  switch (type) {
+    case 'oxy':
+      v.spo2 = Math.min(100, v.spo2 + 8);
+      v.hp = Math.min(100, v.hp + 6);
+      showToast('💨 %100 Yüksek Akışlı O2 verildi.', 'success');
+      break;
+    case 'cpr':
+      performCprTap();
+      break;
+    case 'iv':
+      v.hp = Math.min(100, v.hp + 10);
+      showToast('💉 IV Serum Fizyolojik replasmanı açıldı.', 'success');
+      break;
+    case 'defib':
+      if (SimState.defibCooldown > 0) {
+        showToast(`⏳ Defibrilatör şarj oluyor (${SimState.defibCooldown}s)...`, 'warn');
+        return;
+      }
+      SimState.defibCooldown = 8;
+      audio.playShock();
+      if (v.bpm === 0) {
+        v.bpm = 72;
+        v.spo2 = 92;
+        v.rhythm = 'SİNÜS RİTMİ (GERİ DÖNDÜ)';
+        v.hp = Math.min(100, v.hp + 35);
+        showToast('⚡ DEFİBRİLASYON BAŞARILI! Sinüs ritmi yakalandı!', 'success');
+        murf.speak('Sinüs ritmi geri döndü! Mükemmel müdahale!');
+      } else {
+        showToast('⚡ 200J Şok uygulandı.', 'warn');
+      }
+      break;
+    case 'epi':
+      v.bpm = Math.min(160, v.bpm + 20);
+      v.hp = Math.min(100, v.hp + 12);
+      showToast('🧪 1mg Adrenalin uygulandı. Kardiyak tonus arttı.', 'purple');
+      break;
+    case 'tourniquet':
+      v.hp = Math.min(100, v.hp + 15);
+      showToast('🩹 Basınçlı turnike arteriyel kanamayı durdurdu.', 'success');
+      break;
+  }
+  updateCabinUI();
+}
+
+function performCprTap() {
+  const p = SimState.cprPhase;
+  if (p >= 38 && p <= 62) {
+    SimState.patientVitals.hp = Math.min(100, SimState.patientVitals.hp + 8);
+    document.getElementById('cpr-msg').textContent = 'MÜKEMMEL RİTİM (+8 HP)';
+    document.getElementById('cpr-msg').style.color = '#34d399';
+  } else {
+    document.getElementById('cpr-msg').textContent = 'RİTİM KAÇTI!';
+    document.getElementById('cpr-msg').style.color = '#f87171';
+  }
+}
+
+setInterval(() => {
+  SimState.cprPhase = (SimState.cprPhase + 5) % 100;
+  const thumb = document.getElementById('cpr-thumb');
+  if (thumb) {
+    const pos = Math.sin((SimState.cprPhase / 100) * Math.PI) * 92;
+    thumb.style.left = `${pos}%`;
+  }
+}, 30);
+
+function renderEcg() {
+  const canvas = document.getElementById('ecg-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(16, 185, 129, 0.12)';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 15) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 10) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  SimState.ecgData.shift();
+  let nextY = H / 2;
+
+  const v = SimState.patientVitals;
+  if (v.bpm > 0) {
+    SimState.ecgTimer++;
+    const cycle = Math.max(10, Math.floor(3600 / v.bpm / 2));
+    const step = SimState.ecgTimer % cycle;
+    if (step === 3) nextY = H / 2 - 5;
+    else if (step === 5) nextY = H / 2 + 7;
+    else if (step === 6) nextY = H * 0.12;
+    else if (step === 7) nextY = H * 0.88;
+    else if (step === 9) nextY = H / 2 - 6;
+    else nextY = H / 2;
+
+    if (step === 6) audio.playBeep(v.bpm > 120 ? 980 : 880);
+  } else {
+    nextY = H / 2 + (Math.random() - 0.5) * 1.5;
+  }
+
+  SimState.ecgData.push(nextY);
+
+  ctx.beginPath();
+  ctx.strokeStyle = v.bpm === 0 ? '#ef4444' : (v.bpm > 120 ? '#fbbf24' : '#10b981');
+  ctx.lineWidth = 2;
+  ctx.shadowColor = ctx.strokeStyle;
+  ctx.shadowBlur = 6;
+
+  for (let i = 0; i < SimState.ecgData.length; i++) {
+    const x = (i / SimState.ecgData.length) * W;
+    const y = SimState.ecgData[i];
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function updateCabinUI() {
+  const v = SimState.patientVitals;
+  document.getElementById('vit-bpm').textContent = Math.round(v.bpm);
+  document.getElementById('vit-spo2').textContent = `${Math.round(v.spo2)}%`;
+  document.getElementById('vit-bp').textContent = v.bp;
+  document.getElementById('vit-hp').textContent = Math.round(v.hp);
+  document.getElementById('icu-rhythm').textContent = v.rhythm;
+
+  const defBtn = document.getElementById('defib-btn');
+  const defTxt = document.getElementById('defib-txt');
+  if (SimState.defibCooldown > 0) {
+    defTxt.textContent = `Şarj (${SimState.defibCooldown}s)`;
+    defBtn.disabled = true;
+  } else {
+    defTxt.textContent = 'Defibrilatör (Şok)';
+    defBtn.disabled = false;
+  }
+}
+
+// ============================================================
+// 10. LİSTE RENDERLARI
+// ============================================================
+function renderCasesList() {
+  const container = document.getElementById('cases-list');
+  container.innerHTML = '';
+  const remaining = CASES.filter(c => c.active);
+  document.getElementById('case-count-tag').textContent = `${remaining.length} Aktif Kriz`;
+
+  CASES.forEach(c => {
+    if (!c.active) return;
+    const card = document.createElement('div');
+    card.className = `case-card ${SimState.activeCase && SimState.activeCase.id === c.id ? 'active-case' : ''}`;
+    card.id = `case-card-${c.id}`;
+    card.onclick = () => selectCase(c);
+
+    card.innerHTML = `
+      <div class="case-header-row">
+        <span class="${c.priority === 1 ? 'badge-priority-1' : 'badge-priority-2'}">ÖNCELİK ${c.priority} (${c.priority === 1 ? 'KIRMIZI' : 'SARI'})</span>
+        <span class="badge-capability">${c.requiredCapability}</span>
+      </div>
+      <div class="case-title">${c.title}</div>
+      <div class="case-desc">${c.prompt}</div>
+      <div class="case-meta">
+        <span>📍 ${c.district}</span>
+        <span>⏱️ Hedef Yanıt: &lt; 10 dk</span>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderFleetList() {
+  const container = document.getElementById('fleet-list');
+  container.innerHTML = '';
+
+  FLEET_AMBULANCES.forEach(amb => {
+    const card = document.createElement('div');
+    card.className = 'fleet-card';
+    card.innerHTML = `
+      <div class="fleet-info">
+        <h5>🚑 ${amb.id} ${amb.isPlayer ? '<span style="color:#38bdf8">(SİZ)</span>' : ''}</h5>
+        <span>${amb.baseName} &bull; ${amb.capability}</span>
+      </div>
+      <div class="fleet-status-badge ${amb.deployed ? 'status-deploy' : 'status-avail'}">
+        ${amb.status}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderHospitalList() {
+  const container = document.getElementById('hosp-list');
+  container.innerHTML = '';
+
+  HOSPITALS.forEach(hosp => {
+    const card = document.createElement('div');
+    card.className = 'hosp-item';
+    card.onclick = () => {
+      SimState.assignedHospital = hosp;
+      showToast(`🏥 Sevk hedefi güncellendi: ${hosp.name}`, 'purple');
+      murf.speak(`Hasta sevk hedefi ${hosp.name} olarak belirlendi. Kırmızı alana intikal edin.`);
+    };
+
+    card.innerHTML = `
+      <div class="hosp-name">🏥 ${hosp.name}</div>
+      <div class="hosp-specs">🎯 Uzmanlık: ${hosp.specialties}</div>
+      <div class="hosp-eta">
+        <span>Kapasite: ${hosp.capacity}</span>
+        <span style="color:#38bdf8;font-weight:700">EMSTrack Rotası &gt;</span>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-cases').style.display = 'none';
+  document.getElementById('tab-fleet').style.display = 'none';
+  document.getElementById('tab-cabin').style.display = 'none';
+  document.getElementById('tab-hosp').style.display = 'none';
+
+  if (tab === 'cases') {
+    document.getElementById('btn-tab-cases').classList.add('active');
+    document.getElementById('tab-cases').style.display = 'flex';
+  } else if (tab === 'fleet') {
+    document.getElementById('btn-tab-fleet').classList.add('active');
+    document.getElementById('tab-fleet').style.display = 'flex';
+  } else if (tab === 'cabin') {
+    document.getElementById('btn-tab-cabin').classList.add('active');
+    document.getElementById('tab-cabin').style.display = 'flex';
+  } else if (tab === 'hosp') {
+    document.getElementById('btn-tab-hosp').classList.add('active');
+    document.getElementById('tab-hosp').style.display = 'flex';
+  }
+}
+
+function showToast(msg, type = 'info') {
+  const wrap = document.getElementById('toast-box');
+  if (!wrap) return;
+  const el = document.createElement('div');
+  el.className = `toast-msg ${type}`;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// Can erimesi ve defib cooldown
+setInterval(() => {
+  if (SimState.defibCooldown > 0) SimState.defibCooldown--;
+  if (SimState.currentEventType === EventType.TO_HOSPITAL && SimState.patientVitals.hp > 0) {
+    SimState.patientVitals.hp = Math.max(0, SimState.patientVitals.hp - 0.5);
+    if (SimState.patientVitals.hp <= 0) {
+      showToast('💔 HASTA KAYBEDİLDİ! Acil KPR uygulayın!', 'danger');
+      SimState.patientVitals.bpm = 0;
+      SimState.patientVitals.rhythm = 'ASİSTOLİ (KALP DURDU)';
+    }
+  }
+  updateCabinUI();
+}, 1000);
+
+// ============================================================
+// 11. ANA DÖNGÜ (60 FPS)
+// ============================================================
+function simMainLoop() {
+  updatePhysics();
+  renderMap();
+  renderEcg();
+
+  requestAnimationFrame(simMainLoop);
+}
+</script>
+</body>
+</html>
