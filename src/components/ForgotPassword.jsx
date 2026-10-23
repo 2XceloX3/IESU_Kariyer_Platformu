@@ -12,6 +12,12 @@ export default function ForgotPassword({ setView }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!auth) {
+      setError('Kimlik doğrulama servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {

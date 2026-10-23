@@ -69,6 +69,13 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
   };
 
   const createAccount = async (email, password, mockPrefix) => {
+    if (!auth) {
+      if (import.meta.env.DEV) {
+        console.warn('Firebase Auth hazır değil, geliştirme mock ID atanıyor.');
+        return `${mockPrefix}_${Date.now()}`;
+      }
+      throw new Error(REGISTRATION_UNAVAILABLE_MESSAGE);
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       try {

@@ -11,6 +11,7 @@ import eventBus from '../brain/eventBus';
 import SafeAvatar from './shared/SafeAvatar';
 import Logo from './Logo';
 import { getTenantConfig } from '../config/tenantConfig';
+import { sanitizeCSVCell } from '../utils/export';
 
 const INITIAL_COLUMNS = [
   { id: 'new', title: 'Yeni Başvuru', color: 'bg-blue-50 text-blue-900 border-blue-200' },
@@ -313,7 +314,15 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
     allApplicants.forEach(app => {
       const colId = statusToColumnId(app.rawStatus || app.status);
       const stage = columnIdToStatus(colId);
-      csv += `"${app.name}";"${app.dept}";"${app.role}";"${stage}";"%${app.match}";"${app.email}";"${app.phone}";"${app.date}"\n`;
+      const safeName = sanitizeCSVCell(app.name);
+      const safeDept = sanitizeCSVCell(app.dept);
+      const safeRole = sanitizeCSVCell(app.role);
+      const safeStage = sanitizeCSVCell(stage);
+      const safeMatch = sanitizeCSVCell(`%${app.match}`);
+      const safeEmail = sanitizeCSVCell(app.email);
+      const safePhone = sanitizeCSVCell(app.phone);
+      const safeDate = sanitizeCSVCell(app.date);
+      csv += `"${safeName}";"${safeDept}";"${safeRole}";"${safeStage}";"${safeMatch}";"${safeEmail}";"${safePhone}";"${safeDate}"\n`;
     });
 
     const encodedUri = encodeURI(csv);

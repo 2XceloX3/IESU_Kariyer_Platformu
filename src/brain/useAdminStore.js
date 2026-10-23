@@ -563,12 +563,25 @@ export const useAdminStore = create(
     },
     {
       name: 'iesu-career-admin-store',
-      partialize: (state) => ({
-        students: state.students,
-        alumni: state.alumni,
-        companies: state.companies,
-        academicStaff: state.academicStaff,
-        surveys: state.surveys,
+      partialize: (state) => {
+        const sanitizeList = (arr) => {
+          if (!Array.isArray(arr)) return [];
+          return arr.map(item => {
+            if (!item || typeof item !== 'object') return item;
+            const { password, pass, token, secret, ...clean } = item;
+            if (clean.tcKimlik && typeof clean.tcKimlik === 'string' && clean.tcKimlik.length === 11) {
+              clean.tcKimlik = clean.tcKimlik.slice(0, 4) + '*****' + clean.tcKimlik.slice(-2);
+            }
+            return clean;
+          });
+        };
+
+        return {
+          students: sanitizeList(state.students),
+          alumni: sanitizeList(state.alumni),
+          companies: sanitizeList(state.companies),
+          academicStaff: sanitizeList(state.academicStaff),
+          surveys: state.surveys,
         siteConfig: state.siteConfig,
         auditLogs: state.auditLogs,
         featureToggles: state.featureToggles,
@@ -615,9 +628,10 @@ export const useAdminStore = create(
         messages: Array.isArray(state.messages) ? state.messages.slice(-100) : [],
         mentorships: state.mentorships,
         notifications: Array.isArray(state.notifications) ? state.notifications.slice(0, 50) : []
-      })
+      };
     }
-  )
+  }
+)
 );
 
 // Managed subscriber tracking

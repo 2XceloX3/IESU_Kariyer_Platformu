@@ -1,3 +1,9 @@
+export const sanitizeCSVCell = (val) => {
+  if (val === null || val === undefined) return '';
+  const str = (typeof val === 'symbol' ? val.toString() : String(val)).replace(/"/g, '""');
+  return /^[=+\-@\t\r]/.test(str) ? "'" + str : str;
+};
+
 export const exportToCSV = (data, filename) => {
   if (!Array.isArray(data) || !data.length) {
     typeof window !== 'undefined' && typeof window.alert === 'function' 

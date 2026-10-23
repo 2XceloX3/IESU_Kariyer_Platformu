@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useAppStore from '../../store/useAppStore';
+import { sanitizeCSVCell } from '../../utils/export';
 import {
   Users,
   Building2,
@@ -266,7 +267,17 @@ export default function CMSCandidatePool() {
     csvContent += `Aday ID;Adı Soyadı;Bölüm;Hedef / Başvurulan Firma;Mevcut Aşama;Aday Uyum Skoru;Tecrübe & Beceriler;Yabancı Dil;E-posta;Telefon\n`;
 
     data.candidates.forEach(c => {
-      csvContent += `${c.id};"${c.name}";"${c.department}";"${c.company}";"${c.stage}";"%${c.matchScore}";"${c.experience}";"${c.lang}";"${c.email}";"${c.phone}"\n`;
+      const safeId = sanitizeCSVCell(c.id);
+      const safeName = sanitizeCSVCell(c.name);
+      const safeDept = sanitizeCSVCell(c.department);
+      const safeComp = sanitizeCSVCell(c.company);
+      const safeStage = sanitizeCSVCell(c.stage);
+      const safeMatch = sanitizeCSVCell(`%${c.matchScore}`);
+      const safeExp = sanitizeCSVCell(c.experience);
+      const safeLang = sanitizeCSVCell(c.lang);
+      const safeEmail = sanitizeCSVCell(c.email);
+      const safePhone = sanitizeCSVCell(c.phone);
+      csvContent += `"${safeId}";"${safeName}";"${safeDept}";"${safeComp}";"${safeStage}";"${safeMatch}";"${safeExp}";"${safeLang}";"${safeEmail}";"${safePhone}"\n`;
     });
 
     const encodedUri = encodeURI(csvContent);
