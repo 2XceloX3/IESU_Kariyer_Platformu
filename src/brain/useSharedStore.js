@@ -61,7 +61,7 @@ export const getInitialSharedState = () => ({
 
 export const useSharedStore = create(
   persist(
-    (set, get) => {
+    (set) => {
       const setter = (key) => (val) =>
         set((state) => ({ [key]: typeof val === 'function' ? val(state[key]) : val }));
 
@@ -197,7 +197,7 @@ export function initSharedStoreSubscriptions() {
     sharedStoreUnsubscribers.forEach((unsub) => {
       try {
         if (typeof unsub === 'function') unsub();
-      } catch (_) { /* intentional */ }
+      } catch { /* intentional */ }
     });
     sharedStoreUnsubscribers = [];
   }
@@ -236,7 +236,7 @@ export function initSharedStoreSubscriptions() {
     sharedStoreUnsubscribers.forEach((unsub) => {
       try {
         if (typeof unsub === 'function') unsub();
-      } catch (_) { /* intentional */ }
+      } catch { /* intentional */ }
     });
     sharedStoreUnsubscribers = [];
   };

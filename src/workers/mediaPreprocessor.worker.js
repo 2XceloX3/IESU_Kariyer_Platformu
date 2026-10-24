@@ -24,7 +24,7 @@ function readExifOrientation(buffer) {
 
     // APP1 Marker (0xFFE1) -> EXIF
     if (marker === 0xFFE1) {
-      const app1Length = view.getUint16(offset, false);
+      /* app1Length */ void view.getUint16(offset, false);
       offset += 2;
       
       // "Exif\0\0" (0x45786966 0000) kontrolü
@@ -176,7 +176,7 @@ async function processImage(data) {
   let outputBlob;
   try {
     outputBlob = await canvas.convertToBlob({ type: 'image/webp', quality });
-  } catch (_) {
+  } catch {
     outputBlob = await canvas.convertToBlob({ type: 'image/jpeg', quality });
   }
 

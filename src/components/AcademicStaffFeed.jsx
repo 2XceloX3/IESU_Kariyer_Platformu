@@ -188,6 +188,10 @@ export default function AcademicStaffFeed({
   }, [setInternships]);
 
   const handleApproveInternship = async (id, decision = 'Onaylandı') => {
+    if (effectiveCurrentUser?.role !== 'academic' && effectiveCurrentUser?.role !== 'admin') {
+      window.toast?.error?.('Yalnızca yetkili akademik danışman veya yönetici staj onaylayabilir.');
+      return;
+    }
     try {
       const { setInternshipDecision } = await import('../services/internshipsFs');
       await setInternshipDecision(id, {

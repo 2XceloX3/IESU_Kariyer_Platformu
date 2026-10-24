@@ -50,6 +50,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
   const hasAccess = isSuperAdmin || isBoardMember;
 
   const handleApproveApp = (appId) => {
+    if (!hasAccess) return;
     setAlumniAssocApplications(
       (alumniAssocApplications || []).map(a => a.id === appId ? { ...a, status: 'Onaylandı' } : a)
     );
@@ -57,6 +58,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
   };
 
   const handleRejectApp = (appId) => {
+    if (!hasAccess) return;
     setAlumniAssocApplications(
       (alumniAssocApplications || []).map(a => a.id === appId ? { ...a, status: 'Reddedildi' } : a)
     );
@@ -64,6 +66,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
   };
 
   const handleCreateAnnounce = (e) => {
+    if (!hasAccess) return;
     e.preventDefault();
     if (!newAnnounce.title || !newAnnounce.content) return;
     const created = {

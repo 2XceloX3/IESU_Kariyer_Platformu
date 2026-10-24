@@ -1,6 +1,5 @@
-import SafeAvatar from './shared/SafeAvatar';
 import React, { useState } from 'react';
-import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, Briefcase, GraduationCap } from 'lucide-react';
+import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
 import { signInWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence } from 'firebase/auth';
@@ -79,7 +78,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         s.setUserRole?.('admin');
         s.setCurrentUser?.(adminPayload);
         s.setActivePortalBranch?.('admin');
-      } catch (e) { /* intentional */ }
+      } catch { /* intentional */ }
 
       setUserRole('admin');
       if (setAcademicRole) setAcademicRole('super_admin');
@@ -186,7 +185,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
         const branchMap = { student: 'student', alumni: 'alumni', company: 'company', employer: 'company', academic: 'academic', admin: 'admin' };
         const targetBranch = branchMap[finalRole] || 'student';
         s.setActivePortalBranch?.(targetBranch);
-      } catch (e) { /* intentional */ }
+      } catch { /* intentional */ }
       setUserRole(finalRole);
       if (setCurrentUser) setCurrentUser(loggedUser);
       setView(finalRole === 'employer' ? 'company' : finalRole);
@@ -241,7 +240,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
       s.setUserRole?.(safe.role);
       s.setCurrentUser?.(safe);
       s.setActivePortalBranch?.(safe.role);
-    } catch (e) { /* intentional */ }
+    } catch { /* intentional */ }
     setUserRole(safe.role);
     if (setCurrentUser) setCurrentUser(safe);
     setView(safe.role);

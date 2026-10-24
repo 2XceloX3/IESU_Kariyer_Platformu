@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SafeAvatar from '../shared/SafeAvatar';
 import PanelHeader from './PanelHeader';
-import { MessageSquare, Bell, CheckCircle2, Send, Trash2, Search, Filter, Users, User, Building2, BookOpen } from 'lucide-react';
+import { MessageSquare, Send, Trash2, Search, Users, User, Building2, BookOpen } from 'lucide-react';
 
 import useAppStore from '../../store/useAppStore';
 

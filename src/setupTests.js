@@ -101,9 +101,9 @@ if (typeof HTMLCanvasElement !== 'undefined') {
 
 // Browser dialogs, scroll, and toast mocks
 if (typeof window !== 'undefined') {
-  window.alert = window.alert || vi.fn();
-  window.confirm = window.confirm || vi.fn(() => true);
-  window.scrollTo = window.scrollTo || vi.fn();
+  window.alert = vi.fn();
+  window.confirm = vi.fn(() => true);
+  window.scrollTo = vi.fn();
   window.toast = window.toast || {
     success: vi.fn(),
     error: vi.fn(),

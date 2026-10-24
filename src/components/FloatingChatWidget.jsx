@@ -892,6 +892,10 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
 
   // Handler: Academic approves counseling
   const handleApproveCounseling = (reqId) => {
+    if (!isAcademic && !isAdmin && currentUser?.role !== 'academic' && currentUser?.role !== 'admin') {
+      window.toast?.error?.('Yalnızca danışman akademisyen veya sistem yöneticisi randevu onaylayabilir.');
+      return;
+    }
     const updated = requests.map(r => r.id === reqId ? { ...r, status: 'Onaylandı' } : r);
     saveCounselingRequests(updated);
     if (activeReq?.id === reqId) {
@@ -2542,7 +2546,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
                       </div>
                     )}
 
-                    {activeReq.status !== 'Onaylandı' && (
+                    {activeReq.status !== 'Onaylandı' && (isAcademic || isAdmin || currentUser?.role === 'academic' || currentUser?.role === 'admin') && (
                       <button 
                         type="button"
                         onClick={() => handleApproveCounseling(activeReq.id)}

@@ -9,6 +9,9 @@ vi.mock('../utils/firebase', () => ({ auth: {}, db: {} }));
 vi.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: vi.fn(),
   signOut: vi.fn(),
+  setPersistence: vi.fn(() => Promise.resolve()),
+  browserSessionPersistence: 'SESSION',
+  browserLocalPersistence: 'LOCAL',
 }));
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn(() => ({})),

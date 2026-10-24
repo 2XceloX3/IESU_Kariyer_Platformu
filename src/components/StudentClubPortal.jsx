@@ -235,6 +235,11 @@ export default function StudentClubPortal({
   // President / Officer: Approve Member Application
   const handleApproveMemberApplication = (appId) => {
     if (!selectedClub) return;
+    const canManageClub = isAdmin || isDean || (myManagedClubs || []).some(c => c.id === selectedClub.id);
+    if (!canManageClub) {
+      toast.error('Bu işlemi yalnızca yetkili kulüp yöneticisi gerçekleştirebilir.');
+      return;
+    }
     const targetApp = (selectedClub.memberApplications || []).find(a => a.id === appId);
     if (!targetApp) return;
 
@@ -273,6 +278,11 @@ export default function StudentClubPortal({
   // President / Officer: Reject Member Application
   const handleRejectMemberApplication = (appId) => {
     if (!selectedClub) return;
+    const canManageClub = isAdmin || isDean || (myManagedClubs || []).some(c => c.id === selectedClub.id);
+    if (!canManageClub) {
+      toast.error('Bu işlemi yalnızca yetkili kulüp yöneticisi gerçekleştirebilir.');
+      return;
+    }
     const updatedApps = (selectedClub.memberApplications || []).filter(a => a.id !== appId);
     const updatedClub = {
       ...selectedClub,
