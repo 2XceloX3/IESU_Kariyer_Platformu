@@ -31,6 +31,7 @@ export const OBS_STANDARDS = {
 export const OBS_VERIFICATION_STATUS = {
   UNVERIFIED: 'UNVERIFIED',
   PENDING: 'PENDING',
+  UNVERIFIED_PENDING_REGISTRAR: 'UNVERIFIED_PENDING_REGISTRAR',
   VERIFIED: 'VERIFIED',
   REJECTED: 'REJECTED',
 };
@@ -38,6 +39,7 @@ export const OBS_VERIFICATION_STATUS = {
 export const OBS_VERIFICATION_STATUS_LABELS = {
   UNVERIFIED: 'Doğrulanmamış Beyan',
   PENDING: 'OBS Doğrulaması Bekleniyor',
+  UNVERIFIED_PENDING_REGISTRAR: 'OBS Doğrulaması Bekleniyor (Öğrenci İşleri Onayı Gerekli)',
   VERIFIED: 'İESÜ OBS & YÖKSİS Doğrulanmış',
   REJECTED: 'Doğrulama Başarısız / Uyuşmazlık',
 };
@@ -529,34 +531,33 @@ export function verifyStudentObsRecord(declaredData = {}, options = {}) {
 
   if (isValidFormatNo && options.allowDynamicVerification !== false) {
     const rawGanoNum = declaredGano != null ? parseFloat(String(declaredGano).replace(',', '.')) : null;
-    const safeGano = rawGanoNum !== null && !isNaN(rawGanoNum) ? Math.min(4.0, Math.max(0.0, rawGanoNum)) : 3.50;
-    const dynamicCode = generateObsVerificationCode(cleanNo || cleanId, safeGano);
+    const safeGano = rawGanoNum !== null && !isNaN(rawGanoNum) ? Math.min(4.0, Math.max(0.0, rawGanoNum)) : null;
 
     return {
-      verified: true,
-      status: OBS_VERIFICATION_STATUS.VERIFIED,
-      verificationCode: dynamicCode,
-      verifiedAt: verificationTimestamp,
-      verificationSource: 'OBS & YÖKSİS Dinamik Doğrulama',
-      badge: OBS_STANDARDS.BADGE_LABEL,
-      badgeLabel: OBS_STANDARDS.BADGE_LABEL,
+      verified: false,
+      status: OBS_VERIFICATION_STATUS.UNVERIFIED_PENDING_REGISTRAR,
+      verificationCode: null,
+      verifiedAt: null,
+      verificationSource: 'Doğrulanmamış Öğrenci Beyanı (Öğrenci İşleri Onayı Bekleniyor)',
+      badge: null,
+      badgeLabel: OBS_VERIFICATION_STATUS_LABELS.UNVERIFIED_PENDING_REGISTRAR,
       authorizedUnit: OBS_STANDARDS.REGISTRAR_UNIT,
-      rectorateTitle: OBS_STANDARDS.RECTORATE_TITLE,
+      rectorateTitle: null,
       studentNo: cleanNo || '2023010999',
       studentId: cleanId || 'STU-GEN',
-      fullName: declaredData.name || declaredData.fullName || 'Doğrulanmış Öğrenci',
+      fullName: declaredData.name || declaredData.fullName || 'Kayıtsız Öğrenci',
       tcNoMasked: maskTckn(cleanTc || '10000000000'),
       department: declaredDepartment || 'Bilgisayar Mühendisliği',
       faculty: declaredData.faculty || 'Mühendislik ve Mimarlık Fakültesi',
       grade: declaredGrade || '3. Sınıf',
-      gano: Number(safeGano.toFixed(2)),
-      gpa: Number(safeGano.toFixed(2)),
-      completedEcts: 180,
+      gano: safeGano,
+      gpa: safeGano,
+      completedEcts: declaredData.completedEcts || 0,
       totalEcts: 240,
-      academicStatus: 'Aktif Öğrenci',
-      advisorName: declaredData.advisorName || 'Doç. Dr. Selin Kaya',
-      advisorTitle: 'Bölüm Kariyer Danışmanı',
-      discrepancy: { detected: false, resolution: 'Dinamik OBS doğrulaması onaylandı.' },
+      academicStatus: 'Öğrenci İşleri Onayı Bekleniyor',
+      advisorName: declaredData.advisorName || null,
+      advisorTitle: null,
+      discrepancy: { detected: true, declaredGano: rawGanoNum, officialGano: null, resolution: 'Kayıt resmi OBS arşivinde bulunamadı; Öğrenci İşleri Daire Başkanlığı onayı bekleniyor.' },
       semCertifications: declaredData.certifications || [],
       clubs: declaredData.clubs || [],
     };
@@ -692,8 +693,11 @@ export function generateQrCodeSvg(dataUrlOrText, size = 100) {
 export function generateOfficialKgbDocument(studentData = {}, options = {}) {
   // 1. OBS Doğrulama Bilgilerinin Temini / Reconcile Edilmesi
   const obsVerification = verifyStudentObsRecord(studentData, {
-    allowDynamicVerification: true,
+    allowDynamicVerification: false,
+    ...(options || {})
   });
+
+  const isOfficial = obsVerification.verified === true && obsVerification.status === OBS_VERIFICATION_STATUS.VERIFIED;
 
   const verifiedStudentNo = obsVerification.studentNo || studentData.studentNo || '2023010482';
   const studentId = studentData.id || obsVerification.studentId || 'STU-01';
@@ -701,13 +705,13 @@ export function generateOfficialKgbDocument(studentData = {}, options = {}) {
   const department = obsVerification.department || studentData.department || 'Bilgisayar Mühendisliği';
   const faculty = obsVerification.faculty || studentData.faculty || 'Mühendislik ve Mimarlık Fakültesi';
   const grade = obsVerification.grade || studentData.grade || '3. Sınıf';
-  const gano = obsVerification.gano || 3.84;
-  const obsCode = obsVerification.verificationCode || generateObsVerificationCode(verifiedStudentNo, gano);
+  const gano = obsVerification.gano || (isOfficial ? 3.84 : (studentData.gano ?? studentData.gpa ?? 0));
+  const obsCode = isOfficial ? (obsVerification.verificationCode || generateObsVerificationCode(verifiedStudentNo, gano)) : null;
 
   // 2. Resmî Belge No ve Doğrulama Bağlantısı
-  const kgbCode = generateKgbCode(new Date().getFullYear(), verifiedStudentNo);
-  const verificationUrl = `https://kariyer.esenyurt.edu.tr/dogrula/kgb?kod=${kgbCode}&obs=${obsCode}`;
-  const qrSvg = generateQrCodeSvg(verificationUrl, 110);
+  const kgbCode = isOfficial ? generateKgbCode(new Date().getFullYear(), verifiedStudentNo) : `DRAFT-KGB-${verifiedStudentNo}`;
+  const verificationUrl = isOfficial ? `https://kariyer.esenyurt.edu.tr/dogrula/kgb?kod=${kgbCode}&obs=${obsCode}` : null;
+  const qrSvg = isOfficial ? generateQrCodeSvg(verificationUrl, 110) : null;
 
   // 3. Adım 1 Resmî Staj Kayıtlarının Entegrasyonu
   // Öncelik: Öğrencinin kendi stajları veya Adım 1'deki kurumsal staj arşivi
@@ -855,38 +859,38 @@ export function generateOfficialKgbDocument(studentData = {}, options = {}) {
   const signatureBlocks = {
     advisor: {
       title: 'Kariyer Danışmanı & Bölüm Temsilcisi',
-      name: obsVerification.advisorName || studentData.advisorName || 'Doç. Dr. Selin Kaya',
-      signed: true,
-      signatureDate: '15 Mart 2026',
-      badge: '✓ E-İmzalanmıştır (Mobil İmza: 5070 Sayılı Kanun Uyumlu)',
+      name: obsVerification.advisorName || studentData.advisorName || (isOfficial ? 'Doç. Dr. Selin Kaya' : 'Atanmamış Danışman'),
+      signed: isOfficial,
+      signatureDate: isOfficial ? '15 Mart 2026' : null,
+      badge: isOfficial ? '✓ E-İmzalanmıştır (Mobil İmza: 5070 Sayılı Kanun Uyumlu)' : 'İmza Bekleniyor',
     },
     coordinator: {
       title: 'Kariyer Geliştirme Koordinatörlüğü',
       unit: OBS_STANDARDS.COORDINATOR_UNIT,
-      signed: true,
-      signatureDate: '15 Mart 2026',
-      badge: '✓ Resmî Belge Olarak Tescillidir',
+      signed: isOfficial,
+      signatureDate: isOfficial ? '15 Mart 2026' : null,
+      badge: isOfficial ? '✓ Resmî Belge Olarak Tescillidir' : 'Onay Bekleniyor',
     },
     rectorate: {
-      title: 'T.C. İSTANBUL ESENYURT ÜNİVERSİTESİ REKTÖRLÜĞÜ',
-      name: 'Prof. Dr. Rektörlük Makamı',
-      signed: true,
-      signatureDate: '15 Mart 2026',
-      badge: '✓ Diploma Eki Olarak Onaylanmıştır',
+      title: isOfficial ? OBS_STANDARDS.RECTORATE_TITLE : 'ONAYSIZ TASLAK',
+      name: isOfficial ? 'Prof. Dr. Rektörlük Makamı' : 'Onay Bekliyor',
+      signed: isOfficial,
+      signatureDate: isOfficial ? '15 Mart 2026' : null,
+      badge: isOfficial ? '✓ Diploma Eki Olarak Onaylanmıştır' : 'Öğrenci İşleri Onayı Bekleniyor',
     }
   };
 
   const documentPayload = {
     documentId: kgbCode,
     documentTitle: OBS_STANDARDS.KGB_TITLE,
-    documentType: 'Resmi Diploma Eki ve Yetenek Karnesi',
+    documentType: isOfficial ? 'Resmi Diploma Eki ve Yetenek Karnesi' : 'Taslak Yetenek Karnesi (Onaysız)',
     institutionName: OBS_STANDARDS.INSTITUTION_NAME,
-    rectorateTitle: OBS_STANDARDS.RECTORATE_TITLE,
+    rectorateTitle: isOfficial ? OBS_STANDARDS.RECTORATE_TITLE : null,
     coordinatorUnit: OBS_STANDARDS.COORDINATOR_UNIT,
     registrarUnit: OBS_STANDARDS.REGISTRAR_UNIT,
     legalBasis: OBS_STANDARDS.LEGAL_FRAMEWORK,
     kvkkBasis: OBS_STANDARDS.KVKK_FRAMEWORK,
-    sealText: OBS_STANDARDS.SEAL_TEXT,
+    sealText: isOfficial ? OBS_STANDARDS.SEAL_TEXT : 'TASLAK BELGE - RESMÎ OBS DOĞRULAMASI OLMADAN GEÇERSİZDİR',
     
     // Öğrenci Kimlik ve OBS Doğrulanmış Bilgileri
     student: {
@@ -898,11 +902,11 @@ export function generateOfficialKgbDocument(studentData = {}, options = {}) {
       faculty,
       grade,
       gano,
-      academicStatus: obsVerification.academicStatus || 'Aktif Öğrenci',
+      academicStatus: obsVerification.academicStatus || (isOfficial ? 'Aktif Öğrenci' : 'Öğrenci İşleri Onayı Bekleniyor'),
       obsVerificationCode: obsCode,
-      obsVerifiedAt: obsVerification.verifiedAt,
+      obsVerifiedAt: isOfficial ? obsVerification.verifiedAt : null,
       obsVerificationStatus: obsVerification.status,
-      obsBadge: OBS_STANDARDS.BADGE_LABEL,
+      obsBadge: isOfficial ? OBS_STANDARDS.BADGE_LABEL : 'Doğrulanmamış Taslak',
     },
 
     // 4 Ana İçerik Bloğu
@@ -942,6 +946,8 @@ export function generateOfficialKgbDocument(studentData = {}, options = {}) {
 
     // Güvenlik & Doğrulama
     verification: {
+      isOfficial,
+      isDraft: !isOfficial,
       kgbCode,
       obsVerificationCode: obsCode,
       verificationUrl,

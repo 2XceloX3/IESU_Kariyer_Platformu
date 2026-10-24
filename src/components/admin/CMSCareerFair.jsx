@@ -227,6 +227,20 @@ const CMSCareerFair = () => {
             assignedCompanyName: modalSelectedStatus === 'Boş' ? null : companyToAssign
           };
         }
+        if (
+          companyToAssign &&
+          modalSelectedStatus !== 'Boş' &&
+          ((s.assignedCompanyName && s.assignedCompanyName.trim().toLowerCase() === companyToAssign.trim().toLowerCase()) || (companyId && s.assignedCompanyId === companyId)) &&
+          s.id !== activeModalStand.id &&
+          s.code !== activeModalStand.code
+        ) {
+          return {
+            ...s,
+            status: 'Boş',
+            assignedCompanyId: null,
+            assignedCompanyName: null
+          };
+        }
         return s;
       });
       if (setCareerFairStands) setCareerFairStands(updatedStands);

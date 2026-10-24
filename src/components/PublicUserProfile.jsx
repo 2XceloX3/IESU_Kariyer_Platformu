@@ -67,52 +67,14 @@ export default function PublicUserProfile({
     if (user?.isSelf === true) return true;
     if (!effectiveTargetId || effectiveTargetId === 'self' || effectiveTargetId === 'me' || userId === 'self' || userId === 'me') return true;
     if (effectiveCurrentUser) {
-      if (effectiveCurrentUser.id && (String(effectiveTargetId) === String(effectiveCurrentUser.id) || (user?.id && String(user.id) === String(effectiveCurrentUser.id)))) return true;
-      if (effectiveCurrentUser.uid && (String(effectiveTargetId) === String(effectiveCurrentUser.uid) || (user?.uid && String(user.uid) === String(effectiveCurrentUser.uid)))) return true;
-      if (effectiveCurrentUser.studentId && (String(effectiveTargetId) === String(effectiveCurrentUser.studentId) || (user?.studentId && String(user.studentId) === String(effectiveCurrentUser.studentId)))) return true;
-      if (effectiveCurrentUser.studentNo && (String(effectiveTargetId) === String(effectiveCurrentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(effectiveCurrentUser.studentNo)))) return true;
-      if (effectiveCurrentUser.username && (String(effectiveTargetId).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase() || (user?.username && String(user.username).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase()))) return true;
-      if (effectiveCurrentUser.email && (String(effectiveTargetId).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase() || (user?.email && String(user.email).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase()))) return true;
-      if (effectiveCurrentUser.name && user?.name && effectiveCurrentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
-      if (effectiveCurrentUser.name && String(effectiveTargetId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase()) return true;
-    }
-    const currentBranch = viewerHive || activePortalBranch || effectiveCurrentUser?.role || 'student';
-    const targetStr = String(effectiveTargetId || '').trim().toLowerCase();
-    const userStr = String(user?.id || '').trim().toLowerCase();
-
-    if (currentBranch === 'admin') {
-      if (targetStr === 'admin_1513' || userStr === 'admin_1513' || targetStr === 'admin' || userStr === 'admin') return true;
-    }
-    if (currentBranch === 'student') {
-      if (['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(targetStr) || ['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(userStr)) {
-        if (['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
-          return true;
-        }
-      }
-    }
-    if (currentBranch === 'alumni') {
-      if (['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(targetStr) || ['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(userStr)) {
-        if (['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
-          return true;
-        }
-      }
-    }
-    if (currentBranch === 'academic') {
-      if (['acad-001', 'acad-01', 'acad-1'].includes(targetStr) || ['acad-001', 'acad-01', 'acad-1'].includes(userStr)) {
-        if (['acad-001', 'acad-01'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
-          return true;
-        }
-      }
-    }
-    if (currentBranch === 'company') {
-      if (['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(targetStr) || ['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(userStr)) {
-        if (['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser?.id || '').toLowerCase())) {
-          return true;
-        }
-      }
+      const targetStr = String(effectiveTargetId).trim();
+      if (effectiveCurrentUser.id && targetStr === String(effectiveCurrentUser.id)) return true;
+      if (effectiveCurrentUser.uid && targetStr === String(effectiveCurrentUser.uid)) return true;
+      if (user?.id && effectiveCurrentUser.id && String(user.id) === String(effectiveCurrentUser.id)) return true;
+      if (user?.uid && effectiveCurrentUser.uid && String(user.uid) === String(effectiveCurrentUser.uid)) return true;
     }
     return false;
-  }, [user, userId, effectiveTargetId, currentUser, storeCurrentUser, effectiveCurrentUser, viewerHive, activePortalBranch]);
+  }, [user, userId, effectiveTargetId, effectiveCurrentUser]);
 
   // ─── 1. HEDEF KULLANICIYI ÇÖZÜMLE (VERİ TABANI & MOCK POOL) ───
   useEffect(() => {
@@ -128,8 +90,7 @@ export default function PublicUserProfile({
     if (targetId === 'self' || targetId === 'me' || (effectiveCurrentUser && (
       targetId === effectiveCurrentUser.id || 
       targetId === effectiveCurrentUser.uid || 
-      (effectiveCurrentUser.studentNo && targetId === effectiveCurrentUser.studentNo) ||
-      (effectiveCurrentUser.name && targetId.trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase())
+      (effectiveCurrentUser.studentNo && targetId === effectiveCurrentUser.studentNo)
     ))) {
       const selfRole = effectiveCurrentUser?.role || activePortalBranch || viewerHive || 'student';
       const selfId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || (selfRole === 'alumni' ? 'ALU-001' : selfRole === 'academic' ? 'ACAD-001' : selfRole === 'company' ? 'CMP-001' : selfRole === 'admin' ? 'admin_1513' : 'STU-001');

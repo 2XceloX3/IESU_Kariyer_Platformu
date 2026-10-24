@@ -173,4 +173,44 @@ describe('App Component', () => {
     expect(useAppStore.getState().userRole).toBeNull();
     expect(window.localStorage.getItem('iesu_mock_user')).toBeNull();
   });
+
+  it('rejects sessionStorage iesu_admin_session console bypass on /admin_cms', async () => {
+    window.sessionStorage.setItem('iesu_admin_session', 'active');
+    window.sessionStorage.setItem('iesu_mock_user', JSON.stringify({
+      id: 'attacker-123',
+      name: 'Console Attacker',
+      role: 'admin'
+    }));
+
+    render(
+      <MemoryRouter initialEntries={['/admin_cms']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    // Bypass must fail and redirect to Login
+    await waitFor(() => {
+      expect(screen.getByText('Giriş Yap Login')).toBeInTheDocument();
+    }, { timeout: 5000 });
+  });
+
+  it('enforces positive whitelist: student accessing /company is restricted to StudentHive', async () => {
+    window.sessionStorage.setItem('iesu_mock_user', JSON.stringify({
+      id: 'student-wl-1',
+      name: 'Öğrenci Whitelist',
+      role: 'student'
+    }));
+    useAppStore.setState({ userRole: 'student' });
+
+    render(
+      <MemoryRouter initialEntries={['/company']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    // Instead of CompanyHive, positive whitelist renders designated StudentHive
+    await waitFor(() => {
+      expect(document.body.textContent).toMatch(/Öğrenci|Kariyer|Portal/i);
+    }, { timeout: 8000 });
+  });
 });

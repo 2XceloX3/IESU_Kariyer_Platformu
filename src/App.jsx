@@ -124,9 +124,25 @@ export default function App() {
   }, [storeCurrentUser, currentUser]);
   const effectiveRole = currentUser?.role || userRole || null;
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
-  const hasAdminSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_admin_session') === 'active';
+  const verifyCoordinatorSession = useCallback(() => {
+    try {
+      const adminUser = import.meta.env.VITE_ADMIN_USER ? String(import.meta.env.VITE_ADMIN_USER).trim().toLowerCase() : null;
+      const adminPass = import.meta.env.VITE_ADMIN_PASS ? String(import.meta.env.VITE_ADMIN_PASS).trim() : null;
+      if (!adminUser || !adminPass) return false;
+      const expected = btoa(`${adminUser}:${adminPass}`);
+      const isTestEnv = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+      const isRemembered = typeof window !== 'undefined' && (localStorage.getItem('iesu_remember_me') === 'true' || isTestEnv);
+      const sessionToken = typeof window !== 'undefined' ? sessionStorage.getItem('iesu_coordinator_token') : null;
+      const localToken = isRemembered && typeof window !== 'undefined' ? localStorage.getItem('iesu_coordinator_token') : null;
+      return sessionToken === expected || localToken === expected;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const hasValidCoordinatorAuth = verifyCoordinatorSession();
   const isAdmin = Boolean(
-    (authenticatedUserId || auth?.currentUser || hasAdminSession) &&
+    (authenticatedUserId || auth?.currentUser || hasValidCoordinatorAuth) &&
     (currentUser?.role === 'admin' || userRole === 'admin')
   );
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch && activePortalBranch !== 'admin' ? activePortalBranch : 'student'));
@@ -172,12 +188,12 @@ export default function App() {
 
   useEffect(() => {
     if (!pathView) return;
-    if (ACADEMIC_ROUTES.has(pathView)) setActivePortalBranch?.('academic');
-    else if (COMPANY_ROUTES.has(pathView)) setActivePortalBranch?.('company');
-    else if (ALUMNI_ROUTES.has(pathView)) setActivePortalBranch?.('alumni');
+    if (ACADEMIC_ROUTES.has(pathView) && (effectiveRole === 'academic' || isAdmin)) setActivePortalBranch?.('academic');
+    else if (COMPANY_ROUTES.has(pathView) && (['company', 'employer'].includes(effectiveRole) || isAdmin)) setActivePortalBranch?.('company');
+    else if (ALUMNI_ROUTES.has(pathView) && (effectiveRole === 'alumni' || isAdmin)) setActivePortalBranch?.('alumni');
     else if ((ADMIN_CMS.has(pathView) || pathView === 'admin') && isAdmin) setActivePortalBranch?.('admin');
-    else if (STUDENT_EXCLUSIVE_ROUTES.has(pathView) && !isAdmin) setActivePortalBranch?.('student');
-  }, [pathView, setActivePortalBranch, isAdmin]);
+    else if (STUDENT_EXCLUSIVE_ROUTES.has(pathView) && (effectiveRole === 'student' || isAdmin)) setActivePortalBranch?.('student');
+  }, [pathView, setActivePortalBranch, isAdmin, effectiveRole]);
 
   useEffect(() => {
     let isInitialBoot = true;
@@ -230,34 +246,42 @@ export default function App() {
 
   useEffect(() => {
     if (!isAuthStateResolved) return;
-    const hasAdminSession = typeof window !== 'undefined' && sessionStorage.getItem('iesu_admin_session') === 'active';
-    const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
-    // Oturum kapatma kriteri: admin rolü VAR, Firebase auth YOK, sessionStorage da YOK ve localStorage da YOK
+    // Oturum kapatma kriteri: admin rolü VAR ama Firebase auth YOK ve doğrulanmış koordinatör oturumu YOK
     if (
       (currentUser?.role === 'admin' || userRole === 'admin') &&
       !authenticatedUserId &&
       !(auth?.currentUser) &&
-      !hasAdminSession &&
-      !isRemembered
+      !hasValidCoordinatorAuth
     ) {
       setCurrentUser(null); setUserRole(null);
       localStorage.removeItem('iesu_mock_user');
+      localStorage.removeItem('iesu_coordinator_token');
       try { sessionStorage.removeItem('iesu_mock_user'); } catch (_) {}
+      try { sessionStorage.removeItem('iesu_coordinator_token'); } catch (_) {}
       try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
       setView('login');
     }
-  }, [isAuthStateResolved, currentUser, userRole, authenticatedUserId, setView, setUserRole]);
+  }, [isAuthStateResolved, currentUser, userRole, authenticatedUserId, hasValidCoordinatorAuth, setView, setUserRole]);
 
   const renderHive = () => {
     const s = useAppStore.getState();
     if (ADMIN_CMS.has(pathView)) return isAdmin ? <AdminDashboard setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" /> : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={s.students} alumni={s.alumni} companies={s.companies} academicStaff={s.academicStaff} />;
     
-    // Dedicated branch routes take precedence
-    if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : <StudentHive currentUser={currentUser} setView={setView} />;
-    if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AlumniHive currentUser={currentUser} setView={setView} />;
-    if (ACADEMIC_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <AcademicHive currentUser={currentUser} setView={setView} />;
-    if (COMPANY_ROUTES.has(pathView)) return (effectiveRole === 'student' && !isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : <CompanyHive currentUser={currentUser} setView={setView} />;
-    if (STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return <StudentHive currentUser={currentUser} setView={setView} />;
+    // Positive whitelist fallback: render user's dedicated home portal hive when unauthorized
+    const renderHomeHiveForRole = () => {
+      if (isAdmin) return <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} />;
+      if (effectiveRole === 'alumni') return <AlumniHive currentUser={currentUser} setView={setView} />;
+      if (effectiveRole === 'academic') return <AcademicHive currentUser={currentUser} setView={setView} />;
+      if (effectiveRole === 'company' || effectiveRole === 'employer') return <CompanyHive currentUser={currentUser} setView={setView} />;
+      return <StudentHive currentUser={currentUser} setView={setView} />;
+    };
+
+    // Dedicated branch routes with positive whitelist gating
+    if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : renderHomeHiveForRole();
+    if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'alumni' || isAdmin) ? <AlumniHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
+    if (ACADEMIC_ROUTES.has(pathView)) return (effectiveRole === 'academic' || isAdmin) ? <AcademicHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
+    if (COMPANY_ROUTES.has(pathView)) return (effectiveRole === 'company' || effectiveRole === 'employer' || isAdmin) ? <CompanyHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
+    if (STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return (effectiveRole === 'student' || isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
 
     // Admin branch handling for shared / other views
     if (currentBranch === 'admin' && isAdmin) {

@@ -73,7 +73,7 @@ Kısa, net, samimi, markdown (kalın yazı, madde imleri) kullanan ve emoji bar�
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60]">
+    <div className={isOpen ? 'fixed bottom-6 right-3 sm:right-24 z-50' : 'fixed bottom-44 sm:bottom-26 right-3 sm:right-6 z-40'}>
       {isOpen ? (
         <div className={`${isExpanded ? 'w-[600px] h-[700px] fixed bottom-6 right-6' : 'w-80 sm:w-[400px] h-[550px]'} bg-white/90 backdrop-blur-xl rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-white flex flex-col overflow-hidden animate-fade-in transition-all duration-300`}>
           

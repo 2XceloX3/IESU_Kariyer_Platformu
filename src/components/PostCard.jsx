@@ -379,7 +379,22 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     }
   }, [newComment, comments, currentUser?.name, currentUser?.id, post?.id, setPosts]);
 
+  const postAuthorId = post?.authorId || (typeof post?.author === 'object' ? post?.author?.id : null);
+  const canEdit = Boolean(
+    currentUser?.role === 'admin' ||
+    (currentUser?.id && postAuthorId && String(currentUser.id) === String(postAuthorId))
+  );
+
   const handleDeleteComment = useCallback((commentId) => {
+    const targetComment = comments.find(c => c.id === commentId);
+    if (!targetComment) return;
+    const canDeleteComment = Boolean(
+      currentUser?.role === 'admin' ||
+      (targetComment.authorId && currentUser?.id && String(currentUser.id) === String(targetComment.authorId)) ||
+      (postAuthorId && currentUser?.id && String(currentUser.id) === String(postAuthorId))
+    );
+    if (!canDeleteComment) return;
+
     const updatedComments = comments.filter(c => c.id !== commentId);
     setComments(updatedComments);
     if (setPosts) {
@@ -389,7 +404,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           : p
       ));
     }
-  }, [comments, post?.id, setPosts]);
+  }, [comments, post?.id, postAuthorId, currentUser?.role, currentUser?.id, setPosts]);
 
   const handleCopyLink = useCallback(() => {
     const shareUrl = typeof window !== 'undefined' && window.location?.origin 
@@ -454,23 +469,23 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   }, [shareTarget, shareText, post?.content, currentUser?.id, setMessages]);
 
   const handleSaveEdit = useCallback(() => {
+    if (!canEdit) return;
     if (setPosts) {
       const sanitizedContent = DOMPurify.sanitize(editContent);
       setPosts(prev => prev.map(p => p.id === post.id ? { ...p, content: sanitizedContent } : p));
     }
     setIsEditing(false);
     setIsMenuOpen(false);
-  }, [post?.id, editContent, setPosts]);
+  }, [canEdit, post?.id, editContent, setPosts]);
 
   const handleDelete = useCallback(() => {
+    if (!canEdit) return;
     if (window.confirm("Bu gönderiyi silmek istediğinize emin misiniz?")) {
       if (setPosts) {
         setPosts(prev => prev.filter(p => p.id !== post.id));
       }
     }
-  }, [post?.id, setPosts]);
-
-  const canEdit = currentUser?.role === 'admin' || currentUser?.name === post.author?.name;
+  }, [canEdit, post?.id, setPosts]);
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] shadow-[var(--shadow-soft)] overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
@@ -1339,7 +1354,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                     <span className="font-bold text-[13px] text-gray-900">{comment.author}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] text-gray-500 font-medium">{comment.time}</span>
-                      {(currentUser?.role === 'admin' || currentUser?.name === comment.author || (comment.authorId && currentUser?.id === comment.authorId)) && (
+                      {(currentUser?.role === 'admin' || (comment.authorId && currentUser?.id && String(currentUser.id) === String(comment.authorId)) || (postAuthorId && currentUser?.id && String(currentUser.id) === String(postAuthorId))) && (
                         <button 
                           onClick={() => handleDeleteComment(comment.id)}
                           title="Yorumu Sil"

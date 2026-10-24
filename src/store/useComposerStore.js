@@ -6,7 +6,7 @@
 
 import { create } from 'zustand';
 import { preprocessMediaFile, getClosestPreset } from '../services/mediaPreprocessor';
-import { saveDraft, getDraft, deleteDraft } from '../services/draftStorage';
+import { saveDraft, getDraft, deleteDraft, deleteBlob } from '../services/draftStorage';
 import { uploadResumableMedia } from '../services/ruploadClient';
 import eventBus from '../brain/eventBus';
 
@@ -409,9 +409,17 @@ export const useComposerStore = create((set, get) => ({
         }
       } catch (_) {}
 
-      // Taslağı temizle
+      // Taslağı ve ilişkili Blob depolamasını temizle (bellek sızıntısı önleme)
       if (get().activeDraftId) {
         deleteDraft(get().activeDraftId).catch(() => {});
+      }
+      for (const slide of slides) {
+        if (slide?.blobId) {
+          deleteBlob(slide.blobId).catch(() => {});
+        }
+        if (slide?.id) {
+          deleteBlob(slide.id).catch(() => {});
+        }
       }
 
       if (typeof onFinalPublished === 'function') {

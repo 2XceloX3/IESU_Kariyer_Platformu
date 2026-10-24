@@ -453,9 +453,10 @@ export const useAdminStore = create(
           set((state) => {
             const targetStand = (state.careerFairStands || []).find((s) => s.id === standId || s.code === standId);
             const standCode = targetStand ? targetStand.code : standId;
+            const targetId = targetStand ? targetStand.id : standId;
 
             const updatedStands = (state.careerFairStands || []).map((s) => {
-              if (s.id === standId || s.code === standId) {
+              if (s.id === targetId || s.code === standCode) {
                 return {
                   ...s,
                   status: newStatus,
@@ -463,7 +464,13 @@ export const useAdminStore = create(
                   assignedCompanyName: newStatus === 'Boş' ? null : companyName
                 };
               }
-              if (companyName && newStatus !== 'Boş' && s.assignedCompanyName === companyName && s.code !== standCode) {
+              if (
+                companyName &&
+                newStatus !== 'Boş' &&
+                ((s.assignedCompanyName && s.assignedCompanyName.trim().toLowerCase() === companyName.trim().toLowerCase()) || (companyId && s.assignedCompanyId === companyId)) &&
+                s.id !== targetId &&
+                s.code !== standCode
+              ) {
                 return {
                   ...s,
                   status: 'Boş',
@@ -506,7 +513,8 @@ export const useAdminStore = create(
               careerFairStands: updatedStands,
               careerFairApplications: updatedApps,
               auditLogs: [auditLog, ...(state.auditLogs || [])].slice(0, 100),
-              notifications: [newNotif, ...(state.notifications || [])].slice(0, 50)
+              notifications: [newNotif, ...(state.notifications || [])].slice(0, 50),
+              unreadNotificationsCount: (state.unreadNotificationsCount || 0) + 1
             };
           }),
 

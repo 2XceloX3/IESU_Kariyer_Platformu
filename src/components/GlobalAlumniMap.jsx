@@ -228,7 +228,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
     if (preset.id === 'duzce_corridor') {
       setShowRoutes(true);
       setRouteOriginFilter('Düzce');
-      setTooltipContent("🌲 Düzce ➔ Avrupa & Global Kariyer Koridoru (3.06z)");
+      setTooltipContent("🌲 İstanbul / Esenyurt ➔ Avrupa & Global Kariyer Koridoru (3.06z)");
     }
   };
 
@@ -967,7 +967,7 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
               <button
                 onClick={() => setPosition({ coordinates: [10, 44], zoom: 3.06 })}
                 className="px-1.5 py-0.5 rounded hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 transition font-bold"
-                title="3.06z Düzce Koridor Görünümü"
+                title="3.06z İstanbul / Esenyurt ➔ Avrupa & Global Kariyer Koridoru (3.06z Düzce Koridor Görünümü)"
               >
                 3.06z
               </button>

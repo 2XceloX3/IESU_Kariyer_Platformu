@@ -502,7 +502,7 @@ export default function AdminDashboard({
                 onClick={() => setShowSecretModal(true)}
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
               >
-                Güvenlik Kodunu Gir (389834)
+                Güvenlik Protokol Kodunu Doğrula
               </button>
             </div>
           );

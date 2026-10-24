@@ -1109,8 +1109,8 @@ export const CAREER_ROUTES = [
     alumniCount: 120,
     corridor: 'Almanya Otomotiv & İleri İmalat Koridoru',
     originHub: 'Düzce',
-    title: 'Düzce ➔ Stuttgart Otomotiv Koridoru',
-    description: 'Düzce ve çevre sanayi kümelenmesi mühendislerinin Stuttgart merkezli küresel otomotiv devlerine uzanan kariyer ve staj hattı.'
+    title: 'İstanbul / Esenyurt ➔ Stuttgart Otomotiv Koridoru',
+    description: 'Esenyurt / Trakya Sanayi & Teknoloji Aksı ve çevre sanayi kümelenmesi mühendislerinin Stuttgart merkezli küresel otomotiv devlerine uzanan kariyer ve staj hattı.'
   },
   {
     id: 'route_duzce_munich',
@@ -1124,7 +1124,7 @@ export const CAREER_ROUTES = [
     alumniCount: 95,
     corridor: 'Bavyera Yüksek Teknoloji Hattı',
     originHub: 'Düzce',
-    title: 'Düzce ➔ Münih Robotik & Makine Hattı',
+    title: 'Esenyurt / Trakya Sanayi & Teknoloji Aksı ➔ Münih Robotik & Makine Hattı',
     description: 'Mühendislik ve teknoloji mezunlarının Bavyera endüstriyel otomasyon ve mekatronik ekosistemine transfer yolu.'
   },
   {
@@ -1139,7 +1139,7 @@ export const CAREER_ROUTES = [
     alumniCount: 80,
     corridor: 'Atlantik Ticaret & Dağıtım Hattı',
     originHub: 'Düzce',
-    title: 'Düzce ➔ Londra Ticaret & Lojistik Rotası',
+    title: 'Esenyurt / Trakya Sanayi & Teknoloji Aksı ➔ Londra Ticaret & Lojistik Rotası',
     description: 'Bölgesel sanayi havzası ürünlerinin İngiltere ve Birleşik Krallık ticaret ve tedarik zinciri ağlarıyla entegrasyonu.'
   },
   {
@@ -1154,7 +1154,7 @@ export const CAREER_ROUTES = [
     alumniCount: 45,
     corridor: 'Transatlantik Otomotiv Koridoru',
     originHub: 'Düzce',
-    title: 'Düzce ➔ Detroit Otomotiv Aksı',
+    title: 'Esenyurt / Trakya Sanayi & Teknoloji Aksı ➔ Detroit Otomotiv Aksı',
     description: 'Kuzey Amerika otomotiv merkezi Detroit ile otomotiv yan sanayii arasındaki inovasyon köprüsü.'
   },
   {
@@ -1169,8 +1169,8 @@ export const CAREER_ROUTES = [
     alumniCount: 35,
     corridor: 'Asya İleri İmalat Yolu',
     originHub: 'Düzce',
-    title: 'Düzce ➔ Tokyo Hassas İmalat Hattı',
-    description: 'Japonya hassas mekanik üreticileri ile cam ve sanayi kuruluşları arasındaki mühendislik ortaklığı.'
+    title: 'Esenyurt / Trakya Sanayi & Teknoloji Aksı ➔ Tokyo Hassas İmalat Hattı',
+    description: 'Japonya hassas mekanik üreticileri ile ileri sanayi kuruluşları arasındaki mühendislik ortaklığı.'
   },
   // İstanbul Routes
   {

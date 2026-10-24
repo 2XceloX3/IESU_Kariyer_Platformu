@@ -80,78 +80,22 @@ export default function UserProfile({
   const isCompanyBranch = currentBranch === 'company';
   const isAdminBranch = currentBranch === 'admin';
 
-  const isProfileSelf = (profileType) => {
+  const isProfileSelf = () => {
     // 0. user objesinde isSelf bayrağı varsa kesinlikle kendi profilidir
     if (user?.isSelf === true) return true;
 
     // 1. userId belirtilmediyse veya 'self' / 'me' ise kullanıcının kendi profilidir
     if (!userId || userId === 'self' || userId === 'me') return true;
 
-    // 2. userId oturum açan kullanıcının kimlikleriyle eşleşiyorsa (id, uid, studentId, studentNo, email, username, name)
+    // 2. userId oturum açan kullanıcının tam ID'si ile birebir eşleşiyorsa
+    const targetUserIdStr = String(userId).trim();
     if (effectiveCurrentUser) {
-      if (effectiveCurrentUser.id && (String(userId) === String(effectiveCurrentUser.id) || (user?.id && String(user.id) === String(effectiveCurrentUser.id)))) return true;
-      if (effectiveCurrentUser.uid && (String(userId) === String(effectiveCurrentUser.uid) || (user?.uid && String(user.uid) === String(effectiveCurrentUser.uid)))) return true;
-      if (effectiveCurrentUser.studentId && (String(userId) === String(effectiveCurrentUser.studentId) || (user?.studentId && String(user.studentId) === String(effectiveCurrentUser.studentId)))) return true;
-      if (effectiveCurrentUser.studentNo && (String(userId) === String(effectiveCurrentUser.studentNo) || (user?.studentNo && String(user.studentNo) === String(effectiveCurrentUser.studentNo)))) return true;
-      if (effectiveCurrentUser.email && (String(userId).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase() || (user?.email && String(user.email).toLowerCase() === String(effectiveCurrentUser.email).toLowerCase()))) return true;
-      if (effectiveCurrentUser.username && (String(userId).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase() || (user?.username && String(user.username).toLowerCase() === String(effectiveCurrentUser.username).toLowerCase()))) return true;
-      if (effectiveCurrentUser.name && user?.name && effectiveCurrentUser.name.trim().toLowerCase() === user.name.trim().toLowerCase()) return true;
-      if (effectiveCurrentUser.name && (String(userId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase())) return true;
+      if (effectiveCurrentUser.id && targetUserIdStr === String(effectiveCurrentUser.id)) return true;
+      if (effectiveCurrentUser.uid && targetUserIdStr === String(effectiveCurrentUser.uid)) return true;
+      if (user?.id && effectiveCurrentUser.id && String(user.id) === String(effectiveCurrentUser.id)) return true;
+      if (user?.uid && effectiveCurrentUser.uid && String(user.uid) === String(effectiveCurrentUser.uid)) return true;
     }
 
-    // 3. Admin portalında admin kimlikleri kendi profilidir
-    if (isAdminBranch && (!userId || userId === 'self' || userId === 'me' || userId === 'admin_1513' || userId === 'admin' || user?.id === 'admin_1513' || user?.id === 'admin')) {
-      return true;
-    }
-
-    // 4. Kimlik kontrolü - Açık bir ID belirtilmişse ve kullanıcının ID'sinden farklıysa ASLA self değildir
-    const targetStr = String(userId || '').trim().toLowerCase();
-    const userStr = String(user?.id || '').trim().toLowerCase();
-    const curIdStr = String(effectiveCurrentUser?.id || effectiveCurrentUser?.uid || '').trim().toLowerCase();
-
-    if (userId && userId !== 'self' && userId !== 'me') {
-      if (curIdStr && (targetStr === curIdStr || userStr === curIdStr)) return true;
-      if (curIdStr && targetStr !== curIdStr) return false;
-    }
-
-    if ((isStudentBranch || effectiveCurrentUser?.role === 'student' || (!effectiveCurrentUser?.role && profileType === 'student')) && (
-      !userId || userId === 'self' || userId === 'me' ||
-      ((['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(targetStr) || ['stu-001', 'stu-01', 'stu-1', 'mock_stu_1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['stu-001', 'stu-01', 'stu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role)) ||
-      targetStr.startsWith('mock_stu') || userStr.startsWith('mock_stu')
-    )) {
-      return true;
-    }
-
-    // 5. Mezun dalında mezun kimliği
-    if ((isAlumniBranch || effectiveCurrentUser?.role === 'alumni' || (!effectiveCurrentUser?.role && profileType === 'alumni')) && (
-      !userId || userId === 'self' || userId === 'me' ||
-      ((['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(targetStr) || ['alu-001', 'alu-01', 'alu-1', 'alm-001'].includes(userStr)) && (!effectiveCurrentUser?.id || ['alu-001', 'alu-01', 'alu-1'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role))
-    )) {
-      return true;
-    }
-
-    // 6. Akademik dalında akademik kimliği
-    if ((isAcademicBranch || effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || (!effectiveCurrentUser?.role && profileType === 'academic')) && (
-      !userId || userId === 'self' || userId === 'me' ||
-      ((['acad-001', 'acad-01', 'acad-1'].includes(targetStr) || ['acad-001', 'acad-01', 'acad-1'].includes(userStr)) && (!effectiveCurrentUser?.id || ['acad-001', 'acad-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role))
-    )) {
-      return true;
-    }
-
-    // 7. Firma dalında kurumsal kimlik
-    if ((isCompanyBranch || effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || (!effectiveCurrentUser?.role && profileType === 'company')) && (
-      !userId || userId === 'self' || userId === 'me' ||
-      ((['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(targetStr) || ['cmp-001', 'cmp-01', 'cmp-1', 'trendyol'].includes(userStr)) && (!effectiveCurrentUser?.id || ['cmp-001', 'cmp-01'].includes(String(effectiveCurrentUser.id).toLowerCase()) || !effectiveCurrentUser?.role))
-    )) {
-      return true;
-    }
-
-    // 8. Eğer viewerHive belirtilmişse ve userId 'self' veya tanımsız ise
-    if (viewerHive && (!userId || userId === 'self' || userId === 'me')) {
-      return true;
-    }
-
-    // Aksi takdirde (ör. başka bir öğrenciye, mezuna, akademisyene veya firmaya tıklandığında) bu bir ZİYARETÇİ profildir!
     return false;
   };
 
@@ -430,10 +374,7 @@ export default function UserProfile({
         const isSelfStudent = (isStudentBranch || effectiveCurrentUser?.role === 'student') && (
           (!userId || userId === 'self' || userId === 'me') ||
           (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser.id || targetUserId === 'self')) ||
-          (effectiveCurrentUser?.uid && targetUserId === effectiveCurrentUser.uid) ||
-          (effectiveCurrentUser?.studentId && (targetUserId === effectiveCurrentUser.studentId || found?.studentId === effectiveCurrentUser.studentId)) ||
-          (effectiveCurrentUser?.studentNo && (targetUserId === effectiveCurrentUser.studentNo || found?.studentNo === effectiveCurrentUser.studentNo)) ||
-          (effectiveCurrentUser?.email && found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase())
+          (effectiveCurrentUser?.uid && targetUserId === effectiveCurrentUser.uid)
         );
         const studentData = isSelfStudent ? {
           id: effectiveCurrentUser?.id || targetUserId || 'STU-001',
@@ -471,13 +412,8 @@ export default function UserProfile({
         }
         const isSelfAlumni = (isAlumniBranch || effectiveCurrentUser?.role === 'alumni') && (
           (!userId || userId === 'self' || userId === 'me') ||
-          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
-          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
-          (effectiveCurrentUser?.studentId && (targetUserId === effectiveCurrentUser.studentId || found?.studentId === effectiveCurrentUser.studentId)) ||
-          (!targetUserId && (effectiveCurrentUser?.role === 'alumni' || !effectiveCurrentUser?.role)) ||
-          (targetUserId === 'ALU-001' && (!effectiveCurrentUser?.id || effectiveCurrentUser?.id === 'ALU-001')) ||
-          (effectiveCurrentUser?.email && found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()) ||
-          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser.id || targetUserId === 'self')) || 
+          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid))
         );
         const alumniData = isSelfAlumni ? {
           id: effectiveCurrentUser?.id || targetUserId || 'ALU-001',
@@ -543,12 +479,8 @@ export default function UserProfile({
         }
         const isSelfAcademic = (isAcademicBranch || effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff') && (
           (!userId || userId === 'self' || userId === 'me') ||
-          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
-          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
-          (effectiveCurrentUser?.email && (targetUserId === effectiveCurrentUser.email || (found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()))) ||
-          (!targetUserId && (effectiveCurrentUser?.role === 'academic' || effectiveCurrentUser?.role === 'academic_staff' || !effectiveCurrentUser?.role)) ||
-          (targetUserId === 'ACAD-001' && (!effectiveCurrentUser?.id || effectiveCurrentUser?.id === 'ACAD-001')) ||
-          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser.id || targetUserId === 'self')) || 
+          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid))
         );
         const academicData = isSelfAcademic ? {
           id: effectiveCurrentUser?.id || targetUserId || 'ACAD-001',
@@ -598,15 +530,8 @@ export default function UserProfile({
         let found = (companies || []).find(c => c.id === targetUserId || (typeof c.name === 'string' && c.name.toLowerCase().includes('trendyol')));
         const isSelfCompany = (isCompanyBranch || effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer') && (
           (!userId || userId === 'self' || userId === 'me') ||
-          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser?.id || targetUserId === 'self')) || 
-          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid)) ||
-          (effectiveCurrentUser?.username && (targetUserId === effectiveCurrentUser.username || found?.username === effectiveCurrentUser.username)) ||
-          (effectiveCurrentUser?.email && (targetUserId === effectiveCurrentUser.email || (found?.email && effectiveCurrentUser.email.toLowerCase() === found.email.toLowerCase()))) ||
-          (!targetUserId && (effectiveCurrentUser?.role === 'company' || effectiveCurrentUser?.role === 'employer' || !effectiveCurrentUser?.role)) ||
-          (targetUserId === 'CMP-001' && (!effectiveCurrentUser?.id || effectiveCurrentUser?.id === 'CMP-001')) ||
-          targetUserId === 'admin_1513' || 
-          targetUserId === 'admin' ||
-          (effectiveCurrentUser?.name && found?.name && effectiveCurrentUser.name.trim().toLowerCase() === found.name.trim().toLowerCase())
+          (effectiveCurrentUser?.id && (targetUserId === effectiveCurrentUser.id || targetUserId === 'self')) || 
+          (effectiveCurrentUser?.uid && (targetUserId === effectiveCurrentUser.uid))
         );
         const companyData = isSelfCompany ? {
           id: effectiveCurrentUser?.id || targetUserId || 'CMP-001',
@@ -652,12 +577,10 @@ export default function UserProfile({
       );
       if (found) { 
         const isMatchedSelf = Boolean(
-          (effectiveCurrentUser && (
-            found.id === effectiveCurrentUser.id ||
-            (found.username && effectiveCurrentUser.username && found.username.toLowerCase() === effectiveCurrentUser.username.toLowerCase()) ||
-            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
-          )) ||
-          (isCompanyBranch && (userId === 'self' || !userId || found.id === 'CMP-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+          effectiveCurrentUser && (
+            (effectiveCurrentUser.id && String(found.id) === String(effectiveCurrentUser.id)) ||
+            (effectiveCurrentUser.uid && String(found.id) === String(effectiveCurrentUser.uid))
+          )
         );
         setUser({ ...found, isSelf: Boolean(isMatchedSelf) }); 
         setUserType('company'); 
@@ -668,12 +591,10 @@ export default function UserProfile({
       found = (academicStaff || []).find(a => a.id === targetUserId || a.id === parseInt(targetUserId));
       if (found) { 
         const isMatchedSelf = Boolean(
-          (effectiveCurrentUser && (
-            found.id === effectiveCurrentUser.id ||
-            (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
-            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
-          )) ||
-          (isAcademicBranch && (userId === 'self' || !userId || found.id === 'ACAD-001' || (effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)))
+          effectiveCurrentUser && (
+            (effectiveCurrentUser.id && String(found.id) === String(effectiveCurrentUser.id)) ||
+            (effectiveCurrentUser.uid && String(found.id) === String(effectiveCurrentUser.uid))
+          )
         );
         setUser({ ...found, isSelf: Boolean(isMatchedSelf) }); 
         setUserType('academic'); 
@@ -684,14 +605,10 @@ export default function UserProfile({
       found = (alumni || []).find(a => a.id === targetUserId || a.id === parseInt(targetUserId));
       if (found) { 
         const isMatchedSelf = Boolean(
-          (effectiveCurrentUser && (
-            found.id === effectiveCurrentUser.id ||
-            (effectiveCurrentUser.uid && found.id === effectiveCurrentUser.uid) ||
-            (found.studentId && effectiveCurrentUser.studentId && found.studentId === effectiveCurrentUser.studentId) ||
-            (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
-            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
-          )) ||
-          (isAlumniBranch && (userId === 'self' || !userId) && effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)
+          effectiveCurrentUser && (
+            (effectiveCurrentUser.id && String(found.id) === String(effectiveCurrentUser.id)) ||
+            (effectiveCurrentUser.uid && String(found.id) === String(effectiveCurrentUser.uid))
+          )
         );
         setUser({ ...found, isSelf: Boolean(isMatchedSelf) }); 
         setUserType('alumni'); 
@@ -702,15 +619,10 @@ export default function UserProfile({
       found = (students || []).find(s => s.id === targetUserId || s.id === parseInt(targetUserId));
       if (found) { 
         const isMatchedSelf = Boolean(
-          (effectiveCurrentUser && (
-            found.id === effectiveCurrentUser.id ||
-            (effectiveCurrentUser.uid && found.id === effectiveCurrentUser.uid) ||
-            (found.studentId && effectiveCurrentUser.studentId && found.studentId === effectiveCurrentUser.studentId) ||
-            (found.studentNo && effectiveCurrentUser.studentNo && found.studentNo === effectiveCurrentUser.studentNo) ||
-            (found.email && effectiveCurrentUser.email && found.email.toLowerCase() === effectiveCurrentUser.email.toLowerCase()) ||
-            (found.name && effectiveCurrentUser.name && found.name.toLowerCase() === effectiveCurrentUser.name.toLowerCase())
-          )) ||
-          (isStudentBranch && (userId === 'self' || !userId) && effectiveCurrentUser?.id && found.id === effectiveCurrentUser.id)
+          effectiveCurrentUser && (
+            (effectiveCurrentUser.id && String(found.id) === String(effectiveCurrentUser.id)) ||
+            (effectiveCurrentUser.uid && String(found.id) === String(effectiveCurrentUser.uid))
+          )
         );
         setUser({ ...found, isSelf: isMatchedSelf }); 
         setUserType('student'); 

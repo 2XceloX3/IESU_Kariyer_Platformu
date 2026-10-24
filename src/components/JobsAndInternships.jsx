@@ -161,14 +161,26 @@ export default function JobsAndInternships({
     return 'student';
   };
 
-  const handleApproveJob = (jobId) => {
+  const handleApproveJob = async (jobId) => {
+    try {
+      const { updateJobStatusFs } = await import('../services/jobsApplicationsFs');
+      await updateJobStatusFs(jobId, 'Aktif');
+    } catch (e) {
+      // ignore or log
+    }
     if (setJobs) {
       setJobs(prev => (prev || []).map(j => j.id === jobId ? { ...j, status: 'Aktif' } : j));
     }
     window.toast?.success?.("✅ İlan onaylandı ve tüm üniversite portallarında yayına alındı.");
   };
 
-  const handleRejectJob = (jobId) => {
+  const handleRejectJob = async (jobId) => {
+    try {
+      const { updateJobStatusFs } = await import('../services/jobsApplicationsFs');
+      await updateJobStatusFs(jobId, 'Reddedildi');
+    } catch (e) {
+      // ignore or log
+    }
     if (setJobs) {
       setJobs(prev => (prev || []).map(j => j.id === jobId ? { ...j, status: 'Reddedildi' } : j));
     }

@@ -7,6 +7,7 @@ import TopProfileMenu from './TopProfileMenu';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import AdminOmniDock from './AdminOmniDock';
 
 const NavIcon = ({ icon, label, badge, active, onClick }) => {
   const getClasses = () => {
@@ -281,7 +282,14 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
       </main>
 
       {/* Floating Dock */}
-      {effectiveRole === 'admin' ? null : (
+      {effectiveRole === 'admin' ? (
+        <AdminOmniDock 
+          currentUser={effectiveCurrentUser} 
+          setView={setView} 
+          setSelectedUserId={setSelectedUserId}
+          activeTab="jobs"
+        />
+      ) : (
         <SubPanelFloatingDock 
           currentUser={effectiveCurrentUser} 
           setView={setView} 
