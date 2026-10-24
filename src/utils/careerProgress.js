@@ -53,3 +53,19 @@ export function gradeFromPercent(percent) {
   if (percent > 0) return { label: 'Başlangıç', letter: 'C' };
   return { label: 'Henüz veri yok', letter: '—' };
 }
+
+export function computeWalletReadinessIndex({ certificates = [], verifiedSkills = [], user = null } = {}) {
+  const safeCerts = Array.isArray(certificates) ? certificates.length : 0;
+  const safeSkills = Array.isArray(verifiedSkills) ? verifiedSkills.length : 0;
+  
+  let gpaBonus = 10;
+  if (user && user.gpa != null) {
+    const parsedGpa = parseFloat(user.gpa);
+    if (!isNaN(parsedGpa) && isFinite(parsedGpa)) {
+      gpaBonus = Math.min(Math.max(Math.round((parsedGpa / 4) * 15), 0), 15);
+    }
+  }
+  
+  const rawScore = (safeCerts * 12) + (safeSkills * 8) + gpaBonus;
+  return Math.min(Math.max(rawScore, 20), 100);
+}

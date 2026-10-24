@@ -8,6 +8,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
+import { computeWalletReadinessIndex } from '../utils/careerProgress';
 
 const VERIFIED_SKILLS = [
   { id: 1, type: 'course', amount: 'Tamamlandı', desc: 'İleri Seviye Veri Analizi Eğitimi', date: 'Bugün, 14:30', icon: <BookOpen size={16}/> },
@@ -25,7 +26,7 @@ const CERTIFICATES = [
 
 export default function IesuWallet({ setView, currentUser, userRole, setSelectedUserId, previousView }) {
   const [showExportModal, setShowExportModal] = useState(false);
-  const [readinessScore, setReadinessScore] = useState(80);
+  const [readinessScore, setReadinessScore] = useState(() => computeWalletReadinessIndex({ certificates: CERTIFICATES, verifiedSkills: VERIFIED_SKILLS, user: currentUser }));
 
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const backTarget = previousView || (
@@ -39,7 +40,7 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
   const handleRunAnalysis = () => {
     window.toast && window.toast.info("Dijital cüzdanınızdaki sertifikalar analiz ediliyor...");
     setTimeout(() => {
-      const dynamicScore = Math.min(Math.max((CERTIFICATES.length * 12) + (VERIFIED_SKILLS.length * 8) + 12, 45), 96); setReadinessScore(dynamicScore);
+      const dynamicScore = computeWalletReadinessIndex({ certificates: CERTIFICATES, verifiedSkills: VERIFIED_SKILLS, user: currentUser }); setReadinessScore(dynamicScore);
       window.toast && window.toast.success(`✅ Analiz Tamamlandı: Sektöre hazırlık endeksiniz %${dynamicScore} olarak güncellendi.`);
     }, 2000);
   };
