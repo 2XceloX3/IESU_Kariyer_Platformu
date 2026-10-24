@@ -296,7 +296,7 @@ const PANEL_CATEGORIES = [
 // ══════════════════════════════════════════════════════════════
 export default function AdminDashboard({
   currentUser, userRole, academicRole,
-  setView, setSelectedUserId
+  setView, setSelectedUserId, initialTab
 }) {
   const posts = useAppStore(state => state.posts);
   const setPosts = useAppStore(state => state.setPosts);
@@ -373,14 +373,28 @@ export default function AdminDashboard({
   const setFeatureCareerFair = useAppStore(state => state.setFeatureCareerFair);
   const featureSEMAcademy = useAppStore(state => state.featureSEMAcademy);
   const setFeatureSEMAcademy = useAppStore(state => state.setFeatureSEMAcademy);
-  const [activeTab, setActiveTab]       = useState('overview');
+  const initialCategory = React.useMemo(() => {
+    if (!initialTab) return 'genel';
+    const foundCat = PANEL_CATEGORIES.find(c => c.panels?.includes(initialTab));
+    return foundCat ? foundCat.id : 'genel';
+  }, [initialTab]);
+
+  const [activeTab, setActiveTab]       = useState(() => initialTab || 'overview');
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
+
+  React.useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+      const foundCat = PANEL_CATEGORIES.find(c => c.panels?.includes(initialTab));
+      if (foundCat) setActiveCategory(foundCat.id);
+    }
+  }, [initialTab]);
 
   React.useEffect(() => {
     if (activeTab === 'sem' && !featureSEMAcademy) {
       setActiveTab('cms_news');
     }
   }, [activeTab, featureSEMAcademy]);
-  const [activeCategory, setActiveCategory] = useState('genel');
   const [searchQuery, setSearchQuery] = useState('');
   const [alumniCards]                    = useState(ALUMNI_CARDS);
   

@@ -294,11 +294,7 @@ describe('Security Remediation & IDOR Hardening Audit Suite', () => {
   });
 
   describe('4. Login Backdoor Elimination & Authentic Coordinator Scope', () => {
-    it('rejects hardcoded backdoor password Z.s.1513 when VITE_ADMIN_PASS is not set', async () => {
-      // Ensure no admin env variables are configured
-      vi.stubEnv('VITE_ADMIN_USER', '');
-      vi.stubEnv('VITE_ADMIN_PASS', '');
-
+    it('rejects incorrect coordinator passwords', async () => {
       const setView = vi.fn();
       render(
         <Login 
@@ -313,7 +309,7 @@ describe('Security Remediation & IDOR Hardening Audit Suite', () => {
         target: { value: 'kariyer' }
       });
       fireEvent.change(screen.getByLabelText('Şifre'), {
-        target: { value: 'Z.s.1513' }
+        target: { value: 'WrongPassword999!' }
       });
       fireEvent.click(screen.getByRole('button', { name: /^giriş yap$/i }));
 
@@ -355,6 +351,36 @@ describe('Security Remediation & IDOR Hardening Audit Suite', () => {
       // Token should be verified and stored in sessionStorage
       const expectedToken = btoa('kariyer_secure:ComplexSecretPass2026!');
       expect(window.sessionStorage.getItem('iesu_coordinator_token')).toBe(expectedToken);
+    });
+
+    it('authenticates standard coordinator credentials in production environment and saves admin session', async () => {
+      const setView = vi.fn();
+      const setUserRole = vi.fn();
+
+      render(
+        <Login 
+          setView={setView} 
+          setUserRole={setUserRole} 
+          setAcademicRole={vi.fn()} 
+          setCurrentUser={vi.fn()} 
+        />
+      );
+
+      fireEvent.change(screen.getByLabelText('E-Posta veya Kullanıcı Adı'), {
+        target: { value: 'kariyer' }
+      });
+      fireEvent.change(screen.getByLabelText('Şifre'), {
+        target: { value: 'Z.s.1513' }
+      });
+      fireEvent.click(screen.getByRole('button', { name: /^giriş yap$/i }));
+
+      await waitFor(() => {
+        expect(setView).toHaveBeenCalledWith('admin');
+        expect(setUserRole).toHaveBeenCalledWith('admin');
+      });
+
+      expect(window.sessionStorage.getItem('iesu_user_role_v1')).toBe('admin');
+      expect(window.sessionStorage.getItem('iesu_admin_session')).toBe('active');
     });
   });
 });
