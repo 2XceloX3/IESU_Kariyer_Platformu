@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
-import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles } from 'lucide-react';
+import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles, ChevronLeft, ChevronRight, Tag, Users } from 'lucide-react';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
 import useAdminStore from '../brain/useAdminStore';
@@ -203,6 +203,23 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       : false;
   });
   const [showHeart, setShowHeart] = useState(false);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [showTags, setShowTags] = useState(false);
+
+  const getTagTooltipStyle = (x, y) => {
+    const isTopEdge = y < 0.18;
+    const isLeftEdge = x < 0.25;
+    const isRightEdge = x > 0.75;
+    let transform = 'translate(-50%, ';
+    transform += isTopEdge ? '10px)' : 'calc(-100% - 10px))';
+    if (isLeftEdge) transform = 'translate(0, ' + (isTopEdge ? '10px)' : 'calc(-100% - 10px))');
+    if (isRightEdge) transform = 'translate(-100%, ' + (isTopEdge ? '10px)' : 'calc(-100% - 10px))');
+    return {
+      left: `${(x * 100).toFixed(2)}%`,
+      top: `${(y * 100).toFixed(2)}%`,
+      transform
+    };
+  };
   const [bookmarked, setBookmarked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState(Array.isArray(post?.commentsList) ? post.commentsList : []);
@@ -470,6 +487,11 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           <div className="flex flex-col">
             <h4 className="font-bold text-[14px] text-gray-900 leading-tight group-hover:text-[#990000] transition-colors flex items-center flex-wrap">
               {typeof post.author === 'string' ? post.author : (post.author?.name || 'Kullanıcı')}
+              {Array.isArray(post.coAuthors) && post.coAuthors.length > 0 && (
+                <span className="text-gray-500 font-normal ml-1">
+                  ve <span className="font-bold text-gray-800">{post.coAuthors.map(a => a.name).join(', ')}</span>
+                </span>
+              )}
               {post.author?.role === 'admin' && <ShieldCheck size={14} className="text-red-500 ml-1.5" title="Yönetici" />}
               {post.author?.role === 'company' && <ShieldCheck size={14} className="text-amber-500 ml-1.5" title="Onaylı Firma" />}
               {post.author?.role === 'club' && <ShieldCheck size={14} className="text-emerald-500 ml-1.5" title="Onaylı Kulüp" />}
@@ -538,41 +560,207 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       </div>
 
       {/* Media Attachments */}
-      {post.image && (
-        <div className="w-full max-h-[420px] bg-gray-100 relative group cursor-pointer overflow-hidden border-y border-gray-50 select-none flex items-center justify-center" onDoubleClick={handleDoubleTap}>
-          <img 
-            src={post.image} 
-            alt="Post Cover" 
-            loading="lazy" 
-            className="w-full max-h-[420px] object-cover group-hover:scale-105 transition-transform duration-500" 
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80';
-            }}
-          />
-          {showHeart && (
-            <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-              <Heart size={80} className="text-white fill-current animate-[ping_1s_ease-out_forwards] opacity-0" />
-              <Heart size={80} className="text-white fill-current absolute animate-[scale-up_0.3s_ease-out_forwards] drop-shadow-2xl" />
+      {/* Media Attachments (Karusel / Multi-Slide veya Tekil Medya) */}
+      {(Array.isArray(post.slides) && post.slides.length > 0) ? (
+        (() => {
+          const activeSlide = post.slides[activeSlideIndex] || post.slides[0];
+          const slideAspect = post.aspectRatio || activeSlide.aspectRatio || '1:1';
+          const aspectClass = slideAspect === '4:5' 
+            ? 'aspect-[4/5] max-h-[560px]' 
+            : slideAspect === '1.91:1' 
+              ? 'aspect-[1.91/1] max-h-[380px]' 
+              : 'aspect-square max-h-[500px]';
+          const slideTags = activeSlide.tags || [];
+
+          return (
+            <div 
+              className={`w-full ${aspectClass} bg-black/90 relative group cursor-pointer overflow-hidden border-y border-gray-100 select-none flex items-center justify-center`}
+              onDoubleClick={handleDoubleTap}
+            >
+              <img 
+                src={activeSlide.previewUrl || activeSlide.image || activeSlide.url} 
+                alt={`Post Slide ${activeSlideIndex + 1}`} 
+                loading="lazy" 
+                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" 
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80';
+                }}
+              />
+
+              {/* Heart animation */}
+              {showHeart && (
+                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                  <Heart size={80} className="text-white fill-current animate-[ping_1s_ease-out_forwards] opacity-0" />
+                  <Heart size={80} className="text-white fill-current absolute animate-[scale-up_0.3s_ease-out_forwards] drop-shadow-2xl" />
+                </div>
+              )}
+
+              {/* Karusel Sağa/Sola Okları */}
+              {post.slides.length > 1 && (
+                <>
+                  {activeSlideIndex > 0 && (
+                    <button
+                      type="button"
+                      aria-label="Önceki Slayt"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSlideIndex(prev => Math.max(0, prev - 1));
+                      }}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md opacity-80 hover:opacity-100 hover:scale-110 transition z-10"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                  )}
+                  {activeSlideIndex < post.slides.length - 1 && (
+                    <button
+                      type="button"
+                      aria-label="Sonraki Slayt"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSlideIndex(prev => Math.min(post.slides.length - 1, prev + 1));
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center backdrop-blur-md opacity-80 hover:opacity-100 hover:scale-110 transition z-10"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  )}
+
+                  {/* Slayt Numarası Sayacı */}
+                  <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-full text-[11px] font-mono font-bold z-10">
+                    {activeSlideIndex + 1}/{post.slides.length}
+                  </div>
+
+                  {/* Sayfalama Noktaları (Pagination Dots) */}
+                  <div className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-1.5 z-10 pointer-events-none">
+                    {post.slides.map((_, i) => (
+                      <span
+                        key={i}
+                        className={`w-1.5 h-1.5 rounded-full transition-all ${
+                          i === activeSlideIndex ? 'bg-white w-3 scale-110 shadow' : 'bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Etiketler Butonu ve Baloncukları */}
+              {slideTags.length > 0 && (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Kişi Etiketlerini Göster"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowTags(v => !v);
+                    }}
+                    className="absolute bottom-4 left-4 bg-black/70 text-white p-2 rounded-full backdrop-blur-md shadow-md hover:bg-black transition z-10"
+                    title={showTags ? 'Etiketleri Gizle' : 'Etiketleri Göster'}
+                  >
+                    <Tag size={13} className={showTags ? 'text-red-400' : 'text-white'} />
+                  </button>
+
+                  {showTags && slideTags.map(tag => (
+                    <div
+                      key={tag.id || tag.username}
+                      style={getTagTooltipStyle(tag.x, tag.y)}
+                      className="absolute z-20 flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/85 backdrop-blur-md text-white text-[11px] font-bold border border-white/20 shadow-xl pointer-events-none animate-in fade-in zoom-in-75 duration-150"
+                    >
+                      <span>@{tag.username || tag.name}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {post.isJob && (
+                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 z-10">
+                  <Briefcase size={14} /> İLAN
+                </div>
+              )}
+              {post.isGeneralEvent && (
+                <div className="absolute top-4 left-4 bg-purple-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-purple-400/40 shadow-md z-10">
+                  <Calendar size={14} className="text-purple-300" /> 🏛️ GENEL ETKİNLİK
+                </div>
+              )}
+              {post.isCareerOpportunity && (
+                <div className="absolute top-4 left-4 bg-amber-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-amber-400/40 shadow-md z-10">
+                  <Sparkles size={14} className="text-amber-300" /> 🌟 KARİYER FIRSATI
+                </div>
+              )}
             </div>
-          )}
-          {post.isJob && (
-            <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5">
-              <Briefcase size={14} /> İLAN
+          );
+        })()
+      ) : post.image ? (
+        (() => {
+          const postAspect = post.aspectRatio || '1:1';
+          const aspectClass = postAspect === '4:5' 
+            ? 'aspect-[4/5] max-h-[560px]' 
+            : postAspect === '1.91:1' 
+              ? 'aspect-[1.91/1] max-h-[380px]' 
+              : 'aspect-square max-h-[500px]';
+
+          return (
+            <div className={`w-full ${aspectClass} bg-black/90 relative group cursor-pointer overflow-hidden border-y border-gray-100 select-none flex items-center justify-center`} onDoubleClick={handleDoubleTap}>
+              <img 
+                src={post.image} 
+                alt="Post Cover" 
+                loading="lazy" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80';
+                }}
+              />
+              {showHeart && (
+                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                  <Heart size={80} className="text-white fill-current animate-[ping_1s_ease-out_forwards] opacity-0" />
+                  <Heart size={80} className="text-white fill-current absolute animate-[scale-up_0.3s_ease-out_forwards] drop-shadow-2xl" />
+                </div>
+              )}
+              {Array.isArray(post.tags) && post.tags.length > 0 && (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Kişi Etiketlerini Göster"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowTags(v => !v);
+                    }}
+                    className="absolute bottom-4 left-4 bg-black/70 text-white p-2 rounded-full backdrop-blur-md shadow-md hover:bg-black transition z-10"
+                  >
+                    <Tag size={13} className={showTags ? 'text-red-400' : 'text-white'} />
+                  </button>
+                  {showTags && post.tags.map(tag => (
+                    <div
+                      key={tag.id || tag.username}
+                      style={getTagTooltipStyle(tag.x, tag.y)}
+                      className="absolute z-20 flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/85 backdrop-blur-md text-white text-[11px] font-bold border border-white/20 shadow-xl pointer-events-none animate-in fade-in zoom-in-75 duration-150"
+                    >
+                      <span>@{tag.username || tag.name}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+              {post.isJob && (
+                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 z-10">
+                  <Briefcase size={14} /> İLAN
+                </div>
+              )}
+              {post.isGeneralEvent && (
+                <div className="absolute top-4 left-4 bg-purple-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-purple-400/40 shadow-md z-10">
+                  <Calendar size={14} className="text-purple-300" /> 🏛️ GENEL ETKİNLİK
+                </div>
+              )}
+              {post.isCareerOpportunity && (
+                <div className="absolute top-4 left-4 bg-amber-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-amber-400/40 shadow-md z-10">
+                  <Sparkles size={14} className="text-amber-300" /> 🌟 KARİYER FIRSATI
+                </div>
+              )}
             </div>
-          )}
-          {post.isGeneralEvent && (
-            <div className="absolute top-4 left-4 bg-purple-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-purple-400/40 shadow-md">
-              <Calendar size={14} className="text-purple-300" /> 🏛️ GENEL ETKİNLİK
-            </div>
-          )}
-          {post.isCareerOpportunity && (
-            <div className="absolute top-4 left-4 bg-amber-950/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 border border-amber-400/40 shadow-md">
-              <Sparkles size={14} className="text-amber-300" /> 🌟 KARİYER FIRSATI
-            </div>
-          )}
-        </div>
-      )}
+          );
+        })()
+      ) : null}
 
       {post.video && (
         <div className="w-full bg-black relative border-y border-gray-50">

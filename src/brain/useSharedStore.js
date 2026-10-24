@@ -146,7 +146,23 @@ export const useSharedStore = create(
     {
       name: 'iesu-career-shared-store',
       partialize: (state) => ({
-        posts: Array.isArray(state.posts) ? state.posts.slice(0, 100) : [],
+        posts: Array.isArray(state.posts) ? state.posts.slice(0, 100).map(p => {
+          if (!p || typeof p !== 'object') return p;
+          let safeImg = p.image;
+          if (typeof safeImg === 'string' && safeImg.startsWith('data:image/') && safeImg.length > 50000) {
+            safeImg = ''; // Bozuk veri üretmemek için büyük base64 dizgisini sıfırla (IndexedDB / CDN ile yönetilir)
+          }
+          let safeSlides = p.slides;
+          if (Array.isArray(safeSlides)) {
+            safeSlides = safeSlides.map(s => {
+              if (s && typeof s.previewUrl === 'string' && s.previewUrl.startsWith('data:image/') && s.previewUrl.length > 50000) {
+                return { ...s, previewUrl: '' };
+              }
+              return s;
+            });
+          }
+          return { ...p, image: safeImg, slides: safeSlides };
+        }) : [],
         stories: Array.isArray(state.stories) ? state.stories.slice(0, 30) : [],
         jobs: Array.isArray(state.jobs) ? state.jobs.slice(0, 50) : [],
         swipedJobs: Array.isArray(state.swipedJobs) ? state.swipedJobs.slice(-100) : [],

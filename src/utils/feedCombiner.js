@@ -1,5 +1,9 @@
 export function combineFeedItems(posts, events, news, announcements, jobs, generalEvents = [], careerOpportunities = []) {
-  const combined = [...(Array.isArray(posts) ? posts : []).filter(p => typeof p === 'object' && p !== null && p.status !== 'Beklemede' && p.status !== 'Reddedildi')];
+  const combined = [...(Array.isArray(posts) ? posts : []).filter(p => 
+    typeof p === 'object' && p !== null && 
+    p.status !== 'Reddedildi' && 
+    (p.status !== 'Beklemede' || p.eventPost || p.isGeneralEvent || p.isOptimistic || p.status === 'publishing')
+  )];
 
   const adminAuthor = {
     name: 'Kariyer Geliştirme Merkezi',
