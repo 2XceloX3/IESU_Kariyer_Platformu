@@ -445,10 +445,13 @@ export default function ProfileUpdate({
     // Firebase Firestore background persistence for authenticated users
     if (finalData?.id && !String(finalData.id).startsWith('mock_')) {
       import('../utils/firebase').then(({ db }) => {
+        if (!db) return;
         import('firebase/firestore').then(({ doc, setDoc }) => {
-          setDoc(doc(db, 'users', finalData.id), finalData, { merge: true }).catch(() => {});
-        }).catch(() => {});
-      }).catch(() => {});
+          setDoc(doc(db, 'users', finalData.id), finalData, { merge: true }).catch((err) => {
+            console.warn('[ProfileUpdate] Firestore background sync warning:', err?.message);
+          });
+        }).catch((err) => console.warn('[ProfileUpdate] Firestore module load error:', err));
+      }).catch((err) => console.warn('[ProfileUpdate] Firebase module load error:', err));
     }
 
     setHasChanges(false);

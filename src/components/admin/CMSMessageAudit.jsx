@@ -329,6 +329,14 @@ export default function CMSMessageAudit({ currentUser, setView }) {
         </div>
       </div>
 
+      {/* KVKK & Legal Audit Compliance Notice */}
+      <div className="p-3.5 bg-amber-50/80 border border-amber-200/80 rounded-2xl flex items-center gap-3 text-amber-900 text-xs">
+        <ShieldAlert size={18} className="text-amber-600 shrink-0" />
+        <p className="font-medium leading-relaxed">
+          <strong className="font-bold">6698 Sayılı KVKK ve Kurumsal Güvenlik Politikası:</strong> Bu denetim konsolu yalnızca hak ihlali, siber zorbalık ve uygunsuz içerik vakalarının incelenmesi amacıyla yetkilendirilmiş Süper Yönetici tarafından denetlenebilir. Yapılan tüm sorgulamalar denetim günlüğünde (Audit Trail) kayıt altına alınmaktadır.
+        </p>
+      </div>
+
       {/* Main Table Container */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
         

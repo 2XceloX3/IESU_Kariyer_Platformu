@@ -630,6 +630,13 @@ export default function AlumniEndowmentFund({
                     </div>
                   </div>
 
+                  {/* Institutional Legal & Financial Compliance Notice */}
+                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 leading-relaxed">
+                    <p className="font-medium">
+                      🏛️ <strong>2860 Sayılı Kanun & Vakıf Mevzuatı:</strong> Tüm katkılar İstanbul Esenyurt Üniversitesi Burs & Dayanışma Fonu resmi mevzuatı kapsamında yönetilir. İşlem sonunda doğrulama kodlu resmi e-makbuz üretilmektedir.
+                    </p>
+                  </div>
+
                   {/* Dedication message */}
                   <div>
                     <label className="font-bold text-slate-700 block mb-1">

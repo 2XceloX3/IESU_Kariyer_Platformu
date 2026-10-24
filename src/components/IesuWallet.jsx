@@ -39,8 +39,8 @@ export default function IesuWallet({ setView, currentUser, userRole, setSelected
   const handleRunAnalysis = () => {
     window.toast && window.toast.info("Dijital cüzdanınızdaki sertifikalar analiz ediliyor...");
     setTimeout(() => {
-      setReadinessScore(88);
-      window.toast && window.toast.success("✅ Analiz Tamamlandı: Sektöre hazırlık endeksiniz %88 olarak güncellendi.");
+      const dynamicScore = Math.min(Math.max((CERTIFICATES.length * 12) + (VERIFIED_SKILLS.length * 8) + 12, 45), 96); setReadinessScore(dynamicScore);
+      window.toast && window.toast.success(`✅ Analiz Tamamlandı: Sektöre hazırlık endeksiniz %${dynamicScore} olarak güncellendi.`);
     }, 2000);
   };
 

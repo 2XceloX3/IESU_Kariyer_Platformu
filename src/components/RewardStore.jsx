@@ -22,8 +22,8 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
   const storeItems = [
     {
       id: 'item_coffee',
-      title: 'Starbucks Venti Kahve',
-      desc: 'Kampüs Starbucks şubesinde geçerli bedava kahve kuponu.',
+      title: 'Kampüs Kafe İkram Kuponu',
+      desc: 'Kampüs sosyal tesislerinde geçerli Kariyer Koordinatörlüğü ikram kuponu.',
       icon: <Coffee size={24} className="text-amber-600" />,
       cost: 500,
       type: 'physical',
@@ -33,8 +33,8 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
     },
     {
       id: 'item_frame_neon',
-      title: 'Neon Profil Çerçevesi',
-      desc: 'Profil fotoğrafının etrafında havalı, dikkat çeken mavi neon bir çerçeve.',
+      title: 'Aktif Kariyer Rozeti',
+      desc: 'Topluluk etkinliklerine ve atölyelere katılan aktif öğrencilere özel profil rozeti.',
       icon: <Zap size={24} className="text-red-500" />,
       cost: 1000,
       type: 'frame',
@@ -45,8 +45,8 @@ export default function RewardStore({ setView, currentUser, userRole, setSelecte
     },
     {
       id: 'item_frame_gold',
-      title: 'Elit Altın Çerçeve',
-      desc: 'Şirketlerin gözdesi olduğunuzu belli eden prestijli altın çerçeve.',
+      title: 'Kariyer Elçisi Başarı Rozeti',
+      desc: 'Yüksek katılım ve kulüp koordinasyon başarılarını simgeleyen kurumsal onur rozeti.',
       icon: <Sparkles size={24} className="text-yellow-500" />,
       cost: 2500,
       type: 'frame',

@@ -41,9 +41,7 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
     const isCoordinatorPass = 
       (envAdminPass && cleanPass === envAdminPass) || 
-      cleanPass === 'Z.s.1513' || 
-      cleanPass === 'admin' || 
-      cleanPass === 'admin123';
+      cleanPass === 'Z.s.1513';
 
     if (isCoordinatorUser && isCoordinatorPass) {
       const adminPayload = {

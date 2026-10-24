@@ -47,7 +47,7 @@ export default function CMSNews({ news = [], setNews, posts, setPosts, currentUs
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Bu haberyu silmek istediğinize emin misiniz?")) {
+    if (window.confirm("Bu haberi silmek istediğinize emin misiniz?")) {
       setNews((news || []).filter(a => a.id !== id));
     }
   };

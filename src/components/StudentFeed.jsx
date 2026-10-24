@@ -100,7 +100,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
   const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   const studentName = effectiveCurrentUser?.name || 'Öğrenci';
-  const studentDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Yazılım Mühendisliği');
+  const studentDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Bölüm Belirtilmemiş');
   const studentAvatar = effectiveCurrentUser?.avatar || '/iesu-logo.svg';
   const studentId = effectiveCurrentUser?.id || effectiveCurrentUser?.uid || effectiveCurrentUser?.studentNo || 'self';
   const [visibleFeedCount, setVisibleFeedCount] = useState(12);
@@ -1049,7 +1049,7 @@ groups={groups}
                 const newMentorship = {
                   id: Date.now(),
                   mentorName: effectiveCurrentUser?.name || 'Öğrenci',
-                  department: effectiveCurrentUser?.department || 'Yazılım Mühendisliği',
+                  department: effectiveCurrentUser?.department || 'Bölüm Belirtilmemiş',
                   programTitle: mentorshipForm.title,
                   status: 'Beklemede', // PENDING ADMIN APPROVAL
                   avatar: effectiveCurrentUser?.avatar || null,
