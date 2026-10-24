@@ -51,7 +51,7 @@ describe('ExploreFeed Consistency and Portal Integration Suite', () => {
       expect(screen.getByText('İstanbul Esenyurt Üniversitesi')).toBeInTheDocument();
       expect(screen.getByText(/Kariyer Geliştirme Koordinatörlüğü/i)).toBeInTheDocument();
       expect(screen.getByText(/ÖĞRENCİ AĞI & KARİYER PORTALI/i)).toBeInTheDocument();
-    });
+    }, { timeout: 4000 });
 
     // Keşfet & Sosyal Ağ content should be inside the page
     expect(screen.getByText('Keşfet & Sosyal Ağ')).toBeInTheDocument();

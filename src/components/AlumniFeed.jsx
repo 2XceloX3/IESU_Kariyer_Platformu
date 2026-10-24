@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap, BookOpen, Coffee } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, User, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, MapPin, Newspaper, Camera, GraduationCap, BookOpen, Coffee, Gift } from 'lucide-react';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import BranchNewsWidget from './BranchNewsWidget';
 import JobsAndInternships from './JobsAndInternships';
@@ -336,7 +336,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               <span className="text-xs font-medium text-emerald-600 font-semibold">İESÜ Ağı</span>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
               <button
                 onClick={() => {
                   const store = useAppStore.getState();
@@ -390,6 +390,18 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 </div>
                 <span className="text-xs font-bold text-gray-800 group-hover:text-slate-900 transition-colors leading-tight">Özgeçmiş Hazırlayıcı</span>
                 <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Kariyer CV oluşturucu</span>
+              </button>
+
+              <button
+                onClick={() => setView('burs_fonu')}
+                className="group flex flex-col items-start p-3 rounded-xl border border-emerald-200 bg-gradient-to-b from-emerald-100/60 to-white hover:border-emerald-400 hover:shadow-xs transition-all text-left cursor-pointer"
+                data-testid="alumni-feed-endowment-btn"
+              >
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Gift size={16} />
+                </div>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-emerald-800 transition-colors leading-tight">Burs & Bağış Fonu</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Öğrenciye burs sağla</span>
               </button>
             </div>
           </div>

@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Users, MapPin, Search, ChevronLeft, ArrowRight, Video, Briefcase, CalendarClock, MessageSquare, Target, Star, ExternalLink, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { Building2, MapPin, Search, ChevronLeft, ArrowRight, Video, Briefcase, CalendarClock, MessageSquare, Star, ExternalLink, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import SafeAvatar from './shared/SafeAvatar';
 import useAppStore from '../store/useAppStore';
+import GlobalVirtualFairBooth from './career-fair/GlobalVirtualFairBooth';
+import { GLOBAL_FAIR_BOOTHS, getFairBoothById } from '../services/virtualFairWorkflow';
 
 const MOCK_COMPANIES = [
   {
@@ -81,6 +83,7 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [activeLiveBooth, setActiveLiveBooth] = useState(null);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
 
   const backTarget = previousView || (
@@ -91,7 +94,17 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
     (userRole === 'admin' && !activePortalBranch ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
   );
 
-  const filteredCompanies = MOCK_COMPANIES.filter(c => 
+  const combinedCompanies = React.useMemo(() => {
+    const list = [...GLOBAL_FAIR_BOOTHS];
+    MOCK_COMPANIES.forEach(mc => {
+      if (!list.some(g => g.id.toLowerCase() === mc.id.toLowerCase())) {
+        list.push(mc);
+      }
+    });
+    return list;
+  }, []);
+
+  const filteredCompanies = combinedCompanies.filter(c => 
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     c.sector.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -242,34 +255,30 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
 
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                      <div className="text-sm font-black text-gray-900 mb-0.5">{company.openPositions}</div>
+                      <div className="text-sm font-black text-gray-900 mb-0.5">
+                        {Array.isArray(company.openPositions) ? company.openPositions.length : (company.openPositions || 0)}
+                      </div>
                       <div className="text-[10px] font-bold text-gray-500 uppercase">Pozisyon</div>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                      <div className="text-sm font-black text-[#990000] mb-0.5">{company.availableSlots}</div>
+                      <div className="text-sm font-black text-[#990000] mb-0.5">{company.availableSlots || company.queueLength || 4}</div>
                       <div className="text-[10px] font-bold text-gray-500 uppercase">Boş Randevu</div>
                     </div>
                   </div>
 
                   <div className="flex gap-2 w-full mt-auto">
                     <button 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        window.toast && window.toast.info(`"${company.name}" şirketinin geçmiş mülakat soruları derleniyor...`);
-                        setTimeout(() => {
-                          window.toast && window.toast.success("✅ Mülakat Provası başlatıldı. İlk soru: 'Bize biraz kendinizden bahseder misiniz?'");
-                        }, 2500);
-                      }}
-                      className="flex-1 py-2.5 bg-red-50 border-2 border-red-100 text-[#990000] hover:bg-red-100 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                      title="Mülakat Provası"
+                      onClick={() => setActiveLiveBooth(getFairBoothById(company.id) || company)}
+                      className="flex-1 py-2.5 bg-red-950 hover:bg-red-900 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs"
+                      title="Canlı 10 Dk Hızlı Mülakat Sırası Al"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                      <Video size={14} className="text-red-400" /> Sıra Al
                     </button>
                     <button 
                       onClick={() => setSelectedCompany(company)}
-                      className="flex-[3] py-2.5 bg-[#990000] text-white hover:bg-red-800 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                      className="flex-[2] py-2.5 bg-[#990000] text-white hover:bg-red-800 rounded-xl text-xs sm:text-sm font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
-                      Standı Ziyaret Et <ArrowRight size={16} />
+                      Standı Ziyaret Et <ArrowRight size={15} />
                     </button>
                   </div>
                 </div>
@@ -365,6 +374,19 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
                   </p>
                 </div>
 
+                {/* Live Speed Interview Action */}
+                <button
+                  onClick={() => {
+                    const target = getFairBoothById(selectedCompany.id) || selectedCompany;
+                    setSelectedCompany(null);
+                    setActiveLiveBooth(target);
+                  }}
+                  className="w-full py-3 bg-gradient-to-r from-red-950 via-[#990000] to-red-800 hover:from-red-900 hover:to-red-700 text-white rounded-xl font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-md border border-red-500/30 text-xs sm:text-sm"
+                >
+                  <Video size={18} className="text-red-300 animate-pulse" />
+                  <span>🔴 Canlı 10 Dk Hızlı Mülakat Odası & Sıra Numarası Al</span>
+                </button>
+
                 {/* Actions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button 
@@ -423,6 +445,19 @@ export default function VirtualCareerFair({ setView, currentUser, userRole, setS
           </div>
         )}
       </AnimatePresence>
+
+      {/* Interactive Global Virtual Fair Live Booth & Speed Interview Modal */}
+      {activeLiveBooth && (
+        <GlobalVirtualFairBooth
+          booth={activeLiveBooth}
+          onClose={() => setActiveLiveBooth(null)}
+          currentUser={currentUser}
+          onApplyJob={() => {
+            setActiveLiveBooth(null);
+            if (setView) setView('jobs');
+          }}
+        />
+      )}
 
       {/* Floating Bottom Dock */}
       {setView && (

@@ -33,6 +33,7 @@ const MessagingInterface = lazy(() => import('../../components/MessagingInterfac
 const LiveRoomsPanel = lazy(() => import('../../components/LiveRoomsPanel'));
 const MentorBooking = lazy(() => import('../../components/MentorBooking'));
 const VirtualCareerFair = lazy(() => import('../../components/VirtualCareerFair'));
+const AlumniEndowmentFund = lazy(() => import('../../components/alumni/AlumniEndowmentFund'));
 const IesuWallet = lazy(() => import('../../components/IesuWallet'));
 const CampusMap = lazy(() => import('../../components/CampusMap'));
 const ContactPage = lazy(() => import('../../components/ContactPage'));
@@ -171,6 +172,10 @@ export default function AlumniHive({ currentUser, setView }) {
         return <LiveRoomsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'mentor_booking':
         return <MentorBooking setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
+      case 'endowment':
+      case 'burs_fonu':
+      case 'alumni_endowment':
+        return <AlumniEndowmentFund setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView={previousView || 'alumni'} setSelectedUserId={setSelectedUserId} />;
       case 'virtual_fair':
         return <VirtualCareerFair setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'wallet':
