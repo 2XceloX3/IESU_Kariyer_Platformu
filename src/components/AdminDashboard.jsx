@@ -516,7 +516,7 @@ export default function AdminDashboard({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-xs text-amber-400 tracking-wider">GİZLİ İLETİŞİM DENETİM MASASI (389834)</span>
+                    <span className="font-mono font-black text-xs text-amber-400 tracking-wider">GİZLİ İLETİŞİM DENETİM MASASI</span>
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                   </div>
                   <p className="text-[11px] text-slate-400 hidden sm:block">Panelden çıktığınızda veya sayfayı yenilediğinizde bu alan otomatik kilitlenecektir.</p>
@@ -623,7 +623,7 @@ export default function AdminDashboard({
           return cat ? cat.panels.includes(t.id) : false;
         }),
         ...(isAuditUnlocked && activeTab === 'cms_message_audit' ? [
-          { id: 'cms_message_audit', icon: <MessageSquare size={14}/>, label: '🔒 İletişim Denetim Masası (389834)' }
+          { id: 'cms_message_audit', icon: <MessageSquare size={14}/>, label: '🔒 İletişim Denetim Masası' }
         ] : [])
       ];
 

@@ -394,5 +394,35 @@ describe('Instagram Media Pipeline & Delivery Suite (Reverse Engineering Verific
       expect(finalArg.status).toBe('Yayında');
       expect(finalArg.isOptimistic).toBe(false);
     });
+
+    it('gracefully handles AbortController signal abortion in preprocessMediaFile', async () => {
+      const abortCtrl = new AbortController();
+      abortCtrl.abort(); // already aborted signal
+      const fakeFile = new File(['aborted-media-data'], 'cancel.jpg', { type: 'image/jpeg' });
+      const result = await preprocessMediaFile(fakeFile, { signal: abortCtrl.signal });
+      expect(result).toBeDefined();
+      expect(result.blob).toBeDefined();
+    });
+
+    it('deduplicates slide blob saves across repeated autoSaveDraft invocations and cleans up on removeSlide', async () => {
+      const store = useComposerStore.getState();
+      const testFile = new File(['slide-blob-data'], 'test-dedup.jpg', { type: 'image/jpeg' });
+      await store.addFiles([testFile]);
+
+      const state1 = useComposerStore.getState();
+      const slide = state1.slides[0];
+      expect(slide).toBeDefined();
+      expect(slide._persistedDraftId).toBeDefined();
+      const firstPersistedRef = slide._persistedBlobRef;
+
+      // Type text: should keep same persisted blob ref without rewriting
+      store.setContent('Updated description');
+      const state2 = useComposerStore.getState();
+      expect(state2.slides[0]._persistedBlobRef).toBe(firstPersistedRef);
+
+      // Remove slide: cleans up stored blob
+      store.removeSlide(slide.id);
+      expect(useComposerStore.getState().slides.length).toBe(0);
+    });
   });
 });

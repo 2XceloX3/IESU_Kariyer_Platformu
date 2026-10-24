@@ -7,6 +7,7 @@
 import React, { useState, useRef } from 'react';
 import { Tag, X, User, Users, Check, Search, Sparkles } from 'lucide-react';
 import { useComposerStore } from '../../store/useComposerStore';
+import { useTranslation } from '../../i18n';
 import SafeAvatar from '../shared/SafeAvatar';
 
 // Varsayılan Etiketlenebilir Mezun/Öğrenci ve Kulüp Örnekleri
@@ -20,8 +21,10 @@ const TAGGABLE_SUGGESTIONS = [
 ];
 
 export default function CoordinateTagPicker() {
+  const { t } = useTranslation();
   const slides = useComposerStore(state => state.slides);
   const activeSlideIndex = useComposerStore(state => state.activeSlideIndex);
+  const lockedAspectRatio = useComposerStore(state => state.lockedAspectRatio);
   const addTag = useComposerStore(state => state.addTag);
   const removeTag = useComposerStore(state => state.removeTag);
 
@@ -35,6 +38,16 @@ export default function CoordinateTagPicker() {
   if (!activeSlide) return null;
 
   const currentTags = activeSlide.tags || [];
+  const slideAspect = lockedAspectRatio || activeSlide.crop?.aspect || '1:1';
+
+  const getAspectClass = () => {
+    switch (slideAspect) {
+      case '4:5': return 'aspect-[4/5] max-h-[560px]';
+      case '1.91:1': return 'aspect-[1.91/1] max-h-[380px]';
+      case '1:1':
+      default: return 'aspect-square max-h-[500px]';
+    }
+  };
 
   /**
    * Görsel üzerine tıklandığında normalize koordinatları hesapla
@@ -106,24 +119,25 @@ export default function CoordinateTagPicker() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Tag size={16} className="text-red-500" />
-          <span className="text-sm font-bold">Kişi ve Kulüp Etiketle</span>
+          <span className="text-sm font-bold">{t('composer.tags') || t('common.tags') || 'Kişi ve Kulüp Etiketle'}</span>
         </div>
         <span className="text-xs text-slate-400">
-          Fotoğrafta etiketlemek istediğiniz yere tıklayın
+          {t('composer.clickToTag') || 'Fotoğrafta etiketlemek istediğiniz yere tıklayın'}
         </span>
       </div>
 
-      {/* Tıklanabilir Görsel Alanı */}
-      <div className="relative flex items-center justify-center bg-black/60 rounded-xl overflow-hidden select-none border border-slate-800">
+      {/* Tıklanabilir Görsel Alanı (PostCard ile 1:1 En-Boy Oranı & RTL Koruması dir="ltr") */}
+      <div className="relative flex items-center justify-center bg-black/60 rounded-xl overflow-hidden select-none border border-slate-800 p-2">
         <div 
           ref={imageRef}
           onClick={handleImageClick}
-          className="relative cursor-crosshair max-w-full max-h-[380px] overflow-hidden"
+          dir="ltr"
+          className={`relative cursor-crosshair w-full max-w-[480px] ${getAspectClass()} overflow-hidden rounded-xl border border-slate-700/60 bg-black/90 select-none flex items-center justify-center`}
         >
           <img
             src={activeSlide.previewUrl}
             alt="Etiketleme Alanı"
-            className="w-full h-auto max-h-[380px] object-contain pointer-events-none"
+            className="w-full h-full object-cover pointer-events-none"
           />
 
           {/* Mevcut Etiket Rozetleri */}
@@ -139,7 +153,7 @@ export default function CoordinateTagPicker() {
                 type="button"
                 onClick={() => removeTag(activeSlide.id, tag.id)}
                 className="hover:text-red-400 p-0.5 rounded-full transition"
-                title="Etiketi Kaldır"
+                title={t('composer.removeTag') || 'Etiketi Kaldır'}
               >
                 <X size={12} />
               </button>
@@ -154,7 +168,7 @@ export default function CoordinateTagPicker() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between pb-1.5 border-b border-slate-800 mb-2">
-                <span className="text-[11px] font-bold text-slate-400">Kim bu?</span>
+                <span className="text-[11px] font-bold text-slate-400">{t('composer.whoIsThis') || 'Kim bu?'}</span>
                 <button
                   type="button"
                   onClick={() => { setActivePin(null); setShowSearch(false); }}
@@ -170,7 +184,7 @@ export default function CoordinateTagPicker() {
                 <input
                   type="text"
                   autoFocus
-                  placeholder="Kişi veya kulüp ara..."
+                  placeholder={t('composer.tagSearchPlaceholder') || 'Kişi veya kulüp ara...'}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-7 pr-2 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500"

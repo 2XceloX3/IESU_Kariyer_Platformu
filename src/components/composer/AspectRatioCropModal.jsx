@@ -7,14 +7,17 @@
 import React, { useState } from 'react';
 import { Square, Smartphone, Monitor, ZoomIn, ZoomOut, Check, X, Lock } from 'lucide-react';
 import { useComposerStore } from '../../store/useComposerStore';
-import { ASPECT_RATIOS } from '../../services/mediaPreprocessor';
+import { ASPECT_RATIOS, bakeSlideCrop } from '../../services/mediaPreprocessor';
+import { useTranslation } from '../../i18n';
 
 export default function AspectRatioCropModal({ onNext, onClose }) {
+  const { t } = useTranslation();
   const slides = useComposerStore(state => state.slides);
   const activeSlideIndex = useComposerStore(state => state.activeSlideIndex);
   const lockedAspectRatio = useComposerStore(state => state.lockedAspectRatio);
   const setAspectRatio = useComposerStore(state => state.setAspectRatio);
   const updateSlideCrop = useComposerStore(state => state.updateSlideCrop);
+  const updateSlide = useComposerStore(state => state.updateSlide);
 
   const activeSlide = slides[activeSlideIndex] || slides[0];
   const [zoom, setZoom] = useState(activeSlide?.crop?.zoom || 1.0);
@@ -30,6 +33,30 @@ export default function AspectRatioCropModal({ onNext, onClose }) {
     const newZoom = parseFloat(e.target.value);
     setZoom(newZoom);
     updateSlideCrop(activeSlide.id, { zoom: newZoom });
+  };
+
+  const handleApplyAndNext = () => {
+    if (activeSlide) {
+      updateSlideCrop(activeSlide.id, { aspect: currentAspect, zoom });
+      const pan = { x: activeSlide?.crop?.x || 0, y: activeSlide?.crop?.y || 0 };
+      bakeSlideCrop(activeSlide, currentAspect, zoom, pan)
+        .then((baked) => {
+          if (updateSlide && baked) {
+            updateSlide(activeSlide.id, {
+              blob: baked.blob,
+              previewUrl: baked.previewUrl,
+              width: baked.width,
+              height: baked.height,
+              mimeType: baked.mimeType,
+              crop: baked.crop
+            });
+          }
+        })
+        .catch((err) => {
+          console.warn('[AspectRatioCropModal] Bake crop exception:', err);
+        });
+    }
+    if (onNext) onNext();
   };
 
   // En-boy oranına göre CSS stil sınıfları
@@ -48,7 +75,7 @@ export default function AspectRatioCropModal({ onNext, onClose }) {
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-900/90">
         <div className="flex items-center gap-2">
           <Lock size={16} className="text-red-500" />
-          <span className="text-sm font-bold tracking-tight">Kırpma & En-Boy Oranı Kilidi</span>
+          <span className="text-sm font-bold tracking-tight">{t('composer.cropTitle') || 'Kırpma & En-Boy Oranı Kilidi'}</span>
         </div>
         <div className="flex items-center gap-2">
           {onClose && (
@@ -104,7 +131,7 @@ export default function AspectRatioCropModal({ onNext, onClose }) {
                 currentAspect === '1:1' ? 'bg-red-600 text-white shadow' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Square size={14} /> 1:1 Kare
+              <Square size={14} /> {t('composer.square') || '1:1 Kare'}
             </button>
             <button
               type="button"
@@ -113,7 +140,7 @@ export default function AspectRatioCropModal({ onNext, onClose }) {
                 currentAspect === '4:5' ? 'bg-red-600 text-white shadow' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Smartphone size={14} /> 4:5 Dikey
+              <Smartphone size={14} /> {t('composer.portrait') || '4:5 Dikey'}
             </button>
             <button
               type="button"
@@ -122,7 +149,7 @@ export default function AspectRatioCropModal({ onNext, onClose }) {
                 currentAspect === '1.91:1' ? 'bg-red-600 text-white shadow' : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Monitor size={14} /> 1.91:1 Yatay
+              <Monitor size={14} /> {t('composer.landscape') || '1.91:1 Yatay'}
             </button>
           </div>
 
@@ -149,16 +176,16 @@ export default function AspectRatioCropModal({ onNext, onClose }) {
         <div className="flex items-center justify-between pt-1">
           <span className="text-[11px] text-slate-400 flex items-center gap-1">
             <Lock size={12} className="text-amber-400" />
-            Bu oran karuseldeki tüm ({slides.length}) slayta kilitlendi (CLS = 0.00).
+            {t('composer.lockNotice', { count: slides.length }) || `Bu oran karuseldeki tüm (${slides.length}) slayta kilitlendi (CLS = 0.00).`}
           </span>
 
           {onNext && (
             <button
               type="button"
-              onClick={onNext}
+              onClick={handleApplyAndNext}
               className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-md transition active:scale-95 cursor-pointer"
             >
-              <span>İleri</span>
+              <span>{t('composer.next') || t('common.next') || 'İleri'}</span>
               <Check size={14} strokeWidth={2.5} />
             </button>
           )}

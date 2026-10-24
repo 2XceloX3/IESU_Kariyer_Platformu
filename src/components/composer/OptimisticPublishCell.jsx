@@ -7,8 +7,10 @@
 import React from 'react';
 import { RefreshCw, Save, AlertCircle, CheckCircle2, UploadCloud } from 'lucide-react';
 import { useComposerStore } from '../../store/useComposerStore';
+import { useTranslation } from '../../i18n';
 
 export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
+  const { t } = useTranslation();
   const isPublishing = useComposerStore(state => state.isPublishing);
   const publishProgress = useComposerStore(state => state.publishProgress);
   const publishStatus = useComposerStore(state => state.publishStatus);
@@ -28,17 +30,17 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
   const getStatusLabel = () => {
     switch (publishStatus) {
       case 'preprocessing':
-        return 'Görseller WebP formatına optimize ediliyor...';
+        return t('composer.statusPreprocessing') || 'Görseller WebP formatına optimize ediliyor...';
       case 'uploading':
-        return `RUpload parçalı yükleme sürüyor (%${publishProgress})...`;
+        return t('composer.statusUploading', { progress: publishProgress }) || `RUpload parçalı yükleme sürüyor (%${publishProgress})...`;
       case 'committing':
-        return 'Akışa işleniyor...';
+        return t('composer.statusCommitting') || 'Akışa işleniyor...';
       case 'success':
-        return 'Yayınlandı!';
+        return t('composer.statusSuccess') || 'Yayınlandı!';
       case 'error':
-        return errorMessage || 'Yükleme sırasında ağ bağlantısı kesildi.';
+        return errorMessage || t('composer.statusNetworkError') || 'Yükleme sırasında ağ bağlantısı kesildi.';
       default:
-        return 'Gönderi hazırlanıyor...';
+        return t('composer.statusDefault') || 'Gönderi hazırlanıyor...';
     }
   };
 
@@ -92,7 +94,7 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <p className="text-xs font-extrabold tracking-tight truncate">
-                {publishStatus === 'error' ? 'Paylaşım Başarısız Oldu' : 'Gönderiniz Paylaşılıyor'}
+                {publishStatus === 'error' ? (t('composer.failed') || 'Paylaşım Başarısız Oldu') : (t('composer.publishingTitle') || 'Gönderiniz Paylaşılıyor')}
               </p>
               {publishStatus !== 'error' && (
                 <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
@@ -113,19 +115,19 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
             >
               <RefreshCw size={12} />
-              <span>Tekrar Dene</span>
+              <span>{t('composer.retry') || t('common.retry') || 'Tekrar Dene'}</span>
             </button>
             <button
               type="button"
-              onClick={onSaveDraft || (() => {
-                useComposerStore.getState().autoSaveDraft();
+              onClick={onSaveDraft || (async () => {
+                await useComposerStore.getState().autoSaveDraft();
                 reset();
-                if (window.toast?.success) window.toast.success('İçerik taslaklara kaydedildi.');
+                if (window.toast?.success) window.toast.success(t('composer.draftSaved') || 'İçerik taslaklara kaydedildi.');
               })}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
             >
               <Save size={12} />
-              <span>Taslağa Kaydet</span>
+              <span>{t('composer.saveDraft') || t('common.saveDraft') || 'Taslağa Kaydet'}</span>
             </button>
           </div>
         )}

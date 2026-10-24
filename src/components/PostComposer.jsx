@@ -22,6 +22,7 @@ import eventBus from '../brain/eventBus';
 import SafeAvatar from './shared/SafeAvatar';
 import { getClosestPreset } from '../services/mediaPreprocessor';
 import { useComposerStore } from '../store/useComposerStore';
+import { useTranslation } from '../i18n';
 import AspectRatioCropModal from './composer/AspectRatioCropModal';
 import CarouselFilmstrip from './composer/CarouselFilmstrip';
 import CoordinateTagPicker from './composer/CoordinateTagPicker';
@@ -29,6 +30,7 @@ import CoAuthorSelector from './composer/CoAuthorSelector';
 import OptimisticPublishCell from './composer/OptimisticPublishCell';
 
 export default function PostComposer({ currentUser, userRole, posts, setPosts, asClub, setActiveTab }) {
+  const { t } = useTranslation();
   const logAction = useAppStore(state => state.logAction);
   const [content, setContent] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -69,7 +71,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
   const publishEvent = async () => {
     const title = DOMPurify.sanitize(evTitle.trim());
     if (!title) { 
-      if (window.toast?.info) window.toast.info('Etkinlik başlığı gerekli'); 
+      if (window.toast?.info) window.toast.info(t('composer.eventTitle') || 'Etkinlik başlığı gerekli'); 
       return; 
     }
 
@@ -124,7 +126,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
     for (let i = 0; i < files.length; i++) {
       if (files[i].size > 50 * 1024 * 1024) {
         if (window.toast && typeof window.toast.error === 'function') {
-          window.toast.error("Dosya boyutu en fazla 50 MB olabilir.");
+          window.toast.error(t('composer.maxFileSizeError') || "Dosya boyutu en fazla 50 MB olabilir.");
         }
         return;
       }
@@ -215,7 +217,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                   onFocus={() => setIsFocused(true)}
                   disabled={isSubmitting || isPublishing}
                   aria-label="Gönderi içeriği"
-                  placeholder={isFocused ? "Ne hakkında konuşmak istiyorsunuz?" : "Gönderi başlat..."}
+                  placeholder={isFocused ? (t('composer.placeholderFocused') || "Ne hakkında konuşmak istiyorsunuz?") : (t('composer.placeholderStart') || "Gönderi başlat...")}
                   className={`w-full bg-transparent border-none outline-none text-[15px] sm:text-[16px] text-gray-800 placeholder-gray-500 font-medium resize-none transition-all disabled:opacity-50
                     ${isFocused ? 'min-h-[90px] pt-2 px-1 focus:ring-0' : 'min-h-[48px] pt-3 px-4 cursor-text'}`}
                 />
@@ -224,7 +226,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
               {/* Ortak Yazar Rozetleri (Seçilmişse Görüntüle) */}
               {coAuthors && coAuthors.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5 items-center">
-                  <span className="text-[11px] font-bold text-gray-500">Ortak Yazarlar:</span>
+                  <span className="text-[11px] font-bold text-gray-500">{t('composer.coAuthors') || 'Ortak Yazarlar'}:</span>
                   {coAuthors.map(author => (
                     <span 
                       key={author.id} 
@@ -303,7 +305,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
               {!isVideo && !isPdf && slides.length > 0 && isFocused && (
                 <div className="mt-2.5 flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100">
                   <span className="text-[11px] font-bold text-gray-500 flex items-center gap-1">
-                    <Crop size={12} className="text-red-600" /> En-Boy:
+                    <Crop size={12} className="text-red-600" /> {t('composer.aspectRatio') || 'En-Boy'}:
                   </span>
                   <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-lg text-xs font-bold text-gray-700">
                     <button
@@ -311,21 +313,21 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                       onClick={() => setStoreAspectRatio('1:1')}
                       className={`px-2 py-0.5 rounded-md transition ${currentAspect === '1:1' ? 'bg-white text-red-600 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
                     >
-                      1:1 Kare
+                      {t('composer.square') || '1:1 Kare'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setStoreAspectRatio('4:5')}
                       className={`px-2 py-0.5 rounded-md transition ${currentAspect === '4:5' ? 'bg-white text-red-600 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
                     >
-                      4:5 Dikey
+                      {t('composer.portrait') || '4:5 Dikey'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setStoreAspectRatio('1.91:1')}
                       className={`px-2 py-0.5 rounded-md transition ${currentAspect === '1.91:1' ? 'bg-white text-red-600 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}
                     >
-                      1.91:1 Yatay
+                      {t('composer.landscape') || '1.91:1 Yatay'}
                     </button>
                   </div>
 
@@ -338,7 +340,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                     }`}
                   >
                     <Maximize2 size={12} />
-                    <span>Kırp & Yakınlaştır</span>
+                    <span>{t('composer.cropAndZoom') || 'Kırp & Yakınlaştır'}</span>
                   </button>
 
                   {/* Kişi Etiketle Butonu */}
@@ -350,7 +352,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                     }`}
                   >
                     <Tag size={12} />
-                    <span>Kişi Etiketle</span>
+                    <span>{t('composer.tagPeople') || 'Kişi Etiketle'}</span>
                   </button>
 
                   {/* Ortak Yazar Butonu */}
@@ -362,7 +364,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                     }`}
                   >
                     <Users size={12} />
-                    <span>Ortak Yazar</span>
+                    <span>{t('composer.coAuthor') || 'Ortak Yazar'}</span>
                   </button>
                 </div>
               )}
@@ -394,16 +396,16 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
           {/* BOTTOM TOOLBAR (LINKEDIN STYLE) */}
           {eventMode && (
             <div className="mt-3 rounded-xl border border-orange-200 bg-orange-50/60 p-3 space-y-2">
-              <p className="text-[12px] font-extrabold text-orange-700 tracking-wide">📅 Etkinlik Oluştur</p>
-              <input value={evTitle} onChange={(e) => setEvTitle(e.target.value)} placeholder="Etkinlik başlığı *" className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
+              <p className="text-[12px] font-extrabold text-orange-700 tracking-wide">{t('composer.createEvent') || '📅 Etkinlik Oluştur'}</p>
+              <input value={evTitle} onChange={(e) => setEvTitle(e.target.value)} placeholder={t('composer.eventTitle') || 'Etkinlik başlığı *'} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
               <div className="flex flex-col sm:flex-row gap-2">
-                <input value={evDate} onChange={(e) => setEvDate(e.target.value)} placeholder="Tarih (örn. 15 Mayıs 2026)" className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
-                <input value={evLocation} onChange={(e) => setEvLocation(e.target.value)} placeholder="Yer" className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
+                <input value={evDate} onChange={(e) => setEvDate(e.target.value)} placeholder={t('composer.eventDate') || 'Tarih (örn. 15 Mayıs 2026)'} className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
+                <input value={evLocation} onChange={(e) => setEvLocation(e.target.value)} placeholder={t('composer.eventLocation') || 'Yer'} className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400" />
               </div>
-              <textarea value={evDesc} onChange={(e) => setEvDesc(e.target.value)} placeholder="Açıklama (opsiyonel)" rows={2} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400 resize-none" />
+              <textarea value={evDesc} onChange={(e) => setEvDesc(e.target.value)} placeholder={t('composer.eventDescription') || 'Açıklama (opsiyonel)'} rows={2} className="w-full px-3 py-2 rounded-lg border border-gray-200 text-[14px] outline-none focus:border-orange-400 resize-none" />
               <div className="flex justify-end gap-2 pt-1">
-                <button type="button" onClick={() => setEventMode(false)} className="px-4 py-1.5 rounded-full text-[13px] font-semibold text-gray-500 hover:bg-gray-100 transition">İptal</button>
-                <button type="button" onClick={publishEvent} disabled={isSubmitting || isPublishing} className="px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-[13px] font-semibold transition disabled:opacity-50">Yayınla</button>
+                <button type="button" onClick={() => setEventMode(false)} className="px-4 py-1.5 rounded-full text-[13px] font-semibold text-gray-500 hover:bg-gray-100 transition">{t('composer.cancel') || 'İptal'}</button>
+                <button type="button" onClick={publishEvent} disabled={isSubmitting || isPublishing} className="px-4 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-[13px] font-semibold transition disabled:opacity-50">{t('composer.publish') || 'Yayınla'}</button>
               </div>
             </div>
           )}
@@ -412,7 +414,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
             <div className="flex items-center justify-between w-full sm:w-auto px-1">
               <label className="flex items-center gap-2 px-3 py-2.5 text-gray-500 hover:bg-gray-100 rounded-md cursor-pointer transition-colors font-semibold text-[14px]">
                 <ImageIcon size={20} className="text-red-500" /> 
-                <span className="hidden sm:inline">Medya / Karusel</span>
+                <span className="hidden sm:inline">{t('composer.addMedia') || 'Medya / Karusel'}</span>
                 <input 
                   ref={fileInputRef}
                   type="file" 
@@ -429,7 +431,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                 className="flex items-center gap-2 px-3 py-2.5 text-gray-500 hover:bg-gray-100 rounded-md transition-colors font-semibold text-[14px]"
               >
                 <Calendar size={20} className={eventMode ? 'text-red-600' : 'text-orange-500'} /> 
-                <span className="hidden sm:inline">Etkinlik</span>
+                <span className="hidden sm:inline">{t('composer.addEvent') || 'Etkinlik'}</span>
               </button>
             </div>
             
@@ -442,7 +444,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                 }} 
                 className="px-4 py-1.5 rounded-full font-semibold text-[14px] text-gray-500 hover:bg-gray-100 transition"
               >
-                İptal
+                {t('composer.cancel') || 'İptal'}
               </button>
               <button 
                 type="submit" 
@@ -451,7 +453,7 @@ export default function PostComposer({ currentUser, userRole, posts, setPosts, a
                   ${(content.trim() || slides.length > 0) && !isSubmitting && !isPublishing ? 'bg-red-600 hover:bg-red-700 text-white shadow-md' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
                 `}
               >
-                {isSubmitting || isPublishing ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : 'Gönder'}
+                {isSubmitting || isPublishing ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : (t('composer.send') || 'Gönder')}
               </button>
             </div>
           </div>

@@ -6,7 +6,7 @@
 
 import { create } from 'zustand';
 import { preprocessMediaFile, getClosestPreset } from '../services/mediaPreprocessor';
-import { saveDraft, getDraft, deleteDraft, deleteBlob } from '../services/draftStorage';
+import { saveDraft, getDraft, deleteDraft, storeBlob, getBlob, deleteBlob } from '../services/draftStorage';
 import { uploadResumableMedia } from '../services/ruploadClient';
 import eventBus from '../brain/eventBus';
 
@@ -108,7 +108,7 @@ export const useComposerStore = create((set, get) => ({
         lockedAspectRatio: aspectLock || '1:1',
         step: 'crop' // Medya seçildikten sonra otomatik kırpma adımına geç
       });
-      get().autoSaveDraft();
+      await get().autoSaveDraft();
     }
   },
 
@@ -116,7 +116,13 @@ export const useComposerStore = create((set, get) => ({
    * Slayt Sil
    */
   removeSlide: (slideId) => {
-    const { slides, activeSlideIndex } = get();
+    const { slides, activeSlideIndex, activeDraftId } = get();
+    if (activeDraftId && slideId) {
+      deleteBlob('DRAFT_SLIDE_' + activeDraftId + '_' + slideId).catch(() => {});
+    }
+    if (slideId) {
+      deleteBlob(slideId).catch(() => {});
+    }
     const updated = slides.filter(s => s.id !== slideId).map((s, idx) => ({ ...s, orderIndex: idx }));
     const newIndex = Math.min(activeSlideIndex, Math.max(0, updated.length - 1));
     const newAspect = updated.length === 0 ? null : get().lockedAspectRatio;
@@ -174,6 +180,18 @@ export const useComposerStore = create((set, get) => ({
     const updated = slides.map(s => {
       if (s.id === slideId) {
         return { ...s, crop: { ...s.crop, ...cropData } };
+      }
+      return s;
+    });
+    set({ slides: updated });
+    get().autoSaveDraft();
+  },
+
+  updateSlide: (slideId, updatedFields) => {
+    const { slides } = get();
+    const updated = slides.map(s => {
+      if (s.id === slideId) {
+        return { ...s, ...updatedFields };
       }
       return s;
     });
@@ -241,13 +259,36 @@ export const useComposerStore = create((set, get) => ({
   },
 
   /**
-   * Otomatik IndexedDB Taslak Kaydı
+   * Otomatik IndexedDB Taslak Kaydı (İkili Blob & Meta Bütünlüğü)
    */
   autoSaveDraft: async () => {
     const state = get();
     if (state.slides.length === 0 && !state.content.trim() && !state.eventData) return;
 
     const draftId = state.activeDraftId || ('DFT-' + Date.now());
+
+    // Slaytların ikili Blob'larını IndexedDB'ye kaydet (Zaten kaydedilmişse mükerrer yazımı atla)
+    for (const slide of state.slides) {
+      if (slide.blob) {
+        if (slide._persistedDraftId === draftId && slide._persistedBlobRef === slide.blob) {
+          continue;
+        }
+        try {
+          const blobKey = 'DRAFT_SLIDE_' + draftId + '_' + slide.id;
+          await storeBlob(blobKey, slide.blob, {
+            mimeType: slide.mimeType || slide.blob.type,
+            size: slide.blob.size,
+            slideId: slide.id,
+            draftId
+          });
+          slide._persistedDraftId = draftId;
+          slide._persistedBlobRef = slide.blob;
+        } catch (e) {
+          console.warn('[ComposerStore] Slide blob save error:', e);
+        }
+      }
+    }
+
     const draftPayload = {
       id: draftId,
       content: state.content,
@@ -260,6 +301,8 @@ export const useComposerStore = create((set, get) => ({
         crop: s.crop,
         tags: s.tags,
         mimeType: s.mimeType,
+        width: s.width,
+        height: s.height,
         orderIndex: s.orderIndex
       }))
     };
@@ -410,12 +453,13 @@ export const useComposerStore = create((set, get) => ({
       } catch (_) {}
 
       // Taslağı ve ilişkili Blob depolamasını temizle (bellek sızıntısı önleme)
-      if (get().activeDraftId) {
-        deleteDraft(get().activeDraftId).catch(() => {});
+      const currentDraftId = get().activeDraftId;
+      if (currentDraftId) {
+        deleteDraft(currentDraftId).catch(() => {});
       }
       for (const slide of slides) {
-        if (slide?.blobId) {
-          deleteBlob(slide.blobId).catch(() => {});
+        if (currentDraftId && slide?.id) {
+          deleteBlob('DRAFT_SLIDE_' + currentDraftId + '_' + slide.id).catch(() => {});
         }
         if (slide?.id) {
           deleteBlob(slide.id).catch(() => {});
@@ -461,19 +505,50 @@ export const useComposerStore = create((set, get) => ({
   },
 
   /**
-   * Taslak Geri Yükle (IndexedDB Draft Recovery)
+   * Taslak Geri Yükle (IndexedDB Draft Recovery & İkili Medya Ayağa Kaldırma)
    */
   loadDraft: async (draftId) => {
     if (!draftId) return null;
     try {
       const draft = await getDraft(draftId);
       if (draft) {
+        const reconstructedSlides = [];
+        for (const meta of (draft.slidesMeta || [])) {
+          const blobKey = 'DRAFT_SLIDE_' + draft.id + '_' + meta.id;
+          let blob = null;
+          try {
+            blob = await getBlob(blobKey);
+          } catch (_) {}
+          const previewUrl = blob && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function'
+            ? URL.createObjectURL(blob)
+            : '';
+          reconstructedSlides.push({
+            id: meta.id,
+            blob,
+            previewUrl,
+            width: meta.width || 0,
+            height: meta.height || 0,
+            mimeType: meta.mimeType || blob?.type || 'image/webp',
+            crop: meta.crop || {
+              aspect: draft.lockedAspectRatio || '1:1',
+              zoom: 1.0,
+              x: 0,
+              y: 0
+            },
+            tags: meta.tags || [],
+            orderIndex: meta.orderIndex ?? reconstructedSlides.length
+          });
+        }
+
         set({
           activeDraftId: draft.id,
           content: draft.content || '',
           lockedAspectRatio: draft.lockedAspectRatio || '1:1',
           coAuthors: draft.coAuthors || [],
-          eventData: draft.eventData || null
+          eventData: draft.eventData || null,
+          slides: reconstructedSlides,
+          step: reconstructedSlides.length > 0 ? 'crop' : 'select',
+          activeSlideIndex: 0
         });
         return draft;
       }

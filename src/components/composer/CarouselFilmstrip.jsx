@@ -7,8 +7,10 @@
 import React, { useRef } from 'react';
 import { Plus, ChevronLeft, ChevronRight, X, Image as ImageIcon } from 'lucide-react';
 import { useComposerStore } from '../../store/useComposerStore';
+import { useTranslation } from '../../i18n';
 
 export default function CarouselFilmstrip({ onAddFiles }) {
+  const { t } = useTranslation();
   const slides = useComposerStore(state => state.slides);
   const activeSlideIndex = useComposerStore(state => state.activeSlideIndex);
   const setActiveSlide = useComposerStore(state => state.setActiveSlide);
@@ -33,10 +35,10 @@ export default function CarouselFilmstrip({ onAddFiles }) {
     <div className="w-full bg-slate-900/90 border-t border-slate-800 p-2.5">
       <div className="flex items-center justify-between mb-1.5 px-1">
         <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-          Karusel Slaytları ({slides.length} / 10)
+          {t('composer.filmstripTitle', { count: slides.length }) || `Karusel Slaytları (${slides.length} / 10)`}
         </span>
         <span className="text-[11px] font-mono text-slate-400">
-          Aktif: {activeSlideIndex + 1} / {slides.length}
+          {t('composer.activeSlide', { current: activeSlideIndex + 1, total: slides.length }) || `Aktif: ${activeSlideIndex + 1} / ${slides.length}`}
         </span>
       </div>
 
@@ -73,7 +75,7 @@ export default function CarouselFilmstrip({ onAddFiles }) {
                       e.stopPropagation();
                       reorderSlides(slide.id, 'left');
                     }}
-                    title="Sola Taşı"
+                    title={t('composer.moveLeft') || 'Sola Taşı'}
                     className="p-0.5 hover:bg-white/20 rounded text-white"
                   >
                     <ChevronLeft size={12} />
@@ -87,7 +89,7 @@ export default function CarouselFilmstrip({ onAddFiles }) {
                     e.stopPropagation();
                     removeSlide(slide.id);
                   }}
-                  title="Slaytı Kaldır"
+                  title={t('composer.removeSlide') || 'Slaytı Kaldır'}
                   className="p-0.5 hover:bg-red-600 rounded text-white transition"
                 >
                   <X size={12} />
@@ -100,7 +102,7 @@ export default function CarouselFilmstrip({ onAddFiles }) {
                       e.stopPropagation();
                       reorderSlides(slide.id, 'right');
                     }}
-                    title="Sağa Taşı"
+                    title={t('composer.moveRight') || 'Sağa Taşı'}
                     className="p-0.5 hover:bg-white/20 rounded text-white"
                   >
                     <ChevronRight size={12} />
@@ -116,11 +118,11 @@ export default function CarouselFilmstrip({ onAddFiles }) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            title="Yeni Medya Ekle (Karusel)"
+            title={t('composer.addMedia') || 'Yeni Medya Ekle (Karusel)'}
             className="shrink-0 w-16 h-16 rounded-xl border-2 border-dashed border-slate-700 hover:border-red-500 hover:bg-red-500/10 flex flex-col items-center justify-center text-slate-400 hover:text-red-400 transition cursor-pointer"
           >
             <Plus size={18} />
-            <span className="text-[9px] font-bold mt-0.5">Ekle</span>
+            <span className="text-[9px] font-bold mt-0.5">{t('composer.addMore') || 'Ekle'}</span>
             <input
               ref={fileInputRef}
               type="file"

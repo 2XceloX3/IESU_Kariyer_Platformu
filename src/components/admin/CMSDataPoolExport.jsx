@@ -102,7 +102,7 @@ export default function CMSDataPoolExport() {
           message: `"${item.labName}" rezervasyonunuz için revize talep edildi: ${note}`
         });
       }
-      window.toast && window.toast.success("Revize talebi ve açıklama akademisyene iletildi.");
+      if (window.toast) window.toast.success("Revize talebi ve açıklama akademisyene iletildi.");
     } else {
       if (updateResearchCallApplicationStatus) updateResearchCallApplicationStatus(item.id, 'Revize İstendi', note);
       if (addNotification) {
@@ -113,7 +113,7 @@ export default function CMSDataPoolExport() {
           message: `"${item.callTitle}" başvurunuz için revize talep edildi: ${note}`
         });
       }
-      window.toast && window.toast.success("Revize talebi ve açıklama araştırmacıya/öğrenciye iletildi.");
+      if (window.toast) window.toast.success("Revize talebi ve açıklama araştırmacıya/öğrenciye iletildi.");
     }
     setReviseModalData(null);
     setReviseNote('');
@@ -141,15 +141,15 @@ export default function CMSDataPoolExport() {
   const handleSaveLab = (e) => {
     e.preventDefault();
     if (!labFormData.name.trim()) {
-      window.toast && window.toast.error("Lütfen laboratuvar adını giriniz.");
+      if (window.toast) window.toast.error("Lütfen laboratuvar adını giriniz.");
       return;
     }
     if (editingLab) {
       if (updateResearchLab) updateResearchLab(labFormData);
-      window.toast && window.toast.success("Laboratuvar başarıyla güncellendi.");
+      if (window.toast) window.toast.success("Laboratuvar başarıyla güncellendi.");
     } else {
       if (addResearchLab) addResearchLab(labFormData);
-      window.toast && window.toast.success("Yeni laboratuvar başarıyla eklendi.");
+      if (window.toast) window.toast.success("Yeni laboratuvar başarıyla eklendi.");
     }
     setLabModalOpen(false);
   };
@@ -157,7 +157,7 @@ export default function CMSDataPoolExport() {
   const handleDeleteLab = (id) => {
     if (window.confirm("Bu laboratuvarı katalogdan kaldırmak istediğinize emin misiniz?")) {
       if (deleteResearchLab) deleteResearchLab(id);
-      window.toast && window.toast.success("Laboratuvar silindi.");
+      if (window.toast) window.toast.success("Laboratuvar silindi.");
     }
   };
 
@@ -184,15 +184,15 @@ export default function CMSDataPoolExport() {
   const handleSaveCall = (e) => {
     e.preventDefault();
     if (!callFormData.title.trim() || !callFormData.lead.trim()) {
-      window.toast && window.toast.error("Lütfen çağrı başlığı ve yürütücü alanlarını doldurunuz.");
+      if (window.toast) window.toast.error("Lütfen çağrı başlığı ve yürütücü alanlarını doldurunuz.");
       return;
     }
     if (editingCall) {
       if (updateResearchCall) updateResearchCall(callFormData);
-      window.toast && window.toast.success("Proje çağrısı güncellendi.");
+      if (window.toast) window.toast.success("Proje çağrısı güncellendi.");
     } else {
       if (addResearchCall) addResearchCall(callFormData);
-      window.toast && window.toast.success("Yeni proje çağrısı başarıyla yayınlandı.");
+      if (window.toast) window.toast.success("Yeni proje çağrısı başarıyla yayınlandı.");
     }
     setCallModalOpen(false);
   };
@@ -200,7 +200,7 @@ export default function CMSDataPoolExport() {
   const handleDeleteCall = (id) => {
     if (window.confirm("Bu proje çağrısını silmek istediğinize emin misiniz?")) {
       if (deleteResearchCall) deleteResearchCall(id);
-      window.toast && window.toast.success("Proje çağrısı silindi.");
+      if (window.toast) window.toast.success("Proje çağrısı silindi.");
     }
   };
 
@@ -215,14 +215,14 @@ export default function CMSDataPoolExport() {
       "16:30 - 18:30 (Akşam Seansı)"
     ];
     if (currentSlots.includes(newTimeSlot.trim())) {
-      window.toast && window.toast.error("Bu seans saati zaten tanımlı.");
+      if (window.toast) window.toast.error("Bu seans saati zaten tanımlı.");
       return;
     }
     if (updateResearchConfig) {
       updateResearchConfig({ timeSlots: [...currentSlots, newTimeSlot.trim()] });
     }
     setNewTimeSlot('');
-    window.toast && window.toast.success("Yeni seans saati eklendi.");
+    if (window.toast) window.toast.success("Yeni seans saati eklendi.");
   };
 
   const handleDeleteTimeSlot = (slot) => {
@@ -230,7 +230,7 @@ export default function CMSDataPoolExport() {
     if (updateResearchConfig) {
       updateResearchConfig({ timeSlots: currentSlots.filter(s => s !== slot) });
     }
-    window.toast && window.toast.success("Seans saati kaldırıldı.");
+    if (window.toast) window.toast.success("Seans saati kaldırıldı.");
   };
 
   // Custom Questions / Revision Criteria Handlers
@@ -250,7 +250,7 @@ export default function CMSDataPoolExport() {
       updateResearchConfig({ labCustomQuestions: [...currentQuestions, newQ] });
     }
     setNewLabQuestion({ label: '', options: '', required: true });
-    window.toast && window.toast.success("Yeni laboratuvar rezervasyon kriteri/sorusu eklendi.");
+    if (window.toast) window.toast.success("Yeni laboratuvar rezervasyon kriteri/sorusu eklendi.");
   };
 
   const handleDeleteLabQuestion = (id) => {
@@ -258,7 +258,7 @@ export default function CMSDataPoolExport() {
     if (updateResearchConfig) {
       updateResearchConfig({ labCustomQuestions: currentQuestions.filter(q => q.id !== id) });
     }
-    window.toast && window.toast.success("Kriter sorusu kaldırıldı.");
+    if (window.toast) window.toast.success("Kriter sorusu kaldırıldı.");
   };
 
   const handleAddCallQuestion = (e) => {
@@ -277,7 +277,7 @@ export default function CMSDataPoolExport() {
       updateResearchConfig({ callCustomQuestions: [...currentQuestions, newQ] });
     }
     setNewCallQuestion({ label: '', options: '', required: false });
-    window.toast && window.toast.success("Yeni proje çağrısı başvuru sorusu eklendi.");
+    if (window.toast) window.toast.success("Yeni proje çağrısı başvuru sorusu eklendi.");
   };
 
   const handleDeleteCallQuestion = (id) => {
@@ -285,13 +285,13 @@ export default function CMSDataPoolExport() {
     if (updateResearchConfig) {
       updateResearchConfig({ callCustomQuestions: currentQuestions.filter(q => q.id !== id) });
     }
-    window.toast && window.toast.success("Çağrı sorusu kaldırıldı.");
+    if (window.toast) window.toast.success("Çağrı sorusu kaldırıldı.");
   };
 
   // UTF-8 BOM CSV / Excel Export Engine with KVKK Masking & Security Shield
   const exportToExcel = (dataArray, filename) => {
     if (!dataArray || dataArray.length === 0) {
-      window.toast && window.toast.error("Dışa aktarılacak veri bulunamadı.");
+      if (window.toast) window.toast.error("Dışa aktarılacak veri bulunamadı.");
       return;
     }
 
@@ -340,7 +340,7 @@ export default function CMSDataPoolExport() {
     link.click();
     document.body.removeChild(link);
     
-    window.toast && window.toast.success(`"${filename}" Excel/CSV dosyası başarıyla indirildi.`);
+    if (window.toast) window.toast.success(`"${filename}" Excel/CSV dosyası başarıyla indirildi.`);
   };
 
   const totalPoolRecords = checkupRecords.length + bmiRecords.length + helpdeskTickets.length + labReservations.length + researchCallApplications.length + eventRegistrations.length + surveys.length + newsletterSubscribers.length + careerFairApplications.length + adminMessages.length + alumniAssocApplications.length;
@@ -995,7 +995,7 @@ export default function CMSDataPoolExport() {
                           <button
                             onClick={() => {
                               if (updateLabReservationStatus) updateLabReservationStatus(l.id, 'Onaylandı');
-                              window.toast && window.toast.success("Laboratuvar rezervasyonu onaylandı.");
+                              if (window.toast) window.toast.success("Laboratuvar rezervasyonu onaylandı.");
                             }}
                             className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition"
                             title="Rezervasyonu Onayla"
@@ -1015,7 +1015,7 @@ export default function CMSDataPoolExport() {
                           <button
                             onClick={() => {
                               if (updateLabReservationStatus) updateLabReservationStatus(l.id, 'Reddedildi');
-                              window.toast && window.toast.error("Rezervasyon reddedildi.");
+                              if (window.toast) window.toast.error("Rezervasyon reddedildi.");
                             }}
                             className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition"
                             title="Reddet"
@@ -1169,7 +1169,7 @@ export default function CMSDataPoolExport() {
                           <button
                             onClick={() => {
                               if (updateResearchCallApplicationStatus) updateResearchCallApplicationStatus(a.id, 'Kabul Edildi');
-                              window.toast && window.toast.success("Başvuru kabul edildi.");
+                              if (window.toast) window.toast.success("Başvuru kabul edildi.");
                             }}
                             className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition"
                             title="Başvuruyu Kabul Et"
@@ -1179,7 +1179,7 @@ export default function CMSDataPoolExport() {
                           <button
                             onClick={() => {
                               if (updateResearchCallApplicationStatus) updateResearchCallApplicationStatus(a.id, 'Mülakata Çağrıldı', 'Aday mülakat görüşmesine davet edilmiştir.');
-                              window.toast && window.toast.success("Aday mülakata çağrıldı.");
+                              if (window.toast) window.toast.success("Aday mülakata çağrıldı.");
                             }}
                             className="p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition"
                             title="Mülakata Çağır"
@@ -1199,7 +1199,7 @@ export default function CMSDataPoolExport() {
                           <button
                             onClick={() => {
                               if (updateResearchCallApplicationStatus) updateResearchCallApplicationStatus(a.id, 'Reddedildi');
-                              window.toast && window.toast.error("Başvuru reddedildi.");
+                              if (window.toast) window.toast.error("Başvuru reddedildi.");
                             }}
                             className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition"
                             title="Reddet"

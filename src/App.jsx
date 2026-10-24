@@ -126,6 +126,12 @@ export default function App() {
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
   const verifyCoordinatorSession = useCallback(() => {
     try {
+      const isVerifiedFirebaseAdmin = Boolean(
+        (authenticatedUserId || auth?.currentUser) &&
+        currentUser?.role === 'admin'
+      );
+      if (isVerifiedFirebaseAdmin) return true;
+
       const adminUser = import.meta.env.VITE_ADMIN_USER ? String(import.meta.env.VITE_ADMIN_USER).trim().toLowerCase() : null;
       const adminPass = import.meta.env.VITE_ADMIN_PASS ? String(import.meta.env.VITE_ADMIN_PASS).trim() : null;
       if (!adminUser || !adminPass) return false;
@@ -138,11 +144,11 @@ export default function App() {
     } catch {
       return false;
     }
-  }, []);
+  }, [authenticatedUserId, currentUser]);
 
   const hasValidCoordinatorAuth = verifyCoordinatorSession();
   const isAdmin = Boolean(
-    (authenticatedUserId || auth?.currentUser || hasValidCoordinatorAuth) &&
+    hasValidCoordinatorAuth &&
     (currentUser?.role === 'admin' || userRole === 'admin')
   );
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch && activePortalBranch !== 'admin' ? activePortalBranch : 'student'));

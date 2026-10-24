@@ -1096,12 +1096,12 @@ export function aggregateAlumniHubs(alumniList = [], currentUser = null) {
 }
 
 export const CAREER_ROUTES = [
-  // Düzce Routes (Inspired by Google Maps Direction from Düzce [31.162609, 40.83872] to Europe/Atlantic)
+  // İstanbul / Esenyurt - Trakya Koridoru (Esenyurt [28.67, 41.03] to Europe/Atlantic)
   {
     id: 'route_duzce_stuttgart',
-    fromCity: 'Düzce',
+    fromCity: 'İstanbul',
     fromCountry: 'Türkiye',
-    fromCoords: [31.1626, 40.8387],
+    fromCoords: [28.67, 41.03],
     toCity: 'Stuttgart',
     toCountry: 'Almanya',
     toCoords: [9.1829, 48.7758],
@@ -1114,9 +1114,9 @@ export const CAREER_ROUTES = [
   },
   {
     id: 'route_duzce_munich',
-    fromCity: 'Düzce',
+    fromCity: 'İstanbul',
     fromCountry: 'Türkiye',
-    fromCoords: [31.1626, 40.8387],
+    fromCoords: [28.67, 41.03],
     toCity: 'Münih',
     toCountry: 'Almanya',
     toCoords: [11.5820, 48.1351],
@@ -1129,9 +1129,9 @@ export const CAREER_ROUTES = [
   },
   {
     id: 'route_duzce_london',
-    fromCity: 'Düzce',
+    fromCity: 'İstanbul',
     fromCountry: 'Türkiye',
-    fromCoords: [31.1626, 40.8387],
+    fromCoords: [28.67, 41.03],
     toCity: 'Londra',
     toCountry: 'Birleşik Krallık',
     toCoords: [-0.1276, 51.5072],
@@ -1144,9 +1144,9 @@ export const CAREER_ROUTES = [
   },
   {
     id: 'route_duzce_detroit',
-    fromCity: 'Düzce',
+    fromCity: 'İstanbul',
     fromCountry: 'Türkiye',
-    fromCoords: [31.1626, 40.8387],
+    fromCoords: [28.67, 41.03],
     toCity: 'Detroit',
     toCountry: 'Amerika Birleşik Devletleri',
     toCoords: [-83.0458, 42.3314],
@@ -1159,9 +1159,9 @@ export const CAREER_ROUTES = [
   },
   {
     id: 'route_duzce_tokyo',
-    fromCity: 'Düzce',
+    fromCity: 'İstanbul',
     fromCountry: 'Türkiye',
-    fromCoords: [31.1626, 40.8387],
+    fromCoords: [28.67, 41.03],
     toCity: 'Tokyo',
     toCountry: 'Japonya',
     toCoords: [139.6917, 35.6895],
@@ -1375,13 +1375,18 @@ export const CAREER_ROUTES = [
 export function getCareerRoutes(filterOrigin = null) {
   if (!filterOrigin || filterOrigin === 'all') return CAREER_ROUTES;
   const norm = normalizeStr(filterOrigin);
-  return CAREER_ROUTES.filter(r => 
-    normalizeStr(r.originHub) === norm || 
-    normalizeStr(r.fromCity) === norm || 
-    normalizeStr(r.toCity) === norm ||
-    normalizeStr(r.fromCountry) === norm ||
-    normalizeStr(r.toCountry) === norm
-  );
+  return CAREER_ROUTES.filter(r => {
+    if (norm === 'istanbul') {
+      return normalizeStr(r.originHub) === 'istanbul' || normalizeStr(r.toCity) === 'istanbul';
+    }
+    return (
+      normalizeStr(r.originHub) === norm || 
+      normalizeStr(r.fromCity) === norm || 
+      normalizeStr(r.toCity) === norm ||
+      normalizeStr(r.fromCountry) === norm ||
+      normalizeStr(r.toCountry) === norm
+    );
+  });
 }
 
 export function getCityListByZoom(zoom = 1, country = null) {

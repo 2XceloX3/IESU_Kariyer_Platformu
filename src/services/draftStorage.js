@@ -31,6 +31,11 @@ export function openDraftDB() {
     try {
       const request = window.indexedDB.open(DB_NAME, DB_VERSION);
 
+      request.onblocked = () => {
+        console.warn('[DraftStorage] IndexedDB open blocked (Safari private mode or version lock), falling back to memory');
+        resolve(null);
+      };
+
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
         if (!db.objectStoreNames.contains(STORE_DRAFTS)) {
@@ -45,7 +50,7 @@ export function openDraftDB() {
 
       request.onsuccess = (event) => resolve(event.target.result);
       request.onerror = (event) => {
-        console.warn('[DraftStorage] IndexedDB open error, falling back to memory:', event.target.error);
+        console.warn('[DraftStorage] IndexedDB open error, falling back to memory:', event.target?.error);
         resolve(null);
       };
     } catch (e) {
@@ -77,6 +82,10 @@ export async function saveDraft(draft) {
   return new Promise((resolve, reject) => {
     try {
       const tx = db.transaction(STORE_DRAFTS, 'readwrite');
+      tx.onabort = () => {
+        memoryStorage.drafts.set(record.id, record);
+        resolve(record);
+      };
       const store = tx.objectStore(STORE_DRAFTS);
       const req = store.put(record);
 
@@ -106,6 +115,7 @@ export async function getDraft(id) {
   return new Promise((resolve) => {
     try {
       const tx = db.transaction(STORE_DRAFTS, 'readonly');
+      tx.onabort = () => resolve(memoryStorage.drafts.get(id) || null);
       const store = tx.objectStore(STORE_DRAFTS);
       const req = store.get(id);
 
@@ -129,6 +139,7 @@ export async function getAllDrafts() {
   return new Promise((resolve) => {
     try {
       const tx = db.transaction(STORE_DRAFTS, 'readonly');
+      tx.onabort = () => resolve(Array.from(memoryStorage.drafts.values()));
       const store = tx.objectStore(STORE_DRAFTS);
       const req = store.getAll();
 
@@ -160,6 +171,7 @@ export async function deleteDraft(id) {
   return new Promise((resolve) => {
     try {
       const tx = db.transaction(STORE_DRAFTS, 'readwrite');
+      tx.onabort = () => resolve(true);
       const store = tx.objectStore(STORE_DRAFTS);
       const req = store.delete(id);
       req.onsuccess = () => resolve(true);
@@ -184,7 +196,7 @@ export async function storeBlob(blobId, blobData, metadata = {}) {
     mimeType: blobData.type || metadata.mimeType || 'image/webp',
     size: blobData.size || metadata.size || 0,
     metadata,
-    createdAt: Date.now()
+    createdAt: metadata.createdAt || Date.now()
   };
 
   const db = await openDraftDB();
@@ -196,6 +208,10 @@ export async function storeBlob(blobId, blobData, metadata = {}) {
   return new Promise((resolve) => {
     try {
       const tx = db.transaction(STORE_BLOBS, 'readwrite');
+      tx.onabort = () => {
+        memoryStorage.blobs.set(blobId, record);
+        resolve(record);
+      };
       const store = tx.objectStore(STORE_BLOBS);
       const req = store.put(record);
 
@@ -226,6 +242,10 @@ export async function getBlob(blobId) {
   return new Promise((resolve) => {
     try {
       const tx = db.transaction(STORE_BLOBS, 'readonly');
+      tx.onabort = () => {
+        const mem = memoryStorage.blobs.get(blobId);
+        resolve(mem ? mem.data : null);
+      };
       const store = tx.objectStore(STORE_BLOBS);
       const req = store.get(blobId);
 
@@ -261,6 +281,7 @@ export async function deleteBlob(blobId) {
   return new Promise((resolve) => {
     try {
       const tx = db.transaction(STORE_BLOBS, 'readwrite');
+      tx.onabort = () => resolve(true);
       const store = tx.objectStore(STORE_BLOBS);
       const req = store.delete(blobId);
       req.onsuccess = () => resolve(true);
@@ -293,25 +314,83 @@ export async function clearOldDrafts(maxAgeDays = 7) {
   if (!db) return;
 
   try {
-    const drafts = await getAllDrafts();
-    for (const d of drafts) {
-      if ((d.updatedAt || 0) < cutoff) {
-        await deleteDraft(d.id);
-      }
-    }
-
-    // Süresi dolan ikili blob nesnelerini de temizle
-    const tx = db.transaction(STORE_BLOBS, 'readwrite');
-    const store = tx.objectStore(STORE_BLOBS);
-    const req = store.getAll();
-    req.onsuccess = () => {
-      const blobs = req.result || [];
-      for (const b of blobs) {
-        if ((b.createdAt || 0) < cutoff) {
-          store.delete(b.id);
+    // 1. Süresi dolan taslakları temizle (updatedAt cursor)
+    const pDrafts = new Promise((resolve) => {
+      try {
+        const txDrafts = db.transaction(STORE_DRAFTS, 'readwrite');
+        txDrafts.oncomplete = () => resolve();
+        txDrafts.onerror = () => resolve();
+        txDrafts.onabort = () => resolve();
+        const draftStore = txDrafts.objectStore(STORE_DRAFTS);
+        if (draftStore.indexNames.contains('updatedAt') && typeof IDBKeyRange !== 'undefined') {
+          const draftIndex = draftStore.index('updatedAt');
+          const draftRange = IDBKeyRange.upperBound(cutoff);
+          const draftCursorReq = draftIndex.openCursor(draftRange);
+          draftCursorReq.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+              cursor.delete();
+              cursor.continue();
+            }
+          };
+          draftCursorReq.onerror = () => resolve();
+        } else {
+          const draftCursorReq = draftStore.openCursor();
+          draftCursorReq.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+              if ((cursor.value?.updatedAt || 0) < cutoff) {
+                cursor.delete();
+              }
+              cursor.continue();
+            }
+          };
+          draftCursorReq.onerror = () => resolve();
         }
+      } catch (_) {
+        resolve();
       }
-    };
+    });
+
+    // 2. Süresi dolan ikili blob nesnelerini createdAt indeksi üzerinde IDBKeyRange cursor ile temizle (OOM crash engelleme)
+    const pBlobs = new Promise((resolve) => {
+      try {
+        const txBlobs = db.transaction(STORE_BLOBS, 'readwrite');
+        txBlobs.oncomplete = () => resolve();
+        txBlobs.onerror = () => resolve();
+        txBlobs.onabort = () => resolve();
+        const blobStore = txBlobs.objectStore(STORE_BLOBS);
+        if (blobStore.indexNames.contains('createdAt') && typeof IDBKeyRange !== 'undefined') {
+          const blobIndex = blobStore.index('createdAt');
+          const blobRange = IDBKeyRange.upperBound(cutoff);
+          const blobCursorReq = blobIndex.openCursor(blobRange);
+          blobCursorReq.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+              cursor.delete();
+              cursor.continue();
+            }
+          };
+          blobCursorReq.onerror = () => resolve();
+        } else {
+          const blobCursorReq = blobStore.openCursor();
+          blobCursorReq.onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+              if ((cursor.value?.createdAt || 0) < cutoff) {
+                cursor.delete();
+              }
+              cursor.continue();
+            }
+          };
+          blobCursorReq.onerror = () => resolve();
+        }
+      } catch (_) {
+        resolve();
+      }
+    });
+
+    await Promise.all([pDrafts, pBlobs]);
   } catch (_) {}
 }
 
