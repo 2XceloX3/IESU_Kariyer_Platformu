@@ -125,13 +125,6 @@ export default function StudentApplicationRadar({
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleBack}
-              className="p-2 rounded-xl text-slate-500 hover:text-red-700 hover:bg-red-50 transition cursor-pointer"
-              title="Geri Dön"
-            >
-              <RotateCcw size={18} />
-            </button>
             <Logo className="h-9 w-auto" />
             <div className="hidden sm:block border-l border-slate-200 pl-3">
               <h1 className="text-xs font-black text-slate-900 leading-tight">
@@ -144,11 +137,7 @@ export default function StudentApplicationRadar({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-red-50 border border-red-200/80 rounded-full text-xs font-black text-[#990000]">
-              <Radar size={14} className="animate-spin text-red-600" />
-              <span>{isEn ? 'Anti-Black-Hole Transparency Engine' : 'Kara Delik Başvuru Sendromu Önleme Sistemi'}</span>
-            </div>
-            <LanguageSwitcher variant="pill" />
+            <LanguageSwitcher variant="compact" />
             <TopProfileMenu
               currentUser={effectiveCurrentUser}
               userRole={userRole}

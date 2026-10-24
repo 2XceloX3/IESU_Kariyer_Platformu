@@ -81,6 +81,8 @@ export default function LanguageSwitcher({ variant = 'default', className = '' }
         className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
           variant === 'dark'
             ? 'bg-slate-800/80 hover:bg-slate-700/80 text-cyan-300 border border-cyan-500/30 shadow-sm'
+            : variant === 'compact' || variant === 'light'
+            ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 shadow-xs'
             : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-xs'
         } ${className}`}
       >

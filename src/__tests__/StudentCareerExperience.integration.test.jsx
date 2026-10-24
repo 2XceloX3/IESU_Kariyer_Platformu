@@ -47,7 +47,7 @@ describe('Student Career Experience & 4 Killer Modules Integration', () => {
 
       // Check header and titles
       expect(screen.getAllByText(/Canlı Başvuru Radarı/i).length).toBeGreaterThan(0);
-      expect(screen.getByText(/Kara Delik Başvuru Sendromu Önleme/i)).toBeInTheDocument();
+      expect(screen.getByText(/Şeffaf Başvuru Takip Ağı/i)).toBeInTheDocument();
 
       // Check KPI stat cards
       expect(screen.getByText('Toplam Başvuru')).toBeInTheDocument();
@@ -161,15 +161,9 @@ describe('Student Career Experience & 4 Killer Modules Integration', () => {
         />
       );
 
-      // Check 3308 Guarantee Banner
-      expect(screen.getByTestId('law-3308-guarantee-banner')).toBeInTheDocument();
-      expect(screen.getByText(/3308 Sayılı Kanun Şeffaf Stajyer Güvencesi/i)).toBeInTheDocument();
-      expect(screen.getByText(/Bedava ve güvencesiz staj sömürüsüne son/i)).toBeInTheDocument();
-
-      // Check filter buttons
-      expect(screen.getByText(/⚖️ 3308 Güvenceli/i)).toBeInTheDocument();
-      expect(screen.getByText(/🏛️ SGK Onaylı/i)).toBeInTheDocument();
-      expect(screen.getAllByText(/🍽️ Yol & Yemek/i).length).toBeGreaterThan(0);
+      // Check 3308 Guarantee Banner is removed as requested by UX
+      expect(screen.queryByTestId('law-3308-guarantee-banner')).not.toBeInTheDocument();
+      expect(screen.queryByText(/Bedava ve güvencesiz staj sömürüsüne son/i)).not.toBeInTheDocument();
 
       // Check badges on staj jobs
       const badges3308 = screen.getAllByText(/⚖️ 3308 Kanun Ücret Güvenceli/i);
@@ -177,9 +171,6 @@ describe('Student Career Experience & 4 Killer Modules Integration', () => {
 
       const badgesSgk = screen.getAllByText(/🏛️ Üniversite SGK Onaylı/i);
       expect(badgesSgk.length).toBeGreaterThan(0);
-
-      // Click 3308 filter
-      fireEvent.click(screen.getByText(/⚖️ 3308 Güvenceli/i));
     });
 
     it('renders 3308 Law Guarantee Banner in StajPanel takip tab', async () => {
@@ -220,13 +211,7 @@ describe('Student Career Experience & 4 Killer Modules Integration', () => {
       expect(screen.getByTestId('career-readiness-widget')).toBeInTheDocument();
       expect(screen.getByText(/Kariyer Hazırlık Skoru/i)).toBeInTheDocument();
       expect(screen.getByText(/Aday Seviyesi:/i)).toBeInTheDocument();
-      expect(screen.getByText(/Hedefine Ulaşmak İçin/i)).toBeInTheDocument();
-
-      // Click on recommendation action
-      const ctaBtns = screen.getAllByRole('button');
-      if (ctaBtns.length > 0) {
-        fireEvent.click(ctaBtns[0]);
-      }
+      expect(screen.queryByText(/Hedefine Ulaşmak İçin/i)).not.toBeInTheDocument();
     });
   });
 

@@ -287,16 +287,16 @@ describe('Global Career Fair, ATS Scanner & Alumni Endowment Integration Suite',
   });
 
   describe('Module 4: StudentFeed and AlumniFeed Quick Access Points', () => {
-    it('renders ATS CV Tarayıcı button in StudentFeed Bento Grid and triggers navigation', () => {
+    it('renders Başvuru Radarı quick access button in StudentFeed Bento Grid and triggers navigation', () => {
       const mockSetView = vi.fn();
       render(<StudentFeed setView={mockSetView} userRole="student" />);
 
-      const atsBtn = screen.getByTestId('student-feed-quick-ats-btn');
-      expect(atsBtn).toBeInTheDocument();
-      expect(screen.getByText(/ATS CV Tarayıcı/i)).toBeInTheDocument();
+      const radarBtn = screen.getByTestId('student-feed-quick-radar-btn');
+      expect(radarBtn).toBeInTheDocument();
+      expect(screen.getAllByText(/Başvuru Radarı/i).length).toBeGreaterThan(0);
 
-      fireEvent.click(atsBtn);
-      expect(mockSetView).toHaveBeenCalledWith('ats_scanner');
+      fireEvent.click(radarBtn);
+      expect(mockSetView).toHaveBeenCalledWith('radar');
     });
 
     it('renders Burs & Bağış Fonu button in AlumniFeed Ecosystem Tools and triggers navigation', () => {

@@ -1,7 +1,7 @@
 import useAppStore from '../store/useAppStore';
 import { computeCareerProgress, gradeFromPercent } from '../utils/careerProgress';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, ChevronRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap, Radar, Coffee, FileCheck2 } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, ChevronRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, Globe, ChevronDown, Sparkles, Newspaper, MapPin, Share2, Award, User, Settings, BookOpen, GraduationCap, Rocket, Zap, Radar, Coffee } from 'lucide-react';
 
 import MessagingInterface from './MessagingInterface';
 import PostComposer from './PostComposer';
@@ -396,7 +396,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               <span className="text-xs font-semibold text-gray-400">Merkezi Hizmetler</span>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {/* 1. Kariyer Haritası */}
               <button
                 onClick={() => setView('career_roadmap')}
@@ -460,20 +460,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                 <span className="text-[11px] text-gray-500 mt-1 line-clamp-1">İK inceleme & %15 havuz</span>
               </button>
 
-              {/* 6. Yapay Zekâ ATS Tarayıcı */}
-              <button
-                onClick={() => setView('ats_scanner')}
-                className="group flex flex-col items-start p-3.5 rounded-xl border border-emerald-200 bg-gradient-to-b from-emerald-50/70 to-white hover:border-emerald-400 hover:shadow-md transition-all text-left cursor-pointer"
-                data-testid="student-feed-quick-ats-btn"
-              >
-                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform shadow-xs">
-                  <FileCheck2 size={18} />
-                </div>
-                <span className="text-xs font-bold text-gray-900 group-hover:text-emerald-700 transition-colors leading-tight flex items-center gap-1">
-                  ATS CV Tarayıcı
-                </span>
-                <span className="text-[11px] text-gray-500 mt-1 line-clamp-1">AI Uyum & Filtre Skoru</span>
-              </button>
+              
             </div>
           </div>
           {/* FEED TABS (LINKEDIN STYLE) */}

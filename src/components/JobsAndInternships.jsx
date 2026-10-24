@@ -555,44 +555,6 @@ export default function JobsAndInternships({
 
           {activeTab==='ilanlar'&&(
             <div className="space-y-4 animate-fade-in">
-              {/* 3308 Sayılı Kanun Şeffaf Stajyer Güvencesi Bannerı & Filtresi */}
-              <div className="bg-gradient-to-r from-blue-900/10 via-slate-900/5 to-emerald-900/10 p-4 rounded-2xl border border-blue-200/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" data-testid="law-3308-guarantee-banner">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-900 text-white flex items-center justify-center font-black shrink-0">
-                    <ShieldCheck size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-black text-slate-900">
-                      3308 Sayılı Kanun Şeffaf Stajyer Güvencesi
-                    </h4>
-                    <p className="text-[11px] text-slate-600 font-medium">
-                      Bedava ve güvencesiz staj sömürüsüne son. SGK onaylı, yasal ücret ve yol/yemek garantili ilanlar.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 flex-wrap w-full sm:w-auto">
-                  {[
-                    { id: 'all', label: 'Tümü' },
-                    { id: 'law3308', label: '⚖️ 3308 Güvenceli' },
-                    { id: 'sgk_approved', label: '🏛️ SGK Onaylı' },
-                    { id: 'meal_transport', label: '🍽️ Yol & Yemek' }
-                  ].map((gf) => (
-                    <button
-                      key={gf.id}
-                      type="button"
-                      onClick={() => setGuaranteeFilter(gf.id)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
-                        guaranteeFilter === gf.id
-                          ? 'bg-blue-900 text-white shadow-xs'
-                          : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-                      }`}
-                    >
-                      {gf.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm">
                 <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{filteredJobs.length} güncel fırsat listeleniyor</p>
               </div>
