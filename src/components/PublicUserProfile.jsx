@@ -99,7 +99,7 @@ export default function PublicUserProfile({
         name: effectiveCurrentUser?.name || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi' : 'İESÜ Üyesi'),
         role: selfRole,
         title: effectiveCurrentUser?.title || (selfRole === 'academic' ? 'Öğretim Üyesi' : selfRole === 'alumni' ? 'Mezun' : selfRole === 'admin' ? 'Süper Yönetici & Koordinatör' : ''),
-        department: effectiveCurrentUser?.department || (selfRole === 'admin' ? 'Kariyer Geliştirme Merkezi (KGM)' : 'Yazılım Mühendisliği'),
+        department: effectiveCurrentUser?.department || (selfRole === 'admin' ? 'Kariyer Geliştirme Koordinatörlüğü' : 'Bölüm Belirtilmemiş'),
         company: effectiveCurrentUser?.company || '',
         sector: effectiveCurrentUser?.sector || '',
         grade: effectiveCurrentUser?.grade || effectiveCurrentUser?.year || '3. Sınıf',
@@ -821,7 +821,7 @@ export default function PublicUserProfile({
                 {userType === 'student' && (
                   <>
                     <GraduationCap size={16} className="text-[#990000]" />
-                    <span>{user.department || 'Yazılım Mühendisliği'}</span>
+                    <span>{user.department || 'Bölüm Belirtilmemiş'}</span>
                     <span className="text-slate-400">•</span>
                     <span>{user.grade || user.year || '3. Sınıf'}</span>
                     {user.gpa && (
@@ -849,7 +849,7 @@ export default function PublicUserProfile({
                     <BookOpen size={16} className="text-purple-800" />
                     <span>{user.academicRank || 'Öğretim Üyesi'}</span>
                     <span className="text-slate-400">•</span>
-                    <span>{user.department || 'Yazılım Mühendisliği'}</span>
+                    <span>{user.department || 'Bölüm Belirtilmemiş'}</span>
                   </>
                 )}
 

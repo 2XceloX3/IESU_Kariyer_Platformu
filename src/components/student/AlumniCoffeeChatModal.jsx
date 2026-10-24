@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Coffee, Calendar, Clock, Video, CheckCircle2, X, Sparkles,
-  User, Building2, Globe, MessageSquare, ChevronRight, Award,
-  AlertCircle, ShieldCheck
+  Coffee, Calendar, Clock, Video, CheckCircle2, X,
 } from 'lucide-react';
 import SafeAvatar from '../shared/SafeAvatar';
 import useAppStore from '../../store/useAppStore';

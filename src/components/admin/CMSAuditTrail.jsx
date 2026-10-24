@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import PanelHeader from './PanelHeader';
 import {
   Search,
   Filter,
@@ -15,17 +14,14 @@ import {
   Activity,
   Clock,
   ArrowUpRight,
-  FileText,
   AlertTriangle,
   RefreshCw,
   Download,
   Eye,
   X,
   Building,
-  ChevronRight,
   Database,
-  Layers,
-  Sparkles
+  Layers
 } from 'lucide-react';
 
 // Demo initial logs data

@@ -119,7 +119,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
   const isAdmin = userRole === 'admin' || effectiveCurrentUser?.role === 'admin';
   const alumniName = effectiveCurrentUser?.name || 'Mezun';
-  const alumniDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Yazılım Mühendisliği');
+  const alumniDept = isAdmin ? 'Kariyer Geliştirme Koordinatörlüğü' : (effectiveCurrentUser?.department || 'Bölüm Belirtilmemiş');
   const alumniGradYear = (effectiveCurrentUser?.role === 'alumni' && (effectiveCurrentUser?.gradYear || effectiveCurrentUser?.graduationYear)) ? (effectiveCurrentUser.gradYear || effectiveCurrentUser.graduationYear) : '2023';
   const alumniAvatar = effectiveCurrentUser?.avatar || '/iesu-logo.svg';
   const alumniId = (effectiveCurrentUser?.role === 'alumni' && effectiveCurrentUser?.id && effectiveCurrentUser.id !== 'admin_1513') ? effectiveCurrentUser.id : (effectiveCurrentUser?.id || 'self');

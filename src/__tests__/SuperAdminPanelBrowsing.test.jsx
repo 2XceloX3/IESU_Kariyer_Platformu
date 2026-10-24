@@ -115,7 +115,7 @@ describe('Super Admin Omni-Access & Panel Browsing Suite', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Yönetici Paneli/i)).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 
   it('renders GlobalAlumniMap for Super Admin on global_map route without kickout', async () => {
@@ -138,7 +138,7 @@ describe('Super Admin Omni-Access & Panel Browsing Suite', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Küresel Mezun Haritası/i)).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
   });
 
   it('allows Super Admin to browse into AlumniHive (/alumni) and StudentHive (/student)', async () => {

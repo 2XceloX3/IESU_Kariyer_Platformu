@@ -34,7 +34,7 @@ const requestDevelopmentGeminiResponse = async (prompt, systemInstruction) => {
   const { GoogleGenerativeAI } = await import('@google/generative-ai');
   const client = new GoogleGenerativeAI(DEVELOPMENT_GEMINI_KEY);
   const model = client.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.0-flash',
     ...(systemInstruction && { systemInstruction }),
   });
   const result = await model.generateContent(prompt);
@@ -57,7 +57,7 @@ export const generateAIResponse = async (prompt, systemInstruction = null) => {
       return await requestDevelopmentGeminiResponse(safePrompt, safeSystemInstruction);
     }
   } catch (error) {
-    if (import.meta.env.DEV) {
+    if (import.meta.env.DEV && import.meta.env.MODE !== 'test') {
       console.error('AI response request failed:', error);
     }
     return "Yapay Zeka servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.";

@@ -79,7 +79,7 @@ export default function AlumniCardWallet({ setView, currentUser, userRole = 'alu
               <div className="relative z-10">
                 <p className="text-xs font-mono font-bold text-emerald-200/90 mb-1 tracking-wider">KART NO: 9845 2311 0048</p>
                 <h3 className="text-xl sm:text-2xl font-black tracking-tight">{currentUser?.name || 'Caner Öztürk'}</h3>
-                <p className="text-xs text-emerald-100/80 mt-0.5">{currentUser?.department || 'Yazılım Mühendisliği'} • {currentUser?.graduationYear || '2023'} Mezunu</p>
+                <p className="text-xs text-emerald-100/80 mt-0.5">{currentUser?.department || 'Bölüm Belirtilmemiş'} • {currentUser?.graduationYear || '2023'} Mezunu</p>
               </div>
             </div>
 

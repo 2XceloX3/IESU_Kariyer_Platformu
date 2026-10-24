@@ -3,9 +3,9 @@ import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
 import RichContentRenderer from '../RichContentRenderer';
-import { Megaphone, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, Calendar, ArrowRight, FileText, Table } from 'lucide-react';
+import { Megaphone, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Calendar, ArrowRight, FileText, Table } from 'lucide-react';
 
-export default function CMSNews({ news = [], setNews, posts, setPosts, currentUser }) {
+export default function CMSNews({ news = [], setNews, _posts, setPosts, currentUser }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');

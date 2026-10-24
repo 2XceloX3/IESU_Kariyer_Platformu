@@ -104,7 +104,7 @@ export default function DigitalPortfolio({ setView, currentUser, userRole, setSe
               <h2 className="text-3xl font-black text-red-950">{currentUser?.name || 'Öğrenci Adı'}</h2>
               <CheckCircle2 size={24} className="text-[#990000]" />
             </div>
-            <p className="text-slate-500 font-medium mb-4">{currentUser?.department || 'Yazılım Mühendisliği'} • {currentUser?.year || '4. Sınıf'}</p>
+            <p className="text-slate-500 font-medium mb-4">{currentUser?.department || 'Bölüm Belirtilmemiş'} • {currentUser?.year || '4. Sınıf'}</p>
             <div className="flex flex-wrap justify-center md:justify-start gap-2">
               <span className="px-3 py-1 bg-red-50 text-[#990000] rounded-xl text-xs font-bold flex items-center gap-1 border border-red-100"><Code size={12}/> Frontend</span>
               <span className="px-3 py-1 bg-red-50 text-[#990000] rounded-xl text-xs font-bold flex items-center gap-1 border border-red-100"><Database size={12}/> Backend</span>

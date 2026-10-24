@@ -15,6 +15,7 @@ import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import Login from '../components/Login';
 import StudentFeed from '../components/StudentFeed';
+import AlumniFeed from '../components/AlumniFeed';
 import CMSMessageAudit from '../components/admin/CMSMessageAudit';
 import { generateAIResponse } from '../services/aiService';
 import { computeWalletReadinessIndex } from '../utils/careerProgress';
@@ -246,6 +247,19 @@ describe('Adversarial Remediation & Security Stress Suite', () => {
 
       render(<StudentFeed currentUser={mockAdmin} userRole="admin" setView={vi.fn()} />);
       expect(screen.getAllByText(/Kariyer Geliştirme Koordinatörlüğü/i).length).toBeGreaterThan(0);
+    });
+
+    it('does not force Yazılım Mühendisliği when alumni department is undefined in AlumniFeed', () => {
+      const mockAlumni = {
+        id: 'ALU-TEST-88',
+        name: 'Barış Koç',
+        role: 'alumni',
+        department: undefined,
+        graduationYear: '2021'
+      };
+
+      render(<AlumniFeed currentUser={mockAlumni} userRole="alumni" setView={vi.fn()} />);
+      expect(screen.getByText(/Bölüm Belirtilmemiş/i)).toBeInTheDocument();
     });
   });
 

@@ -186,7 +186,7 @@ export default function StudentDocumentSubmitModal({ isOpen, onClose, currentUse
             </div>
             <div className="text-xs">
               <p className="font-black text-slate-900">{currentUser?.name || 'Alperen Yılmaz'} ({currentUser?.studentId || '20240001'})</p>
-              <p className="text-slate-600 font-medium">{currentUser?.department || 'Yazılım Mühendisliği'} • Fakülte Onayı İçin Hazır</p>
+              <p className="text-slate-600 font-medium">{currentUser?.department || 'Bölüm Belirtilmemiş'} • Fakülte Onayı İçin Hazır</p>
             </div>
           </div>
 
