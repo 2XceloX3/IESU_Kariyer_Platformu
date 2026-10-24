@@ -51,5 +51,8 @@ export const exportToCSV = (data, filename) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    if (typeof URL.revokeObjectURL === 'function') {
+      URL.revokeObjectURL(url);
+    }
   }
 };

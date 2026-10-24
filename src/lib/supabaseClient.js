@@ -23,7 +23,11 @@ export const DataService = {
   async getPosts() {
     if (!isSupabaseConfigured) {
       console.warn("Supabase kurulu değil. Mock veri dönülüyor.");
-      return JSON.parse(localStorage.getItem('iesu_posts') || '[]');
+      try {
+        return JSON.parse(localStorage.getItem('iesu_posts') || '[]');
+      } catch {
+        return [];
+      }
     }
     const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
     if (error) throw error;

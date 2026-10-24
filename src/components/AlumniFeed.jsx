@@ -835,8 +835,10 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 if (setMentorships) {
                   setMentorships([newMentorship, ...(mentorships || [])]);
                 } else {
+                    try {
                     const storedMentorships = JSON.parse(localStorage.getItem('iesu_mentorships_v2') || '[]');
                     localStorage.setItem('iesu_mentorships_v2', JSON.stringify([newMentorship, ...storedMentorships]));
+                  } catch (err) {}
                 }
 
                 window.toast?.success?.("Başvurunuz başarıyla alınmıştır. Kariyer Geliştirme Koordinatörlüğü yöneticisi tarafından onaylandıktan sonra ilan edilecektir.");

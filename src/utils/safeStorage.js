@@ -10,6 +10,24 @@
 const memoryFallback = new Map();
 
 export const safeStorage = {
+  getJSON: (key, fallback = null) => {
+    try {
+      const val = safeStorage.getItem(key);
+      if (val === null || val === undefined || val === '') return fallback;
+      return JSON.parse(val);
+    } catch {
+      return fallback;
+    }
+  },
+
+  setJSON: (key, value) => {
+    try {
+      safeStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // safeStorage.setItem handles memory fallback automatically
+    }
+  },
+
   getItem: (key) => {
     try {
       const val = localStorage.getItem(key);

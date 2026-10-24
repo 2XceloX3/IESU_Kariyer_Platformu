@@ -487,6 +487,8 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     }
   }, [canEdit, post?.id, setPosts]);
 
+  if (!post || typeof post !== 'object') return null;
+
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] shadow-[var(--shadow-soft)] overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
       {/* Header */}

@@ -162,6 +162,10 @@ export default function JobsAndInternships({
   };
 
   const handleApproveJob = async (jobId) => {
+    if (effectiveRole !== 'admin') {
+      window.toast?.error?.('Yalnızca Kariyer Geliştirme Koordinatörlüğü ilan onaylayabilir.');
+      return;
+    }
     try {
       const { updateJobStatusFs } = await import('../services/jobsApplicationsFs');
       await updateJobStatusFs(jobId, 'Aktif');
@@ -175,6 +179,10 @@ export default function JobsAndInternships({
   };
 
   const handleRejectJob = async (jobId) => {
+    if (effectiveRole !== 'admin') {
+      window.toast?.error?.('Yalnızca Kariyer Geliştirme Koordinatörlüğü ilan reddedebilir.');
+      return;
+    }
     try {
       const { updateJobStatusFs } = await import('../services/jobsApplicationsFs');
       await updateJobStatusFs(jobId, 'Reddedildi');

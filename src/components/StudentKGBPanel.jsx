@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import {
   GraduationCap, Award, Briefcase, Calendar, CheckCircle2,
   Download, ExternalLink, FileText, Share2, Sparkles, Star, Users,
@@ -1128,7 +1129,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
                 <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 text-left">
                   <div 
                     className="w-20 h-20 bg-white p-1 rounded-xl border border-slate-200 shrink-0 flex items-center justify-center overflow-hidden shadow-xs"
-                    dangerouslySetInnerHTML={{ __html: kgbDocument.verification.qrSvg }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(kgbDocument?.verification?.qrSvg || '') }}
                   />
                   <div className="text-[10px] space-y-0.5">
                     <p className="font-mono font-bold text-slate-900">{kgbDocument.verification.kgbCode}</p>
