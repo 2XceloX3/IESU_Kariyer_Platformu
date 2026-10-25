@@ -53,6 +53,201 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
     window.scrollTo(0, 0);
   }, []);
 
+  // Öğrencinin bölümüne ve fakültesine göre dinamik analitik bağlamı
+  const departmentInfo = useMemo(() => {
+    const dept = (effectiveCurrentUser?.department || '').toLowerCase();
+    const faculty = (effectiveCurrentUser?.faculty || '').toLowerCase();
+
+    if (dept.includes('gastro') || dept.includes('aşçılık') || faculty.includes('uygulamalı')) {
+      return {
+        field: 'Gastronomi & Mutfak Sanatları',
+        keywords: [
+          { name: 'Gastronomi & Mutfak', weight: 62 },
+          { name: 'HACCP Gıda Güvenliği', weight: 45 },
+          { name: 'Menü Tasarımı & Maliyet', weight: 32 },
+          { name: 'Şef / Mutfak Koordinatörü', weight: 20 }
+        ],
+        companies: [
+          { name: 'Divan Grubu', logo: null, sector: 'Ağırlama & Otelcilik', time: '2 saat önce' },
+          { name: 'D.ream Grubu', logo: null, sector: 'Restoran & Yeme-İçme', time: 'Dün' },
+          { name: 'Big Chefs', logo: null, sector: 'Gastronomi Zinciri', time: '3 gün önce' },
+          { name: 'Swissôtel The Bosphorus', logo: null, sector: 'Lüks Otelcilik', time: '1 hafta önce' },
+          { name: 'Hilton Hotels', logo: null, sector: 'Uluslararası Otelcilik', time: '2 hafta önce' }
+        ],
+        skillsRadar: [
+          { subject: 'Mutfak Tekniği', Siz: 90, Ortanca: 70, fullMark: 100 },
+          { subject: 'Gıda Hijyeni (HACCP)', Siz: 95, Ortanca: 75, fullMark: 100 },
+          { subject: 'Cost Control / Bütçe', Siz: 72, Ortanca: 60, fullMark: 100 },
+          { subject: 'Menü Mühendisliği', Siz: 85, Ortanca: 65, fullMark: 100 },
+          { subject: 'Ekip Koordinasyonu', Siz: 88, Ortanca: 78, fullMark: 100 },
+          { subject: 'Sunum / Tabaklama', Siz: 92, Ortanca: 80, fullMark: 100 },
+        ],
+        missingSkills: [
+          { skill: 'Maliyet Muhasebesi (Cost Control)', demand: 'Çok Yüksek', level: '%85 İK İsteği', category: 'İşletme' },
+          { skill: 'Moleküler Gastronomi & Füzyon', demand: 'Yüksek', level: '%72 İK İsteği', category: 'Mutfak Sanatı' },
+          { skill: 'Uluslararası Şarap & Servis Eğitimi', demand: 'Orta', level: '%68 İK İsteği', category: 'Ağırlama' },
+        ],
+        industries: [
+          { name: 'Lüks Otelcilik & Resort', weight: 120, color: '#990000' },
+          { name: 'Restoran & Cafe Zincirleri', weight: 80, color: '#10B981' },
+          { name: 'Endüstriyel Catering', weight: 55, color: '#8B5CF6' },
+          { name: 'Gıda Denetim & Danışmanlık', weight: 30, color: '#F59E0B' }
+        ]
+      };
+    }
+
+    if (dept.includes('sağlık') || dept.includes('hemşir') || dept.includes('fizyo') || faculty.includes('sağlık')) {
+      return {
+        field: 'Sağlık Bilimleri & Klinik',
+        keywords: [
+          { name: 'Klinik Uygulama', weight: 62 },
+          { name: 'Hasta Bakım Protokolleri', weight: 48 },
+          { name: 'Sağlık Yönetimi & HBYS', weight: 30 },
+          { name: 'Acil Müdahale & Triyaj', weight: 22 }
+        ],
+        companies: [
+          { name: 'Acıbadem Sağlık Grubu', logo: null, sector: 'Özel Sağlık', time: '1 saat önce' },
+          { name: 'Medicana Sağlık Grubu', logo: null, sector: 'Hastane Zinciri', time: 'Dün' },
+          { name: 'Memorial Sağlık Grubu', logo: null, sector: 'Özel Hastane', time: '2 gün önce' },
+          { name: 'Liv Hospital', logo: null, sector: 'Tıp Merkezi', time: '4 gün önce' },
+          { name: 'Türk Kızılay', logo: null, sector: 'Sağlık & İnsani Yardım', time: '1 hafta önce' }
+        ],
+        skillsRadar: [
+          { subject: 'Klinik Uygulama', Siz: 92, Ortanca: 75, fullMark: 100 },
+          { subject: 'Hasta İletişimi', Siz: 95, Ortanca: 82, fullMark: 100 },
+          { subject: 'Tıbbi Etik & Mevzuat', Siz: 88, Ortanca: 70, fullMark: 100 },
+          { subject: 'Acil Müdahale', Siz: 85, Ortanca: 68, fullMark: 100 },
+          { subject: 'HBYS / Sağlık Bilişimi', Siz: 70, Ortanca: 55, fullMark: 100 },
+          { subject: 'Ekip Koordinasyonu', Siz: 88, Ortanca: 76, fullMark: 100 },
+        ],
+        missingSkills: [
+          { skill: 'İleri Yaşam Desteği (BLS/ACLS)', demand: 'Kritik', level: '%92 İK İsteği', category: 'Klinik Acil' },
+          { skill: 'Sağlık Bilişimi / HBYS Entegrasyonu', demand: 'Yüksek', level: '%78 İK İsteği', category: 'Bilişim' },
+          { skill: 'Hasta Hakları & Malpraktis Mevzuatı', demand: 'Yüksek', level: '%74 İK İsteği', category: 'Hukuk / Etik' },
+        ],
+        industries: [
+          { name: 'Özel Hastaneler & Gruplar', weight: 130, color: '#990000' },
+          { name: 'Üniversite Araştırma Hastaneleri', weight: 75, color: '#10B981' },
+          { name: 'Biyomedikal & Sağlık Teknolojileri', weight: 50, color: '#8B5CF6' },
+          { name: 'Rehabilitasyon & Bakım Merkezleri', weight: 30, color: '#F59E0B' }
+        ]
+      };
+    }
+
+    if (dept.includes('işletme') || dept.includes('iktisat') || dept.includes('finans') || dept.includes('pazarlama') || faculty.includes('iktisadi')) {
+      return {
+        field: 'İktisadi ve İdari Bilimler',
+        keywords: [
+          { name: 'Finansal Analiz', weight: 58 },
+          { name: 'Pazar Araştırması & Büyüme', weight: 44 },
+          { name: 'ERP / SAP Muhasebe', weight: 34 },
+          { name: 'Dijital Pazarlama & Veri', weight: 24 }
+        ],
+        companies: [
+          { name: 'Garanti BBVA', logo: null, sector: 'Bankacılık & Finans', time: '2 saat önce' },
+          { name: 'KPMG Türkiye', logo: null, sector: 'Denetim & Danışmanlık', time: 'Dün' },
+          { name: 'PwC Türkiye', logo: null, sector: 'Strateji Danışmanlığı', time: '3 gün önce' },
+          { name: 'Türkiye İş Bankası', logo: null, sector: 'Finansal Hizmetler', time: '1 hafta önce' },
+          { name: 'Unilever Türkiye', logo: null, sector: 'Hızlı Tüketim (FMCG)', time: '2 hafta önce' }
+        ],
+        skillsRadar: [
+          { subject: 'Finansal Modelleme', Siz: 85, Ortanca: 62, fullMark: 100 },
+          { subject: 'İleri Excel / Power BI', Siz: 90, Ortanca: 68, fullMark: 100 },
+          { subject: 'Stratejik Yönetim', Siz: 82, Ortanca: 65, fullMark: 100 },
+          { subject: 'Piyasa Araştırması', Siz: 88, Ortanca: 70, fullMark: 100 },
+          { subject: 'Kurumsal İletişim', Siz: 92, Ortanca: 80, fullMark: 100 },
+          { subject: 'Liderlik & Sunum', Siz: 86, Ortanca: 72, fullMark: 100 },
+        ],
+        missingSkills: [
+          { skill: 'Power BI & Finansal Modelleme', demand: 'Çok Yüksek', level: '%88 İK İsteği', category: 'Veri Analizi' },
+          { skill: 'SAP FI/CO Modül Bilgisi', demand: 'Yüksek', level: '%80 İK İsteği', category: 'Kurumsal ERP' },
+          { skill: 'Dijital Reklam & CAC/LTV Analitiği', demand: 'Yüksek', level: '%72 İK İsteği', category: 'Pazarlama' },
+        ],
+        industries: [
+          { name: 'Bankacılık & Finansal Teknoloji', weight: 120, color: '#990000' },
+          { name: 'Bağımsız Denetim & Danışmanlık', weight: 85, color: '#10B981' },
+          { name: 'FMCG & Perakende', weight: 50, color: '#8B5CF6' },
+          { name: 'E-Ticaret & Dijital Ajans', weight: 30, color: '#F59E0B' }
+        ]
+      };
+    }
+
+    if (dept.includes('hukuk') || dept.includes('adalet')) {
+      return {
+        field: 'Hukuk & Mevzuat',
+        keywords: [
+          { name: 'İş & Ticaret Hukuku', weight: 56 },
+          { name: 'Sözleşmeler Hukuku', weight: 46 },
+          { name: 'KVKK & Veri Gizliliği', weight: 36 },
+          { name: 'Dava & İcra Takibi', weight: 26 }
+        ],
+        companies: [
+          { name: 'Esin Avukatlık Ortaklığı', logo: null, sector: 'Uluslararası Hukuk', time: '3 saat önce' },
+          { name: 'Hergüner Bilgen Özeke', logo: null, sector: 'Kurumsal Hukuk', time: 'Dün' },
+          { name: 'Paksoy Hukuk Bürosu', logo: null, sector: 'Şirketler & Tahkim', time: '2 gün önce' },
+          { name: 'Koç Holding Hukuk Müşavirliği', logo: null, sector: 'Holding Hukuku', time: '1 hafta önce' },
+          { name: 'Turkcell Legal', logo: null, sector: 'Regülasyon & Bilişim Hukuku', time: '2 hafta önce' }
+        ],
+        skillsRadar: [
+          { subject: 'Hukuki Muhakeme', Siz: 95, Ortanca: 75, fullMark: 100 },
+          { subject: 'Dava Dilekçesi Yazımı', Siz: 90, Ortanca: 70, fullMark: 100 },
+          { subject: 'KVKK / Uyum Denetimi', Siz: 85, Ortanca: 62, fullMark: 100 },
+          { subject: 'İçtihat Araştırması', Siz: 92, Ortanca: 78, fullMark: 100 },
+          { subject: 'Sözleşme İnceleme', Siz: 88, Ortanca: 68, fullMark: 100 },
+          { subject: 'Hukuki İngilizce', Siz: 78, Ortanca: 58, fullMark: 100 },
+        ],
+        missingSkills: [
+          { skill: 'Legal Tech & Dijital Dava Yönetimi', demand: 'Yüksek', level: '%82 İK İsteği', category: 'Hukuk Teknolojisi' },
+          { skill: 'Uluslararası Tahkim & Sözleşmeler', demand: 'Çok Yüksek', level: '%86 İK İsteği', category: 'Uluslararası Hukuk' },
+          { skill: 'Bilişim Hukuku & Siber Mevzuat', demand: 'Yükselen', level: '%75 İK İsteği', category: 'Uyum & Regülasyon' },
+        ],
+        industries: [
+          { name: 'Kurumsal Hukuk Büroları', weight: 125, color: '#990000' },
+          { name: 'Holding Hukuk Müşavirlikleri', weight: 80, color: '#10B981' },
+          { name: 'Finans & Uyum / Regülasyon', weight: 50, color: '#8B5CF6' },
+          { name: 'Arabuluculuk & Tahkim', weight: 30, color: '#F59E0B' }
+        ]
+      };
+    }
+
+    // Varsayılan: Mühendislik & Yazılım
+    return {
+      field: 'Mühendislik & Yazılım',
+      keywords: [
+        { name: 'Yazılım Stajyeri', weight: 62 },
+        { name: 'React & Frontend', weight: 45 },
+        { name: 'Node.js & Backend', weight: 28 },
+        { name: 'Veri & Yapay Zekâ', weight: 15 }
+      ],
+      companies: [
+        { name: 'Trendyol', logo: null, sector: 'E-Ticaret & Yazılım', time: '2 saat önce' },
+        { name: 'Getir Teknoloji', logo: null, sector: 'Lojistik & SaaS', time: 'Dün' },
+        { name: 'Baykar Teknoloji', logo: null, sector: 'Savunma & Otonom', time: '2 gün önce' },
+        { name: 'Aselsan A.Ş.', logo: null, sector: 'Savunma Sanayi', time: '4 gün önce' },
+        { name: 'Peak Games', logo: null, sector: 'Mobil Oyun', time: '1 hafta önce' }
+      ],
+      skillsRadar: [
+        { subject: 'Frontend', Siz: 95, Ortanca: 65, fullMark: 100 },
+        { subject: 'Backend', Siz: 70, Ortanca: 55, fullMark: 100 },
+        { subject: 'Algoritma', Siz: 85, Ortanca: 70, fullMark: 100 },
+        { subject: 'Sistem Mimarisi', Siz: 60, Ortanca: 45, fullMark: 100 },
+        { subject: 'İletişim & Scrum', Siz: 90, Ortanca: 80, fullMark: 100 },
+        { subject: 'Kod Kalitesi & Git', Siz: 82, Ortanca: 60, fullMark: 100 },
+      ],
+      missingSkills: [
+        { skill: 'Docker & Kubernetes', demand: 'Çok Yüksek', level: '%82 İK İsteği', category: 'DevOps & Bulut' },
+        { skill: 'TypeScript Enterprise', demand: 'Yüksek', level: '%75 İK İsteği', category: 'Frontend' },
+        { skill: 'AWS / Cloud Architecture', demand: 'Kritik', level: '%90 İK İsteği', category: 'Sistem' },
+      ],
+      industries: [
+        { name: 'Yazılım & SaaS', weight: 120, color: '#990000' },
+        { name: 'Savunma & Havacılık', weight: 80, color: '#10B981' },
+        { name: 'Fintech & Bankacılık', weight: 55, color: '#8B5CF6' },
+        { name: 'E-Ticaret & Perakende', weight: 30, color: '#F59E0B' }
+      ]
+    };
+  }, [effectiveCurrentUser?.department, effectiveCurrentUser?.faculty]);
+
   const calculatedMetrics = useMemo(() => {
     let factor = 1.0;
     let period = 'Son 90 gün';
@@ -61,53 +256,42 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
     else if (timeRange === '30') { factor = 0.42; period = 'Son 30 gün'; } 
     else if (timeRange === '365') { factor = 3.6; period = 'Son 1 yıl'; }
 
+    // Profil doluluğuna bağlı gerçekçi görüntülenme tabanı
+    const completeness = effectiveCurrentUser?.profileCompleteness || 70;
+    const baseViews = Math.round(120 + (completeness * 1.5));
+    const baseSearches = Math.round(60 + (completeness * 0.9));
+
     return {
       period,
-      views: Math.max(12, Math.round(285 * factor)),
-      searches: Math.max(8, Math.round(150 * factor)),
+      views: Math.max(12, Math.round(baseViews * factor)),
+      searches: Math.max(8, Math.round(baseSearches * factor)),
       viewsPercent: Math.round(12 + (factor * 8)),
       searchesPercent: Math.round(5 + (factor * 4)),
-      score: Math.min(98, Math.max(65, Math.round(85 + (factor * 2)))),
+      score: Math.min(98, Math.max(65, Math.round(75 + (completeness * 0.2)))),
       trendData: [
-        { name: '1. Hafta', Görüntülenme: Math.round(30 * factor), Arama: Math.round(15 * factor) },
-        { name: '2. Hafta', Görüntülenme: Math.round(58 * factor), Arama: Math.round(22 * factor) },
-        { name: '3. Hafta', Görüntülenme: Math.round(45 * factor), Arama: Math.round(18 * factor) },
-        { name: '4. Hafta', Görüntülenme: Math.round(89 * factor), Arama: Math.round(35 * factor) },
-        { name: '5. Hafta', Görüntülenme: Math.round(72 * factor), Arama: Math.round(28 * factor) },
-        { name: '6. Hafta', Görüntülenme: Math.round(110 * factor), Arama: Math.round(45 * factor) },
-        { name: '7. Hafta', Görüntülenme: Math.round(145 * factor), Arama: Math.round(65 * factor) },
+        { name: '1. Hafta', Görüntülenme: Math.round((baseViews * 0.10) * factor), Arama: Math.round((baseSearches * 0.10) * factor) },
+        { name: '2. Hafta', Görüntülenme: Math.round((baseViews * 0.20) * factor), Arama: Math.round((baseSearches * 0.15) * factor) },
+        { name: '3. Hafta', Görüntülenme: Math.round((baseViews * 0.16) * factor), Arama: Math.round((baseSearches * 0.12) * factor) },
+        { name: '4. Hafta', Görüntülenme: Math.round((baseViews * 0.31) * factor), Arama: Math.round((baseSearches * 0.23) * factor) },
+        { name: '5. Hafta', Görüntülenme: Math.round((baseViews * 0.25) * factor), Arama: Math.round((baseSearches * 0.19) * factor) },
+        { name: '6. Hafta', Görüntülenme: Math.round((baseViews * 0.38) * factor), Arama: Math.round((baseSearches * 0.30) * factor) },
+        { name: '7. Hafta', Görüntülenme: Math.round((baseViews * 0.50) * factor), Arama: Math.round((baseSearches * 0.43) * factor) },
       ],
-      keywordData: [
-        { name: 'Yazılım Stajyeri', count: Math.max(5, Math.round(62 * factor)) },
-        { name: 'React Developer', count: Math.max(3, Math.round(45 * factor)) },
-        { name: 'Node.js Developer', count: Math.max(2, Math.round(28 * factor)) },
-        { name: 'Veri Bilimi', count: Math.max(1, Math.round(15 * factor)) }
-      ],
-      industryData: [
-        { name: 'Yazılım', value: Math.max(10, Math.round(120 * factor)), color: '#990000' },
-        { name: 'Fintech', value: Math.max(5, Math.round(80 * factor)), color: '#10B981' },
-        { name: 'Oyun', value: Math.max(5, Math.round(55 * factor)), color: '#8B5CF6' },
-        { name: 'E-Ticaret', value: Math.max(2, Math.round(30 * factor)), color: '#F59E0B' }
-      ]
+      keywordData: departmentInfo.keywords.map(kw => ({
+        name: kw.name,
+        count: Math.max(1, Math.round(kw.weight * factor))
+      })),
+      industryData: departmentInfo.industries.map(ind => ({
+        name: ind.name,
+        value: Math.max(2, Math.round(ind.weight * factor)),
+        color: ind.color
+      }))
     };
-  }, [timeRange]);
+  }, [timeRange, effectiveCurrentUser?.profileCompleteness, departmentInfo]);
 
-  const skillRadarData = [
-    { subject: 'Frontend', Siz: 95, Ortanca: 65, fullMark: 100 },
-    { subject: 'Backend', Siz: 70, Ortanca: 55, fullMark: 100 },
-    { subject: 'Algoritma', Siz: 85, Ortanca: 70, fullMark: 100 },
-    { subject: 'Sistem Mimari.', Siz: 60, Ortanca: 45, fullMark: 100 },
-    { subject: 'İletişim', Siz: 90, Ortanca: 80, fullMark: 100 },
-    { subject: 'Liderlik', Siz: 65, Ortanca: 50, fullMark: 100 },
-  ];
-
-  const mockCompanies = [
-    { name: 'Trendyol', logo: null, sector: 'E-Ticaret', time: '2 saat önce' },
-    { name: 'Getir', logo: null, sector: 'Lojistik / Teknoloji', time: 'Dün' },
-    { name: 'Aselsan', logo: null, sector: 'Savunma Sanayi', time: '3 gün önce' },
-    { name: 'Havelsan', logo: null, sector: 'Savunma Sanayi', time: '1 hafta önce' },
-    { name: 'Peak Games', logo: null, sector: 'Oyun Sektörü', time: '2 hafta önce' }
-  ];
+  const skillRadarData = departmentInfo.skillsRadar;
+  const mockCompanies = departmentInfo.companies;
+  const missingSkills = departmentInfo.missingSkills;
 
   const topCompetitors = [
     { rank: 1, init: 'A.Y.', ssp: 3450, projects: 12 },
@@ -115,25 +299,21 @@ export default function StudentAnalytics({ setView, currentUser, userRole, previ
     { rank: 3, init: 'Z.T.', ssp: 2600, projects: 7 },
   ];
 
-  const missingSkills = [
-    { skill: 'Docker & Kubernetes', demand: 'Çok Yüksek', level: '%82 İK İsteği', category: 'DevOps & Bulut' },
-    { skill: 'TypeScript Enterprise', demand: 'Yüksek', level: '%75 İK İsteği', category: 'Frontend' },
-    { skill: 'AWS / Cloud Architecture', demand: 'Kritik', level: '%90 İK İsteği', category: 'Sistem' },
-  ];
-
   const handleGenerateAiReport = () => {
     if (aiResponse) return;
     setAiReportLoading(true);
     setTimeout(() => {
       setAiReportLoading(false);
+      const topMissing = departmentInfo.missingSkills[0]?.skill || 'Mesleki Sertifikasyon';
+      const secMissing = departmentInfo.missingSkills[1]?.skill || 'Sektörel Vaka Analizi';
       setAiResponse({
         score: "92/100",
-        level: "İESÜ Yıldız Yetenek Seviyesi (Top %5)",
+        level: `İESÜ Yıldız Yetenek Seviyesi (Top %5 - ${departmentInfo.field})`,
         tips: [
-          "🚀 Mobil & Çapraz Platform: React Native / Flutter projelerini portfolyona ekleyerek global işveren ilanlarındaki görünürlüğünü %55 artırabilirsin.",
-          "🤝 Kampüs & Mezun Ağı: Profili inceleyen Kurumsal İK yöneticilerine 'İESÜ Mezun Ağı' üzerinden ortak bağlantılarla mesaj gönder.",
-          "📜 Yetkinlik önerisi (önizleme): Sistem Mimarisi puanın (78) bölüm ortalamasının (52) üzerinde! AWS veya Cloud Practitioner sertifikası yükleyerek yetkinliğini tescille.",
-          "💡 Mülakat Simülasyonu: Mülakat Simülatörü & Prova Odası ile 1 canlı teknik pratik tamamlayarak kariyer skorunu +5 puan daha yükseltebilirsin."
+          `🚀 Alanında Uzmanlaşma: ${topMissing} alanındaki yetkinliğini portfolyona ekleyerek sektördeki kurumsal işveren ilanlarındaki görünürlüğünü %55 artırabilirsin.`,
+          `🤝 Kampüs & Mezun Ağı: Profili inceleyen kurumsal İK yöneticilerine 'İESÜ Mezun Ağı' üzerinden ${departmentInfo.field} mezunları aracılığıyla ortak bağlantılarla ulaş.`,
+          `📜 Akredite Sertifika: ${secMissing} konusundaki başarı belgelerini KGB Kariyer Karnene yükleyerek yetkinliğini kurumsal olarak tescille.`,
+          "💡 Mülakat Provası: Mülakat Simülatörü & Prova Odası ile 1 canlı yetkinlik mülakatı pratiği tamamlayarak kariyer skorunu +5 puan daha yükselt."
         ]
       });
       if (window.toast) window.toast.success("İESÜ Stratejik Kariyer Raporunuz Başarıyla Hazırlandı!");

@@ -3,7 +3,7 @@ import {
   ArrowLeft, User, BookOpen, Layers, Briefcase, FileText, Shield, 
   Save, Award, Star, Plus, Trash2, Target, UploadCloud, ChevronRight, 
   Camera, MapPin, Mail, Phone, Globe, Link, GraduationCap, 
-  Clock, Compass, CheckCircle2, Sparkles, X, Eye
+  Clock, Compass, CheckCircle2, Sparkles, X, Eye, Download
 } from 'lucide-react';
 import { IESU_FACULTIES, IESU_MYO, IESU_YUKSEKOKUL } from '../../utils/universityData';
 import useAppStore from '../../store/useAppStore';
@@ -137,7 +137,7 @@ export default function StudentProfileUpdate({
     handleChange('languages', updated);
   };
 
-  // CV File Upload simulation
+  // CV File Upload with persistent Base64 Data URI
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -147,8 +147,18 @@ export default function StudentProfileUpdate({
       }
       setUploadedCvName(file.name);
       handleChange('cvFileName', file.name);
-      handleChange('cvUrl', URL.createObjectURL(file));
-      toast.success(`${file.name} başarıyla seçildi.`);
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const base64Data = evt.target.result;
+        handleChange('cvUrl', base64Data);
+        toast.success(`${file.name} başarıyla yüklendi.`);
+      };
+      reader.onerror = () => {
+        handleChange('cvUrl', URL.createObjectURL(file));
+        toast.success(`${file.name} seçildi.`);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -911,21 +921,67 @@ export default function StudentProfileUpdate({
                     </h4>
                     <p className="text-xs text-slate-500 mb-4">Maksimum dosya boyutu: 5 MB (PDF formatı önerilir)</p>
                     
-                    <div className="flex items-center justify-center gap-3">
+                    <div className="flex flex-wrap items-center justify-center gap-3">
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition"
+                        className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
                       >
-                        Dosya Seç
+                        {uploadedCvName ? 'Farklı Bir Dosya Seç' : 'Dosya Seç'}
                       </button>
                       <button
                         onClick={() => setShowAICVModal(true)}
-                        className="px-5 py-2.5 bg-white border border-red-200 hover:bg-red-50 text-[#990000] font-bold text-xs rounded-xl transition flex items-center gap-1.5"
+                        className="px-5 py-2.5 bg-white border border-red-200 hover:bg-red-50 text-[#990000] font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer"
                       >
                         <Sparkles size={14} className="text-amber-500" />
                         Akıllı CV Oluştur
                       </button>
                     </div>
+
+                    {/* Active Uploaded CV Information Card */}
+                    {(uploadedCvName || formData.cvUrl) && (
+                      <div className="mt-5 p-3.5 bg-white border border-emerald-200 rounded-xl flex items-center justify-between text-left max-w-lg mx-auto shadow-xs">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <CheckCircle2 size={20} />
+                          </div>
+                          <div className="truncate">
+                            <p className="text-xs font-black text-gray-900 truncate">
+                              {uploadedCvName || formData.cvFileName || 'Aktif Özgeçmiş'}
+                            </p>
+                            <span className="text-[10px] font-bold text-emerald-600 block">
+                              Sistemde Kayıtlı & Başvurulara Açık
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0 ml-3">
+                          {formData.cvUrl && (
+                            <a
+                              href={formData.cvUrl}
+                              download={uploadedCvName || formData.cvFileName || 'iesu_ozgecmis.pdf'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1"
+                              title="CV'yi İndir / İncele"
+                            >
+                              <Download size={14} />
+                            </a>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleChange('cvUrl', null);
+                              handleChange('cvFileName', '');
+                              setUploadedCvName('');
+                              toast.info('Yüklü CV kaldırıldı.');
+                            }}
+                            className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition"
+                            title="CV'yi Kaldır"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Portfolio & Social Links */}

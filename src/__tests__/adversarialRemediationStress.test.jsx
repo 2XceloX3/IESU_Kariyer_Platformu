@@ -239,7 +239,7 @@ describe('Adversarial Remediation & Security Stress Suite', () => {
 
       // Bölüm belirtilmemiş öğrenci için 'Yazılım Mühendisliği' basılmamalı, tarafsız kalmalı
       expect(screen.queryByText(/Yazılım Mühendisliği/i)).not.toBeInTheDocument();
-      expect(screen.getByText(/Bölüm Belirtilmemiş/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Bölüm Belirtilmemiş/i).length).toBeGreaterThan(0);
     });
 
     it('renders Kariyer Geliştirme Koordinatörlüğü title cleanly for admin in StudentFeed', () => {

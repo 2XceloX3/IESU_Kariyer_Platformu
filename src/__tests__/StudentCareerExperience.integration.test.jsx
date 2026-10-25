@@ -94,10 +94,11 @@ describe('Student Career Experience & 4 Killer Modules Integration', () => {
     });
 
     it('expands live audit log and allows simulating stage advance', async () => {
+      // Koordinatörlük/Yönetici denetimi modunda aşama simülasyonu doğrulanır (Öğrenci arayüzünde buton gizlidir)
       render(
         <StudentApplicationRadar
           currentUser={mockUser}
-          userRole="student"
+          userRole="admin"
           setView={vi.fn()}
         />
       );

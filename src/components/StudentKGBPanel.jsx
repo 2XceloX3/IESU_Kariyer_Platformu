@@ -430,10 +430,40 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 pb-32 selection:bg-red-100">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 pb-32 selection:bg-red-100 print:bg-white print:p-0 print:m-0 print:pb-0">
       
+      {/* ── PRINT MEDIA ISOLATION STYLES ─────────────────────────── */}
+      <style>{`
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 10mm 12mm 10mm 12mm;
+          }
+          html, body {
+            background: #ffffff !important;
+            color: #000000 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          #kgb-print-area {
+            display: block !important;
+            box-shadow: none !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 8px !important;
+            padding: 16px 20px !important;
+            margin: 0 auto !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            background: #ffffff !important;
+            page-break-inside: avoid;
+          }
+        }
+      `}</style>
+
       {/* ── ÜST SABİT GEZİNME ÇUBUĞU ───────────────────────────────── */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-4 sm:px-8 py-3 shadow-xs">
+      <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 px-4 sm:px-8 py-3 shadow-xs print:hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
           {/* Sol: Geri Dönüş ve Üniversite Logosu */}
@@ -496,10 +526,10 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       </header>
 
       {/* ── ANA İÇERİK ALANI ─────────────────────────────────────── */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6 print:max-w-none print:p-0 print:m-0 print:space-y-0">
 
         {/* ── 1. KARNE PASAPORT KARTI (HERO STUDENT PASSPORT) ─────── */}
-        <section className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_35px_rgb(0,0,0,0.03)] overflow-hidden">
+        <section className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_35px_rgb(0,0,0,0.03)] overflow-hidden print:hidden">
           {/* Üst Kırmızı Kimlik Bandı */}
           <div className="bg-gradient-to-r from-[#7A0606] via-[#990000] to-[#8F0808] px-6 sm:px-8 py-6 relative">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
@@ -600,7 +630,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         </section>
 
         {/* ── 2. DÖRT ANA KARNE GÖSTERGESİ ───────────────────────── */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 print:hidden">
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-xs flex items-center gap-4 hover:border-red-200 transition">
             <div className="w-12 h-12 rounded-2xl bg-red-50 text-[#990000] border border-red-100 flex items-center justify-center shrink-0">
               <Briefcase size={22} />
@@ -647,7 +677,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         </section>
 
         {/* ── 3. KARNE SEKME GEZİNTİSİ & TALEP BUTONU ────────────── */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-200 pb-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-200 pb-2 print:hidden">
           <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto hide-scrollbar">
             {[
               { id: 'ozet', label: 'Genel Karne Özeti', icon: BookOpen },
@@ -993,7 +1023,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
         {/* SEKME 5: RESMİ TRANSKRİPT ÖNİZLEMESİ */}
         {activeTab === 'transkript' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 print:hidden">
               <div>
                 <h3 className="text-base font-black text-slate-900">Resmi Kariyer Gelişim Belgesi (KGB Transkripti)</h3>
                 <p className="text-xs text-slate-600 font-medium">Mezuniyette diplomanın yanında verilecek YÖK uyumlu kariyer eki formatı.</p>
@@ -1256,7 +1286,7 @@ export default function StudentKGBPanel({ setView, currentUser, userRole, previo
       )}
       {/* ── 5. FLOATING DOCK (KURUMSAL ÖĞRENCİ DOCK'U) ─────────────── */}
       {(isAdmin || userRole === 'admin' || activePortalBranch === 'admin') ? null : (
-        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
+        <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px] print:hidden">
           <div className="bg-white/95 backdrop-blur-2xl border-2 border-red-100 p-2 sm:p-2.5 rounded-full shadow-[0_15px_40px_rgba(153,0,0,0.18)] flex items-center justify-between px-4 text-gray-800">
             
             {/* Akış */}

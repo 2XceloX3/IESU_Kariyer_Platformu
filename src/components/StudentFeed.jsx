@@ -223,8 +223,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         <div className="w-full max-w-[1400px] mx-auto px-4 h-16 flex items-center justify-between relative">
           {/* LEFT: Logo & University Title */}
           <div className="flex items-center gap-3">
-            <button onClick={() => setActiveTab('create_post')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-gray-100 ${activeTab === 'create_post' ? 'text-orange-500 bg-orange-50' : 'text-gray-600'}`} title="Gönderi Düzenle/Paylaş">
-              <Star size={22} strokeWidth={activeTab === 'create_post' ? 2.5 : 2} className={activeTab === 'create_post' ? 'fill-current text-orange-500/10' : ''} />
+            <button 
+              onClick={() => setActiveTab('create_post')} 
+              className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50 cursor-pointer ${activeTab === 'create_post' ? 'text-white bg-[#990000] shadow-sm' : 'text-[#990000]'}`} 
+              title="Yeni Gönderi Paylaş"
+            >
+              <Plus size={22} strokeWidth={2.5} />
             </button>
             
             <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-3 cursor-pointer" onClick={() => { setActiveTab('feed'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
@@ -372,7 +376,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         {activeTab === 'create_post' && (
           <div className="bg-white rounded-xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-              <Star className="text-orange-500 fill-current" size={24} /> Gönderi Paylaş & Düzenle
+              <Plus className="text-[#990000]" size={24} strokeWidth={2.5} /> Gönderi Paylaş & Düzenle
              </h2>
              <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           </div>
@@ -386,6 +390,50 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+          {/* MOBİL HIZLI ERİŞİM KOKPİTİ (LG ALTINDA GİZLENEN SOL/SAĞ PANELİN MOBİL KÖPRÜSÜ) */}
+          <div className="lg:hidden bg-gradient-to-r from-red-950 via-[#990000] to-slate-900 rounded-2xl p-4 text-white shadow-md border border-red-800/40 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <SafeAvatar src={studentAvatar} name={studentName} size="sm" className="border-2 border-white/60" />
+                <div className="min-w-0">
+                  <h4 className="text-xs font-black text-white truncate">{studentName}</h4>
+                  <p className="text-[10px] text-red-200 font-semibold truncate">{studentDept}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setView('student_kgb')}
+                className="px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-[10px] font-black tracking-wide flex items-center gap-1 transition cursor-pointer"
+              >
+                <GraduationCap size={12} className="text-amber-300" />
+                <span>KGB: %{careerProgress.percent ?? 0}</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/10 text-center">
+              <button
+                onClick={() => setView('student_kgb')}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition flex flex-col items-center gap-1 cursor-pointer"
+              >
+                <Award size={15} className="text-amber-300" />
+                <span>KGB Karnesi</span>
+              </button>
+              <button
+                onClick={() => setView('radar')}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition flex flex-col items-center gap-1 cursor-pointer"
+              >
+                <Radar size={15} className="text-emerald-300" />
+                <span>Başvuru Radarı</span>
+              </button>
+              <button
+                onClick={() => setShowMentorsModal(true)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition flex flex-col items-center gap-1 cursor-pointer"
+              >
+                <Coffee size={15} className="text-teal-300" />
+                <span>Mentör Bul</span>
+              </button>
+            </div>
+          </div>
+
           {/* Hızlı Erişim: Kariyer & Gelişim Araçları (Bento Grid) */}
           <div className="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-3 px-1">
@@ -807,20 +855,20 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
 
 
           {/* Öğrenci Bilgi Düzenleme shortcut (NET 24PX BOŞLUK) */}
-          <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-2xl text-white border border-red-900 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#7A0000] via-[#990000] to-[#5C0000] rounded-2xl p-6 shadow-xl text-white border border-red-900 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-            <p className="text-[11px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+            <p className="text-[11px] font-black text-amber-300 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
               <Sparkles size={13} className="text-amber-300" /> Hızlı Erişim
             </p>
-            <h3 className="font-black text-xl leading-tight mb-2 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+            <h3 className="font-black text-xl leading-tight mb-2 text-white">
               Öğrenci Profilim & CV
             </h3>
-            <p className="text-xs text-white font-bold mb-5 leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+            <p className="text-xs text-white/90 font-medium mb-5 leading-relaxed">
               Akademik geçmişinizi, stajlarınızı, sertifikalarınızı ve kariyer hedeflerinizi profil alanından güncelleyin.
             </p>
             <button 
               onClick={() => setView('profile_update')} 
-              className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
+              className="w-full py-3.5 bg-white text-[#990000] hover:bg-slate-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md hover:scale-[1.02] active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-white"
             >
               Bilgilerimi Düzenle <ArrowRight size={16} />
             </button>

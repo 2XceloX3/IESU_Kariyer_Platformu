@@ -308,13 +308,15 @@ export default function StudentApplicationRadar({
                           {stage.label}
                         </span>
 
-                        <button
-                          onClick={() => handleSimulateAdvance(app.id)}
-                          className="px-2.5 py-1 text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition cursor-pointer flex items-center gap-1"
-                          title="Geliştirici & Test Simülasyonu: Bir sonraki aşamaya taşı"
-                        >
-                          <RotateCcw size={12} /> Test Aşama Geçişi
-                        </button>
+                        {userRole === 'admin' && (
+                          <button
+                            onClick={() => handleSimulateAdvance(app.id)}
+                            className="px-2.5 py-1 text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition cursor-pointer flex items-center gap-1"
+                            title="Yönetici/Koordinatörlük Denetim Simülasyonu"
+                          >
+                            <RotateCcw size={12} /> Test Aşama Geçişi
+                          </button>
+                        )}
                       </div>
                     </div>
 

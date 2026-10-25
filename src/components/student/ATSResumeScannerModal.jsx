@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   FileCheck2, AlertTriangle, CheckCircle2, Sparkles, Copy, Check,
-  Target, Zap, RefreshCw, X, ShieldAlert, FileText, BarChart3, Layers
+  Target, Zap, RefreshCw, X, ShieldAlert, FileText, BarChart3, Layers,
+  Upload, UserCheck
 } from 'lucide-react';
 import useAppStore from '../../store/useAppStore';
 import {
@@ -80,6 +81,80 @@ Projeler & Sertifikalar:
       const report = scanResumeAgainstJob(resumeText, newDesc, { jobTitle: newTitle });
       setScanReport(report);
       saveAtsScanResult(report);
+    }
+  };
+
+  const fileInputRef = useRef(null);
+
+  const handleLoadProfileResume = () => {
+    const name = currentUser?.name || 'Öğrenci';
+    const email = currentUser?.email || 'ogrenci@ogr.esenyurt.edu.tr';
+    const dept = currentUser?.department || 'Bölüm Belirtilmemiş';
+    const faculty = currentUser?.faculty || 'Fakülte';
+    const skills = Array.isArray(currentUser?.skills) ? currentUser.skills.join(', ') : (currentUser?.skills || 'React, Problem Çözme, Takım Çalışması');
+    const langs = Array.isArray(currentUser?.languages) ? currentUser.languages.map(l => `${l.name} (${l.level || 'Orta'})`).join(', ') : 'İngilizce (B2)';
+    const experiences = Array.isArray(currentUser?.experiences) && currentUser.experiences.length > 0
+      ? currentUser.experiences.map(exp => `- ${exp.title || exp.position || 'Stajyer'} (${exp.company || 'Firma'}): ${exp.description || 'Görev ve sorumluluklar başarıyla yerine getirildi.'}`).join('\n')
+      : `- Stajyer / Proje Deneyimi: ${dept} alanında kurumsal projelerde görev aldı ve vaka analizleri gerçekleştirdi.`;
+
+    const generated = `${name} | ${email} | ${currentUser?.phone || '+90 5xx xxx xx xx'}
+İstanbul Esenyurt Üniversitesi (İESÜ) - ${faculty}
+
+Özet & Kariyer Hedefi:
+İstanbul Esenyurt Üniversitesi ${dept} öğrencisiyim. ${currentUser?.targetSector || 'Sektörel alanda'} yenilikçi, analitik ve ölçülebilir değer üreten projelere katkı sağlamayı hedefliyorum.
+
+Eğitim:
+İstanbul Esenyurt Üniversitesi - ${dept} (Öğrenci No: ${currentUser?.studentNo || '2023010xxx'})
+
+Yetkinlikler & Beceriler:
+${skills}
+
+Yabancı Diller:
+${langs}
+
+Deneyimler & Projeler:
+${experiences}
+
+KGB Akreditasyonu:
+İESÜ Kariyer Geliştirme Koordinatörlüğü Onaylı Kariyer Gelişim Belgesi & EuroPass Eki.`;
+
+    setResumeText(generated);
+    const report = scanResumeAgainstJob(generated, jobDescription, { jobTitle });
+    setScanReport(report);
+    saveAtsScanResult(report);
+    if (window.toast) window.toast.success("Profilinizdeki akademik ve mesleki veriler ATS metnine aktarıldı!");
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.name.endsWith('.txt') || file.type.includes('text')) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const text = evt.target.result;
+        setResumeText(text);
+        const report = scanResumeAgainstJob(text, jobDescription, { jobTitle });
+        setScanReport(report);
+        saveAtsScanResult(report);
+        if (window.toast) window.toast.success(`${file.name} başarıyla aktarıldı.`);
+      };
+      reader.readAsText(file);
+    } else {
+      const fallbackText = `${currentUser?.name || file.name.replace(/\.[^/.]+$/, "")} | ${currentUser?.email || 'ogrenci@ogr.esenyurt.edu.tr'}
+Dosya: ${file.name} (${(file.size / 1024).toFixed(1)} KB)
+İstanbul Esenyurt Üniversitesi - ${currentUser?.department || 'Öğrenci'}
+
+Özet:
+${file.name} belgesi ATS tarama sistemine bağlandı.
+
+Yetkinlikler:
+${Array.isArray(currentUser?.skills) ? currentUser.skills.join(', ') : (currentUser?.skills || 'React, TypeScript, Problem Çözme, Analitik Düşünme')}`;
+      setResumeText(fallbackText);
+      const report = scanResumeAgainstJob(fallbackText, jobDescription, { jobTitle });
+      setScanReport(report);
+      saveAtsScanResult(report);
+      if (window.toast) window.toast.success(`${file.name} dosyası başarıyla seçildi.`);
     }
   };
 
@@ -198,28 +273,56 @@ Projeler & Sertifikalar:
 
             {/* Resume Text Column */}
             <div className="space-y-2 flex flex-col">
-              <div className="flex items-center justify-between">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept=".pdf,.doc,.docx,.txt"
+                className="hidden"
+              />
+              <div className="flex flex-wrap items-center justify-between gap-1.5">
                 <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
                   <FileText size={15} className="text-blue-600" />
                   Öğrenci Özgeçmiş Metni (CV)
                 </label>
-                <button
-                  onClick={() => setResumeText(defaultResume)}
-                  className="text-[11px] font-bold text-red-700 hover:underline flex items-center gap-1"
-                >
-                  <RefreshCw size={12} /> Varsayılanı Yükle
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleLoadProfileResume}
+                    className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 cursor-pointer"
+                    title="İESÜ Profil bilgilerinizden otomatik CV metni oluşturur"
+                  >
+                    <UserCheck size={12} /> Profilimden Çek
+                  </button>
+                  <span className="text-slate-300">•</span>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[11px] font-bold text-blue-700 hover:text-blue-800 hover:underline flex items-center gap-1 cursor-pointer"
+                    title="PDF, DOCX veya TXT belgesi yükleyin"
+                  >
+                    <Upload size={12} /> Dosya Yükle
+                  </button>
+                  <span className="text-slate-300">•</span>
+                  <button
+                    type="button"
+                    onClick={() => setResumeText(defaultResume)}
+                    className="text-[11px] font-bold text-slate-500 hover:text-red-700 hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <RefreshCw size={12} /> Örnek
+                  </button>
+                </div>
               </div>
               <textarea
                 value={resumeText}
                 onChange={(e) => setResumeText(e.target.value)}
                 rows={7}
-                placeholder="CV metninizi buraya yapıştırın..."
-                className="w-full text-xs p-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-mono flex-1 resize-none"
+                placeholder="CV metninizi buraya yapıştırın veya 'Profilimden Çek' butonuna basarak anında aktarın..."
+                className="w-full text-xs p-2.5 bg-white border border-gray-300 rounded-lg text-gray-700 font-mono flex-1 resize-none focus:border-[#990000] focus:ring-1 focus:ring-[#990000] outline-none"
               />
               <button
                 onClick={handleRunScan}
-                className="w-full py-2.5 bg-gradient-to-r from-red-800 to-red-600 hover:from-red-700 hover:to-red-500 text-white rounded-lg text-xs font-black shadow-sm flex items-center justify-center gap-2 cursor-pointer transition"
+                className="w-full py-2.5 bg-gradient-to-r from-red-800 to-red-600 hover:from-red-700 hover:to-red-500 text-white rounded-lg text-xs font-black shadow-sm flex items-center justify-center gap-2 cursor-pointer transition active:scale-[0.99]"
               >
                 <Zap size={15} /> ATS Taramasını Yenile & Skoru Hesapla
               </button>

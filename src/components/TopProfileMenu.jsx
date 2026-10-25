@@ -4,18 +4,16 @@ import {
   CreditCard, Zap, LogOut, ChevronDown, User, Shield, Calendar, Wand2, FileText, 
   MessageSquare, ShieldCheck, Crown, LayoutDashboard, GraduationCap, Users as UsersIcon, 
   Building2, BookOpen, MessageCircle, Ghost, EyeOff, Download, Trash2, Globe, Trophy, 
-  Mic, Briefcase, Wallet, Bot, CalendarCheck, Target, BarChart2, Award, Atom, Activity, Compass, Camera
+  Mic, Briefcase, Wallet, Bot, CalendarCheck, Target, BarChart2, Award, Atom, Compass, Camera
 } from 'lucide-react';
 import Logo from './Logo';
 import useAppStore, { coreStore } from '../store/useAppStore';
-import BMICalculatorModal from './BMICalculatorModal';
 import CompanyManagementModal from './CompanyManagementModal';
 import SafeAvatar from './shared/SafeAvatar';
 import { signOut } from 'firebase/auth';
 import { auth } from '../utils/firebase';
 
 export default function TopProfileMenu({ currentUser, userRole, setView, setSelectedUserId, academicRole, currentView, setCurrentUser, isDark = false }) {
-  const [showBmiModal, setShowBmiModal] = useState(false);
   const [showCompanyModal, setShowCompanyModal] = useState(false);
   const activeFrame = useAppStore(state => state?.activeFrame);
   const alumniAssocBoard = useAppStore?.(state => state.alumniAssocBoard) || [];
@@ -392,9 +390,6 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
                   <Calendar size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Takvim
                 </button>
-                <button role="menuitem" onClick={() => { setIsOpen(false); setShowBmiModal(true); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 hover:bg-emerald-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
-                  <Activity size={16} className="text-emerald-600 group-hover:scale-110 transition-all duration-200" /> Kilo & Sağlık VKİ Ölçümü
-                </button>
               </div>
 
               {/* LOGOUT */}
@@ -578,14 +573,6 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                 >
                   <Calendar size={16} className={`text-gray-500 transition-all duration-200 ${userRole === 'alumni' ? 'group-hover:text-emerald-700' : 'group-hover:text-[#990000]'}`} /> Takvim
                 </button>
-
-                <button 
-                  role="menuitem" 
-                  onClick={() => { setIsOpen(false); setShowBmiModal(true); }} 
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 hover:bg-emerald-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer"
-                >
-                  <Activity size={16} className="text-emerald-600 group-hover:scale-110 transition-all duration-200" /> Kilo & Sağlık VKİ Ölçümü
-                </button>
               </div>
 
               <div className="border-t border-gray-50 mt-1 py-1">
@@ -602,7 +589,6 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
         </div>
       )}
       </div>
-      <BMICalculatorModal isOpen={showBmiModal} onClose={() => setShowBmiModal(false)} />
       <CompanyManagementModal isOpen={showCompanyModal} onClose={() => setShowCompanyModal(false)} currentUser={effectiveCurrentUser} />
     </div>
   );

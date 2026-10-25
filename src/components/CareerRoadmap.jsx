@@ -7,6 +7,7 @@ import {
   Download, GraduationCap, CheckCheck, ShieldCheck
 } from 'lucide-react';
 import Logo from './Logo';
+import SafeAvatar from './shared/SafeAvatar';
 import TopProfileMenu from './TopProfileMenu';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
@@ -581,10 +582,11 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
         {SECTOR_MENTORS[selectedSectorId] && (
           <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 rounded-2xl p-4 sm:p-5 text-white border border-emerald-800/40 shadow-md mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <img 
+              <SafeAvatar 
                 src={SECTOR_MENTORS[selectedSectorId].avatar} 
-                alt="" 
-                className="w-12 h-12 rounded-2xl object-cover border-2 border-emerald-400 shadow-md shrink-0" 
+                name={SECTOR_MENTORS[selectedSectorId].name}
+                size="md"
+                className="w-12 h-12 rounded-2xl border-2 border-emerald-400 shadow-md shrink-0" 
               />
               <div>
                 <div className="flex items-center gap-2">

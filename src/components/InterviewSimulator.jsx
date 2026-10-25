@@ -107,33 +107,90 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
     setRecordingState('processing');
 
     const qText = activeScenario?.questions?.[currentQuestionIndex] || 'Genel Mülakat Sorusu';
-    const duration = timer || 15;
+    const duration = timer || 0;
 
-    const baseComm = Math.min(96, Math.max(74, 78 + Math.round((duration % 18))));
-    const baseTech = Math.min(97, Math.max(72, activeScenario?.id === 'software_engineer' ? 90 : 85 + (duration % 10)));
-    const baseStar = Math.min(98, Math.max(76, 84 + (qText.length % 14)));
+    let baseComm = 82;
+    let baseTech = 80;
+    let baseStar = 84;
+    let strengths = [];
+    let growth = [];
+    let starAdvice = '';
+
+    if (duration < 10) {
+      // Yetersiz süre: Çok kısa yanıt uyarısı
+      baseComm = Math.max(35, Math.min(52, 30 + duration * 2));
+      baseTech = Math.max(30, Math.min(50, 25 + duration * 2));
+      baseStar = Math.max(32, Math.min(48, 28 + duration * 2));
+      strengths = [
+        "Mülakat provasını başlattınız ve kamera/mikrofon kaydını aktif ettiniz."
+      ];
+      growth = [
+        `Cevap süreniz çok kısa kaldı (${duration} saniye). Kurumsal mülakatlarda bir yetkinlik sorusuna doyurucu cevap vermek en az 45-90 saniye gerektirir.`,
+        "Sorunun Durum (Situation), Görev (Task) ve Eylem (Action) adımlarını somutlaştırarak tekrar deneyiniz."
+      ];
+      starAdvice = "STAR metodolojisinde her soru için en az 45 saniyelik bir açıklama sunulmalı; somut olay ve aldığınız rol netleştirilmelidir.";
+    } else if (duration < 30) {
+      // Kısa yanıt: Geliştirilebilir
+      baseComm = 72;
+      baseTech = activeScenario?.id === 'software_engineer' ? 76 : 74;
+      baseStar = 70;
+      strengths = [
+        `"${qText.slice(0, 36)}..." sorusunun ana fikrine doğrudan temas ettiniz.`,
+        "Kendinizi ifade etme cesaretiniz ve temel giriş cümleleriniz anlaşılırdı."
+      ];
+      growth = activeScenario?.id === 'software_engineer' ? [
+        "Teknik ayrıntıları ve kullandığınız kütüphane/algoritma tercihlerini daha geniş aktarabilirsiniz.",
+        "Cevabınızı 60-90 saniye aralığına genişleterek karşılaşılan zorlukları ve çözümlerinizi detaylandırın."
+      ] : [
+        "Cevabınız biraz özet kaldı; aldığınız aksiyonları ve somut çıktıları genişletmeniz ikna ediciliği artıracaktır.",
+        "Sayısal veriler veya ölçülebilir başarı metrikleri ekleyerek anlatımı güçlendirin."
+      ];
+      starAdvice = "STAR tekniğinde Sonuç (Result) aşamasını ihmal etmeyin; projenin veya görevin getirdiği faydayı vurgulayın.";
+    } else if (duration > 150) {
+      // Çok uzun yanıt: Özetleme ihtiyacı
+      baseComm = 78;
+      baseTech = 85;
+      baseStar = 76;
+      strengths = [
+        "Konuya derinlemesine hakim olduğunuz ve detaylı vaka bilgisine sahip olduğunuz açıkça görülüyor.",
+        "Teknik terminolojiyi ve süreç aşamalarını zengin bir şekilde kullandınız."
+      ];
+      growth = [
+        `Cevap süreniz ${formatTime(duration)} sürdü. İK mülakatlarında 2.5 dakikayı aşan yanıtlar mülakatçının odağını kaybetmesine yol açabilir.`,
+        "STAR metodunu uygularken 'Giriş - Eylem - Sonuç' akışını 90-120 saniyede toparlamaya özen gösterin."
+      ];
+      starAdvice = "Net ve vurucu olun; detaylarda boğulmak yerine elde ettiğiniz anahtar çıktıyı (KPI) öne çıkarın.";
+    } else {
+      // İdeal süre aralığı (30 - 150 saniye): Profesyonel mülakat standardı
+      baseComm = Math.min(96, Math.max(84, 86 + Math.round((duration - 30) / 15)));
+      baseTech = Math.min(97, Math.max(82, activeScenario?.id === 'software_engineer' ? 92 : 88));
+      baseStar = Math.min(98, Math.max(85, 88 + Math.round((duration - 30) / 20)));
+      strengths = [
+        `"${qText.slice(0, 36)}..." sorusuna odaklı, profesyonel zamanlamalı (${formatTime(duration)}) ve yapısal bir akış sundunuz.`,
+        "Düşünceleri ifade etme süreniz ve konuşma hızınız kurumsal mülakat kriterlerine tam uyum sağladı."
+      ];
+      growth = activeScenario?.id === 'software_engineer' ? [
+        "Dağıtık sistem kararlarında mimari ödünleşimleri (latency vs. consistency) daha belirgin vurgulayabilirsiniz.",
+        "Teknik örneklendirmelerde somut teknoloji yığını ve benchmark metrikleri eklemek güven verir."
+      ] : activeScenario?.id === 'marketing' ? [
+        "Kampanya ROI ve müşteri edinme maliyeti (CAC) gibi sayısal metriklere daha fazla yer verebilirsiniz.",
+        "Kriz yönetimi senaryolarında ekip içi koordinasyon adımlarını STAR tekniğiyle netleştirin."
+      ] : [
+        "Finansal analiz süreçlerinde veri doğrulama araçları (Power Query / SQL) kullanımınızı detaylandırın.",
+        "Stres anında aldığınız kriz inisiyatiflerini ölçülebilir finansal etkileriyle aktarın."
+      ];
+      starAdvice = activeScenario?.id === 'software_engineer'
+        ? "STAR metodunda Eylem (Action) adımında bizzat yazdığınız kod veya optimizasyonu, Sonuç (Result) aşamasında ise sistem performansındaki % artışı net belirtin."
+        : "STAR(L) anlatımında Eylem (Action) aşamasına odaklanıp sürecin kurumunuza kazandırdığı somut çıktıyı vurgulayın.";
+    }
 
     const dynFeedback = {
       commScore: baseComm,
       techScore: baseTech,
       starScore: baseStar,
-      strengths: [
-        `"${qText.slice(0, 36)}..." sorusuna odaklı ve yapısal bir cevap akışı sundunuz.`,
-        duration > 20 ? "Düşünceleri ifade etme süreniz ve konuşma hızınız profesyonel mülakat kriterlerine uygundu." : "Öz ve net ifadelerle sorunun odak noktasına temas ettiniz."
-      ],
-      growth: activeScenario?.id === 'software_engineer' ? [
-        "Dağıtık sistem kararlarında mimari ödünleşimleri (latency vs. consistency) daha belirgin vurgulayabilirsiniz.",
-        "Teknik örneklendirmelerde somut teknoloji yığını ve benchmark metrikleri eklemek güven verir."
-      ] : activeScenario?.id === 'marketing' ? [
-        "Kampanya ROI ve edinme maliyeti (CAC) gibi sayısal metriklere daha fazla yer verebilirsiniz.",
-        "Kriz yönetimi senaryolarında ekip içi koordinasyon adımlarını STAR tekniğiyle netleştirin."
-      ] : [
-        "Finansal analiz süreçlerinde veri doğrulama araçları (Power Query / SQL) kullanımınızı detaylandırın.",
-        "Stres anında aldığınız kriz inisiyatiflerini ölçülebilir finansal etkileriyle aktarın."
-      ],
-      starAdvice: activeScenario?.id === 'software_engineer'
-        ? "STAR metodunda Eylem (Action) adımında bizzat yazdığınız kod veya optimizasyonu, Sonuç (Result) aşamasında ise sistem performansındaki % artışı net belirtin."
-        : "STAR(L) anlatımında Eylem (Action) aşamasına odaklanıp sürecin kurumunuza kazandırdığı somut çıktıyı vurgulayın."
+      strengths,
+      growth,
+      starAdvice
     };
 
     setTimeout(() => {
