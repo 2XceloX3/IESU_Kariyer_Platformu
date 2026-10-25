@@ -147,7 +147,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   const handleFairSubmit = (e) => {
     e.preventDefault();
     const newApp = {
-      id: 'CFA-' + Math.random().toString(36).substr(2, 9),
+      id: 'CFA-' + Math.random().toString(36).substring(2, 11),
       companyId: effectiveCurrentUser?.id || effectiveCurrentUser?.uid || null,
       companyName: effectiveCurrentUser?.name || 'Firma Adı',
       status: 'Beklemede',

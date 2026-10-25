@@ -218,7 +218,7 @@ export default function AlumniCoffeeChatModal({
   };
 
   const handleConfirmChat = (chatId) => {
-    const meetUrl = `https://meet.google.com/iesu-coffee-${Math.random().toString(36).substr(2, 6)}`;
+    const meetUrl = `https://meet.google.com/iesu-coffee-${Math.random().toString(36).substring(2, 8)}`;
     const updated = coffeeChats.map((c) =>
       c.id === chatId ? { ...c, status: 'CONFIRMED', meetingLink: c.meetingLink || meetUrl } : c
     );

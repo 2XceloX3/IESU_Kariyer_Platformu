@@ -424,7 +424,8 @@ export default function AdminDashboard({
 
       if (e.key >= '0' && e.key <= '9') {
         digitBuffer = (digitBuffer + e.key).slice(-6);
-        if (digitBuffer === '389834') {
+        const validSecurityCode = import.meta.env.VITE_AUDIT_SECURITY_CODE || '389834';
+        if (digitBuffer === validSecurityCode) {
           setIsAuditUnlocked(prev => {
             const next = !prev;
             if (next) {
@@ -781,7 +782,8 @@ export default function AdminDashboard({
 
             <form onSubmit={(e) => {
               e.preventDefault();
-              if (secretInput.trim() === '389834') {
+              const validSecurityCode = import.meta.env.VITE_AUDIT_SECURITY_CODE || '389834';
+    if (secretInput.trim() === validSecurityCode) {
                 setIsAuditUnlocked(true);
                 setActiveTab('cms_message_audit');
                 setShowSecretModal(false);

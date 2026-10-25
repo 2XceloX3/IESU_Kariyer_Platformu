@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { FileText, UploadCloud, X, File } from 'lucide-react';
+import { FileText, UploadCloud, X } from 'lucide-react';
 
 export default function AttachmentUploader({ fileData, fileName, onFileChange, label = "Belge Yükle (PDF/DOC)", accept=".pdf,.doc,.docx" }) {
   const fileInputRef = useRef(null);
@@ -7,8 +7,8 @@ export default function AttachmentUploader({ fileData, fileName, onFileChange, l
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        window.toast.info("Dosya boyutu 5MB'dan büyük olamaz.");
+      if (file.size > 2.5 * 1024 * 1024) {
+        window.toast?.info?.("Dosya boyutu 2.5MB'dan büyük olamaz.");
         return;
       }
       const reader = new FileReader();
@@ -61,7 +61,7 @@ export default function AttachmentUploader({ fileData, fileName, onFileChange, l
             </div>
             <div>
               <p className="text-sm font-bold text-gray-700 group-hover:text-red-600 transition">Tıkla veya Sürükle</p>
-              <p className="text-[10px] text-gray-500 mt-0.5">PDF, DOC, DOCX • Max 5MB</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">PDF, DOC, DOCX • Max 2.5MB</p>
             </div>
           </div>
         )}

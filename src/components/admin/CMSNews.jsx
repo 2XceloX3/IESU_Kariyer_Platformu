@@ -54,7 +54,7 @@ export default function CMSNews({ news = [], setNews, _posts, setPosts, currentU
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title || !form.date) return window.toast.info("Başlık ve tarih zorunludur.");
+    if (!form.title || !form.date) return (window.toast?.info?.("Başlık ve tarih zorunludur.") ?? window.alert?.("Başlık ve tarih zorunludur."));
 
     const newId = currentId || ('NE-D' + Date.now());
 

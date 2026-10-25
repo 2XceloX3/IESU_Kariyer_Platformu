@@ -120,7 +120,7 @@ export const coreStore = create(
 
         const now = new Date();
         const entry = {
-          id: 'log_' + now.getTime() + '_' + Math.random().toString(36).substr(2, 6),
+          id: 'log_' + now.getTime() + '_' + Math.random().toString(36).substring(2, 8),
           timestamp: now.toLocaleTimeString('tr-TR'),
           isoTimestamp: now.toISOString(),
           user: cleanUser,

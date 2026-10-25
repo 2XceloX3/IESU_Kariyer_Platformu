@@ -354,7 +354,7 @@ export const useAdminStore = create(
             }
 
             const newEntry = {
-              id: 'log_' + now.getTime() + '_' + Math.random().toString(36).substr(2, 6),
+              id: 'log_' + now.getTime() + '_' + Math.random().toString(36).substring(2, 8),
               timestamp: now.toLocaleTimeString('tr-TR'),
               isoTimestamp: now.toISOString(),
               user: cleanUser,
@@ -493,7 +493,7 @@ export const useAdminStore = create(
 
             const now = new Date();
             const auditLog = {
-              id: 'log_' + Math.random().toString(36).substr(2, 9),
+              id: 'log_' + Math.random().toString(36).substring(2, 11),
               timestamp: now.toLocaleTimeString('tr-TR'),
               user: 'Kariyer Ofisi Yöneticisi',
               action: `Kariyer Günleri: ${standCode} -> ${newStatus === 'Boş' ? 'Stant Boşaltıldı' : companyName + ' (' + newStatus + ')'}`,
@@ -502,7 +502,7 @@ export const useAdminStore = create(
             };
 
             const newNotif = {
-              id: 'notif_' + Math.random().toString(36).substr(2, 9),
+              id: 'notif_' + Math.random().toString(36).substring(2, 11),
               title: 'Stant Ataması Güncellendi',
               message: `${standCode} için stant durumu güncellendi: ${newStatus === 'Boş' ? 'Stant Boşaltıldı' : (companyName || '') + ' (' + newStatus + ')'}`,
               date: now.toLocaleDateString('tr-TR'),

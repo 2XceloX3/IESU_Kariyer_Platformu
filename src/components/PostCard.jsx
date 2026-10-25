@@ -360,7 +360,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     if (!trimmed) return;
     const sanitizedText = DOMPurify.sanitize(trimmed).slice(0, 500);
     const commentObj = {
-      id: 'cmt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      id: 'cmt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
       text: sanitizedText,
       author: currentUser?.name || 'Siz',
       authorId: currentUser?.id,

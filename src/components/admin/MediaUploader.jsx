@@ -1,12 +1,23 @@
 import React, { useRef } from 'react';
-import { Image as ImageIcon, UploadCloud, X } from 'lucide-react';
+import { UploadCloud, X } from 'lucide-react';
 
 export default function MediaUploader({ image, onImageChange, label = "Görsel Yükle", aspect = "16:9" }) {
   const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files && e.target.files[0];
     if (file) {
+      if (!file.type || !file.type.startsWith('image/')) {
+        window.toast?.info?.("Lütfen geçerli bir görsel dosyası (PNG, JPG, WEBP) seçin.");
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        window.toast?.info?.("Görsel boyutu 2MB'dan büyük olamaz.");
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         onImageChange(reader.result);
@@ -53,7 +64,7 @@ export default function MediaUploader({ image, onImageChange, label = "Görsel Y
               <UploadCloud size={20} />
             </div>
             <p className="text-sm font-bold text-gray-700">Tıkla veya Sürükle</p>
-            <p className="text-[10px] text-gray-500 mt-1">PNG, JPG, WEBP • Max 5MB</p>
+            <p className="text-[10px] text-gray-500 mt-1">PNG, JPG, WEBP • Max 2MB</p>
           </div>
         )}
         <input 

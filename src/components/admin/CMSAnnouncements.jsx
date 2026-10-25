@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import AdminCMSLayout, { TopInfoCard } from './AdminCMSLayout';
 import MediaUploader from './MediaUploader';
 import AttachmentUploader from './AttachmentUploader';
-import { Megaphone, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Image as ImageIcon, Calendar, ArrowRight, FileText } from 'lucide-react';
+import { Megaphone, CheckCircle2, Edit, Trash2, Plus, Search, Filter, Calendar, ArrowRight } from 'lucide-react';
 
-export default function CMSAnnouncements({ announcements = [], setAnnouncements, posts, setPosts, currentUser }) {
+export default function CMSAnnouncements({ announcements = [], setAnnouncements, _posts, setPosts, currentUser }) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,7 +53,7 @@ export default function CMSAnnouncements({ announcements = [], setAnnouncements,
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title || !form.date) return window.toast.info("Başlık ve tarih zorunludur.");
+    if (!form.title || !form.date) return (window.toast?.info?.("Başlık ve tarih zorunludur.") ?? window.alert?.("Başlık ve tarih zorunludur."));
 
     const newId = currentId || ('NE-D' + Date.now());
 

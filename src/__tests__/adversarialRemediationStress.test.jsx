@@ -17,6 +17,9 @@ import Login from '../components/Login';
 import StudentFeed from '../components/StudentFeed';
 import AlumniFeed from '../components/AlumniFeed';
 import CMSMessageAudit from '../components/admin/CMSMessageAudit';
+import MediaUploader from '../components/admin/MediaUploader';
+import AttachmentUploader from '../components/admin/AttachmentUploader';
+import safeStorage from '../utils/safeStorage';
 import { generateAIResponse } from '../services/aiService';
 import { computeWalletReadinessIndex } from '../utils/careerProgress';
 import { processAlumniDonation } from '../services/alumniGivingWorkflow';
@@ -105,7 +108,7 @@ describe('Adversarial Remediation & Security Stress Suite', () => {
       window.sessionStorage.setItem('iesu_user_role_v1', 'admin');
       // NOT: iesu_admin_session veya geçerli token VERİLMEDİ (Saldırı simülasyonu)
 
-      render(
+      const { unmount } = render(
         <MemoryRouter initialEntries={['/admin_cms']}>
           <App />
         </MemoryRouter>
@@ -115,6 +118,7 @@ describe('Adversarial Remediation & Security Stress Suite', () => {
       await waitFor(() => {
         expect(screen.queryByText(/SÜPER ADMİN/i)).not.toBeInTheDocument();
       });
+      unmount();
     });
 
     it('authenticates legitimate coordinator with authentic session token', async () => {
@@ -310,6 +314,61 @@ describe('Adversarial Remediation & Security Stress Suite', () => {
 
       expect(screen.getByText(/6698 Sayılı KVKK ve Kurumsal Güvenlik Politikası/i)).toBeInTheDocument();
       expect(screen.getByText(/Audit Trail/i)).toBeInTheDocument();
+    });
+  });
+  // ═════════════════════════════════════════════════════════════════════════
+  // 7. DEPOLAMA KOTASI VE GÜVENLİ PARSER DAYANIKLILIK TESTİ
+  // ═════════════════════════════════════════════════════════════════════════
+  describe('Module 7: SafeStorage & Upload File Size Enforcement Stress', () => {
+    it('safely recovers and returns fallback when localStorage has malformed JSON', () => {
+      window.localStorage.setItem('malformed_key', '{ invalid json ...');
+      const recovered = safeStorage.getJSON('malformed_key', { status: 'safe' });
+      expect(recovered).toEqual({ status: 'safe' });
+    });
+
+    it('enforces 2MB image boundary and blocks oversized files in MediaUploader', () => {
+      const onImageChange = vi.fn();
+      window.toast = { info: vi.fn(), success: vi.fn() };
+
+      const { container } = render(<MediaUploader onImageChange={onImageChange} />);
+      const fileInput = container.querySelector('input[type="file"]');
+
+      const oversizedFile = new File(['x'.repeat(5 * 1024 * 1024)], 'huge.jpg', { type: 'image/jpeg' });
+      Object.defineProperty(fileInput, 'files', { value: [oversizedFile], configurable: true });
+      fireEvent.change(fileInput);
+
+      expect(window.toast.info).toHaveBeenCalledWith(expect.stringContaining("2MB'dan büyük"));
+      expect(onImageChange).not.toHaveBeenCalled();
+    });
+
+    it('rejects non-image files in MediaUploader', () => {
+      const onImageChange = vi.fn();
+      window.toast = { info: vi.fn() };
+
+      const { container } = render(<MediaUploader onImageChange={onImageChange} />);
+      const fileInput = container.querySelector('input[type="file"]');
+
+      const nonImageFile = new File(['malicious script'], 'hack.sh', { type: 'application/x-sh' });
+      Object.defineProperty(fileInput, 'files', { value: [nonImageFile], configurable: true });
+      fireEvent.change(fileInput);
+
+      expect(window.toast.info).toHaveBeenCalledWith(expect.stringContaining("geçerli bir görsel"));
+      expect(onImageChange).not.toHaveBeenCalled();
+    });
+
+    it('enforces 2.5MB boundary in AttachmentUploader', () => {
+      const onFileChange = vi.fn();
+      window.toast = { info: vi.fn() };
+
+      const { container } = render(<AttachmentUploader onFileChange={onFileChange} />);
+      const fileInput = container.querySelector('input[type="file"]');
+
+      const oversizedPdf = new File(['x'.repeat(3 * 1024 * 1024)], 'thesis.pdf', { type: 'application/pdf' });
+      Object.defineProperty(fileInput, 'files', { value: [oversizedPdf], configurable: true });
+      fireEvent.change(fileInput);
+
+      expect(window.toast.info).toHaveBeenCalledWith(expect.stringContaining("2.5MB'dan büyük"));
+      expect(onFileChange).not.toHaveBeenCalled();
     });
   });
 });

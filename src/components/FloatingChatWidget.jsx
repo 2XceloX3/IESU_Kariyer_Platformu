@@ -620,7 +620,7 @@ export default function FloatingChatWidget({ setView, currentUser: propsCurrentU
       const raw = localStorage.getItem('iesu_platform_messages_audit_v1');
       const logs = raw ? JSON.parse(raw) : [];
       const entry = {
-        id: 'AUDIT-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+        id: 'AUDIT-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
         senderId: senderId || 'user',
         senderName: senderName || 'Kullanıcı',
         senderRole: senderRole || 'student',

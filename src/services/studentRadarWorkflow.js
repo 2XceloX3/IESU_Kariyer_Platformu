@@ -306,7 +306,7 @@ export function enrichApplicationWithRadar(app, protocols = SAMPLE_CORPORATE_PRO
 
   return {
     ...app,
-    id: app.id || 'RADAR-APP-' + Math.random().toString(36).substr(2, 6),
+    id: app.id || 'RADAR-APP-' + Math.random().toString(36).substring(2, 8),
     jobTitle: app.jobTitle || app.title || 'Pozisyon',
     company,
     companyLogo: app.companyLogo || app.logo || null,
