@@ -39,6 +39,36 @@ const INTERVIEW_SCENARIOS = [
       "Excel'de statik tablolar yerine Power Query ve API bağlantıları kullanarak otomatize ettiğin bir veri sürecini anlatır mısın?",
       "Beklenmedik bir pazar krizi durumunda nakit akışı senaryo modellemesini (Scenario Modeling) nasıl yaparsın?"
     ]
+  },
+  {
+    id: 'gastronomy',
+    title: 'Gastronomi & Mutfak Sanatları',
+    icon: '👨‍🍳',
+    questions: [
+      "Mutfakta yoğun servis anında ürün tedarik krizi veya hijyen denetimi aksamasıyla karşılaştığında ekibi nasıl organize edersin?",
+      "Menü mühendisliğinde maliyet kontrolü (Cost Control) sağlarken lezzet ve porsiyon kalitesini koruduğun bir vaka örneğini anlatır mısın?",
+      "HACCP gıda güvenliği standartlarını ve sıfır atık mutfak uygulamalarını operasyonunda nasıl hayata geçirirsin?"
+    ]
+  },
+  {
+    id: 'healthcare',
+    title: 'Sağlık Bilimleri & Klinik',
+    icon: '🩺',
+    questions: [
+      "Acil bir triyaj veya kriz ortamında hasta yakınları ve sağlık ekibi arasındaki kritik iletişimi nasıl yönetirsin?",
+      "Tıbbi etik, hasta hakları ve malpraktis riskini önleme konusundaki klinik yaklaşımını STAR metoduyla açıklar mısın?",
+      "Aşırı yoğun nöbet şartlarında stres yönetimi ve hasta bakım protokollerini hatasız nasıl uyguladın?"
+    ]
+  },
+  {
+    id: 'law',
+    title: 'Hukuk & Kurumsal Uyum',
+    icon: '⚖️',
+    questions: [
+      "Karmaşık bir ticari sözleşme veya dava sürecinde karşı tarafın beklenmedik hamlesine karşı stratejinizi nasıl kurguladınız?",
+      "KVKK ve kurumsal uyum süreçlerinde şirketin ticari hedefleriyle hukuki risk dengesini nasıl sağlarsınız?",
+      "Zaman kısıtı altında çoklu duruşma ve içtihat taraması yürütürken önceliklendirmenizi ve kriz yönetimini nasıl yaparsınız?"
+    ]
   }
 ];
 
@@ -175,12 +205,27 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
       ] : activeScenario?.id === 'marketing' ? [
         "Kampanya ROI ve müşteri edinme maliyeti (CAC) gibi sayısal metriklere daha fazla yer verebilirsiniz.",
         "Kriz yönetimi senaryolarında ekip içi koordinasyon adımlarını STAR tekniğiyle netleştirin."
+      ] : activeScenario?.id === 'gastronomy' ? [
+        "Reçete maliyetlendirme (Cost Control) ve porsiyon optimizasyonu adımlarını sayısal yüzdelerle aktarın.",
+        "HACCP kritik kontrol noktalarındaki anlık kriz aksiyonlarınızı STAR adımlarıyla detaylandırın."
+      ] : activeScenario?.id === 'healthcare' ? [
+        "Hasta triyajı ve kriz anındaki protokol adımlarını tıp mevzuatına referans vererek açıklayın.",
+        "Sağlık ekibiyle koordinasyonda aldığınız inisiyatifi somut vaka çıktısıyla pekiştirin."
+      ] : activeScenario?.id === 'law' ? [
+        "İçtihat araştırması ve mevzuat analizinde kullandığınız argümantasyon zincirini somutlaştırın.",
+        "Risk analizi yaparken kurumsal müvekkil faydası ile hukuki kesinlik arasındaki dengeyi vurgulayın."
       ] : [
         "Finansal analiz süreçlerinde veri doğrulama araçları (Power Query / SQL) kullanımınızı detaylandırın.",
         "Stres anında aldığınız kriz inisiyatiflerini ölçülebilir finansal etkileriyle aktarın."
       ];
       starAdvice = activeScenario?.id === 'software_engineer'
         ? "STAR metodunda Eylem (Action) adımında bizzat yazdığınız kod veya optimizasyonu, Sonuç (Result) aşamasında ise sistem performansındaki % artışı net belirtin."
+        : activeScenario?.id === 'gastronomy'
+        ? "Mutfak krizlerinde Eylem (Action) aşamasında hijyen ve maliyet dengesini, Sonuç (Result) aşamasında ise misafir memnuniyeti ve sıfır atık başarısını vurgulayın."
+        : activeScenario?.id === 'healthcare'
+        ? "Klinik vakalarda Durum ve Görevi hasta güvenliği merkezinde tanımlayıp, Eyleminizi mesleki etik ve protokoller doğrultusunda netleştirin."
+        : activeScenario?.id === 'law'
+        ? "Hukuki vaka analizinde mevzuat dayanağınızı (Eylem) ve müvekkile sağlanan hukuki korumayı (Sonuç) net çizgilerle sunun."
         : "STAR(L) anlatımında Eylem (Action) aşamasına odaklanıp sürecin kurumunuza kazandırdığı somut çıktıyı vurgulayın.";
     }
 
