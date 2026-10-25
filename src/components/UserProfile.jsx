@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart, Crown, Activity, Globe, Volume2, PlayCircle, Sparkles, Settings, Clock, Tag, Tent, Flag, Plus, ChevronRight, BarChart2, Link2, Link, Radar, Target, LayoutDashboard, Download, Zap } from 'lucide-react';
+import { ArrowLeft, MapPin, Briefcase, GraduationCap, Mail, MessageSquare, ExternalLink, Calendar, Star, Building2, UserCircle2, Award, FileText, CheckCircle2, BookOpen, UserPlus, UserCheck, Users, ShieldCheck, Camera, Home, Compass, Bell, Search, MessageCircle, X, Heart, Crown, Activity, Globe, Volume2, PlayCircle, Sparkles, Settings, Clock, Tag, Tent, Flag, Plus, ChevronRight, BarChart2, Link2, Link, Radar, Target, LayoutDashboard, Download, Zap, Code2, FileCheck } from 'lucide-react';
 import Logo from './Logo';
 import { Badge } from './admin/AdminCMSLayout';
 import PostCard from './PostCard';
@@ -1076,9 +1076,154 @@ export default function UserProfile({
 
           </div>
 
-          {/* 2. ORTA SÜTUN: GÖNDERİLER & AKIŞ (FLEX-1) ─── */}
+          {/* 2. ORTA SÜTUN: İŞ & STAJ DENEYİMLERİ, PROJELER & AKIŞ (FLEX-1) ─── */}
           <div className="flex-1 space-y-5 w-full">
             
+            {/* LINKEDIN STANDARD: İŞ & STAJ DENEYİMLERİ (WORK EXPERIENCE) */}
+            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
+                  <Briefcase size={18} className="text-[#990000]" /> İş & Staj Deneyimleri
+                </h3>
+                <span className="bg-red-50 text-[#990000] text-xs font-bold px-2.5 py-0.5 rounded-full">
+                  {((user?.experiences || currentUser?.experiences) || [1]).length} Deneyim
+                </span>
+              </div>
+
+              {(() => {
+                const rawExp = user?.experiences || currentUser?.experiences;
+                const expList = Array.isArray(rawExp) && rawExp.length > 0 ? rawExp : [
+                  {
+                    id: 'exp-mock-1',
+                    company: 'Teknopark İstanbul Bilişim A.Ş.',
+                    role: 'Stajyer Yazılım Geliştirici (Frontend)',
+                    type: 'Staj',
+                    location: 'İstanbul (Hibrit)',
+                    startDate: '2025-06-15',
+                    endDate: '2025-08-30',
+                    isCurrent: false,
+                    description: 'React ve Tailwind CSS ile kurumsal dashboard arayüzlerinin geliştirilmesi, REST API entegrasyonu ve Git sürüm kontrolü süreçlerine aktif katılım.',
+                    skills: ['React', 'JavaScript', 'Tailwind CSS', 'Git']
+                  }
+                ];
+
+                return (
+                  <div className="space-y-4">
+                    {expList.map((exp, idx) => (
+                      <div key={exp.id || idx} className="flex items-start gap-3.5 pb-4 last:pb-0 border-b last:border-0 border-gray-100">
+                        <div className="w-10 h-10 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center font-black shrink-0 border border-red-100/60">
+                          <Building2 size={18} />
+                        </div>
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <h4 className="font-black text-sm text-gray-900">{exp.role}</h4>
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                              {exp.type || 'Staj'}
+                            </span>
+                          </div>
+                          <p className="text-xs font-bold text-gray-700">{exp.company} {exp.location && `• ${exp.location}`}</p>
+                          <p className="text-[11px] text-gray-500 font-medium flex items-center gap-1.5">
+                            <Calendar size={12} className="text-gray-400" />
+                            {exp.startDate} - {exp.isCurrent ? <span className="text-emerald-600 font-bold">Devam Ediyor</span> : (exp.endDate || 'Tamamlandı')}
+                          </p>
+                          {exp.description && (
+                            <p className="text-xs text-gray-600 pt-1 leading-relaxed">{exp.description}</p>
+                          )}
+                          {Array.isArray(exp.skills) && exp.skills.length > 0 && (
+                            <div className="flex flex-wrap gap-1 pt-1.5">
+                              {exp.skills.map((sk, sidx) => (
+                                <span key={sidx} className="px-2 py-0.5 bg-red-50/60 text-[#990000] text-[10px] font-bold rounded-md border border-red-100/50">
+                                  {sk}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* LINKEDIN STANDARD: PROJELER & BİTİRME ÇALIŞMALARI */}
+            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
+                  <Code2 size={18} className="text-[#990000]" /> Projeler & Portfolyo
+                </h3>
+                <span className="bg-red-50 text-[#990000] text-xs font-bold px-2.5 py-0.5 rounded-full">
+                  {((user?.projects || currentUser?.projects) || [1]).length} Proje
+                </span>
+              </div>
+
+              {(() => {
+                const rawProj = user?.projects || currentUser?.projects;
+                const projList = Array.isArray(rawProj) && rawProj.length > 0 ? rawProj : [
+                  {
+                    id: 'proj-mock-1',
+                    title: 'İESÜ Akıllı Kampüs ve Kariyer Portalı',
+                    role: 'Proje Lideri & Frontend Geliştirici',
+                    date: '2025 - 2026',
+                    liveUrl: 'https://kariyer.esenyurt.edu.tr',
+                    githubUrl: 'https://github.com/ogrenci/iesu-kariyer-portal',
+                    description: 'Öğrencilerin staj bulmasını ve mezun ağını güçlendirmeyi hedefleyen web uygulaması. Gerçek zamanlı mesajlaşma ve yapay zeka destekli CV oluşturucu içerir.',
+                    technologies: ['React', 'Tailwind CSS', 'Vite', 'Firebase']
+                  }
+                ];
+
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    {projList.map((proj, idx) => (
+                      <div key={proj.id || idx} className="p-4 bg-slate-50/70 rounded-2xl border border-slate-100 flex flex-col justify-between space-y-3">
+                        <div className="space-y-1.5">
+                          <h4 className="font-black text-xs text-gray-900 leading-snug">{proj.title}</h4>
+                          <p className="text-[11px] font-bold text-[#990000]">{proj.role} {proj.date && <span className="text-gray-400 font-normal">({proj.date})</span>}</p>
+                          {proj.description && (
+                            <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">{proj.description}</p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2 pt-2 border-t border-slate-200/60">
+                          {Array.isArray(proj.technologies) && proj.technologies.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {proj.technologies.map((tech, tidx) => (
+                                <span key={tidx} className="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-bold text-slate-700">
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 pt-1">
+                            {proj.liveUrl && (
+                              <a 
+                                href={proj.liveUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:underline"
+                              >
+                                <ExternalLink size={12} /> Canlı Demo
+                              </a>
+                            )}
+                            {proj.githubUrl && (
+                              <a 
+                                href={proj.githubUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-700 hover:underline"
+                              >
+                                <Code2 size={12} /> GitHub
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+
             {/* Gönderiler & Paylaşımlar Akışı */}
             <div className="space-y-4">
               <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-xs flex items-center justify-between">
@@ -1105,6 +1250,84 @@ export default function UserProfile({
           {/* 3. SAĞ SÜTUN (320px) ─── */}
           <div className="w-full lg:w-[320px] shrink-0 space-y-5">
             
+            {/* KARIYER.NET RESMÎ İK & UYGUNLUK BİLGİLERİ */}
+            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-xs space-y-3">
+              <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-2.5">
+                <ShieldCheck size={16} className="text-[#990000]" /> Kurumsal İK Kriterleri
+              </h3>
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                  <span className="text-gray-500 font-bold">Askerlik:</span>
+                  <span className="font-black text-gray-900">
+                    {user?.militaryStatus || currentUser?.militaryStatus || 'Tecilli (Öğrenci)'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                  <span className="text-gray-500 font-bold">Sürücü Belgesi:</span>
+                  <span className="font-black text-emerald-700">
+                    {Array.isArray(user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses) 
+                      ? (user?.drivingLicenseClasses || currentUser?.drivingLicenseClasses).join(', ') 
+                      : 'B Sınıfı'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                  <span className="text-gray-500 font-bold">Çalışma Tercihi:</span>
+                  <span className="font-black text-[#990000]">
+                    {user?.workModelPreference || currentUser?.workModelPreference || 'Hibrit'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* RESMÎ DİL SINAV SKORLARI (YDS, TOEFL, IELTS) */}
+            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-xs space-y-3">
+              <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-2.5">
+                <FileCheck size={16} className="text-emerald-600" /> Resmî Dil Sınavları
+              </h3>
+              <div className="space-y-2">
+                {(() => {
+                  const rawExams = user?.languageExams || currentUser?.languageExams;
+                  const examList = Array.isArray(rawExams) && rawExams.length > 0 ? rawExams : [
+                    { id: '1', examType: 'YDS (ÖSYM)', score: '82.5', year: '2025' }
+                  ];
+
+                  return examList.map((exam, idx) => (
+                    <div key={exam.id || idx} className="p-2.5 bg-emerald-50/50 border border-emerald-100 rounded-xl flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-black text-emerald-950">{exam.examType}</p>
+                        <p className="text-[10px] text-emerald-700">{exam.year} Sınavı</p>
+                      </div>
+                      <span className="px-2 py-1 bg-white border border-emerald-300 rounded-lg text-xs font-black text-emerald-800">
+                        {exam.score}
+                      </span>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+
+            {/* SERTİFİKALAR & LİSANSLAR */}
+            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-xs space-y-3">
+              <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-2.5">
+                <Award size={16} className="text-amber-500" /> Sertifikalar & Lisanslar
+              </h3>
+              <div className="space-y-2">
+                {(() => {
+                  const rawCerts = user?.certificates || currentUser?.certificates;
+                  const certList = Array.isArray(rawCerts) && rawCerts.length > 0 ? rawCerts : [
+                    { id: '1', title: 'İleri Seviye Web Geliştirme', issuer: 'BTK Akademi', issueDate: '2025' }
+                  ];
+
+                  return certList.map((cert, idx) => (
+                    <div key={cert.id || idx} className="p-2.5 bg-amber-50/40 border border-amber-100/70 rounded-xl">
+                      <p className="text-xs font-black text-gray-900 leading-snug">{cert.title}</p>
+                      <p className="text-[11px] text-gray-600 mt-0.5">{cert.issuer} • <span className="text-amber-700 font-bold">{cert.issueDate}</span></p>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+
             {/* Rozetler & Yetkinlikler */}
             <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-xs space-y-3">
               <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-2 border-b border-gray-100 pb-2.5">
