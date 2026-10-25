@@ -35,7 +35,7 @@ const ADMIN_CMS = new Set([
   'cms_portfolios', 'cms_incubator', 'cms_clubs', 'cms_gallery', 'cms_message_audit', 
   'world_map'
 ]);
-const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao', 'endowment', 'burs_fonu', 'alumni_endowment']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
+const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
 const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
 const STUDENT_EXCLUSIVE_ROUTES = new Set([
   'student', 'feed', 'student_kgb', 'student_analytics', 'career_test', 
@@ -47,7 +47,7 @@ const SHARED_ROUTES = new Set([
   'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 
   'calendar', 'groups', 'group_profile', 'network', 'career_network', 'live_rooms', 
   'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard', 'global_map',
-  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services', 'endowment', 'burs_fonu', 'ats_scanner'
+  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services', 'ats_scanner'
 ]);
 
 const LEGAL_PAGE_ALIASES = {

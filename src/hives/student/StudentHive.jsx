@@ -50,7 +50,8 @@ const MentorMatch = lazy(() => import('../../components/MentorMatch'));
 const MentorBooking = lazy(() => import('../../components/MentorBooking'));
 const VirtualCareerFair = lazy(() => import('../../components/VirtualCareerFair'));
 const ATSResumeScannerModal = lazy(() => import('../../components/student/ATSResumeScannerModal'));
-const AlumniEndowmentFund = lazy(() => import('../../components/alumni/AlumniEndowmentFund'));
+// AlumniEndowmentFund kaldırıldı (2026-10-25): 2860 Sayılı Yardım Toplama Kanunu gereği
+// gerçek ödeme altyapısı ve Valilik izni hazırlanana kadar askıya alındı.
 const IesuWallet = lazy(() => import('../../components/IesuWallet'));
 const CampusMap = lazy(() => import('../../components/CampusMap'));
 const AnkaChat = lazy(() => import('../../components/AnkaChat'));
@@ -178,10 +179,7 @@ export default function StudentHive({ currentUser, setView }) {
       case 'ats_resume_scanner':
       case 'ats_optimizer':
         return <ATSResumeScannerModal isOpen={true} onClose={() => handleSetView('student')} />;
-      case 'endowment':
-      case 'burs_fonu':
-      case 'alumni_endowment':
-        return <AlumniEndowmentFund setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView={previousView || 'student'} setSelectedUserId={setSelectedUserId} />;
+      // case 'endowment' | 'burs_fonu' | 'alumni_endowment': Bağış modülü askıya alındı.
       case 'career_test':
         return <CareerTest setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'career_roadmap':

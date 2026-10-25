@@ -299,7 +299,10 @@ describe('Global Career Fair, ATS Scanner & Alumni Endowment Integration Suite',
       expect(mockSetView).toHaveBeenCalledWith('radar');
     });
 
-    it('renders Burs & Bağış Fonu button in AlumniFeed Ecosystem Tools and triggers navigation', () => {
+    it.skip('renders Burs & Bağış Fonu button in AlumniFeed Ecosystem Tools and triggers navigation', () => {
+      // KALDIRMA NOTU (2026-10-25): Bağış modülü 2860 Sayılı Yardım Toplama Kanunu kapsamında
+      // Valilik izni + gerçek ödeme altyapısı hazırlanana kadar askıya alındı.
+      // Test, modül geri aktive edildiğinde .skip kaldırılarak tekrar çalıştırılmalıdır.
       const mockSetView = vi.fn();
       render(<AlumniFeed setView={mockSetView} userRole="alumni" />);
 
@@ -311,7 +314,8 @@ describe('Global Career Fair, ATS Scanner & Alumni Endowment Integration Suite',
       expect(mockSetView).toHaveBeenCalledWith('burs_fonu');
     });
 
-    it('renders Mezun Bağış & Burs Fonu button in AdminFeed quick actions and triggers navigation', () => {
+    it.skip('renders Mezun Bağış & Burs Fonu button in AdminFeed quick actions and triggers navigation', () => {
+      // KALDIRMA NOTU (2026-10-25): Bağış modülü 2860 Sayılı Yardım Toplama Kanunu kapsamında askıya alındı.
       const mockSetView = vi.fn();
       render(
         <AdminFeed

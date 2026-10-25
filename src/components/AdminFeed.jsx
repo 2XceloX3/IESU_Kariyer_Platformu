@@ -785,13 +785,8 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
               >
                 <Briefcase size={14} /> ATS Panosunu İncele
               </button>
-              <button
-                onClick={() => setView('burs_fonu')}
-                className="w-full py-2 px-3 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 text-xs font-bold transition flex items-center justify-center gap-2 border border-emerald-500/30 cursor-pointer"
-                data-testid="admin-feed-endowment-btn"
-              >
-                <Award size={14} className="text-emerald-400" /> Mezun Bağış & Burs Fonu
-              </button>
+              {/* Mezun Bağış & Burs Fonu butonu kaldırıldı (2026-10-25).
+                  2860 Sayılı Yardım Toplama Kanunu kapsamında askıya alındı. */}
             </div>
           </div>
 

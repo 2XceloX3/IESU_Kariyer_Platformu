@@ -33,7 +33,9 @@ const MessagingInterface = lazy(() => import('../../components/MessagingInterfac
 const LiveRoomsPanel = lazy(() => import('../../components/LiveRoomsPanel'));
 const MentorBooking = lazy(() => import('../../components/MentorBooking'));
 const VirtualCareerFair = lazy(() => import('../../components/VirtualCareerFair'));
-const AlumniEndowmentFund = lazy(() => import('../../components/alumni/AlumniEndowmentFund'));
+// AlumniEndowmentFund kaldırıldı (2026-10-25): 2860 Sayılı Yardım Toplama Kanunu gereği
+// gerçek ödeme altyapısı ve Valilik izni hazırlanana kadar askıya alındı.
+// Tekrar aktive etmek için: AlumniEndowmentFund lazy import'unu geri ekle + case 'endowment' rotasını restore et.
 const IesuWallet = lazy(() => import('../../components/IesuWallet'));
 const CampusMap = lazy(() => import('../../components/CampusMap'));
 const ContactPage = lazy(() => import('../../components/ContactPage'));
@@ -172,10 +174,8 @@ export default function AlumniHive({ currentUser, setView }) {
         return <LiveRoomsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'mentor_booking':
         return <MentorBooking setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
-      case 'endowment':
-      case 'burs_fonu':
-      case 'alumni_endowment':
-        return <AlumniEndowmentFund setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" previousView={previousView || 'alumni'} setSelectedUserId={setSelectedUserId} />;
+      // case 'endowment' | 'burs_fonu' | 'alumni_endowment': Bağış modülü askıya alındı.
+      // Yeniden etkinleştirme: Valilik izni + iyzico/PayTR + Firestore backend hazırlandıktan sonra.
       case 'virtual_fair':
         return <VirtualCareerFair setView={handleSetView} currentUser={effectiveCurrentUser} userRole="alumni" />;
       case 'wallet':

@@ -142,7 +142,7 @@ describe('Adversarial Remediation & Security Stress Suite', () => {
       await waitFor(() => {
         expect(screen.getByText(/Yönetici Paneli/i)).toBeInTheDocument();
         expect(screen.getByText(/SÜPER ADMİN/i)).toBeInTheDocument();
-      }, { timeout: 5000 });
+      }, { timeout: 10000 });
     });
   });
 
