@@ -191,13 +191,17 @@ export default function ProfileUpdate({
   const cfg = BRANCH_CONFIGS[effectiveBranch] || BRANCH_CONFIGS.student;
 
   const [activeTab, setActiveTab] = useState('personal');
-  const [formData, setFormData] = useState({ 
-    skills: [], languages: [], experiences: [], certificates: [], careerPreferences: [],
-    privacySettings: { visibility: true, emailNotifications: true, newsletters: true },
-    isDoubleMajor: false,
-    checkupAnswers: {},
+  const [formData, setFormData] = useState(() => ({ 
+    skills: Array.isArray(currentUser?.skills) ? currentUser.skills : [],
+    languages: Array.isArray(currentUser?.languages) ? currentUser.languages : [],
+    experiences: Array.isArray(currentUser?.experiences) ? currentUser.experiences : [],
+    certificates: Array.isArray(currentUser?.certificates) ? currentUser.certificates : [],
+    careerPreferences: Array.isArray(currentUser?.careerPreferences) ? currentUser.careerPreferences : [],
+    privacySettings: { visibility: true, emailNotifications: true, newsletters: true, ...(currentUser?.privacySettings || {}) },
+    isDoubleMajor: Boolean(currentUser?.isDoubleMajor),
+    checkupAnswers: currentUser?.checkupAnswers && typeof currentUser.checkupAnswers === 'object' ? currentUser.checkupAnswers : {},
     ...currentUser 
-  });
+  }));
   const [hasChanges, setHasChanges] = useState(false);
   
   // File Upload State
@@ -227,7 +231,12 @@ export default function ProfileUpdate({
       setFormData(prev => ({ 
         ...prev, 
         ...currentUser,
-        checkupAnswers: currentUser.checkupAnswers || prev.checkupAnswers || {
+        skills: Array.isArray(currentUser.skills) ? currentUser.skills : (Array.isArray(prev.skills) ? prev.skills : []),
+        languages: Array.isArray(currentUser.languages) ? currentUser.languages : (Array.isArray(prev.languages) ? prev.languages : []),
+        experiences: Array.isArray(currentUser.experiences) ? currentUser.experiences : (Array.isArray(prev.experiences) ? prev.experiences : []),
+        certificates: Array.isArray(currentUser.certificates) ? currentUser.certificates : (Array.isArray(prev.certificates) ? prev.certificates : []),
+        careerPreferences: Array.isArray(currentUser.careerPreferences) ? currentUser.careerPreferences : (Array.isArray(prev.careerPreferences) ? prev.careerPreferences : []),
+        checkupAnswers: (currentUser.checkupAnswers && typeof currentUser.checkupAnswers === 'object') ? currentUser.checkupAnswers : (prev.checkupAnswers || {
           1: currentUser.employed !== undefined ? (currentUser.employed ? 'Evet' : 'Hayır') : 'Evet',
           2: currentUser.jobTiming || '0 - 3 Ay İçinde',
           3: currentUser.sector || 'Teknoloji & Yazılım',
@@ -240,7 +249,7 @@ export default function ProfileUpdate({
           10: 'Evet',
           11: 'Evet',
           12: currentUser.alumniNotes || ''
-        }
+        })
       }));
       if (currentUser.faculty) setSelectedFaculty(currentUser.faculty);
       if (currentUser.department) setSelectedDept(currentUser.department);
@@ -315,7 +324,7 @@ export default function ProfileUpdate({
 
   const toggleArrayItem = (field, value) => {
     setFormData(prev => {
-      const currentArray = prev[field] || [];
+      const currentArray = Array.isArray(prev[field]) ? prev[field] : [];
       const newArray = currentArray.includes(value) 
         ? currentArray.filter(i => i !== value)
         : [...currentArray, value];
@@ -348,7 +357,7 @@ export default function ProfileUpdate({
     }
 
     const resolvedCountry = formData.country || 'Türkiye';
-    const resolvedCity = formData.city || (formData.checkupAnswers?.[7] ? formData.checkupAnswers[7].split('/')[0].trim() : 'İstanbul');
+    const resolvedCity = formData.city || (typeof formData.checkupAnswers?.[7] === 'string' ? formData.checkupAnswers[7].split('/')[0].trim() : 'İstanbul');
     const geocoded = geocodeLocation(resolvedCountry, resolvedCity);
 
     const finalData = { 
@@ -543,8 +552,8 @@ export default function ProfileUpdate({
     }
   };
   const removeItem = (arrayName, idOrValue) => {
-    const arr = formData[arrayName] || [];
-    const newArr = typeof arr[0] === 'string' ? arr.filter(item => item !== idOrValue) : arr.filter(item => item.id !== idOrValue);
+    const arr = Array.isArray(formData[arrayName]) ? formData[arrayName] : [];
+    const newArr = typeof arr[0] === 'string' ? arr.filter(item => item !== idOrValue) : arr.filter(item => item?.id !== idOrValue);
     handleInputChange(arrayName, newArr);
   };
 
@@ -552,7 +561,7 @@ export default function ProfileUpdate({
     const allUnits = [...IESU_FACULTIES, ...IESU_MYO, ...IESU_YUKSEKOKUL, ...IESU_ENSTITU];
     const faculties = allUnits.map((u, i) => ({ 
       id: `fac-${i}`, name: u.name, status: 'Aktif', 
-      departments: u.departments.map((d, j) => ({ id: `dept-${i}-${j}`, name: d, status: 'Aktif', programs: [{ id: `prog-${i}-${j}`, name: d, level: 'Lisans', status: 'Aktif' }] })) 
+      departments: (u.departments || []).map((d, j) => ({ id: `dept-${i}-${j}`, name: d, status: 'Aktif', programs: [{ id: `prog-${i}-${j}`, name: d, level: 'Lisans', status: 'Aktif' }] })) 
     }));
     const depts = selectedFaculty ? (faculties.find(f => f.name === selectedFaculty)?.departments || []) : [];
     const capDepts = selectedCapFaculty ? (faculties.find(f => f.name === selectedCapFaculty)?.departments || []) : [];
@@ -2094,7 +2103,7 @@ export default function ProfileUpdate({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {formData.experiences.map(exp => (
+                      {(Array.isArray(formData.experiences) ? formData.experiences : []).map(exp => (
                         <div key={exp.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-start justify-between">
                           <div>
                             <h5 className="text-sm font-black text-gray-900">{exp.title}</h5>
@@ -2199,7 +2208,7 @@ export default function ProfileUpdate({
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {formData.certificates.map(cert => (
+                      {(Array.isArray(formData.certificates) ? formData.certificates : []).map(cert => (
                         <div key={cert.id} className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-start justify-between">
                           <div>
                             <h5 className="text-sm font-black text-gray-900">{cert.name}</h5>

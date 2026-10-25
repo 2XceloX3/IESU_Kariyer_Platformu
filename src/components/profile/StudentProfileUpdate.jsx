@@ -445,8 +445,8 @@ export default function StudentProfileUpdate({
                         }}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
-                        {Object.keys(IESU_FACULTIES).map(f => (
-                          <option key={f} value={f}>{f}</option>
+                        {IESU_FACULTIES.map(f => (
+                          <option key={f.name} value={f.name}>{f.name}</option>
                         ))}
                       </select>
                     </div>
@@ -459,7 +459,7 @@ export default function StudentProfileUpdate({
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
                         <option value="">Bölüm Seçiniz...</option>
-                        {(IESU_FACULTIES[formData.faculty] || ['Bilgisayar Mühendisliği', 'Yazılım Mühendisliği', 'İşletme']).map(d => (
+                        {((IESU_FACULTIES.find(f => f.name === formData.faculty)?.departments) || ['Bilgisayar Mühendisliği', 'Yazılım Mühendisliği', 'İşletme']).map(d => (
                           <option key={d} value={d}>{d}</option>
                         ))}
                       </select>
@@ -547,8 +547,8 @@ export default function StudentProfileUpdate({
                             className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 outline-none"
                           >
                             <option value="">Fakülte Seçiniz...</option>
-                            {Object.keys(IESU_FACULTIES).map(f => (
-                              <option key={f} value={f}>{f}</option>
+                            {IESU_FACULTIES.map(f => (
+                              <option key={f.name} value={f.name}>{f.name}</option>
                             ))}
                           </select>
                         </div>
@@ -779,7 +779,7 @@ export default function StudentProfileUpdate({
                     </div>
 
                     <div className="flex flex-wrap gap-2 pt-1">
-                      {formData.skills.map(skill => (
+                      {(Array.isArray(formData.skills) ? formData.skills : []).map(skill => (
                         <span 
                           key={skill} 
                           className="bg-red-50 text-[#990000] border border-red-200 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs"
@@ -823,7 +823,7 @@ export default function StudentProfileUpdate({
                     </div>
 
                     <div className="space-y-2">
-                      {formData.languages.map((lang, idx) => (
+                      {(Array.isArray(formData.languages) ? formData.languages : []).map((lang, idx) => (
                         <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
                           <div className="flex items-center gap-3">
                             <Globe size={18} className="text-slate-600" />
@@ -852,7 +852,7 @@ export default function StudentProfileUpdate({
                   </div>
 
                   <div className="space-y-3">
-                    {formData.clubs.map(club => (
+                    {(Array.isArray(formData.clubs) ? formData.clubs : []).map(club => (
                       <div key={club} className="flex items-center justify-between p-4 bg-red-50/40 border border-red-100 rounded-2xl">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl bg-[#990000] text-white flex items-center justify-center font-bold">

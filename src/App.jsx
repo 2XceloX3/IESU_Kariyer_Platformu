@@ -18,6 +18,7 @@ const ContactPage = lazy(() => import('./components/ContactPage')), ServicesPage
 const AboutUsPage = lazy(() => import('./components/AboutUsPage')), EventsPage = lazy(() => import('./components/EventsPage'));
 const DynamicContentPage = lazy(() => import('./components/DynamicContentPage'));
 const GlobalAlumniMap = lazy(() => import('./components/GlobalAlumniMap'));
+const ProfileUpdate = lazy(() => import('./components/ProfileUpdate'));
 
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events', 'events_list', 'etkinliklerimiz']);
@@ -352,6 +353,7 @@ export default function App() {
 
     // Admin branch handling for shared / other views
     if (currentBranch === 'admin' && isAdmin) {
+      if (pathView === 'profile_update') return <ProfileUpdate setView={setView} currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" />;
       if (pathView === 'user_profile') return <UserProfile userId={currentUser?.id || (currentUser?.uid || currentUser?.id || 'self')} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'public_profile') return <PublicUserProfile userId={s.selectedUserId} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;

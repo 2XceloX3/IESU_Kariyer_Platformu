@@ -1,6 +1,6 @@
 import useAppStore from '../store/useAppStore';
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, ClipboardList, Target, ChevronDown, MapPin, ChevronRight, GraduationCap, Award, Building2 } from 'lucide-react';
+import { Search, Bell, MessageCircle, Briefcase, Bookmark, Heart, Send, Plus, Users, Compass, UserCircle2, MoreHorizontal, X, CreditCard, CheckCircle, Clock, ShieldCheck, Crown, CheckCircle2, LayoutDashboard, Star, UserCheck, ArrowRight, FileText, Calendar, Wand2, Home, Target, ChevronDown, MapPin, ChevronRight, GraduationCap, Award, Building2 } from 'lucide-react';
 import JobsAndInternships from './JobsAndInternships';
 import BranchNewsWidget from './BranchNewsWidget';
 import ConnectionSuggestions from './ConnectionSuggestions';
@@ -383,7 +383,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               <span className="text-xs font-medium text-blue-600 font-semibold">İESÜ İşveren Ağı</span>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <button
                 onClick={() => setView('company_ats')}
                 className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-blue-50/40 to-white hover:border-blue-200 hover:shadow-xs transition-all text-left cursor-pointer"
@@ -404,17 +404,6 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                 </div>
                 <span className="text-xs font-bold text-gray-800 group-hover:text-emerald-700 transition-colors leading-tight">Yeni İlan Yayınla</span>
                 <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Staj & iş ilanı oluştur</span>
-              </button>
-
-              <button
-                onClick={() => setView('jobs')}
-                className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-slate-50/60 to-white hover:border-slate-300 hover:shadow-xs transition-all text-left cursor-pointer"
-              >
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-                  <ClipboardList size={16} />
-                </div>
-                <span className="text-xs font-bold text-gray-800 group-hover:text-slate-900 transition-colors leading-tight">İlanlarım</span>
-                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Yayınlanan fırsatlar</span>
               </button>
 
               <button
