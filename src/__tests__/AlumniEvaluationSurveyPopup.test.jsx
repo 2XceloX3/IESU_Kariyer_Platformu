@@ -21,7 +21,7 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
     });
   });
 
-  it('renders official 10 evaluation questions when currentView is alumni even if user is admin', async () => {
+  it('does NOT automatically pop up on page load (only opens via explicit trigger)', async () => {
     render(
       <SurveyPopupModal 
         currentUser={{ id: 'admin_1513', name: 'KGM Super Admin', role: 'admin' }}
@@ -35,12 +35,11 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
       await new Promise(r => setTimeout(r, 650));
     });
 
-    expect(screen.getByText(/Resmî Değerlendirme Anketi/i)).toBeTruthy();
-    expect(screen.getByText(/İESÜ Mezun Kariyer ve Memnuniyet Değerlendirme Anketi/i)).toBeTruthy();
-    expect(screen.getByText(/İESÜ akademik eğitiminin mesleki kariyerinize/i)).toBeTruthy();
+    // It must NOT pop up by itself!
+    expect(screen.queryByText(/Resmî Değerlendirme Anketi/i)).not.toBeInTheDocument();
   });
 
-  it('immediately opens on open-survey-popup custom event', async () => {
+  it('immediately opens on open-survey-popup custom event and renders 10 evaluation questions', async () => {
     render(
       <SurveyPopupModal 
         currentUser={{ id: 'alumni_101', name: 'Caner Öztürk', role: 'alumni' }}
@@ -55,11 +54,30 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
     });
 
     expect(screen.getByText(/Resmî Değerlendirme Anketi/i)).toBeTruthy();
+    expect(screen.getByText(/İESÜ Mezun Kariyer ve Memnuniyet Değerlendirme Anketi/i)).toBeTruthy();
     expect(screen.getAllByText(/1 - Yetersiz/i).length).toBe(10);
     expect(screen.getAllByText(/5 - Mükemmel/i).length).toBe(10);
   });
 
-  it('renders Değerlendirme Anketi banner and sidebar button, but NOT redundant tab in AlumniFeed', () => {
+  it('renders Değerlendirme Anketi banner and transitions to completed state once filled', () => {
+    const { unmount } = render(
+      <AlumniFeed 
+        setView={vi.fn()}
+        setSelectedUserId={vi.fn()}
+        currentUser={{ id: 'alumni_101', name: 'Caner Öztürk', role: 'alumni' }}
+        userRole="alumni"
+      />
+    );
+
+    // Initial state: Soruları Yanıtla button visible
+    expect(screen.getByText(/Resmî Mezun Değerlendirme Anketi/i)).toBeTruthy();
+    expect(screen.getByText(/Soruları Yanıtla/i)).toBeTruthy();
+
+    unmount();
+
+    // Mark survey as filled in localStorage
+    localStorage.setItem('survey_filled_SRV-101', 'true');
+
     render(
       <AlumniFeed 
         setView={vi.fn()}
@@ -69,21 +87,10 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
       />
     );
 
-    // Sidebar button exists
-    expect(screen.getAllByText(/Mezun Değerlendirme Anketi/i).length).toBeGreaterThan(0);
-    // Banner card exists with Soruları Yanıtla button
-    expect(screen.getByText(/Resmî Mezun Değerlendirme Anketi/i)).toBeTruthy();
-    expect(screen.getByText(/Soruları Yanıtla/i)).toBeTruthy();
-
-    // The feed filter tabs are clean: Senin İçin, Ağım, İESÜ Mezunlar Portalı
-    expect(screen.getByRole('button', { name: /^Senin İçin/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /^Ağım/i })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /^(İESÜ Mezunlar Portalı|Mezunlar Derneği)/i })).toBeTruthy();
-    
-    // There should be NO extra standalone "Değerlendirme Anketi" tab button in the feed tab row
-    const tabs = screen.getAllByRole('button');
-    const tabTexts = tabs.map(b => b.textContent?.trim());
-    expect(tabTexts).not.toContain('Değerlendirme Anketi');
+    // After completion: Soruları Yanıtla button is replaced by Katılımınız Alındı badge
+    expect(screen.getByText(/Katılım Sağlandı ✓/i)).toBeTruthy();
+    expect(screen.getByText(/Katılımınız Alındı/i)).toBeTruthy();
+    expect(screen.queryByText(/Soruları Yanıtla/i)).toBeNull();
   });
 
   it('AdminOmniDock with theme emerald navigates to alumni feed instead of admin on Home button click', () => {
@@ -109,34 +116,11 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
     expect(useAppStore.getState().activePortalBranch).toBe('alumni');
   });
 
-  it('does not re-open after user dismisses it (persists in localStorage and stays closed)', async () => {
-    const { unmount } = render(
-      <SurveyPopupModal 
-        currentUser={{ id: 'alumni_101', name: 'Caner Öztürk', role: 'alumni' }}
-        userRole="alumni"
-        currentView="alumni"
-        activePortalBranch="alumni"
-      />
-    );
+  it('does not re-open after user fills it (persists in localStorage and stays closed)', async () => {
+    // Simulate user has already completed the survey
+    localStorage.setItem('survey_filled_SRV-101', 'true');
+    localStorage.setItem('iesu_survey_completed_alumni', 'true');
 
-    // Initial open
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 650));
-    });
-
-    const closeBtn = screen.getByRole('button', { name: /^Bir daha gösterme$/i });
-    expect(closeBtn).toBeInTheDocument();
-
-    act(() => {
-      fireEvent.click(closeBtn);
-    });
-
-    expect(screen.queryByText(/Resmî Değerlendirme Anketi/i)).not.toBeInTheDocument();
-    expect(localStorage.getItem('iesu_survey_popup_dismissed')).toBe('true');
-
-    unmount();
-
-    // Re-render SurveyPopupModal to simulate re-visiting the page
     render(
       <SurveyPopupModal 
         currentUser={{ id: 'alumni_101', name: 'Caner Öztürk', role: 'alumni' }}
@@ -146,11 +130,14 @@ describe('Alumni Evaluation Survey Popup and Feed Integration', () => {
       />
     );
 
-    await act(async () => {
-      await new Promise(r => setTimeout(r, 650));
+    act(() => {
+      window.dispatchEvent(new CustomEvent('open-survey-popup'));
     });
 
-    // Should NOT re-open
+    // Should NOT open
     expect(screen.queryByText(/Resmî Değerlendirme Anketi/i)).not.toBeInTheDocument();
+    expect(window.toast.info).toHaveBeenCalledWith(
+      expect.stringContaining("Resmî mezun değerlendirme anketini daha önce tamamladınız")
+    );
   });
 });

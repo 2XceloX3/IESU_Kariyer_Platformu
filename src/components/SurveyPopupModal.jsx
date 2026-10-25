@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ClipboardList, CheckCircle2, X, Star, Clock, Send, Sparkles } from 'lucide-react';
+import { ClipboardList, CheckCircle2, X, Sparkles } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 
 const OFFICIAL_ALUMNI_SURVEY = {
@@ -34,244 +34,263 @@ export default function SurveyPopupModal({ currentUser, userRole, currentView, a
   // Active branch & role resolution
   const effectiveBranch = activePortalBranch || (currentView === 'alumni' ? 'alumni' : (currentView === 'student' ? 'student' : (currentView === 'company' ? 'company' : (currentView === 'academic' ? 'academic' : null))));
   const isAlumni = effectiveBranch === 'alumni' || userRole === 'alumni' || currentUser?.role === 'alumni' || currentView === 'alumni';
-  const currentRole = isAlumni ? 'alumni' : (effectiveBranch || userRole || currentUser?.role);
 
-  // Listen for explicit manual opening triggers
+  // Check if survey was already completed by the user
+  const isSurveyCompleted = (surveyId) => {
+    try {
+      const sId = surveyId || 'SRV-101';
+      const uId = currentUser?.id || 'guest';
+      return (
+        localStorage.getItem(`survey_filled_${sId}`) === 'true' ||
+        localStorage.getItem(`survey_filled_${sId}_${uId}`) === 'true' ||
+        localStorage.getItem('iesu_survey_completed_alumni') === 'true' ||
+        sessionStorage.getItem(`survey_filled_${sId}`) === 'true' ||
+        sessionStorage.getItem(`survey_filled_${sId}_${uId}`) === 'true' ||
+        sessionStorage.getItem('iesu_survey_completed_alumni') === 'true'
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  // Only open via explicit manual triggers (custom event) - NO automatic popups!
   useEffect(() => {
     const handleManualOpen = () => {
+      // Find latest survey from store to reflect admin question changes, fallback to OFFICIAL_ALUMNI_SURVEY
+      const storeSurvey = surveys.find(s => s.id === 'SRV-101');
       const surveyToOpen = isAlumni
-        ? OFFICIAL_ALUMNI_SURVEY
-        : (surveys.find(s => s.status === 'Aktif') || OFFICIAL_ALUMNI_SURVEY);
+        ? (storeSurvey && storeSurvey.questions?.length ? storeSurvey : OFFICIAL_ALUMNI_SURVEY)
+        : (surveys.find(s => s.status === 'Aktif') || storeSurvey || OFFICIAL_ALUMNI_SURVEY);
+
+      // If already completed, do not reopen; notify politely
+      if (isSurveyCompleted(surveyToOpen?.id)) {
+        if (window.toast?.info) {
+          window.toast.info("Resmî mezun değerlendirme anketini daha önce tamamladınız. Katkınız için teşekkür ederiz!");
+        }
+        return;
+      }
+
       setActiveSurvey(surveyToOpen);
       setIsOpen(true);
     };
 
     window.addEventListener('open-survey-popup', handleManualOpen);
     return () => window.removeEventListener('open-survey-popup', handleManualOpen);
-  }, [isAlumni, surveys]);
-
-  // Automatic evaluation popup trigger upon entering relevant panels
-  useEffect(() => {
-    // Giriş yapılmamış kullanıcılara anket gösterilmez
-    if (!currentUser && !userRole && !currentView) return;
-    if (userRole === 'guest' || (!currentUser?.id && !userRole && !currentView)) return;
-
-    const now = new Date();
-
-    let eligibleSurvey = surveys.find(s => {
-      if (s.status !== 'Aktif') return false;
-
-      if (s.durationDays && s.createdAt) {
-        const createdDate = new Date(s.createdAt);
-        const expiryDate = new Date(createdDate.getTime() + (parseInt(s.durationDays, 10) * 24 * 60 * 60 * 1000));
-        if (now > expiryDate) return false;
-      }
-
-      const audiences = Array.isArray(s.targetAudiences) && s.targetAudiences.length > 0
-        ? s.targetAudiences
-        : (s.targetAudience ? s.targetAudience.split(',').map(item => item.trim()) : ['Tümü']);
-
-      if (audiences.includes('Tümü')) return true;
-      if (audiences.includes('Öğrenciler') && currentRole === 'student') return true;
-      if (audiences.includes('Mezunlar') && (currentRole === 'alumni' || currentRole === 'mezun' || isAlumni)) return true;
-      if (audiences.includes('Firmalar') && (currentRole === 'company' || currentRole === 'employer')) return true;
-      if (audiences.includes('Akademik') && currentRole === 'academic') return true;
-
-      return false;
-    });
-
-    // If in Alumni view/branch, ensure official Alumni Evaluation Survey is selected
-    if (isAlumni) {
-      if (!eligibleSurvey || eligibleSurvey.id === 'SRV-101' || !eligibleSurvey.questions || eligibleSurvey.questions.length < 5) {
-        eligibleSurvey = OFFICIAL_ALUMNI_SURVEY;
-      }
-    }
-
-    if (eligibleSurvey) {
-      // 10 Likert Değerlendirme Sorusu güvencesi
-      if (eligibleSurvey.id === 'SRV-101' || (eligibleSurvey.questions && eligibleSurvey.questions[0]?.text?.includes('istihdam durumunuz'))) {
-        eligibleSurvey = OFFICIAL_ALUMNI_SURVEY;
-      }
-
-      const filledKey = `survey_filled_${eligibleSurvey.id}_${currentUser?.id || 'guest'}`;
-      const dismissedKey = `survey_dismissed_${eligibleSurvey.id}_${currentUser?.id || 'guest'}`;
-
-      if (!sessionStorage.getItem(filledKey) && !sessionStorage.getItem(dismissedKey)) {
-        setActiveSurvey(eligibleSurvey);
-        // Smooth entrance delay
-        const timer = setTimeout(() => {
-          setIsOpen(true);
-        }, 500);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [surveys, currentUser, userRole, currentView, activePortalBranch, isAlumni, currentRole]);
+  }, [isAlumni, surveys, currentUser]);
 
   if (!isOpen || !activeSurvey) return null;
+
+  const totalQuestions = activeSurvey.questions?.length || 0;
+  const answeredCount = Object.keys(answers).length;
+  const progressPercent = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
 
   const handleSelectScore = (questionId, score) => {
     const newAnswers = { ...answers, [questionId]: score };
     setAnswers(newAnswers);
 
-    const totalQuestions = activeSurvey.questions?.length || 0;
-    const answeredCount = Object.keys(newAnswers).length;
+    const answered = Object.keys(newAnswers).length;
 
-    if (answeredCount >= totalQuestions) {
+    if (answered >= totalQuestions) {
       setTimeout(() => {
+        // Build strictly anonymous response object (NO student/user identifying info: KVKK compliance)
+        const anonymousResponse = {
+          id: 'RESP_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          submittedAt: new Date().toISOString(),
+          scores: (activeSurvey.questions || []).map(q => newAnswers[q.id] || 0),
+          answers: { ...newAnswers }
+        };
+
         if (setSurveys) {
-          setSurveys(surveys.map(s => s.id === activeSurvey.id ? {
-            ...s,
-            responses: (s.responses || 0) + 1
-          } : s));
+          setSurveys(surveys.map(s => {
+            if (s.id === activeSurvey.id) {
+              const existingRows = Array.isArray(s.responseRows) ? s.responseRows : [];
+              return {
+                ...s,
+                responses: (s.responses || 0) + 1,
+                responseRows: [...existingRows, anonymousResponse]
+              };
+            }
+            return s;
+          }));
         }
 
-        const filledKey = `survey_filled_${activeSurvey.id}_${currentUser?.id || 'guest'}`;
+        const surveyId = activeSurvey.id;
+        const userId = currentUser?.id || 'guest';
         try {
           if (typeof localStorage !== 'undefined') {
-            localStorage.setItem(filledKey, 'true');
-            localStorage.setItem(`survey_filled_${activeSurvey.id}`, 'true');
+            localStorage.setItem(`survey_filled_${surveyId}`, 'true');
+            localStorage.setItem(`survey_filled_${surveyId}_${userId}`, 'true');
+            localStorage.setItem('iesu_survey_completed_alumni', 'true');
             localStorage.setItem('iesu_survey_popup_dismissed', 'true');
           }
           if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem(filledKey, 'true');
+            sessionStorage.setItem(`survey_filled_${surveyId}`, 'true');
+            sessionStorage.setItem(`survey_filled_${surveyId}_${userId}`, 'true');
+            sessionStorage.setItem('iesu_survey_completed_alumni', 'true');
             sessionStorage.setItem('iesu_survey_popup_dismissed', 'true');
           }
         } catch (_) {}
 
-        if (window.toast) window.toast.success("✅ Değerlendirme yanıtlarınız otomatik olarak kaydedildi. Teşekkür ederiz!");
+        if (window.toast?.success) {
+          window.toast.success("✅ Değerlendirme yanıtlarınız anonim olarak kaydedildi. Katkınız için teşekkür ederiz!");
+        }
         setIsOpen(false);
-      }, 300);
+      }, 250);
     }
   };
 
   const handleDismiss = () => {
     const surveyId = activeSurvey?.id || 'SRV-101';
     const userId = currentUser?.id || 'guest';
-    const dismissedKey = `survey_dismissed_${surveyId}_${userId}`;
     try {
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(dismissedKey, 'true');
+        localStorage.setItem(`survey_dismissed_${surveyId}_${userId}`, 'true');
         localStorage.setItem(`survey_dismissed_${surveyId}`, 'true');
         localStorage.setItem('iesu_survey_popup_dismissed', 'true');
       }
       if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem(dismissedKey, 'true');
+        sessionStorage.setItem(`survey_dismissed_${surveyId}_${userId}`, 'true');
         sessionStorage.setItem('iesu_survey_popup_dismissed', 'true');
       }
     } catch (_) {}
     setIsOpen(false);
   };
 
-  // Branch Adaptive Theme
+  // Theme configuration
   const theme = isAlumni ? {
     accentGlow: 'from-emerald-600 via-teal-500 to-emerald-700',
     iconBox: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     badge: 'text-emerald-700 bg-emerald-50 border-emerald-200',
-    activeBtn: 'bg-emerald-600 text-white border-emerald-600 shadow-md scale-105',
+    activeBtn: 'bg-emerald-600 text-white border-emerald-600 shadow-sm font-black',
     hoverBtn: 'hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300',
-    cardBorder: 'border-emerald-500/25',
-    brandName: 'İESÜ Mezun İlişkileri Koordinatörlüğü'
+    cardBorder: 'border-emerald-500/30'
   } : {
     accentGlow: 'from-red-600 via-amber-500 to-[#990000]',
     iconBox: 'bg-red-50 text-[#990000] border-red-100',
     badge: 'text-red-600 bg-red-50 border-red-100',
-    activeBtn: 'bg-[#990000] text-white border-[#990000] shadow-md scale-105',
+    activeBtn: 'bg-[#990000] text-white border-[#990000] shadow-sm font-black',
     hoverBtn: 'hover:bg-red-50 hover:text-[#990000] hover:border-red-300',
-    cardBorder: 'border-red-500/20',
-    brandName: 'İESÜ Kariyer Geliştirme Merkezi (KGM)'
+    cardBorder: 'border-red-500/25'
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] max-w-md w-full animate-bounce-in font-sans">
-      <div className={`bg-white rounded-3xl p-6 shadow-2xl border-2 ${theme.cardBorder} relative overflow-hidden backdrop-blur-xl`}>
+    <div className="fixed bottom-4 right-4 z-[9999] max-w-[420px] w-full font-sans transition-all animate-bounce-in">
+      <div className={`bg-white rounded-2xl p-4 shadow-2xl border-2 ${theme.cardBorder} relative overflow-hidden backdrop-blur-xl`}>
         
-        {/* Glow Accent Header */}
-        <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${theme.accentGlow}`}></div>
+        {/* Glow Accent Header Line */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${theme.accentGlow}`}></div>
 
-        {/* Header & X Button */}
-        <div className="flex items-start justify-between gap-3 mb-4 pt-1">
-          <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-2xl border shrink-0 ${theme.iconBox}`}>
-              <ClipboardList size={22} />
+        {/* Header & Controls */}
+        <div className="flex items-center justify-between gap-2 mb-3 pt-1">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className={`p-1.5 rounded-xl border shrink-0 ${theme.iconBox}`}>
+              <ClipboardList size={18} />
             </div>
-            <div>
-              <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${theme.badge}`}>
+            <div className="min-w-0">
+              <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border inline-block ${theme.badge}`}>
                 Resmî Değerlendirme Anketi
               </span>
-              <h3 className="font-black text-slate-900 text-sm leading-snug mt-1">{activeSurvey.title}</h3>
+              <h3 className="font-black text-slate-900 text-xs truncate mt-0.5">{activeSurvey.title}</h3>
             </div>
           </div>
           
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             <button 
               onClick={handleDismiss}
-              className="text-[11px] font-bold text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg hover:bg-slate-100 transition cursor-pointer"
-              title="Kapat ve bir daha otomatik açma"
+              className="text-[10px] font-bold text-slate-400 hover:text-slate-700 px-1.5 py-0.5 rounded hover:bg-slate-100 transition cursor-pointer"
+              title="Kapat"
             >
               Bir daha gösterme
             </button>
             <button 
               onClick={handleDismiss}
-              className="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center font-bold transition shrink-0 cursor-pointer"
+              className="w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full flex items-center justify-center font-bold transition shrink-0 cursor-pointer"
               title="Kapat"
               aria-label="Kapat"
             >
-              <X size={16} />
+              <X size={14} />
             </button>
           </div>
         </div>
 
-        {activeSurvey.description && (
-          <p className="text-xs text-slate-500 font-medium mb-4 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-            {activeSurvey.description}
-          </p>
-        )}
-
-        {/* Questions List */}
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
-          {(activeSurvey.questions || []).map((q, idx) => (
-            <div key={q.id || idx} className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
-              <p className="text-xs font-black text-slate-800 leading-snug">
-                {idx + 1}. {q.text ? q.text.replace(/^\d+[\.\)]\s*/, '') : ''}
-              </p>
-
-              {/* 1-5 Likert Scale - Direct Click auto-submits */}
-              <div className="flex items-center justify-between gap-1 pt-1">
-                {[1, 2, 3, 4, 5].map((score) => {
-                  const isSelected = answers[q.id] === score;
-                  return (
-                    <button
-                      key={score}
-                      type="button"
-                      onClick={() => handleSelectScore(q.id, score)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
-                        isSelected 
-                          ? theme.activeBtn 
-                          : `bg-white text-slate-700 border-slate-200 ${theme.hoverBtn}`
-                      }`}
-                    >
-                      {score}
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="flex justify-between text-[10px] font-bold text-slate-400 px-1">
-                <span>1 - Yetersiz</span>
-                <span>5 - Mükemmel</span>
-              </div>
-            </div>
-          ))}
+        {/* Progress Bar */}
+        <div className="mb-3 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+          <div 
+            className="bg-emerald-500 h-full transition-all duration-300 rounded-full" 
+            style={{ width: `${progressPercent}%` }}
+          />
         </div>
 
-        {/* Footer info */}
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400">
-          <span className="flex items-center gap-1 text-emerald-600"><Sparkles size={13} /> Seçtiğiniz anda otomatik kaydedilir</span>
+        <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 mb-2 px-1">
+          <span>İlerleme: {answeredCount} / {totalQuestions} Yanıtlandı</span>
+          <span className="text-emerald-700 font-black">%{progressPercent}</span>
+        </div>
+
+        {/* Compact Questions List (Kompakt ve ekranı kaplamayan tasarım) */}
+        <div className="space-y-2 max-h-[44vh] overflow-y-auto custom-scrollbar pr-1">
+          {(activeSurvey.questions || []).map((q, idx) => {
+            const isAnswered = answers[q.id] !== undefined;
+            return (
+              <div 
+                key={q.id || idx} 
+                className={`p-2.5 rounded-xl border transition-all ${
+                  isAnswered 
+                    ? 'bg-emerald-50/40 border-emerald-200/80' 
+                    : 'bg-slate-50 border-slate-200/70'
+                }`}
+              >
+                <div className="flex items-start gap-1.5 mb-1.5">
+                  <span className="text-[11px] font-black text-slate-800 shrink-0">
+                    {idx + 1}.
+                  </span>
+                  <p className="text-[11px] font-bold text-slate-700 leading-snug flex-1">
+                    {q.text ? q.text.replace(/^\d+[\.\)]\s*/, '') : ''}
+                  </p>
+                  {isAnswered && (
+                    <CheckCircle2 size={13} className="text-emerald-600 shrink-0 mt-0.5" />
+                  )}
+                </div>
+
+                {/* 1-5 Compact Likert Buttons */}
+                <div className="flex items-center justify-between gap-1">
+                  {[1, 2, 3, 4, 5].map((score) => {
+                    const isSelected = answers[q.id] === score;
+                    return (
+                      <button
+                        key={score}
+                        type="button"
+                        onClick={() => handleSelectScore(q.id, score)}
+                        className={`flex-1 h-7 rounded-lg text-xs font-black transition-all cursor-pointer border ${
+                          isSelected 
+                            ? theme.activeBtn 
+                            : `bg-white text-slate-600 border-slate-200 ${theme.hoverBtn}`
+                        }`}
+                      >
+                        {score}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex justify-between text-[9px] font-semibold text-slate-400 px-0.5 mt-1">
+                  <span>1 - Yetersiz</span>
+                  <span>5 - Mükemmel</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Compact Footer */}
+        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-medium text-slate-400">
+          <span className="flex items-center gap-1 text-emerald-700 font-bold">
+            <Sparkles size={12} /> Tıklayınca otomatik kaydedilir
+          </span>
           <button 
             type="button" 
             onClick={handleDismiss} 
-            className="text-slate-400 hover:text-slate-600 underline cursor-pointer text-[10px]"
+            className="text-slate-400 hover:text-slate-600 underline cursor-pointer"
           >
-            Kapat ve Bir Daha Gösterme
+            Kapat
           </button>
         </div>
 

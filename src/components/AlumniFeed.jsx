@@ -433,29 +433,59 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
           </div>
 
           {/* Mezun Kariyer & Memnuniyet Değerlendirme Davet Kartı */}
-          <div className="bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 text-white rounded-3xl p-5 shadow-sm border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
-            <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center shrink-0">
-                <ClipboardList size={22} />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-black text-white truncate">Resmî Mezun Değerlendirme Anketi</h4>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold shrink-0">10 Değerlendirme Sorusu</span>
+          {(() => {
+            const isSurveyCompleted = (() => {
+              try {
+                const uId = effectiveCurrentUser?.id || 'guest';
+                return (
+                  localStorage.getItem('survey_filled_SRV-101') === 'true' ||
+                  localStorage.getItem(`survey_filled_SRV-101_${uId}`) === 'true' ||
+                  localStorage.getItem('iesu_survey_completed_alumni') === 'true' ||
+                  sessionStorage.getItem('survey_filled_SRV-101') === 'true' ||
+                  sessionStorage.getItem('iesu_survey_completed_alumni') === 'true'
+                );
+              } catch {
+                return false;
+              }
+            })();
+
+            return (
+              <div className="bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-900 text-white rounded-3xl p-5 shadow-sm border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center shrink-0">
+                    <ClipboardList size={22} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-black text-white truncate">Resmî Mezun Değerlendirme Anketi</h4>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold shrink-0">
+                        {isSurveyCompleted ? 'Katılım Sağlandı ✓' : '10 Değerlendirme Sorusu'}
+                      </span>
+                    </div>
+                    <p className="text-[12px] text-emerald-200/80 font-medium line-clamp-1 mt-0.5">
+                      {isSurveyCompleted 
+                        ? 'Değerlendirmeniz başarıyla kaydedilmiştir. Üniversitemize katkınız için teşekkür ederiz.'
+                        : 'Üniversitemizin akreditasyon ve kariyer kalitesini artırmak için deneyimlerinizi paylaşın.'}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-[12px] text-emerald-200/80 font-medium line-clamp-1 mt-0.5">
-                  Üniversitemizin akreditasyon ve kariyer kalitesini artırmak için deneyimlerinizi paylaşın.
-                </p>
+                {isSurveyCompleted ? (
+                  <div className="w-full sm:w-auto px-3.5 py-1.5 bg-emerald-800/60 text-emerald-200 text-[11px] font-bold rounded-xl border border-emerald-500/40 flex items-center justify-center gap-1.5 shrink-0">
+                    <CheckCircle2 size={13} className="text-emerald-300" />
+                    <span>Katılımınız Alındı</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => window.dispatchEvent(new CustomEvent('open-survey-popup'))}
+                    className="w-full sm:w-auto px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition shadow-md shadow-emerald-600/30 flex items-center justify-center gap-1.5 shrink-0 cursor-pointer border border-emerald-400/30"
+                  >
+                    <span>Soruları Yanıtla</span>
+                    <ArrowRight size={13} className="text-white" />
+                  </button>
+                )}
               </div>
-            </div>
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('open-survey-popup'))}
-              className="w-full sm:w-auto px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition shadow-md shadow-emerald-600/30 flex items-center justify-center gap-1.5 shrink-0 cursor-pointer border border-emerald-400/30"
-            >
-              <span>Soruları Yanıtla</span>
-              <ArrowRight size={13} className="text-white" />
-            </button>
-          </div>
+            );
+          })()}
 
           <div className="space-y-6">
             {filteredFeedItems.length === 0 ? (

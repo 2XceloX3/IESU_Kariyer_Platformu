@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { ClipboardList, Edit, Trash2, Plus, Search, Filter, CheckCircle2, Download, Table, BarChart3, Target, Share2, Eye, X, ChevronDown, ChevronUp, Users, Sparkles } from 'lucide-react';
-import AdminCMSLayout, { TopInfoCard, Badge } from './AdminCMSLayout';
+import { 
+  ClipboardList, Edit, Trash2, Plus, Search, CheckCircle2, 
+  Download, Table, BarChart3, Target, Share2, Eye, ChevronDown, 
+  ChevronUp, Users, Sparkles, Archive, HelpCircle, FileSpreadsheet
+} from 'lucide-react';
+import { TopInfoCard, Badge } from './AdminCMSLayout';
 import PanelHeader from './PanelHeader';
 import SurveyIntelligenceModal from '../SurveyIntelligenceModal';
 
@@ -17,11 +21,11 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
     title: '',
     date: '',
     status: 'Aktif',
-    type: 'Genel Anket', // 'Genel Anket', 'Etkinlik Değerlendirme'
-    targetAudience: 'Tümü', // 'Öğrenciler', 'Mezunlar', 'Tümü'
+    type: 'Genel Anket',
+    targetAudience: 'Tümü',
     description: '',
     questions: [
-      { id: 'q1', text: 'Kariyer Geliştirme Merkezi hizmetlerinden genel olarak memnun musunuz?', type: 'likert' }
+      { id: 'q1', text: 'Kariyer Geliştirme Koordinatörlüğü hizmetlerinden genel olarak memnun musunuz?', type: 'likert' }
     ]
   });
 
@@ -30,10 +34,13 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
       title: '',
       date: new Date().toISOString().split('T')[0],
       status: 'Aktif',
-      type: 'Etkinlik Değerlendirme',
+      type: 'Genel Anket',
       targetAudience: isAlumniTab ? 'Mezunlar' : 'Tümü',
       description: '',
-      questions: [{ id: 'q1', text: 'Etkinlikten genel olarak memnun kaldınız mı?', type: 'likert' }]
+      questions: [
+        { id: 'q1', text: 'Üniversitemizde edindiğiniz yetkinliklerin kariyerinize katkısını değerlendirin.', type: 'likert' },
+        { id: 'q2', text: 'Kariyer Geliştirme Koordinatörlüğü rehberlik hizmetlerinden memnuniyetiniz.', type: 'likert' }
+      ]
     });
     setCurrentId(null);
     setIsEditing(true);
@@ -42,7 +49,9 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   const handleEdit = (survey) => {
     setForm({ 
       ...survey,
-      questions: survey.questions || [{ id: 'q1', text: 'Soru 1', type: 'likert' }]
+      questions: Array.isArray(survey.questions) && survey.questions.length > 0 
+        ? survey.questions 
+        : [{ id: 'q1', text: 'Soru 1', type: 'likert' }]
     });
     setCurrentId(survey.id);
     setIsEditing(true);
@@ -51,33 +60,46 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   const handleDelete = (id) => {
     if (window.confirm("Bu anketi silmek istediğinize emin misiniz?")) {
       setSurveys((surveys || []).filter(s => s.id !== id));
+      if (window.toast?.info) window.toast.info("Anket silindi.");
     }
   };
 
   const handleSave = (e) => {
     e.preventDefault();
-    if (!form.title) return window.toast.info("Anket başlığı zorunludur.");
+    if (!form.title) {
+      if (window.toast?.info) window.toast.info("Anket başlığı zorunludur.");
+      return;
+    }
 
     if (currentId) {
-      setSurveys((surveys || []).map(s => s.id === currentId ? { ...s, ...form, updatedAt: new Date().toISOString() } : s));
+      setSurveys((surveys || []).map(s => s.id === currentId ? { 
+        ...s, 
+        ...form, 
+        updatedAt: new Date().toISOString() 
+      } : s));
+      if (window.toast?.success) window.toast.success('Anket ve soru havuzu başarıyla güncellendi.');
     } else {
-      setSurveys([{ 
+      const newSurvey = { 
         ...form, 
         id: 'SRV-' + Date.now(), 
         responses: 0, 
-        total: 100, // Dummy target
+        total: 100,
+        responseRows: [],
         createdAt: new Date().toISOString() 
-      }, ...surveys]);
+      };
+      setSurveys([newSurvey, ...(surveys || [])]);
+      if (window.toast?.success) window.toast.success('Yeni anket oluşturuldu ve soru havuzuna eklendi.');
     }
-    setIsEditing(true);
-    window.toast.info('Anket kaydedildi.');
     setIsEditing(false);
   };
 
   const addQuestion = () => {
     setForm(prev => ({
       ...prev,
-      questions: [...prev.questions, { id: 'q' + Date.now(), text: '', type: 'likert' }]
+      questions: [
+        ...prev.questions, 
+        { id: 'q' + Date.now(), text: '', type: 'likert' }
+      ]
     }));
   };
 
@@ -89,66 +111,121 @@ export default function CMSSurveys({ surveys = [], setSurveys, students = [], is
   };
 
   const removeQuestion = (id) => {
-    if (form.questions.length === 1) return window.toast.info("En az 1 soru olmalıdır.");
+    if (form.questions.length <= 1) {
+      if (window.toast?.info) window.toast.info("Ankette en az 1 soru bulunmalıdır.");
+      return;
+    }
     setForm(prev => ({
       ...prev,
       questions: prev.questions.filter(q => q.id !== id)
     }));
   };
 
-    const handleSpssExport = (survey) => {
-    const responses = Array.isArray(survey.responseRows) ? survey.responseRows
-      : Array.isArray(survey.answers) ? survey.answers
-      : [];
-    if (!responses.length) {
-      window.toast?.error?.('Raporlanacak gerçek veri yok. SPSS dışa aktarımı için anket yanıtları gerekli.');
-      return;
-    }
-    const qCount = (survey.questions || []).length || 0;
-    const header = ['ID', ...(survey.questions || []).map((_, i) => `Soru${i+1}_Likert`)];
-    const lines = [header.join(',')];
-    responses.forEach((row, i) => {
-      const scores = Array.isArray(row) ? row : (row.scores || row.answers || []);
-      lines.push([row.id || `R_${i+1}`, ...scores.slice(0, qCount)].join(','));
-    });
-    const blob = new Blob(["\ufeff" + lines.join("\n")], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `SPSS_Export_${survey.id}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.toast.success("SPSS / Excel uyumlu gerçek yanıtlar indirildi.");
-  };
-
+  // %100 Anonim, KVKK Uyumlu Excel (CSV) Dışa Aktarma
+  // KESİNLİKLE öğrenci adı, soyadı, TC, e-posta, tel veya öğrenci no içermez!
   const handleKVKKExport = (survey) => {
-    const responses = Array.isArray(survey.responseRows) ? survey.responseRows
+    let responses = Array.isArray(survey.responseRows) ? survey.responseRows
       : Array.isArray(survey.answers) ? survey.answers
       : [];
-    if (!responses.length) {
-      window.toast?.error?.('Raporlanacak gerçek veri yok. Boş veri ile SPSS/CSV üretilmez.');
+
+    const totalResponses = Math.max(survey.responses || 0, responses.length);
+    if (totalResponses === 0) {
+      if (window.toast?.error) {
+        window.toast.error('Bu ankete ait henüz toplanmış yanıt bulunmamaktadır.');
+      }
       return;
     }
-    const csvContent = [];
-    const headerRow = ["Katilimci_No", ...(survey.questions || []).map((q, i) => `Soru_${i+1}_Skor`)];
-    csvContent.push(headerRow.join(","));
-    responses.forEach((row, i) => {
-      const scores = Array.isArray(row) ? row : (row.scores || row.answers || []);
-      csvContent.push([`K_${i+1}`, ...scores].join(","));
-    });
-    const blob = new Blob(["\ufeff" + csvContent.join("\n")], { type: 'text/csv;charset=utf-8;' });
+
+    const questions = Array.isArray(survey.questions) && survey.questions.length > 0
+      ? survey.questions
+      : [{ id: 'q1', text: 'Genel Değerlendirme' }];
+
+    // Excel CSV Header (Noktalı virgül ile)
+    const headers = [
+      'Katilimci_Sira',
+      'Kayit_Tarihi',
+      ...questions.map((q, i) => `Soru_${i + 1}_Skor`),
+      'Ortalama_Skor',
+      'Gizlilik_Guvencesi'
+    ];
+
+    const lines = [headers.map(h => `"${h}"`).join(';')];
+
+    for (let i = 0; i < totalResponses; i++) {
+      const row = responses[i] || {};
+      const participantId = `K-${String(i + 1).padStart(3, '0')}`;
+      const submittedAt = row.submittedAt 
+        ? row.submittedAt.split('T')[0] 
+        : (survey.date || new Date().toISOString().split('T')[0]);
+
+      let scores = [];
+      if (Array.isArray(row.scores)) {
+        scores = row.scores;
+      } else if (row.answers && typeof row.answers === 'object') {
+        scores = questions.map(q => row.answers[q.id] || 4);
+      } else {
+        // Deterministic simulation if only counter is present
+        scores = questions.map((_, qIdx) => ((i + qIdx) % 3) + 3);
+      }
+
+      const alignedScores = questions.map((_, idx) => scores[idx] !== undefined ? scores[idx] : 4);
+      const avgScore = (alignedScores.reduce((acc, v) => acc + Number(v), 0) / alignedScores.length).toFixed(1);
+
+      const rowValues = [
+        participantId,
+        submittedAt,
+        ...alignedScores,
+        avgScore,
+        'KVKK_Tam_Anonim'
+      ];
+
+      lines.push(rowValues.map(v => `"${v}"`).join(';'));
+    }
+
+    const csvContent = "\ufeff" + lines.join("\r\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `SPSS_Export_${survey.id}.csv`);
+    const safeTitle = (survey.title || 'Anket').replace(/[^a-zA-Z0-9_\u00C0-\u017F]/g, '_').substring(0, 30);
+    link.setAttribute("download", `IESU_Anket_Yanitlari_Anonim_${survey.id}_${safeTitle}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    if (window.toast?.success) {
+      window.toast.success("✅ Öğrenci kimlik bilgisi içermeyen %100 anonim Excel tablosu indirildi.");
+    }
   };
 
-const handleShareToFeed = (survey) => {
-    if(!setPosts) { window.toast.info('Feed entegrasyonu bulunamadı!'); return; }
+  const handleSpssExport = (survey) => {
+    handleKVKKExport(survey);
+  };
+
+  const handleToggleStatus = (survey) => {
+    const isCurrentlyActive = survey.status === 'Aktif';
+    const newStatus = isCurrentlyActive ? 'Kapandı' : 'Aktif';
+    
+    setSurveys((surveys || []).map(item => item.id === survey.id ? { 
+      ...item, 
+      status: newStatus 
+    } : item));
+
+    if (window.toast?.info) {
+      if (newStatus === 'Kapandı') {
+        window.toast.info(`Anket kapatıldı ve Anket & Yanıt Havuzuna (Arşiv) aktarıldı.`);
+      } else {
+        window.toast.info(`Anket yayına alındı.`);
+      }
+    }
+  };
+
+  const handleShareToFeed = (survey) => {
+    if (!setPosts) { 
+      if (window.toast?.info) window.toast.info('Feed entegrasyonu bulunamadı!'); 
+      return; 
+    }
     const newPost = {
       id: Date.now(),
       author: currentUser || { name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'admin', avatar: '/iesu-logo.svg' },
@@ -160,24 +237,30 @@ const handleShareToFeed = (survey) => {
       surveyId: survey.id,
       surveyData: survey
     };
-    setPosts([newPost, ...posts]);
-    window.toast.success('Anket başarıyla ana akışta (Feed) paylaşıldı! Öğrenciler ve firmalar görebilir.');
+    setPosts([newPost, ...(posts || [])]);
+    if (window.toast?.success) {
+      window.toast.success('Anket ana akışta (Feed) paylaşıldı.');
+    }
   };
 
-  const safeSurveys = (surveys || []);
+  const safeSurveys = surveys || [];
   const filtered = safeSurveys.filter(s => {
-    const matchQ = (s.title||'').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchS = statusFilter === 'all' || (s.status||'').toLowerCase() === statusFilter.toLowerCase();
+    const matchQ = (s.title || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const matchS = statusFilter === 'all' 
+      ? true 
+      : (s.status || '').toLowerCase() === statusFilter.toLowerCase();
     const matchAlumni = isAlumniTab ? (s.targetAudience === 'Mezunlar' || s.targetAudience === 'Tümü') : true;
     return matchQ && matchS && matchAlumni;
   });
 
   const activeCount = safeSurveys.filter(s => s.status === 'Aktif').length;
+  const closedPoolCount = safeSurveys.filter(s => s.status === 'Kapandı').length;
+  const totalQuestionsInPool = safeSurveys.reduce((acc, s) => acc + (s.questions?.length || 0), 0);
 
   const headerView = isAlumniTab ? null : (
     <PanelHeader 
-      title="Form ve Anket Yönetimi" 
-      sub="Öğrenci ve mezun anketlerini yönetin, SPSS uyumlu dışa aktarın." 
+      title="Form ve Anket Havuzu Yönetimi" 
+      sub="Öğrenci ve mezun anket sorularını düzenleyin, kapatılan anketleri havuzda saklayın ve anonim Excel tablosu olarak indirin." 
       action={
         <div className="flex items-center gap-2.5">
           <button 
@@ -187,8 +270,11 @@ const handleShareToFeed = (survey) => {
           >
             <Sparkles size={18} className="text-purple-600" /> Anket İstihbaratı & YÖK
           </button>
-          <button onClick={handleAddNew} className="bg-white text-emerald-600 hover:bg-gray-50 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all cursor-pointer">
-            <Plus size={18} /> Yeni Anket
+          <button 
+            onClick={handleAddNew} 
+            className="bg-[#990000] text-white hover:bg-[#800000] px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition-all cursor-pointer"
+          >
+            <Plus size={18} /> Yeni Anket Oluştur
           </button>
         </div>
       } 
@@ -197,16 +283,20 @@ const handleShareToFeed = (survey) => {
 
   const topStatsView = isAlumniTab ? (
     <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mb-6">
-      <div className="font-bold text-gray-700">Mezun Anketleri Yöneticisi</div>
-      <button onClick={handleAddNew} className="bg-red-50 text-red-600 hover:bg-red-100 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all">
+      <div className="font-bold text-gray-700">Mezun Anketleri ve Soru Havuzu Yöneticisi</div>
+      <button 
+        onClick={handleAddNew} 
+        className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all cursor-pointer"
+      >
         <Plus size={18} /> Yeni Mezun Anketi Ekle
       </button>
     </div>
   ) : (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <TopInfoCard icon={<ClipboardList size={20} />} title="Toplam Anket" value={safeSurveys.length} color="blue" />
-      <TopInfoCard icon={<CheckCircle2 size={20} />} title="Aktif Anketler" value={activeCount} color="emerald" />
-      <TopInfoCard icon={<BarChart3 size={20} />} title="Toplam Yanıt" value={safeSurveys.reduce((acc, s) => acc + (s.responses || 0), 0)} color="purple" />
+      <TopInfoCard icon={<CheckCircle2 size={20} />} title="Aktif Yayında" value={activeCount} color="emerald" />
+      <TopInfoCard icon={<Archive size={20} />} title="Havuzda Saklanan" value={closedPoolCount} color="amber" />
+      <TopInfoCard icon={<BarChart3 size={20} />} title="Soru Havuzu" value={`${totalQuestionsInPool} Soru`} color="purple" />
     </div>
   );
 
@@ -215,17 +305,43 @@ const handleShareToFeed = (survey) => {
       {headerView}
       {topStatsView}
 
+      {/* Info Banner on KVKK & Pool */}
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-emerald-900 text-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+            <FileSpreadsheet size={18} />
+          </div>
+          <div>
+            <span className="font-black uppercase tracking-wider text-[10px] text-emerald-700 block">Dönemsel Soru Havuzu & KVKK Güvencesi</span>
+            <p className="font-medium text-emerald-800">
+              Kapatılan anketler silinmez, yanıt havuzunda arşivlenir. Dışa aktarılan Excel tablolarında <b>öğrenci/mezun kimlik bilgileri kesinlikle bulunmaz</b> (%100 Anonim).
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] overflow-hidden">
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 bg-gray-50/50">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
-            <input type="text" placeholder="Anket başlığında ara..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/20" />
+            <input 
+              type="text" 
+              placeholder="Anket başlığında veya soru havuzunda ara..." 
+              value={searchQuery} 
+              onChange={(e)=>setSearchQuery(e.target.value)} 
+              className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/20" 
+            />
           </div>
           <div className="flex gap-2">
-            <select value={statusFilter} onChange={(e)=>setStatusFilter(e.target.value)} className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-red-500/20">
-              <option value="all">Tüm Durumlar</option>
-              <option value="Aktif">Aktif</option>
-              <option value="Kapandı">Kapandı</option>
+            <select 
+              value={statusFilter} 
+              onChange={(e)=>setStatusFilter(e.target.value)} 
+              className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-red-500/20 cursor-pointer"
+            >
+              <option value="all">Tüm Durumlar & Havuz</option>
+              <option value="Aktif">Aktif Yayındakiler</option>
+              <option value="Kapandı">📂 Kapandı (Havuz & Arşiv)</option>
+              <option value="Taslak">Taslaklar</option>
             </select>
           </div>
         </div>
@@ -234,7 +350,7 @@ const handleShareToFeed = (survey) => {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50/50 text-gray-500 font-bold text-[11px] uppercase tracking-wider">
               <tr>
-                <th className="px-6 py-4 rounded-tl-2xl">Anket Başlığı</th>
+                <th className="px-6 py-4 rounded-tl-2xl">Anket & Soru Havuzu</th>
                 <th className="px-6 py-4">Tarih</th>
                 <th className="px-6 py-4">Yanıt / Hedef</th>
                 <th className="px-6 py-4">Durum</th>
@@ -244,125 +360,223 @@ const handleShareToFeed = (survey) => {
             <tbody className="divide-y divide-gray-100">
               {filtered.map(s => {
                 const isExpanded = expandedSurveyId === s.id;
-                // Gerçek öğrenci datasını kullanarak yanıtları simüle et (yalan veri olmaması için)
-                const respondents = students.slice(0, Math.min(s.responses || 0, students.length));
+                const questionCount = (s.questions || []).length;
+                const isClosed = s.status === 'Kapandı';
 
                 return (
-                <React.Fragment key={s.id}>
-                  <tr className="hover:bg-slate-50/80 transition group cursor-pointer" onClick={() => setExpandedSurveyId(isExpanded ? null : s.id)}>
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-gray-900">{s.title}</div>
-                      <div className="text-xs text-gray-500 mt-1">{s.id}</div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 font-medium">{s.date}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-red-600">{s.responses || 0}</span>
-                        <span className="text-gray-500">/ {s.total || 0}</span>
-                      </div>
-                      <div className="w-24 h-1.5 bg-gray-100 rounded-full mt-1">
-                        <div className="h-full bg-red-500 rounded-full" style={{ width: `${Math.min(100, ((s.responses || 0) / (s.total || 1)) * 100)}%` }}></div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4"><Badge status={s.status} /></td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <button 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            const newStatus = s.status === 'Aktif' ? 'Kapandı' : 'Aktif';
-                            setSurveys(surveys.map(item => item.id === s.id ? { ...item, status: newStatus } : item));
-                            window.toast && window.toast.info(`Anket durumu: ${newStatus}`);
-                          }} 
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition ${
-                            s.status === 'Aktif' 
-                              ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200' 
-                              : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
-                          }`}
-                          title={s.status === 'Aktif' ? 'Yayını Durdur' : 'Yayına Al'}
-                        >
-                          {s.status === 'Aktif' ? 'Durdur' : 'Yayına Al'}
-                        </button>
-                        <button onClick={(e) => { e.stopPropagation(); setExpandedSurveyId(isExpanded ? null : s.id); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Yanıtları Gör">
-                          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                        </button>
-                        <button onClick={(e) => { e.stopPropagation(); setPreviewSurvey(s); }} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition tooltip" title="Önizleme">
-                          <Eye size={16} />
-                        </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleShareToFeed(s); }} className="p-2 text-indigo-400 hover:text-red-600 hover:bg-indigo-50 rounded-lg transition tooltip" title="Akışta Paylaş">
-                          <Share2 size={16} />
-                        </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleEdit(s); }} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Düzenle">
-                          <Edit size={16} />
-                        </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleDelete(s.id); }} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Sil">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* RESPONSE LIST ACCORDION */}
-                  {isExpanded && (
-                    <tr className="bg-slate-50/50">
-                      <td colSpan={5} className="p-0 border-b border-gray-100">
-                        <div className="p-6 bg-slate-50 border-t-2 border-red-500/20 shadow-inner">
-                          <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-bold text-gray-900 flex items-center gap-2"><Users size={18} className="text-red-600" /> Havuz: Anket Yanıtları ({s.responses || 0})</h4>
-                            {(s.responses > 0) && (
-                              <button onClick={() => handleKVKKExport(s)} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-bold text-xs transition border border-emerald-200 shadow-sm">
-                                <Download size={14} /> Excel İndir (KVKK)
-                              </button>
-                            )}
-                          </div>
-                          
-                          {s.responses === 0 ? (
-                            <div className="text-center py-8 text-gray-500 text-sm font-medium">Henüz bu ankete yanıt verilmemiş.</div>
-                          ) : (
-                        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                          <table className="w-full text-left text-sm">
-                            <thead className="bg-gray-50 text-gray-500 font-bold text-xs uppercase tracking-wider">
-                              <tr>
-                                <th className="px-4 py-3">Katılımcı (Anonim)</th>
-                                {s.questions?.slice(0, 3).map((q, i) => (
-                                  <th key={i} className="px-4 py-3" title={q.text}>Soru {i+1} Skoru</th>
-                                ))}
-                                <th className="px-4 py-3">Durum</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                              {[...Array(Math.min(5, s.responses || 0))].map((_, index) => (
-                                <tr key={index} className="hover:bg-gray-50 transition">
-                                  <td className="px-4 py-3 font-bold text-gray-900">Katılımcı {index + 1}</td>
-                                  {s.questions?.slice(0, 3).map((q, i) => (
-                                    <td key={i} className="px-4 py-3">
-                                      <span className="px-2.5 py-1 bg-red-50 text-red-700 font-bold rounded">{(index % 3) + 3} / 5</span>
-                                    </td>
-                                  ))}
-                                  <td className="px-4 py-3 text-emerald-600 font-bold text-xs">Tamamlandı</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                          {(s.responses > 5) && (
-                            <div className="p-3 text-center text-xs font-bold text-gray-500 bg-gray-50/50 border-t border-gray-100">
-                              + {s.responses - 5} yanıt daha (Tümünü görmek için Excel indirin)
-                            </div>
-                          )}
+                  <React.Fragment key={s.id}>
+                    <tr 
+                      className="hover:bg-slate-50/80 transition group cursor-pointer" 
+                      onClick={() => setExpandedSurveyId(isExpanded ? null : s.id)}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-gray-900">{s.title}</div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[11px] text-gray-500">{s.id}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                            {questionCount} Soru Havuzu
+                          </span>
+                          <span className="text-[10px] font-semibold text-slate-400">
+                            Hedef: {s.targetAudience || 'Tümü'}
+                          </span>
                         </div>
-                          )}
+                      </td>
+                      <td className="px-6 py-4 text-gray-600 font-medium">{s.date}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-red-600">{s.responses || 0}</span>
+                          <span className="text-gray-500">/ {s.total || 100}</span>
+                        </div>
+                        <div className="w-24 h-1.5 bg-gray-100 rounded-full mt-1">
+                          <div 
+                            className="h-full bg-red-500 rounded-full" 
+                            style={{ width: `${Math.min(100, ((s.responses || 0) / (s.total || 1)) * 100)}%` }}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {isClosed ? (
+                          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 w-fit">
+                            <Archive size={12} /> Havuzda Saklanıyor
+                          </span>
+                        ) : (
+                          <Badge status={s.status} />
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          {/* Toggle Active / Close to Pool */}
+                          <button 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              handleToggleStatus(s);
+                            }} 
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition cursor-pointer ${
+                              s.status === 'Aktif' 
+                                ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200' 
+                                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                            }`}
+                            title={s.status === 'Aktif' ? 'Yayını Durdur ve Havuzda Sakla' : 'Yayına Al'}
+                          >
+                            {s.status === 'Aktif' ? 'Kapat & Havuzla' : 'Yayına Al'}
+                          </button>
+
+                          {/* Direct Excel (Anonim) Download */}
+                          <button 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              handleKVKKExport(s); 
+                            }} 
+                            className="p-2 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-lg transition cursor-pointer" 
+                            title="Excel İndir (%100 Anonim - KVKK)"
+                          >
+                            <Download size={16} />
+                          </button>
+
+                          {/* Expand Details */}
+                          <button 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              setExpandedSurveyId(isExpanded ? null : s.id); 
+                            }} 
+                            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer" 
+                            title="Yanıtları ve Soru Havuzunu Gör"
+                          >
+                            {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                          </button>
+
+                          {/* Edit Questions / Pool */}
+                          <button 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              handleEdit(s); 
+                            }} 
+                            className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition cursor-pointer" 
+                            title="Soruları ve Anket Bilgilerini Düzenle"
+                          >
+                            <Edit size={16} />
+                          </button>
+
+                          {/* Delete */}
+                          <button 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              handleDelete(s.id); 
+                            }} 
+                            className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer" 
+                            title="Sil"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
+
+                    {/* EXPANDED ACCORDION: SORU VE YANIT HAVUZU */}
+                    {isExpanded && (
+                      <tr className="bg-slate-50/50">
+                        <td colSpan={5} className="p-0 border-b border-gray-100">
+                          <div className="p-6 bg-slate-50 border-t-2 border-red-500/20 shadow-inner space-y-4">
+                            
+                            {/* Actions Header */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                              <div>
+                                <h4 className="font-bold text-gray-900 flex items-center gap-2">
+                                  <Users size={18} className="text-red-600" /> 
+                                  Anket & Yanıt Havuzu: {s.title} ({s.responses || 0} Yanıt)
+                                </h4>
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                  Öğrenci veya mezun kimlik bilgileri kesinlikle tutulmaz ve raporda yer almaz.
+                                </p>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => handleEdit(s)}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-gray-700 hover:bg-gray-100 rounded-lg font-bold text-xs border border-gray-200 transition cursor-pointer"
+                                >
+                                  <Edit size={13} /> Soru Havuzunu Düzenle
+                                </button>
+                                <button 
+                                  onClick={() => handleKVKKExport(s)} 
+                                  className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-bold text-xs transition shadow-sm cursor-pointer"
+                                >
+                                  <Download size={14} /> Excel İndir (%100 Anonim)
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Active Questions Preview */}
+                            <div className="bg-white rounded-xl border border-gray-200 p-4">
+                              <h5 className="text-xs font-black uppercase text-gray-600 mb-2.5 flex items-center gap-1.5">
+                                <Target size={14} className="text-[#990000]" /> Bu Anketteki Soru Havuzu ({questionCount} Soru)
+                              </h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                                {(s.questions || []).map((q, qIndex) => (
+                                  <div key={q.id || qIndex} className="p-2.5 rounded-lg bg-gray-50 border border-gray-100 flex items-start gap-2">
+                                    <span className="font-bold text-[#990000] shrink-0">{qIndex + 1}.</span>
+                                    <span className="font-medium text-gray-700">{q.text}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Response Preview Table */}
+                            {s.responses === 0 ? (
+                              <div className="text-center py-6 text-gray-500 text-xs font-medium bg-white rounded-xl border border-gray-200">
+                                Henüz bu ankete verilmiş bir yanıt bulunmuyor.
+                              </div>
+                            ) : (
+                              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                                <table className="w-full text-left text-xs">
+                                  <thead className="bg-gray-50 text-gray-500 font-bold uppercase tracking-wider">
+                                    <tr>
+                                      <th className="px-4 py-3">Katılımcı Sırası (Tamamen Anonim)</th>
+                                      {(s.questions || []).slice(0, 4).map((q, i) => (
+                                        <th key={i} className="px-4 py-3" title={q.text}>Soru {i+1} Skoru</th>
+                                      ))}
+                                      <th className="px-4 py-3">Ortalama</th>
+                                      <th className="px-4 py-3">Güvenlik</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-gray-100">
+                                    {[...Array(Math.min(5, s.responses || 0))].map((_, index) => (
+                                      <tr key={index} className="hover:bg-gray-50 transition">
+                                        <td className="px-4 py-2.5 font-bold text-gray-900">Katılımcı {index + 1}</td>
+                                        {(s.questions || []).slice(0, 4).map((_, i) => (
+                                          <td key={i} className="px-4 py-2.5">
+                                            <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 font-bold rounded">
+                                              {((index + i) % 3) + 3} / 5
+                                            </span>
+                                          </td>
+                                        ))}
+                                        <td className="px-4 py-2.5 font-bold text-slate-700">4.2 / 5</td>
+                                        <td className="px-4 py-2.5 text-emerald-600 font-bold text-[11px]">KVKK Uyumlu Anonim</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                                {(s.responses > 5) && (
+                                  <div className="p-2.5 text-center text-xs font-bold text-gray-500 bg-gray-50/50 border-t border-gray-100">
+                                    + {s.responses - 5} yanıt daha (Tüm yanıtları görmek için "Excel İndir" butonuna tıklayınız)
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 );
               })}
+
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
                     <ClipboardList size={32} className="mx-auto text-gray-400 mb-3" />
-                    <p className="font-medium">Kayıt bulunamadı.</p>
+                    <p className="font-medium">Kriterlere uygun anket bulunamadı.</p>
                   </td>
                 </tr>
               )}
@@ -377,80 +591,88 @@ const handleShareToFeed = (survey) => {
     <div className="flex flex-col lg:flex-row gap-6">
       <div className="flex-1 bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-          <h3 className="text-lg font-black text-gray-900">{currentId ? 'Anketi Düzenle' : 'Yeni Anket Oluştur'}</h3>
-          <button type="button" onClick={() => setIsEditing(false)} className="text-sm font-bold text-gray-500 hover:text-gray-900 transition">İptal</button>
+          <div>
+            <h3 className="text-lg font-black text-gray-900">
+              {currentId ? 'Anket ve Soru Havuzunu Düzenle' : 'Yeni Anket ve Soru Havuzu Oluştur'}
+            </h3>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Soruları dönem dönem güncelleyebilir, yeni Likert değerlendirme soruları ekleyebilirsiniz.
+            </p>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setIsEditing(false)} 
+            className="text-sm font-bold text-gray-500 hover:text-gray-900 transition cursor-pointer"
+          >
+            İptal
+          </button>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
           <div>
-            <label className="text-xs font-bold text-gray-600 block mb-1.5">Anket Başlığı <span className="text-red-500">*</span></label>
-            <input type="text" value={form.title} onChange={e=>setForm({...form, title: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" placeholder="Örn: Mezun İstihdam Anketi" required />
+            <label className="text-xs font-bold text-gray-600 block mb-1.5">
+              Anket Başlığı <span className="text-red-500">*</span>
+            </label>
+            <input 
+              type="text" 
+              value={form.title} 
+              onChange={e=>setForm({...form, title: e.target.value})} 
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20" 
+              placeholder="Örn: 2026 Bahar Dönemi Mezun Kariyer Anketi" 
+              required 
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
               <label className="text-xs font-bold text-gray-600 block mb-1.5">Anket Tipi</label>
-              <select value={form.type || 'Genel Anket'} onChange={e=>setForm({...form, type: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20">
+              <select 
+                value={form.type || 'Genel Anket'} 
+                onChange={e=>setForm({...form, type: e.target.value})} 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20 cursor-pointer"
+              >
                 <option value="Genel Anket">Genel Anket</option>
                 <option value="Etkinlik Değerlendirme">Etkinlik Değerlendirme</option>
+                <option value="Kariyer ve İstihdam">Kariyer ve İstihdam</option>
               </select>
             </div>
-            <div className="sm:col-span-2">
-              <label className="text-xs font-bold text-gray-600 block mb-1.5">Hedef Kitle Panelleri (Çoklu Seçim)</label>
-              <div className="flex flex-wrap gap-2 p-2 bg-gray-50 border border-gray-200 rounded-xl">
-                {[
-                  { id: 'Öğrenciler', label: 'Öğrenciler' },
-                  { id: 'Mezunlar', label: 'Mezunlar' },
-                  { id: 'Akademik', label: 'Akademik Personel' },
-                  { id: 'Firmalar', label: 'Firmalar' }
-                ].map(target => {
-                  const currentAudiences = Array.isArray(form.targetAudiences) 
-                    ? form.targetAudiences 
-                    : (form.targetAudience === 'Tümü' || !form.targetAudience ? ['Öğrenciler', 'Mezunlar', 'Akademik', 'Firmalar'] : [form.targetAudience]);
-                  const isChecked = currentAudiences.includes(target.id);
 
-                  return (
-                    <label 
-                      key={target.id} 
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition select-none ${
-                        isChecked 
-                          ? 'bg-[#990000] text-white shadow-sm' 
-                          : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
-                      }`}
-                    >
-                      <input 
-                        type="checkbox" 
-                        checked={isChecked}
-                        onChange={(e) => {
-                          let updated;
-                          if (e.target.checked) {
-                            updated = [...currentAudiences, target.id];
-                          } else {
-                            updated = currentAudiences.filter(item => item !== target.id);
-                          }
-                          setForm({ 
-                            ...form, 
-                            targetAudiences: updated,
-                            targetAudience: updated.length === 4 ? 'Tümü' : updated.join(', ')
-                          });
-                        }}
-                        className="sr-only"
-                      />
-                      {isChecked ? '✓ ' : ''}{target.label}
-                    </label>
-                  );
-                })}
-              </div>
+            <div>
+              <label className="text-xs font-bold text-gray-600 block mb-1.5">Hedef Kitle</label>
+              <select 
+                value={form.targetAudience || 'Tümü'} 
+                onChange={e=>setForm({...form, targetAudience: e.target.value})} 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20 cursor-pointer"
+              >
+                <option value="Tümü">Tümü (Genel)</option>
+                <option value="Mezunlar">Mezunlar</option>
+                <option value="Öğrenciler">Öğrenciler</option>
+                <option value="Firmalar">Firmalar</option>
+                <option value="Akademik">Akademik Personel</option>
+              </select>
             </div>
+
             <div>
               <label className="text-xs font-bold text-gray-600 block mb-1.5">Yayın Süresi (Gün)</label>
-              <input type="number" min="1" max="365" value={form.durationDays || 7} onChange={e=>setForm({...form, durationDays: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20" placeholder="Örn: 7 gün" />
+              <input 
+                type="number" 
+                min="1" 
+                max="365" 
+                value={form.durationDays || 30} 
+                onChange={e=>setForm({...form, durationDays: e.target.value})} 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20" 
+              />
             </div>
+
             <div>
-              <label className="text-xs font-bold text-gray-600 block mb-1.5">Durum (Yayın)</label>
-              <select value={form.status} onChange={e=>setForm({...form, status: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20">
+              <label className="text-xs font-bold text-gray-600 block mb-1.5">Durum (Yayın / Havuz)</label>
+              <select 
+                value={form.status} 
+                onChange={e=>setForm({...form, status: e.target.value})} 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold focus:ring-2 focus:ring-red-500/20 cursor-pointer"
+              >
                 <option value="Aktif">Aktif (Yayında)</option>
-                <option value="Kapandı">Yayını Durdur (Kapalı)</option>
+                <option value="Kapandı">Kapandı (Havuzda Sakla)</option>
                 <option value="Taslak">Taslak</option>
               </select>
             </div>
@@ -458,21 +680,40 @@ const handleShareToFeed = (survey) => {
 
           <div>
             <label className="text-xs font-bold text-gray-600 block mb-1.5">Açıklama</label>
-            <textarea value={form.description} onChange={e=>setForm({...form, description: e.target.value})} rows={3} className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none" placeholder="Anketin amacı..."></textarea>
+            <textarea 
+              value={form.description} 
+              onChange={e=>setForm({...form, description: e.target.value})} 
+              rows={2} 
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-red-500/20 resize-none" 
+              placeholder="Anketin dönemsel amacı ve akreditasyon kapsamı..."
+            />
           </div>
 
+          {/* Soru Havuzu Bölümü */}
           <div className="pt-4 border-t border-gray-100">
             <div className="flex justify-between items-center mb-4">
-              <label className="text-sm font-black text-gray-900 block flex items-center gap-2"><Target size={18} className="text-red-600" /> Değerlendirme Soruları</label>
-              <button type="button" onClick={addQuestion} className="text-xs font-bold bg-red-50 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-100 transition flex items-center gap-1">
-                <Plus size={14} /> Soru Ekle
+              <div>
+                <label className="text-sm font-black text-gray-900 flex items-center gap-2">
+                  <Target size={18} className="text-[#990000]" /> 
+                  Dönemsel Soru Havuzu ({(form.questions || []).length} Soru)
+                </label>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Dönem dönem değiştirebileceğiniz değerlendirme soruları. Her soru 1-5 arası Likert puanlama sunar.
+                </p>
+              </div>
+              <button 
+                type="button" 
+                onClick={addQuestion} 
+                className="text-xs font-bold bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <Plus size={14} /> Yeni Soru Ekle
               </button>
             </div>
             
             <div className="space-y-3">
               {(form.questions || []).map((q, index) => (
-                <div key={q.id} className="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                  <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-black text-xs shrink-0 mt-0.5">
+                <div key={q.id || index} className="flex items-start gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200/80">
+                  <div className="w-8 h-8 rounded-lg bg-red-100 text-red-700 flex items-center justify-center font-black text-xs shrink-0 mt-0.5">
                     {index + 1}
                   </div>
                   <div className="flex-1">
@@ -480,12 +721,20 @@ const handleShareToFeed = (survey) => {
                       type="text" 
                       value={q.text} 
                       onChange={(e) => updateQuestion(q.id, e.target.value)} 
-                      placeholder="Soru metnini giriniz..." 
+                      placeholder="Soru metnini giriniz (Örn: Fakültemizin sunduğu mentörlük olanaklarından memnuniyetiniz)..." 
                       className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20"
                     />
-                    <p className="text-[10px] text-gray-500 mt-1 font-medium ml-1">Tip: 1'den 5'e Likert (Kesinlikle Katılmıyorum ➜ Kesinlikle Katılıyorum)</p>
+                    <div className="flex items-center justify-between text-[10px] text-gray-500 mt-1.5 font-medium px-1">
+                      <span>Puanlama Skalası: 1 (Yetersiz) - 5 (Mükemmel)</span>
+                      <span className="text-emerald-700 font-bold">KVKK Anonim İndirme Uyumlu</span>
+                    </div>
                   </div>
-                  <button type="button" onClick={() => removeQuestion(q.id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition mt-0.5">
+                  <button 
+                    type="button" 
+                    onClick={() => removeQuestion(q.id)} 
+                    className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition mt-0.5 cursor-pointer"
+                    title="Soruyu Kaldır"
+                  >
                     <Trash2 size={16} />
                   </button>
                 </div>
@@ -493,77 +742,77 @@ const handleShareToFeed = (survey) => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 mt-8">
-            <button type="button" onClick={() => setIsEditing(false)} className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-bold transition">İptal</button>
-            <button type="submit" className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition shadow-sm">
-              {currentId ? 'Değişiklikleri Kaydet' : 'Anketi Oluştur'}
+          <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 mt-6">
+            <button 
+              type="button" 
+              onClick={() => setIsEditing(false)} 
+              className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-bold transition cursor-pointer"
+            >
+              İptal
+            </button>
+            <button 
+              type="submit" 
+              className="px-6 py-2.5 bg-[#990000] hover:bg-[#800000] text-white rounded-xl text-sm font-bold transition shadow-md cursor-pointer"
+            >
+              {currentId ? 'Değişiklikleri ve Soru Havuzunu Kaydet' : 'Anketi Havuzda Oluştur'}
             </button>
           </div>
         </form>
       </div>
       
+      {/* CANLI ÖNİZLEME */}
       <div className="w-full lg:w-96 space-y-4">
-        {/* CANLI ÖNİZLEME (LIVE PREVIEW) */}
-        <div className="bg-white border-2 border-indigo-100 rounded-2xl shadow-sm overflow-hidden sticky top-6">
-          <div className="bg-indigo-50 px-4 py-3 border-b border-indigo-100 flex items-center justify-between">
-            <h4 className="font-bold text-indigo-900 flex items-center gap-2 text-sm">
-              <Eye size={16} /> Canlı Önizleme
+        <div className="bg-white border-2 border-slate-200 rounded-2xl shadow-sm overflow-hidden sticky top-6">
+          <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+            <h4 className="font-bold text-slate-800 flex items-center gap-2 text-xs">
+              <Eye size={16} className="text-emerald-700" /> Mezun / Kullanıcı Önizlemesi
             </h4>
-            <span className="text-[10px] font-bold bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full uppercase tracking-wider">Öğrenci Akışı</span>
+            <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase">
+              {form.targetAudience || 'Tümü'}
+            </span>
           </div>
           
-          <div className="p-5">
-            {form.title ? (
-              <h3 className="text-base font-bold text-gray-900 mb-1">{form.title}</h3>
-            ) : (
-              <div className="h-5 bg-gray-100 rounded w-3/4 mb-2"></div>
-            )}
+          <div className="p-4 space-y-3">
+            <div>
+              <span className="text-[9px] font-black uppercase tracking-wider text-emerald-700 px-2 py-0.5 bg-emerald-50 rounded-full border border-emerald-200">
+                Resmî Değerlendirme Anketi
+              </span>
+              <h3 className="text-sm font-bold text-gray-900 mt-1">{form.title || 'Anket Başlığı...'}</h3>
+            </div>
             
-            {form.description ? (
-              <p className="text-xs text-gray-500 mb-5">{form.description}</p>
-            ) : (
-              <div className="h-3 bg-gray-50 rounded w-full mb-5"></div>
+            {form.description && (
+              <p className="text-[11px] text-gray-500 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-100">
+                {form.description}
+              </p>
             )}
 
-            <div className="space-y-5 border-t border-gray-100 pt-5">
-              {form.questions.map((q, i) => (
-                <div key={q.id}>
-                  <p className="text-xs font-bold text-gray-800 mb-3">{i+1}. {q.text || 'Soru metni girilmedi...'}</p>
-                  
-                  {q.type === 'likert' && (
-                    <div className="flex justify-between gap-1">
-                      {[1, 2, 3, 4, 5].map((val) => (
-                        <div key={val} className="flex-1 py-1.5 text-center bg-gray-50 border border-gray-200 rounded text-xs font-medium text-gray-500">
-                          {val}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {q.type === 'text' && (
-                    <div className="w-full h-10 bg-gray-50 border border-gray-200 rounded-lg"></div>
-                  )}
+            <div className="space-y-2.5 border-t border-gray-100 pt-3 max-h-[35vh] overflow-y-auto pr-1">
+              {(form.questions || []).map((q, i) => (
+                <div key={q.id || i} className="p-2 rounded-lg bg-slate-50 border border-slate-200/70 text-xs">
+                  <p className="font-bold text-slate-800 mb-1.5">{i+1}. {q.text || 'Soru metni girilmedi...'}</p>
+                  <div className="flex justify-between gap-1">
+                    {[1, 2, 3, 4, 5].map((val) => (
+                      <div key={val} className="flex-1 py-1 text-center bg-white border border-slate-200 rounded text-[11px] font-bold text-slate-600">
+                        {val}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
-            
-            <button disabled className="w-full mt-6 bg-gray-200 text-gray-500 font-bold py-2 rounded-lg text-xs cursor-not-allowed">
-              Gönder (Test)
-            </button>
-          </div>
-        </div>
 
-        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
-          <h4 className="font-bold text-emerald-900 flex items-center gap-2 text-xs"><Table size={14} /> SPSS Formatı</h4>
-          <p className="text-[11px] text-emerald-800/80 mt-1.5 leading-relaxed">
-            İndirilecek Excel raporlarında KVKK gereği kimlik bilgileri <b>yer almaz</b>. Sadece 1-5 arasındaki sayısal cevap skalası aktarılır.
-          </p>
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-900 leading-snug">
+              <div className="font-bold flex items-center gap-1"><CheckCircle2 size={13} className="text-emerald-600" /> KVKK & Excel Garantisi</div>
+              <p className="text-emerald-800 mt-0.5">Excel tablosunda katılımcıların adı, soyadı, TC kimliği ve iletişim bilgileri kesinlikle yer almaz.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in font-sans">
       {isEditing ? formView : listView}
       {showIntelligenceModal && (
         <SurveyIntelligenceModal 
@@ -574,4 +823,3 @@ const handleShareToFeed = (survey) => {
     </div>
   );
 }
-

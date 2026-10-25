@@ -695,16 +695,30 @@ export const initialGroups = [
 export const initialSurveys = [
   {
     id: 'SRV-101',
-    title: '2024 Mezun İstihdam ve Memnuniyet Anketi',
-    description: 'İESÜ\'nün kalitesini artırmak için mezuniyet sonrası iş hayatınızla ilgili deneyimlerinizi öğrenmek istiyoruz.',
+    title: 'İESÜ Mezun Kariyer ve Memnuniyet Değerlendirme Anketi',
+    description: 'İESÜ Kalite Yönetim Akreditasyonu ve Kariyer Geliştirme Merkezi (KGM) resmi değerlendirme anketi. 10 soruluk değerlendirmeyi tamamlayarak mezun ekosistemine katkı sağlayın.',
     date: '2026-07-15',
     status: 'Aktif',
     type: 'Genel Anket',
     targetAudience: 'Mezunlar',
-    responses: 24,
+    responses: 3,
+    total: 100,
     questions: [
-      { id: 'q1', text: 'İESÜ\'de aldığınız eğitimin mevcut işinize katkısı nedir?', type: 'likert' },
-      { id: 'q2', text: 'Şu anki işinizden genel olarak memnun musunuz?', type: 'likert' }
+      { id: 'q1', text: '1. İESÜ akademik eğitiminin mesleki kariyerinize ve yetkinliğinize katkısını değerlendirin.', type: 'likert' },
+      { id: 'q2', text: '2. Üniversitemizde aldığınız staj ve uygulamalı deneyimlerin kariyerinize olan faydasını değerlendirin.', type: 'likert' },
+      { id: 'q3', text: '3. İESÜ Kariyer Geliştirme Merkezi (KGM) danışmanlık ve rehberlik hizmetlerinden memnuniyetiniz.', type: 'likert' },
+      { id: 'q4', text: '4. Bölümünüzdeki teknik altyapı, yazılım ve laboratuvar olanaklarının yeterliliği.', type: 'likert' },
+      { id: 'q5', text: '5. İESÜ akademisyen kadrosunun erişilebilirliği ve sunduğu mentörlük kalitesi.', type: 'likert' },
+      { id: 'q6', text: '6. Üniversitemizde kazanılan yabancı dil ve iletişim becerilerinin sektördeki yeterliliği.', type: 'likert' },
+      { id: 'q7', text: '7. İESÜ Mezun Ağı ve mezunlar arası dayanışma platformunun etkililiği.', type: 'likert' },
+      { id: 'q8', text: '8. Aktif İESÜ öğrencilerine mentörlük verme veya iş/staj fırsatı sağlama isteğiniz.', type: 'likert' },
+      { id: 'q9', text: '9. İESÜ diplomasının iş dünyasında ve sektörünüzde sağladığı prestij seviyesi.', type: 'likert' },
+      { id: 'q10', text: '10. İESÜ Kariyer Geliştirme Merkezi ve üniversitemizden genel memnuniyet seviyeniz.', type: 'likert' }
+    ],
+    responseRows: [
+      { id: 'RESP_001', submittedAt: '2026-07-16T10:15:00.000Z', scores: [5, 4, 5, 4, 5, 4, 5, 4, 5, 5], answers: { q1: 5, q2: 4, q3: 5, q4: 4, q5: 5, q6: 4, q7: 5, q8: 4, q9: 5, q10: 5 } },
+      { id: 'RESP_002', submittedAt: '2026-07-17T14:22:00.000Z', scores: [4, 5, 4, 4, 5, 3, 4, 5, 4, 4], answers: { q1: 4, q2: 5, q3: 4, q4: 4, q5: 5, q6: 3, q7: 4, q8: 5, q9: 4, q10: 4 } },
+      { id: 'RESP_003', submittedAt: '2026-07-18T09:40:00.000Z', scores: [5, 5, 4, 5, 4, 4, 5, 5, 5, 5], answers: { q1: 5, q2: 5, q3: 4, q4: 5, q5: 4, q6: 4, q7: 5, q8: 5, q9: 5, q10: 5 } }
     ]
   },
   {
@@ -715,13 +729,17 @@ export const initialSurveys = [
     status: 'Aktif',
     type: 'Etkinlik Değerlendirme',
     targetAudience: 'Tümü',
-    responses: 112,
+    responses: 2,
+    total: 100,
     questions: [
       { id: 'q1', text: 'Kariyer merkezimizin ilanlarını ne sıklıkla takip ediyorsunuz?', type: 'likert' }
+    ],
+    responseRows: [
+      { id: 'RESP_101', submittedAt: '2026-07-11T11:00:00.000Z', scores: [4], answers: { q1: 4 } },
+      { id: 'RESP_102', submittedAt: '2026-07-12T16:30:00.000Z', scores: [5], answers: { q1: 5 } }
     ]
   }
 ];
-
 
 export const initialPosts = [
     { id: 'POST-001', author: { id: 'CMP-001', name: 'Trendyol', avatar: 'https://ui-avatars.com/api/?name=Trendyol&background=F97316&color=fff', title: 'Teknoloji Ekibi', role: 'employer' }, content: 'Yazılım Mühendisliği stajyer alımlarımız başlamıştır! Tüm İESÜ öğrencilerini bekliyoruz. 🚀 #trendyol #staj', likes: 145, comments: 23, time: '2 saat önce' },
