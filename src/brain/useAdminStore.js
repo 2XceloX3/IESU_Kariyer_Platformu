@@ -819,19 +819,19 @@ export function initAdminStoreSubscriptions() {
         }
       });
     }
-  });
+  }, { isSystem: true });
 
   const unsubCoffeeRequested = eventBus.on('coffee_chat:requested', (payload) => {
     if (payload && payload.chat) {
       useAdminStore.getState().addCoffeeChat(payload.chat);
     }
-  });
+  }, { isSystem: true });
 
   const unsubCoffeeStatus = eventBus.on('coffee_chat:status_changed', (payload) => {
     if (payload && payload.chatId && payload.status) {
       useAdminStore.getState().updateCoffeeChatStatus(payload.chatId, payload.status, payload.extraData || {});
     }
-  });
+  }, { isSystem: true });
 
   adminStoreUnsubscribers = [unsubError, unsubCoffeeRequested, unsubCoffeeStatus];
 

@@ -207,28 +207,28 @@ export function initSharedStoreSubscriptions() {
       const post = payload.post || payload;
       useSharedStore.getState().addPost(post);
     }
-  });
+  }, { isSystem: true });
 
   const unsubJob = eventBus.on('job:published', (payload) => {
     if (payload && (payload.job || payload.title)) {
       const job = payload.job || payload;
       useSharedStore.getState().addJob(job);
     }
-  });
+  }, { isSystem: true });
 
   const unsubEvent = eventBus.on('event:announced', (payload) => {
     if (payload && (payload.event || payload.title)) {
       const evt = payload.event || payload;
       useSharedStore.getState().addEvent(evt);
     }
-  });
+  }, { isSystem: true });
 
   const unsubAnnouncement = eventBus.on('announcement:broadcast', (payload) => {
     if (payload && (payload.announcement || payload.title)) {
       const ann = payload.announcement || payload;
       useSharedStore.getState().addAnnouncement(ann);
     }
-  });
+  }, { isSystem: true });
 
   sharedStoreUnsubscribers = [unsubPost, unsubJob, unsubEvent, unsubAnnouncement];
 
