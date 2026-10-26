@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, Users, Building2, Lock, ArrowRight, ArrowLeft, ShieldCheck, GraduationCap } from 'lucide-react';
 import Logo from './Logo';
 import { auth, db } from '../utils/firebase';
@@ -7,9 +7,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import useAppStore from '../store/useAppStore';
 const EDevletObsModal = import.meta.env.DEV ? React.lazy(() => import('./modals/EDevletObsModal')) : null;
 
-export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser, students = [], alumni = [], companies = [], academicStaff = [] }) {
+export default function Login({ setView, setUserRole, setAcademicRole, setCurrentUser, students = [], alumni = [], companies = [], academicStaff = [], initialRole = 'student' }) {
   const { setRegisterAccountType } = useAppStore();
-  const [loginRole, setLoginRole] = useState('alumni');
+  const [loginRole, setLoginRole] = useState(initialRole);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEdevletModalOpen, setIsEdevletModalOpen] = useState(false);
@@ -17,6 +17,11 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    const supportedRoles = ['student', 'alumni', 'academic', 'company', 'employer'];
+    setLoginRole(supportedRoles.includes(initialRole) ? initialRole : 'student');
+  }, [initialRole]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

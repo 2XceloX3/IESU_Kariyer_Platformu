@@ -364,7 +364,7 @@ export default function MainFooter({ setView }) {
                 <Phone size={16} className="text-white shrink-0 mt-0.5" />
                 <div>
                   <span className="text-[10px] uppercase text-red-200 block font-black tracking-wider">Telefon</span>
-                  <span className="font-bold text-white">{tenant.phone || '444 9 123 (Dahili: 1102)'}</span>
+                  <span className="font-bold text-white">{tenant.phone || '444 9 123 / 1322'}</span>
                 </div>
               </div>
 
@@ -372,7 +372,7 @@ export default function MainFooter({ setView }) {
                 <MapPin size={16} className="text-white shrink-0 mt-0.5" />
                 <div>
                   <span className="text-[10px] uppercase text-red-200 block font-black tracking-wider">Adres</span>
-                  <span className="font-bold text-white">{tenant.address || 'Zafer Mahallesi, Doğan Araslı Bulvarı No:79, 34513 Esenyurt / İSTANBUL'}</span>
+                  <span className="font-bold text-white">{tenant.address || 'Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt / İstanbul'}</span>
                 </div>
               </div>
             </div>

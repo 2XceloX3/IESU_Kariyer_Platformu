@@ -9,10 +9,22 @@ import { useTranslation } from '../i18n';
 
 export default function MainHeader({ setView, currentUser, userRole }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const siteConfig = useAppStore(state => state.siteConfig);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
   const tenant = getTenantConfig();
   const { t } = useTranslation();
+
+  const submitSearch = (event) => {
+    event?.preventDefault?.();
+    const query = searchQuery.trim();
+    if (!query) return;
+    try {
+      sessionStorage.setItem('iesu_jobs_search_query', query);
+    } catch (_) {}
+    setView?.('jobs');
+    setIsMobileMenuOpen(false);
+  };
 
   const getDestination = () => {
     if (!currentUser) return 'landing';
@@ -55,20 +67,17 @@ export default function MainHeader({ setView, currentUser, userRole }) {
           {/* CENTER & RIGHT GROUP: Search Bar + Nav Links */}
           <div className="flex items-center gap-4 md:gap-6 overflow-x-auto py-1">
             {/* Search Bar */}
-            <div className="relative hidden md:block w-40 lg:w-52 flex-shrink-0">
+            <form onSubmit={submitSearch} role="search" className="relative hidden md:block w-40 lg:w-52 flex-shrink-0">
               <Search className="absolute left-3 top-2.5 text-white/60" size={14} />
               <input
-                type="text"
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t('common.searchPlaceholder')}
                 aria-label={t('common.searchPlaceholder')}
-                className="w-full bg-white/10 text-white placeholder-white/60 text-xs font-medium pl-9 pr-3 py-1.5 rounded-xl border border-white/20 focus:outline-none focus:bg-white/20 transition shadow-inner"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value) {
-                    if (setView) setView('explore');
-                  }
-                }}
+                className="w-full bg-white/10 text-white placeholder-white/60 text-xs font-medium pl-9 pr-3 py-2 rounded-xl border border-white/20 focus:outline-none focus:bg-white/20 focus-visible:ring-2 focus-visible:ring-white transition shadow-inner"
               />
-            </div>
+            </form>
 
             {/* Nav Links (Desktop) */}
             <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
@@ -106,6 +115,7 @@ export default function MainHeader({ setView, currentUser, userRole }) {
             {/* Mobile Hamburger Menu Toggle Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-expanded={isMobileMenuOpen}
               className="lg:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition focus:outline-none flex-shrink-0"
               aria-label="Menüyü Aç/Kapat"
             >
@@ -117,6 +127,22 @@ export default function MainHeader({ setView, currentUser, userRole }) {
         {/* Mobile Dropdown Navigation Drawer */}
         {isMobileMenuOpen && (
           <div className="lg:hidden bg-slate-900/95 backdrop-blur-xl border-t border-white/10 px-6 py-4 space-y-3 animate-fade-in shadow-2xl">
+            <form onSubmit={submitSearch} role="search" className="flex gap-2">
+              <label className="relative min-w-0 flex-1">
+                <span className="sr-only">{t('common.searchPlaceholder')}</span>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60" size={15} />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={t('common.searchPlaceholder')}
+                  className="w-full rounded-xl border border-white/20 bg-white/10 py-2.5 pl-9 pr-3 text-sm text-white placeholder-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                />
+              </label>
+              <button type="submit" className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-[#990000]">
+                {t('common.search')}
+              </button>
+            </form>
             <div className="flex justify-end pb-1 border-b border-white/10">
               <LanguageSwitcher variant="pill" />
             </div>

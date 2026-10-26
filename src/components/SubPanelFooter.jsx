@@ -436,7 +436,7 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
               </div>
               <div>
                 <span className="text-[10px] uppercase font-black tracking-wider text-white/70 block">TELEFON</span>
-                <span className="font-bold">444 9 123 (Dahili: 1102)</span>
+                <span className="font-bold">444 9 123 / 1322</span>
               </div>
             </div>
 
@@ -446,65 +446,26 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
               </div>
               <div>
                 <span className="text-[10px] uppercase font-black tracking-wider text-white/70 block">ADRES</span>
-                <span className="font-bold">Zafer Mahallesi, Doğan Araslı Bulvarı No:79, 34513 Esenyurt / İSTANBUL</span>
+                <span className="font-bold">Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt / İstanbul</span>
               </div>
             </div>
           </div>
 
-          {/* Column 4: Newsletter Box */}
+          {/* Column 4: Current opportunities */}
           <div className={`${isEmerald ? 'bg-[#022C22]/80 border-emerald-500/30' : 'bg-[#660000]/80 border-white/20'} backdrop-blur-md p-5 rounded-3xl border shadow-2xl space-y-3`}>
             <h4 className="text-xs font-black text-white uppercase tracking-wider border-b border-white/20 pb-1.5">
-              E-Bülten&apos;e Kayıt Olun
+              Güncel fırsatlar
             </h4>
             <p className="text-[11px] text-white/90 leading-relaxed font-medium">
-              Sektör buluşmaları, yeni staj programları ve duyurulardan ilk siz haberdar olun.
+              İş ve staj ilanlarını görüntüleyin. E-posta aboneliği bu portalda henüz etkin değil.
             </p>
-
-            {subscribed ? (
-              <div className="bg-emerald-800/90 p-3 rounded-xl text-white text-xs font-bold flex items-center gap-2">
-                <CheckCircle2 size={16} /> Aboneliğiniz Kaydedildi!
-              </div>
-            ) : (
-              <form onSubmit={handleOpenForm} className="space-y-3">
-                <div className="flex items-center bg-black/40 border border-white/30 rounded-2xl p-1.5 shadow-inner">
-                  <input
-                    type="email"
-                    required
-                    placeholder="E-posta adresiniz..."
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent px-3 text-xs text-white placeholder-white/70 focus:outline-none font-medium"
-                  />
-                  <button
-                    type="submit"
-                    className={`w-8 h-8 bg-white ${isEmerald ? 'text-[#064E3B]' : 'text-[#990000]'} hover:bg-slate-100 rounded-xl flex items-center justify-center transition shrink-0 cursor-pointer shadow-lg`}
-                  >
-                    <ArrowRight size={16} />
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <input 
-                    type="checkbox" 
-                    id="sub-kvkk-visible" 
-                    required 
-                    checked={kvkkAgreed}
-                    onChange={(e) => setKvkkAgreed(e.target.checked)}
-                    className="rounded border-white/40 text-[#990000] focus:ring-white cursor-pointer" 
-                  />
-                  <label htmlFor="sub-kvkk-visible" className="text-[10px] text-white/90 font-medium cursor-pointer">
-                    <button
-                      type="button"
-                      onClick={() => setShowKvkkModal(true)}
-                      className="underline font-bold text-white hover:text-red-200 mr-1"
-                    >
-                      Aydınlatma Metni
-                    </button>
-                    'ni okudum, onaylıyorum.
-                  </label>
-                </div>
-              </form>
-            )}
+            <button
+              type="button"
+              onClick={() => setView?.('jobs')}
+              className={`inline-flex min-h-10 items-center gap-2 rounded-xl bg-white px-4 py-2 text-xs font-black ${isEmerald ? 'text-[#064E3B]' : 'text-[#990000]'} transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
+            >
+              İlanlara göz at <ArrowRight size={15} />
+            </button>
           </div>
 
         </div>

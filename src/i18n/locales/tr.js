@@ -4,6 +4,18 @@
  */
 
 export const tr = {
+  landing: {
+    heroTitle: 'Kariyerini Şekillendir',
+    heroSubtitle: 'İş ve staj fırsatlarını keşfet, kariyer becerilerini geliştir ve profesyonel ağını büyüt.',
+    heroCtaJobs: 'İş ve staj ilanlarını gör',
+    heroCtaServices: 'Kariyer hizmetlerini keşfet',
+    audienceTitle: 'Size uygun portala geçin',
+    audienceSubtitle: 'Devam etmek için kullanıcı rolünüzü seçin.',
+    student: 'Öğrenci',
+    alumni: 'Mezun',
+    employer: 'İşveren',
+    academic: 'Akademisyen'
+  },
   common: {
     appName: 'İstanbul Esenyurt Üniversitesi',
     coordinatorTitle: 'Kariyer Geliştirme Koordinatörlüğü',
@@ -17,7 +29,7 @@ export const tr = {
     close: 'Kapat',
     back: 'Geri',
     search: 'Ara...',
-    searchPlaceholder: 'İçerik, ilan veya bölüm ara...',
+    searchPlaceholder: 'Pozisyon, şirket veya staj ara...',
     viewAll: 'Tümünü Gör',
     download: 'İndir',
     print: 'Yazdır',

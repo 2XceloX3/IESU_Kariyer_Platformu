@@ -17,8 +17,8 @@ export const DEFAULT_TENANT_CONFIG = {
   logoUrl: '/iesu-logo.svg',
   faviconUrl: '/iesu-logo.svg',
   foundedYear: '2013',
-  address: 'Zafer Mah. Doğan Araslı Bulvarı No:79 Esenyurt / İstanbul',
-  phone: '+90 212 444 91 23',
+  address: 'Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt / İstanbul',
+  phone: '444 9 123 / 1322',
   colors: {
     primary: '#990000',
     primaryHover: '#7A0000',

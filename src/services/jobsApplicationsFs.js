@@ -66,7 +66,11 @@ export async function fetchApplicationsForApplicant(uid) {
 
 export async function fetchApplicationsForCompany(uid) {
   if (!uid) return [];
-  const q = query(collection(db, 'applications'), where('companyId', '==', uid));
+  const q = query(
+    collection(db, 'applications'),
+    where('companyId', '==', uid),
+    where('kvkkConsentAccepted', '==', true),
+  );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }

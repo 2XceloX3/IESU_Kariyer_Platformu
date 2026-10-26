@@ -36,6 +36,14 @@ service cloud.firestore {
       );
     }
 
+    function isStudentOrAlumni() {
+      return isAuthenticated() && (
+        request.auth.token.get('role', '') in ['student', 'alumni'] ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['student', 'alumni'])
+      );
+    }
+
     function selfSelectableRole(role) {
       return role in ['student', 'alumni', 'company', 'employer'];
     }
@@ -46,7 +54,11 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isAuthenticated();
+      // Profiles are private unless the owner opts in to employer discovery.
+      allow read: if isAuthenticated() && (
+        isOwner(userId) || isAdmin() ||
+        (isCompany() && resource.data.get('visibilityToEmployers', false) == true)
+      );
 
       allow create: if isAuthenticated()
         && request.auth.uid == userId
@@ -92,7 +104,8 @@ service cloud.firestore {
     function applicationCompanyMatchesJob() {
       return applicationJobExists()
         && get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.companyId
-          == request.resource.data.companyId;
+           == request.resource.data.companyId
+        && get(/databases//documents/jobs/).data.get('status', 'Aktif') == 'Aktif';
     }
 
     function applicantCreateStatusOk() {
@@ -108,14 +121,16 @@ service cloud.firestore {
 
     match /applications/{applicationId} {
       allow create: if isAuthenticated()
+        && isStudentOrAlumni()
         && request.resource.data.applicantId == request.auth.uid
         && applicationCompanyMatchesJob()
+        && request.resource.data.get('kvkkConsentAccepted', false) == true
         && applicantCreateStatusOk()
         && noCompanyReservedApplicationFields();
 
       allow read: if isAuthenticated() && (
         resource.data.applicantId == request.auth.uid ||
-        resource.data.companyId == request.auth.uid ||
+        (resource.data.companyId == request.auth.uid && resource.data.get('kvkkConsentAccepted', false) == true) ||
         isAdmin() ||
         isAcademic()
       );
@@ -130,6 +145,13 @@ service cloud.firestore {
           && request.resource.data.applicantId == resource.data.applicantId
           && request.resource.data.jobId == resource.data.jobId
           && request.resource.data.companyId == resource.data.companyId
+          && resource.data.get('kvkkConsentAccepted', false) == true
+          && request.resource.data.get('kvkkConsentAccepted', false) == true
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+          && request.resource.data.status in [
+            'Beklemede', 'Onay Bekliyor', 'İletişime Geçildi', 'Mülakata Çağrıldı',
+            'Mülakat', 'Kabul Edildi', 'Reddedildi'
+          ]
         )
       );
 

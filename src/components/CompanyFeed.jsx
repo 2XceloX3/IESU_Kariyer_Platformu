@@ -26,7 +26,7 @@ import JobCreator from './JobCreator';
 import { exportPDF } from '../lib/pdfExporter';
 import SafeAvatar from './shared/SafeAvatar';
 import CorporateProtocolCRM from './protocol/CorporateProtocolCRM';
-import { maskPhone, maskEmail, maskSensitiveData } from '../services/obsVerificationWorkflow';
+import { maskSensitiveData } from '../services/obsVerificationWorkflow';
 
 export default function CompanyFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab = 'feed' }) {
   const storeCurrentUser = useAppStore(state => state.currentUser);
@@ -88,7 +88,6 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   const [atsStatusFilter, setAtsStatusFilter] = useState('Tümü');
   const [selectedCandidateCvModal, setSelectedCandidateCvModal] = useState(null);
 
-  const [companyCandidateApps, setCompanyCandidateApps] = useState([]); // no demo/PII seed
   const corporateProtocols = useAppStore(state => state.corporateProtocols) || [];
 
   const allCandidateApps = React.useMemo(() => {
@@ -96,30 +95,71 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
     if (!uid) return [];
     const storeApps = (applications || []).filter(a => a.companyId === uid);
     return storeApps.map(a => {
-      const hasConsent = a.kvkkConsentAccepted === true || a.explicitConsent === true;
+      const hasConsent = a.kvkkConsentAccepted === true;
+      const sanitized = maskSensitiveData(a, {
+        viewerRole: 'company',
+        viewerId: uid,
+        explicitConsent: hasConsent
+      });
+      const profile = a.candidateProfileSnapshot && typeof a.candidateProfileSnapshot === 'object'
+        ? a.candidateProfileSnapshot
+        : {};
       const rawPhone = a.applicantPhone || a.phone || null;
       const rawEmail = a.applicantEmail || a.email || null;
-      const maskedPhone = hasConsent ? rawPhone : (rawPhone ? maskPhone(rawPhone) : null);
-      const maskedEmail = hasConsent ? rawEmail : (rawEmail ? maskEmail(rawEmail) : null);
 
       return {
         id: a.id,
-        applicantName: a.applicantName || a.name || 'Öğrenci Adayı',
-        applicantDept: a.applicantDept || a.department || 'Bölüm Belirtilmemiş',
-        jobTitle: a.jobTitle || 'Başvuru Yapılan Pozisyon',
+        applicantName: a.applicantName || a.name || 'Aday',
+        applicantDept: a.applicantDept || a.department || 'Belirtilmedi',
+        jobTitle: a.jobTitle || 'İlan',
         status: a.status || 'Beklemede',
-        applicantPhone: maskedPhone,
-        applicantEmail: maskedEmail,
+        applicantPhone: sanitized.applicantPhone || sanitized.phone || rawPhone,
+        applicantEmail: sanitized.applicantEmail || sanitized.email || rawEmail,
+        applicantAvatar: profile.avatar || a.applicantAvatar || null,
         rawPhone,
         rawEmail,
-        isMasked: !hasConsent && Boolean(rawPhone || rawEmail),
         kvkkConsentAccepted: hasConsent,
-        cvType: a.cvType || 'İESÜ Dijital CV',
+        isMasked: Boolean(sanitized.isMasked || !hasConsent),
+        cvType: a.cvType || 'Belirtilmedi',
+        cvUrl: hasConsent ? a.cvUrl || profile.cvUrl || '' : '',
+        cvFileName: hasConsent ? a.cvFileName || '' : '',
+        faculty: profile.faculty || '',
+        year: profile.year || '',
+        graduationExpectedYear: profile.graduationExpectedYear || '',
+        gpa: profile.gpa ?? '',
+        bio: profile.bio || '',
+        linkedin: profile.linkedin || '',
+        experiences: Array.isArray(profile.experiences) ? profile.experiences : [],
+        projects: Array.isArray(profile.projects) ? profile.projects : [],
+        skills: Array.isArray(profile.skills) ? profile.skills : [],
+        certificates: Array.isArray(profile.certificates) ? profile.certificates : [],
+        languages: Array.isArray(profile.languages) ? profile.languages : [],
         coverLetter: a.coverLetter || null,
         companyId: a.companyId,
       };
     });
   }, [applications, effectiveCurrentUser]);
+
+  useEffect(() => {
+    let active = true;
+    const uid = effectiveCurrentUser?.uid || effectiveCurrentUser?.id;
+    if (!uid) return () => { active = false; };
+    (async () => {
+      try {
+        const { fetchApplicationsForCompany } = await import('../services/jobsApplicationsFs');
+        const remote = await fetchApplicationsForCompany(uid);
+        if (!active || !Array.isArray(remote)) return;
+        setApplications((previous) => {
+          const merged = new Map((previous || []).map((application) => [application.id, application]));
+          remote.forEach((application) => merged.set(application.id, application));
+          return [...merged.values()];
+        });
+      } catch (error) {
+        console.warn('Firma başvuruları yüklenemedi:', error);
+      }
+    })();
+    return () => { active = false; };
+  }, [effectiveCurrentUser?.uid, effectiveCurrentUser?.id, setApplications]);
 
   const filteredCandidateApps = React.useMemo(() => {
     if (atsStatusFilter === 'Tümü') return allCandidateApps;
@@ -127,14 +167,15 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
   }, [allCandidateApps, atsStatusFilter]);
 
   const updateCandidateStatus = async (appId, newStatus) => {
-    if (setApplications) {
-      setApplications(prev => (prev || []).map(a => a.id === appId ? { ...a, status: newStatus } : a));
-    }
     try {
       const { updateApplicationStatusFs } = await import('../services/jobsApplicationsFs');
       await updateApplicationStatusFs(appId, newStatus);
+      if (setApplications) {
+        setApplications(prev => (prev || []).map(a => a.id === appId ? { ...a, status: newStatus } : a));
+      }
     } catch (e) {
       window.toast?.error?.(e?.message || 'Durum Firestore\'a yazılamadı');
+      return;
     }
     const targetCandidate = allCandidateApps.find(a => a.id === appId);
     window.toast?.success?.(`Aday (${targetCandidate?.applicantName || 'Öğrenci'}) durumu "${newStatus}" olarak güncellendi.`);
@@ -307,12 +348,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     {effectiveCurrentUser?.name || 'Kurumsal Firma'}
                   </h2>
                   <p className="text-[12px] font-bold text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded-full inline-block mb-3 border border-blue-100">
-                    {effectiveCurrentUser?.sector || 'Sektör Lideri / Resmî Anlaşmalı Firma'}
+                    {effectiveCurrentUser?.sector || 'Sektör bilgisi eklenmedi'}
                   </p>
                   
                   <div className="mt-2 text-center p-3 bg-blue-50/60 rounded-xl border border-blue-100">
                     <p className="text-[11px] font-bold text-blue-950">Kariyer Geliştirme Merkezi</p>
-                    <p className="text-[10px] text-blue-700 font-medium mt-0.5">Resmî Kurumsal İletişim Portalı</p>
+                    <p className="text-[10px] text-blue-700 font-medium mt-0.5">İş ilanları ve başvuru yönetimi</p>
                   </div>
 
                   <div className="mt-3 flex flex-col gap-2 w-full">
@@ -972,7 +1013,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                   <p className="text-[11px] text-slate-500 font-medium mt-0.5">Başvuran öğrencilerin durumunu güncelleyip iletişime geçebilirsiniz.</p>
                 </div>
                 <span className="bg-purple-100 text-purple-900 font-black text-xs px-3.5 py-1.5 rounded-xl border border-purple-200 shadow-2xs">
-                  Toplam {companyCandidateApps.length} Aday Başvurusu
+                  Toplam {allCandidateApps.length} Aday Başvurusu
                 </span>
               </div>
 
@@ -988,7 +1029,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                         : 'bg-white text-slate-600 hover:bg-purple-100/60 border border-slate-200/80'
                     }`}
                   >
-                    {filterTab} {filterTab === 'Tümü' ? `(${companyCandidateApps.length})` : `(${companyCandidateApps.filter(a => a.status === filterTab).length})`}
+                    {filterTab} {filterTab === 'Tümü' ? `(${allCandidateApps.length})` : `(${allCandidateApps.filter(a => a.status === filterTab).length})`}
                   </button>
                 ))}
               </div>
@@ -1035,7 +1076,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                           onClick={() => setSelectedCandidateCvModal(app)} 
                           className="px-2.5 py-1 bg-slate-900 hover:bg-black text-white rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
                         >
-                          <FileText size={13} /> CV İncele
+                          <FileText size={13} /> Başvuruyu incele
                         </button>
                         <button 
                           onClick={() => {
@@ -1060,8 +1101,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     {/* Contact Info & Cover Letter Box */}
                     <div className="p-3 bg-slate-50/90 rounded-xl space-y-2 text-[11px] text-slate-700 border border-slate-200/70">
                       <div className="flex items-center gap-3 flex-wrap font-medium text-slate-800 text-[11px]">
-                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">📱 Tel: {app.applicantPhone || '05** *** ** **'}</span>
-                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">✉️ E-Posta: {app.applicantEmail || '***@***.***'}</span>
+                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">📱 Tel: {app.applicantPhone || 'Telefon paylaşılmadı'}</span>
+                        <span className="font-bold text-slate-900 bg-white px-2.5 py-0.5 rounded border border-slate-200/60 shadow-2xs">✉️ E-Posta: {app.applicantEmail || 'E-posta paylaşılmadı'}</span>
                         <span className="text-purple-800 font-extrabold bg-purple-50 px-2.5 py-0.5 rounded border border-purple-100 shadow-2xs">📄 {app.cvType}</span>
                         {app.isMasked && (
                           <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shadow-2xs" title="6698 Sayılı KVKK ve CBDO BİGR uyarınca üçüncü şahıslara karşı maskelenmiştir">
@@ -1108,7 +1149,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
             {/* Modal Footer */}
             <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between shrink-0">
-              <span className="text-xs text-slate-500 font-medium">İESÜ Kariyer Geliştirme Merkezi Doğrulanmış Aday Paneli</span>
+              <span className="text-xs text-slate-500 font-medium">Aday başvuruları</span>
               <button 
                 onClick={() => setShowCompanyAppsModal(false)}
                 className="px-5 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition cursor-pointer"
@@ -1121,7 +1162,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         </div>
       )}
 
-      {/* ─── KGM AKREDİTE GERÇEK A4 DİJİTAL CV MODALI & İNDİRME / YAZDIRMA (Z-[10000]) ─── */}
+      {/* Candidate-submitted application summary and printable view. */}
       {selectedCandidateCvModal && (
         <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in font-sans">
           <div className="bg-slate-900 rounded-3xl w-full max-w-4xl shadow-2xl border border-blue-800/40 overflow-hidden flex flex-col max-h-[94vh] relative">
@@ -1133,8 +1174,8 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                   <FileText size={20} />
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-white">{selectedCandidateCvModal.applicantName} — Resmi A4 Dijital CV</h3>
-                  <p className="text-[11px] text-purple-200 font-medium">İESÜ Kariyer Geliştirme Merkezi Akredite Belge</p>
+                  <h3 className="font-black text-sm text-white">{selectedCandidateCvModal.applicantName} — Başvuru özeti</h3>
+                  <p className="text-[11px] text-purple-200 font-medium">Adayın başvuruda paylaştığı bilgiler</p>
                 </div>
               </div>
 
@@ -1142,12 +1183,12 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => {
-                    const filename = `${(selectedCandidateCvModal.applicantName || 'Öğrenci').replace(/\s+/g, '_')}_IESU_Akredite_CV.pdf`;
+                    const filename = `${(selectedCandidateCvModal.applicantName || 'Aday').replace(/\s+/g, '_')}_Basvuru_Ozeti.pdf`;
                     exportPDF('printable-a4-cv', filename);
                   }}
                   className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-md"
                 >
-                  <FileText size={15} /> 📥 A4 PDF İndir
+                  <FileText size={15} /> PDF olarak kaydet
                 </button>
 
                 <button
@@ -1178,27 +1219,27 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               </div>
             </div>
 
-            {/* Modal Body Container (A4 Printable Canvas Area) */}
+            {/* Printable application summary */}
             <div className="p-4 sm:p-8 overflow-y-auto flex-1 bg-slate-800/60 custom-scrollbar flex justify-center">
               
-              {/* ─── REALISTIC A4 SHEET CANVAS (210mm x 297mm Ratio - CV preview layout) ─── */}
+              {/* A4 layout for printing */}
               <div id="printable-a4-cv" className="w-full max-w-[210mm] bg-white text-slate-900 p-8 sm:p-10 shadow-2xl rounded-sm border border-slate-300 space-y-6 font-sans text-left relative min-h-[297mm]">
                 
-                {/* TOP NAME & CONTACT BAR (CV preview layout - Contact Details Flush at Divider Line) */}
+                {/* Candidate name and contact details */}
                 <div className="flex justify-between items-start border-b border-slate-300 pb-3 gap-4">
                   <div className="flex-1 flex flex-col justify-between min-h-[7rem]">
                     <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight pt-2">{selectedCandidateCvModal.applicantName}</h1>
                     <div className="flex items-center gap-4 text-xs font-semibold text-slate-700 flex-wrap pt-2">
-                      <span>📱 {selectedCandidateCvModal.applicantPhone || '0543-187-59-90'}</span>
-                      <span>✉️ {selectedCandidateCvModal.applicantEmail || '—'}</span>
-                      <span>🔗 {selectedCandidateCvModal.linkedin || '—'}</span>
+                      {selectedCandidateCvModal.applicantPhone && <span>📱 {selectedCandidateCvModal.applicantPhone}</span>}
+                      {selectedCandidateCvModal.applicantEmail && <span>✉️ {selectedCandidateCvModal.applicantEmail}</span>}
+                      {selectedCandidateCvModal.linkedin && <a className="underline" href={selectedCandidateCvModal.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>}
                     </div>
                   </div>
 
                   {/* Profile Photo / Avatar Frame */}
                   <div className="w-24 h-28 bg-slate-100 border border-slate-300 rounded-lg shadow-xs overflow-hidden shrink-0 flex items-center justify-center">
-                    {selectedCandidateCvModal.photo ? (
-                      <SafeAvatar src={selectedCandidateCvModal.photo} name={selectedCandidateCvModal.applicantName} size={80} className="w-full h-full object-cover" />
+                    {selectedCandidateCvModal.applicantAvatar ? (
+                      <SafeAvatar src={selectedCandidateCvModal.applicantAvatar} name={selectedCandidateCvModal.applicantName} size={80} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-tr from-purple-800 to-indigo-900 text-white font-black text-xl flex items-center justify-center">
                         {selectedCandidateCvModal.applicantName.substring(0, 2).toUpperCase()}
@@ -1215,30 +1256,32 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     
                     {/* Hakkımda */}
                     <section className="space-y-1 border-b border-slate-200 pb-3.5">
-                      <h2 className="text-sm font-black text-slate-900 uppercase tracking-wide">Hakkımda</h2>
+                      <h2 className="text-sm font-black text-slate-900 uppercase tracking-wide">Profil özeti</h2>
                       <p className="text-[11.5px] text-slate-700 leading-relaxed font-normal">
-                        {selectedCandidateCvModal.coverLetter || 'Uluslararası Ticaret ve Finansman bölümünden mezun oldum. İstanbul Esenyurt Üniversitesi Havacılık Yönetimi çift ana dal programında son sınıf öğrencisiyim. Zorunlu derslerimi tamamladığım için tam zamanlı çalışmaya uygunum. Yaklaşık 9,5 yıllık iş tecrübem boyunca saha operasyonları, ekip koordinasyonu ve kriz yönetimi alanlarında deneyim kazandım.'}
+                        {selectedCandidateCvModal.bio || 'Aday henüz bir profil özeti paylaşmadı.'}
                       </p>
                     </section>
+
+                    {selectedCandidateCvModal.coverLetter && (
+                      <section className="space-y-1 border-b border-slate-200 pb-3.5">
+                        <h2 className="text-sm font-black text-slate-900 uppercase tracking-wide">Başvuru ön yazısı</h2>
+                        <p className="text-[11.5px] text-slate-700 leading-relaxed font-normal">{selectedCandidateCvModal.coverLetter}</p>
+                      </section>
+                    )}
 
                     {/* İş Deneyimi */}
                     <section className="space-y-2 border-b border-slate-200 pb-3.5">
                       <h2 className="text-sm font-black text-slate-900 uppercase tracking-wide">İş Deneyimi</h2>
                       <div className="space-y-2 text-xs">
-                        {(selectedCandidateCvModal.experiences || [
-                          { role: 'Stajyer', company: 'İstanbul Büyükşehir Belediyesi', date: '01.02.2013 – 01.02.2017' },
-                          { role: 'Aşçı Yardımcısı', company: 'İSPER A.Ş.', date: '01.02.2017-22.09.2022' },
-                          { role: 'Stajyer', company: 'Ziraat Bankası', date: '19.08.2024-16.09.2024' },
-                          { role: 'Kütüphane Görevlisi', company: 'T.C. Gençlik ve Spor Bakanlığı', date: '01.02.2026-01.06.2026' }
-                        ]).map((exp, idx) => (
+                        {(selectedCandidateCvModal.experiences || []).length ? selectedCandidateCvModal.experiences.map((exp, idx) => (
                           <div key={idx} className="flex justify-between items-baseline text-xs">
                             <div>
-                              <span className="font-black text-slate-900 mr-2">{exp.role}</span>
-                              <span className="font-semibold text-slate-700">{exp.company}</span>
+                              <span className="font-black text-slate-900 mr-2">{exp.role || exp.title}</span>
+                              <span className="font-semibold text-slate-700">{exp.company || exp.organization}</span>
                             </div>
-                            <span className="font-mono text-[11px] text-slate-600 font-bold shrink-0">{exp.date}</span>
+                            <span className="font-mono text-[11px] text-slate-600 font-bold shrink-0">{exp.date || [exp.startDate, exp.endDate].filter(Boolean).join(' – ')}</span>
                           </div>
-                        ))}
+                        )) : <p className="text-slate-500">Deneyim bilgisi paylaşılmadı.</p>}
                       </div>
                     </section>
 
@@ -1246,19 +1289,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     <section className="space-y-2">
                       <h2 className="text-sm font-black text-slate-900 uppercase tracking-wide">Projeler ve Organizasyon Deneyimi</h2>
                       <div className="space-y-2.5">
-                        {(selectedCandidateCvModal.projects || [
-                          { title: 'Fakülte Öğrenci Temsilciliği ve Üniversite Öğrenci Temsilciliği', date: '2023 - 2026' },
-                          { title: 'Gençlik ve Spor Bakanlığı Üniversite Öğrenci Temsilciliği', date: '2024 - 2026' },
-                          { title: 'Kalite Koordinatörlüğü Fakülte Öğrenci Temsilciliği', date: '2025 - 2026' },
-                          { title: 'Kalite Koordinatörlüğü Üniversite Öğrenci Temsilciliği', date: '2025 - 2026' },
-                          { title: 'Genç Yeşilay Kulüp Başkanlığı', date: '2025 - 2026' },
-                          { title: 'Güneydoğu Anadolu İhracatçı Birlikleri Eğitimi', date: '09.07 2024', desc: 'Turquality® Dünyanın İlk ve Tek Devlet Destekli Markalaşma Programı / Excel\'de Kısa Yollar ve Pratik Uygulamalar' },
-                          { title: 'TÜBİTAK 2209-A Araştırma Projesi Üniversite Öğrencileri Araştırma Projesi', date: '2024 -2024', subTitle: '"Dijital Dalgada Savrulanlar: Z Kuşağının İmtihanı"', desc: 'Proje ekibinde görev aldım. Araştırma ve raporlama süreçlerine katkı sağladım.' },
-                          { title: 'Gençlik ve Spor Bakanlığı Unides Projesi', date: '2025 - 2026', desc: '(Proje Ekibi/Yürütücüsü) 4 ve 5 Dönem (Yeşil Fest)' },
-                          { title: 'STAR Akreditasyon', date: '2026', desc: 'İşletme ve Yönetimi Bilimleri Fakültesi Öğrenci Temsilcisi olarak görev aldım' },
-                          { title: 'Medek Akreditasyon', desc: 'Kalite Koordinatörlüğü Üniversite Öğrenci Temsilcisi olarak görev aldım' },
-                          { title: 'MayFest 26 Bahar Festivali', date: '2026', desc: 'Mayfest 26 Üniversite Öğrenci Temsilcisi olarak öğrenci organizasyon katılımı ve yönetimi süreçlerinde görev aldım' }
-                        ]).map((proj, idx) => (
+                        {(selectedCandidateCvModal.projects || []).length ? selectedCandidateCvModal.projects.map((proj, idx) => (
                           <div key={idx} className="space-y-0.5 border-l-2 border-slate-200 pl-2.5">
                             <div className="flex justify-between items-baseline">
                               <span className="font-bold text-slate-900">{proj.title}</span>
@@ -1267,7 +1298,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                             {proj.subTitle && <p className="font-semibold text-slate-800 text-[11px]">{proj.subTitle}</p>}
                             {proj.desc && <p className="text-slate-600 text-[11px] font-normal">{proj.desc}</p>}
                           </div>
-                        ))}
+                        )) : <p className="text-slate-500">Proje bilgisi paylaşılmadı.</p>}
                       </div>
                     </section>
 
@@ -1280,68 +1311,41 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
                     <section className="space-y-0.5">
                       <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">Eğitim</h3>
                       <p className="font-bold text-slate-900">İstanbul Esenyurt Üniversitesi</p>
-                      <p className="text-slate-700 font-medium">{selectedCandidateCvModal.applicantDept || 'Uluslararası Ticaret ve Finansman'}</p>
-                      <p className="text-[11px] text-slate-500 font-bold">2022-2026</p>
+                      <p className="text-slate-700 font-medium">{selectedCandidateCvModal.applicantDept || selectedCandidateCvModal.faculty || 'Bölüm bilgisi paylaşılmadı'}</p>
+                      {selectedCandidateCvModal.year && <p className="text-[11px] text-slate-500">Sınıf: {selectedCandidateCvModal.year}</p>}
+                      {selectedCandidateCvModal.graduationExpectedYear && <p className="text-[11px] text-slate-500">Beklenen mezuniyet: {selectedCandidateCvModal.graduationExpectedYear}</p>}
+                      {selectedCandidateCvModal.gpa !== '' && selectedCandidateCvModal.gpa != null && <p className="text-[11px] text-slate-500">Not ortalaması: {selectedCandidateCvModal.gpa}</p>}
                     </section>
 
                     {/* Teknik Yetkinlikler */}
                     <section className="space-y-0.5">
                       <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">Teknik Yetkinlikler</h3>
                       <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-700 font-medium">
-                        {(selectedCandidateCvModal.skillsTech || ['MS Office', 'Excel', 'Yapay zekâ araçları (ChatGPT, Claude, Gemini, Codex)', 'Google Workspace']).map((sk, i) => (
+                        {(selectedCandidateCvModal.skills || []).length ? selectedCandidateCvModal.skills.map((sk, i) => (
                           <li key={i}>{sk}</li>
-                        ))}
+                        )) : <li>Yetkinlik paylaşılmadı.</li>}
                       </ul>
                     </section>
 
-                    {/* Kişisel Yetkinlikler */}
+                    {/* Languages and certificates */}
                     <section className="space-y-0.5">
-                      <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">Kişisel Yetkinlikler</h3>
-                      <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-700 font-medium">
-                        {(selectedCandidateCvModal.skillsPersonal || ['Analitik düşünme', 'Problem çözme', 'Takım çalışması', 'Organizasyon', 'Zaman yönetimi', 'Kriz yönetimi']).map((sk, i) => (
-                          <li key={i}>{sk}</li>
-                        ))}
-                      </ul>
+                      <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">Diller</h3>
+                      {(selectedCandidateCvModal.languages || []).length ? selectedCandidateCvModal.languages.map((language, i) => <p key={i} className="text-[11px] text-slate-600">{typeof language === 'string' ? language : [language.name, language.level].filter(Boolean).join(' — ')}</p>) : <p className="text-[11px] text-slate-500">Dil bilgisi paylaşılmadı.</p>}
                     </section>
 
-                    {/* İlgi Alanları */}
                     <section className="space-y-0.5">
-                      <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">İlgi Alanları</h3>
-                      <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-700 font-medium">
-                        {(selectedCandidateCvModal.interests || ['Gitar', 'Yapay zekâ teknolojileri', 'Dijital teknolojiler', 'Havacılık', 'Uluslararası ticaret ve lojistik', 'Kişisel gelişim', 'Dövüş Sporları']).map((sk, i) => (
-                          <li key={i}>{sk}</li>
-                        ))}
-                      </ul>
-                    </section>
-
-                    {/* KİŞİSEL VE MESLEKİ GELİŞİM */}
-                    <section className="space-y-0.5">
-                      <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">KİŞİSEL VE MESLEKİ GELİŞİM</h3>
-                      <ul className="list-disc list-inside space-y-0.5 text-[11px] text-slate-700 font-medium">
-                        {(selectedCandidateCvModal.trainings || ['AFAD Temel Afet Farkındalık Eğitimi', 'AFAD Gönüllülük Eğitimi', 'Temel İlk Yardım Eğitimi', 'Kariyer ve Liderlik Seminerleri']).map((tr, i) => (
-                          <li key={i}>{tr}</li>
-                        ))}
-                      </ul>
-                    </section>
-
-                    {/* Dil */}
-                    <section className="space-y-0.5">
-                      <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">Dil</h3>
-                      <p className="font-bold text-slate-900">İngilizce</p>
-                      <p className="text-[11px] text-slate-600 font-medium">{selectedCandidateCvModal.language || 'İngilizce — Temel Seviye (A2)'}</p>
+                      <h3 className="font-black text-slate-900 uppercase tracking-wide text-xs">Sertifikalar</h3>
+                      {(selectedCandidateCvModal.certificates || []).length ? selectedCandidateCvModal.certificates.map((certificate, i) => <p key={i} className="text-[11px] text-slate-600">{typeof certificate === 'string' ? certificate : [certificate.name || certificate.title, certificate.issuer].filter(Boolean).join(' — ')}</p>) : <p className="text-[11px] text-slate-500">Sertifika bilgisi paylaşılmadı.</p>}
                     </section>
 
                   </div>
 
                 </div>
 
-                {/* FOOTER VERIFICATION SEAL */}
+                {/* Data provenance */}
                 <div className="pt-4 border-t border-slate-300 flex items-center justify-between text-[10px] text-slate-500">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-emerald-700" />
-                    <span className="font-extrabold text-slate-800">İstanbul Esenyurt Üniversitesi KGM Akredite Belge — e-İmza Onaylı</span>
-                  </div>
-                  <span className="font-mono font-bold text-slate-700">Ref: KGM-CV-2026</span>
+                  <span>Bu özet, adayın başvuruda paylaştığı beyanlardan oluşturulmuştur.</span>
+                  {selectedCandidateCvModal.cvUrl && <a className="font-bold text-blue-700 underline" href={selectedCandidateCvModal.cvUrl} target="_blank" rel="noreferrer">Adayın yüklediği CV dosyasını aç</a>}
                 </div>
 
               </div>
@@ -1350,7 +1354,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
 
             {/* Modal Footer Bar */}
             <div className="p-4 bg-slate-900 border-t border-slate-700 flex items-center justify-between shrink-0">
-              <span className="text-xs text-purple-200/70 font-medium">A4 Printable Format & Live PDF Exporter</span>
+              <span className="text-xs text-purple-200/70 font-medium">Adayın paylaştığı başvuru bilgileri</span>
               <button 
                 onClick={() => setSelectedCandidateCvModal(null)}
                 className="px-5 py-2 bg-white hover:bg-slate-200 text-slate-900 rounded-xl text-xs font-bold transition cursor-pointer"

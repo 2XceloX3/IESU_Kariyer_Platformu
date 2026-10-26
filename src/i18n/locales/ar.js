@@ -4,6 +4,18 @@
  */
 
 export const ar = {
+  landing: {
+    heroTitle: 'ارسم مسارك المهني',
+    heroSubtitle: 'اكتشف فرص العمل والتدريب، وطوّر مهاراتك المهنية، ووسّع شبكة علاقاتك.',
+    heroCtaJobs: 'استكشف الوظائف والتدريب',
+    heroCtaServices: 'استكشف الخدمات المهنية',
+    audienceTitle: 'اختر بوابتك',
+    audienceSubtitle: 'حدّد دورك للمتابعة.',
+    student: 'طالب',
+    alumni: 'خريج',
+    employer: 'صاحب عمل',
+    academic: 'أكاديمي'
+  },
   common: {
     appName: 'جامعة إسطنبول إيسنيورت (İESÜ)',
     coordinatorTitle: 'منسقية التطوير المهني والتوظيف',
@@ -17,7 +29,7 @@ export const ar = {
     close: 'إغلاق',
     back: 'رجوع',
     search: 'بحث...',
-    searchPlaceholder: 'ابحث عن الفرص، الفعاليات أو الأقسام...',
+    searchPlaceholder: 'ابحث عن وظيفة أو جهة عمل أو تدريب...',
     viewAll: 'عرض الكل',
     download: 'تنزيل',
     print: 'طباعة',

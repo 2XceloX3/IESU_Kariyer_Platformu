@@ -4,6 +4,18 @@
  */
 
 export const de = {
+  landing: {
+    heroTitle: 'Gestalte deine Karriere',
+    heroSubtitle: 'Entdecke Stellen und Praktika, entwickle deine Karrierekompetenzen und erweitere dein berufliches Netzwerk.',
+    heroCtaJobs: 'Stellen und Praktika entdecken',
+    heroCtaServices: 'Karriereservices entdecken',
+    audienceTitle: 'Wähle dein Portal',
+    audienceSubtitle: 'Wähle deine Rolle, um fortzufahren.',
+    student: 'Studierende',
+    alumni: 'Alumni',
+    employer: 'Arbeitgeber',
+    academic: 'Akademische Mitarbeitende'
+  },
   common: {
     appName: 'Istanbul Esenyurt Universität (IESU)',
     coordinatorTitle: 'Koordinationsstelle für Karriereentwicklung',
@@ -17,7 +29,7 @@ export const de = {
     close: 'Schließen',
     back: 'Zurück',
     search: 'Suchen...',
-    searchPlaceholder: 'Angebote, Veranstaltungen oder Fachbereiche durchsuchen...',
+    searchPlaceholder: 'Stellen, Arbeitgeber oder Praktika durchsuchen...',
     viewAll: 'Alle anzeigen',
     download: 'Herunterladen',
     print: 'Drucken',

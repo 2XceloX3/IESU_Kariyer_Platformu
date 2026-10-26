@@ -24,7 +24,7 @@ export default function FooterModals({ activeModal, onClose, setView }) {
       content: (
         <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
           <p>
-            İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi; öğrencilerimizin ve mezunlarımızın kariyer yolculuklarında potansiyellerini en üst seviyeye çıkarmalarını, iş dünyasına nitelikli ve özgüvenli bireyler olarak adım atmalarını hedefleyen resmî üniversite birimidir.
+            İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi, öğrencilerin ve mezunların kariyer planlama süreçlerini destekleyen üniversite birimidir.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <div className="p-3 bg-red-50/60 rounded-xl border border-red-100">
@@ -33,7 +33,7 @@ export default function FooterModals({ activeModal, onClose, setView }) {
             </div>
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
               <h4 className="font-bold text-slate-900 text-xs uppercase mb-1">Vizyonumuz</h4>
-              <p className="text-xs text-slate-600">Türkiye'nin lider üniversite-sanayi iş birliği ve dijital istihdam ekosistemini yürütmek.</p>
+              <p className="text-xs text-slate-600">Öğrenci ve mezunların kariyer gelişimini destekleyen, iş dünyasıyla bağlantı kuran bir yapı oluşturmak.</p>
             </div>
           </div>
         </div>
@@ -46,12 +46,11 @@ export default function FooterModals({ activeModal, onClose, setView }) {
       content: (
         <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
           <p>
-            Kariyer Portalı; W3C WCAG 2.1 AA erişilebilirlik standartlarına uygun olarak tasarlanmıştır. Görme, işitme ve motor beceri farklılıkları olan tüm kullanıcılarımız için yüksek kontrastlı arayüz ve ekran okuyucu uyumluluğu sunulmaktadır.
+            Portalın erişilebilirliğini geliştirmeye devam ediyoruz. Klavye kullanımı, ekran okuyucu veya görsel okunabilirlikle ilgili bir sorunla karşılaşırsanız üniversitenin resmî iletişim kanalından bildirebilirsiniz.
           </p>
           <ul className="space-y-2 text-xs font-semibold text-slate-600">
-            <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-500" /> Ekran Okuyucu (Screen Reader) Uyumlu Semantic HTML</li>
-            <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-500" /> Yüksek Kontrast Metin & Odaklama Göstergeleri (Focus Ring)</li>
-            <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-500" /> Klavye İle Tam Navigasyon Erişimi (Tab/Enter)</li>
+            <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-500" /> Ekran boyutlarına uyumlu düzen üzerinde çalışıyoruz</li>
+            <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-500" /> Klavye ve odak göstergeleri için iyileştirmeler sürüyor</li>
           </ul>
         </div>
       )
@@ -64,18 +63,18 @@ export default function FooterModals({ activeModal, onClose, setView }) {
         <div className="space-y-3 text-slate-700 text-sm">
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
             <h4 className="font-bold text-slate-900 text-xs mb-1">Portala nasıl kaydolabilirim?</h4>
-            <p className="text-xs text-slate-600">Öğrenci ve mezunlarımız ÖBS/MBS bilgileriyle, firmalar ise kurumsal vergi no doğrulama protokolüyle anında giriş yapabilir.</p>
+            <p className="text-xs text-slate-600">Kayıt ekranında hesabınıza uygun kullanıcı türünü seçin ve istenen bilgileri tamamlayın. Hesap erişiminde sorun yaşarsanız resmî üniversite iletişim kanalına başvurun.</p>
           </div>
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
             <h4 className="font-bold text-slate-900 text-xs mb-1">Staj ve İlan Başvuruları nasıl iletilir?</h4>
-            <p className="text-xs text-slate-600">İlan detayındaki "Hemen Başvur" butonuna tıklayarak profilinizi ve CV'nizi doğrudan firma İKY paneline iletebilirsiniz.</p>
+            <p className="text-xs text-slate-600">İlan detayındaki başvuru adımlarını ve paylaşım onayını inceleyin. Başvurularım ekranından mevcut başvurularınızı takip edebilirsiniz.</p>
           </div>
           <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-100 flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-blue-900">Doğrudan Destek Hattı</p>
-              <p className="text-[11px] text-blue-700">kariyer@esenyurt.edu.tr | +90 (212) 699 00 00</p>
+              <p className="text-[11px] text-blue-700">444 9 123 / 1322</p>
             </div>
-            <button onClick={() => { onClose?.(); setView?.('messaging'); }} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition cursor-pointer">Mesaj Gönder</button>
+            <a href="https://www.esenyurt.edu.tr/icerik/3223-kariyer-gelistirme-merkezi-koordinatorlugu-iletisim" target="_blank" rel="noreferrer" className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition">İletişim bilgileri</a>
           </div>
         </div>
       )
@@ -86,14 +85,8 @@ export default function FooterModals({ activeModal, onClose, setView }) {
       icon: <ShieldCheck className="text-purple-600" size={24} />,
       content: (
         <div className="space-y-3 text-slate-700 text-sm leading-relaxed">
-          <p className="text-xs">
-            Kişisel verileriniz, 6698 sayılı KVKK mevzuatına uygun olarak yalnızca kariyer geliştirme, staj eşleştirme, mezun takip ve iş başvurularının kurumsal firmalara iletilmesi amacıyla işlenmektedir.
-          </p>
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1.5">
-            <p className="font-bold text-slate-900">Veri Güvenliği Garantisi:</p>
-            <p className="text-slate-600">• Kişisel verileriniz hiçbir üçüncü taraf reklam veya pazarlama şirketine satılmaz.</p>
-            <p className="text-slate-600">• Özgeçmişiniz yalnızca başvurduğunuz onaylı anlaşmalı kurumsal firmalara gösterilir.</p>
-          </div>
+          <p className="text-xs">Bu portalda profil ve başvuru verilerinin işlenme kapsamı, aktarımı ve saklama süresi için portala özgü onaylı aydınlatma metni yayımlanmalıdır. Bu kart hukuki aydınlatma metni yerine geçmez.</p>
+          <a href="https://www.esenyurt.edu.tr/icerik/1013-kisisel-verilerin-korunmasi" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-xs font-bold text-purple-900">Üniversitenin resmî KVKK sayfası</a>
         </div>
       )
     },
@@ -104,13 +97,11 @@ export default function FooterModals({ activeModal, onClose, setView }) {
       content: (
         <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
           <p>
-            İstanbul Esenyurt Üniversitesi Kariyer Portalı'nda onaylı kurumsal firmalar, Yetenek Fuarı sponsorlukları, öne çıkan staj duyuruları ve kurumsal marka tanıtım panelleri yayınlayabilir.
+            İşveren iş birliği veya etkinlik desteği için Kariyer Geliştirme Merkeziyle resmî iletişim kanallarından bağlantı kurun. Bu portalda ücretli reklam veya sponsorluk satın alma akışı tanımlı değildir.
           </p>
           <div className="p-4 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
-            <h4 className="font-bold text-amber-900 text-xs uppercase">Sponsorluk Seçenekleri:</h4>
-            <p className="text-xs text-amber-800">• Öne Çıkan Kurum Banner İlanları</p>
-            <p className="text-xs text-amber-800">• Kampüs Kariyer Zirvesi Stant Kurulum Hakları</p>
-            <p className="text-xs text-amber-800">• Doğrudan Hedefli Yetenek E-Posta Duyuruları</p>
+            <h4 className="font-bold text-amber-900 text-xs uppercase">İletişim</h4>
+            <a className="text-xs text-amber-800 underline" href="https://www.esenyurt.edu.tr/icerik/3223-kariyer-gelistirme-merkezi-koordinatorlugu-iletisim" target="_blank" rel="noreferrer">Güncel iletişim bilgilerini aç</a>
           </div>
         </div>
       )
@@ -121,16 +112,7 @@ export default function FooterModals({ activeModal, onClose, setView }) {
       icon: <Briefcase className="text-[#990000]" size={24} />,
       content: (
         <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
-          <p>
-            İstanbul Esenyurt Üniversitesi kadrosu veya yüksek teknoloji park ortaklıklarında açık akademik/idari pozisyonlara göz atın.
-          </p>
-          <div className="p-3 bg-red-50/60 rounded-xl border border-red-100 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-900 text-xs">Yazılım & Sistem Uzmanı</span>
-              <span className="text-[10px] font-bold text-[#990000] bg-white px-2 py-0.5 rounded border border-red-200">Tam Zamanlı</span>
-            </div>
-            <p className="text-xs text-slate-600">Bilgi İşlem Daire Başkanlığı bünyesinde web portal geliştirici pozisyonu.</p>
-          </div>
+          <p>Portalda yayımlanan güncel iş ve staj ilanlarını inceleyin. Boş pozisyonlar listede gösterilmediğinde açık ilan bulunmuyor olabilir.</p>
           <button onClick={() => { onClose?.(); setView?.('jobs'); }} className="w-full py-2.5 bg-[#990000] text-white rounded-xl text-xs font-bold hover:bg-red-800 transition shadow-sm cursor-pointer">
             Tüm İlan & Staj Pozisyonlarına Git
           </button>

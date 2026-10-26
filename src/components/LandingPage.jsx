@@ -108,16 +108,16 @@ export default function LandingPage({ setView, currentUser, userRole }) {
     events_list: {
       title: "Akademik ve Sektörel Etkinliklerimiz",
       category: "Etkinlik Takvimi",
-      date: "2026 Güz & Bahar Dönemi",
+      date: "Güncel takvim için resmî duyuruları izleyin",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/05/wuyeismnf35tr-bahar-senligi.jpg",
-      content: `### Yaklaşan ve Güncel Etkinliklerimiz\n\nİstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından düzenlenen atölyeler, seminerler ve zirveler:\n\n---\n\n#### 🎪 1. İESÜ Bahar Şenliği & Kariyer Festivali 2026\n- **Tarih:** 15-18 Mayıs 2026\n- **Yer:** Esenyurt Kampüsü Ana Bahçe\n- **Detay:** Sektör lideri şirket stantları, kariyer sohbetleri ve müzik performansları eşliğinde yıllık büyük buluşma.\n\n---\n\n#### 🏆 2. Bilim Rüzgarı & Akademik Başarı Ödül Töreni\n- **Tarih:** 20 Nisan 2026\n- **Yer:** Konferans Salonu\n- **Detay:** Başarılı projelerin, TEKNOFEST ekiplerinin ve akademik yayın ödüllerinin takdim edildiği resmi tören.\n\n---\n\n#### 🚀 3. TEKNOFEST & Ar-Ge Girişimcilik Zirvesi\n- **Tarih:** 10 Mart 2026\n- **Yer:** İESÜMER Kuluçka Merkezi\n- **Detay:** TEKNOFEST yarışmalarına katılacak öğrenci takımlarına teknik mentorluk ve fon sunumları.`
+      content: `### Etkinlik takvimi\n\nGüncel etkinlik tarihleri, başvuru koşulları ve katılım bilgileri için üniversitenin resmî duyurularını kontrol edin. Bu portalda güncel etkinlik kaydı yoksa geçmiş tarihler yaklaşan etkinlik gibi gösterilmez.`
     },
     contact_us: {
       title: "Kariyer Geliştirme Merkezi İletişim Bilgileri",
       category: "İletişim & Ulaşım",
-      date: "7/24 Kesintisiz Destek",
+      date: "İletişim ve çalışma saatleri",
       imageUrl: "https://www.esenyurt.edu.tr/uploads/2024/06/km1geeaqjq2ly-aday-ogrenci.png",
-      content: `### Bizimle İletişime Geçin\n\nKariyer planlama, staj işlemleri, randevu talepleri veya kurumsal iş birlikleri için aşağıdaki iletişim kanallarından bize ulaşabilirsiniz:\n\n---\n\n#### 📍 Kampüs Adresi\n**İstanbul Esenyurt Üniversitesi Rektörlüğü**\nZafer Mahallesi, Doğan Araslı Bulvarı No:79, 34513 Esenyurt / İstanbul\n\n---\n\n#### 📞 Telefon ve E-Posta\n- **Santral:** 444 9 123 / 0 (212) 422 70 00\n- **E-Posta:** kariyer@esenyurt.edu.tr\n- **Öğrenci Dekanlığı:** ogrencidekanligi@esenyurt.edu.tr\n\n---\n\n#### ⏰ Çalışma Saatleri\nHafta İçi: 08:30 - 17:30 (Resmi Tatiller Hariç)`
+      content: `### Kariyer Geliştirme Merkezi ile iletişim\n\nGüncel adres ve telefon bilgileri için üniversitenin resmî kariyer merkezi iletişim sayfasını kullanın.\n\n- **Adres:** Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt / İstanbul\n- **Santral:** 444 9 123\n- **Kariyer Merkezi:** 444 9 123 / 1322\n- **E-posta:** kariyer@esenyurt.edu.tr\n\n[Resmî iletişim sayfası](https://www.esenyurt.edu.tr/icerik/3223-kariyer-gelistirme-merkezi-koordinatorlugu-iletisim)`
     }
   }), []);
 
@@ -238,12 +238,11 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 title: 'İESÜMER Kuluçka & Girişimcilik Merkezi',
                 badge: '🚀 Girişimcilik & Ar-Ge',
                 imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&auto=format&fit=crop&q=60',
-                desc: 'İESÜMER Kuluçka Merkezi; öğrencilerimizin yenilikçi iş fikirlerini prototipe dönüştürmelerini sağlayan, prototip laboratuvarları, 3D yazıcı parkı, patent rehberliği ve yatırımcı buluşmaları sunan resmî girişimcilik merkezimizdir.',
+                desc: 'Girişimcilik ve kuluçka merkeziyle ilgili güncel hizmetleri, başvuru koşullarını ve iletişim bilgilerini üniversitenin resmî duyurularından takip edin.',
                 features: [
-                  '7/24 Kesintisiz Paylaşımlı Ofis ve Çalışma Alanı',
-                  'TÜBİTAK BİGG ve KOSGEB Hibe Destek Danışmanlığı',
-                  'Mentör Akademisyenler Eşliğinde Şirketleşme Desteği',
-                  'Yatırımcı ve Melek Yatırım Ağı Sunum Günleri (Demo Day)'
+                  'Güncel program ve etkinlik duyuruları',
+                  'Başvuru ve katılım koşulları',
+                  'Merkez iletişim bilgileri'
                 ],
                 targetView: 'startup_incubator'
               })} 
@@ -259,12 +258,11 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 title: 'CBİKO Ulusal Staj & Yetenek Kapısı',
                 badge: '💼 Kariyer & İstihdam',
                 imageUrl: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&auto=format&fit=crop&q=60',
-                desc: 'Cumhurbaşkanlığı İnsan Kaynakları Ofisi (CBİKO) koordinasyonunda yürütülen Ulusal Staj Programı ve Yetenek Kapısı platformu ile öğrencilerimize liyakat esaslı zorunlu ve gönüllü staj imkanları sunulmaktadır.',
+                desc: 'Ulusal Staj Programı ve Yetenek Kapısı için güncel başvuru tarihlerini, koşulları ve fırsatları ilgili resmî platformlardan kontrol edin.',
                 features: [
-                  'Liyakat Esaslı Kamu ve Özel Sektör Staj Fırsatları',
-                  'Resmî Staj Evrakları ve SGK Giriş Onay Portalı',
-                  '500+ Kurumsal Şirketin Staj İlanlarına Doğrudan Başvuru',
-                  'Kariyer Danışmanları Eşliğinde Başvuru Takibi'
+                  'Resmî başvuru takvimi ve koşulları',
+                  'Yayımlanan staj fırsatları',
+                  'Kariyer merkezi iletişim bilgileri'
                 ],
                 targetView: 'staj'
               })} 
@@ -280,12 +278,11 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 title: 'Özgeçmiş & CV Oluşturucu',
                 badge: '🤖 Kariyer Asistanı',
                 imageUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop&q=60',
-                desc: 'Akıllı CV Sihirbazı ile uluslararası İnsan Kaynakları standartlarına tam uyumlu profesyonel özgeçmişler ve ön yazılar hazırlayabilirsiniz.',
+                desc: 'CV oluşturucu ile profil bilgilerinizden özgeçmiş taslağı hazırlayın; başvuru öncesi bilgilerinizi kontrol edin.',
                 features: [
-                  'Uluslararası Standartlarda Profesyonel Şablonlar',
-                  'Beceriler ve Deneyim Önerileri',
-                  'PDF / Word Formatında Anında İndirme ve Düzenleme',
-                  'Çoklu Dili Destekleyen Profesyonel Özgeçmiş Formatı'
+                  'Profil bilgilerini kullanarak CV taslağı hazırlama',
+                  'İçeriği gözden geçirip düzenleme',
+                  'Mevcut dışa aktarma seçeneklerini kullanma'
                 ],
                 targetView: 'cvbuilder'
               })} 
@@ -340,7 +337,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                     <Briefcase size={28} />
                   </div>
                   <h3 className="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">Ulusal Staj<br/>Programı</h3>
-                  <p className="text-red-100 text-sm font-medium mb-8 max-w-md leading-relaxed opacity-90">Cumhurbaşkanlığı İnsan Kaynakları Ofisi koordinasyonunda liyakat esaslı staj imkanı. Profesyonel hayata sağlam bir adım atın.</p>
+              <p className="text-red-100 text-sm font-medium mb-8 max-w-md leading-relaxed opacity-90">Ulusal Staj Programı ve Yetenek Kapısı hakkındaki güncel başvuru bilgilerini resmî platformlardan inceleyin.</p>
                   <button type="button" className="bg-white text-[#990000] px-7 py-3 rounded-full font-bold text-[13px] w-max hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-xl shadow-black/10 z-20 cursor-pointer relative">Detayları İncele <ArrowRight size={16}/></button>
                 </div>
               </div>
@@ -369,7 +366,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 <TrendingUp size={24} />
               </div>
               <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight">Kariyer Danışmanlığı</h3>
-              <p className="text-gray-500 text-[13px] font-medium leading-relaxed">Bilimsel ölçümlere dayalı öz değerlendirme envanterleri ve yetenek testleri.</p>
+              <p className="text-gray-500 text-[13px] font-medium leading-relaxed">Kariyer hedeflerinizi belirleme ve başvuru hazırlığınızı güçlendirme konusunda bilgi alın.</p>
             </SpotlightCard>
 
             {/* Bento 3: Akran Mentorluk Programı */}
@@ -408,14 +405,13 @@ export default function LandingPage({ setView, currentUser, userRole }) {
               onClick={() => setSelectedPillModal({
                 id: 'bento_isbirlikleri',
                 title: 'Kurumsal Sektör İşbirlikleri & Protokoller',
-                badge: '🤝 Dev Markalarla Güçlü Bağlar',
+                badge: '🤝 İşveren duyuruları',
                 imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&auto=format&fit=crop&q=60',
-                desc: 'İstanbul Esenyurt Üniversitesi; sanayi, teknoloji, sağlık ve finans sektörlerinin önde gelen 500+ kurumsal şirketiyle stratejik iş birliği protokollerine imza atmaktadır.',
+                desc: 'Güncel işveren etkinlikleri, ilanlar ve iş birliği duyuruları yayımlandıkça burada görüntülenir.',
                 features: [
-                  '500+ Kurumsal Şirketle İmzalanan Resmî Staj Protokolü',
-                  'Sektör Liderleriyle Mülakat ve İş İlanı Buluşmaları',
-                  'Teknik Geziler ve Saha Projesi Uygulama İmkânı',
-                  'Mezuniyet Sonrası Doğrudan İşe Alım Önceliği'
+                  'Yayımlanan iş ve staj ilanları',
+                  'Güncel kariyer etkinlikleri',
+                  'İşveren iş birliği duyuruları'
                 ],
                 targetView: 'about_us'
               })}
@@ -424,7 +420,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 <Handshake size={28} />
               </div>
               <h3 className="text-lg font-black text-gray-900 mb-1 tracking-tight">İşbirliklerimiz</h3>
-              <p className="text-gray-500 text-[12px] font-medium leading-relaxed">Sektörün dev markalarıyla güçlü protokoller.</p>
+              <p className="text-gray-500 text-[12px] font-medium leading-relaxed">Güncel işveren etkinlikleri ve iş birliği duyurularını takip edin.</p>
             </SpotlightCard>
 
             {/* Bento 5: Araştırma Faaliyetleri */}
@@ -436,19 +432,18 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                 title: 'Geleceğin Meslekleri & Araştırma Hub',
                 badge: '📊 Sektörel Analiz & Ar-Ge',
                 imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60',
-                desc: 'Kariyer Geliştirme Merkezi Araştırma Birimi; yapay zeka, dijitalleşme ve iş dünyasının geleceğine yönelik düzenli istihdam analizleri ve sektör raporları yayımlar.',
+                desc: 'Kariyer alanlarına ilişkin araştırma ve içerikler yayımlandıkça bu bölümde paylaşılır.',
                 features: [
-                  'Yıllık Mezun İstihdam Endeksi ve Sektör Raporları',
-                  'Mesleklere Etki Analizleri',
-                  'Öğrenci Ar-Ge Projeleri ve TÜBİTAK Başvuru Desteği',
-                  'Akademik Yayın ve Sektörel Makale Arşivi'
+                  'Güncel kariyer içerikleri',
+                  'Araştırma duyuruları',
+                  'Sektörel etkinlikler'
                 ],
                 targetView: 'research_hub'
               })}
             >
               <div>
                 <h3 className="text-lg font-black mb-2 tracking-tight text-white/90">Araştırma Faaliyetleri</h3>
-                <p className="text-gray-400 text-[12px] font-medium mb-6 leading-relaxed">Geleceğin meslek analizleri ve sektörel istihdam raporları.</p>
+                <p className="text-gray-400 text-[12px] font-medium mb-6 leading-relaxed">Kariyer alanlarına ilişkin güncel içerik ve araştırma duyuruları.</p>
               </div>
               <div className="flex justify-between items-end">
                 <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-gray-300 border border-white/10"><Search size={20} /></div>

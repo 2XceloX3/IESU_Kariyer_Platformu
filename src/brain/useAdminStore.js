@@ -41,7 +41,7 @@ const initialStaffList = [
     id: 'STAFF-1',
     name: 'Zuhal ŞAHİN',
     title: 'Kariyer Geliştirme Ofis Sorumlusu',
-    phone: '444 9 123 (Dahili: 1102)',
+    phone: '444 9 123 / 1322',
     email: 'zsahin@esenyurt.edu.tr',
     photo: 'https://www.esenyurt.edu.tr/uploads/staffs/405.jpg',
     yokLink: 'https://www.esenyurt.edu.tr/kadro/kariyer-gelistirme-ofisi-kadro-1'
@@ -50,7 +50,7 @@ const initialStaffList = [
     id: 'STAFF-2',
     name: 'Mutlu Gülsev YAĞIZ',
     title: 'Kariyer Geliştirme Ofisi Sorumlusu',
-    phone: '444 9 123 (Dahili: 1102)',
+    phone: '444 9 123 / 1322',
     email: 'myagiz@esenyurt.edu.tr',
     photo: 'https://www.esenyurt.edu.tr/uploads/staffs/278.jpg',
     yokLink: 'http://akademik.yok.gov.tr/AkademikArama/AkademisyenGorevOgrenimBilgileri?islem=direct&authorId=CAC066B35D650BC1'

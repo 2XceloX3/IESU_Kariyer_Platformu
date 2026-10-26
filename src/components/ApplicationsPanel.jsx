@@ -117,7 +117,7 @@ export default function ApplicationsPanel({ currentUser, userRole, setView, setS
       return applications || [];
     }
     // Company: companyId only (F-ATS-008 — no name filter)
-    return (applications || []).filter(app => uid && app.companyId === uid);
+    return (applications || []).filter(app => uid && app.companyId === uid && app.kvkkConsentAccepted === true);
   }, [applications, effectiveRole, userRole, effectiveCurrentUser]);
 
   const handleStatusChange = async (appId, newStatus) => {

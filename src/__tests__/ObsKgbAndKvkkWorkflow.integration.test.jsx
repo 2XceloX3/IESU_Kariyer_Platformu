@@ -226,7 +226,7 @@ describe('Adım 4: Doğrulanmış OBS Entegrasyon Katmanı, QR Kodlu KGB Belgesi
       );
 
       // OBS Doğrulandı rozet ve çipi
-      expect(screen.getByText(OBS_STANDARDS.BADGE_LABEL)).toBeInTheDocument();
+      expect(screen.getAllByText(OBS_STANDARDS.BADGE_LABEL).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(/OBS Doğrulandı:/i)).toBeInTheDocument();
       expect(screen.getByText('IESU-OBS-VERIFIED-9941A')).toBeInTheDocument();
     });

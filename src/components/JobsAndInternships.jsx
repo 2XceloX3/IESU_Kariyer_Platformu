@@ -82,6 +82,13 @@ export default function JobsAndInternships({
 
   const openApplyModal = (job) => {
     if (!requireLoginForApply()) return;
+    setAppForm({
+      coverLetter: '',
+      phone: effectiveCurrentUser?.phone || '',
+      email: effectiveCurrentUser?.email || auth?.currentUser?.email || '',
+      cvType: effectiveCurrentUser?.cvUrl ? 'uploaded_cv' : 'profile',
+      kvkkConsentAccepted: false
+    });
     setApplyModalJob(job);
   };
 
@@ -103,7 +110,15 @@ export default function JobsAndInternships({
   const notifications = useAppStore(state => state.notifications) || [];
   const [viewMode, setViewMode] = useState('list');
   const [swipeIndex, setSwipeIndex] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => {
+    try {
+      const initialQuery = sessionStorage.getItem('iesu_jobs_search_query') || '';
+      sessionStorage.removeItem('iesu_jobs_search_query');
+      return initialQuery;
+    } catch (_) {
+      return '';
+    }
+  });
   const [filterType, setFilterType] = useState('all');
   const [guaranteeFilter, setGuaranteeFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('ilanlar');
@@ -113,7 +128,7 @@ export default function JobsAndInternships({
   const [footerModal, setFooterModal] = useState(null);
   const [applyModalJob, setApplyModalJob] = useState(null);
   const [postApplyHint, setPostApplyHint] = useState(false);
-  const [appForm, setAppForm] = useState({ coverLetter: '', phone: currentUser?.phone || '', cvType: 'KGM Akredite İESÜ Dijital CV' });
+  const [appForm, setAppForm] = useState({ coverLetter: '', phone: '', email: '', cvType: 'profile', kvkkConsentAccepted: false });
   const [showAnkaModal, setShowAnkaModal] = useState(false);
   const addNotification = (notif) => { setNotifications(prev => [notif, ...prev]); };
 
@@ -222,12 +237,17 @@ export default function JobsAndInternships({
     if (!applyModalJob) return;
     if (!requireLoginForApply()) return;
     if (!branchTargetId) { window.toast?.error("Başvuru için geçerli bir kullanıcı kimliği bulunamadı. Lütfen tekrar giriş yapın."); setView?.('login'); return; }
-    if (effectiveRole !== 'student' && effectiveRole !== 'alumni' && userRole !== 'student' && userRole !== 'alumni') { window.toast?.error("Sadece öğrenciler ve mezunlar başvuru yapabilir."); return; }
-    if (applications.some(a => a.jobId === applyModalJob.id && (a.applicantId === branchTargetId || a.applicantId === currentUser?.id))) { window.toast?.info("Bu ilana zaten başvurdunuz."); setApplyModalJob(null); return; }
-    
-    const tenant = getTenantConfig();
+    if (effectiveRole !== 'student' && effectiveRole !== 'alumni') { window.toast?.error("Sadece öğrenciler ve mezunlar başvuru yapabilir."); return; }
+    if (!appForm.kvkkConsentAccepted) { window.toast?.error('Başvurudaki bilgilerin ilan sahibiyle paylaşılması için onay vermeniz gerekiyor.'); return; }
+    const applicantEmail = (appForm.email || effectiveCurrentUser?.email || auth?.currentUser?.email || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(applicantEmail)) { window.toast?.error('Başvuruda kullanılacak geçerli bir e-posta adresi girin.'); return; }
+    if (!appForm.phone.trim()) { window.toast?.error('Başvuruda kullanılacak telefon numarasını girin.'); return; }
+    if (appForm.cvType === 'uploaded_cv' && !effectiveCurrentUser?.cvUrl) { window.toast?.error('Profilinizde yüklenmiş bir CV bulunamadı. Profilinize CV ekleyin veya profil özetinizi paylaşın.'); return; }
     const authUid = auth?.currentUser?.uid || null;
     const applicantUid = authUid || branchTargetId;
+    if (applications.some(a => a.jobId === applyModalJob.id && a.applicantId === applicantUid)) { window.toast?.info("Bu ilana zaten başvurdunuz."); setApplyModalJob(null); return; }
+
+    const tenant = getTenantConfig();
     if (!applyModalJob.companyId) {
       window.toast?.error?.('İlan firma kimliği eksik; başvuru kaydedilemedi.');
       setApplyModalJob(null);
@@ -236,6 +256,10 @@ export default function JobsAndInternships({
     if (!applicantUid) {
       window.toast?.error?.('Başvuru için giriş gerekli.');
       setView?.('login');
+      return;
+    }
+    if (appForm.cvType === 'uploaded_cv' && /^data:/i.test(effectiveCurrentUser?.cvUrl || '')) {
+      window.toast?.error?.('Yüklediğiniz CV dosyası hesap depolamasına taşınmamış. Önce profilinizden yeniden yükleyin.');
       return;
     }
     const newApp = { 
@@ -247,11 +271,34 @@ export default function JobsAndInternships({
       companyId: applyModalJob.companyId,
       applicantId: applicantUid, 
       applicantName: branchName, 
-      applicantEmail: currentUser?.email || (effectiveRole === 'alumni' ? 'mezun@esenyurt.edu.tr' : 'ogrenci@esenyurt.edu.tr'),
-      applicantPhone: appForm.phone || '0555 000 0000',
+      applicantEmail,
+      applicantPhone: appForm.phone.trim(),
+      applicantAvatar: effectiveCurrentUser?.avatar || '',
       applicantDept: branchDept,
-      coverLetter: appForm.coverLetter || 'İlanınızla yakından ilgileniyorum.',
-      cvType: appForm.cvType || `KGM Akredite ${tenant.institutionShortName} Dijital CV`,
+      coverLetter: appForm.coverLetter.trim(),
+      cvType: appForm.cvType === 'uploaded_cv' ? 'Yüklenen özgeçmiş' : 'Kariyer profili özeti',
+      cvUrl: appForm.cvType === 'uploaded_cv' ? effectiveCurrentUser?.cvUrl : '',
+      cvFileName: appForm.cvType === 'uploaded_cv' ? effectiveCurrentUser?.cvFileName || '' : '',
+      kvkkConsentAccepted: true,
+      candidateProfileSnapshot: {
+        name: branchName,
+        email: applicantEmail,
+        phone: appForm.phone.trim(),
+        avatar: effectiveCurrentUser?.avatar || '',
+        faculty: effectiveCurrentUser?.faculty || '',
+        department: effectiveCurrentUser?.department || '',
+        year: effectiveCurrentUser?.year || effectiveCurrentUser?.classLevel || '',
+        graduationExpectedYear: effectiveCurrentUser?.graduationExpectedYear || effectiveCurrentUser?.graduationYear || '',
+        gpa: effectiveCurrentUser?.gpa ?? effectiveCurrentUser?.agno ?? '',
+        bio: effectiveCurrentUser?.bio || effectiveCurrentUser?.summary || '',
+        skills: Array.isArray(effectiveCurrentUser?.skills) ? effectiveCurrentUser.skills : [],
+        experiences: Array.isArray(effectiveCurrentUser?.experiences) ? effectiveCurrentUser.experiences : [],
+        projects: Array.isArray(effectiveCurrentUser?.projects) ? effectiveCurrentUser.projects : [],
+        certificates: Array.isArray(effectiveCurrentUser?.certificates) ? effectiveCurrentUser.certificates : [],
+        languages: Array.isArray(effectiveCurrentUser?.languages) ? effectiveCurrentUser.languages : [],
+        linkedin: effectiveCurrentUser?.linkedin || '',
+        cvUrl: appForm.cvType === 'uploaded_cv' ? effectiveCurrentUser?.cvUrl || '' : ''
+      },
       status: 'Beklemede', 
       companyContacted: false,
       date: new Date().toLocaleDateString('tr-TR'),
@@ -300,7 +347,7 @@ export default function JobsAndInternships({
     window.toast?.success("İş & Staj başvurunuz KGM ve Firma Havuzuna başarıyla iletildi!");
     addNotification({ id:'N-'+Date.now(), userId:branchTargetId, text:`${applyModalJob.title} ilanına başvurunuz iletildi.`, read:false, time:'Az önce' });
     setApplyModalJob(null);
-    setAppForm({ coverLetter: '', phone: currentUser?.phone || '', cvType: `KGM Akredite ${tenant.institutionShortName} Dijital CV` });
+    setAppForm({ coverLetter: '', phone: '', email: '', cvType: 'profile', kvkkConsentAccepted: false });
     // Post-apply next step: offer CV builder refresh + applications list
     setPostApplyHint(true);
   };
@@ -531,6 +578,15 @@ export default function JobsAndInternships({
                   <span className="text-lg leading-none">+</span> <span className="hidden sm:inline">Yeni İlan Oluştur</span>
                 </button>
               )}
+              {(effectiveRole === 'student' || effectiveRole === 'alumni') && (
+                <button
+                  type="button"
+                  onClick={() => setView?.('applications')}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-black text-[#990000] transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#990000]"
+                >
+                  Başvurularım <span className="rounded-full bg-white px-2 py-0.5">{myApplicationsCount}</span>
+                </button>
+              )}
             </div>
             <div className="px-5 pb-4 flex items-center gap-2 overflow-x-auto">
               {[
@@ -555,11 +611,40 @@ export default function JobsAndInternships({
 
           {activeTab==='ilanlar'&&(
             <div className="space-y-4 animate-fade-in">
-              <div className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm">
+              <div className="flex flex-col gap-3 bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-[13px] font-bold text-gray-700 flex items-center gap-1.5"><TrendingUp size={15} className={theme.trendingIcon} />{filteredJobs.length} güncel fırsat listeleniyor</p>
+                <label className="relative w-full sm:max-w-sm">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Pozisyon, şirket veya şehir ara"
+                    aria-label="Pozisyon, şirket veya şehir ara"
+                    className="w-full rounded-xl border border-gray-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#990000] focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-100"
+                  />
+                </label>
               </div>
               {(()=>{
-                if(filteredJobs.length===0) return(<div className="flex flex-col items-center justify-center p-16 bg-white border border-gray-100 border-dashed rounded-2xl"><Briefcase size={44} className="text-gray-300 mb-4" /><p className="text-gray-900 font-black text-lg mb-1">Henüz ilan yok</p><p className="text-gray-500 font-medium text-center text-sm">Yeni ilanlar eklendiğinde burada görünecek.</p></div>);
+                if(filteredJobs.length===0) return(
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center sm:p-14">
+                    <Briefcase size={40} className="mb-4 text-gray-300" />
+                    <p className="mb-1 text-lg font-black text-gray-900">{activeJobs.length ? 'Aramana uygun ilan bulunamadı' : 'Şu anda aktif ilan yok'}</p>
+                    <p className="max-w-md text-sm leading-6 text-gray-500">{activeJobs.length ? 'Arama kelimeni veya ilan türünü değiştirerek tekrar dene.' : 'Yeni ilanlar yayımlandığında burada görüntülenecek. Kariyer hizmetlerini inceleyebilir veya daha sonra tekrar gelebilirsin.'}</p>
+                    <div className="mt-5 flex flex-wrap justify-center gap-2">
+                      {(searchQuery || filterType !== 'all' || guaranteeFilter !== 'all') && (
+                        <button type="button" onClick={() => { setSearchQuery(''); setFilterType('all'); setGuaranteeFilter('all'); }} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">
+                          Aramayı ve filtreleri temizle
+                        </button>
+                      )}
+                      {(effectiveRole === 'student' || effectiveRole === 'alumni') && (
+                        <button type="button" onClick={() => setView?.('applications')} className="rounded-xl bg-[#990000] px-4 py-2.5 text-sm font-bold text-white hover:bg-red-800">
+                          Başvurularımı görüntüle
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
                 if(viewMode==='swipe'){
                   const unswipedJobs=activeJobs.filter(j=>!swipedJobs.includes(j.id));
                   const currentJob=unswipedJobs[swipeIndex];
@@ -923,7 +1008,18 @@ export default function JobsAndInternships({
                 </div>
               </div>
 
-              {/* Field 1: Phone */}
+              {/* Contact details */}
+              <div>
+                <label className="block text-xs font-black text-slate-800 mb-1">Başvuru e-postası *</label>
+                <input
+                  type="email"
+                  required
+                  value={appForm.email}
+                  onChange={e => setAppForm({ ...appForm, email: e.target.value })}
+                  placeholder="ad.soyad@ornek.com"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-purple-600"
+                />
+              </div>
               <div>
                 <label className="block text-xs font-black text-slate-800 mb-1">İletişim Telefon Numarası *</label>
                 <input 
@@ -936,17 +1032,22 @@ export default function JobsAndInternships({
                 />
               </div>
 
-              {/* Field 2: CV Selection */}
+              {/* CV selection */}
               <div>
-                <label className="block text-xs font-black text-slate-800 mb-1">Eklenecek Özgeçmiş / CV *</label>
+                <label className="block text-xs font-black text-slate-800 mb-1">İşverenle paylaşılacak kariyer bilgisi *</label>
                 <select 
                   value={appForm.cvType}
                   onChange={e => setAppForm({ ...appForm, cvType: e.target.value })}
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-purple-600"
                 >
-                  <option value="KGM Akredite İESÜ Dijital CV">KGM Akredite İESÜ Dijital Özgeçmiş (Profilinizdeki Otomatik CV)</option>
-                  <option value="Özel Yüklenen PDF CV">İESÜ Kariyer Havuzundaki Yüklenmiş PDF CV</option>
+                  <option value="profile">Kariyer profilimin özeti</option>
+                  {effectiveCurrentUser?.cvUrl && <option value="uploaded_cv">Profilime yüklediğim CV dosyası</option>}
                 </select>
+                <p className="mt-1 text-[11px] text-slate-500">
+                  {appForm.cvType === 'uploaded_cv'
+                    ? effectiveCurrentUser?.cvFileName || 'Yüklediğiniz CV dosyası başvurunuza eklenir.'
+                    : 'Eğitim, yetkinlik ve deneyim alanlarınız başvuru kaydına eklenir.'}
+                </p>
               </div>
 
               {/* Field 3: Cover Letter */}
@@ -972,10 +1073,25 @@ export default function JobsAndInternships({
                 ></textarea>
               </div>
 
-              {/* Info Notice */}
+              <div className="flex items-start gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-700">
+                <input
+                  id="application-data-consent"
+                  type="checkbox"
+                  required
+                  checked={appForm.kvkkConsentAccepted}
+                  onChange={e => setAppForm({ ...appForm, kvkkConsentAccepted: e.target.checked })}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#990000]"
+                />
+                <div>
+                  <label htmlFor="application-data-consent" className="cursor-pointer">Başvurumun değerlendirilmesi için bu formdaki iletişim bilgilerimin ve seçtiğim kariyer özeti/CV dosyasının ilan sahibi firma ile paylaşılmasını kabul ediyorum.</label>
+                  <button type="button" onClick={() => setFooterModal('privacy')} className="ml-1 font-bold text-[#990000] underline">Gizlilik ve KVKK bilgisi</button>
+                </div>
+              </div>
+
+              {/* Save destination */}
               <div className="p-3 bg-amber-50 border border-amber-200/70 rounded-xl flex items-start gap-2 text-[11px] text-amber-900 font-medium">
                 <CheckCircle2 size={16} className="text-amber-700 shrink-0 mt-0.5" />
-                <span>Bu başvuru formu otomatik olarak hem <b>KGM Yönetici Paneline</b> hem de <b>{applyModalJob.company} İlan Havuzuna</b> anlık kaydedilecektir.</span>
+                <span>Başvuru kaydı KGM yönetim ekranına ve <b>{applyModalJob.company}</b> başvuru havuzuna gönderilir.</span>
               </div>
 
               {/* Submit Action */}
@@ -1015,7 +1131,7 @@ export default function JobsAndInternships({
         />
       )}
 
-      {footerModal&&<FooterModals type={footerModal} onClose={()=>setFooterModal(null)}/>}
+      {footerModal&&<FooterModals activeModal={footerModal} onClose={()=>setFooterModal(null)}/>}
 
       {/* FLOATING BOTTOM DOCK - HER KOVANA ÖZGÜ BAĞLAMSAL DOCK */}
       {effectiveRole === 'admin' ? (

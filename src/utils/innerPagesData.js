@@ -20,7 +20,7 @@ export const innerPagesData = {
     ],
     contactInfo: {
       email: "kariyer@esenyurt.edu.tr",
-      phone: "444 9 123 / 0 (212) 422 70 00",
+      phone: "444 9 123 / +90 212 699 09 90",
       office: "Kariyer Geliştirme Merkezi / Rektörlük Binası"
     }
   },
@@ -89,7 +89,7 @@ export const innerPagesData = {
       {
         id: "veri-guvenligi",
         title: "Kişisel Verilerin Korunması",
-        content: "İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi olarak kişisel verilerinizin güvenliğine en yüksek düzeyde önem veriyoruz. Sitemizi ziyaretiniz sırasında elde edilen bilgiler, yalnızca sizlere daha iyi hizmet sunmak ve kariyer süreçlerinizi desteklemek amacıyla, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) çerçevesinde işlenmektedir.\\n\\nKişisel verileriniz hiçbir üçüncü taraf reklam veya pazarlama şirketine satılmaz. Özgeçmişiniz ve başvuru bilgileriniz yalnızca başvurduğunuz onaylı anlaşmalı kurumsal firmalara ve üniversite idari birimlerine gösterilir.",
+        content: "Bu kariyer portalına özgü veri işleme amaçları, aktarım kapsamı ve saklama süreleri yetkili birimlerce onaylanmış metin olarak burada yayımlanmalıdır. Güncel üniversite KVKK açıklaması için [İstanbul Esenyurt Üniversitesi'nin resmî sayfasını açın](https://www.esenyurt.edu.tr/icerik/1013-kisisel-verilerin-korunmasi).",
         icon: "Shield"
       }
     ]
@@ -102,7 +102,7 @@ export const innerPagesData = {
       {
         id: "genel-sartlar",
         title: "Kullanım Şartları ve Yasal Esaslar",
-        content: "Bu web sitesi, İstanbul Esenyurt Üniversitesi öğrencileri, mezunları, akademisyenleri ve anlaşmalı firmaları için kariyer planlama süreçlerini desteklemek amacıyla hazırlanmıştır. Sitede yer alan iş/staj ilanları, haberler ve duyurular bilgilendirme amaçlıdır.\\n\\nKullanıcılar platform üzerinde beyan ettikleri bilgilerin doğruluğundan bizzat sorumludur. Üniversitemiz, yürürlükteki mevzuata aykırı veya yanıltıcı bilgi içeren hesapları ve başvuruları askıya alma hakkını saklı tutar.",
+        content: "Bu kariyer portalına özel kullanım koşulları, kullanıcı sorumlulukları ve ilan/başvuru süreçlerine ilişkin kurallar yetkili birimlerce onaylandıktan sonra burada yayımlanmalıdır. Şu anda bu sayfa onaylı bir kullanım sözleşmesi yerine geçmez.",
         icon: "FileText"
       }
     ]
@@ -115,7 +115,7 @@ export const innerPagesData = {
       {
         id: "kvkk-isleme",
         title: "Kişisel Verilerin İşlenme Amacı ve Haklarınız",
-        content: "6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca; kişisel verileriniz veri sorumlusu sıfatıyla İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından işlenmektedir.\\n\\nVerileriniz staj başvurularının alınması, kariyer danışmanlığı, yetenek kapısı eşleşmeleri ve mezun istihdam takibi amacıyla kullanılmaktadır. KVKK Madde 11 uyarınca verilerinizin silinmesini, düzeltilmesini veya işlenme amacını öğrenmeyi kvkk@esenyurt.edu.tr adresi üzerinden talep edebilirsiniz.",
+        content: "Kariyer portalındaki başvuru ve profil verilerine ilişkin aydınlatma metni, veri sorumlusu ve iletişim kanalları yetkili birimlerce onaylandıktan sonra burada yayımlanmalıdır. Güncel üniversite KVKK açıklaması için [resmî sayfayı açın](https://www.esenyurt.edu.tr/icerik/1013-kisisel-verilerin-korunmasi).",
         icon: "ShieldCheck"
       }
     ]
@@ -128,7 +128,7 @@ export const innerPagesData = {
       {
         id: "cerez-genel",
         title: "Çerezlerin Kullanımı",
-        content: "Bu platform, oturum yönetimi ve temel işlevsellik için zorunlu çerezler kullanabilir. Tercih ve analitik çerezlere ilişkin ayrıntılı liste ve saklama süreleri hukuk onayı sonrasında bu sayfada yayımlanacaktır. Detaylı bilgi için kvkk@esenyurt.edu.tr adresine başvurabilirsiniz.",
+        content: "Kullanılan çerez türleri, amaçları ve saklama süreleri güncel envanter ve yetkili birim onayıyla burada yayımlanmalıdır. Bu bilgiler netleşene kadar tercih/analitik çerezlere ilişkin bir iddia sunulmuyor.",
         icon: "Cookie"
       }
     ]

@@ -17,6 +17,58 @@ import AICVBuilder from '../AICVBuilder';
 import { toast } from '../shared/Toast';
 import eventBus from '../../brain/eventBus';
 
+const buildProfileFormData = (user = {}) => {
+  const u = user || {};
+  return {
+    name: u.name || '',
+    studentNo: u.studentNo || u.studentId || '',
+    email: u.email || '',
+    phone: u.phone || '',
+    birthDate: u.birthDate || '',
+    city: u.city || '',
+    bio: u.bio || u.summary || '',
+    avatar: u.avatar || '',
+    nationality: u.nationality || '',
+    militaryStatus: u.militaryStatus || '',
+    militaryDate: u.militaryDate || '',
+    hasDrivingLicense: u.hasDrivingLicense ?? false,
+    drivingLicenseClasses: Array.isArray(u.drivingLicenseClasses) ? u.drivingLicenseClasses : [],
+    hasSrc: u.hasSrc ?? false,
+    travelObstacle: u.travelObstacle || '',
+    faculty: u.faculty || '',
+    department: u.department || '',
+    year: u.year || u.classLevel || '',
+    gpa: u.gpa ?? u.agno ?? '',
+    advisorName: u.advisorName || '',
+    graduationExpectedYear: u.graduationExpectedYear || '',
+    isDoubleMajor: u.isDoubleMajor ?? false,
+    capFaculty: u.capFaculty || '',
+    capDept: u.capDept || '',
+    experiences: Array.isArray(u.experiences) ? u.experiences : [],
+    projects: Array.isArray(u.projects) ? u.projects : [],
+    certificates: Array.isArray(u.certificates) ? u.certificates : [],
+    skills: Array.isArray(u.skills) ? u.skills : [],
+    languages: Array.isArray(u.languages) ? u.languages : [],
+    languageExams: Array.isArray(u.languageExams) ? u.languageExams : [],
+    internshipStatus: u.internshipStatus || '',
+    voluntaryInternshipInterest: u.voluntaryInternshipInterest ?? false,
+    targetPosition: u.targetPosition || '',
+    targetSector: u.targetSector || '',
+    workModelPreference: u.workModelPreference || '',
+    coverLetter: u.coverLetter || '',
+    references: Array.isArray(u.references) ? u.references : [],
+    clubs: Array.isArray(u.clubs) ? u.clubs : [],
+    linkedin: u.linkedin || '',
+    github: u.github || '',
+    portfolioUrl: u.portfolioUrl || '',
+    cvUrl: u.cvUrl || null,
+    cvFileName: u.cvFileName || '',
+    visibilityToEmployers: u.visibilityToEmployers ?? false,
+    emailNewsletter: u.emailNewsletter ?? false,
+    smsAlerts: u.smsAlerts ?? false
+  };
+};
+
 export default function StudentProfileUpdate({ 
   setView, 
   currentUser, 
@@ -24,149 +76,18 @@ export default function StudentProfileUpdate({
   userRole = 'student',
   setSelectedUserId
 }) {
-  const [activeTab, setActiveTab] = useState('academic'); 
+  const [activeTab, setActiveTab] = useState('academic');
+  const [openTabGroups, setOpenTabGroups] = useState(['profile', 'experience', 'application', 'privacy']);
   const [hasChanges, setHasChanges] = useState(false);
   const [showAICVModal, setShowAICVModal] = useState(false);
   const fileInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
   const [uploadedCvName, setUploadedCvName] = useState(currentUser?.cvFileName || '');
+  const [isCvUploading, setIsCvUploading] = useState(false);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
 
   // Form State strictly customized for Student Hive with LinkedIn & Kariyer.net Standards
-  const [formData, setFormData] = useState({
-    // 1. Personal & Contact Info
-    name: currentUser?.name || '',
-    studentNo: currentUser?.studentNo || currentUser?.studentId || '2023010482',
-    email: currentUser?.email || 'ogrenci@ogr.esenyurt.edu.tr',
-    phone: currentUser?.phone || '0555 123 4567',
-    birthDate: currentUser?.birthDate || '2003-05-14',
-    city: currentUser?.city || 'İstanbul / Esenyurt',
-    bio: currentUser?.bio || currentUser?.summary || 'Yazılım geliştirme ve yapay zeka alanlarında kendini geliştiren, takım çalışmasına yatkın lisans öğrencisi.',
-    avatar: currentUser?.avatar || '',
-    nationality: currentUser?.nationality || 'T.C.',
-
-    // 2. HR Legal & Mobility (Kariyer.net Core Standards)
-    militaryStatus: currentUser?.militaryStatus || 'Tecilli', // 'Tecilli', 'Yapıldı', 'Muaf', 'Muaf (Kadın Aday)'
-    militaryDate: currentUser?.militaryDate || '2028-07-01',
-    hasDrivingLicense: currentUser?.hasDrivingLicense !== undefined ? currentUser.hasDrivingLicense : true,
-    drivingLicenseClasses: currentUser?.drivingLicenseClasses || ['B'],
-    hasSrc: currentUser?.hasSrc || false,
-    travelObstacle: currentUser?.travelObstacle || 'Seyahat Engeli Yok', // 'Seyahat Engeli Yok', 'Yurtiçi Seyahat Edebilir', 'Seyahat Edemez'
-
-    // 3. Academic Info
-    faculty: currentUser?.faculty || 'Mühendislik ve Mimarlık Fakültesi',
-    department: currentUser?.department || 'Bilgisayar Mühendisliği',
-    year: currentUser?.year || currentUser?.classLevel || '3. Sınıf',
-    gpa: currentUser?.gpa || currentUser?.agno || 3.42,
-    advisorName: currentUser?.advisorName || 'Dr. Öğr. Üyesi Deniz Demir',
-    graduationExpectedYear: currentUser?.graduationExpectedYear || '2027',
-    isDoubleMajor: currentUser?.isDoubleMajor || false,
-    capFaculty: currentUser?.capFaculty || '',
-    capDept: currentUser?.capDept || '',
-
-    // 4. Work & Internship Experiences (LinkedIn & Kariyer.net Core)
-    experiences: Array.isArray(currentUser?.experiences) && currentUser.experiences.length > 0 
-      ? currentUser.experiences 
-      : [
-          {
-            id: 'exp-1',
-            company: 'Teknopark İstanbul Bilişim A.Ş.',
-            role: 'Stajyer Yazılım Geliştirici (Frontend)',
-            type: 'Staj', // 'Staj' | 'Yarı Zamanlı' | 'Tam Zamanlı' | 'Gönüllü'
-            location: 'İstanbul (Hibrit)',
-            startDate: '2025-06-15',
-            endDate: '2025-08-30',
-            isCurrent: false,
-            description: 'React ve Tailwind CSS kullanılarak kurumsal dashboard arayüzlerinin geliştirilmesi, REST API entegrasyonu ve Git sürüm kontrolü süreçlerine aktif katılım sağlandı.',
-            skills: ['React', 'JavaScript', 'Tailwind CSS', 'Git']
-          }
-        ],
-
-    // 5. Projects & Capstone (LinkedIn Project Showcase)
-    projects: Array.isArray(currentUser?.projects) && currentUser.projects.length > 0
-      ? currentUser.projects
-      : [
-          {
-            id: 'proj-1',
-            title: 'İESÜ Akıllı Kampüs ve Kariyer Portalı',
-            role: 'Proje Lideri & Frontend Geliştirici',
-            date: '2025 - 2026',
-            liveUrl: 'https://kariyer.esenyurt.edu.tr',
-            githubUrl: 'https://github.com/ogrenci/iesu-kariyer-portal',
-            description: 'Öğrencilerin staj bulmasını ve mezun ağını güçlendirmeyi hedefleyen web uygulaması. Gerçek zamanlı mesajlaşma ve yapay zeka destekli CV oluşturucu içerir.',
-            technologies: ['React', 'Tailwind CSS', 'Vite', 'Firebase']
-          }
-        ],
-
-    // 6. Certifications & Licenses (Coursera, BTK, AWS, Cisco)
-    certificates: Array.isArray(currentUser?.certificates) && currentUser.certificates.length > 0
-      ? currentUser.certificates
-      : [
-          {
-            id: 'cert-1',
-            title: 'İleri Seviye Web Geliştirme (Full Stack)',
-            issuer: 'BTK Akademi & Bilgi Teknolojileri Kurumu',
-            issueDate: '2025-03',
-            credentialId: 'BTK-9941-REACT-2025',
-            credentialUrl: 'https://btkakademi.gov.tr/sertifika/BTK-9941'
-          }
-        ],
-
-    // 7. Skills & Languages
-    skills: currentUser?.skills || ['React', 'JavaScript (ES6+)', 'Node.js', 'Tailwind CSS', 'Git & GitHub'],
-    languages: currentUser?.languages || [
-      { name: 'Türkçe', level: 'Ana Dil (C2)' },
-      { name: 'İngilizce', level: 'Mesleki Yetkinlik (B2)' }
-    ],
-    // Standardized Official Language Exams (YDS, TOEFL, IELTS, YÖKDİL)
-    languageExams: Array.isArray(currentUser?.languageExams) && currentUser.languageExams.length > 0
-      ? currentUser.languageExams
-      : [
-          {
-            id: 'lexam-1',
-            examType: 'YDS (Yabancı Dil Bilgisi Seviye Tespit Sınavı)',
-            score: '82.5',
-            year: '2025',
-            status: 'Doğrulandı'
-          }
-        ],
-
-    // 8. Career Goals & Cover Letter
-    internshipStatus: currentUser?.internshipStatus || 'Devam Ediyor', // 'Yapıldı', 'Yapılmadı', 'Devam Ediyor'
-    voluntaryInternshipInterest: currentUser?.voluntaryInternshipInterest !== undefined ? currentUser.voluntaryInternshipInterest : true,
-    targetPosition: currentUser?.targetPosition || 'Frontend / Fullstack Developer',
-    targetSector: currentUser?.targetSector || 'Teknoloji & Yazılım',
-    workModelPreference: currentUser?.workModelPreference || 'Hibrit', // 'Hibrit', 'Uzaktan', 'Ofis', 'Yarı Zamanlı'
-    coverLetter: currentUser?.coverLetter || 'Sayın Yetkili,\n\nİstanbul Esenyurt Üniversitesi Bilgisayar Mühendisliği 3. sınıf öğrencisiyim. Üniversite eğitimim boyunca hem teorik temellerimi güçlendirdim hem de modern web teknolojileri (React, Node.js) üzerine somut projeler geliştirdim.\n\nŞirketinizin dinamik ve yenilikçi mühendislik ekibinde stajyer / aday mühendis olarak yer almaktan, katma değer üretirken kendimi sektörel anlamda geliştirmekten büyük mutluluk duyarım.\n\nİlginiz ve değerlendirmeniz için teşekkür ederim.\n\nSaygılarımla.',
-
-    // 9. Academic & Professional References
-    references: Array.isArray(currentUser?.references) && currentUser.references.length > 0
-      ? currentUser.references
-      : [
-          {
-            id: 'ref-1',
-            fullName: 'Prof. Dr. Deniz Demir',
-            organization: 'İstanbul Esenyurt Üniversitesi',
-            title: 'Bilgisayar Mühendisliği Bölüm Başkanı / Akademik Danışman',
-            phone: '0212 911 00 00',
-            email: 'denizdemir@esenyurt.edu.tr',
-            type: 'Akademik'
-          }
-        ],
-
-    // 10. Student Clubs & Social Activities
-    clubs: currentUser?.clubs || ['İESÜ Yazılım ve İnovasyon Kulübü', 'IEEE İESÜ Öğrenci Kolu'],
-
-    // 11. Links & CV File
-    linkedin: currentUser?.linkedin || 'https://linkedin.com/in/ogrenci',
-    github: currentUser?.github || 'https://github.com/ogrenci',
-    portfolioUrl: currentUser?.portfolioUrl || 'https://ogrenci-portfolio.dev',
-    cvUrl: currentUser?.cvUrl || null,
-    cvFileName: currentUser?.cvFileName || '',
-
-    // 12. Privacy & Notifications
-    visibilityToEmployers: currentUser?.visibilityToEmployers !== undefined ? currentUser.visibilityToEmployers : true,
-    emailNewsletter: currentUser?.emailNewsletter !== undefined ? currentUser.emailNewsletter : true,
-    smsAlerts: currentUser?.smsAlerts !== undefined ? currentUser.smsAlerts : false
-  });
+  const [formData, setFormData] = useState(() => buildProfileFormData(currentUser));
 
   // Modal / Inline Form State Helpers
   const [newSkillInput, setNewSkillInput] = useState('');
@@ -227,22 +148,9 @@ export default function StudentProfileUpdate({
   // Sync with currentUser prop updates
   useEffect(() => {
     if (currentUser) {
-      setFormData(prev => ({
-        ...prev,
-        ...currentUser,
-        studentNo: currentUser.studentNo || currentUser.studentId || prev.studentNo,
-        skills: currentUser.skills || prev.skills,
-        languages: currentUser.languages || prev.languages,
-        clubs: currentUser.clubs || prev.clubs,
-        experiences: Array.isArray(currentUser.experiences) && currentUser.experiences.length > 0 ? currentUser.experiences : prev.experiences,
-        projects: Array.isArray(currentUser.projects) && currentUser.projects.length > 0 ? currentUser.projects : prev.projects,
-        certificates: Array.isArray(currentUser.certificates) && currentUser.certificates.length > 0 ? currentUser.certificates : prev.certificates,
-        references: Array.isArray(currentUser.references) && currentUser.references.length > 0 ? currentUser.references : prev.references,
-        languageExams: Array.isArray(currentUser.languageExams) && currentUser.languageExams.length > 0 ? currentUser.languageExams : prev.languageExams
-      }));
-      if (currentUser.cvFileName) {
-        setUploadedCvName(currentUser.cvFileName);
-      }
+      setFormData(buildProfileFormData(currentUser));
+      setUploadedCvName(currentUser.cvFileName || '');
+      setHasChanges(false);
     }
   }, [currentUser]);
 
@@ -293,7 +201,7 @@ export default function StudentProfileUpdate({
       examType: tempExam.examType,
       score: tempExam.score.trim(),
       year: tempExam.year || '2025',
-      status: 'Doğrulandı'
+      verificationStatus: 'self_reported'
     };
     handleChange('languageExams', [...(formData.languageExams || []), newEntry]);
     setTempExam({
@@ -457,29 +365,98 @@ export default function StudentProfileUpdate({
     handleChange('drivingLicenseClasses', updated);
   };
 
-  // CV File Upload with persistent Base64 Data URI
-  const handleFileChange = (e) => {
+  // Authenticated users upload their CV to the private resume bucket.
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Özgeçmiş dosya boyutu 5 MB\'dan küçük olmalıdır.');
+        e.target.value = '';
         return;
       }
-      setUploadedCvName(file.name);
-      handleChange('cvFileName', file.name);
+      if (currentUser?.uid) {
+        setIsCvUploading(true);
+        try {
+          const [{ storage }, { ref, uploadBytes, getDownloadURL }] = await Promise.all([
+            import('../../utils/firebase'),
+            import('firebase/storage')
+          ]);
+          if (!storage) throw new Error('Dosya depolama servisi hazır değil.');
+          const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const storageRef = ref(storage, `resumes/${currentUser.uid}/${Date.now()}_${safeName}`);
+          const uploadedFile = await uploadBytes(storageRef, file, { contentType: file.type || 'application/octet-stream' });
+          const downloadUrl = await getDownloadURL(uploadedFile.ref);
+          setUploadedCvName(file.name);
+          handleChange('cvFileName', file.name);
+          handleChange('cvUrl', downloadUrl);
+          toast.success('Özgeçmiş güvenli dosya alanına yüklendi. Profil değişikliğini kaydetmeyi unutmayın.');
+        } catch (error) {
+          console.error('CV yüklemesi başarısız:', error);
+          toast.error('Özgeçmiş yüklenemedi. Bağlantınızı ve dosya türünü kontrol edip yeniden deneyin.');
+        } finally {
+          setIsCvUploading(false);
+          e.target.value = '';
+        }
+        return;
+      }
 
+      // The local preview has no account storage; keep small files local only.
+      if (file.size > 512 * 1024) {
+        toast.error('Önizleme oturumunda en fazla 512 KB dosya seçilebilir. Kalıcı CV yüklemek için hesabınızla giriş yapın.');
+        e.target.value = '';
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (evt) => {
-        const base64Data = evt.target.result;
-        handleChange('cvUrl', base64Data);
-        toast.success(`${file.name} başarıyla yüklendi.`);
+        setUploadedCvName(file.name);
+        handleChange('cvFileName', file.name);
+        handleChange('cvUrl', evt.target.result);
+        toast.success('CV dosyası önizleme oturumuna eklendi.');
       };
-      reader.onerror = () => {
-        handleChange('cvUrl', URL.createObjectURL(file));
-        toast.success(`${file.name} seçildi.`);
-      };
+      reader.onerror = () => toast.error('Dosya okunamadı. Lütfen yeniden deneyin.');
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleAvatarFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/') || file.size > 4 * 1024 * 1024) {
+      toast.error('Profil fotoğrafı görsel olmalı ve 4 MB’tan küçük olmalıdır.');
+      e.target.value = '';
+      return;
+    }
+    if (currentUser?.uid) {
+      setIsAvatarUploading(true);
+      try {
+        const [{ storage }, { ref, uploadBytes, getDownloadURL }] = await Promise.all([
+          import('../../utils/firebase'),
+          import('firebase/storage')
+        ]);
+        if (!storage) throw new Error('Dosya depolama servisi hazır değil.');
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const storageRef = ref(storage, `avatars/${currentUser.uid}/${Date.now()}_${safeName}`);
+        const uploadedFile = await uploadBytes(storageRef, file, { contentType: file.type });
+        handleChange('avatar', await getDownloadURL(uploadedFile.ref));
+        toast.success('Profil fotoğrafı yüklendi. Değişikliği kaydetmeyi unutmayın.');
+      } catch (error) {
+        console.error('Profil fotoğrafı yüklemesi başarısız:', error);
+        toast.error('Profil fotoğrafı yüklenemedi. Bağlantınızı ve dosya türünü kontrol edip yeniden deneyin.');
+      } finally {
+        setIsAvatarUploading(false);
+        e.target.value = '';
+      }
+      return;
+    }
+    if (file.size > 512 * 1024) {
+      toast.error('Önizleme oturumunda en fazla 512 KB fotoğraf seçilebilir.');
+      e.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => handleChange('avatar', event.target.result);
+    reader.onerror = () => toast.error('Fotoğraf okunamadı. Lütfen yeniden deneyin.');
+    reader.readAsDataURL(file);
   };
 
   // Comprehensive ATS Profile Completeness Calculation (0 - 100)
@@ -508,12 +485,12 @@ export default function StudentProfileUpdate({
 
     // Validation
     if (!formData.name || formData.name.trim().length < 2) {
-      if (showToast) toast.error('Lütfen geçerli bir Ad Soyad giriniz.');
-      return;
+      toast.error('Kaydetmeden önce geçerli bir ad ve soyad giriniz.');
+      return false;
     }
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      if (showToast) toast.error('Lütfen geçerli bir e-posta adresi giriniz.');
-      return;
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error('E-posta adresini kontrol edip yeniden deneyiniz.');
+      return false;
     }
 
     const updatedUser = {
@@ -538,13 +515,17 @@ export default function StudentProfileUpdate({
     } catch { /* intentional */}
 
     // Firestore synchronization for authenticated student accounts
-    const studentUid = updatedUser?.uid || updatedUser?.id;
+    const studentUid = updatedUser?.uid;
     if (studentUid && !String(studentUid).startsWith('mock_')) {
-      import('../../utils/firebase').then(({ db }) => {
+      import('../../utils/firebase').then(({ db }) =>
         import('firebase/firestore').then(({ doc, setDoc }) => {
-          setDoc(doc(db, 'users', studentUid), updatedUser, { merge: true }).catch(() => {});
-        }).catch(() => {});
-      }).catch(() => {});
+          if (!db) throw new Error('Firestore bağlantısı kurulamadı.');
+          return setDoc(doc(db, 'users', studentUid), updatedUser, { merge: true });
+        })
+      ).catch((error) => {
+        console.error('Profil bulut eşitlemesi başarısız:', error);
+        toast.error('Profil bu cihazda kaydedildi ancak hesabınızla eşitlenemedi. Bağlantınızı kontrol edip yeniden kaydedin.');
+      });
     }
 
     // 2. Synchronize with Admin Brain Student Directory (useAdminStore)
@@ -577,8 +558,9 @@ export default function StudentProfileUpdate({
 
     setHasChanges(false);
     if (showToast) {
-      toast.success('Öğrenci profil bilgileriniz LinkedIn & Kariyer.net standartlarında kaydedildi.');
+      toast.success('Profil bilgileriniz kaydedildi.');
     }
+    return true;
   };
 
   // Comprehensive 11 TABS Architecture
@@ -595,6 +577,21 @@ export default function StudentProfileUpdate({
     { id: 'cv_links', label: 'Özgeçmiş (PDF) & Portfolyo', icon: FileText },
     { id: 'privacy', label: 'Gizlilik & İzinler', icon: Shield }
   ];
+  const TAB_GROUPS = [
+    { id: 'profile', label: 'Temel profil', tabIds: ['academic', 'personal'] },
+    { id: 'experience', label: 'Deneyim ve yetkinlikler', tabIds: ['experiences', 'projects', 'certificates', 'skills', 'clubs'] },
+    { id: 'application', label: 'Başvuru hazırlığı', tabIds: ['career', 'references', 'cv_links'] },
+    { id: 'privacy', label: 'Gizlilik', tabIds: ['privacy'] }
+  ];
+
+  const navigateWithSave = (view) => {
+    if (isCvUploading || isAvatarUploading) {
+      toast.info('Dosya yüklemesi tamamlanınca devam edebilirsiniz.');
+      return;
+    }
+    if (hasChanges && !handleSave(false)) return;
+    setView(view);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-28 animate-fade-in">
@@ -604,8 +601,7 @@ export default function StudentProfileUpdate({
           <div className="flex items-center gap-3">
             <button 
               onClick={() => {
-                if (hasChanges) handleSave(false);
-                setView('student');
+                navigateWithSave('student');
               }} 
               className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer"
               title="Öğrenci Akışına Dön"
@@ -618,14 +614,12 @@ export default function StudentProfileUpdate({
               onKeyDown={(e) => { 
                 if (e.key === 'Enter' || e.key === ' ') { 
                   e.preventDefault(); 
-                  if (hasChanges) handleSave(false);
-                  setView('student'); 
+                  navigateWithSave('student');
                 } 
               }} 
               className="flex items-center gap-3 cursor-pointer" 
               onClick={() => {
-                if (hasChanges) handleSave(false);
-                setView('student');
+                navigateWithSave('student');
               }}
             >
               <Logo className="h-8 w-auto text-[#990000]" />
@@ -645,7 +639,7 @@ export default function StudentProfileUpdate({
             ) : (
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full flex items-center gap-1.5 hidden sm:inline-flex">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span>Güncel ve Senkron</span>
+                <span>Kaydedildi</span>
               </span>
             )}
           </div>
@@ -660,36 +654,43 @@ export default function StudentProfileUpdate({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <div className="flex items-center gap-5">
               <div className="relative group">
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarFileChange}
+                  className="hidden"
+                  aria-label="Profil fotoğrafı seç"
+                />
                 <SafeAvatar 
                   src={formData.avatar} 
                   name={formData.name || 'Öğrenci'} 
                   className="w-20 h-20 rounded-2xl border-4 border-white/20 shadow-md text-2xl font-black bg-white/10" 
                 />
                 <button 
-                  onClick={() => {
-                    const url = prompt('Yeni profil fotoğrafı URL\'si giriniz:', formData.avatar);
-                    if (url !== null) handleChange('avatar', url);
-                  }}
-                  className="absolute -bottom-2 -right-2 p-1.5 bg-white text-[#990000] rounded-xl shadow-md hover:bg-red-50 transition cursor-pointer"
-                  title="Fotoğrafı Değiştir"
+                  type="button"
+                  disabled={isAvatarUploading}
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="absolute -bottom-2 -right-2 p-1.5 bg-white text-[#990000] rounded-xl shadow-md hover:bg-red-50 transition cursor-pointer disabled:opacity-60"
+                  title={isAvatarUploading ? 'Fotoğraf yükleniyor' : 'Fotoğraf seç'}
                 >
-                  <Camera size={14} />
+                  {isAvatarUploading ? <span className="text-[9px] font-bold">…</span> : <Camera size={14} />}
                 </button>
               </div>
 
               <div>
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="bg-red-500/30 text-white border border-red-400/30 px-2.5 py-0.5 rounded-md text-[11px] font-black uppercase tracking-wider">
-                    ÖĞRENCİ BİLGİ SİSTEMİ
+                    KARİYER PROFİLİ
                   </span>
-                  <span className="text-xs text-red-100 font-mono font-bold">No: {formData.studentNo}</span>
+                  {formData.studentNo && <span className="text-xs text-red-100 font-mono font-bold">No: {formData.studentNo}</span>}
                   <span className="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 px-2.5 py-0.5 rounded-md text-[11px] font-bold">
-                    ATS & LinkedIn Uyumlu
+                    Özgeçmiş
                   </span>
                 </div>
                 <h2 className="text-2xl font-black text-white">{formData.name || 'Öğrenci Adı'}</h2>
                 <p className="text-red-100 text-sm font-medium">
-                  {formData.faculty} • <span className="text-amber-300 font-bold">{formData.department}</span> ({formData.year})
+                  {formData.faculty || 'Fakülte bilgisi eklenmedi'}{formData.department ? <> • <span className="text-amber-300 font-bold">{formData.department}</span></> : null}{formData.year ? ` (${formData.year})` : ''}
                 </p>
               </div>
             </div>
@@ -699,7 +700,7 @@ export default function StudentProfileUpdate({
               <div className="flex items-center justify-between text-xs font-bold mb-2">
                 <span className="text-red-100 flex items-center gap-1.5">
                   <ShieldCheck size={14} className="text-emerald-300" />
-                  ATS Profil Doluluk Skoru
+                  Profil tamamlanma durumu
                 </span>
                 <span className="text-white font-black text-sm">%{completeness}</span>
               </div>
@@ -711,8 +712,8 @@ export default function StudentProfileUpdate({
               </div>
               <p className="text-[11px] text-red-200 mt-2">
                 {completeness >= 85 
-                  ? 'Mükemmel! Özgeçmişiniz kurumsal işveren filtrelerinde en üst sırada listelenir.' 
-                  : 'Staj deneyimleri, projeler ve sertifikalarınızı ekleyerek %100 yapın.'}
+                  ? 'Profiliniz tamamlandı. Bilgilerinizi güncel tutun.'
+                  : 'Eğitim, deneyim ve yetkinliklerinizi ekledikçe profiliniz tamamlanır.'}
               </p>
             </div>
           </div>
@@ -730,37 +731,63 @@ export default function StudentProfileUpdate({
                 <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Profil Sekmeleri</p>
                 <span className="text-[11px] font-bold text-slate-500">11 Bölüm</span>
               </div>
-              {TABS.map(tab => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
+              {TAB_GROUPS.map((group) => {
+                const isOpen = openTabGroups.includes(group.id);
+                const groupTabs = TABS.filter((tab) => group.tabIds.includes(tab.id));
                 return (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      if (hasChanges) handleSave(false);
-                      setActiveTab(tab.id);
-                    }}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                      isActive 
-                        ? 'bg-[#990000] text-white shadow-sm' 
-                        : 'text-slate-600 hover:bg-red-50/60 hover:text-[#990000]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Icon size={16} className={isActive ? 'text-white' : 'text-slate-600'} />
-                      <span className="truncate">{tab.label}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {tab.count !== undefined && tab.count > 0 && (
-                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${
-                          isActive ? 'bg-white/20 text-white' : 'bg-red-50 text-[#990000]'
-                        }`}>
-                          {tab.count}
-                        </span>
-                      )}
-                      <ChevronRight size={14} className={isActive ? 'text-white' : 'text-slate-400'} />
-                    </div>
-                  </button>
+                  <div key={group.id} className="mb-1">
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      onClick={() => setOpenTabGroups((groups) => (
+                        groups.includes(group.id)
+                          ? groups.filter((id) => id !== group.id)
+                          : [...groups, group.id]
+                      ))}
+                      className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-[#990000] rounded-lg cursor-pointer"
+                    >
+                      <span>{group.label}</span>
+                      <ChevronRight size={14} className={`transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+                    </button>
+                    {isOpen && groupTabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => {
+                            if (isCvUploading || isAvatarUploading) {
+                              toast.info('Dosya yüklemesi tamamlanınca devam edebilirsiniz.');
+                              return;
+                            }
+                            if (hasChanges && !handleSave(false)) return;
+                            setActiveTab(tab.id);
+                          }}
+                          className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                            isActive
+                              ? 'bg-[#990000] text-white shadow-sm'
+                              : 'text-slate-600 hover:bg-red-50/60 hover:text-[#990000]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <Icon size={16} className={isActive ? 'text-white' : 'text-slate-600'} />
+                            <span className="truncate">{tab.label}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {tab.count !== undefined && tab.count > 0 && (
+                              <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${
+                                isActive ? 'bg-white/20 text-white' : 'bg-red-50 text-[#990000]'
+                              }`}>
+                                {tab.count}
+                              </span>
+                            )}
+                            <ChevronRight size={14} className={isActive ? 'text-white' : 'text-slate-400'} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 );
               })}
 
@@ -793,7 +820,7 @@ export default function StudentProfileUpdate({
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Fakülte / Yüksekokul *</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Fakülte / Yüksekokul</label>
                       <select
                         value={formData.faculty}
                         onChange={(e) => {
@@ -802,6 +829,7 @@ export default function StudentProfileUpdate({
                         }}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
+                        <option value="">Fakülte / Yüksekokul seçiniz...</option>
                         {IESU_FACULTIES.map(f => (
                           <option key={f.name} value={f.name}>{f.name}</option>
                         ))}
@@ -809,7 +837,7 @@ export default function StudentProfileUpdate({
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Bölüm / Program *</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Bölüm / Program</label>
                       <select
                         value={formData.department}
                         onChange={(e) => handleChange('department', e.target.value)}
@@ -823,12 +851,13 @@ export default function StudentProfileUpdate({
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Sınıf Düzeyi *</label>
+                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Sınıf Düzeyi</label>
                       <select
                         value={formData.year}
                         onChange={(e) => handleChange('year', e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
+                        <option value="">Sınıf düzeyi seçiniz...</option>
                         <option value="Hazırlık">İngilizce Hazırlık</option>
                         <option value="1. Sınıf">1. Sınıf</option>
                         <option value="2. Sınıf">2. Sınıf</option>
@@ -846,7 +875,7 @@ export default function StudentProfileUpdate({
                           min="0.00"
                           max="4.00"
                           value={formData.gpa}
-                          onChange={(e) => handleChange('gpa', parseFloat(e.target.value) || 0)}
+                          onChange={(e) => handleChange('gpa', e.target.value === '' ? '' : Number(e.target.value))}
                           className="w-32 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-black text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                         />
                         <span className="text-xs text-slate-500 font-medium">4.00 üzerinden sistemde kayıtlı akademik başarı puanınız.</span>
@@ -1014,12 +1043,13 @@ export default function StudentProfileUpdate({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 p-4 bg-slate-50 rounded-2xl border border-slate-200">
                       {/* Askerlik Durumu */}
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Askerlik Durumu *</label>
+                        <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Askerlik Durumu (isteğe bağlı)</label>
                         <select
                           value={formData.militaryStatus}
                           onChange={(e) => handleChange('militaryStatus', e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-800 outline-none focus:border-[#990000]"
                         >
+                          <option value="">Belirtmek istemiyorum</option>
                           <option value="Tecilli">Tecilli (Öğrenci / Mezun)</option>
                           <option value="Yapıldı">Yapıldı (Tamamlandı)</option>
                           <option value="Muaf">Muaf</option>
@@ -1048,6 +1078,7 @@ export default function StudentProfileUpdate({
                           onChange={(e) => handleChange('travelObstacle', e.target.value)}
                           className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-800 outline-none focus:border-[#990000]"
                         >
+                          <option value="">Belirtmek istemiyorum</option>
                           <option value="Seyahat Engeli Yok">Seyahat Engeli Yok (Yurtiçi/Yurtdışı)</option>
                           <option value="Yurtiçi Seyahat Edebilir">Yalnızca Yurtiçi Seyahat Edebilir</option>
                           <option value="Seyahat Edemez">Seyahat Edemez</option>
@@ -1817,15 +1848,15 @@ export default function StudentProfileUpdate({
                         {formData.languageExams.map((exam) => (
                           <div key={exam.id} className="p-3 bg-white border border-slate-200 rounded-xl flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <FileCheck size={18} className="text-emerald-600" />
+                      <Info size={18} className="text-slate-500" />
                               <div>
                                 <span className="font-black text-xs text-gray-900">{exam.examType}</span>
                                 <span className="text-xs text-slate-500 ml-2">({exam.year})</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-black">
-                                Puan: {exam.score}
+                              <span className="px-2.5 py-1 bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold">
+                                {exam.verified === true && exam.verificationSource ? 'Doğrulanmış' : 'Beyan edilen puan'}: {exam.score}
                               </span>
                               <button
                                 type="button"
@@ -1919,6 +1950,7 @@ export default function StudentProfileUpdate({
                         onChange={(e) => handleChange('internshipStatus', e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
+                        <option value="">Durum seçiniz...</option>
                         <option value="Yapıldı">Tamamlandı (Onaylandı)</option>
                         <option value="Devam Ediyor">Şu Anda Yapılıyor</option>
                         <option value="Yapılmadı">Henüz Yapılmadı / Staj Aranıyor</option>
@@ -1933,6 +1965,7 @@ export default function StudentProfileUpdate({
                         onChange={(e) => handleChange('workModelPreference', e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
+                        <option value="">Tercih seçiniz...</option>
                         <option value="Hibrit">Hibrit (Ofis + Uzaktan)</option>
                         <option value="Uzaktan">Tamamen Uzaktan (Remote)</option>
                         <option value="Ofis">Ofisten / Yerinde</option>
@@ -1958,6 +1991,7 @@ export default function StudentProfileUpdate({
                         onChange={(e) => handleChange('targetSector', e.target.value)}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] outline-none"
                       >
+                        <option value="">Sektör seçiniz...</option>
                         <option value="Teknoloji & Yazılım">Teknoloji & Yazılım</option>
                         <option value="Savunma Sanayii & Havacılık">Savunma Sanayii & Havacılık</option>
                         <option value="Finans & Bankacılık">Finans & Bankacılık</option>
@@ -2249,14 +2283,16 @@ export default function StudentProfileUpdate({
                     <h4 className="font-bold text-gray-900 text-sm mb-1">
                       {uploadedCvName ? `Seçilen Dosya: ${uploadedCvName}` : 'Özgeçmişinizi (PDF) Buraya Yükleyin'}
                     </h4>
-                    <p className="text-xs text-slate-500 mb-4">Maksimum dosya boyutu: 5 MB (PDF formatı önerilir)</p>
+                    <p className="text-xs text-slate-500 mb-4">Maksimum dosya boyutu: 5 MB. Giriş yaptıysanız CV’niz güvenli dosya alanına yüklenir.</p>
                     
                     <div className="flex flex-wrap items-center justify-center gap-3">
                       <button
+                        type="button"
+                        disabled={isCvUploading}
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                        className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 disabled:opacity-60 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer disabled:cursor-wait"
                       >
-                        {uploadedCvName ? 'Farklı Bir Dosya Seç' : 'Dosya Seç'}
+                        {isCvUploading ? 'Yükleniyor…' : uploadedCvName ? 'Farklı Bir Dosya Seç' : 'Dosya Seç'}
                       </button>
                       <button
                         onClick={() => setShowAICVModal(true)}
@@ -2279,7 +2315,7 @@ export default function StudentProfileUpdate({
                               {uploadedCvName || formData.cvFileName || 'Aktif Özgeçmiş'}
                             </p>
                             <span className="text-[10px] font-bold text-emerald-600 block">
-                              Sistemde Kayıtlı & Başvurulara Açık
+                              {hasChanges ? 'Kaydedilmemiş değişiklik var' : 'Profilde kayıtlı'}
                             </span>
                           </div>
                         </div>
@@ -2403,19 +2439,20 @@ export default function StudentProfileUpdate({
               <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
                 <button
                   type="button"
+                  disabled={isCvUploading || isAvatarUploading}
                   onClick={() => {
-                    if (hasChanges) handleSave(false);
-                    setView('student');
+                    navigateWithSave('student');
                   }}
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition cursor-pointer"
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-700 font-bold text-sm rounded-xl transition cursor-pointer disabled:cursor-wait"
                 >
                   İptal & Geri Dön
                 </button>
 
                 <button
                   type="button"
+                  disabled={isCvUploading || isAvatarUploading}
                   onClick={handleSave}
-                  className="px-7 py-3 bg-[#990000] hover:bg-red-800 text-white font-black text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
+                  className="px-7 py-3 bg-[#990000] hover:bg-red-800 disabled:opacity-50 text-white font-black text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:cursor-wait"
                 >
                   <Save size={18} />
                   <span>Değişiklikleri Kaydet</span>

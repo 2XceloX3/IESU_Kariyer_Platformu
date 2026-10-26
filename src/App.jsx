@@ -180,6 +180,13 @@ export default function App() {
     (currentUser?.role === 'admin' || userRole === 'admin')
   );
   const currentBranch = isAdmin ? (activePortalBranch || 'admin') : (['student', 'alumni', 'academic', 'company', 'employer'].includes(effectiveRole) ? standardRoleHive : (activePortalBranch && activePortalBranch !== 'admin' ? activePortalBranch : 'student'));
+  const loginInitialRole = ALUMNI_ROUTES.has(pathView)
+    ? 'alumni'
+    : ACADEMIC_ROUTES.has(pathView)
+      ? 'academic'
+      : COMPANY_ROUTES.has(pathView)
+        ? 'employer'
+        : 'student';
 
   const setView = useCallback((v) => {
     const raw = typeof v === 'function' ? v(pathView) : v;
@@ -317,7 +324,7 @@ export default function App() {
           academicRole="super_admin" 
         />
       ) : (
-        <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={s.students} alumni={s.alumni} companies={s.companies} academicStaff={s.academicStaff} />
+        <Login setView={setView} setUserRole={setUserRole} setAcademicRole={() => {}} setCurrentUser={setCurrentUser} students={s.students} alumni={s.alumni} companies={s.companies} academicStaff={s.academicStaff} initialRole={loginInitialRole} />
       );
     }
 
@@ -404,7 +411,7 @@ export default function App() {
           : PUBLIC_NEWS.has(pathView) ? <PublicNewsView setView={setView} currentUser={null} userRole={null} />
           : (pathView === '' || pathView === 'landing') ? <LandingPage setView={setView} currentUser={null} userRole={userRole} setUserRole={setUserRole} />
           : resolveLegalContentId(pathView) ? <DynamicContentPage contentId={resolveLegalContentId(pathView)} setView={setView} previousView="landing" currentUser={null} userRole={null} />
-          : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={store.setAcademicRole || (() => {})} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} />
+          : <Login setView={setView} setUserRole={setUserRole} setAcademicRole={store.setAcademicRole || (() => {})} setCurrentUser={setCurrentUser} students={store.students} alumni={store.alumni} companies={store.companies} academicStaff={store.academicStaff} initialRole={loginInitialRole} />
         ) : (
           (pathView === 'landing') ? (
             <LandingPage setView={setView} currentUser={currentUser} userRole={userRole} setUserRole={setUserRole} />

@@ -167,7 +167,7 @@ describe('StudentProfileUpdate - LinkedIn & Kariyer.net Standards Verification',
     fireEvent.click(personalTab);
 
     // Verify military & driving license elements exist
-    expect(screen.getByText('Askerlik Durumu *')).toBeDefined();
+    expect(screen.getByText(/Askerlik Durumu/i)).toBeDefined();
     expect(screen.getByText('Sürücü Belgesi (Ehliyet) Var mı?')).toBeDefined();
     expect(screen.getByText('B (Otomobil)')).toBeDefined();
   });

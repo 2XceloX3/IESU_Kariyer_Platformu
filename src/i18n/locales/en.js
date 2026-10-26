@@ -4,6 +4,18 @@
  */
 
 export const en = {
+  landing: {
+    heroTitle: 'Shape Your Career',
+    heroSubtitle: 'Discover jobs and internships, develop your career skills, and grow your professional network.',
+    heroCtaJobs: 'Explore jobs and internships',
+    heroCtaServices: 'Explore career services',
+    audienceTitle: 'Choose your portal',
+    audienceSubtitle: 'Select your role to continue.',
+    student: 'Student',
+    alumni: 'Alumni',
+    employer: 'Employer',
+    academic: 'Academic'
+  },
   common: {
     appName: 'Istanbul Esenyurt University (IESU)',
     coordinatorTitle: 'Career Development Coordination Office',
@@ -17,7 +29,7 @@ export const en = {
     close: 'Close',
     back: 'Back',
     search: 'Search...',
-    searchPlaceholder: 'Search opportunities, events, or departments...',
+    searchPlaceholder: 'Search roles, employers, or internships...',
     viewAll: 'View All',
     download: 'Download',
     print: 'Print',

@@ -26,18 +26,26 @@ export default function MentorRequestModal({ isOpen, onClose, mentor, currentUse
       toast.error('Lütfen mentörünüze hedeflerinizi ve danışmak istediğiniz konuları belirten en az 10 karakterlik bir mesaj yazınız.');
       return;
     }
+    if (!currentUser?.uid && !currentUser?.id) {
+      toast.error('Talep oluşturmak için oturum açmanız gerekiyor.');
+      return;
+    }
+    if (!mentor?.uid && !mentor?.id) {
+      toast.error('Mentör profili bulunamadı. Lütfen yeniden deneyin.');
+      return;
+    }
 
     setSubmitting(true);
 
     const newRequest = {
       id: 'mreq_' + Date.now(),
-      studentId: currentUser?.id || 'std_' + Date.now(),
+      studentId: currentUser.uid || currentUser.id,
       studentName: currentUser?.name || 'Öğrenci',
-      studentDept: currentUser?.department || currentUser?.faculty || 'Öğrenci',
-      studentEmail: currentUser?.email || 'ogrenci@esenyurt.edu.tr',
-      mentorId: mentor.id || 'mnt_' + Date.now(),
-      mentorName: mentor.name || 'Onaylı Mentör',
-      mentorTitle: mentor.title || mentor.department || 'İESÜ Mentörü',
+      studentDept: currentUser?.department || currentUser?.faculty || '',
+      studentEmail: currentUser?.email || '',
+      mentorId: mentor.uid || mentor.id,
+      mentorName: mentor.name || 'Mentör',
+      mentorTitle: mentor.title || mentor.department || 'Mentör',
       topic: topic,
       mode: mode,
       preferredDate: date,
@@ -48,10 +56,12 @@ export default function MentorRequestModal({ isOpen, onClose, mentor, currentUse
     };
 
     try {
-      // 1. Sync to localStorage for CMSMentorshipPool
-      const existing = JSON.parse(localStorage.getItem('iesu_mentorship_requests_v1') || '[]');
+      // This prototype shares mentorship requests through the current browser session.
+      const savedRequests = JSON.parse(localStorage.getItem('iesu_mentorship_requests_v1') || '[]');
+      const existing = Array.isArray(savedRequests) ? savedRequests : [];
       const updated = [newRequest, ...existing];
       localStorage.setItem('iesu_mentorship_requests_v1', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('iesu_counseling_updated', { detail: newRequest }));
 
       // 2. Sync to Zustand Admin & Shared Stores
       try {
@@ -72,7 +82,7 @@ export default function MentorRequestModal({ isOpen, onClose, mentor, currentUse
         console.warn('AppStore sync note:', err);
       }
 
-      toast.success(`Sayın ${mentor.name} için mentörlük talebiniz başarıyla oluşturuldu! Koordinatörlük ve mentör onayından sonra bilgilendirileceksiniz.`);
+      toast.success('Mentörlük talebiniz bu oturumun talep listesine kaydedildi.');
       setNote('');
       setSubmitting(false);
       onClose();
