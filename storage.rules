@@ -1,65 +1,81 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    
-    // Yardımcı güvenlik fonksiyonları
+
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
+
+    // KRİTİK DÜZELTME: Sadece admin claim'i veya doğrulanmış kariyer@iesu.edu.tr hesabı admin yetkisi alır.
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
-        (request.auth.token.email != null && request.auth.token.email.matches('.*@iesu\\.edu\\.tr$') && request.auth.token.email == 'kariyer@iesu.edu.tr')
+        (request.auth.token.email == 'kariyer@iesu.edu.tr' && request.auth.token.email_verified == true)
       );
     }
 
     function isCompany() {
-      return isAuthenticated() && (request.auth.token.role == 'company' || request.auth.token.role == 'employer');
+      return isAuthenticated() && (
+        request.auth.token.role == 'company' ||
+        request.auth.token.role == 'employer' ||
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role in ['company', 'employer']
+      );
     }
 
     function isAcademic() {
-      return isAuthenticated() && request.auth.token.role == 'academic';
+      return isAuthenticated() && (
+        request.auth.token.role == 'academic' ||
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'academic'
+      );
     }
 
     function isImage() {
-      return request.resource.contentType.matches('image/.*') &&
-             request.resource.size < 5 * 1024 * 1024; // 5 MB max
+      return request.resource != null &&
+             request.resource.contentType.matches('image/(jpeg|png|webp|gif)') &&
+             request.resource.size < 5 * 1024 * 1024; // Maksimum 5 MB
     }
 
     function isDocument() {
-      return (request.resource.contentType == 'application/pdf' ||
+      return request.resource != null &&
+             (request.resource.contentType == 'application/pdf' ||
               request.resource.contentType == 'application/msword' ||
               request.resource.contentType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') &&
-             request.resource.size < 10 * 1024 * 1024; // 10 MB max
+             request.resource.size < 10 * 1024 * 1024; // Maksimum 10 MB
     }
 
-    // Profil avatarları: Kullanıcı kendi avatarını yükleyebilir, herkes okuyabilir
+    // Profil avatarları: Sadece sahibi veya admin yükleyebilir
     match /avatars/{userId}/{fileName} {
       allow read: if true;
       allow write: if (isOwner(userId) || isAdmin()) && isImage();
     }
 
-    // Özgeçmiş / CV belgeleri: Kullanıcı kendi CV'sini yükleyebilir/okuyabilir, firma ve admin okuyabilir
+    // Özgeçmiş / CV belgeleri (KVKK Korumalı): Sadece sahibi, yetkili işveren/akademisyen veya admin okuyabilir
     match /resumes/{userId}/{fileName} {
-      allow read: if isOwner(userId) || isAdmin() || (isAuthenticated() && request.auth.token.role == 'company');
+      allow read: if isOwner(userId) || isAdmin() || isCompany() || isAcademic();
       allow write: if (isOwner(userId) || isAdmin()) && isDocument();
     }
 
-    // İş başvurusu ekleri: başvuru sahibi, firma, akademik koordinatör veya admin okuyabilir
+    // İş başvurusu ekleri: Sadece başvuru sahibi kendi UID'sini içeren dosyayı yükleyebilir
     match /applications/{applicationId}/{fileName} {
-      allow read: if isAuthenticated() && (isAdmin() || isCompany() || isAcademic() || fileName.matches('.*' + request.auth.uid + '.*'));
-      allow write: if isAuthenticated() && (isDocument() || isImage());
+      allow read: if isAuthenticated() && (
+        isAdmin() || isCompany() || isAcademic() || fileName.matches('.*' + request.auth.uid + '.*')
+      );
+      allow write: if isAuthenticated() &&
+        (isAdmin() || fileName.matches('.*' + request.auth.uid + '.*')) &&
+        (isDocument() || isImage());
     }
 
-    // Kulüp ve etkinlik medyaları
+    // Kulüp ve etkinlik medyaları: Sadece admin veya kulüp yetkilileri yazabilir
     match /clubs/{clubId}/{fileName} {
       allow read: if true;
-      allow write: if isAuthenticated() && isImage();
+      allow write: if isAuthenticated() && isImage() && (
+        isAdmin() ||
+        firestore.get(/databases/(default)/documents/clubs/$(clubId)).data.presidentId == request.auth.uid
+      );
     }
 
     // Kurumsal ve sistem belgeleri

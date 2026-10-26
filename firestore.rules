@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -11,10 +11,6 @@ service cloud.firestore {
     }
 
     // CRITICAL: admin is claim-only. Doc role alone must NOT grant admin
-    // (prevents self-elevation via users/{uid}.role = 'admin').
-    // WARNING: existing admins with only users/{uid}.role == 'admin' and no
-    // custom claim will be locked out of admin rule paths until a claim is set
-    // (see patches/ADMIN-CLAIMS.PLAN.md).
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
@@ -52,14 +48,11 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isAuthenticated();
 
-      // Self-create: only signup roles. Never admin/academic (admin assigns those).
       allow create: if isAuthenticated()
         && request.auth.uid == userId
         && selfSelectableRole(request.resource.data.role)
         && noPrivilegedUserFields();
 
-      // Owner may update profile but cannot change role / privilege fields.
-      // Role changes (incl. academic promotion) require isAdmin() claim.
       allow update: if isAdmin()
         || (
           isOwner(userId)
@@ -73,7 +66,6 @@ service cloud.firestore {
 
     match /jobs/{jobId} {
       allow read: if true;
-      // F-ATS-005: company create must stamp own uid as companyId
       allow create: if isAuthenticated() && (
         isAdmin() || (
           isCompany()
@@ -100,7 +92,7 @@ service cloud.firestore {
     function applicationCompanyMatchesJob() {
       return applicationJobExists()
         && get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.companyId
-           == request.resource.data.companyId;
+          == request.resource.data.companyId;
     }
 
     function applicantCreateStatusOk() {
@@ -128,7 +120,6 @@ service cloud.firestore {
         isAcademic()
       );
 
-      // Company may update only applications for its own jobs; cannot reassign applicant/jobId.
       allow update: if isAuthenticated() && (
         isAdmin() ||
         (
@@ -147,7 +138,9 @@ service cloud.firestore {
 
     match /posts/{postId} {
       allow read: if true;
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && (!request.resource.data.keys().hasAny(['authorId']) || request.resource.data.authorId == request.auth.uid)
+        && (!request.resource.data.keys().hasAny(['author']) || !(request.resource.data.author is map) || !request.resource.data.author.keys().hasAny(['id']) || request.resource.data.author.id == request.auth.uid);
       allow update: if isAuthenticated() && (
         resource.data.author.id == request.auth.uid ||
         resource.data.authorId == request.auth.uid ||
@@ -171,15 +164,15 @@ service cloud.firestore {
 
     match /notifications/{notifId} {
       allow read, update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['userId', 'title'])
+        && request.resource.data.userId is string;
     }
 
     match /audit_logs/{logId} {
       allow read, write: if isAdmin();
     }
 
-
-    // Internship requests: student creates own; academic/admin decide.
     match /internships/{internshipId} {
       allow create: if isAuthenticated()
         && request.resource.data.studentId == request.auth.uid
@@ -216,8 +209,15 @@ service cloud.firestore {
         resource.data.studentId == request.auth.uid ||
         resource.data.applicantId == request.auth.uid
       );
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && (isAcademic() || isAdmin() || resource.data.studentId == request.auth.uid);
+      allow create: if isAuthenticated()
+        && (!request.resource.data.keys().hasAny(['studentId']) || request.resource.data.studentId == request.auth.uid)
+        && (!request.resource.data.keys().hasAny(['applicantId']) || request.resource.data.applicantId == request.auth.uid);
+      allow update: if isAuthenticated() && (
+        isAcademic() || isAdmin() || (
+          resource.data.studentId == request.auth.uid &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'approvedBy', 'reviewedBy'])
+        )
+      );
       allow delete: if isAdmin();
     }
 
@@ -228,7 +228,8 @@ service cloud.firestore {
 
     match /counselingRequests/{docId} {
       allow read: if isAuthenticated() && (isAcademic() || isAdmin() || resource.data.studentId == request.auth.uid);
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated()
+        && (!request.resource.data.keys().hasAny(['studentId']) || request.resource.data.studentId == request.auth.uid);
       allow update: if isAuthenticated() && (isAcademic() || isAdmin());
       allow delete: if isAdmin();
     }
