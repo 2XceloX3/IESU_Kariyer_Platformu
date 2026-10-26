@@ -232,7 +232,6 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
 
         await saveProfile(academicUid, newAcademic);
         if (setAcademicStaff) setAcademicStaff(prev => [...(prev || []), newAcademic]);
-        setRegisteredUser(newAcademic);
       } else if (accountType === 'alumni') {
         if (formData.password !== formData.passwordConfirm) {
           setError("Şifreler eşleşmiyor! Lütfen kontrol edin.");
@@ -732,13 +731,13 @@ export default function Register({ setView, setCurrentUser, setUserRole }) {
                 {accountType === 'employer' 
                   ? "Firma kayıt talebiniz Kariyer Geliştirme Merkezine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
                   : accountType === 'academic'
-                  ? "Akademik hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık kurumsal e-postanız ve şifrenizle giriş yapabilirsiniz."
+                  ? "Akademik kayıt talebiniz Kariyer Geliştirme Merkezine başarıyla iletilmiştir. Bilgileriniz incelendikten sonra hesabınız akademik personel olarak aktif edilecek ve e-posta adresinize bilgilendirme yapılacaktır."
                   : accountType === 'alumni'
                   ? "Mezun hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Aramıza tekrar hoş geldiniz, artık giriş yapabilirsiniz."
                   : "Öğrenci hesabınız başarıyla oluşturuldu ve şifreniz belirlendi. Artık öğrenci numaranız ve şifrenizle giriş yapabilirsiniz."}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                {accountType === 'employer' ? (
+                {accountType === 'employer' || accountType === 'academic' ? (
                   <button 
                     onClick={() => setView('login')}
                     className="inline-flex items-center justify-center bg-gray-900 text-white font-bold py-3.5 px-8 rounded-xl hover:bg-black transition-all shadow-lg active:scale-[0.98] cursor-pointer"
