@@ -141,38 +141,14 @@ export default function App() {
   const standardRoleHive = effectiveRole === 'company' || effectiveRole === 'employer' ? 'company' : effectiveRole === 'academic' ? 'academic' : effectiveRole === 'alumni' ? 'alumni' : 'student';
   const verifyCoordinatorSession = useCallback(() => {
     try {
-      const isVerifiedFirebaseAdmin = Boolean(
+      return Boolean(
         (authenticatedUserId || auth?.currentUser) &&
         currentUser?.role === 'admin'
       );
-      if (isVerifiedFirebaseAdmin) return true;
-
-      // Authentic Coordinator verification
-      const isAuthenticCoordinator = Boolean(
-        (currentUser?.id === 'admin_1513' || currentUser?.name === 'Kariyer Geliştirme Koordinatörlüğü') &&
-        (currentUser?.role === 'admin' || userRole === 'admin')
-      );
-
-      const isRemembered = typeof window !== 'undefined' && localStorage.getItem('iesu_remember_me') === 'true';
-      const sessionToken = typeof window !== 'undefined' ? sessionStorage.getItem('iesu_coordinator_token') : null;
-      const localToken = isRemembered && typeof window !== 'undefined' ? localStorage.getItem('iesu_coordinator_token') : null;
-      const hasActiveAdminSession = typeof window !== 'undefined' && (
-        sessionStorage.getItem('iesu_admin_session') === 'active' ||
-        (isRemembered && localStorage.getItem('iesu_admin_session') === 'active')
-      );
-      
-      const adminUser = import.meta.env.VITE_ADMIN_USER ? String(import.meta.env.VITE_ADMIN_USER).trim().toLowerCase() : 'kariyer';
-      const adminPass = import.meta.env.VITE_ADMIN_PASS ? String(import.meta.env.VITE_ADMIN_PASS).trim() : 'Z.s.1513';
-      const expected = btoa(`${adminUser}:${adminPass}`);
-
-      if (sessionToken === expected || localToken === expected) return true;
-      if (isAuthenticCoordinator && hasActiveAdminSession) return true;
-
-      return false;
     } catch {
       return false;
     }
-  }, [authenticatedUserId, currentUser, userRole]);
+  }, [authenticatedUserId, currentUser]);
 
   const hasValidCoordinatorAuth = verifyCoordinatorSession();
   const isAdmin = Boolean(
@@ -290,11 +266,9 @@ export default function App() {
       setCurrentUser(null);
       setUserRole(null);
       localStorage.removeItem('iesu_mock_user');
-      localStorage.removeItem('iesu_coordinator_token');
       localStorage.removeItem('iesu_user_role_v1');
       localStorage.removeItem('iesu_admin_session');
       try { sessionStorage.removeItem('iesu_mock_user'); } catch (_) {}
-      try { sessionStorage.removeItem('iesu_coordinator_token'); } catch (_) {}
       try { sessionStorage.removeItem('iesu_admin_session'); } catch (_) {}
       try { sessionStorage.removeItem('iesu_user_role_v1'); } catch (_) {}
       setView('login');

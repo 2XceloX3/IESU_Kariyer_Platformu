@@ -36,41 +36,6 @@ describe('Super Admin Omni-Access & Panel Browsing Suite', () => {
     });
   });
 
-  it('allows Super Admin to log in with coordinator credentials in production (no env vars)', async () => {
-    const setView = vi.fn();
-    const setUserRole = vi.fn();
-    const setCurrentUser = vi.fn();
-
-    render(
-      <Login 
-        setView={setView} 
-        setUserRole={setUserRole} 
-        setAcademicRole={vi.fn()} 
-        setCurrentUser={setCurrentUser} 
-      />
-    );
-
-    fireEvent.change(screen.getByLabelText('E-Posta veya Kullanıcı Adı'), {
-      target: { value: 'kariyer' }
-    });
-    fireEvent.change(screen.getByLabelText('Şifre'), {
-      target: { value: 'Z.s.1513' }
-    });
-    fireEvent.click(screen.getByRole('button', { name: /^giriş yap$/i }));
-
-    await waitFor(() => {
-      expect(setView).toHaveBeenCalledWith('admin');
-      expect(setUserRole).toHaveBeenCalledWith('admin');
-      expect(setCurrentUser).toHaveBeenCalledWith(expect.objectContaining({
-        role: 'admin',
-        name: 'Kariyer Geliştirme Koordinatörlüğü'
-      }));
-    });
-
-    expect(window.sessionStorage.getItem('iesu_user_role_v1')).toBe('admin');
-    expect(window.sessionStorage.getItem('iesu_admin_session')).toBe('active');
-  });
-
   it('renders AdminDashboard for Super Admin on admin_cms without redirection or logout', async () => {
     const adminUser = {
       id: 'admin_1513',

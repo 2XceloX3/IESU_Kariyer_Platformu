@@ -17,12 +17,25 @@ describe('Reproduce Profile Update ErrorBoundary Crash', () => {
     };
 
     localStorage.setItem('iesu_mock_user', JSON.stringify(adminUser));
-    localStorage.setItem('iesu_admin_session', 'active');
-    sessionStorage.setItem('iesu_admin_session', 'active');
     sessionStorage.setItem('iesu_mock_user', JSON.stringify(adminUser));
-    const token = btoa('kariyer:Z.s.1513');
-    sessionStorage.setItem('iesu_coordinator_token', token);
-    localStorage.setItem('iesu_coordinator_token', token);
+
+    // Simulate Firebase Admin being authenticated
+    const authModule = require('firebase/auth');
+    if (!authModule.onAuthStateChanged) {
+      vi.mock('firebase/auth', () => ({
+        signInWithEmailAndPassword: vi.fn(),
+        signOut: vi.fn(),
+        onAuthStateChanged: vi.fn((_auth, callback) => {
+          callback({ uid: 'admin_1513', email: 'admin@iesu.edu.tr' });
+          return vi.fn();
+        }),
+      }));
+    } else {
+      authModule.onAuthStateChanged = vi.fn((_auth, callback) => {
+        callback({ uid: 'admin_1513', email: 'admin@iesu.edu.tr' });
+        return vi.fn();
+      });
+    }
 
     useAppStore.setState({
       currentUser: adminUser,

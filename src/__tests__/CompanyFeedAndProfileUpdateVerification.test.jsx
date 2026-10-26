@@ -122,10 +122,13 @@ describe('CompanyFeed and ProfileUpdate Verification', () => {
 
     localStorage.setItem('iesu_mock_user', JSON.stringify(adminUser));
     sessionStorage.setItem('iesu_mock_user', JSON.stringify(adminUser));
-    sessionStorage.setItem('iesu_admin_session', 'active');
-    const token = btoa('kariyer:Z.s.1513');
-    sessionStorage.setItem('iesu_coordinator_token', token);
-    localStorage.setItem('iesu_remember_me', 'true');
+
+    // Simulate Firebase Admin being authenticated
+    const authModule = require('firebase/auth');
+    authModule.onAuthStateChanged = vi.fn((_auth, callback) => {
+      callback({ uid: 'admin_1513', email: 'admin@iesu.edu.tr' });
+      return vi.fn();
+    });
 
     useAppStore.setState({
       currentUser: adminUser,
