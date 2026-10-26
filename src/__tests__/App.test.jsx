@@ -194,6 +194,30 @@ describe('App Component', () => {
     }, { timeout: 5000 });
   });
 
+  it('gracefully handles localStorage.removeItem exceptions during initialization', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+    vi.stubEnv('MODE', 'development');
+
+    const removeItemSpy = vi.spyOn(window.localStorage, 'removeItem').mockImplementation(() => {
+      throw new Error('Simulated localStorage error');
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(removeItemSpy).toHaveBeenCalledWith('iesu_mock_user');
+      expect(document.body.textContent).toMatch(/Kariyer|Giriş|Esenyurt|Üniversite|Portal/i);
+    });
+
+    removeItemSpy.mockRestore();
+    process.env.NODE_ENV = originalNodeEnv;
+  });
+
   it('enforces positive whitelist: student accessing /company is restricted to StudentHive', async () => {
     window.sessionStorage.setItem('iesu_mock_user', JSON.stringify({
       id: 'student-wl-1',
