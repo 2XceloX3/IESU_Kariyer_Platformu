@@ -268,26 +268,30 @@ export const useComposerStore = create((set, get) => ({
     const draftId = state.activeDraftId || ('DFT-' + Date.now());
 
     // Slaytların ikili Blob'larını IndexedDB'ye kaydet (Zaten kaydedilmişse mükerrer yazımı atla)
+    const blobPromises = [];
     for (const slide of state.slides) {
       if (slide.blob) {
         if (slide._persistedDraftId === draftId && slide._persistedBlobRef === slide.blob) {
           continue;
         }
-        try {
-          const blobKey = 'DRAFT_SLIDE_' + draftId + '_' + slide.id;
-          await storeBlob(blobKey, slide.blob, {
-            mimeType: slide.mimeType || slide.blob.type,
-            size: slide.blob.size,
-            slideId: slide.id,
-            draftId
+        const blobKey = 'DRAFT_SLIDE_' + draftId + '_' + slide.id;
+        const p = storeBlob(blobKey, slide.blob, {
+          mimeType: slide.mimeType || slide.blob.type,
+          size: slide.blob.size,
+          slideId: slide.id,
+          draftId
+        })
+          .then(() => {
+            slide._persistedDraftId = draftId;
+            slide._persistedBlobRef = slide.blob;
+          })
+          .catch((e) => {
+            console.warn('[ComposerStore] Slide blob save error:', e);
           });
-          slide._persistedDraftId = draftId;
-          slide._persistedBlobRef = slide.blob;
-        } catch (e) {
-          console.warn('[ComposerStore] Slide blob save error:', e);
-        }
+        blobPromises.push(p);
       }
     }
+    await Promise.all(blobPromises);
 
     const draftPayload = {
       id: draftId,
