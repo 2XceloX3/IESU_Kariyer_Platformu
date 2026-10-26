@@ -724,7 +724,12 @@ export default function MessagingInterface({ previousView, currentUser, userRole
         const url = URL.createObjectURL(blob);
         setCapturedMedia({ type: 'video', url });
       };
-      mediaRecorderRef.current.start();
+      try {
+        mediaRecorderRef.current.start();
+      } catch (err) {
+        console.error('Error starting recording:', err);
+        setIsRecording(false);
+      }
     }
   };
 
