@@ -121,7 +121,8 @@ export async function getDraft(id) {
 
       req.onsuccess = () => resolve(req.result || memoryStorage.drafts.get(id) || null);
       req.onerror = () => resolve(memoryStorage.drafts.get(id) || null);
-    } catch (_) {
+    } catch (e) {
+      console.warn('[DraftStorage] Exception in getDraft:', e);
       resolve(memoryStorage.drafts.get(id) || null);
     }
   });
@@ -152,7 +153,8 @@ export async function getAllDrafts() {
         }
       };
       req.onerror = () => resolve(Array.from(memoryStorage.drafts.values()));
-    } catch (_) {
+    } catch (e) {
+      console.warn('[DraftStorage] Exception in getAllDrafts:', e);
       resolve(Array.from(memoryStorage.drafts.values()));
     }
   });
@@ -176,7 +178,8 @@ export async function deleteDraft(id) {
       const req = store.delete(id);
       req.onsuccess = () => resolve(true);
       req.onerror = () => resolve(true);
-    } catch (_) {
+    } catch (e) {
+      console.warn('[DraftStorage] Exception in deleteDraft:', e);
       resolve(true);
     }
   });
@@ -220,7 +223,8 @@ export async function storeBlob(blobId, blobData, metadata = {}) {
         memoryStorage.blobs.set(blobId, record);
         resolve(record);
       };
-    } catch (_) {
+    } catch (e) {
+      console.warn('[DraftStorage] Exception in storeBlob:', e);
       memoryStorage.blobs.set(blobId, record);
       resolve(record);
     }
@@ -261,7 +265,8 @@ export async function getBlob(blobId) {
         const mem = memoryStorage.blobs.get(blobId);
         resolve(mem ? mem.data : null);
       };
-    } catch (_) {
+    } catch (e) {
+      console.warn('[DraftStorage] Exception in getBlob:', e);
       const mem = memoryStorage.blobs.get(blobId);
       resolve(mem ? mem.data : null);
     }
@@ -286,7 +291,8 @@ export async function deleteBlob(blobId) {
       const req = store.delete(blobId);
       req.onsuccess = () => resolve(true);
       req.onerror = () => resolve(true);
-    } catch (_) {
+    } catch (e) {
+      console.warn('[DraftStorage] Exception in deleteBlob:', e);
       resolve(true);
     }
   });
@@ -347,7 +353,8 @@ export async function clearOldDrafts(maxAgeDays = 7) {
           };
           draftCursorReq.onerror = () => resolve();
         }
-      } catch (_) {
+      } catch (e) {
+        console.warn('[DraftStorage] Exception in clearOldDrafts pDrafts:', e);
         resolve();
       }
     });
@@ -385,13 +392,16 @@ export async function clearOldDrafts(maxAgeDays = 7) {
           };
           blobCursorReq.onerror = () => resolve();
         }
-      } catch (_) {
+      } catch (e) {
+        console.warn('[DraftStorage] Exception in clearOldDrafts pBlobs:', e);
         resolve();
       }
     });
 
     await Promise.all([pDrafts, pBlobs]);
-  } catch (_) {}
+  } catch (e) {
+    console.warn('[DraftStorage] Exception in clearOldDrafts:', e);
+  }
 }
 
 export default {
