@@ -24,6 +24,7 @@ export const SUPPORTED_EVENTS = [
 class EventBus {
   constructor() {
     this.listeners = new Map();
+    this.systemListeners = new Map(); // Immune to clear()
     this.throughputLog = []; // array of timestamps (ms)
     this.eventHistory = [];  // bounded ring-buffer (max 100)
     this.totalEventCount = 0;
@@ -66,13 +67,22 @@ class EventBus {
 
     // 3. Dispatch to subscribers
     const handlers = this.listeners.get(event);
+    const systemHandlers = this.systemListeners.get(event);
     const wildcardHandlers = this.listeners.get('*');
+    const wildcardSystemHandlers = this.systemListeners.get('*');
     let dispatched = false;
 
     // Combine specific and wildcard handlers defensively
     const targets = [];
+    if (systemHandlers && systemHandlers.size > 0) {
+      targets.push(...Array.from(systemHandlers));
+    }
     if (handlers && handlers.size > 0) {
       targets.push(...Array.from(handlers));
+    }
+
+    if (wildcardSystemHandlers && wildcardSystemHandlers.size > 0) {
+      targets.push(...Array.from(wildcardSystemHandlers).map(fn => (data) => fn(event, data)));
     }
     if (wildcardHandlers && wildcardHandlers.size > 0) {
       targets.push(...Array.from(wildcardHandlers).map(fn => (data) => fn(event, data)));
@@ -105,16 +115,18 @@ class EventBus {
    * Subscribe a handler to an event.
    * Returns a clean unsubscribe function.
    */
-  on(event, handler) {
+  on(event, handler, options = {}) {
     if (!event || typeof handler !== 'function') {
       return () => {};
     }
 
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, new Set());
+    const targetMap = options.isSystem ? this.systemListeners : this.listeners;
+
+    if (!targetMap.has(event)) {
+      targetMap.set(event, new Set());
     }
 
-    this.listeners.get(event).add(handler);
+    targetMap.get(event).add(handler);
 
     // Unsubscribe callback
     return () => this.off(event, handler);
@@ -124,12 +136,24 @@ class EventBus {
    * Explicitly remove a handler subscription.
    */
   off(event, handler) {
-    if (!this.listeners.has(event)) return false;
-    const handlers = this.listeners.get(event);
-    const removed = handlers.delete(handler);
-    if (handlers.size === 0) {
-      this.listeners.delete(event);
+    let removed = false;
+
+    if (this.listeners.has(event)) {
+      const handlers = this.listeners.get(event);
+      if (handlers.delete(handler)) removed = true;
+      if (handlers.size === 0) {
+        this.listeners.delete(event);
+      }
     }
+
+    if (this.systemListeners.has(event)) {
+      const handlers = this.systemListeners.get(event);
+      if (handlers.delete(handler)) removed = true;
+      if (handlers.size === 0) {
+        this.systemListeners.delete(event);
+      }
+    }
+
     return removed;
   }
 

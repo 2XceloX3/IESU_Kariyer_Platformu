@@ -343,7 +343,7 @@ describe('Adversarial Challenger M1-1: Brain & Hive Foundation Stress Suite', ()
   // GROUP 5: EMPIRICAL DISCOVERY — The eventBus.clear() Architecture Bug
   // ══════════════════════════════════════════════════════════════
   describe('Group 5: EMPIRICAL DISCOVERY — The eventBus.clear() Architecture Bug', () => {
-    it('proves that eventBus.clear() severs useSharedStore reactive bindings', () => {
+    it('proves that eventBus.clear() does not sever useSharedStore reactive bindings', () => {
       eventBus.clear();
 
       eventBus.emit('post:created', { post: { id: 'STRESS-POST-1', content: 'Should reach store' } });
@@ -351,12 +351,12 @@ describe('Adversarial Challenger M1-1: Brain & Hive Foundation Stress Suite', ()
       const currentPosts = useSharedStore.getState().posts;
       const received = currentPosts.some((p) => p.id === 'STRESS-POST-1');
 
-      // The listener was destroyed by eventBus.clear(), so received is false.
-      // This confirms the empirical flaw.
-      expect(received).toBe(false);
+      // The listener was NOT destroyed by eventBus.clear() because it's a system listener,
+      // so received is true.
+      expect(received).toBe(true);
     });
 
-    it('proves that eventBus.clear() severs useAdminStore hive:error telemetry listener', () => {
+    it('proves that eventBus.clear() does not sever useAdminStore hive:error telemetry listener', () => {
       const initialErrors = useAdminStore.getState().hiveErrors.student;
 
       eventBus.clear();
@@ -364,7 +364,7 @@ describe('Adversarial Challenger M1-1: Brain & Hive Foundation Stress Suite', ()
       eventBus.emit('hive:error', { hive: 'student', error: 'Student crash' });
 
       const currentErrors = useAdminStore.getState().hiveErrors.student;
-      expect(currentErrors).toBe(initialErrors);
+      expect(currentErrors).toBe(initialErrors + 1);
     });
   });
 
