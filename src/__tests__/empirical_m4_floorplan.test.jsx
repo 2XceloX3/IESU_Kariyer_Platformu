@@ -212,11 +212,8 @@ describe('M4 Empirical Test Suite: 2D Interactive Stand Floorplan Map & Layout A
     const standA01 = stateAfter.careerFairStands.find(s => s.code === 'Stant A-01');
 
     expect(standA05.assignedCompanyName).toBe('Baykar Teknoloji');
-    // EMPIRICAL BUG CHECK: Does Stant A-01 still show Baykar Teknoloji?
-    // In current implementation, assignStandToCompany does NOT clear Stant A-01!
-    if (standA01.assignedCompanyName === 'Baykar Teknoloji') {
-      console.warn('[EMPIRICAL FINDING]: Double assignment defect confirmed. Stant A-01 was not auto-vacated when Baykar Teknoloji was reassigned to Stant A-05.');
-    }
+    expect(standA01.assignedCompanyName).toBeNull();
+    expect(standA01.status).toBe('Boş');
   });
 
   it('E7 [DEFECT TEST]: Live Stage button inside Stand Allocator tab breaks active tab rendering', () => {

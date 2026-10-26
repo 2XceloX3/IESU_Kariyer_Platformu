@@ -466,7 +466,6 @@ export const useAdminStore = create(
               }
               if (
                 companyName &&
-                newStatus !== 'Boş' &&
                 ((s.assignedCompanyName && s.assignedCompanyName.trim().toLowerCase() === companyName.trim().toLowerCase()) || (companyId && s.assignedCompanyId === companyId)) &&
                 s.id !== targetId &&
                 s.code !== standCode
