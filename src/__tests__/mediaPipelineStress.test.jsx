@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { 
   openDraftDB, 
   saveDraft, 
@@ -205,7 +205,11 @@ describe('Instagram Media Pipeline & Delivery Suite (Reverse Engineering Verific
       await store.addFiles([file]);
 
       const onNext = vi.fn();
-      render(<AspectRatioCropModal onNext={onNext} />);
+      let container;
+      await act(async () => {
+        const result = render(<AspectRatioCropModal onNext={onNext} />);
+        container = result.container;
+      });
 
       expect(screen.getByText(/1:1 Kare/i)).toBeInTheDocument();
       expect(screen.getByText(/4:5 Dikey/i)).toBeInTheDocument();
@@ -213,12 +217,16 @@ describe('Instagram Media Pipeline & Delivery Suite (Reverse Engineering Verific
 
       // En-boy oranı değiştir
       const portraitBtn = screen.getByText(/4:5 Dikey/i);
-      fireEvent.click(portraitBtn);
+      act(() => {
+        fireEvent.click(portraitBtn);
+      });
       expect(useComposerStore.getState().lockedAspectRatio).toBe('4:5');
 
       // İleri butonu
       const nextBtn = screen.getByText('İleri');
-      fireEvent.click(nextBtn);
+      act(() => {
+        fireEvent.click(nextBtn);
+      });
       expect(onNext).toHaveBeenCalled();
     });
   });

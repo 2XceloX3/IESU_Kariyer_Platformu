@@ -14,8 +14,11 @@ import {
 
 vi.mock('../utils/firebase', () => ({ auth: {}, db: {} }));
 vi.mock('firebase/auth', () => ({
-  signInWithEmailAndPassword: vi.fn(),
+  signInWithEmailAndPassword: vi.fn(() => Promise.reject(new Error("auth/invalid-credential"))),
   signOut: vi.fn(),
+  setPersistence: vi.fn(() => Promise.resolve()),
+  browserSessionPersistence: 'SESSION',
+  browserLocalPersistence: 'LOCAL',
 }));
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn(() => ({})),
