@@ -48,7 +48,9 @@ describe('PostComposer Full Integration & Pipeline Tests', () => {
     render(<PostComposer currentUser={currentUser} userRole="student" posts={[]} setPosts={vi.fn()} />);
 
     const textarea = screen.getByPlaceholderText('Gönderi başlat...');
-    fireEvent.focus(textarea);
+    act(() => {
+      fireEvent.focus(textarea);
+    });
     fireEvent.change(textarea, { target: { value: 'Yeni araştırma laboratuvarı açıldı!' } });
 
     expect(useComposerStore.getState().content).toBe('Yeni araştırma laboratuvarı açıldı!');
@@ -56,36 +58,50 @@ describe('PostComposer Full Integration & Pipeline Tests', () => {
 
   it('toggles AspectRatioCropModal when clicking "Kırp & Yakınlaştır"', async () => {
     const currentUser = { id: 'usr_1', name: 'Caner Öztürk', role: 'student' };
-    useComposerStore.setState({
-      slides: [
-        {
-          id: 'sld_1',
-          previewUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400',
-          crop: { aspect: '1:1', zoom: 1.0 },
-          tags: []
-        }
-      ]
+    act(() => {
+      useComposerStore.setState({
+        slides: [
+          {
+            id: 'sld_1',
+            previewUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400',
+            crop: { aspect: '1:1', zoom: 1.0 },
+            tags: []
+          }
+        ]
+      });
     });
 
-    render(<PostComposer currentUser={currentUser} userRole="student" posts={[]} setPosts={vi.fn()} />);
+    let container;
+    act(() => {
+      const result = render(<PostComposer currentUser={currentUser} userRole="student" posts={[]} setPosts={vi.fn()} />);
+      container = result.container;
+    });
 
     const textarea = screen.getByPlaceholderText('Gönderi başlat...');
-    fireEvent.focus(textarea);
+    act(() => {
+      fireEvent.focus(textarea);
+    });
 
     const cropBtn = screen.getByText('Kırp & Yakınlaştır');
     expect(cropBtn).toBeInTheDocument();
 
-    fireEvent.click(cropBtn);
+    act(() => {
+      fireEvent.click(cropBtn);
+    });
     expect(screen.getByText('Kırpma & En-Boy Oranı Kilidi')).toBeInTheDocument();
 
     // Oran değiştir
     const portraitBtns = screen.getAllByText('4:5 Dikey');
-    fireEvent.click(portraitBtns[portraitBtns.length - 1]);
+    act(() => {
+      fireEvent.click(portraitBtns[portraitBtns.length - 1]);
+    });
     expect(useComposerStore.getState().lockedAspectRatio).toBe('4:5');
 
     // Modalı kapat
     const nextBtn = screen.getByText('İleri');
-    fireEvent.click(nextBtn);
+    act(() => {
+      fireEvent.click(nextBtn);
+    });
     expect(screen.queryByText('Kırpma & En-Boy Oranı Kilidi')).not.toBeInTheDocument();
   });
 

@@ -136,23 +136,29 @@ describe('Job Application Form and Admin Pool Integration', () => {
     expect(mockSetApplications).toHaveBeenCalled();
   });
 
-  it('renders "İlan & Staj Başvuru Havuzu" tab in AdminDashboard', () => {
-    render(
-      <AdminDashboard
-        currentUser={{ id: 'admin1', name: 'Admin' }}
-        userRole="admin"
-        academicRole="super_admin"
-        setView={vi.fn()}
-        setSelectedUserId={vi.fn()}
-      />
-    );
+  it('renders "İlan & Staj Başvuru Havuzu" tab in AdminDashboard', async () => {
+    let container;
+    await waitFor(() => {
+      const result = render(
+        <AdminDashboard
+          currentUser={{ id: 'admin1', name: 'Admin' }}
+          userRole="admin"
+          academicRole="super_admin"
+          setView={vi.fn()}
+          setSelectedUserId={vi.fn()}
+        />
+      );
+      container = result.container;
+    });
 
     // The tab should be visible in Main Tabs or category panels
     const poolTabs = screen.getAllByText(/İlan & Staj Başvuru Havuzu/i);
     expect(poolTabs.length).toBeGreaterThan(0);
 
     // Clicking the tab opens the pool
-    fireEvent.click(poolTabs[0]);
+    await waitFor(() => {
+      fireEvent.click(poolTabs[0]);
+    });
     expect(screen.getAllByText(/İlan & Staj Başvuru Havuzu/i).length).toBeGreaterThan(0);
   });
 });

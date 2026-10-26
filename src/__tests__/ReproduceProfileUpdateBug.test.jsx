@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import useAppStore from '../store/useAppStore';
@@ -31,14 +31,17 @@ describe('Reproduce Profile Update ErrorBoundary Crash', () => {
       authenticatedUserId: 'admin_1513'
     });
 
-    const { container } = render(
-      <MemoryRouter initialEntries={['/profile_update']}>
-        <App />
-      </MemoryRouter>
-    );
-
-    // Wait a tick for effects
-    await new Promise(r => setTimeout(r, 200));
+    let container;
+    await act(async () => {
+      const result = render(
+        <MemoryRouter initialEntries={['/profile_update']}>
+          <App />
+        </MemoryRouter>
+      );
+      container = result.container;
+      // Wait a tick for effects and suspenses
+      await new Promise(r => setTimeout(r, 200));
+    });
 
     // Check if ErrorBoundary triggered
     const errorHeading = screen.queryByText(/Beklenmeyen Bir Hata Oluştu/i);
