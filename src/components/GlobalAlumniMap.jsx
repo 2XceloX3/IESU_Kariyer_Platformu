@@ -382,7 +382,8 @@ export default function GlobalAlumniMap({ setView, currentUser, userRole, setSel
   const handleSelectSuggestion = (sug) => {
     setSearchQuery('');
     if (sug.type === 'city') {
-      const existingHub = hubs.find(h => h && normalizeStr(h.city) === normalizeStr(sug.name));
+      const normSugName = normalizeStr(sug.name);
+      const existingHub = hubs.find(h => h && (h.normCity || normalizeStr(h.city)) === normSugName);
       if (existingHub) {
         handleHubSelect(existingHub);
       } else {
