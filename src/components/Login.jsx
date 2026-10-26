@@ -26,67 +26,6 @@ export default function Login({ setView, setUserRole, setAcademicRole, setCurren
     const cleanUser = (username || '').trim().toLowerCase();
     const cleanPass = (password || '').trim();
 
-    // 1. Kariyer Koordinatörlüğü / Süper Yönetici Yetkili Girişi (GitHub Release & Production Desteği)
-    const envAdminUser = import.meta.env.VITE_ADMIN_USER ? String(import.meta.env.VITE_ADMIN_USER).trim().toLowerCase() : null;
-    const envAdminPass = import.meta.env.VITE_ADMIN_PASS ? String(import.meta.env.VITE_ADMIN_PASS).trim() : null;
-
-    const isCoordinatorUser = 
-      (envAdminUser && cleanUser === envAdminUser) || 
-      cleanUser === 'kariyer' || 
-      cleanUser === 'admin' || 
-      cleanUser === 'admin_1513' || 
-      cleanUser === 'kgm@esenyurt.edu.tr' || 
-      cleanUser === 'admin@esenyurt.edu.tr' ||
-      cleanUser === 'kariyer@iesu.edu.tr';
-
-    const isCoordinatorPass = 
-      (envAdminPass && cleanPass === envAdminPass) || 
-      cleanPass === 'Z.s.1513';
-
-    if (isCoordinatorUser && isCoordinatorPass) {
-      const adminPayload = {
-        id: 'admin_1513',
-        name: 'Kariyer Geliştirme Koordinatörlüğü',
-        role: 'admin',
-        grade: 'Süper Yönetici',
-        avatar: '/iesu-logo.svg',
-        onboardingCompleted: true
-      };
-
-      try {
-        const adminToken = btoa(`${cleanUser}:${cleanPass}`);
-        if (rememberMe) {
-          localStorage.setItem('iesu_remember_me', 'true');
-          localStorage.setItem('iesu_mock_user', JSON.stringify(adminPayload));
-          localStorage.setItem('iesu_user_role_v1', 'admin');
-          localStorage.setItem('iesu_admin_session', 'active');
-          localStorage.setItem('iesu_coordinator_token', adminToken);
-        } else {
-          localStorage.removeItem('iesu_remember_me');
-          localStorage.removeItem('iesu_mock_user');
-          localStorage.removeItem('iesu_user_role_v1');
-          localStorage.removeItem('iesu_admin_session');
-          localStorage.removeItem('iesu_coordinator_token');
-        }
-        sessionStorage.setItem('iesu_mock_user', JSON.stringify(adminPayload));
-        sessionStorage.setItem('iesu_user_role_v1', 'admin');
-        sessionStorage.setItem('iesu_admin_session', 'active');
-        sessionStorage.setItem('iesu_coordinator_token', adminToken);
-        const s = useAppStore.getState();
-        s.setUserRole?.('admin');
-        s.setCurrentUser?.(adminPayload);
-        s.setActivePortalBranch?.('admin');
-      } catch { /* intentional */ }
-
-      setUserRole('admin');
-      if (setAcademicRole) setAcademicRole('super_admin');
-      if (setCurrentUser) setCurrentUser(adminPayload);
-      
-      setView('admin');
-      setIsLoading(false);
-      return;
-    }
-
     try {
       // FIREBASE AUTHENTICATION
       if (!auth) {
