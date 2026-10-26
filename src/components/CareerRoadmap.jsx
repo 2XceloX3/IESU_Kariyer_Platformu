@@ -317,7 +317,9 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
         setSelectedSectorId(savedSector);
         setRoadmap(DEFAULT_ROADMAPS[savedSector]);
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error('Kariyer verileri okunamadı:', e);
+    }
   }, []);
 
   const handleSelectSector = (sectorId) => {
@@ -326,7 +328,10 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
     setDreamRole('');
     try {
       localStorage.setItem('iesu_career_roadmap_active_sector_v2', sectorId);
-    } catch (e) {}
+    } catch (e) {
+      console.error('Kariyer hedefi kaydedilemedi:', e);
+      window.toast?.error?.('Seçiminiz tarayıcıya kaydedilemedi.');
+    }
   };
 
   const toggleTask = (taskKey) => {
@@ -334,7 +339,10 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
       const next = { ...prev, [taskKey]: !prev[taskKey] };
       try {
         localStorage.setItem('iesu_career_roadmap_completed_tasks_v2', JSON.stringify(next));
-      } catch (e) {}
+      } catch (e) {
+        console.error('Görev durumu kaydedilemedi:', e);
+        window.toast?.error?.('Görev durumu kaydedilemedi.');
+      }
       return next;
     });
   };
