@@ -978,6 +978,8 @@ export function aggregateAlumniHubs(alumniList = [], currentUser = null) {
   BASE_ALUMNI_HUBS.forEach(h => {
     hubsMap.set(h.id, {
       ...h,
+      normCity: normalizeStr(h.city),
+      normCountry: normalizeStr(h.country),
       count: h.baseCount,
       alumniList: [],
       topCompanies: Array.isArray(h.topCompanies) ? [...h.topCompanies] : [],
