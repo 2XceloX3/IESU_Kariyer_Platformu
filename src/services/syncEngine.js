@@ -253,45 +253,51 @@ const PROXY_ENGINES = [
   (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
 ];
 
+async function attemptProxyFetch(url, getProxyUrl) {
+  const proxyUrl = getProxyUrl(url);
+  const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
+  if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+  
+  let rawHTML = '';
+  if (proxyUrl.includes('allorigins')) {
+    const json = await res.json();
+    rawHTML = json.contents || '';
+  } else {
+    rawHTML = await res.text();
+  }
+
+  if (!rawHTML || rawHTML.length < 50) throw new Error('Response too short');
+
+  const extracted = extractTextFromHTML(rawHTML);
+  const contentHash = simpleHash(rawHTML.slice(0, 5000));
+
+  return {
+    success: true,
+    url,
+    contentHash,
+    fetchedAt: new Date().toISOString(),
+    verificationStatus: 'VERIFIED',
+    ...extracted,
+  };
+}
+
 export async function fetchOfficialPage(url) {
   let lastError = 'Bilinmeyen Hata';
-  
-  for (const getProxyUrl of PROXY_ENGINES) {
-    const proxyUrl = getProxyUrl(url);
-    try {
-      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
-      if (!res.ok) continue;
-      
-      let rawHTML = '';
-      if (proxyUrl.includes('allorigins')) {
-        const json = await res.json();
-        rawHTML = json.contents || '';
-      } else {
-        rawHTML = await res.text();
-      }
-
-      if (!rawHTML || rawHTML.length < 50) continue;
-
-      const extracted = extractTextFromHTML(rawHTML);
-      const contentHash = simpleHash(rawHTML.slice(0, 5000));
-      
-      return {
-        success: true,
-        url,
-        contentHash,
-        fetchedAt: new Date().toISOString(),
-        verificationStatus: 'VERIFIED',
-        ...extracted,
-      };
-    } catch (err) {
-      lastError = err.message || 'Bağlantı Zaman Aşımı';
-    }
+  try {
+    const proxyPromises = PROXY_ENGINES.map((getProxyUrl) =>
+      attemptProxyFetch(url, getProxyUrl)
+    );
+    return await Promise.any(proxyPromises);
+  } catch (err) {
+    // Falls through to fallback on AggregateError (when all proxies fail)
+    lastError = err.message || 'Tüm proxy bağlantıları başarısız oldu';
   }
 
   // Fallback graceful object if all network proxies are blocked/down
   return {
     success: true,
     url,
+    errorFallbackReason: lastError,
     contentHash: simpleHash(url + Date.now()),
     fetchedAt: new Date().toISOString(),
     verificationStatus: 'FALLBACK_VERIFIED',
