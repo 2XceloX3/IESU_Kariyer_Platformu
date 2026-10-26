@@ -29,6 +29,86 @@ afterEach(() => {
 });
 
 describe('Register production safety', () => {
+  it('displays email already in use error', async () => {
+    firebaseAuthMocks.createUserWithEmailAndPassword.mockRejectedValue({ code: 'auth/email-already-in-use' });
+
+    render(
+      <Register
+        setView={vi.fn()}
+        setCurrentUser={vi.fn()}
+        setUserRole={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText('Ad Soyadı'), { target: { value: 'Test Mezun' } });
+    fireEvent.change(screen.getByLabelText('Öğrenci Numarası'), { target: { value: '202400001' } });
+    fireEvent.change(screen.getByLabelText('Mezun Olunan Bölüm'), { target: { value: 'Yazılım Mühendisliği' } });
+    fireEvent.change(screen.getByLabelText('Mezuniyet Yılı'), { target: { value: '2024' } });
+    fireEvent.change(screen.getByLabelText('E-Posta Adresi'), { target: { value: 'mezun@example.test' } });
+    fireEvent.change(screen.getByLabelText('Yeni Şifre'), { target: { value: 'guvenli-sifre' } });
+    fireEvent.change(screen.getByLabelText('Yeni Şifre Tekrar'), { target: { value: 'guvenli-sifre' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: /KVKK Aydınlatma Metni/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Mezun Hesabımı Aktifleştir' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Bu e-posta adresi zaten kullanımda!')).toBeInTheDocument();
+    });
+  });
+
+  it('displays weak password error', async () => {
+    vi.stubEnv('DEV', false);
+    firebaseAuthMocks.createUserWithEmailAndPassword.mockRejectedValue({ code: 'auth/weak-password' });
+
+    render(
+      <Register
+        setView={vi.fn()}
+        setCurrentUser={vi.fn()}
+        setUserRole={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText('Ad Soyadı'), { target: { value: 'Test Mezun' } });
+    fireEvent.change(screen.getByLabelText('Öğrenci Numarası'), { target: { value: '202400001' } });
+    fireEvent.change(screen.getByLabelText('Mezun Olunan Bölüm'), { target: { value: 'Yazılım Mühendisliği' } });
+    fireEvent.change(screen.getByLabelText('Mezuniyet Yılı'), { target: { value: '2024' } });
+    fireEvent.change(screen.getByLabelText('E-Posta Adresi'), { target: { value: 'mezun@example.test' } });
+    fireEvent.change(screen.getByLabelText('Yeni Şifre'), { target: { value: 'zayif1' } });
+    fireEvent.change(screen.getByLabelText('Yeni Şifre Tekrar'), { target: { value: 'zayif1' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: /KVKK Aydınlatma Metni/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Mezun Hesabımı Aktifleştir' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Şifre çok zayıf. Lütfen daha güçlü bir şifre seçin.')).toBeInTheDocument();
+    });
+  });
+
+  it('displays unknown error', async () => {
+    vi.stubEnv('DEV', false);
+    firebaseAuthMocks.createUserWithEmailAndPassword.mockRejectedValue({ code: 'auth/unknown-error', message: 'Bilinmeyen bir hata oluştu' });
+
+    render(
+      <Register
+        setView={vi.fn()}
+        setCurrentUser={vi.fn()}
+        setUserRole={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText('Ad Soyadı'), { target: { value: 'Test Mezun' } });
+    fireEvent.change(screen.getByLabelText('Öğrenci Numarası'), { target: { value: '202400001' } });
+    fireEvent.change(screen.getByLabelText('Mezun Olunan Bölüm'), { target: { value: 'Yazılım Mühendisliği' } });
+    fireEvent.change(screen.getByLabelText('Mezuniyet Yılı'), { target: { value: '2024' } });
+    fireEvent.change(screen.getByLabelText('E-Posta Adresi'), { target: { value: 'mezun@example.test' } });
+    fireEvent.change(screen.getByLabelText('Yeni Şifre'), { target: { value: 'guvenli-sifre' } });
+    fireEvent.change(screen.getByLabelText('Yeni Şifre Tekrar'), { target: { value: 'guvenli-sifre' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: /KVKK Aydınlatma Metni/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Mezun Hesabımı Aktifleştir' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Kayıt servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.')).toBeInTheDocument();
+    });
+  });
+
   it('does not create a local alumni session when Firebase registration is unavailable', async () => {
     vi.stubEnv('DEV', false);
     firebaseAuthMocks.createUserWithEmailAndPassword.mockRejectedValue({ code: 'auth/network-request-failed' });
