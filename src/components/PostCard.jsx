@@ -202,6 +202,20 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
       ? post.likedBy.includes(effectiveCurrentUser.id)
       : false;
   });
+  const [likesCount, setLikesCount] = useState(post?.likes || 0);
+
+  useEffect(() => {
+    if (typeof post?.likes === 'number') {
+      setLikesCount(post.likes);
+    }
+  }, [post?.likes]);
+
+  useEffect(() => {
+    if (effectiveCurrentUser?.id && Array.isArray(post?.likedBy)) {
+      setLiked(post.likedBy.includes(effectiveCurrentUser.id));
+    }
+  }, [post?.likedBy, effectiveCurrentUser?.id]);
+
   const [showHeart, setShowHeart] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [showTags, setShowTags] = useState(false);
@@ -295,7 +309,10 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     const nextLiked = !liked;
     setLiked(nextLiked);
 
-    const currentLikes = post?.likes || 0;
+    const currentLikes = typeof likesCount === 'number' ? likesCount : (post?.likes || 0);
+    const updatedLikes = Math.max(0, currentLikes + (nextLiked ? 1 : -1));
+    setLikesCount(updatedLikes);
+
     let newLikedBy = Array.isArray(post?.likedBy) ? [...post.likedBy] : [];
     if (nextLiked) {
       if (effectiveCurrentUser?.id && !newLikedBy.includes(effectiveCurrentUser.id)) {
@@ -306,7 +323,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     }
     const updatedPost = {
       ...post,
-      likes: Math.max(0, currentLikes + (nextLiked ? 1 : -1)),
+      likes: updatedLikes,
       likedBy: newLikedBy
     };
 
@@ -315,28 +332,34 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     }
 
     try {
+      const store = useAppStore.getState();
+      const pid = post?.id;
+      if (pid) {
+        if (store.setEvents && Array.isArray(store.events) && store.events.some(e => e.id === pid)) {
+          store.setEvents(store.events.map(e => e.id === pid ? { ...e, likes: updatedLikes, likedBy: newLikedBy } : e));
+        }
+        if (store.setGeneralEvents && Array.isArray(store.generalEvents) && store.generalEvents.some(e => e.id === pid)) {
+          store.setGeneralEvents(store.generalEvents.map(e => e.id === pid ? { ...e, likes: updatedLikes, likedBy: newLikedBy } : e));
+        }
+        if (store.setNews && Array.isArray(store.news) && store.news.some(n => n.id === pid)) {
+          store.setNews(store.news.map(n => n.id === pid ? { ...n, likes: updatedLikes, likedBy: newLikedBy } : n));
+        }
+        if (store.setAnnouncements && Array.isArray(store.announcements) && store.announcements.some(a => a.id === pid)) {
+          store.setAnnouncements(store.announcements.map(a => a.id === pid ? { ...a, likes: updatedLikes, likedBy: newLikedBy } : a));
+        }
+        if (store.setJobs && Array.isArray(store.jobs) && store.jobs.some(j => j.id === pid)) {
+          store.setJobs(store.jobs.map(j => j.id === pid ? { ...j, likes: updatedLikes, likedBy: newLikedBy } : j));
+        }
+        if (store.setCareerOpportunities && Array.isArray(store.careerOpportunities) && store.careerOpportunities.some(o => o.id === pid)) {
+          store.setCareerOpportunities(store.careerOpportunities.map(o => o.id === pid ? { ...o, likes: updatedLikes, likedBy: newLikedBy } : o));
+        }
+      }
+    } catch (_) {}
+
+    try {
       eventBus.emit('post:updated', { post: updatedPost });
     } catch (_) {}
-    return;
-    setLiked(!liked);
-    if (setPosts) {
-      setPosts(prev => (prev || []).map(p => {
-        if (p.id === post.id) {
-          const currentLikes = p.likes || 0;
-          let newLikedBy = Array.isArray(p.likedBy) ? [...p.likedBy] : [];
-          if (!liked) {
-            if (!newLikedBy.includes(effectiveCurrentUser?.id)) newLikedBy.push(effectiveCurrentUser?.id);
-          } else {
-            newLikedBy = newLikedBy.filter(id => id !== effectiveCurrentUser?.id);
-          }
-          const updated = { ...p, likes: Math.max(0, currentLikes + (liked ? -1 : 1)), likedBy: newLikedBy };
-          try { eventBus.emit('post:updated', { post: updated }); } catch (_) {}
-          return updated;
-        }
-        return p;
-      }));
-    }
-  }, [liked, post?.id, post?.authorId, post?.author?.id, effectiveCurrentUser?.id, setPosts]);
+  }, [liked, likesCount, post, effectiveCurrentUser?.id, setPosts]);
 
   useEffect(() => {
     if (isShareModalOpen) {
@@ -918,7 +941,7 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           >
             <Heart size={20} className={`${liked ? 'fill-current scale-110' : ''} transition-transform`} /> 
             <span className="hidden sm:inline">Beğen</span>
-            <span className="text-xs font-semibold ml-1 px-1.5 py-0.5 bg-gray-100/50 rounded-md text-gray-500">{post?.likes || 0}</span>
+            <span className="text-xs font-semibold ml-1 px-1.5 py-0.5 bg-gray-100/50 rounded-md text-gray-500">{likesCount || 0}</span>
           </button>
           <button 
             aria-label="Yorumları Aç"
