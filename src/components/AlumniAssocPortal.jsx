@@ -154,7 +154,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
             Mezunlar Portalı Özel Yönetim Portalı sadece yetkili Portal Yönetim kurulu üyeleri ve koordinatörlük yöneticilerine açıktır.
           </p>
           <button 
-            onClick={() => setView('mezun_dernek')}
+            onClick={() => setView ? setView('birlik_agi') : null}
             className="px-6 py-3 bg-[#059669] text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition shadow-md cursor-pointer"
           >
             Mezunlar Akışına Dön →
@@ -214,7 +214,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
             </p>
           </div>
           <button 
-            onClick={() => setView('mezun_dernek')}
+            onClick={() => setView ? setView('birlik_agi') : null}
             className="z-10 bg-white text-[#059669] font-black text-xs px-5 py-3 rounded-2xl hover:bg-emerald-50 transition shadow-lg whitespace-nowrap cursor-pointer"
           >
             Kamuya Açık Akış Sayfasını Gör →
@@ -311,7 +311,14 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                   <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
                     {(alumniAssocApplications || []).map(app => (
                       <tr key={app.id} className="hover:bg-slate-50">
-                        <td className="p-4 font-black text-slate-900">{app.name}</td>
+                        <td className="p-4">
+                          <span className="font-black text-slate-900 block">{app.name}</span>
+                          {app.notes && (
+                            <span className="text-[11px] text-slate-500 font-normal italic block max-w-xs truncate" title={app.notes}>
+                              💬 {app.notes}
+                            </span>
+                          )}
+                        </td>
                         <td className="p-4">
                           <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${
                             app.type === 'Yönetim Ekibi Adaylığı' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'

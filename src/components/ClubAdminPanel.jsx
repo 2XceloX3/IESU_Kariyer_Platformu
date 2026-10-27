@@ -241,8 +241,15 @@ export default function ClubAdminPanel({
       attendees: 0
     };
 
-    if (setEvents) {
-      setEvents(prev => [newEvent, ...(prev || [])]);
+    const enrichedEvent = {
+      ...newEvent,
+      status: 'Öğrenci Dekanlığı Onayı Bekliyor',
+      approvalStatus: 'pending',
+      createdAt: new Date().toISOString()
+    };
+    if (typeof setEvents === 'function') {
+      const currentEvents = Array.isArray(events) ? events : [];
+      setEvents([enrichedEvent, ...currentEvents]);
     }
     toast.success('Gönderi ve Etkinlik başarıyla paylaşıldı!');
     

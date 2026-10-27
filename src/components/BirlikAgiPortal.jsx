@@ -87,6 +87,7 @@ export default function BirlikAgiPortal({ currentUser, setView, previousView, se
       graduationYear: appForm.graduationYear,
       email: appForm.email,
       phone: appForm.phone,
+      notes: appForm.note || '',
       appliedAt: new Date().toLocaleDateString('tr-TR'),
       status: 'Beklemede'
     };

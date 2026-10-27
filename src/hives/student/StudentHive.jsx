@@ -222,11 +222,14 @@ export default function StudentHive({ currentUser, setView }) {
         return <MetaverseLibrary setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'hackathon_market':
         return <HackathonMarket setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+      case 'clubs_directory':
+      case 'sksdb_clubs':
+        return <SKSDBClubsDirectory setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'clubs':
       case 'club_portal':
-        return <StudentClubPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
+        return <StudentClubPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView={previousView || "student"} setSelectedUserId={setSelectedUserId} />;
       case 'club_admin':
-        return <ClubAdminPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" />;
+        return <ClubAdminPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="club_portal" />;
       case 'sem':
         return <SemPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" previousView="student" setSelectedUserId={setSelectedUserId} />;
       case 'staj':

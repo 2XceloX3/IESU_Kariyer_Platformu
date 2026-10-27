@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { 
   Users, Search, Plus, FileText, X, UserPlus, Info, 
   Play, Star, Briefcase, Zap, Heart, MessageCircle, Share2, 
-  MapPin, Calendar, CheckCircle2, ChevronRight 
+  MapPin, Calendar, CheckCircle2, ChevronRight, LogOut, Clock
 } from 'lucide-react';
 import { toast } from './shared/Toast';
 
@@ -89,28 +89,55 @@ export default function ClubsDirectory({
     
     const request = {
       id: `REQ-${Date.now()}`,
-      userId: currentUser?.id || 'STU-999',
-      userName: currentUser?.name || 'Öğrenci',
-      department: joinForm.department,
-      motivation: joinForm.motivation,
-      skills: joinForm.skills,
+      userId: currentUser?.id || currentUser?.uid || 'STU-999',
+      userName: currentUser?.name || currentUser?.displayName || 'İESÜ Öğrencisi',
+      department: joinForm.department || currentUser?.department || 'Belirtilmedi',
+      motivation: joinForm.motivation || '',
+      skills: joinForm.skills || '',
       status: 'pending',
       date: new Date().toISOString()
     };
 
-    const updatedClubs = (clubs || []).map(c => {
-      if (c.id === selectedClub.id) {
-        return { ...c, memberRequests: [...(c.memberRequests || []), request] };
-      }
-      return c;
-    });
+    if (typeof setClubs === 'function' && Array.isArray(clubs)) {
+      const updatedClubs = clubs.map(c => {
+        if (c.id === selectedClub.id) {
+          const existingReqs = c.requests || c.memberRequests || [];
+          const nextReqs = [...existingReqs, request];
+          return { ...c, requests: nextReqs, memberRequests: nextReqs };
+        }
+        return c;
+      });
+      setClubs(updatedClubs);
+      setSelectedClub({ 
+        ...selectedClub, 
+        requests: [...(selectedClub.requests || selectedClub.memberRequests || []), request],
+        memberRequests: [...(selectedClub.requests || selectedClub.memberRequests || []), request] 
+      });
+    }
 
-    setClubs(updatedClubs);
-    setSelectedClub({ ...selectedClub, memberRequests: [...(selectedClub.memberRequests || []), request] });
+    toast.success(`${selectedClub.name} kulübüne katılım talebiniz kulüp yönetimine iletildi.`);
     setShowJoinModal(false);
     setJoinForm({ department: '', motivation: '', skills: '' });
-    toast.success(`${selectedClub.name} kulübüne katılım talebiniz (yetenek profili ile) iletildi.`);
   };
+
+  const handleLeaveClub = (clubToLeave) => {
+    const target = clubToLeave || selectedClub;
+    if (!target || typeof setClubs !== 'function' || !Array.isArray(clubs)) return;
+    const uid = currentUser?.id || currentUser?.uid || 'STU-999';
+    const uname = currentUser?.name || currentUser?.displayName;
+    const updatedClubs = clubs.map((c) => {
+      if (c.id !== target.id) return c;
+      const nextMembers = (c.members || []).filter((m) => (m.id !== uid && m.userId !== uid) && m.name !== uname);
+      return { ...c, members: nextMembers, memberCount: nextMembers.length };
+    });
+    setClubs(updatedClubs);
+    if (selectedClub && selectedClub.id === target.id) {
+      const nextMembers = (selectedClub.members || []).filter((m) => (m.id !== uid && m.userId !== uid) && m.name !== uname);
+      setSelectedClub({ ...selectedClub, members: nextMembers, memberCount: nextMembers.length });
+    }
+    toast.info(`${target.name} kulüp üyeliğinden ayrıldınız.`);
+  };
+
 
   const takeMission = (mission) => {
     toast.success(`Tebrikler! "${mission.title}" görevini üstlendiniz. Tamamlandığında +${mission.points} Kariyer Gelişim Puanı kazanacaksınız.`);
@@ -346,9 +373,31 @@ export default function ClubsDirectory({
                   <img src={selectedClub.logo} alt={selectedClub.name} className="w-full h-full object-cover rounded-xl" />
                 </div>
                 {selectedClub.status === 'Aktif' && (
-                  <button onClick={() => setShowJoinModal(true)} className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition-all hover:shadow-lg flex items-center gap-2 mb-2 cursor-pointer active:scale-95">
-                    <UserPlus size={16} /> Katıl
-                  </button>
+                  (() => {
+                    const uid = currentUser?.id || currentUser?.uid || 'STU-999';
+                    const uname = currentUser?.name || currentUser?.displayName;
+                    const isMember = (selectedClub.members || []).some(m => m.id === uid || m.userId === uid || (uname && m.name === uname));
+                    const isPending = (selectedClub.memberRequests || selectedClub.requests || []).some(r => r.userId === uid || r.id === uid || (uname && r.userName === uname));
+                    if (isMember) {
+                      return (
+                        <button onClick={() => handleLeaveClub(selectedClub)} className="px-6 py-2.5 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center gap-2 mb-2 cursor-pointer active:scale-95">
+                          <LogOut size={16} /> Kulüpten Ayrıl
+                        </button>
+                      );
+                    }
+                    if (isPending) {
+                      return (
+                        <span className="px-5 py-2.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-sm font-bold flex items-center gap-2 mb-2">
+                          <Clock size={16} /> Başvuru İnceleniyor
+                        </span>
+                      );
+                    }
+                    return (
+                      <button onClick={() => setShowJoinModal(true)} className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition-all hover:shadow-lg flex items-center gap-2 mb-2 cursor-pointer active:scale-95">
+                        <UserPlus size={16} /> Katıl
+                      </button>
+                    );
+                  })()
                 )}
               </div>
 

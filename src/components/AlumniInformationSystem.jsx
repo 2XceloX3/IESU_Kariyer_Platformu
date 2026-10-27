@@ -105,7 +105,7 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
     if (featureAlumniCard !== false) {
       list.push({ id: 'mezun_kart', label: '💳 Mezun Kart' });
     }
-    if (featureAlumniAssocToggle) {
+    if (featureAlumniAssocToggle !== false) {
       list.push({ id: 'mezun_dernek_basvuru', label: '🏛️ İESÜ Mezunlar Ağı Başvurusu' });
     }
     return list;
@@ -188,8 +188,18 @@ export default function AlumniInformationSystem({ setView, currentUser, userRole
     if (checkupStep < CHECKUP_QUESTIONS.length - 1) {
       setCheckupStep(checkupStep + 1);
     } else {
+      const finalAnswers = { ...checkupAnswers, [qId]: opt };
       setCheckupCompleted(true);
-      window.toast && window.toast.success("🎉 Tebrikler! 12 soruluk kariyer check-up testi tamamlandı.");
+      if (typeof addCheckupRecord === 'function') {
+        addCheckupRecord({
+          id: `CHK-${Date.now()}`,
+          userId: currentUser?.id || currentUser?.uid || 'ALUM-1',
+          userName: currentUser?.name || currentUser?.displayName || 'Mezun',
+          answers: finalAnswers,
+          completedAt: new Date().toISOString()
+        });
+      }
+      window.toast && window.toast.success("🎉 Tebrikler! 12 soruluk kariyer check-up testi tamamlandı ve MBS kaydınıza işlendi.");
     }
   };
 
