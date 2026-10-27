@@ -499,6 +499,10 @@ export default function StudentClubPortal({
       }
     }
 
+    try {
+      eventBus.emit('club:request_submitted', { request: newApp, clubId: selectedClub?.id });
+    } catch (_) {}
+
     setShowVenueModal(false);
     setVenueForm({
       title: '',
@@ -532,6 +536,10 @@ export default function StudentClubPortal({
         setClubs(prev => (prev || []).map(c => c.id === selectedClub.id ? updatedClub : c));
       }
     }
+
+    try {
+      eventBus.emit('club:request_submitted', { request: newApp, clubId: selectedClub?.id });
+    } catch (_) {}
 
     try {
       eventBus.emit('application:status', {
@@ -1538,8 +1546,27 @@ export default function StudentClubPortal({
                 </div>
               )}
 
-              {/* TAB 4: VENUE & ALLOCATION REQUESTS (NO MONEY COLUMN FOR STUDENT) */}
+              {/* TAB 4: VENUE & ALLOCATION REQUESTS (AUTHORIZATION GATED) */}
               {clubDetailTab === 'venue_requests' && (
+                !authorized ? (
+                  <div className="bg-white rounded-3xl p-10 border border-slate-200 text-center max-w-md mx-auto my-8 space-y-4 shadow-sm animate-fade-in">
+                    <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center mx-auto shadow-inner">
+                      <Lock size={26} />
+                    </div>
+                    <h4 className="text-base font-black text-slate-900">Yönetim Kurulu & SKS Tahsis Alanı</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Etkinlik salon ve mekan tahsis başvuruları yalnızca kulüp başkanı, yetkili yönetim kurulu ve Öğrenci Dekanlığı (SKS) tarafından görüntülenebilir ve yönetilebilir.
+                    </p>
+                    {!userIsMember && (
+                      <button 
+                        onClick={() => setShowApplyMemberModal(true)}
+                        className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition shadow-xs cursor-pointer"
+                      >
+                        Kulübe Üyelik Başvurusu Yap
+                      </button>
+                    )}
+                  </div>
+                ) : (
                 <div className="space-y-6 animate-fade-in">
                   
                   {/* Status Metric Cards (NO Currency - Only Status & Counts) */}
@@ -1621,6 +1648,7 @@ export default function StudentClubPortal({
                     </div>
                   </div>
                 </div>
+                )
               )}
 
               {/* TAB 5: MEMBERS & DETAILED MEMBERSHIP APPLICATIONS */}

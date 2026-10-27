@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
-import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles, ChevronLeft, ChevronRight, Tag, Users } from 'lucide-react';
+import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles, ChevronLeft, ChevronRight, Tag, Users, Ticket } from 'lucide-react';
 import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
 import useAdminStore from '../brain/useAdminStore';
@@ -292,7 +292,32 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   }, [liked]);
 
   const handleLikeToggle = useCallback(() => {
-    if (effectiveCurrentUser?.id === (post?.authorId || post?.author?.id)) return;
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+
+    const currentLikes = post?.likes || 0;
+    let newLikedBy = Array.isArray(post?.likedBy) ? [...post.likedBy] : [];
+    if (nextLiked) {
+      if (effectiveCurrentUser?.id && !newLikedBy.includes(effectiveCurrentUser.id)) {
+        newLikedBy.push(effectiveCurrentUser.id);
+      }
+    } else {
+      newLikedBy = newLikedBy.filter(id => id !== effectiveCurrentUser?.id);
+    }
+    const updatedPost = {
+      ...post,
+      likes: Math.max(0, currentLikes + (nextLiked ? 1 : -1)),
+      likedBy: newLikedBy
+    };
+
+    if (setPosts) {
+      setPosts(prev => (prev || []).map(p => p.id === post.id ? updatedPost : p));
+    }
+
+    try {
+      eventBus.emit('post:updated', { post: updatedPost });
+    } catch (_) {}
+    return;
     setLiked(!liked);
     if (setPosts) {
       setPosts(prev => (prev || []).map(p => {
@@ -304,7 +329,9 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           } else {
             newLikedBy = newLikedBy.filter(id => id !== effectiveCurrentUser?.id);
           }
-          return { ...p, likes: currentLikes + (liked ? -1 : 1), likedBy: newLikedBy };
+          const updated = { ...p, likes: Math.max(0, currentLikes + (liked ? -1 : 1)), likedBy: newLikedBy };
+          try { eventBus.emit('post:updated', { post: updated }); } catch (_) {}
+          return updated;
         }
         return p;
       }));
@@ -373,7 +400,11 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     if (setPosts) {
       setPosts(prev => (prev || []).map(p => 
         p.id === post.id 
-          ? { ...p, comments: (p.comments || 0) + 1, commentsList: updatedComments } 
+          ? (() => {
+              const updated = { ...p, comments: (p.comments || 0) + 1, commentsList: updatedComments };
+              try { eventBus.emit('post:updated', { post: updated }); } catch (_) {}
+              return updated;
+            })() 
           : p
       ));
     }
@@ -400,7 +431,11 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     if (setPosts) {
       setPosts(prev => (prev || []).map(p => 
         p.id === post.id 
-          ? { ...p, comments: Math.max(0, (p.comments || 1) - 1), commentsList: updatedComments } 
+          ? (() => {
+              const updated = { ...p, comments: Math.max(0, (p.comments || 1) - 1), commentsList: updatedComments };
+              try { eventBus.emit('post:updated', { post: updated }); } catch (_) {}
+              return updated;
+            })() 
           : p
       ));
     }
@@ -423,6 +458,40 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     const text = `Bu ilana göz at: ${post.title || 'Kariyer İlanı'} \n${shareUrl}`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
   }, [post?.id, post?.title]);
+
+  const isEventPost = Boolean(post?.eventPost || post?.eventTitle);
+  const attendeesList = Array.isArray(post?.attendees) ? post.attendees : [];
+  const isAttending = Boolean(effectiveCurrentUser?.id && attendeesList.includes(effectiveCurrentUser.id));
+
+  const handleToggleEventAttendance = useCallback(() => {
+    if (!effectiveCurrentUser?.id) {
+      if (window.toast?.info) window.toast.info('Etkinliğe katılmak için lütfen giriş yapın.');
+      return;
+    }
+    const nextAttending = !isAttending;
+    const nextAttendees = nextAttending
+      ? [...attendeesList, effectiveCurrentUser.id]
+      : attendeesList.filter(id => id !== effectiveCurrentUser.id);
+    const updatedPost = { ...post, attendees: nextAttendees };
+    try { eventBus.emit('post:updated', { post: updatedPost }); } catch (_) {}
+
+    if (setPosts) {
+      setPosts(prev => (prev || []).map(p => {
+        if (p.id === post.id) {
+          const updated = { ...p, attendees: nextAttendees };
+          try {
+            eventBus.emit('post:updated', { post: updated });
+          } catch (_) {}
+          return updated;
+        }
+        return p;
+      }));
+    }
+
+    if (window.toast?.success) {
+      window.toast.success(nextAttending ? '🎉 Etkinliğe katılımınız kaydedildi!' : 'Etkinlik katılımınız iptal edildi.');
+    }
+  }, [isAttending, attendeesList, effectiveCurrentUser?.id, post?.id, setPosts]);
 
   const handleDiscordShare = useCallback(() => {
     const shareUrl = typeof window !== 'undefined' && window.location?.origin 
@@ -565,6 +634,43 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
             {!post.image && post.isGeneralEvent && (
               <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-50 border border-purple-200/80 text-purple-900 text-xs font-bold shadow-xs">
                 <Calendar size={13} className="text-purple-600" /> 🏛️ Kampüs & Rektörlük Genel Etkinliği
+              </div>
+            )}
+            {isEventPost && (
+              <div className="mt-3.5 p-3.5 bg-gradient-to-r from-red-50/80 via-rose-50/40 to-slate-50 border border-red-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div className="space-y-1 min-w-0">
+                  <div className="flex items-center gap-2 text-xs font-black text-[#990000]">
+                    <Calendar size={14} className="shrink-0" />
+                    <span className="truncate">{post.eventDate || 'Tarih Yakında'}</span>
+                    {post.eventLocation && (
+                      <>
+                        <span className="text-gray-300">•</span>
+                        <span className="text-slate-600 font-bold truncate">📍 {post.eventLocation}</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="text-xs font-black text-slate-900 truncate">
+                    {post.eventTitle || 'Kampüs Kulüp Etkinliği'}
+                  </div>
+                  {post.eventDesc && (
+                    <p className="text-[11px] text-slate-500 line-clamp-2">{post.eventDesc}</p>
+                  )}
+                  <div className="text-[10px] text-slate-400 font-bold">
+                    👥 {attendeesList.length} öğrenci katılıyor
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleEventAttendance}
+                  className={`px-4 py-2 rounded-xl text-xs font-black transition shadow-xs flex items-center justify-center gap-1.5 shrink-0 cursor-pointer ${
+                    isAttending 
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
+                      : 'bg-[#990000] text-white hover:bg-red-800'
+                  }`}
+                >
+                  {isAttending ? <CheckCircle2 size={14} /> : <Ticket size={14} />}
+                  <span>{isAttending ? 'Katıldın ✓' : 'Etkinliğe Katıl'}</span>
+                </button>
               </div>
             )}
             {!post.image && post.isCareerOpportunity && (

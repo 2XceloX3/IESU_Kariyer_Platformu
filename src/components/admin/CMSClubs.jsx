@@ -9,6 +9,7 @@ import {
 import PanelHeader from './PanelHeader';
 import { toast } from '../shared/Toast';
 import { initialClubs, initialClubApplications } from '../../data/mockClubsData';
+import eventBus from '../../brain/eventBus';
 
 export default function CMSClubs({ 
   clubs = [], 
@@ -265,6 +266,9 @@ export default function CMSClubs({
         return c;
       }));
     }
+    try {
+      eventBus.emit('club:request_decision', { request: app, status: 'approved' });
+    } catch (_) {}
     toast.success(`"${app.eventName || app.title || 'Etkinlik'}" için mekan tahsisi ve ${finalAllocatedBudget.toLocaleString('tr-TR')} TL bütçe onaylandı!`);
   };
 
@@ -287,7 +291,10 @@ export default function CMSClubs({
         return c;
       }));
     }
-    toast.error('Mekan & tahsis talebi reddedildi.');
+    try {
+      eventBus.emit('club:request_decision', { request: app, status: 'rejected' });
+    } catch (_) {}
+    toast.error('Mekan tahsis başvurusu reddedildi.');
   };
 
   // ACTION: Transfer Club President

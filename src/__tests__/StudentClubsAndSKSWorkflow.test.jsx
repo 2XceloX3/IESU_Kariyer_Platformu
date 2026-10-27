@@ -60,8 +60,8 @@ describe('Student Clubs & SKS Governance Workflow Suite', () => {
     const venueTab = screen.getByText(/Etkinlik & Yer Talepleri/i);
     fireEvent.click(venueTab);
 
-    // Student should see venue requests, but NOT currency balance cards
-    expect(screen.getByText(/Etkinlik & Yer Tahsis Başvuruları/i)).toBeInTheDocument();
+    // Regular student is gated with privacy lock: cannot see internal venue/budget allocations
+    expect(screen.getByText(/Yönetim Kurulu & SKS Tahsis Alanı/i)).toBeInTheDocument();
     expect(screen.queryByText(/45\.000 ₺/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/16\.500 ₺/i)).not.toBeInTheDocument();
   });

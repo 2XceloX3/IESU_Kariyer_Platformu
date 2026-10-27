@@ -4,6 +4,7 @@ import { toast } from '../shared/Toast';
 import SafeAvatar from '../shared/SafeAvatar';
 import useAppStore from '../../store/useAppStore';
 import { useAdminStore } from '../../brain/useAdminStore';
+import eventBus from '../../brain/eventBus';
 
 export default function MentorRequestModal({ isOpen, onClose, mentor, currentUser }) {
   const [topic, setTopic] = useState('Kariyer Planlama & Hedef Belirleme');
@@ -81,6 +82,18 @@ export default function MentorRequestModal({ isOpen, onClose, mentor, currentUse
       } catch (err) {
         console.warn('AppStore sync note:', err);
       }
+
+      try {
+        eventBus.emit('mentorship:requested', { request: newRequest });
+        eventBus.emit('notification:dispatched', {
+          id: 'notif_' + Date.now(),
+          targetUserId: mentor.uid || mentor.id,
+          title: 'Yeni Mentörlük Randevu Talebi',
+          message: `${currentUser?.name || 'Bir öğrenci'} sizden "${topic}" konusunda görüşme randevusu talep etti.`,
+          type: 'mentorship',
+          createdAt: new Date().toISOString()
+        });
+      } catch (_) {}
 
       toast.success('Mentörlük talebiniz bu oturumun talep listesine kaydedildi.');
       setNote('');
