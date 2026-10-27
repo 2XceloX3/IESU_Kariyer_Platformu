@@ -29,33 +29,58 @@ describe('Student Career Tools Hub & Left Sidebar Cockpit Suite', () => {
     department: 'Yazılım Mühendisliği'
   };
 
-  it('renders modern categorized 8-tool grid in the left sidebar', () => {
+  it('renders streamlined LinkedIn/Handshake style left sidebar shortcuts', () => {
     render(<StudentFeed currentUser={mockUser} setView={vi.fn()} />);
 
-    // Header & badge
+    // Header exists
     expect(screen.getByText(/Kariyer & Gelişim Araçları/i)).toBeInTheDocument();
-    expect(screen.getByText('8 Araç')).toBeInTheDocument();
 
-    // 8 tools are visible in the sidebar
-    expect(screen.getByText('Kariyer Haritası')).toBeInTheDocument();
-    expect(screen.getByText('Mülakat Simülatörü')).toBeInTheDocument();
-    expect(screen.getByText('ATS CV Tarayıcı')).toBeInTheDocument();
-    expect(screen.getByText('Kariyer Testi')).toBeInTheDocument();
-    expect(screen.getAllByText(/Başvuru Radarı/i).length).toBeGreaterThan(0);
-    expect(screen.getByText('Staj Portalı')).toBeInTheDocument();
-    expect(screen.getByText('Kuluçka Merkezi')).toBeInTheDocument();
-    expect(screen.getByText('Kulüpler Portalı')).toBeInTheDocument();
+    // Streamlined shortcuts
+    expect(screen.getAllByText(/Başvuru Radarım/i).length).toBeGreaterThan(0);
+    expect(screen.getByText('Kaydedilen İlanlar')).toBeInTheDocument();
+    expect(screen.getByText('Kulüp & Topluluklar')).toBeInTheDocument();
 
-    // Launcher button exists
-    expect(screen.getByText(/Gelişim Hub'ı & Puan Rehberi/i)).toBeInTheDocument();
+    // Launcher button for the full 8-tool cockpit
+    expect(screen.getByText(/Gelişim Araçları Merkezi \(8 Araç\)/i)).toBeInTheDocument();
   });
 
-  it('opens ATS Resume Scanner modal in-feed without unmounting the feed', async () => {
+  it('opens Career Hub Cockpit Modal with all 8 detailed modules and KGB points', async () => {
+    const mockSetView = vi.fn();
+    render(<StudentFeed currentUser={mockUser} setView={mockSetView} />);
+
+    // Click Hub button
+    const hubBtn = screen.getByText(/Gelişim Araçları Merkezi \(8 Araç\)/i);
+    fireEvent.click(hubBtn);
+
+    // Cockpit Modal is opened with all 8 tools
+    expect(screen.getByText('Kariyer & Gelişim Araçları Merkezi')).toBeInTheDocument();
+    expect(screen.getByText(/İESÜ Öğrenci Gelişim Ekosistemi/i)).toBeInTheDocument();
+    expect(screen.getByText('Kariyer Haritası & Yol Planı')).toBeInTheDocument();
+    expect(screen.getByText('AI Mülakat Simülatörü')).toBeInTheDocument();
+    expect(screen.getByText('ATS CV Tarayıcı & Optimizasyon')).toBeInTheDocument();
+    expect(screen.getByText('Holland Kariyer Eğilim Testi')).toBeInTheDocument();
+    expect(screen.getByText('Resmî Staj Portalı')).toBeInTheDocument();
+    expect(screen.getByText('Kuluçka Merkezi (TTO)')).toBeInTheDocument();
+    expect(screen.getByText('Öğrenci Kulüpleri Portalı')).toBeInTheDocument();
+    expect(screen.getByText(/\+10 KGB Puanı/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+15 KGB Üyelik/i)).toBeInTheDocument();
+
+    // Direct action from inside Cockpit Modal
+    const roadmapAction = screen.getByText('Yol Haritasına Git');
+    fireEvent.click(roadmapAction);
+    expect(mockSetView).toHaveBeenCalledWith('career_roadmap');
+  });
+
+  it('opens ATS Resume Scanner modal from inside Cockpit modal without unmounting feed', async () => {
     render(<StudentFeed currentUser={mockUser} setView={vi.fn()} />);
 
-    // Click ATS CV Tarayıcı in the sidebar
-    const atsBtn = screen.getByText('ATS CV Tarayıcı');
-    fireEvent.click(atsBtn);
+    // Open Cockpit Modal
+    const hubBtn = screen.getByText(/Gelişim Araçları Merkezi \(8 Araç\)/i);
+    fireEvent.click(hubBtn);
+
+    // Click ATS CV Scan action
+    const atsAction = screen.getByText(/CV'mi Tara \(Akışta Aç\)/i);
+    fireEvent.click(atsAction);
 
     // ATS Modal should pop up directly over the feed
     await waitFor(() => {
@@ -71,26 +96,6 @@ describe('Student Career Tools Hub & Left Sidebar Cockpit Suite', () => {
       expect(screen.queryByText(/Yapay Zekâ ATS Uyum Tarayıcısı & CV Optimizasyonu/i)).not.toBeInTheDocument();
     });
     expect(screen.getByText(/Kariyer & Gelişim Araçları/i)).toBeInTheDocument();
-  });
-
-  it('opens Career Hub Cockpit Modal with all 8 detailed modules and KGB points', async () => {
-    const mockSetView = vi.fn();
-    render(<StudentFeed currentUser={mockUser} setView={mockSetView} />);
-
-    // Click Hub button
-    const hubBtn = screen.getByText(/Gelişim Hub'ı & Puan Rehberi/i);
-    fireEvent.click(hubBtn);
-
-    // Cockpit Modal is opened
-    expect(screen.getByText('Kariyer & Gelişim Araçları Merkezi')).toBeInTheDocument();
-    expect(screen.getByText(/İESÜ Öğrenci Gelişim Ekosistemi/i)).toBeInTheDocument();
-    expect(screen.getByText(/\+10 KGB Puanı/i)).toBeInTheDocument();
-    expect(screen.getByText(/\+15 KGB Üyelik/i)).toBeInTheDocument();
-
-    // Direct action from inside Cockpit Modal
-    const roadmapAction = screen.getByText('Yol Haritasına Git');
-    fireEvent.click(roadmapAction);
-    expect(mockSetView).toHaveBeenCalledWith('career_roadmap');
   });
 
   it('triggers quick radar navigation via student-feed-quick-radar-btn test id', () => {
