@@ -1,7 +1,8 @@
 {
   "name": "iesukariyer",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "İstanbul Esenyurt Üniversitesi Kariyer, Staj ve Mezun Platformu",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -27,7 +28,6 @@
     "fuse.js": "^7.5.0",
     "html2pdf.js": "^0.14.0",
     "lucide-react": "^1.23.0",
-    "pdfkit": "^0.19.1",
     "prop-types": "^15.8.1",
     "react": "^19.2.7",
     "react-confetti": "^6.4.0",

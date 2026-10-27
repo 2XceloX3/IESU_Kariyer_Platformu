@@ -7,11 +7,13 @@
   :root {
     /* === İstanbul Esenyurt Üniversitesi Brand Colors === */
     --brand-primary: #A80016;
+    --brand-primary-kurumsal: #990000;
     --brand-secondary: #800000;
+    --brand-secondary-kurumsal: #D32F2F;
     --brand-accent: #9E0B0F;
     --brand-soft-red: #FFF5F5;
     --brand-white: #FFFFFF;
-    --brand-navy: #0A2342;
+    --brand-navy: #1e3a5f;
     --brand-navy-dark: #071A30;
     --brand-blue: #2563EB;
     --brand-blue-light: #3B82F6;
@@ -19,7 +21,7 @@
     --brand-bg: #F8FAFF;
     --surface-white: #FFFFFF;
     --surface-soft: #F0F7FF;
-    --surface-glass: rgba(255, 255, 255, 0.72);
+    --surface-glass: rgba(255, 255, 255, 0.90);
     --border-soft: rgba(10, 35, 66, 0.14);
     --shadow-soft: 0 12px 32px rgba(10, 35, 66, 0.12);
   }

@@ -50,6 +50,8 @@ const MentorMatch = lazy(() => import('../../components/MentorMatch'));
 const MentorBooking = lazy(() => import('../../components/MentorBooking'));
 const VirtualCareerFair = lazy(() => import('../../components/VirtualCareerFair'));
 const ATSResumeScannerModal = lazy(() => import('../../components/student/ATSResumeScannerModal'));
+const CampusPulseFeed = lazy(() => import('../../components/CampusPulseFeed'));
+const StudentDedicatedHub = lazy(() => import('./StudentDedicatedHub'));
 // AlumniEndowmentFund kaldırıldı (2026-10-25): 2860 Sayılı Yardım Toplama Kanunu gereği
 // gerçek ödeme altyapısı ve Valilik izni hazırlanana kadar askıya alındı.
 const IesuWallet = lazy(() => import('../../components/IesuWallet'));
@@ -175,6 +177,12 @@ export default function StudentHive({ currentUser, setView }) {
       case 'application_radar':
       case 'student_radar':
         return <StudentApplicationRadar setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} previousView="student" />;
+      case 'campus_pulse':
+      case 'pulse':
+        return <CampusPulseFeed setView={handleSetView} currentUser={effectiveCurrentUser} onBack={() => handleSetView('feed')} />;
+      case 'student_hub':
+      case 'student_portal':
+        return <StudentDedicatedHub setView={handleSetView} currentUser={effectiveCurrentUser} onBack={() => handleSetView('feed')} />;
       case 'ats_scanner':
       case 'ats_resume_scanner':
       case 'ats_optimizer':

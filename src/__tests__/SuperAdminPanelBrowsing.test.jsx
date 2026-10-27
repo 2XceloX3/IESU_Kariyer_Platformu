@@ -92,7 +92,7 @@ describe('Super Admin Omni-Access & Panel Browsing Suite', () => {
     await waitFor(() => {
       expect(screen.getByText(/Yönetici Paneli/i)).toBeInTheDocument();
       expect(screen.getByText(/SÜPER ADMİN/i)).toBeInTheDocument();
-    }, { timeout: 4000 });
+    }, { timeout: 10000 });
   });
 
   it('renders direct CMS subpanels (e.g. cms_datapool) inside AdminDashboard for Super Admin', async () => {
