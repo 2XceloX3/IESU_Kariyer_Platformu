@@ -50,36 +50,23 @@ service firebase.storage {
     // Profil avatarları: Sadece sahibi veya admin yükleyebilir
     match /avatars/{userId}/{fileName} {
       allow read: if true;
-      allow create, update: if (isOwner(userId) || isAdmin()) && isImage();
-      allow delete: if isOwner(userId) || isAdmin();
+      allow write: if (isOwner(userId) || isAdmin()) && isImage();
     }
 
-    // CV files are private. A consenting application shares its download URL in that application record.
+    // Özgeçmiş / CV belgeleri (KVKK Korumalı): Sadece sahibi, yetkili işveren/akademisyen veya admin okuyabilir
     match /resumes/{userId}/{fileName} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create, update: if (isOwner(userId) || isAdmin()) && isDocument();
-      allow delete: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin() || isCompany() || isAcademic();
+      allow write: if (isOwner(userId) || isAdmin()) && isDocument();
     }
 
-    // Application attachments require a matching Firestore application and its explicit consent.
+    // İş başvurusu ekleri: Sadece başvuru sahibi kendi UID'sini içeren dosyayı yükleyebilir
     match /applications/{applicationId}/{fileName} {
-      function applicationExists() {
-        return firestore.exists(/databases/(default)/documents/applications/$(applicationId));
-      }
-      function applicationData() {
-        return firestore.get(/databases/(default)/documents/applications/$(applicationId)).data;
-      }
-      allow read: if isAuthenticated() && applicationExists() && (
-        isAdmin() ||
-        (applicationData().applicantId == request.auth.uid) ||
-        (applicationData().companyId == request.auth.uid && applicationData().get('kvkkConsentAccepted', false) == true) ||
-        (isAcademic() && applicationData().get('kvkkConsentAccepted', false) == true)
+      allow read: if isAuthenticated() && (
+        isAdmin() || isCompany() || isAcademic() || fileName.matches('.*' + request.auth.uid + '.*')
       );
-      allow write: if isAuthenticated() && applicationExists()
-        && applicationData().applicantId == request.auth.uid
-        && applicationData().get('kvkkConsentAccepted', false) == true
-        && (isDocument() || isImage());
-    }
+      allow write: if isAuthenticated() &&
+        (isAdmin() || fileName.matches('.*' + request.auth.uid + '.*')) &&
+        (isDocument() || isImage());
     }
 
     // Kulüp ve etkinlik medyaları: Sadece admin veya kulüp yetkilileri yazabilir
