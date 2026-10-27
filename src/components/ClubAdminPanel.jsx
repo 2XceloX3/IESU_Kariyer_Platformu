@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import SafeAvatar from './shared/SafeAvatar';
 import { 
   Shield, Users, Check, X, Megaphone, MapPin, Send, FileText, 
   Image as ImageIcon, ArrowLeft, Building2, CheckCircle2, 
@@ -79,9 +80,12 @@ export default function ClubAdminPanel({
 
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <div className="w-7 h-7 rounded-full bg-[#990000] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                  {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'Y'}
-                </div>
+                <SafeAvatar 
+                  src={currentUser?.avatar} 
+                  name={currentUser?.name || 'Kulüp Yöneticisi'} 
+                  size={28} 
+                  className="w-7 h-7 rounded-full shadow-2xs" 
+                />
                 <div className="hidden sm:block text-left">
                   <p className="text-xs font-bold text-slate-900 leading-none">{currentUser?.name || 'Kulüp Yöneticisi'}</p>
                   <p className="text-[10px] font-bold text-emerald-700 mt-0.5">{currentUser?.role === 'admin' ? 'Süper Admin' : 'Öğrenci'}</p>
@@ -261,9 +265,12 @@ export default function ClubAdminPanel({
 
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl">
-              <div className="w-7 h-7 rounded-full bg-[#990000] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'Y'}
-              </div>
+              <SafeAvatar 
+                src={currentUser?.avatar} 
+                name={currentUser?.name || 'Kulüp Yöneticisi'} 
+                size={28} 
+                className="w-7 h-7 rounded-full shadow-2xs" 
+              />
               <div className="hidden sm:block text-left">
                 <p className="text-xs font-bold text-slate-900 leading-none">{currentUser?.name || 'Kulüp Yöneticisi'}</p>
                 <p className="text-[10px] font-bold text-emerald-700 mt-0.5">{currentUser?.role === 'admin' ? 'Süper Admin' : 'Kulüp Başkanı'}</p>
@@ -472,9 +479,12 @@ export default function ClubAdminPanel({
                       return (
                         <div key={member.id} className={`p-4 border rounded-2xl flex items-center justify-between transition-all ${isMemberPresident ? 'bg-amber-50/60 border-amber-200' : isMemberAdmin ? 'bg-red-50/50 border-red-200' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
                           <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-xs ${isMemberPresident ? 'bg-amber-500' : isMemberAdmin ? 'bg-[#990000]' : 'bg-slate-400'}`}>
-                              {member.name ? member.name.charAt(0).toUpperCase() : 'Ü'}
-                            </div>
+                            <SafeAvatar 
+                              src={member.avatar} 
+                              name={member.name} 
+                              size={40} 
+                              className={`w-10 h-10 rounded-xl ${isMemberPresident ? 'ring-2 ring-amber-400' : isMemberAdmin ? 'ring-2 ring-[#990000]' : ''}`} 
+                            />
                             <div>
                               <p className="font-bold text-slate-900 text-xs sm:text-sm">{member.name}</p>
                               <p className="text-[10px] font-bold mt-0.5 uppercase tracking-wider">

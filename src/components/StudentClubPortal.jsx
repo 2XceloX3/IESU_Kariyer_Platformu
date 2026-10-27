@@ -7,7 +7,8 @@ import {
   Zap, Heart, MessageCircle, Share2, Play, Pause, Download, Sparkles,
   Filter, ExternalLink, Mail, Phone, Check, Award, Lock, Music,
   Sliders, Camera, ChevronLeft, Bookmark, CornerDownRight, Send, UserCheck,
-  UploadCloud, Video, Film, Trash2, Link as LinkIcon, Image as ImageIcon
+  UploadCloud, Video, Film, Trash2, Link as LinkIcon, Image as ImageIcon,
+  Ticket, QrCode, ListTodo, Printer, Tag, Compass, Layers
 } from 'lucide-react';
 import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
@@ -31,9 +32,89 @@ export default function StudentClubPortal({
     (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
   );
   const [activeTab, setActiveTab] = useState('discover'); // 'discover' | 'my_clubs' | 'admin'
-  const [clubDetailTab, setClubDetailTab] = useState('overview'); // 'overview' | 'events' | 'board' | 'venue_requests' | 'members'
+  const [clubDetailTab, setClubDetailTab] = useState('overview'); // 'overview' | 'events' | 'tasks' | 'board' | 'venue_requests' | 'members'
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClub, setSelectedClub] = useState(null);
+
+  // Smart filters & discovery states
+  const [selectedCategory, setSelectedCategory] = useState('Tümü');
+  const [sortBy, setSortBy] = useState('members'); // 'members' | 'events' | 'alphabetical'
+
+  // Live RSVP & QR Ticketing State
+  const [ticketModalEvent, setTicketModalEvent] = useState(null);
+  const [registeredEventIds, setRegisteredEventIds] = useState(new Set());
+
+  // Club Tasks State
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [newTaskForm, setNewTaskForm] = useState({
+    title: '',
+    category: 'Lojistik & Donanım',
+    deadline: '',
+    points: 10,
+    description: ''
+  });
+  const [clubTasks, setClubTasks] = useState({
+    'CLUB-001': [
+      {
+        id: 'TASK-101',
+        title: 'İESÜ Hackathon 2026 Ana Sahne Ses & Projeksiyon Provası',
+        category: 'Lojistik & Donanım',
+        assignee: 'Caner Şahin (Genel Sekreter)',
+        status: 'in_progress',
+        points: 10,
+        deadline: '17 Ekim 2026'
+      },
+      {
+        id: 'TASK-102',
+        title: 'Instagram & LinkedIn Sponsorluk ve Duyuru Görselleri',
+        category: 'Medya & Tasarım',
+        assignee: 'Elif Yıldız',
+        status: 'completed',
+        points: 10,
+        deadline: '15 Ekim 2026'
+      },
+      {
+        id: 'TASK-103',
+        title: 'Konuşmacı ve Jüri Üyeleri Karşılama / Ulaşım Koordinasyonu',
+        category: 'Halkla İlişkiler',
+        assignee: null,
+        status: 'todo',
+        points: 10,
+        deadline: '18 Ekim 2026'
+      },
+      {
+        id: 'TASK-104',
+        title: 'Katılımcı Yaka Kartı ve Hoş Geldin Kiti Hazırlığı',
+        category: 'Operasyon',
+        assignee: null,
+        status: 'todo',
+        points: 10,
+        deadline: '17 Ekim 2026'
+      }
+    ],
+    'CLUB-002': [
+      {
+        id: 'TASK-201',
+        title: 'Girişimcilik Zirvesi Mentor Davetiyeleri ve Katılım Takibi',
+        category: 'Halkla İlişkiler',
+        assignee: null,
+        status: 'todo',
+        points: 10,
+        deadline: '20 Kasım 2026'
+      }
+    ],
+    'CLUB-003': [
+      {
+        id: 'TASK-301',
+        title: 'IEEE Robotik Kol Atölyesi Parça Envanter Sayımı',
+        category: 'Lojistik & Donanım',
+        assignee: null,
+        status: 'todo',
+        points: 10,
+        deadline: '25 Kasım 2026'
+      }
+    ]
+  });
   
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -52,7 +133,9 @@ export default function StudentClubPortal({
     showUnauthorizedModal || 
     showCreatePostModal || 
     activeStoryModal || 
-    assignRoleModalMember
+    assignRoleModalMember ||
+    ticketModalEvent ||
+    showTaskModal
   );
 
   // Media / Instagram State
@@ -137,11 +220,55 @@ export default function StudentClubPortal({
     )
   ), [clubList, currentUser]);
 
-  const filteredClubs = useMemo(() => (clubList || []).filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    c.description?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    c.category?.toLowerCase().includes(searchQuery.toLowerCase())
-  ), [clubList, searchQuery]);
+  const CLUB_CATEGORIES = [
+    'Tümü',
+    'Bilim & Teknoloji',
+    'Girişimcilik & İnovasyon',
+    'Kültür & Sanat',
+    'Mühendislik & Robotik',
+    'Sosyal Sorumluluk & Yaşam',
+    'Spor & Sağlık'
+  ];
+
+  const matchesCategory = (club, cat) => {
+    if (!cat || cat === 'Tümü') return true;
+    const cCat = (club.category || '').toLowerCase();
+    const cName = (club.name || '').toLowerCase();
+    if (cat === 'Bilim & Teknoloji') return cCat.includes('bilim') || cCat.includes('teknoloji') || cCat.includes('yazılım') || cName.includes('yazılım');
+    if (cat === 'Girişimcilik & İnovasyon') return cCat.includes('girişim') || cCat.includes('inovasyon') || cCat.includes('kariyer');
+    if (cat === 'Kültür & Sanat') return cCat.includes('kültür') || cCat.includes('sanat') || cCat.includes('müzik');
+    if (cat === 'Mühendislik & Robotik') return cCat.includes('mühendislik') || cCat.includes('robotik') || cCat.includes('ieee') || cName.includes('robotik');
+    if (cat === 'Sosyal Sorumluluk & Yaşam') return cCat.includes('sosyal') || cCat.includes('sorumluluk') || cCat.includes('yaşam');
+    if (cat === 'Spor & Sağlık') return cCat.includes('spor') || cCat.includes('sağlık');
+    return cCat.includes(cat.toLowerCase());
+  };
+
+  const filteredClubs = useMemo(() => {
+    return (clubList || []).filter(c => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch = !q || 
+        c.name.toLowerCase().includes(q) || 
+        (c.description && c.description.toLowerCase().includes(q)) || 
+        (c.category && c.category.toLowerCase().includes(q));
+      
+      return matchesSearch && matchesCategory(c, selectedCategory);
+    }).sort((a, b) => {
+      if (sortBy === 'members') {
+        const aMem = a.memberCount || a.members?.length || 0;
+        const bMem = b.memberCount || b.members?.length || 0;
+        return bMem - aMem;
+      }
+      if (sortBy === 'events') {
+        const aEvt = a.events?.length || 0;
+        const bEvt = b.events?.length || 0;
+        return bEvt - aEvt;
+      }
+      if (sortBy === 'alphabetical') {
+        return (a.name || '').localeCompare(b.name || '', 'tr');
+      }
+      return 0;
+    });
+  }, [clubList, searchQuery, selectedCategory, sortBy]);
 
   // Authorization Check: President, Vice President, Secretary, Financial Officer
   const isAuthorizedOfficer = (club) => {
@@ -389,6 +516,95 @@ export default function StudentClubPortal({
     });
 
     toast.success('Salon ve etkinlik tahsis talebiniz Öğrenci Dekanlığına iletildi! Teknik onay birim tarafından verilecektir.');
+  };
+
+  // Event Registration & QR Ticket Generation
+  const handleRegisterEvent = (event) => {
+    setRegisteredEventIds(prev => new Set([...prev, event.id]));
+    
+    if (selectedClub && selectedClub.events) {
+      const updatedEvents = selectedClub.events.map(ev => 
+        ev.id === event.id ? { ...ev, registeredCount: (ev.registeredCount || 0) + 1 } : ev
+      );
+      const updatedClub = { ...selectedClub, events: updatedEvents };
+      setSelectedClub(updatedClub);
+      if (setClubs) {
+        setClubs(prev => (prev || []).map(c => c.id === selectedClub.id ? updatedClub : c));
+      }
+    }
+
+    try {
+      eventBus.emit('application:status', {
+        type: 'club_event_rsvp',
+        clubId: selectedClub?.id,
+        clubName: selectedClub?.name,
+        eventId: event.id,
+        eventTitle: event.title,
+        studentName: currentUser?.name || 'Öğrenci',
+        studentNo: currentUser?.studentNo || '2023010482',
+        kgbPoints: 5
+      });
+    } catch (_) {}
+
+    toast.success(`"${event.title}" etkinliğine kaydınız başarıyla tamamlandı! +5 KGB Transkript Puanı profilinize işlendi.`);
+    setTicketModalEvent(event);
+  };
+
+  // Club Internal Task Actions
+  const handleClaimTask = (taskId) => {
+    if (!selectedClub) return;
+    const clubId = selectedClub.id;
+    const currentList = clubTasks[clubId] || [];
+    const updated = currentList.map(t => {
+      if (t.id === taskId) {
+        return {
+          ...t,
+          assignee: currentUser?.name || 'Öğrenci',
+          status: 'in_progress'
+        };
+      }
+      return t;
+    });
+    setClubTasks(prev => ({ ...prev, [clubId]: updated }));
+    toast.success('Görevi üstlendiniz! Başarıyla tamamlandığında +10 KGB kulüp faaliyet puanı profilinize tanımlanacaktır.');
+  };
+
+  const handleToggleTaskStatus = (taskId) => {
+    if (!selectedClub) return;
+    const clubId = selectedClub.id;
+    const currentList = clubTasks[clubId] || [];
+    const updated = currentList.map(t => {
+      if (t.id === taskId) {
+        const nextStatus = t.status === 'todo' ? 'in_progress' : t.status === 'in_progress' ? 'completed' : 'todo';
+        return { ...t, status: nextStatus };
+      }
+      return t;
+    });
+    setClubTasks(prev => ({ ...prev, [clubId]: updated }));
+    toast.info('Görev durumu güncellendi.');
+  };
+
+  const handleCreateTask = (e) => {
+    e.preventDefault();
+    if (!selectedClub || !newTaskForm.title) return;
+    const clubId = selectedClub.id;
+    const newTask = {
+      id: 'TASK-' + Date.now(),
+      title: newTaskForm.title,
+      category: newTaskForm.category,
+      points: Number(newTaskForm.points) || 10,
+      deadline: newTaskForm.deadline || 'Yakında',
+      description: newTaskForm.description || '',
+      assignee: null,
+      status: 'todo'
+    };
+    setClubTasks(prev => ({
+      ...prev,
+      [clubId]: [newTask, ...(prev[clubId] || [])]
+    }));
+    setShowTaskModal(false);
+    setNewTaskForm({ title: '', category: 'Lojistik & Donanım', deadline: '', points: 10, description: '' });
+    toast.success('Yeni kulüp içi görev oluşturuldu ve görev masasına eklendi!');
   };
 
   // File upload handler for club media post (Photos & Videos)
@@ -680,6 +896,9 @@ export default function StudentClubPortal({
                     <span className="text-xs font-bold text-emerald-200 bg-emerald-500/20 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-emerald-300/30">
                       <CheckCircle2 size={13} /> Resmî Kulüp
                     </span>
+                    <span className="text-xs font-bold text-amber-200 bg-amber-500/20 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-300/30">
+                      <Award size={13} /> 🎓 KGB +15 Puan
+                    </span>
                     {authorized && (
                       <span className="text-xs font-bold text-amber-200 bg-amber-400/20 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-300/30">
                         <ShieldCheck size={13} /> Yetkili Yönetici
@@ -692,6 +911,16 @@ export default function StudentClubPortal({
               </div>
 
               <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                {authorized && (
+                  <button
+                    onClick={() => { if (setView) setView('club_admin'); }}
+                    className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                    title="Kulüp İdare Masası"
+                  >
+                    <ShieldCheck size={16} /> 👑 Kulüp Yönetim Masası
+                  </button>
+                )}
+
                 {userIsMember ? (
                   <span className="px-5 py-2.5 bg-white text-emerald-800 font-bold text-xs rounded-xl shadow-sm flex items-center justify-center gap-1.5 border border-emerald-200">
                     <CheckCircle2 size={16} className="text-emerald-600" /> Üyesiniz
@@ -725,6 +954,7 @@ export default function StudentClubPortal({
             {[
               { id: 'overview', label: 'Genel Bakış & Medya Akışı', icon: Activity },
               { id: 'events', label: `Etkinlikler (${selectedClub.events?.length || 0})`, icon: Calendar },
+              { id: 'tasks', label: `Görev & Ekip Masası (${(clubTasks[selectedClub.id] || []).length})`, icon: ListTodo },
               { id: 'board', label: `Yönetim Kurulu (${selectedClub.boardMembers?.length || 0})`, icon: Users },
               { id: 'venue_requests', label: `Etkinlik & Yer Talepleri (${selectedClub.budgetRequests?.length || 0})`, icon: Building2 },
               { id: 'members', label: `Üyeler & Başvurular (${selectedClub.memberCount || selectedClub.members?.length || 0})`, icon: FileText }
@@ -1093,42 +1323,70 @@ export default function StudentClubPortal({
               {/* TAB 2: EVENTS */}
               {clubDetailTab === 'events' && (
                 <div className="space-y-4 animate-fade-in">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-gray-900 text-base">Kulüp Etkinlik Takvimi</h3>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-base">Kulüp Etkinlik Takvimi</h3>
+                      <p className="text-xs text-slate-500 font-medium">Katıldığınız her resmî etkinlik için KGB belgenize +5 Transkript Puanı eklenir.</p>
+                    </div>
                     {authorized && (
                       <button 
                         onClick={handleOpenVenueModal}
-                        className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                        className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0"
                       >
                         <Plus size={15} /> Yeni Etkinlik / Salon Talebi
                       </button>
                     )}
                   </div>
 
-                  {(selectedClub.events || []).map(event => (
-                    <div key={event.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${event.status === 'Tamamlandı' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-800'}`}>
-                            {event.status}
-                          </span>
-                          <span className="text-xs font-bold text-slate-700">{event.category}</span>
+                  {(selectedClub.events || []).map(event => {
+                    const isRegistered = registeredEventIds.has(event.id);
+                    return (
+                      <div key={event.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${event.status === 'Tamamlandı' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-800'}`}>
+                              {event.status}
+                            </span>
+                            <span className="text-xs font-bold text-slate-700">{event.category}</span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                              <Award size={12} className="text-amber-600" /> +5 KGB Puanı
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                            <Users size={14} className="text-slate-600" />
+                            <span>{event.registeredCount || 0} / {event.quota || 100} Katılımcı</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
-                          <Users size={14} className="text-slate-600" />
-                          <span>{event.registeredCount} / {event.quota} Katılımcı</span>
+
+                        <h4 className="text-lg font-black text-gray-900 mb-2">{event.title}</h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">{event.description}</p>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 pt-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
+                            <div className="flex items-center gap-1.5"><Calendar size={14} className="text-[#990000]" /> {event.date} • {event.time}</div>
+                            <div className="flex items-center gap-1.5"><MapPin size={14} className="text-[#990000]" /> {event.location}</div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isRegistered ? (
+                              <button
+                                onClick={() => setTicketModalEvent(event)}
+                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <Sparkles size={14} /> 🎟️ QR Giriş Biletim
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleRegisterEvent(event)}
+                                className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                              >
+                                <Calendar size={14} /> Bilet Al & Kaydol (+5 KGB)
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
-
-                      <h4 className="text-lg font-black text-gray-900 mb-2">{event.title}</h4>
-                      <p className="text-xs text-slate-600 leading-relaxed mb-4">{event.description}</p>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium border-t border-slate-100 pt-3">
-                        <div className="flex items-center gap-1.5"><Calendar size={14} className="text-[#990000]" /> {event.date} • {event.time}</div>
-                        <div className="flex items-center gap-1.5"><MapPin size={14} className="text-[#990000]" /> {event.location}</div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   {(!selectedClub.events || selectedClub.events.length === 0) && (
                     <div className="bg-white rounded-2xl p-10 border border-dashed border-slate-200 text-center">
@@ -1138,6 +1396,102 @@ export default function StudentClubPortal({
                       <p className="text-xs text-slate-700 font-medium">Planlanmış bir etkinlik bulunmuyor.</p>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* TAB: TASKS & TEAM WORKSPACE */}
+              {clubDetailTab === 'tasks' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-base flex items-center gap-2">
+                        <ListTodo size={20} className="text-[#990000]" /> Kulüp İçi Görev & Ekip Masası
+                      </h3>
+                      <p className="text-xs text-slate-500 font-medium mt-0.5">
+                        Etkinlik hazırlıklarına katılın, görev üstlenin ve KGB Transkriptinize +10 Kulüp Faaliyet Puanı kazandırın.
+                      </p>
+                    </div>
+                    {authorized && (
+                      <button 
+                        onClick={() => setShowTaskModal(true)}
+                        className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0"
+                      >
+                        <Plus size={15} /> Yeni Görev Oluştur
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Tasks Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {((clubTasks[selectedClub.id] || [])).map(task => {
+                      const isAssignedToMe = task.assignee === currentUser?.name;
+                      return (
+                        <div key={task.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <span className="text-[10px] font-bold text-[#990000] bg-red-50 border border-red-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                {task.category}
+                              </span>
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                                task.status === 'completed' ? 'bg-emerald-100 text-emerald-800' :
+                                task.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                                'bg-slate-100 text-slate-700'
+                              }`}>
+                                {task.status === 'completed' ? 'Tamamlandı' : task.status === 'in_progress' ? 'Sürüyor' : 'Yapılacak'}
+                              </span>
+                            </div>
+                            <h4 className="font-bold text-gray-900 text-sm mb-1.5">{task.title}</h4>
+                            {task.description && (
+                              <p className="text-xs text-slate-600 mb-3">{task.description}</p>
+                            )}
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 mt-3">
+                            <div className="text-xs text-slate-500 font-medium">
+                              {task.deadline && <span>Son Tarih: <strong className="text-slate-700">{task.deadline}</strong></span>}
+                              <div className="text-[11px] font-bold text-amber-700 flex items-center gap-1 mt-0.5">
+                                <Award size={12} /> +{task.points || 10} KGB Puanı
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              {task.assignee ? (
+                                <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700">
+                                  <UserCheck size={13} className="text-emerald-600" />
+                                  <span>{isAssignedToMe ? 'Siz Üstlendiniz' : task.assignee}</span>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleClaimTask(task.id)}
+                                  className="px-3.5 py-1.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl transition shadow-2xs flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Check size={13} /> Görevi Üstlen (+10 KGB)
+                                </button>
+                              )}
+                              {authorized && (
+                                <button
+                                  onClick={() => handleToggleTaskStatus(task.id)}
+                                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                                  title="Durumu Değiştir"
+                                >
+                                  <Sliders size={14} />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {(!clubTasks[selectedClub.id] || clubTasks[selectedClub.id].length === 0) && (
+                      <div className="col-span-full bg-white rounded-2xl p-10 border border-dashed border-slate-200 text-center">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-2 shadow-2xs">
+                          <ListTodo size={24} />
+                        </div>
+                        <p className="text-xs text-slate-700 font-medium">Henüz aktif bir kulüp içi görev tanımlanmamış.</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -2174,6 +2528,262 @@ export default function StudentClubPortal({
           </div>
         )}
 
+        {/* ============================================================== */}
+        {/* MODAL 7: DIGITAL EVENT TICKET & QR PASS MODAL                  */}
+        {/* ============================================================== */}
+        {ticketModalEvent && (
+          <div className="fixed inset-0 z-[10000] bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
+            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden animate-scale-up border border-slate-200">
+              
+              {/* Header */}
+              <div className="p-6 bg-gradient-to-r from-red-950 via-[#990000] to-rose-900 text-white flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full border border-white/20">
+                      Resmî Etkinlik Giriş Kartı
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                      Onaylandı
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-black">{ticketModalEvent.title}</h3>
+                  <p className="text-xs text-red-100 font-medium mt-0.5">{selectedClub?.name || 'İESÜ Öğrenci Kulüpleri'}</p>
+                </div>
+                <button
+                  onClick={() => setTicketModalEvent(null)}
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition cursor-pointer shrink-0"
+                  title="Kapat"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Pass Body */}
+              <div className="p-6 space-y-5">
+                
+                {/* Details Grid */}
+                <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs">
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Katılımcı</span>
+                    <strong className="text-slate-900 text-sm font-black">{currentUser?.name || 'Öğrenci'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Öğrenci No</span>
+                    <strong className="text-slate-900 text-sm font-black">{currentUser?.studentNo || '2023010482'}</strong>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Tarih & Saat</span>
+                    <span className="text-slate-800 font-bold">{ticketModalEvent.date} • {ticketModalEvent.time}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Etkinlik Alanı</span>
+                    <span className="text-slate-800 font-bold truncate block">{ticketModalEvent.location}</span>
+                  </div>
+                </div>
+
+                {/* SVG QR CODE */}
+                <div className="p-5 bg-white rounded-2xl border-2 border-dashed border-slate-200 text-center shadow-inner">
+                  <div className="w-40 h-40 mx-auto">
+                    <svg viewBox="0 0 160 160" className="w-full h-full" fill="none">
+                      <rect width="160" height="160" fill="#FFFFFF" rx="8" />
+                      <rect x="12" y="12" width="40" height="40" rx="4" fill="#0F172A" />
+                      <rect x="20" y="20" width="24" height="24" rx="2" fill="#FFFFFF" />
+                      <rect x="26" y="26" width="12" height="12" rx="1" fill="#990000" />
+                      
+                      <rect x="108" y="12" width="40" height="40" rx="4" fill="#0F172A" />
+                      <rect x="116" y="20" width="24" height="24" rx="2" fill="#FFFFFF" />
+                      <rect x="122" y="26" width="12" height="12" rx="1" fill="#990000" />
+                      
+                      <rect x="12" y="108" width="40" height="40" rx="4" fill="#0F172A" />
+                      <rect x="20" y="116" width="24" height="24" rx="2" fill="#FFFFFF" />
+                      <rect x="26" y="122" width="12" height="12" rx="1" fill="#990000" />
+
+                      <rect x="58" y="18" width="6" height="6" fill="#0F172A" />
+                      <rect x="70" y="18" width="6" height="6" fill="#0F172A" />
+                      <rect x="82" y="18" width="6" height="6" fill="#0F172A" />
+                      <rect x="94" y="18" width="6" height="6" fill="#0F172A" />
+
+                      <rect x="58" y="30" width="6" height="6" fill="#0F172A" />
+                      <rect x="76" y="30" width="12" height="6" fill="#0F172A" />
+                      <rect x="94" y="30" width="6" height="6" fill="#0F172A" />
+
+                      <rect x="18" y="58" width="6" height="6" fill="#0F172A" />
+                      <rect x="30" y="58" width="6" height="6" fill="#0F172A" />
+                      <rect x="42" y="58" width="6" height="6" fill="#0F172A" />
+                      <rect x="58" y="58" width="12" height="12" fill="#990000" />
+                      <rect x="76" y="58" width="6" height="6" fill="#0F172A" />
+                      <rect x="88" y="58" width="18" height="6" fill="#0F172A" />
+                      <rect x="114" y="58" width="6" height="6" fill="#0F172A" />
+                      <rect x="126" y="58" width="12" height="6" fill="#0F172A" />
+
+                      <rect x="18" y="70" width="12" height="6" fill="#0F172A" />
+                      <rect x="36" y="70" width="6" height="6" fill="#0F172A" />
+                      <rect x="76" y="70" width="12" height="6" fill="#0F172A" />
+                      <rect x="94" y="70" width="6" height="6" fill="#0F172A" />
+                      <rect x="108" y="70" width="18" height="6" fill="#0F172A" />
+                      <rect x="132" y="70" width="6" height="6" fill="#0F172A" />
+
+                      <rect x="18" y="82" width="6" height="6" fill="#0F172A" />
+                      <rect x="30" y="82" width="18" height="6" fill="#0F172A" />
+                      <rect x="58" y="82" width="6" height="6" fill="#0F172A" />
+                      <rect x="70" y="82" width="18" height="12" fill="#0F172A" />
+                      <rect x="94" y="82" width="12" height="6" fill="#990000" />
+                      <rect x="114" y="82" width="6" height="6" fill="#0F172A" />
+                      <rect x="126" y="82" width="18" height="6" fill="#0F172A" />
+
+                      <rect x="58" y="100" width="12" height="6" fill="#0F172A" />
+                      <rect x="76" y="100" width="6" height="6" fill="#0F172A" />
+                      <rect x="88" y="100" width="12" height="6" fill="#0F172A" />
+                      <rect x="108" y="100" width="6" height="6" fill="#0F172A" />
+                      <rect x="120" y="100" width="18" height="6" fill="#0F172A" />
+
+                      <rect x="58" y="114" width="18" height="6" fill="#0F172A" />
+                      <rect x="82" y="114" width="12" height="6" fill="#0F172A" />
+                      <rect x="100" y="114" width="18" height="6" fill="#0F172A" />
+                      <rect x="126" y="114" width="12" height="6" fill="#0F172A" />
+
+                      <rect x="58" y="126" width="6" height="12" fill="#0F172A" />
+                      <rect x="70" y="126" width="18" height="6" fill="#0F172A" />
+                      <rect x="94" y="126" width="12" height="12" fill="#0F172A" />
+                      <rect x="114" y="126" width="6" height="6" fill="#0F172A" />
+                      <rect x="126" y="126" width="18" height="12" fill="#990000" />
+                    </svg>
+                  </div>
+                  <p className="text-[11px] font-mono text-slate-500 mt-2 font-bold tracking-wider">
+                    IESU-TKT-{ticketModalEvent.id}-{currentUser?.studentNo || '2026'}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Kapıda görevli personel veya turnike tarafından okutunuz.</p>
+                </div>
+
+                {/* KGB Transcript Badge */}
+                <div className="bg-amber-50 border border-amber-200/80 rounded-2xl p-3 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <Award size={18} className="text-amber-600 shrink-0" />
+                    <div>
+                      <strong className="text-amber-900 block font-bold">+5 KGB Transkript Katkısı</strong>
+                      <span className="text-[11px] text-amber-700">Etkinlik katılımınızla mezuniyet belgenize işlenmiştir.</span>
+                    </div>
+                  </div>
+                  <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                </div>
+              </div>
+
+              {/* Actions Footer */}
+              <div className="p-4 px-6 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    toast.success('Bilet PDF formatında hazırlanıyor...');
+                  }}
+                  className="px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer shadow-2xs flex items-center gap-1.5"
+                >
+                  <Download size={14} /> PDF Olarak İndir
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTicketModalEvent(null)}
+                  className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer"
+                >
+                  Tamam
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* MODAL 8: NEW CLUB TASK MODAL (FOR AUTHORIZED OFFICERS)         */}
+        {/* ============================================================== */}
+        {showTaskModal && (
+          <div className="fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 font-sans animate-fade-in">
+            <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl flex flex-col overflow-hidden animate-scale-up border border-slate-100">
+              <div className="p-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#990000] bg-red-50 px-2.5 py-1 rounded-md inline-block mb-1">
+                    Kulüp Yönetim Masası
+                  </span>
+                  <h3 className="text-lg font-black text-gray-900">Yeni Kulüp İçi Görev Ekle</h3>
+                  <p className="text-xs text-slate-500 font-medium">Kulüp üyelerinin üstleneceği operasyon veya organizasyon görevi tanımlayın.</p>
+                </div>
+                <button
+                  onClick={() => setShowTaskModal(false)}
+                  className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-700 transition cursor-pointer shrink-0"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateTask} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Görev Başlığı *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newTaskForm.title}
+                    onChange={(e) => setNewTaskForm({ ...newTaskForm, title: e.target.value })}
+                    placeholder="Örn: Konuşmacı Ulaşım ve Karşılama Ekibi"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
+                    <select
+                      value={newTaskForm.category}
+                      onChange={(e) => setNewTaskForm({ ...newTaskForm, category: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
+                    >
+                      <option>Lojistik & Donanım</option>
+                      <option>Medya & Tasarım</option>
+                      <option>Halkla İlişkiler</option>
+                      <option>Operasyon & Karşılama</option>
+                      <option>Sponsorluk & Maliye</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Son Tarih</label>
+                    <input
+                      type="text"
+                      value={newTaskForm.deadline}
+                      onChange={(e) => setNewTaskForm({ ...newTaskForm, deadline: e.target.value })}
+                      placeholder="Örn: 20 Ekim 2026"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Açıklama / Yönergeler</label>
+                  <textarea
+                    rows={2}
+                    value={newTaskForm.description}
+                    onChange={(e) => setNewTaskForm({ ...newTaskForm, description: e.target.value })}
+                    placeholder="Görevle ilgili detaylar ve beklentiler..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000] focus:bg-white resize-none"
+                  />
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowTaskModal(false)}
+                    className="px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer shadow-2xs"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                  >
+                    <CheckCircle2 size={16} /> Görevi Yayınla
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* FLOATING BOTTOM DOCK */}
         {!isAnyModalOpen && (
           <SubPanelFloatingDock 
@@ -2229,9 +2839,55 @@ export default function StudentClubPortal({
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'discover' && (
-          <div className="animate-fade-in space-y-8">
+          <div className="animate-fade-in space-y-6">
+            
+            {/* PRESTIGE COMMAND HERO BANNER */}
+            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-[#990000] text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-slate-700/60 shadow-xl">
+              <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-red-600/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative z-10 space-y-5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[11px] font-bold bg-white/15 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 uppercase tracking-wider flex items-center gap-1.5">
+                    <Building2 size={13} className="text-red-200" /> SKS Daire Başkanlığı & Öğrenci Dekanlığı
+                  </span>
+                  <span className="text-[11px] font-bold bg-amber-400/20 text-amber-200 backdrop-blur-md px-3 py-1 rounded-full border border-amber-300/30 flex items-center gap-1.5">
+                    <Award size={13} /> KGB Transkript Katkısı
+                  </span>
+                </div>
+
+                <div>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+                    İESÜ Kulüp & Topluluklar Ekosistemi
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-200/90 mt-2 max-w-3xl leading-relaxed">
+                    İstanbul Esenyurt Üniversitesi resmî öğrenci kulüplerini keşfedin, üye olun, etkinliklere bilet alarak QR geçiş kartınızı oluşturun ve mezuniyet transkriptinize Kariyer Gelişim Belgesi (KGB) puanı kazandırın.
+                  </p>
+                </div>
+
+                {/* 4 Stats & KGB Badges */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider block">Resmî Kulüp</span>
+                    <strong className="text-lg font-black text-white">{clubList.length}+ Kulüp</strong>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider block">Aktif Öğrenci Üye</span>
+                    <strong className="text-lg font-black text-emerald-300">3.850+</strong>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider block">Yıllık Etkinlik</span>
+                    <strong className="text-lg font-black text-amber-300">120+</strong>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider block">KGB Puanı</span>
+                    <strong className="text-xs sm:text-sm font-black text-rose-200 block">+15 Üyelik / +5 Bilet</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SEARCH & ACTION CONTROL BAR */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
               <div className="relative flex-1 w-full">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
@@ -2243,38 +2899,121 @@ export default function StudentClubPortal({
                   onChange={(e) => setSearchQuery(e.target.value)} 
                 />
               </div>
-              <button onClick={() => setShowCreateModal(true)} className="w-full md:w-auto px-6 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer">
-                <Plus size={20} /> Yeni Kulüp Kur (EK-1)
-              </button>
+
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-3 text-xs font-bold text-slate-700 outline-none focus:border-[#990000] focus:bg-white cursor-pointer shadow-2xs"
+                >
+                  <option value="members">Sıralama: En Çok Üyeli</option>
+                  <option value="events">Sıralama: En Çok Etkinlik</option>
+                  <option value="alphabetical">Sıralama: Alfabetik (A-Z)</option>
+                </select>
+
+                <button 
+                  onClick={() => setShowCreateModal(true)} 
+                  className="px-5 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs sm:text-sm rounded-xl transition shadow flex items-center justify-center gap-2 cursor-pointer shrink-0 active:scale-95"
+                >
+                  <Plus size={18} /> Yeni Kulüp Kur (EK-1)
+                </button>
+              </div>
             </div>
 
+            {/* SMART CATEGORY PILLS */}
+            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
+              {CLUB_CATEGORIES.map(cat => {
+                const isCatActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
+                      isCatActive
+                        ? 'bg-[#990000] text-white shadow-xs'
+                        : 'bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>{cat}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CLUBS DIRECTORY GRID */}
             {filteredClubs.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-200">
+              <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
                 <div className="w-16 h-16 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mx-auto mb-3 shadow-2xs">
                   <Building2 size={32} />
                 </div>
-                <p className="text-slate-700 font-medium">Aramanıza uygun kulüp bulunamadı.</p>
+                <p className="text-slate-700 font-bold">Aramanıza veya seçilen kategoriye uygun kulüp bulunamadı.</p>
+                <button
+                  onClick={() => { setSelectedCategory('Tümü'); setSearchQuery(''); }}
+                  className="mt-3 text-xs text-[#990000] font-bold hover:underline"
+                >
+                  Filtreleri Temizle
+                </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredClubs.map(club => (
-                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  key={club.id} onClick={() => setSelectedClub(club)} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all cursor-pointer group flex flex-col h-full">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className="w-16 h-16 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-white overflow-hidden">
-                        {club.logo ? <SafeAvatar src={club.logo} name={club.name} size={64} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 text-slate-500 flex items-center justify-center"><Building2 size={24} /></div>}
+                  <div 
+                    role="button" 
+                    tabIndex={0} 
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
+                    key={club.id} 
+                    onClick={() => setSelectedClub(club)} 
+                    className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-red-200 transition-all cursor-pointer group flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="w-16 h-16 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-white overflow-hidden">
+                          {club.logo ? <SafeAvatar src={club.logo} name={club.name} size={64} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 text-slate-500 flex items-center justify-center"><Building2 size={24} /></div>}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                            <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md uppercase tracking-wider truncate">
+                              {club.category || 'Genel'}
+                            </span>
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-0.5">
+                              <CheckCircle2 size={10} /> Resmî
+                            </span>
+                          </div>
+                          <h3 className="font-black text-gray-900 leading-snug group-hover:text-[#990000] transition-colors line-clamp-1">{club.name}</h3>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-black text-gray-900 leading-tight mb-1 group-hover:text-[#990000] transition-colors">{club.name}</h3>
-                        <p className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">{club.category || 'Genel'}</p>
-                      </div>
+
+                      <p className="text-xs text-slate-600 line-clamp-3 mb-4 leading-relaxed font-medium">
+                        {club.description || 'Öğrencilerin akademik ve sosyal gelişimlerini desteklemeyi amaçlamaktadır.'}
+                      </p>
                     </div>
-                    <p className="text-sm text-slate-600 line-clamp-3 mb-6 flex-1">{club.description || 'Öğrencilerin akademik ve sosyal gelişimlerini desteklemeyi amaçlamaktadır.'}</p>
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                        <Users size={14} className="text-[#990000]" /> {club.memberCount || club.members?.length || 45} Üye
+
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                          <Award size={11} className="text-amber-600" /> 🎓 KGB +15 Puan
+                        </span>
+                        {isMemberOfClub(club) && (
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <CheckCircle2 size={10} /> Üyesiniz
+                          </span>
+                        )}
                       </div>
-                      {isMemberOfClub(club) && <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">Üyesiniz</span>}
-                      <ChevronRight size={18} className="text-slate-600 group-hover:text-[#990000] transition-colors" />
+
+                      <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
+                        <div className="flex items-center gap-3 text-xs font-bold text-slate-600">
+                          <span className="flex items-center gap-1.5">
+                            <Users size={14} className="text-[#990000]" /> {club.memberCount || club.members?.length || 45} Üye
+                          </span>
+                          <span className="flex items-center gap-1.5 text-slate-400">
+                            • <Calendar size={13} className="text-slate-500" /> {club.events?.length || 3} Etkinlik
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs font-bold text-[#990000] group-hover:translate-x-1 transition-transform">
+                          <span>Detayları Gör</span>
+                          <ChevronRight size={16} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
