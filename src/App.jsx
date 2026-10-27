@@ -28,7 +28,7 @@ const ADMIN_CMS = new Set([
   'cms_staff', 'mesajlar', 'data_cleanup', 'ilan', 'cms_feat', 'cms_jobs', 'gonullu', 
   'mentorluk', 'etkinlik', 'cms_events', 'kariyer_gunleri', 'cms_news', 'cms_ann', 
   'academic_catalog', 'academic_approvals', 'anket', 'analytics', 'entegrasyon', 
-  'mezun_dernek', 'kart', 'cms_ssp', 'platform_ayarlari', 'akademik_radar', 
+  'cms_mezun_dernek', 'cms_alumni_assoc', 'kart', 'cms_ssp', 'platform_ayarlari', 'akademik_radar', 
   'aday_havuzu', 'user_types', 'audit_log', 'site_editor', 'cms_sync', 
   'institutional_stats', 'cms_career_counseling', 'cms_corporate_partnerships', 
   'company_edu_requests', 'company_event_msgs', 'content_import', 'cms_ment', 
@@ -353,6 +353,7 @@ export default function App() {
 
     // Dedicated branch routes with positive whitelist gating
     if (pathView === 'admin') return isAdmin ? <AdminFeed setView={setView} currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} userRole="admin" academicRole="super_admin" setSelectedGroupId={s.setSelectedGroupId} /> : renderHomeHiveForRole();
+    if (pathView === 'birlik_agi' || pathView === 'mezun_dernek') return <AlumniHive currentUser={currentUser} setView={setView} />;
     if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'alumni' || isAdmin) ? <AlumniHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
     if (ACADEMIC_ROUTES.has(pathView)) return (effectiveRole === 'academic' || isAdmin) ? <AcademicHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
     if (COMPANY_ROUTES.has(pathView)) return (effectiveRole === 'company' || effectiveRole === 'employer' || isAdmin) ? <CompanyHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();

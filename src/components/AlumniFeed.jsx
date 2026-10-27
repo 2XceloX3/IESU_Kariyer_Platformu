@@ -370,7 +370,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 onClick={() => {
                   const store = useAppStore.getState();
                   if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
-                  setView('mezun_dernek');
+                  setView('birlik_agi');
                 }}
                 className="group flex flex-col items-start p-3 rounded-xl border border-gray-100 bg-gradient-to-b from-cyan-50/40 to-white hover:border-cyan-200 hover:shadow-xs transition-all text-left cursor-pointer"
               >
@@ -416,7 +416,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
               onClick={() => {
                 const store = useAppStore.getState();
                 if (store.setActivePortalBranch) store.setActivePortalBranch('alumni');
-                setView('mezun_dernek');
+                setView('birlik_agi');
               }} 
               className="pb-3 font-semibold text-[15px] text-gray-500 hover:text-emerald-700 transition-colors relative cursor-pointer"
             >

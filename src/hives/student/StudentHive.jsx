@@ -60,6 +60,7 @@ const AnkaChat = lazy(() => import('../../components/AnkaChat'));
 const BMICalculatorModal = lazy(() => import('../../components/BMICalculatorModal'));
 const SKSDBLunchWidget = lazy(() => import('../../components/SKSDBLunchWidget'));
 const SKSDBClubsDirectory = lazy(() => import('../../components/SKSDBClubsDirectory'));
+const BirlikAgiPortal = lazy(() => import('../../components/BirlikAgiPortal'));
 const BIDBSystemStatusCard = lazy(() => import('../../components/BIDBSystemStatusCard'));
 const BIDBHelpdeskModal = lazy(() => import('../../components/BIDBHelpdeskModal'));
 const KariyerJobBoard = lazy(() => import('../../components/KariyerJobBoard'));
@@ -222,6 +223,9 @@ export default function StudentHive({ currentUser, setView }) {
         return <MetaverseLibrary setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
       case 'hackathon_market':
         return <HackathonMarket setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;
+      case 'birlik_agi':
+      case 'mezun_dernek':
+        return <BirlikAgiPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} setSelectedGroupId={setSelectedGroupId} academicRole="student" />;
       case 'clubs_directory':
       case 'sksdb_clubs':
         return <SKSDBClubsDirectory setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;

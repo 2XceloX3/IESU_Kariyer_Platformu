@@ -80,7 +80,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
         sub="Mezunlar portalı duyuru, etkinlik ve buluşma içeriklerini yönetin"
         action={
           <div className="flex items-center gap-2">
-            <button onClick={() => setView?.('alumni_assoc_portal')} className="flex items-center gap-2 bg-[#990000] hover:bg-red-800 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-md">
+            <button onClick={() => setView?.('birlik_agi')} className="flex items-center gap-2 bg-[#990000] hover:bg-red-800 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-md">
               <Users size={16} /> İESÜ Mezunlar Portalı Aç →
             </button>
             <button onClick={() => setShowForm(!showForm)} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold transition">
@@ -253,7 +253,7 @@ export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setV
             </p>
           </div>
           <button 
-            onClick={() => setView?.('alumni_assoc_portal')}
+            onClick={() => setView?.('birlik_agi')}
             className="px-4 py-2 bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-red-800 transition"
           >
             Özel Portalda Detaylı İncele →

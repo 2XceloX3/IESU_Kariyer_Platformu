@@ -269,7 +269,7 @@ const PANEL_CATEGORIES = [
     id: 'kullanici', 
     label: 'Kullanıcı Yönetimi', 
     icon: <Users size={14}/>, 
-    panels: ['students', 'alumni', 'companies', 'academic_staff', 'cms_staff', 'cms_clubs', 'mezun_dernek', 'kart', 'cms_groups', 'user_types'] 
+    panels: ['students', 'alumni', 'companies', 'academic_staff', 'cms_staff', 'cms_clubs', 'cms_mezun_dernek', 'kart', 'cms_groups', 'user_types'] 
   },
   { 
     id: 'icerik', 
@@ -474,7 +474,7 @@ export default function AdminDashboard({
       case 'students':    return <CMSStudents students={students || []} setStudents={setStudents} />;
       case 'academic_staff': return <CMSAcademicStaff academicStaff={academicStaff || []} setAcademicStaff={setAcademicStaff} />;
       case 'alumni':      return <CMSAlumni alumni={alumni || []} setAlumni={setAlumni} surveys={surveys} setSurveys={setSurveys} currentUser={currentUser} setPosts={setPosts} posts={posts} setView={setView} />;
-      case 'mezun_dernek':return <CMSAlumniAssoc setView={setView} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
+      case 'cms_mezun_dernek': case 'cms_alumni_assoc': case 'mezun_dernek': return <CMSAlumniAssoc setView={setView} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
       case 'kart':        return <CMSAlumniCard alumniCardApplications={alumniCardApplications} setAlumniCardApplications={setAlumniCardApplications} alumniCardForms={alumniCardForms} setAlumniCardForms={setAlumniCardForms} />;
       case 'ilan':        return <CMSJobs jobs={jobs || []} setJobs={setJobs} applications={applications || []} setApplications={setApplications} setSelectedUserId={setSelectedUserId} setView={setView} />;
       case 'etkinlik':    return <CMSEvents events={events || []} setEvents={setEvents} posts={posts} setPosts={setPosts} currentUser={currentUser} />;
@@ -591,7 +591,7 @@ export default function AdminDashboard({
     { id: 'anket', icon: <ClipboardList size={14}/>, label: 'Anketler' },
     { id: 'analytics', icon: <BarChart3 size={14}/>, label: 'Analitik & Raporlar' },
     { id: 'entegrasyon', icon: <Radio size={14}/>, label: 'Entegrasyonlar' },
-    { id: 'mezun_dernek', icon: <Users size={14}/>, label: 'Mezunlar Portalı' },
+    { id: 'cms_mezun_dernek', icon: <Users size={14}/>, label: 'Mezunlar Portalı (CMS)' },
     { id: 'kart', icon: <CreditCard size={14}/>, label: 'Mezun Kartı' },
     { id: 'cms_ssp', icon: <BookOpenKgb size={14}/>, label: 'KGB Sistemi' },
     { id: 'platform_ayarlari', icon: <Settings size={14}/>, label: 'Platform Ayarları', superAdminOnly: true },
