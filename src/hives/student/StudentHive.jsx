@@ -178,7 +178,19 @@ export default function StudentHive({ currentUser, setView }) {
       case 'ats_scanner':
       case 'ats_resume_scanner':
       case 'ats_optimizer':
-        return <ATSResumeScannerModal isOpen={true} onClose={() => handleSetView('student')} />;
+        return (
+          <>
+            <StudentFeed
+              setView={handleSetView}
+              setSelectedUserId={setSelectedUserId}
+              currentUser={effectiveCurrentUser}
+              userRole="student"
+              academicRole="student"
+              setSelectedGroupId={setSelectedGroupId}
+            />
+            <ATSResumeScannerModal isOpen={true} onClose={() => handleSetView('student')} />
+          </>
+        );
       // case 'endowment' | 'burs_fonu' | 'alumni_endowment': Bağış modülü askıya alındı.
       case 'career_test':
         return <CareerTest setView={handleSetView} currentUser={effectiveCurrentUser} userRole="student" setSelectedUserId={setSelectedUserId} />;

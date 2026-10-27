@@ -28,6 +28,7 @@ import BranchNewsWidget from './BranchNewsWidget';
 import MentorRequestModal from './modals/MentorRequestModal';
 import CareerReadinessWidget from './student/CareerReadinessWidget';
 import AlumniCoffeeChatModal from './student/AlumniCoffeeChatModal';
+import ATSResumeScannerModal from './student/ATSResumeScannerModal';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
 import { initialClubs } from '../data/mockClubsData';
 
@@ -86,6 +87,8 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [selectedMentorForRequest, setSelectedMentorForRequest] = useState(null);
   const [showCoffeeChatModal, setShowCoffeeChatModal] = useState(false);
   const [selectedAlumnusForChat, setSelectedAlumnusForChat] = useState(null);
+  const [showAtsModal, setShowAtsModal] = useState(false);
+  const [showCareerHubModal, setShowCareerHubModal] = useState(false);
   const followedUserIds = useAppStore(state => state.followedUserIds) || [];
   const EMPTY_ARRAY = useMemo(() => [], []);
 
@@ -376,156 +379,172 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             </button>
           </div>
 
-          {/* Kariyer & Gelişim Araçları — Sol Kenar Çubuğu Kokpiti (LinkedIn / Handshake Standardı) */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-3 text-left transition-all hover:border-red-200">
-            <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-100">
+          {/* Kariyer & Gelişim Araçları — Modernize Edilmiş Akıllı Kariyer Hub'ı */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-3.5 text-left transition-all hover:border-red-200">
+            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse shrink-0"></span>
                 <h4 className="text-[12px] font-black leading-tight text-gray-900">Kariyer & Gelişim Araçları</h4>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-red-50 text-[#990000] border border-red-200 text-[9px] font-bold">
-                8 Araç
-              </span>
+              <button 
+                onClick={() => setShowCareerHubModal(true)}
+                className="px-2 py-0.5 rounded-full bg-red-50 text-[#990000] border border-red-200 text-[9px] font-bold hover:bg-red-100 transition cursor-pointer flex items-center gap-1"
+                title="Tüm Araçları İncele"
+              >
+                <span>8 Araç</span>
+                <ChevronRight size={10} />
+              </button>
             </div>
 
-            <div className="space-y-1">
+            {/* 4 Ana Kategori İstasyonu — 2x2 Kompakt Grid */}
+            <div className="grid grid-cols-2 gap-1.5">
               {/* 1. Kariyer Haritası */}
               <button
                 onClick={() => setView('career_roadmap')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-blue-50/80 border border-slate-100 hover:border-blue-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Compass size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Compass size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-blue-700 transition-colors block truncate">Kariyer Haritası</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Adım adım rota & hedefler</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-blue-100/60 text-blue-800">Rota</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-700 shrink-0">Faz 1-4</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-blue-700 transition-colors block truncate">Kariyer Haritası</span>
+                  <span className="text-[9px] text-gray-400 block truncate">4 Fazlı Hedef Planı</span>
+                </div>
               </button>
 
               {/* 2. Mülakat Simülatörü */}
               <button
                 onClick={() => setView('interview_simulator')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-emerald-50/80 border border-slate-100 hover:border-emerald-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Sparkles size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Sparkles size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-emerald-700 transition-colors block truncate">Mülakat Simülatörü</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Kamera ile STAR AI prova</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-emerald-100/60 text-emerald-800">STAR AI</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 shrink-0">STAR AI</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-emerald-700 transition-colors block truncate">Mülakat Simülatörü</span>
+                  <span className="text-[9px] text-gray-400 block truncate">Canlı Soru & Prova</span>
+                </div>
               </button>
 
-              {/* 3. ATS CV Tarayıcı */}
+              {/* 3. ATS CV Tarayıcı (Akış İçi Modal) */}
               <button
-                onClick={() => setView('ats_scanner')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                onClick={() => setShowAtsModal(true)}
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-indigo-50/80 border border-slate-100 hover:border-indigo-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <FileText size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <FileText size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-indigo-700 transition-colors block truncate">ATS CV Tarayıcı</span>
-                    <span className="text-[9px] text-gray-400 block truncate">İK anahtar kelime eşleşmesi</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-indigo-100/60 text-indigo-800">ATS Skor</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 shrink-0">ATS</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-indigo-700 transition-colors block truncate">ATS CV Tarayıcı</span>
+                  <span className="text-[9px] text-gray-400 block truncate">İK Anahtar Kelime</span>
+                </div>
               </button>
 
               {/* 4. Kariyer Testi */}
               <button
                 onClick={() => setView('career_test')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-purple-50/80 border border-slate-100 hover:border-purple-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Target size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Target size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-purple-700 transition-colors block truncate">Kariyer Testi</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Holland yetkinlik envanteri</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-purple-100/60 text-purple-800">Holland</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-700 shrink-0">Holland</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-purple-700 transition-colors block truncate">Kariyer Testi</span>
+                  <span className="text-[9px] text-gray-400 block truncate">Yetkinlik Analizi</span>
+                </div>
               </button>
 
               {/* 5. Başvuru Radarı */}
               <button
                 onClick={() => setView('radar')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-red-50/80 border border-slate-100 hover:border-red-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
                 data-testid="student-feed-quick-radar-btn"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-red-50 text-[#990000] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Radar size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-red-100 text-[#990000] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Radar size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-[#990000] transition-colors block truncate">Başvuru Radarı</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Canlı İK havuz takibi</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-red-100/60 text-[#990000]">Canlı İK</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-red-50 text-[#990000] shrink-0">Canlı İK</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-[#990000] transition-colors block truncate">Başvuru Radarı</span>
+                  <span className="text-[9px] text-gray-400 block truncate">Havuz & Durum Takip</span>
+                </div>
               </button>
 
               {/* 6. Staj Portalı */}
               <button
                 onClick={() => setView('staj')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-teal-50/80 border border-slate-100 hover:border-teal-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Briefcase size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Briefcase size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-teal-700 transition-colors block truncate">Staj Portalı</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Resmî staj & SGK defteri</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-teal-100/60 text-teal-800">SGK</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-teal-50 text-teal-700 shrink-0">SGK</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-teal-700 transition-colors block truncate">Staj Portalı</span>
+                  <span className="text-[9px] text-gray-400 block truncate">Form-1 & Defter</span>
+                </div>
               </button>
 
               {/* 7. Kuluçka Merkezi */}
               <button
                 onClick={() => setView('startup_incubator')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-amber-50/80 border border-slate-100 hover:border-amber-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Rocket size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Rocket size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-amber-700 transition-colors block truncate">Kuluçka Merkezi</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Girişim & TÜBİTAK BİGG</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-amber-100/60 text-amber-800">TTO</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 shrink-0">TTO</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-amber-700 transition-colors block truncate">Kuluçka Merkezi</span>
+                  <span className="text-[9px] text-gray-400 block truncate">TÜBİTAK BİGG & Proje</span>
+                </div>
               </button>
 
               {/* 8. Kulüpler Portalı */}
               <button
                 onClick={() => setView('club_portal')}
-                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+                className="p-2 rounded-xl bg-slate-50/70 hover:bg-rose-50/80 border border-slate-100 hover:border-rose-200 transition-all flex flex-col justify-between group cursor-pointer text-left"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Users size={14} />
+                <div className="flex items-center justify-between w-full mb-1">
+                  <div className="w-6 h-6 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Users size={13} />
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-rose-700 transition-colors block truncate">Kulüpler Portalı</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Öğrenci toplulukları & etkinlik</span>
-                  </div>
+                  <span className="text-[8px] font-black uppercase px-1 py-0.2 rounded bg-rose-100/60 text-rose-800">+15 KGB</span>
                 </div>
-                <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-rose-50 text-rose-700 shrink-0">Topluluk</span>
+                <div>
+                  <span className="text-[11px] font-bold text-gray-800 group-hover:text-rose-700 transition-colors block truncate">Kulüpler Portalı</span>
+                  <span className="text-[9px] text-gray-400 block truncate">Topluluk & Görev</span>
+                </div>
               </button>
             </div>
+
+            {/* Hub Quick Action / Cockpit Launcher */}
+            <button
+              onClick={() => setShowCareerHubModal(true)}
+              className="w-full mt-2.5 py-2 px-3 bg-slate-50 hover:bg-red-50 hover:text-[#990000] text-slate-700 rounded-xl text-[10px] font-bold border border-slate-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs group"
+            >
+              <Sparkles size={12} className="text-[#990000] group-hover:scale-110 transition-transform" />
+              <span>Gelişim Hub'ı & Puan Rehberi</span>
+              <ChevronRight size={11} className="text-slate-400 group-hover:text-[#990000] transition-colors" />
+            </button>
           </div>
         </div>
 
@@ -1367,6 +1386,225 @@ groups={groups}
           selectedAlumnus={selectedAlumnusForChat}
         />
       )}
+
+      {/* ATS ÖZGEÇMİŞ TARAYICI MODALI (Akış Üzerinde Kesintisiz) */}
+      {showAtsModal && (
+        <ATSResumeScannerModal
+          isOpen={showAtsModal}
+          onClose={() => setShowAtsModal(false)}
+        />
+      )}
+
+      {/* 8'Lİ KARİYER & GELİŞİM ARAÇLARI KOKPİT MODALI */}
+      {showCareerHubModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 sm:p-8 relative">
+            <button
+              onClick={() => setShowCareerHubModal(false)}
+              className="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer"
+              title="Kapat"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-[#990000] text-white flex items-center justify-center shadow-md">
+                <Sparkles size={24} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse"></span>
+                  <span className="text-[11px] font-bold text-[#990000] uppercase tracking-wider">İESÜ Öğrenci Gelişim Ekosistemi</span>
+                </div>
+                <h3 className="text-xl font-black text-slate-900">Kariyer & Gelişim Araçları Merkezi</h3>
+                <p className="text-xs text-slate-500 font-medium">8 yapay zekâ simülatörü, staj evrak masası ve topluluk görevleriyle KGB Transkriptinizi güçlendirin.</p>
+              </div>
+            </div>
+
+            {/* 4 Grup - 8 Araç Kartları Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 1. Kariyer Haritası */}
+              <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 hover:border-blue-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <Compass size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Faz 1 - 4 Rota</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">Kariyer Haritası & Yol Planı</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">Bölümünüze ve hedeflerinize özel 4 fazlı akademik ve sektörel gelişim kilometre taşlarını takip edin.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setView('career_roadmap'); }}
+                  className="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>Yol Haritasına Git</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* 2. Mülakat Simülatörü */}
+              <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 hover:border-emerald-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <Sparkles size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">+10 KGB Puanı</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">AI Mülakat Simülatörü</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">Kamera veya sesle STAR metodunda gerçekçi mülakat sorularına cevap verin; yapay zekâ analiz raporu alın.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setView('interview_simulator'); }}
+                  className="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>Mülakat Odasını Aç</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* 3. ATS CV Tarayıcı */}
+              <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 hover:border-indigo-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                      <FileText size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">ATS Skoru</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">ATS CV Tarayıcı & Optimizasyon</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">Özgeçmişinizi kurumsal İK filtrelerine karşı test edin, eksik anahtar kelimeleri ve format hatalarını tespit edin.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setShowAtsModal(true); }}
+                  className="mt-4 w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>CV'mi Tara (Akışta Aç)</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* 4. Kariyer Testi */}
+              <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 hover:border-purple-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+                      <Target size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">Holland RIASEC</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">Holland Kariyer Eğilim Testi</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">Yetkinliklerinizi ve ilgi alanlarınızı bilimsel envanterle ölçün; kişiselleştirilmiş rol önerileri kazanın.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setView('career_test'); }}
+                  className="mt-4 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>Testi Çöz / İncele</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* 5. Başvuru Radarı */}
+              <div className="p-4 rounded-2xl bg-red-50/50 border border-red-100 hover:border-red-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center">
+                      <Radar size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-red-100 text-[#990000] px-2 py-0.5 rounded-full">Canlı İK Havuzu</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">Başvuru Radarı</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">Yaptığınız staj ve iş başvurularının İK tarafından incelenme durumunu ve VIP protokol önceliklerini izleyin.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setView('radar'); }}
+                  className="mt-4 w-full py-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>Başvuru Radarına Git</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* 6. Staj Portalı */}
+              <div className="p-4 rounded-2xl bg-teal-50/50 border border-teal-100 hover:border-teal-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center">
+                      <Briefcase size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full">SGK & Form-1</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">Resmî Staj Portalı</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">Zorunlu ve gönüllü staj başvuruları, Form-1 onayları ve dijital staj defteri teslim masası.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setView('staj'); }}
+                  className="mt-4 w-full py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>Staj Masasını Aç</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* 7. Kuluçka Merkezi */}
+              <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 hover:border-amber-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                      <Rocket size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">TTO & BİGG</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">Kuluçka Merkezi (TTO)</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">Teknoloji Transfer Ofisi bünyesinde girişim fikrinizi ticarileştirin, hibe ve tohum fon desteği alın.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setView('startup_incubator'); }}
+                  className="mt-4 w-full py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>Kuluçka Merkezine Git</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+
+              {/* 8. Kulüpler Portalı */}
+              <div className="p-4 rounded-2xl bg-rose-50/50 border border-rose-100 hover:border-rose-300 transition-all flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center">
+                      <Users size={18} />
+                    </div>
+                    <span className="text-[10px] font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">+15 KGB Üyelik</span>
+                  </div>
+                  <h4 className="font-bold text-slate-900 text-sm">Öğrenci Kulüpleri Portalı</h4>
+                  <p className="text-xs text-slate-600 font-medium mt-1">40+ aktif öğrenci topluluğuna katılın, etkinliklere QR bilet alın ve kulüp içi görev masasında rol alın.</p>
+                </div>
+                <button
+                  onClick={() => { setShowCareerHubModal(false); setView('club_portal'); }}
+                  className="mt-4 w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  <span>Kulüpleri Keşfet</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-xs text-slate-500 font-medium">Tamamlanan her modül KGB Transkriptinize doğrudan yansır.</span>
+              <button
+                onClick={() => setShowCareerHubModal(false)}
+                className="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
