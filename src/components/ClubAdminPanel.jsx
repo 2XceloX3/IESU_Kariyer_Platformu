@@ -3,7 +3,8 @@ import SafeAvatar from './shared/SafeAvatar';
 import { 
   Shield, Users, Check, X, Megaphone, MapPin, Send, FileText, 
   Image as ImageIcon, ArrowLeft, Building2, CheckCircle2, 
-  Clock, Award, ChevronRight, UserCheck, AlertCircle, Sparkles
+  Clock, Award, ChevronRight, UserCheck, AlertCircle, Sparkles,
+  Calendar, Lock, ExternalLink, HelpCircle
 } from 'lucide-react';
 import Logo from './Logo';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
@@ -123,31 +124,65 @@ export default function ClubAdminPanel({
   
   const isPresident = selectedClub.presidentId === currentUser?.id || selectedClub.president?.name === currentUser?.name;
 
+  // Combined Membership Requests & Detailed Applications
+  const combinedRequests = useMemo(() => {
+    const list = [...(selectedClub.memberRequests || [])];
+    (selectedClub.memberApplications || []).forEach(app => {
+      if (app.status === 'pending' && !list.some(r => r.id === app.id || r.userId === app.studentId)) {
+        list.push({
+          id: app.id,
+          userId: app.studentId,
+          userName: app.name,
+          name: app.name,
+          studentNo: app.studentNo,
+          tcKimlik: app.tcKimlik,
+          department: app.department,
+          grade: app.grade,
+          motivation: app.reason || 'Kulüp faaliyetlerine aktif katılmak istiyorum.',
+          date: app.appliedAt || new Date().toISOString()
+        });
+      }
+    });
+    return list;
+  }, [selectedClub]);
+
   const handleAcceptRequest = (req) => {
     const updatedClubs = (clubs || []).map(c => {
       if (c.id === selectedClub.id) {
         const newMember = {
           id: 'MEM-' + Date.now(),
-          userId: req.userId || req.id,
+          userId: req.userId || req.studentId || req.id,
+          studentNo: req.studentNo || '',
+          tcKimlik: req.tcKimlik || '',
           name: req.userName || req.name || 'İsimsiz Üye',
           department: req.department || '',
+          grade: req.grade || '',
+          role: 'Aktif Üye',
           joinedAt: new Date().toISOString()
         };
         const newMembers = [...(c.members || []), newMember];
-        const newRequests = (c.memberRequests || []).filter(r => r.id !== req.id);
-        return { ...c, members: newMembers, memberRequests: newRequests, memberCount: (c.memberCount || 0) + 1 };
+        const newRequests = (c.memberRequests || []).filter(r => r.id !== req.id && r.userId !== (req.userId || req.studentId));
+        const newApplications = (c.memberApplications || []).filter(a => a.id !== req.id && a.studentId !== (req.userId || req.studentId));
+        return { 
+          ...c, 
+          members: newMembers, 
+          memberRequests: newRequests, 
+          memberApplications: newApplications,
+          memberCount: (c.memberCount || 0) + 1 
+        };
       }
       return c;
     });
     setClubs(updatedClubs);
-    toast.success(`${req.userName || req.name || 'Öğrenci'} kulübe kabul edildi.`);
+    toast.success(`${req.userName || req.name || 'Öğrenci'} kulübe kabul edildi ve üye kadrosuna eklendi.`);
   };
 
   const handleRejectRequest = (reqId) => {
     const updatedClubs = (clubs || []).map(c => {
       if (c.id === selectedClub.id) {
         const newRequests = (c.memberRequests || []).filter(r => r.id !== reqId);
-        return { ...c, memberRequests: newRequests };
+        const newApplications = (c.memberApplications || []).filter(a => a.id !== reqId);
+        return { ...c, memberRequests: newRequests, memberApplications: newApplications };
       }
       return c;
     });
@@ -284,7 +319,7 @@ export default function ClubAdminPanel({
       <main className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 pb-28">
         
         {/* BANNER CARD */}
-        <div className="mb-8 bg-gradient-to-r from-red-950 via-[#990000] to-rose-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-red-800/40">
+        <div className="mb-6 bg-gradient-to-r from-red-950 via-[#990000] to-rose-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-red-800/40">
           <div className="absolute top-[-50%] right-[-10%] w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
           
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -325,6 +360,45 @@ export default function ClubAdminPanel({
           </div>
         </div>
 
+        {/* RESMÎ BAŞKAN YETKİLERİ VE MEVZUAT HARİTASI */}
+        <div className="mb-6 bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs">
+          <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2.5">
+            <div className="flex items-center gap-2">
+              <Shield className="text-[#990000]" size={18} />
+              <h3 className="font-black text-slate-900 text-sm">Kulüp Başkanı Resmî Yetki Alanları & SKS İş Akışı</h3>
+            </div>
+            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">İESÜ Kulüpler Yönergesi</span>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
+              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs mb-2">1</div>
+              <strong className="text-xs font-bold text-slate-900 block leading-tight">Üye İdaresi & Kabul</strong>
+              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Öğrenci No ve TC ile gelen başvuruları onaylama ve ihraç.</span>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
+              <div className="w-7 h-7 rounded-lg bg-red-100 text-[#990000] flex items-center justify-center font-bold text-xs mb-2">2</div>
+              <strong className="text-xs font-bold text-slate-900 block leading-tight">SKS Salon Tahsisi</strong>
+              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Ömer Halisdemir, amfi ve ses sistemi talep formu sunma.</span>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
+              <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs mb-2">3</div>
+              <strong className="text-xs font-bold text-slate-900 block leading-tight">Etkinlik & QR Bilet</strong>
+              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Kampüs etkinlik takvimine etkinlik girme ve bilet dağıtma.</span>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
+              <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold text-xs mb-2">4</div>
+              <strong className="text-xs font-bold text-slate-900 block leading-tight">Görev Masası (+10 KGB)</strong>
+              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Üyelere görev atama, operasyonu koordine etme ve tamamlama.</span>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
+              <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs mb-2">5</div>
+              <strong className="text-xs font-bold text-slate-900 block leading-tight">Resmî EK Belgeleri</strong>
+              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">EK-2, EK-3 (Yıllık Plan) ve Danışman onay formlarını iletme.</span>
+            </div>
+          </div>
+        </div>
+
         {/* TABS CONTAINER */}
         <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
           
@@ -340,9 +414,9 @@ export default function ClubAdminPanel({
             >
               <Shield size={16}/> 
               Katılım İstekleri
-              {(selectedClub.memberRequests?.length > 0) && (
+              {(combinedRequests?.length > 0) && (
                 <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full ml-1 font-black animate-pulse">
-                  {selectedClub.memberRequests.length}
+                  {combinedRequests.length}
                 </span>
               )}
             </button>
@@ -356,6 +430,23 @@ export default function ClubAdminPanel({
               }`}
             >
               <Users size={16}/> Üyeler ve Yetkiler
+            </button>
+
+            <button 
+              onClick={() => setActiveTab('venue_requests')} 
+              className={`whitespace-nowrap py-4 px-6 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                activeTab === 'venue_requests' 
+                  ? 'border-[#990000] text-[#990000] bg-white font-black' 
+                  : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
+              }`}
+            >
+              <Building2 size={16}/> 
+              SKS Mekan & Etkinlik Talepleri
+              {(selectedClub.budgetRequests?.length > 0) && (
+                <span className="bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded-full ml-1 font-bold">
+                  {selectedClub.budgetRequests.length}
+                </span>
+              )}
             </button>
 
             <button 
@@ -397,17 +488,24 @@ export default function ClubAdminPanel({
             {/* 1. REQUESTS TAB */}
             {activeTab === 'requests' && (
               <div className="animate-fade-in">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-700 border border-emerald-200">
-                    <Shield size={20} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-700 border border-emerald-200">
+                      <Shield size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900">Bekleyen Katılım İstekleri</h3>
+                      <p className="text-xs text-slate-600 font-medium">Kulübünüze katılmak isteyen öğrencileri onaylayın veya reddedin.</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-black text-slate-900">Bekleyen Katılım İstekleri</h3>
-                    <p className="text-xs text-slate-600 font-medium">Kulübünüze katılmak isteyen öğrencileri onaylayın veya reddedin.</p>
-                  </div>
+                  {combinedRequests.length > 0 && (
+                    <span className="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full border border-emerald-200">
+                      {combinedRequests.length} Yeni Başvuru
+                    </span>
+                  )}
                 </div>
 
-                {(!selectedClub.memberRequests || selectedClub.memberRequests.length === 0) ? (
+                {(!combinedRequests || combinedRequests.length === 0) ? (
                   <div className="text-center py-16 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                     <div className="w-14 h-14 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
                       <Shield size={32} />
@@ -417,28 +515,52 @@ export default function ClubAdminPanel({
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedClub.memberRequests.map(req => (
-                      <div key={req.id} className="p-5 border border-slate-200 rounded-2xl bg-white hover:border-emerald-300 hover:shadow-md transition-all group">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="font-bold text-slate-900 text-base">{req.userName || req.name}</h4>
-                            <p className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 inline-block px-2.5 py-1 rounded-md mt-1">{req.department}</p>
+                    {combinedRequests.map(req => {
+                      const displayTc = req.tcKimlik ? `${req.tcKimlik.slice(0, 3)}*****${req.tcKimlik.slice(-2)}` : null;
+                      return (
+                        <div key={req.id} className="p-5 border border-slate-200 rounded-2xl bg-white hover:border-emerald-300 hover:shadow-md transition-all group">
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <h4 className="font-bold text-slate-900 text-base">{req.userName || req.name}</h4>
+                              <div className="flex flex-wrap items-center gap-2 mt-1">
+                                {req.department && (
+                                  <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md">
+                                    {req.department} {req.grade ? `(${req.grade})` : ''}
+                                  </span>
+                                )}
+                                {req.studentNo && (
+                                  <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                                    No: {req.studentNo}
+                                  </span>
+                                )}
+                                {displayTc && (
+                                  <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                                    TC: {displayTc}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-[10px] text-slate-700 font-bold bg-slate-100 px-2.5 py-1 rounded-md shrink-0">
+                              {new Date(req.date || Date.now()).toLocaleDateString('tr-TR')}
+                            </span>
                           </div>
-                          <span className="text-[10px] text-slate-700 font-bold bg-slate-100 px-2.5 py-1 rounded-md">{new Date(req.date || Date.now()).toLocaleDateString('tr-TR')}</span>
+
+                          <div className="bg-slate-50 p-3.5 rounded-xl mb-4 border border-slate-200">
+                            <span className="text-[10px] uppercase font-bold text-slate-600 block mb-1">Başvuru Motivasyonu:</span>
+                            <p className="text-xs text-slate-700 font-medium italic">"{req.motivation}"</p>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => handleAcceptRequest(req)} className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
+                              <Check size={14} /> Onayla
+                            </button>
+                            <button onClick={() => handleRejectRequest(req.id)} className="flex-1 py-2.5 bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                              <X size={14} /> Reddet
+                            </button>
+                          </div>
                         </div>
-                        <div className="bg-slate-50 p-3.5 rounded-xl mb-4 border border-slate-200">
-                          <p className="text-xs text-slate-700 font-medium italic">"{req.motivation}"</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => handleAcceptRequest(req)} className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
-                            <Check size={14} /> Onayla
-                          </button>
-                          <button onClick={() => handleRejectRequest(req.id)} className="flex-1 py-2.5 bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                            <X size={14} /> Reddet
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -511,6 +633,122 @@ export default function ClubAdminPanel({
                         </div>
                       );
                     })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SKS VENUE & EVENT REQUESTS TAB */}
+            {activeTab === 'venue_requests' && (
+              <div className="animate-fade-in space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-[#990000] border border-red-200">
+                      <Building2 size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-900">SKS Mekan & Etkinlik Tahsis Talepleri</h3>
+                      <p className="text-xs text-slate-600 font-medium">Sağlık Kültür ve Spor (SKS) Daire Başkanlığı ve Öğrenci Dekanlığına iletilen resmi salon ve ekipman başvuruları.</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      toast.info("Resmi Salon Tahsis Formu (EK-3) için Öğrenci Kulüpleri Portalındaki 'Etkinlik & Yer Tahsis Talebi' modalına yönlendiriliyorsunuz.");
+                      if (onBack) onBack();
+                    }}
+                    className="bg-[#990000] hover:bg-red-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-2 cursor-pointer self-start sm:self-auto shrink-0"
+                  >
+                    <Building2 size={15} /> Yeni Salon / Etkinlik Talebi Gönder
+                  </button>
+                </div>
+
+                {/* Metric Summary Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Toplam Tahsis Başvurusu</p>
+                    <h4 className="text-xl font-black text-slate-900">{selectedClub.budgetRequests?.length || 0} Talep</h4>
+                    <span className="text-[11px] text-slate-600 font-medium">2026-2027 Faaliyet Dönemi</span>
+                  </div>
+                  <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100">
+                    <p className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider mb-1">Tahsis Edilen Mekanlar</p>
+                    <h4 className="text-xl font-black text-emerald-800">
+                      {(selectedClub.budgetRequests || []).filter(r => r.status === 'approved').length} Onaylı
+                    </h4>
+                    <span className="text-[11px] text-emerald-700 font-medium">SKS Daire Onayı Alındı</span>
+                  </div>
+                  <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-100">
+                    <p className="text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1">Komisyon İncelemesinde</p>
+                    <h4 className="text-xl font-black text-amber-800">
+                      {(selectedClub.budgetRequests || []).filter(r => r.status === 'pending').length} Bekleyen
+                    </h4>
+                    <span className="text-[11px] text-amber-700 font-medium">Dekanlık Değerlendirmesinde</span>
+                  </div>
+                </div>
+
+                {/* Venue Requests List */}
+                {(!selectedClub.budgetRequests || selectedClub.budgetRequests.length === 0) ? (
+                  <div className="text-center py-16 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                    <div className="w-14 h-14 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                      <Building2 size={32} />
+                    </div>
+                    <h4 className="text-slate-900 font-bold text-base">Henüz Salon/Etkinlik Talebi İletilmedi</h4>
+                    <p className="text-slate-600 font-medium text-xs mt-1">Ömer Halisdemir Salonu, Amfi veya Fuaye alanı tahsisleri için talep formu oluşturabilirsiniz.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto border border-slate-200 rounded-2xl shadow-xs">
+                    <table className="w-full text-left text-xs text-slate-700">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-[11px] uppercase font-bold text-slate-600 tracking-wider">
+                        <tr>
+                          <th className="py-3.5 px-4">Etkinlik & Program Adı</th>
+                          <th className="py-3.5 px-4">Talep Edilen Mekan</th>
+                          <th className="py-3.5 px-4">Tarih & Saat</th>
+                          <th className="py-3.5 px-4">Başvuran Yetkili</th>
+                          <th className="py-3.5 px-4">SKS Durumu</th>
+                          <th className="py-3.5 px-4">SKS Onay & Tahsis Notu</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium bg-white">
+                        {selectedClub.budgetRequests.map((req, idx) => (
+                          <tr key={req.id || idx} className="hover:bg-slate-50/70 transition">
+                            <td className="py-3.5 px-4 font-bold text-slate-900">
+                              {req.title || req.eventName}
+                            </td>
+                            <td className="py-3.5 px-4 font-semibold text-slate-800">
+                              <span className="inline-flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-md text-slate-800">
+                                <MapPin size={12} className="text-[#990000]" />
+                                {req.venue || req.requestedVenue || req.location || 'Merkez Kampüs'}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-slate-700">
+                              {req.eventDate ? `${req.eventDate} (${req.startTime || '10:00'} - ${req.endTime || '17:00'})` : (req.requestedDate || req.date || 'Belirtilmedi')}
+                            </td>
+                            <td className="py-3.5 px-4 text-slate-700">
+                              {req.requester || req.requesterName || 'Kulüp Başkanı'}
+                            </td>
+                            <td className="py-3.5 px-4">
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                req.status === 'approved' 
+                                  ? 'bg-emerald-100 text-emerald-800' 
+                                  : req.status === 'rejected'
+                                  ? 'bg-rose-100 text-rose-800'
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {req.status === 'approved' ? (
+                                  <><Check size={11} /> Tahsis Onaylandı</>
+                                ) : req.status === 'rejected' ? (
+                                  <><X size={11} /> Reddedildi</>
+                                ) : (
+                                  <><Clock size={11} /> SKS İncelemesinde</>
+                                )}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-slate-700 text-xs">
+                              {req.approvalNote || 'Mekan ve teknik altyapı komisyonca değerlendiriliyor.'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 )}
               </div>

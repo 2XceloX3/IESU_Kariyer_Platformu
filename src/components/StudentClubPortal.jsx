@@ -921,21 +921,24 @@ export default function StudentClubPortal({
                   </button>
                 )}
 
-                {userIsMember ? (
-                  <span className="px-5 py-2.5 bg-white text-emerald-800 font-bold text-xs rounded-xl shadow-sm flex items-center justify-center gap-1.5 border border-emerald-200">
-                    <CheckCircle2 size={16} className="text-emerald-600" /> Üyesiniz
-                  </span>
-                ) : userHasPending ? (
-                  <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md text-white border border-white/30 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed">
-                    <Clock size={16} /> Başvurunuz İncelemede
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => setShowApplyMemberModal(true)}
-                    className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
-                  >
-                    <Plus size={16} /> Kulübe Başvur & Katıl
-                  </button>
+                {/* Membership Action (Only for non-authorized students; officers/admins manage, they don't apply) */}
+                {!authorized && (
+                  userIsMember ? (
+                    <span className="px-5 py-2.5 bg-white text-emerald-800 font-bold text-xs rounded-xl shadow-sm flex items-center justify-center gap-1.5 border border-emerald-200">
+                      <CheckCircle2 size={16} className="text-emerald-600" /> Üyesiniz
+                    </span>
+                  ) : userHasPending ? (
+                    <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md text-white border border-white/30 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed">
+                      <Clock size={16} /> Başvurunuz İncelemede
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setShowApplyMemberModal(true)}
+                      className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+                    >
+                      <Plus size={16} /> Kulübe Başvur & Katıl
+                    </button>
+                  )
                 )}
 
                 {/* Venue Request Action Button */}
@@ -1420,6 +1423,27 @@ export default function StudentClubPortal({
                       </button>
                     )}
                   </div>
+
+                  {/* Open Showcase Info Banner for Non-Members */}
+                  {!userIsMember && !authorized && (
+                    <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900 shadow-xs">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-amber-800">
+                          <Lock size={16} />
+                        </div>
+                        <div>
+                          <strong className="font-bold block text-amber-950">Açık Görev & Etkinlik Hazırlık Vitrini</strong>
+                          <span className="text-[11px] text-amber-800">Kulübün hazırlık görevlerini inceleyebilir, görev üstlenerek +10 KGB puanı kazanmak için kulüp kadrosuna katılabilirsiniz.</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setShowApplyMemberModal(true)}
+                        className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl transition shadow-xs flex items-center gap-1.5 shrink-0 self-start sm:self-auto cursor-pointer"
+                      >
+                        <Plus size={14} /> Kulübe Başvur & Katıl (+15 KGB)
+                      </button>
+                    </div>
+                  )}
 
                   {/* Tasks Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
