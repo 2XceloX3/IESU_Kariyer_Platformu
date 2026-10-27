@@ -24,7 +24,7 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
     vi.clearAllMocks();
   });
 
-  it('renders all 4 active Bento Grid tools in StudentFeed and does NOT render removed tools (SEM, CV, Sim, Applications)', () => {
+  it('renders modern student quick shortcuts in StudentFeed and does NOT render bloated 8-panel grid', () => {
     const setView = vi.fn();
     render(
       <MemoryRouter>
@@ -32,20 +32,18 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
       </MemoryRouter>
     );
 
-    // Active 4 tools:
-    expect(screen.getByText('Kariyer Haritası')).toBeInTheDocument();
-    expect(screen.getByText('Kariyer Testi')).toBeInTheDocument();
-    expect(screen.getByText('Kuluçka Merkezi')).toBeInTheDocument();
-    expect(screen.getByText('Kulüpler Portalı')).toBeInTheDocument();
+    // Modern LinkedIn-style shortcuts:
+    expect(screen.getByText('Başvuru Radarım')).toBeInTheDocument();
+    expect(screen.getByText('Kaydedilen İlanlar')).toBeInTheDocument();
+    expect(screen.getByText('Kulüp & Topluluklar')).toBeInTheDocument();
 
-    // Removed 4 tools must NOT be present in Bento Grid:
+    // Bloated legacy panels must NOT pollute the left feed sidebar:
     expect(screen.queryByText('SEM Akademi')).not.toBeInTheDocument();
     expect(screen.queryByText('Özgeçmiş Hazırlayıcı')).not.toBeInTheDocument();
     expect(screen.queryByText('Mülakat Provası')).not.toBeInTheDocument();
-    expect(screen.queryByText('Başvurularım')).not.toBeInTheDocument();
   });
 
-  it('triggers setView with correct view keys when bento grid buttons are clicked', () => {
+  it('triggers setView with correct view keys when student quick shortcuts are clicked', () => {
     const setView = vi.fn();
     render(
       <MemoryRouter>
@@ -53,16 +51,14 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByText('Kariyer Haritası'));
-    expect(setView).toHaveBeenCalledWith('career_roadmap');
+    const appsBtn = screen.getByText('Başvuru Radarım');
+    expect(appsBtn).toBeInTheDocument();
+    fireEvent.click(appsBtn);
+    expect(setView).toHaveBeenCalledWith('radar');
 
-    fireEvent.click(screen.getByText('Kariyer Testi'));
-    expect(setView).toHaveBeenCalledWith('career_test');
-
-    fireEvent.click(screen.getByText('Kuluçka Merkezi'));
-    expect(setView).toHaveBeenCalledWith('startup_incubator');
-
-    fireEvent.click(screen.getByText('Kulüpler Portalı'));
+    const clubsBtn = screen.getByText('Kulüp & Topluluklar');
+    expect(clubsBtn).toBeInTheDocument();
+    fireEvent.click(clubsBtn);
     expect(setView).toHaveBeenCalledWith('club_portal');
   });
 
@@ -187,7 +183,7 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
     expect(screen.getByText(/EduChain/i)).toBeInTheDocument();
   });
 
-  it('renders core student career tools in bento grid and navigates correctly', () => {
+  it('renders core student career tools in modal hub and navigates correctly', () => {
     const setView = vi.fn();
     render(
       <MemoryRouter>
@@ -195,14 +191,14 @@ describe('Student Feed Bento Grid Tools & Verified Mentors Guide Suite', () => {
       </MemoryRouter>
     );
 
-    const roadmapBtn = screen.getByText('Kariyer Haritası');
+    // Open Career Hub modal
+    const hubTrigger = screen.getByText(/Gelişim Araçları Merkezi/i);
+    expect(hubTrigger).toBeInTheDocument();
+    fireEvent.click(hubTrigger);
+
+    const roadmapBtn = screen.getByText('Yol Haritasına Git');
     expect(roadmapBtn).toBeInTheDocument();
     fireEvent.click(roadmapBtn);
     expect(setView).toHaveBeenCalledWith('career_roadmap');
-
-    const testBtn = screen.getByText('Kariyer Testi');
-    expect(testBtn).toBeInTheDocument();
-    fireEvent.click(testBtn);
-    expect(setView).toHaveBeenCalledWith('career_test');
   });
 });

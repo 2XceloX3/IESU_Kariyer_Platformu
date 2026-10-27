@@ -1,3 +1,5 @@
+import { generateAutonomousCareerResponse } from './autonomousCareerAI';
+
 // Provider credentials must stay on a server. `VITE_*` values are embedded in
 // a browser build, so a direct Gemini key is allowed only while developing
 // locally. Deployed builds call a gateway that owns the provider credential.
@@ -43,12 +45,12 @@ const requestDevelopmentGeminiResponse = async (prompt, systemInstruction) => {
 };
 
 export const generateAIResponse = async (prompt, systemInstruction = null) => {
-  try {
-    const safePrompt = typeof prompt === 'string' ? prompt.slice(0, 4000) : String(prompt || '').slice(0, 4000);
-    const safeSystemInstruction = systemInstruction && typeof systemInstruction === 'string'
-      ? systemInstruction.slice(0, 4000)
-      : systemInstruction;
+  const safePrompt = typeof prompt === 'string' ? prompt.slice(0, 4000) : String(prompt || '').slice(0, 4000);
+  const safeSystemInstruction = systemInstruction && typeof systemInstruction === 'string'
+    ? systemInstruction.slice(0, 4000)
+    : systemInstruction;
 
+  try {
     if (AI_GATEWAY_URL) {
       return await requestGatewayResponse(safePrompt, safeSystemInstruction);
     }
@@ -58,12 +60,14 @@ export const generateAIResponse = async (prompt, systemInstruction = null) => {
     }
   } catch (error) {
     if (import.meta.env.DEV && import.meta.env.MODE !== 'test') {
-      console.error('AI response request failed:', error);
+      console.warn('Live AI response request failed:', error?.message);
     }
-    return "Yapay Zeka servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.";
+    if (AI_GATEWAY_URL) {
+      return "Yapay Zeka servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.";
+    }
+    return generateAutonomousCareerResponse(safePrompt, safeSystemInstruction);
   }
 
-  return import.meta.env.DEV
-    ? "Geliştirme anahtarı yapılandırılmadı. Yerel .env.local dosyanızı kontrol edin."
-    : "Yapay Zeka servisine şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.";
+  // If no external gateway configured, engage İESÜ autonomous career intelligence engine
+  return generateAutonomousCareerResponse(safePrompt, safeSystemInstruction);
 };

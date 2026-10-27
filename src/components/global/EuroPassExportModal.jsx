@@ -32,6 +32,7 @@ export default function EuroPassExportModal({ isOpen, onClose, studentProfile = 
   const [activeTab, setActiveTab] = useState('cv'); // 'cv' | 'ds' | 'erasmus'
   const [exportLang, setExportLang] = useState(language === 'en' ? 'en' : 'tr');
   const [copied, setCopied] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   const isEn = exportLang === 'en';
 
@@ -58,6 +59,65 @@ export default function EuroPassExportModal({ isOpen, onClose, studentProfile = 
       setTimeout(() => setCopied(false), 2000);
     } catch (_) {
       toast.error('Kopyalama başarısız oldu.');
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    setIsExportingPdf(true);
+    try {
+      const payload = activeTab === 'cv' ? cvJsonLd : activeTab === 'ds' ? diplomaSupplement : erasmusAgreement;
+      const htmlContent = exportDocumentToPrintableHTML(activeTab, payload, { language: exportLang });
+      const baseName = activeTab === 'cv' 
+        ? `EuroPass_CV_${studentProfile.studentNo || 'IESU'}`
+        : activeTab === 'ds'
+          ? `Bologna_Diploma_Supplement_${studentProfile.studentNo || 'IESU'}`
+          : `Erasmus_Learning_Agreement_${studentProfile.studentNo || 'IESU'}`;
+
+      try {
+        const html2pdfModule = await import('html2pdf.js');
+        const html2pdf = html2pdfModule.default || html2pdfModule;
+
+        if (typeof html2pdf === 'function') {
+          const container = document.createElement('div');
+          container.style.position = 'fixed';
+          container.style.left = '-9999px';
+          container.style.top = '0';
+          container.style.width = '800px';
+          container.innerHTML = htmlContent;
+          document.body.appendChild(container);
+
+          const opt = {
+            margin: [8, 8, 8, 8],
+            filename: `${baseName}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          await html2pdf().from(container).set(opt).save();
+          document.body.removeChild(container);
+          toast.success(isEn ? 'EuroPass PDF downloaded successfully!' : 'EuroPass PDF belgesi başarıyla indirildi!');
+          return;
+        }
+      } catch (_) {
+        // Fallback for jsdom / test environments
+      }
+
+      // Robust fallback: Download full printable HTML doc
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${baseName}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success(isEn ? 'Document downloaded successfully!' : 'Belge başarıyla indirildi!');
+    } catch (_) {
+      toast.error(isEn ? 'PDF export failed.' : 'PDF oluşturulurken bir hata oluştu.');
+    } finally {
+      setIsExportingPdf(false);
     }
   };
 
@@ -361,7 +421,7 @@ export default function EuroPassExportModal({ isOpen, onClose, studentProfile = 
               : 'Avrupa Konseyi, UNESCO ve Avrupa Komisyonu DS Kılavuzlarına uygundur.'}
           </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+          <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
             <button
               type="button"
               onClick={handleCopyJson}
@@ -383,10 +443,21 @@ export default function EuroPassExportModal({ isOpen, onClose, studentProfile = 
             <button
               type="button"
               onClick={handleDownloadJsonLd}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#003399] to-[#002266] hover:from-[#002b80] hover:to-[#001a4d] text-white font-black text-xs transition shadow-md flex items-center gap-2 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer"
+              title="Dijital veri entegrasyonu için JSON-LD"
             >
-              <Download size={15} />
-              <span>{isEn ? 'Download EuroPass JSON-LD' : 'EuroPass JSON-LD İndir'}</span>
+              <Download size={14} />
+              <span>JSON-LD</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDownloadPDF}
+              disabled={isExportingPdf}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#990000] via-red-700 to-[#003399] hover:from-red-800 hover:to-blue-900 text-white font-black text-xs transition shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <FileText size={15} />
+              <span>{isExportingPdf ? (isEn ? 'Exporting PDF...' : 'PDF Hazırlanıyor...') : (isEn ? 'Download EuroPass (PDF)' : 'Resmî EuroPass İndir (PDF)')}</span>
             </button>
           </div>
         </div>

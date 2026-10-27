@@ -1,4 +1,5 @@
 import useAppStore from '../store/useAppStore';
+import eventBus from '../brain/eventBus';
 import SafeAvatar from './shared/SafeAvatar';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, Plus, MoreVertical, Phone, Video, Info, Paperclip, Send, X, ArrowLeft, Camera, Image as ImageIcon, Smile, FileText, Check, CheckCheck, Clock, ShieldCheck, File, Headphones, Play, Pause, AlertCircle, Mic, MicOff, VideoOff, Monitor, MonitorOff, CircleDashed, Users, MessageCircle, MessageSquare, Edit, Archive, Edit3, CheckCircle2, PhoneCall, PhoneOutgoing, PhoneMissed, PhoneIncoming, Megaphone, UserCircle2, ChevronLeft, ChevronDown, PlayCircle, Eye, EyeOff, Film, Aperture, Infinity, PhoneOff, Trash2, Bell, BellOff, Shield, ShieldOff, UserX, UserPlus, Building2, GraduationCap, School, Activity, Wifi, Download } from 'lucide-react';
@@ -318,6 +319,22 @@ export default function MessagingInterface({ previousView, currentUser, userRole
   const storeMessages = useAppStore(state => state.messages);
   const setMessages = useAppStore(state => state.setMessages);
   const messages = Array.isArray(propsMessages) ? propsMessages : storeMessages;
+
+  // Real-time incoming cross-tab mesh listener
+  useEffect(() => {
+    const unsub = eventBus.on('chat:message_received', ({ message }) => {
+      if (message && message.id && typeof setMessages === 'function') {
+        setMessages(prev => {
+          const list = Array.isArray(prev) ? prev : [];
+          if (list.some(m => m.id === message.id)) return list;
+          return [...list, message];
+        });
+      }
+    });
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [setMessages]);
   
   const groups = useAppStore(state => state.groups);
   const setGroups = useAppStore(state => state.setGroups);
@@ -564,6 +581,7 @@ export default function MessagingInterface({ previousView, currentUser, userRole
 
     const updatedMessagesList = [...messages, newMsg];
     setMessages(updatedMessagesList);
+    try { eventBus.emit('chat:message_sent', { message: newMsg }); } catch (_) {}
     setNewMessage('');
     setShowEmojiPicker(false);
     setReplyingTo(null);

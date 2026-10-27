@@ -47,4 +47,18 @@ describe('AI gateway client', () => {
 
     await expect(generateAIResponse('Merhaba')).resolves.toBe(unavailableMessage);
   });
+
+  it('delivers rich autonomous career guidance when no gateway is configured (demo/offline resilience)', async () => {
+    vi.stubEnv('VITE_AI_GATEWAY_URL', '');
+    vi.stubEnv('VITE_GEMINI_API_KEY', '');
+
+    const { generateAIResponse } = await import('../lib/gemini');
+
+    const mülakatResponse = await generateAIResponse('Yazılım mühendisliği mülakatına nasıl hazırlanmalıyım?');
+    expect(mülakatResponse).toContain('İESÜ Kariyer & Mülakat Değerlendirme Raporu');
+    expect(mülakatResponse).toContain('STAR Metodu');
+
+    const cvResponse = await generateAIResponse('CV incelemesi yapar mısın?');
+    expect(cvResponse).toContain('İESÜ ATS & Özgeçmiş İnceleme Analizi');
+  });
 });

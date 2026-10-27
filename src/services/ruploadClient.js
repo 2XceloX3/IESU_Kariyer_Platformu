@@ -160,14 +160,36 @@ export async function uploadResumableMedia(blob, options = {}) {
 
   return {
     uploadId: session.sessionId,
+    blobId: session.sessionId,
     url: mockCdnUrl,
     totalBytes
   };
+}
+
+/**
+ * Sayfa yenilenmesi veya oturum geçişlerinde IndexedDB'den kalıcı medya URL'i çöz
+ */
+export async function resolvePersistentMediaUrl(urlOrBlobId) {
+  if (!urlOrBlobId) return null;
+  if (typeof urlOrBlobId === 'string' && (urlOrBlobId.startsWith('http://') || urlOrBlobId.startsWith('https://') || urlOrBlobId.startsWith('data:'))) {
+    return urlOrBlobId;
+  }
+  try {
+    const blobRecord = await getBlob(urlOrBlobId);
+    if (blobRecord) {
+      const realBlob = blobRecord instanceof Blob ? blobRecord : blobRecord.data;
+      if (realBlob && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+        return URL.createObjectURL(realBlob);
+      }
+    }
+  } catch (_) {}
+  return urlOrBlobId;
 }
 
 export default {
   createUploadSession,
   getResumeOffset,
   uploadResumableMedia,
-  getAdaptiveChunkSize
+  getAdaptiveChunkSize,
+  resolvePersistentMediaUrl
 };
