@@ -47,7 +47,19 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const alumni = useAppStore(state => state.alumni);
   const companies = useAppStore(state => state.companies);
   const featuredOpportunities = useAppStore(state => state.featuredOpportunities);
-  const [stories, setStories] = useState([]);
+  const [stories, setStories] = useState(() => {
+    const defaults = [
+      { id: 'st-1', authorName: 'İESÜ Kariyer Merkezi', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: '2026 Bahar Dönemi Zorunlu Staj & KGM Başvuruları Başladı!', createdAt: '1s önce' },
+      { id: 'st-2', authorName: 'Yapay Zeka Kulübü', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Prompt Mühendisliği & CV Atölyesi B-Blok Amfide!', createdAt: '3s önce' },
+      { id: 'st-3', authorName: 'İESÜ Mezunlar Derneği', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
+    ];
+    try {
+      const saved = JSON.parse(localStorage.getItem('iesu_campus_stories_v1') || '[]');
+      return [...saved, ...defaults];
+    } catch (_) {
+      return defaults;
+    }
+  });
   const [mentorships, setMentorships] = useState(() => {
     try {
       const saved = localStorage.getItem('iesu_mentorships_v2');

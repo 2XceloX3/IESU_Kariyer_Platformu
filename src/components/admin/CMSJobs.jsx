@@ -123,6 +123,21 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
         ? currentOpps.map(o => o.id === jobId ? { ...o, status: 'Aktif', isApproved: true, approvalStatus: 'approved' } : o)
         : (approvedItem ? [approvedItem, ...currentOpps] : currentOpps);
       appState.setCareerOpportunities(nextOpps);
+    if (typeof appState.setNotifications === 'function' && approvedItem) {
+      appState.setNotifications([
+        {
+          id: 'notif_job_' + Date.now(),
+          userId: approvedItem.companyId || 'all',
+          title: 'Yeni Kariyer Fırsatı Yayında!',
+          message: `${approvedItem.company || 'Kurumsal Firma'} — "${approvedItem.title}" ilanı KGM tarafından onaylanarak yayına alındı.`,
+          type: 'job',
+          read: false,
+          time: 'Az önce',
+          createdAt: new Date().toISOString()
+        },
+        ...(appState.notifications || [])
+      ]);
+    }
     }
     const targetJob = updatedJobs.find(j => j.id === jobId);
     try {
