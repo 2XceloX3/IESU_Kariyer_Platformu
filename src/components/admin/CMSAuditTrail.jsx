@@ -1,3 +1,5 @@
+import useAppStore from '../../store/useAppStore';
+import useAdminStore from '../../brain/useAdminStore';
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Search,
@@ -417,21 +419,86 @@ const STAFF_LIST = [
 ];
 
 export default function CMSAuditTrail() {
-  // State initialization with localStorage persistence
+  const storeLogs = useAdminStore((state) => state.auditLogs) || useAppStore((state) => state.auditLogs) || [];
+
+  // State initialization with localStorage & store persistence
   const [logs, setLogs] = useState(() => {
     try {
-      const saved = localStorage.getItem('iesu_audit_log_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
+      const saved1 = JSON.parse(localStorage.getItem('iesu_audit_logs_v1') || '[]');
+      const saved2 = JSON.parse(localStorage.getItem('iesu_audit_log_v1') || '[]');
+      const mergedSaved = Array.isArray(saved1) ? [...saved1, ...(Array.isArray(saved2) ? saved2 : [])] : [];
+
+      const formattedStore = (storeLogs || []).map(entry => {
+        if (entry.title && entry.user && typeof entry.user === 'object') return entry;
+        return {
+          id: entry.id || ('LOG-' + Date.now()),
+          user: typeof entry.user === 'object' ? entry.user : {
+            name: entry.user || 'Sistem Yöneticisi',
+            role: 'Süper Admin',
+            email: 'kariyer@iesu.edu.tr',
+            initials: String(entry.user || 'SY').slice(0, 2).toUpperCase(),
+            avatarBg: 'bg-[#990000]',
+            permission: 'Seviye 5 - Tam Yetkili Super Admin',
+            lastLogin: 'Aktif Oturum'
+          },
+          actionType: entry.module || entry.category || 'Sistem',
+          title: entry.action || 'Sistem İşlemi',
+          detail: typeof entry.metadata === 'object' && entry.metadata ? JSON.stringify(entry.metadata) : (entry.action || ''),
+          target: entry.module || 'Genel',
+          category: entry.module || 'Genel Denetim',
+          timestamp: entry.isoTimestamp || new Date().toISOString(),
+          displayTime: entry.timestamp || 'Az önce',
+          ip: entry.ip || '195.175.42.10',
+          isCritical: entry.severity === 'critical'
+        };
+      });
+
+      const all = [...formattedStore, ...mergedSaved, ...INITIAL_LOGS];
+      const seen = new Set();
+      return all.filter(item => {
+        if (!item || !item.id || seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
     } catch (e) {
       console.error('Audit log read error:', e);
+      return INITIAL_LOGS;
     }
-    return INITIAL_LOGS;
   });
+
+  useEffect(() => {
+    const handleNewLog = (e) => {
+      const entry = e.detail;
+      if (!entry) return;
+      const formatted = {
+        id: entry.id || ('LOG-' + Date.now()),
+        user: typeof entry.user === 'object' ? entry.user : {
+          name: entry.user || 'Sistem Yöneticisi',
+          role: 'Süper Admin',
+          email: 'kariyer@iesu.edu.tr',
+          initials: String(entry.user || 'SY').slice(0, 2).toUpperCase(),
+          avatarBg: 'bg-[#990000]',
+          permission: 'Seviye 5 - Tam Yetkili Super Admin',
+          lastLogin: 'Aktif Oturum'
+        },
+        actionType: entry.module || 'Sistem',
+        title: entry.action || 'Sistem İşlemi',
+        detail: typeof entry.metadata === 'object' && entry.metadata ? JSON.stringify(entry.metadata) : (entry.action || ''),
+        target: entry.module || 'Genel',
+        category: entry.module || 'Genel Denetim',
+        timestamp: entry.isoTimestamp || new Date().toISOString(),
+        displayTime: entry.timestamp || 'Az önce',
+        ip: entry.ip || '195.175.42.10',
+        isCritical: entry.severity === 'critical'
+      };
+      setLogs(prev => [formatted, ...(prev || [])]);
+    };
+
+    window.addEventListener('iesu_audit_logged', handleNewLog);
+    return () => {
+      window.removeEventListener('iesu_audit_logged', handleNewLog);
+    };
+  }, []);
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');

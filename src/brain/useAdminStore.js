@@ -367,6 +367,15 @@ export const useAdminStore = create(
 
             const logs = state.auditLogs || [];
             eventBus.emit('audit:logged', newEntry);
+            try {
+              if (typeof localStorage !== 'undefined') {
+                const existing = JSON.parse(localStorage.getItem('iesu_audit_logs_v1') || '[]');
+                localStorage.setItem('iesu_audit_logs_v1', JSON.stringify([newEntry, ...existing].slice(0, 250)));
+              }
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('iesu_audit_logged', { detail: newEntry }));
+              }
+            } catch (_) {}
             return { auditLogs: [newEntry, ...logs.slice(0, 199)] };
           }),
         logAuditAction: (user, action, module, severity, metadata) =>
