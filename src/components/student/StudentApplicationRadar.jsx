@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import {
   Radar, Clock, CheckCircle2, AlertCircle, Sparkles, Building2,
   Calendar, ArrowRight, ExternalLink, Filter, Search, Award,
-  ChevronRight, FileText, Video, Eye, ChevronDown, ChevronUp,
+  ChevronLeft, ChevronRight, FileText, Video, Eye, ChevronDown, ChevronUp,
   RotateCcw, ShieldCheck, HeartHandshake, UserCheck, Coffee
 } from 'lucide-react';
 import Logo from '../Logo';
@@ -125,14 +125,23 @@ export default function StudentApplicationRadar({
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Logo className="h-9 w-auto" />
-            <div className="hidden sm:block border-l border-slate-200 pl-3">
-              <h1 className="text-xs font-black text-slate-900 leading-tight">
-                {t('common.appName')}
-              </h1>
-              <p className="text-[10px] font-bold text-red-700 tracking-wide uppercase">
-                {t('common.coordinatorTitle')} • {t('radar.title')}
-              </p>
+            <button
+              onClick={() => setView(previousView || 'student')}
+              className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
+              title="Geri Dön"
+            >
+              <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+            </button>
+            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(previousView || 'student')}>
+              <Logo className="h-8 w-auto text-[#990000]" />
+              <div className="hidden sm:block border-l border-slate-200 pl-3">
+                <h1 className="text-xs font-black text-slate-900 leading-tight">
+                  {t('common.appName')}
+                </h1>
+                <p className="text-[10px] font-bold text-red-700 tracking-wide uppercase">
+                  {t('common.coordinatorTitle')} • {t('radar.title')}
+                </p>
+              </div>
             </div>
           </div>
 

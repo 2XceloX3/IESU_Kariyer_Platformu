@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Target, Sparkles, ArrowLeft, ArrowRight, Zap, CheckCircle2, 
+  Target, Sparkles, ChevronLeft, ArrowLeft, ArrowRight, Zap, CheckCircle2, 
   CircleDashed, Rocket, Code, Award, Users, CalendarClock,
   Compass, CheckSquare, Square, RefreshCw, BookOpen, Briefcase,
   Download, GraduationCap, CheckCheck, ShieldCheck
@@ -448,21 +448,21 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-28">
-      {/* Header */}
-      <header className="h-16 bg-white border-b border-gray-200/80 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40 shadow-xs">
-        <div className="flex items-center gap-4">
+      {/* Clean Institutional Subpanel Header */}
+      <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-xs flex items-center justify-between px-4 sm:px-8">
+        <div className="flex items-center gap-3.5 shrink-0">
           <button 
             onClick={() => setView(backTarget)} 
-            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-red-50 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer shadow-xs"
+            className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
             title="Geri Dön"
           >
-            <ArrowLeft size={18} />
+            <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
           </button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
             <Logo className="h-8 w-auto text-[#990000]" />
             <div>
-              <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Kariyer Haritası</h1>
-              <p className="text-[11px] font-bold text-gray-500">Adım Adım Gelişim Rotası & Görev Takibi</p>
+              <h1 className="font-black text-slate-900 text-sm sm:text-base leading-tight">Kariyer Haritası</h1>
+              <p className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">İESÜ 4 Fazlı Müfredat & Yetkinlik Takibi</p>
             </div>
           </div>
         </div>

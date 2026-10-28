@@ -9,7 +9,12 @@ import { generateAIResponse } from '../lib/gemini';
 import { exportPDF } from '../lib/pdfExporter';
 import EuroPassExportModal from './global/EuroPassExportModal';
 
-export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId, onUpdateProfile }) {
+export default function AICVBuilder({ currentUser, userRole, setView, setSelectedUserId, onUpdateProfile, previousView }) {
+  const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const backTarget = previousView || (
+    activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
+    (userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')
+  );
   const [showEuroPassModal, setShowEuroPassModal] = useState(false);
   const messages = useAppStore(state => state.messages);
   const setMessages = useAppStore(state => state.setMessages);
@@ -356,20 +361,20 @@ JSON formatı: { "skills": ["Yetkinlik 1", "Yetkinlik 2", "Yetkinlik 3", "Yetkin
   return (
     <div className="w-full bg-slate-50 min-h-screen pb-24">
       {setView && (
-        <header className="h-16 bg-white border-b border-gray-200/80 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between shadow-xs hide-on-print">
-          <div className="flex items-center gap-4">
+        <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between shadow-xs hide-on-print">
+          <div className="flex items-center gap-3.5 shrink-0">
             <button
-              onClick={() => setView(userRole === 'admin' ? 'admin' : (userRole === 'employer' || userRole === 'company') ? 'company' : userRole === 'alumni' ? 'alumni' : userRole === 'academic' ? 'academic' : 'student')}
-              className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+              onClick={() => setView(backTarget)}
+              className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
               title="Geri Dön"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             </button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
               <Logo className="h-8 w-auto text-[#990000]" />
               <div>
-                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Özgeçmiş Hazırlayıcı</h1>
-                <p className="text-[11px] font-bold text-gray-500">Kariyer & Yetenek Merkezi</p>
+                <h1 className="font-black text-slate-900 text-sm sm:text-base leading-tight">Özgeçmiş Hazırlayıcı</h1>
+                <p className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">İESÜ Kariyer Geliştirme Koordinatörlüğü • AI CV Stüdyosu</p>
               </div>
             </div>
           </div>

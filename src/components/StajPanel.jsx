@@ -226,61 +226,52 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
       />
 
       <div>
-        {/* Top Sticky Header Bar */}
-        <div className="sticky top-0 z-40 bg-gradient-to-r from-[#990000] via-[#800000] to-[#660000] text-white px-4 sm:px-8 py-3.5 shadow-xl flex items-center justify-between border-b border-red-800 gap-4">
-          <div className="flex items-center gap-3 shrink-0">
+        {/* Clean Institutional Subpanel Header */}
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 shrink-0">
             <button 
               onClick={() => setView(backTarget)}
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition cursor-pointer shrink-0"
+              className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
               title="Geri Dön"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             </button>
             <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
-              <div className="brightness-0 invert flex-shrink-0">
-                <Logo className="h-10 w-auto" />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xs sm:text-sm font-black text-white leading-tight tracking-tight">İstanbul Esenyurt Üniversitesi</h1>
-                <p className="text-[10px] font-bold text-red-200 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
+              <Logo className="h-8 w-auto text-[#990000]" />
+              <div>
+                <h1 className="text-xs sm:text-sm font-black text-slate-900 leading-tight">İstanbul Esenyurt Üniversitesi</h1>
+                <p className="text-[10px] font-bold text-[#990000] tracking-wider uppercase">Kariyer Geliştirme Koordinatörlüğü • Resmî Staj Portalı</p>
               </div>
             </div>
           </div>
 
           {/* Right Group */}
-          <div className="flex items-center gap-4 md:gap-6 overflow-x-auto py-1">
-            <div className="relative hidden md:block w-44 lg:w-56 flex-shrink-0">
-              <Search className="absolute left-3 top-2.5 text-white/60" size={14} />
-              <input
-                type="text"
-                placeholder="Staj veya Belge Ara..."
-                className="w-full bg-white/10 text-white placeholder-white/60 text-xs font-medium pl-9 pr-3 py-1.5 rounded-xl border border-white/20 focus:outline-none focus:bg-white/20 transition"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value) {
-                    if (setView) setView('jobs');
-                  }
-                }}
-              />
+          <div className="flex items-center gap-3 md:gap-4 overflow-x-auto py-1 shrink-0">
+            <div className="hidden lg:flex items-center gap-4 text-xs font-bold text-slate-600">
+              <button onClick={() => setView(backTarget)} className="hover:text-[#990000] transition">Akış</button>
+              <button onClick={() => setView('jobs')} className="hover:text-[#990000] transition">İş & Staj</button>
+              <button onClick={() => setView('student_kgb')} className="hover:text-[#990000] transition">KGB Karnesi</button>
             </div>
 
-            <div className="hidden lg:flex items-center gap-5 text-xs font-extrabold text-white/90 whitespace-nowrap">
-              <button onClick={() => setView('feed')} className="hover:text-white hover:underline transition">Akış</button>
-              <button onClick={() => setView('jobs')} className="hover:text-white hover:underline transition">İş & Staj</button>
-              <button onClick={() => setView('student_kgb')} className="hover:text-white hover:underline transition">KGB Karnesi</button>
-            </div>
+            <button
+              onClick={() => setIsForm1ModalOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
+            >
+              <Plus size={14} /> Form-1 Başvurusu
+            </button>
 
             {effectiveCurrentUser ? (
               <TopProfileMenu currentUser={effectiveCurrentUser} userRole={userRole || 'student'} setView={setView} setSelectedUserId={setSelectedUserId} />
             ) : (
               <button 
                 onClick={() => setView('login')}
-                className="flex items-center gap-1.5 bg-white text-[#990000] hover:bg-red-50 px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg whitespace-nowrap flex-shrink-0 cursor-pointer"
+                className="flex items-center gap-1.5 bg-[#990000] text-white hover:bg-red-800 px-4 py-2 rounded-xl text-xs font-black transition shadow-xs whitespace-nowrap cursor-pointer"
               >
                 <LogIn size={15} /> Giriş Yap
               </button>
             )}
           </div>
-        </div>
+        </header>
 
         {/* Corporate Hero Header */}
         <div className="bg-gradient-to-r from-red-800 via-[#990000] to-rose-900 text-white py-14 px-4 sm:px-8 relative overflow-hidden shadow-xl border-b border-red-900">
@@ -290,9 +281,9 @@ export default function StajPanel({ setView, userRole = 'student', currentUser, 
           <div className="max-w-7xl mx-auto relative z-10">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs font-bold text-red-200 mb-6">
-              <button onClick={() => setView('landing')} className="hover:text-white hover:underline transition cursor-pointer">Ana Sayfa</button>
+              <button onClick={() => setView(backTarget)} className="hover:text-white hover:underline transition cursor-pointer">Öğrenci Akışı</button>
               <span>/</span>
-              <button onClick={() => setView('services')} className="hover:text-white hover:underline transition cursor-pointer">Kariyer Destek</button>
+              <button onClick={() => setView('student_hub')} className="hover:text-white hover:underline transition cursor-pointer">Kariyer & Gelişim Araçları</button>
               <span>/</span>
               <span className="text-white font-black">Staj ve 3308 / 5510 Resmî SGK İş Akışı</span>
             </div>

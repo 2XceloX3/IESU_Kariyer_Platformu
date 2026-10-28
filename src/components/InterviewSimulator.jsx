@@ -434,20 +434,20 @@ export default function InterviewSimulator({ setView, userRole, currentUser, set
 
   return (
     <div className="min-h-[100dvh] bg-[#f8fafc] flex flex-col font-sans pb-24">
-      <header className="h-20 bg-white border-b border-gray-200/50 flex items-center justify-between px-6 lg:px-12 sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-6">
+      <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-50 shadow-xs">
+        <div className="flex items-center gap-3.5">
           <button 
             onClick={() => setView(backTarget)} 
-            className="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700 hover:text-[#990000] transition cursor-pointer"
+            className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
             title="Geri Dön"
           >
-            <ChevronLeft size={22} />
+            <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
           </button>
-          <div className="flex items-center gap-3">
-            <Logo className="h-10 w-auto text-[#990000]" />
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView(backTarget)}>
+            <Logo className="h-8 w-auto text-[#990000]" />
             <div className="hidden sm:block">
-              <h1 className="font-black text-gray-900 text-lg leading-tight">Mülakat Provası</h1>
-              <p className="text-[12px] font-bold text-gray-500">Sektörel Mülakat Simülasyonu</p>
+              <h1 className="font-black text-slate-900 text-sm sm:text-base leading-tight">AI Mülakat Simülatörü</h1>
+              <p className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">İESÜ Simülasyon Koçu & STAR Metodu Değerlendirmesi</p>
             </div>
           </div>
         </div>

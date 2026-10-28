@@ -852,15 +852,15 @@ export default function StudentClubPortal({
       <div className="min-h-screen bg-[#F8FAFC] font-sans pb-32 animate-fade-in">
         
         {/* ── ÜST SABİT GEZİNME ÇUBUĞU ───────────────────────────────── */}
-        <header className="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40 px-4 sm:px-8 py-3 shadow-xs">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+        <header className="h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-4 sm:px-8 shadow-xs flex items-center justify-between">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
               <button 
                 onClick={() => setSelectedClub(null)} 
-                className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs"
+                className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
                 title="Kulüp Listesine Dön"
               >
-                <ArrowLeft size={18} />
+                <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
               </button>
               <div 
                 role="button" 
@@ -2854,21 +2854,21 @@ export default function StudentClubPortal({
   // ==============================================================
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-28">
-      <nav className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <nav className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3.5 shrink-0">
             <button 
               onClick={() => setView(backTarget)} 
-              className="w-10 h-10 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs"
+              className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
               title="Geri Dön"
             >
-              <ArrowLeft size={18} />
+              <ChevronLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             </button>
-            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer" onClick={() => setView(backTarget)}>
+            <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setView(backTarget)}>
               <Logo className="h-8 w-auto text-[#990000]" />
               <div>
-                <h1 className="font-black text-gray-900 text-sm sm:text-base leading-tight">Öğrenci Kulüpleri Portalı</h1>
-                <p className="text-[11px] font-bold text-gray-500">Öğrenci Dekanlığı & Kariyer Geliştirme Koordinatörlüğü</p>
+                <h1 className="font-black text-slate-900 text-sm sm:text-base leading-tight">Öğrenci Kulüpleri Portalı</h1>
+                <p className="text-[10px] font-bold text-[#990000] uppercase tracking-wider">Öğrenci Dekanlığı & SKS Daire Başkanlığı</p>
               </div>
             </div>
           </div>
