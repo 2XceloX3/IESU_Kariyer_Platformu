@@ -5,46 +5,46 @@ with open('src/components/JobsAndInternships.jsx', 'r', encoding='utf-8') as f:
 
 # Fix 3: Turkish characters
 replacements = {
-    'guncel firsat': 'güncel fýrsat',
-    'Henuz ilan yok': 'Henüz ilan yok',
-    'Yeni ilanlar eklendiginde burada gorunecek.': 'Yeni ilanlar eklendiðinde burada görünecek.',
-    'Harikasin!': 'Harikasýn!',
-    'Butun ilanlari inceledin.': 'Bütün ilanlarý inceledin.',
-    'Basa Don': 'Baþa Dön',
-    'Profil Eslesme': 'Profil Eþleþme',
-    'eslesme': 'eþleþme',
-    'Sola gec, saga basvur!': 'Sola geç, saða baþvur!',
-    'Cumhurbaskanligi Insan Kaynaklari': 'Cumhurbaþkanlýðý Ýnsan Kaynaklarý',
-    'e-Devlet sifrenizle sisteme giris yapin.': 'e-Devlet þifrenizle sisteme giriþ yapýn.',
-    'Staj Basvurusu menuunden guncel yilin programina tiklayin.': 'Staj Baþvurusu menüsünden güncel yýlýn programýna týklayýn.',
-    'Basvuru formunu eksiksiz doldurun.': 'Baþvuru formunu eksiksiz doldurun.',
-    'Basvuru durumunuzu Kariyer Kapisi uzerinden takip edin.': 'Baþvuru durumunuzu Kariyer Kapýsý üzerinden takip edin.',
-    'Ilgili Formlar': 'Ýlgili Formlar',
-    'Mesleki Egitim Sozlesmesi': 'Mesleki Eðitim Sözleþmesi',
-    'Is Sagligi ve Guvenligi': 'Ýþ Saðlýðý ve Güvenliði',
-    'Ulusal Staj Basvuru Formu': 'Ulusal Staj Baþvuru Formu',
-    'Istenilen evraklarin eksiksiz doldurulmasi zorunludur.': 'Ýstenilen evraklarýn eksiksiz doldurulmasý zorunludur.',
-    'Basvuru Formunun Doldurulmasi': 'Baþvuru Formunun Doldurulmasý',
-    'Uygulamali Egitim Basvuru Formu doldurulmalidir.': 'Uygulamalý Eðitim Baþvuru Formu doldurulmalýdýr.',
-    'Ogrenci, kurum yetkilisi ve bolum staj sorumlusu tarafindan islak imzali olmalidir.': 'Öðrenci, kurum yetkilisi ve bölüm staj sorumlusu tarafýndan ýslak imzalý olmalýdýr.',
-    'SGK Mustehaklik Belgesi': 'SGK Müstehaklýk Belgesi',
-    'e-Devlet sistemi uzerinden barkodlu olarak guncel tarihli temin edilmelidir.': 'e-Devlet sistemi üzerinden barkodlu olarak güncel tarihli temin edilmelidir.',
-    'Ogrencinin gecerli T.C. Kimlik Karti fotokopisi dosyaya eklenmelidir.': 'Öðrencinin geçerli T.C. Kimlik Kartý fotokopisi dosyaya eklenmelidir.',
+    'guncel firsat': 'gï¿½ncel fï¿½rsat',
+    'Henuz ilan yok': 'Henï¿½z ilan yok',
+    'Yeni ilanlar eklendiginde burada gorunecek.': 'Yeni ilanlar eklendiï¿½inde burada gï¿½rï¿½necek.',
+    'Harikasin!': 'Harikasï¿½n!',
+    'Butun ilanlari inceledin.': 'Bï¿½tï¿½n ilanlarï¿½ inceledin.',
+    'Basa Don': 'Baï¿½a Dï¿½n',
+    'Profil Eslesme': 'Profil Eï¿½leï¿½me',
+    'eslesme': 'eï¿½leï¿½me',
+    'Sola gec, saga basvur!': 'Sola geï¿½, saï¿½a baï¿½vur!',
+    'Cumhurbaskanligi Insan Kaynaklari': 'Cumhurbaï¿½kanlï¿½ï¿½ï¿½ ï¿½nsan Kaynaklarï¿½',
+    'e-Devlet sifrenizle sisteme giris yapin.': 'e-Devlet ï¿½ifrenizle sisteme giriï¿½ yapï¿½n.',
+    'Staj Basvurusu menuunden guncel yilin programina tiklayin.': 'Staj Baï¿½vurusu menï¿½sï¿½nden gï¿½ncel yï¿½lï¿½n programï¿½na tï¿½klayï¿½n.',
+    'Basvuru formunu eksiksiz doldurun.': 'Baï¿½vuru formunu eksiksiz doldurun.',
+    'Basvuru durumunuzu Kariyer Kapisi uzerinden takip edin.': 'Baï¿½vuru durumunuzu Kariyer Kapï¿½sï¿½ ï¿½zerinden takip edin.',
+    'Ilgili Formlar': 'ï¿½lgili Formlar',
+    'Mesleki Egitim Sozlesmesi': 'Mesleki Eï¿½itim Sï¿½zleï¿½mesi',
+    'Is Sagligi ve Guvenligi': 'ï¿½ï¿½ Saï¿½lï¿½ï¿½ï¿½ ve Gï¿½venliï¿½i',
+    'Ulusal Staj Basvuru Formu': 'Ulusal Staj Baï¿½vuru Formu',
+    'Istenilen evraklarin eksiksiz doldurulmasi zorunludur.': 'ï¿½stenilen evraklarï¿½n eksiksiz doldurulmasï¿½ zorunludur.',
+    'Basvuru Formunun Doldurulmasi': 'Baï¿½vuru Formunun Doldurulmasï¿½',
+    'Uygulamali Egitim Basvuru Formu doldurulmalidir.': 'Uygulamalï¿½ Eï¿½itim Baï¿½vuru Formu doldurulmalï¿½dï¿½r.',
+    'Ogrenci, kurum yetkilisi ve bolum staj sorumlusu tarafindan islak imzali olmalidir.': 'ï¿½ï¿½renci, kurum yetkilisi ve bï¿½lï¿½m staj sorumlusu tarafï¿½ndan ï¿½slak imzalï¿½ olmalï¿½dï¿½r.',
+    'SGK Mustehaklik Belgesi': 'SGK Mï¿½stehaklï¿½k Belgesi',
+    'e-Devlet sistemi uzerinden barkodlu olarak guncel tarihli temin edilmelidir.': 'e-Devlet sistemi ï¿½zerinden barkodlu olarak gï¿½ncel tarihli temin edilmelidir.',
+    'Ogrencinin gecerli T.C. Kimlik Karti fotokopisi dosyaya eklenmelidir.': 'ï¿½ï¿½rencinin geï¿½erli T.C. Kimlik Kartï¿½ fotokopisi dosyaya eklenmelidir.',
     'Evrak Teslimi (3 Suret)': 'Evrak Teslimi (3 Suret)',
-    'Tum belgeler 3 takim halinde hazirlanmalidir.': 'Tüm belgeler 3 takým halinde hazýrlanmalýdýr.',
-    'Gorsel Kilavuz ve Formlar': 'Görsel Kýlavuz ve Formlar',
-    'Tum Formlar Sayfasina Git': 'Tüm Formlar Sayfasýna Git',
-    'Ilan Havuzu': 'Ýlan Havuzu',
-    'Aktif Ilan': 'Aktif Ýlan',
-    'Staj Firsati': 'Staj Fýrsatý',
-    'Toplam Basvuru': 'Toplam Baþvuru',
-    'Basvurularim': 'Baþvurularým',
-    'Isveren Partnerler': 'Ýþveren Partnerler',
-    'acik pozisyon': 'açýk pozisyon',
-    'Hakkinda': 'Hakkýnda',
-    'Yardim': 'Yardým',
-    'Is Tanimi': 'Ýþ Tanýmý',
-    'Is tanimi belirtilmemis.': 'Ýþ tanýmý belirtilmemiþ.'
+    'Tum belgeler 3 takim halinde hazirlanmalidir.': 'Tï¿½m belgeler 3 takï¿½m halinde hazï¿½rlanmalï¿½dï¿½r.',
+    'Gorsel Kilavuz ve Formlar': 'Gï¿½rsel Kï¿½lavuz ve Formlar',
+    'Tum Formlar Sayfasina Git': 'Tï¿½m Formlar Sayfasï¿½na Git',
+    'Ilan Havuzu': 'ï¿½lan Havuzu',
+    'Aktif Ilan': 'Aktif ï¿½lan',
+    'Staj Firsati': 'Staj Fï¿½rsatï¿½',
+    'Toplam Basvuru': 'Toplam Baï¿½vuru',
+    'Basvurularim': 'Baï¿½vurularï¿½m',
+    'Isveren Partnerler': 'ï¿½ï¿½veren Partnerler',
+    'acik pozisyon': 'aï¿½ï¿½k pozisyon',
+    'Hakkinda': 'Hakkï¿½nda',
+    'Yardim': 'Yardï¿½m',
+    'Is Tanimi': 'ï¿½ï¿½ Tanï¿½mï¿½',
+    'Is tanimi belirtilmemis.': 'ï¿½ï¿½ tanï¿½mï¿½ belirtilmemiï¿½.'
 }
 
 for k, v in replacements.items():
@@ -78,13 +78,13 @@ content = content.replace('if(activeJobs.length===0)', 'if(filteredJobs.length==
 
 # Fix 4 UI
 search_bar = '''
-              {/* Arama ve Filtre Çubuðu */}
+              {/* Arama ve Filtre ï¿½ubuï¿½u */}
               <div className="flex flex-col sm:flex-row gap-3 mt-4 mb-4">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-3 text-slate-400" size={16} />
                   <input
                     type="text"
-                    placeholder="Ýlan ara... (pozisyon, þirket, þehir)"
+                    placeholder="ï¿½lan ara... (pozisyon, ï¿½irket, ï¿½ehir)"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#990000]/20"
@@ -95,10 +95,10 @@ search_bar = '''
                   onChange={e => setFilterType(e.target.value)}
                   className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none bg-white"
                 >
-                  <option value="all">Tüm Ýlanlar</option>
+                  <option value="all">Tï¿½m ï¿½lanlar</option>
                   <option value="staj">Staj</option>
-                  <option value="tam_zamanli">Tam Zamanlý</option>
-                  <option value="yari_zamanli">Yarý Zamanlý</option>
+                  <option value="tam_zamanli">Tam Zamanlï¿½</option>
+                  <option value="yari_zamanli">Yarï¿½ Zamanlï¿½</option>
                   <option value="uzaktan">Uzaktan</option>
                 </select>
               </div>
@@ -119,7 +119,7 @@ firestore_logic = '''
         status: 'Onay Bekliyor',
       });
     } catch (e) {
-      console.warn('Firestore baþvuru kaydý yapýlamadý:', e.message);
+      console.warn('Firestore baï¿½vuru kaydï¿½ yapï¿½lamadï¿½:', e.message);
     }
 '''
 content = content.replace('setApplications(prev => [...(prev || []), newApp]);', firestore_logic)

@@ -14,7 +14,7 @@ Adversarially challenge and stress-test the Shared Brain Layer (src/brain/eventB
 1. EventBus stress test:
    - High volume emits (e.g. 500 events in rapid succession)
    - Concurrent subscribe and unsubscribe
-   - Error throwing inside a subscriber — verify other subscribers continue execution and event emitter does not crash
+   - Error throwing inside a subscriber ï¿½ verify other subscribers continue execution and event emitter does not crash
    - Sliding window throughput calculation accuracy
 2. AdminStore defense test:
    - Attempt prototype pollution on setSiteConfig
