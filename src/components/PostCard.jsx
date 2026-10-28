@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles, ChevronLeft, ChevronRight, Tag, Users, Ticket } from 'lucide-react';
-import { FaWhatsapp, FaDiscord } from 'react-icons/fa';
+import { FaWhatsapp } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
 import useAdminStore from '../brain/useAdminStore';
 import eventBus from '../brain/eventBus';
@@ -516,13 +516,13 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
     }
   }, [isAttending, attendeesList, effectiveCurrentUser?.id, post?.id, setPosts]);
 
-  const handleDiscordShare = useCallback(() => {
+  const handleCampusShare = useCallback(() => {
     const shareUrl = typeof window !== 'undefined' && window.location?.origin 
       ? `${window.location.origin}/post/${post.id}` 
       : `https://kariyer.esenyurt.edu.tr/post/${post.id}`;
     navigator.clipboard.writeText(shareUrl);
     if (window.toast && typeof window.toast.info === 'function') {
-      window.toast.info("Link kopyalandı. Discord'a yapıştırabilirsiniz!");
+      window.toast.info("Gönderi bağlantısı panoya kopyalandı!");
     }
   }, [post?.id]);
 
@@ -653,7 +653,35 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
           </div>
         ) : (
           <div>
-            <p className="text-[15px] text-gray-800 font-medium leading-snug whitespace-pre-wrap break-words">{post.content}</p>
+            {post.location && (
+          <div className="mb-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">
+            <span>📍 {post.location}</span>
+          </div>
+        )}
+        {post.milestone && (
+          <div className={`mb-2.5 p-3 rounded-2xl bg-gradient-to-r ${post.milestoneColor || 'from-[#990000] to-[#1e3a5f]'} text-white font-bold text-xs shadow-sm flex items-center gap-2`}>
+            <span>{post.milestone}</span>
+          </div>
+        )}
+        <p className="text-[15px] text-gray-800 font-medium leading-snug whitespace-pre-wrap break-words">{post.content}</p>
+        {post.poll && Array.isArray(post.poll.options) && (
+          <div className="mt-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <div className="text-xs font-bold text-[#1e3a5f]">{post.poll.question}</div>
+            <div className="space-y-1.5">
+              {post.poll.options.map((opt, idx) => {
+                const total = Math.max(1, post.poll.totalVotes || 1);
+                const pct = Math.round(((opt.votes || 0) / total) * 100);
+                return (
+                  <div key={opt.id || idx} className="relative overflow-hidden rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 flex items-center justify-between">
+                    <div className="absolute inset-y-0 left-0 bg-[#990000]/10 transition-all" style={{ width: `${pct}%` }} />
+                    <span className="relative z-10">{opt.text}</span>
+                    <span className="relative z-10 text-[11px] font-bold text-[#990000]">{pct}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
             {!post.image && post.isGeneralEvent && (
               <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-50 border border-purple-200/80 text-purple-900 text-xs font-bold shadow-xs">
                 <Calendar size={13} className="text-purple-600" /> 🏛️ Kampüs & Rektörlük Genel Etkinliği
@@ -1077,12 +1105,12 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
                 </button>
                 <button 
                   type="button"
-                  aria-label="Discord" 
-                  onClick={handleDiscordShare} 
-                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-[#5865F2]/10 hover:bg-[#5865F2]/20 text-[#5865F2] transition border border-[#5865F2]/20 cursor-pointer active:scale-95"
+                  aria-label="Kampüs Ağı" 
+                  onClick={handleCampusShare} 
+                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-[#1e3a5f]/10 hover:bg-[#1e3a5f]/20 text-[#1e3a5f] transition border border-[#1e3a5f]/20 cursor-pointer active:scale-95"
                 >
-                  <FaDiscord size={22} />
-                  <span className="text-[11px] font-bold">Discord</span>
+                  <Share2 size={22} />
+                  <span className="text-[11px] font-bold">Kampüs Ağı</span>
                 </button>
                 <button 
                   type="button"

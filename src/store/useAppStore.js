@@ -1,3 +1,24 @@
+// 5MB LocalStorage QuotaExceededError Koruması (Tersine Mühendislik Yaması)
+if (typeof window !== 'undefined' && window.Storage && !window.__iesuQuotaGuardInstalled) {
+  window.__iesuQuotaGuardInstalled = true;
+  const origSetItem = window.Storage.prototype.setItem;
+  window.Storage.prototype.setItem = function(key, value) {
+    try {
+      return origSetItem.call(this, key, value);
+    } catch (err) {
+      if (err && (err.name === 'QuotaExceededError' || err.code === 22)) {
+        try {
+          const cleaned = String(value).replace(/data:[^;]+;base64,[A-Za-z0-9+/=]{80000,}/g, '');
+          if (cleaned !== String(value)) {
+            return origSetItem.call(this, key, cleaned);
+          }
+        } catch (_) {}
+      }
+      throw err;
+    }
+  };
+}
+
 /**
  * src/store/useAppStore.js
  * Core Session & Routing Zustand Store with Backward-Compatibility Delegation Facade.

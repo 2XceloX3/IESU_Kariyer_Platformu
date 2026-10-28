@@ -245,7 +245,7 @@ export default function JobsAndInternships({
     if (appForm.cvType === 'uploaded_cv' && !effectiveCurrentUser?.cvUrl) { window.toast?.error('Profilinizde yüklenmiş bir CV bulunamadı. Profilinize CV ekleyin veya profil özetinizi paylaşın.'); return; }
     const authUid = auth?.currentUser?.uid || null;
     const applicantUid = authUid || branchTargetId;
-    if (applications.some(a => a.jobId === applyModalJob.id && a.applicantId === applicantUid)) { window.toast?.info("Bu ilana zaten başvurdunuz."); setApplyModalJob(null); return; }
+    if (applications.some(a => String(a.jobId) === String(applyModalJob.id) && String(a.applicantId) === String(applicantUid))) { window.toast?.info("Bu ilana zaten başvurdunuz."); setApplyModalJob(null); return; }
 
     const tenant = getTenantConfig();
     if (!applyModalJob.companyId) {

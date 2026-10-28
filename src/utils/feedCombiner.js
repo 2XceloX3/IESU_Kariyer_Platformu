@@ -125,6 +125,12 @@ export function combineFeedItems(posts, events, news, announcements, jobs, gener
     });
   }
 
+  combined.forEach((item, idx) => {
+    if (item && typeof item === 'object' && !item._feedKey) {
+      const prefix = item.feedType || item.type || (item.company ? 'job' : item.organizer ? 'event' : 'post');
+      item._feedKey = `${prefix}_${item.id ?? idx}`;
+    }
+  });
   return combined.sort((a, b) => {
     const timeA = new Date(a.createdAt || a.timestamp || 0).getTime();
     const timeB = new Date(b.createdAt || b.timestamp || 0).getTime();
