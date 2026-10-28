@@ -235,15 +235,38 @@ export default function CompanyATSBoard({ setView, currentUser: propsCurrentUser
   const updateCandidateStatus = async (item, targetColId) => {
     const newStatus = columnIdToStatus(targetColId);
 
-    if (item.isStoreApp || (item.id && !String(item.id).startsWith('mock_') && !String(item.id).startsWith('app-'))) {
-      try {
-        const { updateApplicationStatusFs } = await import('../services/jobsApplicationsFs');
-        await updateApplicationStatusFs(item.id, newStatus);
-      } catch (e) {
-        window.toast?.error?.(e?.message || 'Aday durumu Firestore\'a yazılamadı');
-        return;
+    if (item.isStoreApp || (item.id && !String(item.id).startsWith('mock_'))) {
+      if (!String(item.id).startsWith('app-')) {
+        try {
+          const { updateApplicationStatusFs } = await import('../services/jobsApplicationsFs');
+          await updateApplicationStatusFs(item.id, newStatus);
+        } catch (e) {
+          console.warn('Firestore ATS status update fallback to store:', e?.message);
+        }
       }
-      setApplications(prev => (prev || []).map(a => a.id === item.id ? { ...a, status: newStatus } : a));
+      const currentApps = Array.isArray(useAppStore.getState().applications)
+        ? useAppStore.getState().applications
+        : (Array.isArray(applications) ? applications : []);
+      const updatedApps = currentApps.map(a =>
+        a.id === item.id ? { ...a, status: newStatus, stage: newStatus } : a
+      );
+      if (typeof setApplications === 'function') {
+        setApplications(updatedApps);
+      }
+      try {
+        const appState = useAppStore.getState();
+        if (typeof appState.setNotifications === 'function') {
+          const notif = {
+            id: 'notif_ats_' + Date.now(),
+            userId: item.applicantId || item.userId || 'student',
+            title: `Başvuru Durumu Güncellendi: ${newStatus}`,
+            message: `${currentUser?.name || 'Kurumsal Partner'} başvurunuzu "${newStatus}" aşamasına taşıdı.`,
+            createdAt: new Date().toISOString(),
+            read: false
+          };
+          appState.setNotifications([notif, ...(appState.notifications || [])]);
+        }
+      } catch (_) {}
     } else {
       setMockApplicants(prev => {
         const next = { ...prev };

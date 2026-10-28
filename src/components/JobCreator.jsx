@@ -152,12 +152,14 @@ Sunduğumuz Olanaklar:
       ? new Date(formData.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
       : 'Son Başvuru: Yakında';
 
+    const resolvedCompanyName = companyName || currentUser?.companyName || currentUser?.name || 'Kurumsal Partner';
     const newJob = {
       id: 'JOB-' + Date.now(),
       tenantId: tenant.id || 'iesu',
-      companyId: auth?.currentUser?.uid || currentUser?.uid || currentUser?.id || null,
+      companyId: auth?.currentUser?.uid || currentUser?.uid || currentUser?.id || 'company_default',
       title: formData.title.trim(),
-      company: companyName,
+      company: resolvedCompanyName,
+      companyName: resolvedCompanyName,
       location: formData.location.trim(),
       type: formData.type,
       workModel: formData.workModel,
@@ -169,9 +171,11 @@ Sunduğumuz Olanaklar:
       logo: previewImage || (isAdmin ? (tenant.logoUrl || '/iesu-logo.svg') : (currentUser?.avatar || currentUser?.logo || '')),
       imageUrl: previewImage || '',
       status: isAdmin ? 'Aktif' : 'Onay Bekliyor',
+      approvalStatus: isAdmin ? 'approved' : 'pending',
       targetHives: targetHives,
       publishedBy: isAdmin ? 'admin' : 'company',
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      applicantsCount: 0
     };
 
     if (!newJob.companyId) {
@@ -189,6 +193,14 @@ Sunduğumuz Olanaklar:
       return;
     }
     setJobs([newJob, ...(jobs || [])]);
+    try {
+      const appState = useAppStore.getState();
+      if (typeof appState.setCareerOpportunities === 'function') {
+        appState.setCareerOpportunities([newJob, ...(appState.careerOpportunities || [])]);
+      } else if (Array.isArray(appState.careerOpportunities)) {
+        useAppStore.setState({ careerOpportunities: [newJob, ...appState.careerOpportunities] });
+      }
+    } catch (_) {}
 
     // Cross-hive event broadcasting (Beehive Brain & useSharedStore)
     if (eventBus && typeof eventBus.emit === 'function') {

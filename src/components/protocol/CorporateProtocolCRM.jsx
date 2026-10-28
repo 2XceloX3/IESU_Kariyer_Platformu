@@ -45,7 +45,8 @@ import {
   Check,
 } from 'lucide-react';
 
-export default function CorporateProtocolCRM({ _currentUser = null }) {
+export default function CorporateProtocolCRM({ currentUser = null, _currentUser = null, onProtocolRequest = null }) {
+  const effectiveUser = currentUser || _currentUser;
   const storeProtocols = useAppStore((state) => state.corporateProtocols);
   const setCorporateProtocols = useAppStore((state) => state.setCorporateProtocols);
   const addCorporateProtocol = useAppStore((state) => state.addCorporateProtocol);
@@ -91,17 +92,17 @@ export default function CorporateProtocolCRM({ _currentUser = null }) {
 
   // New Protocol Form
   const [newProtocol, setNewProtocol] = useState({
-    companyName: '',
+    companyName: effectiveUser?.companyName || effectiveUser?.name || '',
     sector: PROTOCOL_SECTORS[0],
     protocolType: PROTOCOL_TYPES.COOPERATION,
     committedQuota: 20,
     placedCount: 0,
     signedDate: new Date().toISOString().split('T')[0],
     validUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    contactPerson: '',
-    contactTitle: '',
-    contactEmail: '',
-    contactPhone: '',
+    contactPerson: effectiveUser?.contactPerson || effectiveUser?.name || '',
+    contactTitle: effectiveUser?.title || 'İnsan Kaynakları / Kurumsal İlişkiler',
+    contactEmail: effectiveUser?.email || '',
+    contactPhone: effectiveUser?.phone || '',
     scope: '',
     assignedFaculty: 'Mühendislik ve Mimarlık Fakültesi',
     notes: '',
@@ -231,6 +232,11 @@ export default function CorporateProtocolCRM({ _currentUser = null }) {
     }
     const updatedList = [createdItem, ...protocols];
     if (setCorporateProtocols) setCorporateProtocols(updatedList);
+    if (typeof onProtocolRequest === 'function') {
+      try {
+        onProtocolRequest(createdItem);
+      } catch (_) {}
+    }
 
     setShowAddModal(false);
     if (window.toast?.success) {

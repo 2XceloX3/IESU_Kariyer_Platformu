@@ -200,6 +200,43 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
     window.toast?.success?.('Başvurunuz başarıyla alındı! İlgili birim dönüş yapacaktır.');
   };
 
+  const handleProtocolRequest = async (protocolData) => {
+    const newRequest = {
+      id: 'protocol_' + Date.now(),
+      companyId: effectiveCurrentUser?.uid || effectiveCurrentUser?.id || 'company_default',
+      companyName: effectiveCurrentUser?.name || 'Kurumsal Firma',
+      status: 'Onay Bekliyor',
+      createdAt: new Date().toISOString(),
+      ...protocolData
+    };
+    try {
+      const appState = useAppStore.getState();
+      const nextProtocols = [newRequest, ...(appState.corporateProtocols || [])];
+      useAppStore.setState({
+        corporateProtocols: nextProtocols,
+        protocolRequests: [newRequest, ...(appState.protocolRequests || [])]
+      });
+      if (typeof setNotifications === 'function') {
+        setNotifications([
+          {
+            id: 'notif_proto_' + Date.now(),
+            userId: 'admin',
+            title: `Yeni Üniversite-Sanayi Protokol Talebi: ${newRequest.companyName}`,
+            message: `${newRequest.companyName} kurumsal staj ve istihdam protokolü başvurusu gönderdi.`,
+            createdAt: new Date().toISOString(),
+            read: false
+          },
+          ...(notifications || [])
+        ]);
+      }
+      if (window.toast?.success) {
+        window.toast.success('Üniversite-Sanayi Protokol talebiniz Rektörlük / Kariyer Merkezi onayına iletildi!');
+      }
+    } catch (err) {
+      console.warn('Protocol request state update error:', err);
+    }
+  };
+
   const [activeTab, setActiveTab] = useState(() => initialTab || 'feed');
   useEffect(() => {
     if (initialTab) {
@@ -507,7 +544,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
         {/* PROTOCOLS TAB */}
         {activeTab === 'protocols' && (
           <div className="w-full shrink-0 animate-fade-in mb-6">
-            <CorporateProtocolCRM currentUser={effectiveCurrentUser} />
+            <CorporateProtocolCRM currentUser={effectiveCurrentUser} onProtocolRequest={handleProtocolRequest} />
           </div>
         )}
 
