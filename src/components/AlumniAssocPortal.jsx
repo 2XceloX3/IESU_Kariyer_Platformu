@@ -138,7 +138,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
             }}>
               <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
               <div className="hidden sm:block text-left">
-                <h1 className="text-[13px] font-black text-[#059669] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+                <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
                 <p className="text-[10px] font-bold text-gray-500 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
               </div>
             </div>
@@ -146,7 +146,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
           </div>
         </nav>
         <main className="flex-1 w-full max-w-xl mx-auto p-8 pt-32 flex flex-col items-center justify-center text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-red-100/80 text-[#990000] flex items-center justify-center">
             <Lock size={32} />
           </div>
           <h2 className="text-2xl font-black text-slate-900">Erişim Yetkisi Sınırlı</h2>
@@ -155,7 +155,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
           </p>
           <button 
             onClick={() => setView ? setView('birlik_agi') : null}
-            className="px-6 py-3 bg-[#059669] text-white font-bold text-xs rounded-xl hover:bg-emerald-700 transition shadow-md cursor-pointer"
+            className="px-6 py-3 bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-[#7f0000] transition shadow-md cursor-pointer"
           >
             Mezunlar Akışına Dön →
           </button>
@@ -177,17 +177,17 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
           }}>
             <Logo className="h-10 w-auto hover:scale-105 transition-transform shrink-0" />
             <div className="hidden sm:block text-left">
-              <h1 className="text-[13px] font-black text-[#059669] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
+              <h1 className="text-[13px] font-black text-[#990000] tracking-tight leading-none mb-0.5">İstanbul Esenyurt Üniversitesi</h1>
               <p className="text-[10px] font-bold text-gray-500 tracking-wider">Kariyer Geliştirme Koordinatörlüğü</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-emerald-50 text-[#059669]`} title="Bildirimler">
+            <button onClick={() => setView('notifications')} className={`p-2 rounded-full transition-all flex items-center justify-center hover:bg-red-50/70 text-[#990000]`} title="Bildirimler">
               <div className="relative">
-                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#059669]/10" />
+                <Bell size={24} strokeWidth={2.5} className="fill-current text-[#990000]/10" />
                 {((notifications || []).filter(n => n.userId === currentUser?.id && !n.read).length > 0) && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-50/700 rounded-full border-2 border-white"></span>
                 )}
               </div>
             </button>
@@ -201,7 +201,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
       <main className="flex-1 w-full max-w-[1300px] mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         
         {/* Header Hero Banner */}
-        <div className="bg-gradient-to-r from-teal-950 via-[#059669] to-emerald-900 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="bg-gradient-to-r from-teal-950 via-[#990000] to-emerald-900 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-2 z-10 max-w-2xl">
             <span className="bg-emerald-800/80 text-emerald-100 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-emerald-700">
               ÖZEL YÖNETİM & AKIŞ KONTROL PORTALI
@@ -215,7 +215,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
           </div>
           <button 
             onClick={() => setView ? setView('birlik_agi') : null}
-            className="z-10 bg-white text-[#059669] font-black text-xs px-5 py-3 rounded-2xl hover:bg-emerald-50 transition shadow-lg whitespace-nowrap cursor-pointer"
+            className="z-10 bg-white text-[#990000] font-black text-xs px-5 py-3 rounded-2xl hover:bg-red-50/70 transition shadow-lg whitespace-nowrap cursor-pointer"
           >
             Kamuya Açık Akış Sayfasını Gör →
           </button>
@@ -235,7 +235,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
                 activeTab === t.id 
-                  ? 'bg-[#059669] text-white shadow-md' 
+                  ? 'bg-[#990000] text-white shadow-md' 
                   : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
@@ -258,7 +258,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
               {(alumniAssocBoard || []).map((m) => (
                 <div key={m.id} className="p-5 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-between">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-black uppercase text-[#059669] bg-emerald-100 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-black uppercase text-[#990000] bg-red-100/80 px-2 py-0.5 rounded-md">
                       {m.role}
                     </span>
                     <h4 className="text-sm font-black text-slate-900">{m.name}</h4>
@@ -331,7 +331,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                         <td className="p-4">{app.appliedAt}</td>
                         <td className="p-4">
                           <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black ${
-                            app.status === 'Onaylandı' ? 'bg-emerald-100 text-emerald-800' :
+                            app.status === 'Onaylandı' ? 'bg-red-100/80 text-[#1e3a5f]' :
                             app.status === 'Reddedildi' ? 'bg-rose-100 text-rose-800' : 'bg-slate-200 text-slate-700'
                           }`}>
                             {app.status}
@@ -342,7 +342,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                             <>
                               <button 
                                 onClick={() => handleApproveApp(app.id)}
-                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[11px] cursor-pointer"
+                                className="px-3 py-1.5 bg-[#990000] hover:bg-[#7f0000] text-white rounded-lg font-bold text-[11px] cursor-pointer"
                               >
                                 Onayla
                               </button>
@@ -384,7 +384,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                     value={newAnnounce.title}
                     onChange={(e) => setNewAnnounce({ ...newAnnounce, title: e.target.value })}
                     placeholder="Örn: 2026 Olağan Genel Kurul Toplantısı ve Network Buluşması"
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                     required
                   />
                 </div>
@@ -426,13 +426,13 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                     value={newAnnounce.content}
                     onChange={(e) => setNewAnnounce({ ...newAnnounce, content: e.target.value })}
                     placeholder="Duyuru içeriğini detaylıca yazınız..."
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                     required
                   />
                 </div>
                 <button 
                   type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-emerald-800 via-[#059669] to-teal-700 hover:from-emerald-900 hover:to-teal-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
+                  className="px-6 py-3 bg-gradient-to-r from-emerald-800 via-[#990000] to-[#1e3a5f] hover:from-[#1e3a5f] hover:to-teal-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
                 >
                   <Send size={16} /> Duyuruyu Akışa Yay
                 </button>
@@ -441,7 +441,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
               {/* SAĞ CANLI ÖN İZLEME */}
               <div className="lg:col-span-2 sticky top-24 space-y-2">
                 <span className="text-[11px] font-black uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-[#059669]" /> Canlı Duyuru Ön İzlemesi
+                  <Sparkles size={14} className="text-[#990000]" /> Canlı Duyuru Ön İzlemesi
                 </span>
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center gap-3">
@@ -454,7 +454,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                     />
                     <div>
                       <h4 className="text-xs font-black text-slate-900">{currentUser?.name || 'İESÜ Mezunlar Portalı'}</h4>
-                      <span className="text-[9px] font-bold text-[#059669] bg-emerald-100 px-1.5 py-0.5 rounded">Resmî Duyuru</span>
+                      <span className="text-[9px] font-bold text-[#990000] bg-red-100/80 px-1.5 py-0.5 rounded">Resmî Duyuru</span>
                     </div>
                   </div>
                   <h4 className="text-sm font-black text-slate-900">{newAnnounce.title || 'Duyuru Başlığı Burada Görünecek'}</h4>
@@ -492,7 +492,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                     value={newEvent.title}
                     onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                     placeholder="Örn: Mühendislik Mezunları Zirvesi & Kokteyl"
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                     required
                   />
                 </div>
@@ -503,7 +503,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                        type="date"
                       value={newEvent.date}
                       onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
-                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                       required
                     />
                   </div>
@@ -514,7 +514,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                       value={newEvent.time}
                       onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
                       placeholder="14:00"
-                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                     />
                   </div>
                 </div>
@@ -525,7 +525,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                     value={newEvent.location}
                     onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
                     placeholder="Prof. Dr. Fuat Sezgin Konferans Salonu"
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                   />
                 </div>
                 <div>
@@ -566,12 +566,12 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                     value={newEvent.description}
                     onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
                     placeholder="Etkinlik hakkında detaylar..."
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                   />
                 </div>
                 <button 
                   type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-emerald-800 via-[#059669] to-teal-700 hover:from-emerald-900 hover:to-teal-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
+                  className="px-6 py-3 bg-gradient-to-r from-emerald-800 via-[#990000] to-[#1e3a5f] hover:from-[#1e3a5f] hover:to-teal-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
                 >
                   <Calendar size={16} /> Etkinliği Yayınla
                 </button>
@@ -580,11 +580,11 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
               {/* SAĞ CANLI ÖN İZLEME */}
               <div className="lg:col-span-2 sticky top-24 space-y-2">
                 <span className="text-[11px] font-black uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
-                  <Calendar size={14} className="text-[#059669]" /> Canlı Etkinlik Kartı Ön İzlemesi
+                  <Calendar size={14} className="text-[#990000]" /> Canlı Etkinlik Kartı Ön İzlemesi
                 </span>
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-[#059669] bg-emerald-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-black text-[#990000] bg-red-100/80 px-2 py-0.5 rounded">
                       {newEvent.date || 'Tarih Girilmedi'} — {newEvent.time || '14:00'}
                     </span>
                     <span className="text-[10px] font-bold text-slate-400">{newEvent.location || 'Mekân Girilmedi'}</span>
@@ -621,7 +621,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                   value={newMember.name}
                   onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
                   placeholder="Örn: Dr. Caner ŞAHİN"
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                   required
                 />
               </div>
@@ -632,7 +632,7 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                   value={newMember.role}
                   onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
                   placeholder="Örn: Basın ve İletişim Sorumlusu"
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                   required
                 />
               </div>
@@ -643,12 +643,12 @@ export default function AlumniAssocPortal({ setView, currentUser, userRole, setS
                   value={newMember.email}
                   onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
                   placeholder="caner@esenyurt.edu.tr"
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#059669] outline-none"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#990000] outline-none"
                 />
               </div>
               <button 
                 type="submit"
-                className="px-6 py-3 bg-gradient-to-r from-emerald-800 via-[#059669] to-teal-700 hover:from-emerald-900 hover:to-teal-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
+                className="px-6 py-3 bg-gradient-to-r from-emerald-800 via-[#990000] to-[#1e3a5f] hover:from-[#1e3a5f] hover:to-teal-800 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-md cursor-pointer"
               >
                 <UserPlus size={16} /> Portal Yetkisi Ver
               </button>

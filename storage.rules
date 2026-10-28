@@ -10,7 +10,6 @@ service firebase.storage {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // KRİTİK DÜZELTME: Sadece admin claim'i veya doğrulanmış kariyer@iesu.edu.tr hesabı admin yetkisi alır.
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
@@ -36,7 +35,7 @@ service firebase.storage {
     function isImage() {
       return request.resource != null &&
              request.resource.contentType.matches('image/(jpeg|png|webp|gif)') &&
-             request.resource.size < 5 * 1024 * 1024; // Maksimum 5 MB
+             request.resource.size < 5 * 1024 * 1024;
     }
 
     function isDocument() {
@@ -44,22 +43,19 @@ service firebase.storage {
              (request.resource.contentType == 'application/pdf' ||
               request.resource.contentType == 'application/msword' ||
               request.resource.contentType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') &&
-             request.resource.size < 10 * 1024 * 1024; // Maksimum 10 MB
+             request.resource.size < 10 * 1024 * 1024;
     }
 
-    // Profil avatarları: Sadece sahibi veya admin yükleyebilir
     match /avatars/{userId}/{fileName} {
       allow read: if true;
       allow write: if (isOwner(userId) || isAdmin()) && isImage();
     }
 
-    // Özgeçmiş / CV belgeleri (KVKK Korumalı): Sadece sahibi, yetkili işveren/akademisyen veya admin okuyabilir
     match /resumes/{userId}/{fileName} {
       allow read: if isOwner(userId) || isAdmin() || isCompany() || isAcademic();
       allow write: if (isOwner(userId) || isAdmin()) && isDocument();
     }
 
-    // İş başvurusu ekleri: Sadece başvuru sahibi kendi UID'sini içeren dosyayı yükleyebilir
     match /applications/{applicationId}/{fileName} {
       allow read: if isAuthenticated() && (
         isAdmin() || isCompany() || isAcademic() || fileName.matches('.*' + request.auth.uid + '.*')
@@ -69,7 +65,6 @@ service firebase.storage {
         (isDocument() || isImage());
     }
 
-    // Kulüp ve etkinlik medyaları: Sadece admin veya kulüp yetkilileri yazabilir
     match /clubs/{clubId}/{fileName} {
       allow read: if true;
       allow write: if isAuthenticated() && isImage() && (
@@ -78,13 +73,11 @@ service firebase.storage {
       );
     }
 
-    // Kurumsal ve sistem belgeleri
     match /system/{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Varsayılan kural: Güvenli kapalı mimari
     match /{allPaths=**} {
       allow read, write: if isAdmin();
     }

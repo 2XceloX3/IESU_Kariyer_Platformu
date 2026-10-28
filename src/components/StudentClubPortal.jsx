@@ -901,7 +901,7 @@ export default function StudentClubPortal({
                     <span className="text-xs font-bold text-white/90 bg-white/10 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1">
                       <Users size={13} /> {selectedClub.memberCount || (selectedClub.members?.length || 45)} Üye
                     </span>
-                    <span className="text-xs font-bold text-emerald-200 bg-emerald-500/20 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-emerald-300/30">
+                    <span className="text-xs font-bold text-emerald-200 bg-white/15 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-emerald-300/30">
                       <CheckCircle2 size={13} /> Resmî Kulüp
                     </span>
                     <span className="text-xs font-bold text-amber-200 bg-amber-500/20 backdrop-blur-md px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-300/30">
@@ -942,7 +942,7 @@ export default function StudentClubPortal({
                   ) : (
                     <button 
                       onClick={() => setShowApplyMemberModal(true)}
-                      className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+                      className="px-6 py-2.5 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
                     >
                       <Plus size={16} /> Kulübe Başvur & Katıl
                     </button>
@@ -1381,7 +1381,7 @@ export default function StudentClubPortal({
                             {isRegistered ? (
                               <button
                                 onClick={() => setTicketModalEvent(event)}
-                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                                className="px-4 py-2 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
                               >
                                 <Sparkles size={14} /> 🎟️ QR Giriş Biletim
                               </button>
@@ -1694,7 +1694,7 @@ export default function StudentClubPortal({
                             <div className="flex items-center gap-2 shrink-0">
                               <button
                                 onClick={() => handleApproveMemberApplication(app.id)}
-                                className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                                className="px-3.5 py-1.5 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-2xs cursor-pointer"
                               >
                                 <Check size={14} /> Onayla
                               </button>
@@ -1725,7 +1725,7 @@ export default function StudentClubPortal({
                       {!userIsMember && !userHasPending && (
                         <button
                           onClick={() => setShowApplyMemberModal(true)}
-                          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                          className="px-4 py-2 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
                         >
                           <Plus size={15} /> Kulübe Başvur
                         </button>
@@ -2169,7 +2169,7 @@ export default function StudentClubPortal({
                   </button>
                   <button 
                     type="submit" 
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                    className="px-5 py-2.5 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
                   >
                     <CheckCircle2 size={16} /> Başvuruyu İlet
                   </button>
@@ -2294,7 +2294,7 @@ export default function StudentClubPortal({
                             <Trash2 size={14} />
                           </button>
                           <div className="p-2.5 bg-slate-900/90 text-white flex items-center justify-between text-xs font-semibold px-3">
-                            <span className="flex items-center gap-1.5 text-emerald-400">
+                            <span className="flex items-center gap-1.5 text-[#990000]">
                               <CheckCircle2 size={13} /> Video Başarıyla Yüklendi
                             </span>
                             <button
@@ -2594,7 +2594,7 @@ export default function StudentClubPortal({
                     <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full border border-white/20">
                       Resmî Etkinlik Giriş Kartı
                     </span>
-                    <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                    <span className="text-[10px] font-bold text-amber-300 bg-white/15 px-2 py-0.5 rounded-full border border-white/25">
                       Onaylandı
                     </span>
                   </div>
@@ -2925,7 +2925,7 @@ export default function StudentClubPortal({
                   </div>
                   <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15">
                     <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider block">Aktif Öğrenci Üye</span>
-                    <strong className="text-lg font-black text-emerald-300">3.850+</strong>
+                    <strong className="text-lg font-black text-amber-300">3.850+</strong>
                   </div>
                   <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15">
                     <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider block">Yıllık Etkinlik</span>

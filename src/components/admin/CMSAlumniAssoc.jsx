@@ -6,6 +6,12 @@ import PostCard from '../PostCard';
 
 export default function CMSAlumniAssoc({ posts = [], setPosts, currentUser, setView }) {
   const alumniAssocApplications = useAppStore(state => state.alumniAssocApplications) || [];
+  const alumniAssocBoard = useAppStore(state => state.alumniAssocBoard) || [];
+  const setAlumniAssocBoard = useAppStore(state => state.setAlumniAssocBoard);
+  const alumniAssocAnnouncements = useAppStore(state => state.alumniAssocAnnouncements) || [];
+  const setAlumniAssocAnnouncements = useAppStore(state => state.setAlumniAssocAnnouncements);
+  const alumniAssocEvents = useAppStore(state => state.alumniAssocEvents) || [];
+  const setAlumniAssocEvents = useAppStore(state => state.setAlumniAssocEvents);
   const setAlumniAssocApplications = useAppStore(state => state.setAlumniAssocApplications);
   const logAction = useAppStore(state => state.logAction);
 

@@ -149,6 +149,20 @@ export default function StudentHive({ currentUser, setView }) {
 
   const currentView = (pathView && pathView !== 'student' && pathView !== 'feed') ? pathView : (activeView || 'feed');
 
+
+  const EIGHT_HUB_TOOLS = [
+    { id: 'career_roadmap', label: '1. Kariyer Haritası' },
+    { id: 'interview_simulator', label: '2. AI Mülakat' },
+    { id: 'ats_scanner', label: '3. ATS CV Tarayıcı' },
+    { id: 'career_test', label: '4. Holland Testi' },
+    { id: 'radar', label: '5. Başvuru Radarı' },
+    { id: 'staj', label: '6. Resmi Staj Portalı' },
+    { id: 'startup_incubator', label: '7. Kuluçka Merkezi' },
+    { id: 'club_portal', label: '8. Kulüpler Portalı' },
+  ];
+  const view = currentView;
+  const isEightToolView = EIGHT_HUB_TOOLS.some(t => t.id === currentView) || ['interview_sim', 'application_radar', 'student_radar', 'clubs', 'clubs_directory'].includes(currentView);
+
   const renderActiveView = () => {
     switch (currentView) {
       case 'student_onboarding':
@@ -410,6 +424,41 @@ export default function StudentHive({ currentUser, setView }) {
         />
       )}
 
+      {isEightToolView && (
+        <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs px-4 py-2.5">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => handleSetView('student')}
+                className="px-3 py-1.5 rounded-xl bg-[#990000] hover:bg-[#7f0000] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              >
+                ← Öğrenci Akışına Dön
+              </button>
+              <span className="text-xs font-bold text-[#1e3a5f] hidden sm:inline">
+                İESÜ Gelişim Araçları Merkezi (8'li Modül Ağı)
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+              {EIGHT_HUB_TOOLS.map(tool => {
+                const active = currentView === tool.id || (tool.id === 'radar' && ['application_radar', 'student_radar'].includes(currentView)) || (tool.id === 'club_portal' && ['clubs', 'clubs_directory'].includes(currentView));
+                return (
+                  <button
+                    key={tool.id}
+                    onClick={() => handleSetView(tool.id)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                      active
+                        ? 'bg-[#1e3a5f] text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                    }`}
+                  >
+                    {tool.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="w-10 h-10 border-4 border-[#990000] border-t-transparent rounded-full animate-spin" /></div>}>
         {renderActiveView()}
       </Suspense>

@@ -19,12 +19,6 @@ const firebaseConfig = {
   measurementId: import.meta.env?.VITE_FIREBASE_MEASUREMENT_ID || undefined,
 };
 
-if (!isTestEnv && (!firebaseConfig.apiKey || !firebaseConfig.projectId)) {
-  console.warn(
-    "[Firebase] Eksik ortam değişkeni tespit edildi. Lütfen .env dosyanızda VITE_FIREBASE_* değişkenlerinin tanımlı olduğundan emin olun."
-  );
-}
-
 let app = null;
 let _db = null;
 let _auth = null;
@@ -35,18 +29,16 @@ try {
     app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   }
 } catch (e) {
-  console.warn("[Firebase] Initialization fallback warning:", e);
   try {
     app = initializeApp(firebaseConfig, "iesu-fallback-" + Date.now());
-  } catch (e2) {
-    console.error("[Firebase] Fatal: app initialization failed", e2);
+  } catch (_) {
     app = null;
   }
 }
 
-try { _db = app ? getFirestore(app) : null; } catch (e) { console.warn("[Firebase] Firestore init failed:", e?.message); }
-try { _auth = app ? getAuth(app) : null; } catch (e) { console.warn("[Firebase] Auth init failed:", e?.message); }
-try { _storage = app ? getStorage(app) : null; } catch (e) { console.warn("[Firebase] Storage init failed:", e?.message); }
+try { _db = app ? getFirestore(app) : null; } catch (_) {}
+try { _auth = app ? getAuth(app) : null; } catch (_) {}
+try { _storage = app ? getStorage(app) : null; } catch (_) {}
 
 export const analytics = null;
 export const db = _db;

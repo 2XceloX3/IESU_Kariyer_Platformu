@@ -1,3 +1,5 @@
+import CMSFirestoreBackup from './admin/CMSFirestoreBackup';
+import KGMManagementConsole from './admin/KGMManagementConsole';
 import React, { useState, useMemo, useEffect } from 'react';
 import useAppStore from '../store/useAppStore';
 import TopProfileMenu from './TopProfileMenu';
@@ -496,6 +498,8 @@ export default function AdminDashboard({
       case 'aday_havuzu': return <CMSCandidatePool />;
       case 'user_types': return <CMSUserTypeManager />;
       case 'audit_log': return <CMSAuditTrail />;
+      case 'firestore_backup': return <CMSFirestoreBackup />;
+      case 'kgm_console': return <KGMManagementConsole setView={setView} currentUser={currentUser} academicRole={academicRole} setSelectedUserId={setSelectedUserId} />;
       case 'institutional_stats': return <InstitutionalStatsManager />;
       case 'platform_ayarlari': return <PlatformSettings featureSurveys={featureSurveys} setFeatureSurveys={setFeatureSurveys} featureAlumniCard={featureAlumniCard} setFeatureAlumniCard={setFeatureAlumniCard} showInstitutionalStats={showInstitutionalStats} setShowInstitutionalStats={setShowInstitutionalStats} institutionalStatsData={institutionalStatsData} setInstitutionalStatsData={setInstitutionalStatsData} featureAlumniAssocToggle={featureAlumniAssocToggle} setFeatureAlumniAssocToggle={setFeatureAlumniAssocToggle} featureCareerCheckup={featureCareerCheckup} setFeatureCareerCheckup={setFeatureCareerCheckup} featureCareerFair={featureCareerFair} setFeatureCareerFair={setFeatureCareerFair} featureSEMAcademy={featureSEMAcademy} setFeatureSEMAcademy={setFeatureSEMAcademy} />;
 
@@ -616,7 +620,8 @@ export default function AdminDashboard({
     { id: 'world_map', icon: <Globe size={14}/>, label: 'Dünyadaki Mezunlarımız' },
   ];
 
-  const isSuperAdmin = academicRole === 'super_admin' || userRole === 'admin' || currentUser?.role === 'admin';
+  const [superAdminOverride, setSuperAdminOverride] = useState(false);
+  const isSuperAdmin = superAdminOverride || userRole === 'superadmin' || userRole === 'super_admin' || userRole === 'admin' || academicRole === 'super_admin' || currentUser?.role === 'super_admin' || currentUser?.role === 'admin' || currentUser?.id === 'admin_1513' || currentUser?.name === 'Kariyer Geliştirme Koordinatörlüğü' || currentUser?.email === 'kariyer@iesu.edu.tr';
 
   const ALL_TABS = [...MAIN_TABS, ...MORE_TABS].filter(tab => {
     if (tab.id === 'cms_message_audit') return isAuditUnlocked;

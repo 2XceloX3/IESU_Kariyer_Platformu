@@ -384,4 +384,5 @@ const identity   = (s) => s;
 const useAppStore = (selector = identity) => useStore(api, selector);
 Object.assign(useAppStore, api);
 
+export { useAppStore };
 export default useAppStore;

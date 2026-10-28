@@ -1,3 +1,4 @@
+import useAppStore from '../store/useAppStore';
 import SafeAvatar from './shared/SafeAvatar';
 import React, { useState } from 'react';
 import { 
