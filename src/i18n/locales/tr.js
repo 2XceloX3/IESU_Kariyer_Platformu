@@ -16,6 +16,27 @@ export const tr = {
     employer: 'İşveren',
     academic: 'Akademisyen'
   },
+  hive: {
+    student: 'Öğrenci Kovanı',
+    alumni: 'Mezun Kovanı',
+    company: 'Şirket Kovanı',
+    academic: 'Akademik Kovan',
+    admin: 'Yönetim Paneli',
+    feed: 'Kampüs Akışı',
+    explore: 'Keşfet',
+    jobs: 'İş & Staj İlanları',
+    clubs: 'Öğrenci Kulüpleri',
+    events: 'Etkinlikler',
+    alumniAssoc: 'Mezunlar Derneği',
+    unityNetwork: 'Birlik Ağı',
+    atsBoard: 'Aday Takip (ATS)',
+    protocols: 'Kurumsal Protokoller',
+    internshipApprovals: 'Zorunlu Staj Onayları',
+    academicAdvising: 'Akademik Danışmanlık',
+    researchLabs: 'Araştırma Laboratuvarları',
+    auditTrail: 'Denetim Kayıtları'
+  },
+
   common: {
     appName: 'İstanbul Esenyurt Üniversitesi',
     coordinatorTitle: 'Kariyer Geliştirme Koordinatörlüğü',

@@ -16,6 +16,27 @@ export const ar = {
     employer: 'صاحب عمل',
     academic: 'أكاديمي'
   },
+  hive: {
+    student: 'خلية الطلاب',
+    alumni: 'خلية الخريجين',
+    company: 'خلية الشركات',
+    academic: 'الخلية الأكاديمية',
+    admin: 'لوحة الإدارة',
+    feed: 'نبض الحرم الجامعي',
+    explore: 'استكشاف',
+    jobs: 'فرص العمل والتدريب',
+    clubs: 'الأندية الطلابية',
+    events: 'الفعاليات',
+    alumniAssoc: 'جمعية الخريجين',
+    unityNetwork: 'شبكة الاتحاد',
+    atsBoard: 'تتبع المتقدمين (ATS)',
+    protocols: 'البروتوكولات المؤسسية',
+    internshipApprovals: 'موافقات التدريب الإلزامي',
+    academicAdvising: 'الإرشاد الأكاديمي',
+    researchLabs: 'مختبرات الأبحاث',
+    auditTrail: 'سجلات التدقيق'
+  },
+
   common: {
     appName: 'جامعة إسطنبول إيسنيورت (İESÜ)',
     coordinatorTitle: 'منسقية التطوير المهني والتوظيف',

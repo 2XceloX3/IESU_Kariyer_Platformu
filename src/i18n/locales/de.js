@@ -16,6 +16,27 @@ export const de = {
     employer: 'Arbeitgeber',
     academic: 'Akademische Mitarbeitende'
   },
+  hive: {
+    student: 'Studenten-Portal',
+    alumni: 'Alumni-Portal',
+    company: 'Unternehmens-Portal',
+    academic: 'Akademisches Portal',
+    admin: 'Admin-Konsole',
+    feed: 'Campus-Feed',
+    explore: 'Entdecken',
+    jobs: 'Jobs & Praktika',
+    clubs: 'Studentenclubs',
+    events: 'Veranstaltungen',
+    alumniAssoc: 'Alumni-Vereinigung',
+    unityNetwork: 'Einheitsnetzwerk',
+    atsBoard: 'Bewerbermanagement (ATS)',
+    protocols: 'Unternehmensprotokolle',
+    internshipApprovals: 'Pflichtpraktikum-Freigaben',
+    academicAdvising: 'Akademische Beratung',
+    researchLabs: 'Forschungslabore',
+    auditTrail: 'Prüfprotokolle'
+  },
+
   common: {
     appName: 'Istanbul Esenyurt Universität (IESU)',
     coordinatorTitle: 'Koordinationsstelle für Karriereentwicklung',

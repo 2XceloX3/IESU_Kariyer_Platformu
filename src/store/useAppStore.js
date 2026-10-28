@@ -87,9 +87,13 @@ export const coreStore = create(
       // Internationalization (TR / EN)
       language: (typeof window !== 'undefined' && localStorage.getItem('iesu_preferred_language')) || 'tr',
       setLanguage: (lang) => {
-        const safe = lang === 'en' ? 'en' : 'tr';
+        const safe = ['tr', 'en', 'ar', 'de'].includes(lang) ? lang : 'tr';
+    if (typeof document !== 'undefined' && document.documentElement) {
+      document.documentElement.lang = safe;
+      document.documentElement.dir = safe === 'ar' ? 'rtl' : 'ltr';
+    }
         try { if (typeof window !== 'undefined') localStorage.setItem('iesu_preferred_language', safe); } catch (_) {}
-        try { eventBus.emit('language:changed', { language: safe }); } catch (_) {}
+        try { eventBus.emit('language:changed', { language: safe }); eventBus.emit('i18n:languageChanged', { language: safe }); } catch (_) {}
         set({ language: safe });
       },
 

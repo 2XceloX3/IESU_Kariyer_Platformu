@@ -16,6 +16,27 @@ export const en = {
     employer: 'Employer',
     academic: 'Academic'
   },
+  hive: {
+    student: 'Student Hive',
+    alumni: 'Alumni Hive',
+    company: 'Company Hive',
+    academic: 'Academic Hive',
+    admin: 'Admin Dashboard',
+    feed: 'Campus Feed',
+    explore: 'Explore',
+    jobs: 'Jobs & Internships',
+    clubs: 'Student Clubs',
+    events: 'Events',
+    alumniAssoc: 'Alumni Association',
+    unityNetwork: 'Unity Network',
+    atsBoard: 'Applicant Tracking (ATS)',
+    protocols: 'Corporate Protocols',
+    internshipApprovals: 'Internship Approvals',
+    academicAdvising: 'Academic Advising',
+    researchLabs: 'Research Labs',
+    auditTrail: 'Audit Trail'
+  },
+
   common: {
     appName: 'Istanbul Esenyurt University (IESU)',
     coordinatorTitle: 'Career Development Coordination Office',
