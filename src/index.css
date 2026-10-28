@@ -6,9 +6,9 @@
 @layer base {
   :root {
     /* === İstanbul Esenyurt Üniversitesi Brand Colors === */
-    --brand-primary: #A80016;
+    --brand-primary: #990000;
     --brand-primary-kurumsal: #990000;
-    --brand-secondary: #800000;
+    --brand-secondary: #D32F2F;
     --brand-secondary-kurumsal: #D32F2F;
     --brand-accent: #9E0B0F;
     --brand-soft-red: #FFF5F5;

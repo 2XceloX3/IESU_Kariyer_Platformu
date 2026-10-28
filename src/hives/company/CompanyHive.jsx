@@ -108,12 +108,16 @@ export default function CompanyHive({ currentUser, setView }) {
             currentUser={effectiveCurrentUser}
           />
         );
+      case 'ats':
       case 'company_ats':
         return <CompanyATSBoard setView={handleSetView} currentUser={effectiveCurrentUser} />;
+      case 'post-job':
+      case 'post_job':
       case 'create_job':
         return <JobCreator setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} userRole="company" />;
+      case 'profile':
       case 'user_profile':
         return <UserProfile userId={selectedUserId || effectiveCurrentUser?.id || effectiveCurrentUser?.uid || 'self'} viewerHive="company" setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} setSelectedUserId={setSelectedUserId} />;
       case 'public_profile':
@@ -122,6 +126,7 @@ export default function CompanyHive({ currentUser, setView }) {
         return <ProfileUpdate setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'applications':
         return <ApplicationsPanel setView={handleSetView} currentUser={effectiveCurrentUser} />;
+      case 'fair':
       case 'virtual_fair':
         return <VirtualCareerFair setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
       case 'notifications':

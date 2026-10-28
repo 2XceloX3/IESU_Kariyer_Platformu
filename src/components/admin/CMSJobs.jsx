@@ -112,12 +112,23 @@ export default function CMSJobs({ jobs = [], setJobs, applications = [], setAppl
   const totalApplications = (applications || []).length;
 
   const handleApproveJob = (jobId) => {
-    setJobs((jobs || []).map(j => j.id === jobId ? { ...j, status: 'Aktif' } : j));
-    const targetJob = (jobs || []).find(j => j.id === jobId);
+    const updatedJobs = (jobs || []).map(j => j.id === jobId ? { ...j, status: 'Aktif', isApproved: true, approvalStatus: 'approved' } : j);
+    setJobs(updatedJobs);
+    const appState = useAppStore.getState();
+    if (typeof appState.setCareerOpportunities === 'function') {
+      const currentOpps = appState.careerOpportunities || [];
+      const approvedItem = updatedJobs.find(j => j.id === jobId);
+      const exists = currentOpps.some(o => o.id === jobId);
+      const nextOpps = exists
+        ? currentOpps.map(o => o.id === jobId ? { ...o, status: 'Aktif', isApproved: true, approvalStatus: 'approved' } : o)
+        : (approvedItem ? [approvedItem, ...currentOpps] : currentOpps);
+      appState.setCareerOpportunities(nextOpps);
+    }
+    const targetJob = updatedJobs.find(j => j.id === jobId);
     try {
-      eventBus?.emit?.('job:published', { job: { ...targetJob, status: 'Aktif' } });
+      eventBus?.emit?.('job:published', { job: targetJob });
     } catch (_) {}
-    window.toast && window.toast.success('İlan yayına alındı!');
+    window.toast && window.toast.success('İlan onaylandı ve tüm kovanlarda yayına alındı!');
   };
 
   const handleRejectJob = (jobId) => {

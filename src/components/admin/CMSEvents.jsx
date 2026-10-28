@@ -162,9 +162,9 @@ export default function CMSEvents({ events = [], setEvents }) {
     };
     
     if (currentId) {
-      setEvents((events || []).map(ev => ev.id === currentId ? { ...ev, ...normalizedForm, updatedAt: new Date().toISOString() } : ev));
+      setEvents((events || []).map(ev => ev.id === currentId ? { ...ev, ...normalizedForm, status: form.status || ev.status || 'Yayında', approvalStatus: 'approved', isApproved: true, updatedAt: new Date().toISOString() } : ev));
     } else {
-      setEvents(current => [{ ...normalizedForm, id: newId, type: 'Etkinlik', createdAt: new Date().toISOString() }, ...(current || [])]);
+      setEvents(current => [{ ...normalizedForm, id: newId, type: 'Etkinlik', status: form.status || 'Yayında', approvalStatus: 'approved', isApproved: true, createdAt: new Date().toISOString() }, ...(current || [])]);
     }
     setIsEditing(false);
   };

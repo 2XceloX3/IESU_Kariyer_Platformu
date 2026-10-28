@@ -158,8 +158,20 @@ service cloud.firestore {
       allow create, delete: if isAdmin();
       allow update: if isAuthenticated() && (
         resource.data.presidentId == request.auth.uid ||
-        isAdmin()
+        isAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['requests', 'memberRequests', 'members', 'memberCount'])
       );
+    }
+
+    match /clubApplications/{appId} {
+      allow read, create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update: if isAuthenticated();
+      allow delete: if isAdmin();
     }
 
     match /notifications/{notifId} {

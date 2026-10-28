@@ -72,7 +72,7 @@ export default function AcademicStaffFeed({
   // --- Danışmanlık & Randevu Talepleri State ---
   const [counselingRequests, setCounselingRequests] = useState(() => {
     try {
-      const saved = localStorage.getItem('iesu_mentorship_requests_v1');
+      const saved = localStorage.getItem('iesu_counseling_requests_v1') || localStorage.getItem('iesu_mentorship_requests_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -88,7 +88,7 @@ export default function AcademicStaffFeed({
   useEffect(() => {
     const handleSync = () => {
       try {
-        const saved = localStorage.getItem('iesu_mentorship_requests_v1');
+        const saved = localStorage.getItem('iesu_counseling_requests_v1') || localStorage.getItem('iesu_mentorship_requests_v1');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) setCounselingRequests(parsed);
@@ -115,7 +115,7 @@ export default function AcademicStaffFeed({
   const saveCounselingRequests = (updatedList) => {
     setCounselingRequests(updatedList);
     try {
-      localStorage.setItem('iesu_mentorship_requests_v1', JSON.stringify(updatedList));
+      localStorage.setItem('iesu_counseling_requests_v1', JSON.stringify(updatedList));
       window.dispatchEvent(new CustomEvent('iesu_counseling_updated'));
     } catch (e) { /* intentional */ }
   };
