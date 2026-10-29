@@ -55,6 +55,7 @@ const CMSPortfolios = React.lazy(() => import('./admin/CMSPortfolios'));
 const CMSClubs = React.lazy(() => import('./admin/CMSClubs'));
 const CMSIncubator = React.lazy(() => import('./admin/CMSIncubator'));
 const CMSWorldMap = React.lazy(() => import('./admin/CMSWorldMap'));
+const CMSKalbis = React.lazy(() => import('./admin/CMSKalbis'));
 const AkademikPanel = React.lazy(() => import('./admin/AkademikPanel'));
 import PanelHeader from './admin/PanelHeader';
 import Logo from './Logo';
@@ -265,7 +266,7 @@ const PANEL_CATEGORIES = [
     id: 'genel', 
     label: 'Genel Bakış', 
     icon: <LayoutDashboard size={14}/>, 
-    panels: ['overview', 'operasyon', 'basvuru_havuzu', 'aday_havuzu', 'mesajlar', 'cms_datapool', 'world_map'] 
+    panels: ['overview', 'cms_kalbis', 'operasyon', 'basvuru_havuzu', 'aday_havuzu', 'mesajlar', 'cms_datapool', 'world_map'] 
   },
   { 
     id: 'kullanici', 
@@ -289,7 +290,7 @@ const PANEL_CATEGORIES = [
     id: 'sistem', 
     label: 'Sistem & Analiz', 
     icon: <Settings size={14}/>, 
-    panels: ['site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] 
+    panels: ['cms_kalbis', 'site_editor', 'institutional_stats', 'platform_ayarlari', 'cms_sync', 'data_cleanup', 'cms_datapool', 'content_import', 'analytics', 'anket', 'audit_log', 'akademik_radar', 'aday_havuzu', 'entegrasyon', 'cms_ssp'] 
   }
 ];
 
@@ -558,12 +559,14 @@ export default function AdminDashboard({
         );
       case 'site_editor': return <CMSSiteEditor />;
       case 'world_map': return <CMSWorldMap />;
+      case 'cms_kalbis': case 'kalbis': return <CMSKalbis currentUser={currentUser} setView={setView} />;
       default:            return <OverviewPanel {...p}/>;
     }
   };
 
   const MAIN_TABS = [
     { id: 'overview', icon: <LayoutDashboard size={14}/>, label: 'Genel Bakış' },
+    { id: 'cms_kalbis', icon: <ShieldCheck size={14}/>, label: 'KALBİS Kalite Yönetim Sistemi' },
     { id: 'basvuru_havuzu', icon: <Briefcase size={14}/>, label: 'İlan & Staj Başvuru Havuzu' },
     { id: 'cms_mentorship_pool', icon: <UserCheck size={14}/>, label: 'Mentörlük & Danışmanlık Havuzu' },
     { id: 'cms_datapool', icon: <Database size={14}/>, label: 'Veri Havuzu & Excel' },

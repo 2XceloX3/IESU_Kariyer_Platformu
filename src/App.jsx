@@ -33,7 +33,7 @@ const ADMIN_CMS = new Set([
   'institutional_stats', 'cms_career_counseling', 'cms_corporate_partnerships', 
   'company_edu_requests', 'company_event_msgs', 'content_import', 'cms_ment', 
   'cms_portfolios', 'cms_incubator', 'cms_clubs', 'cms_gallery', 'cms_message_audit', 
-  'world_map'
+  'world_map', 'kalbis', 'cms_kalbis'
 ]);
 const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
 const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
