@@ -6,7 +6,7 @@ import { Users, Plus, Edit2, Trash2, Phone, Mail, ExternalLink, ShieldCheck, Ima
 const defaultStaffList = [
   {
     id: 'STAFF-1',
-    name: 'Zuhal ŞAHİN',
+    name: 'Kariyer Geliştirme Koordinatörlüğü',
     title: 'Kariyer Geliştirme Ofis Sorumlusu',
     phone: '444 9 123 (Dahili: 1102)',
     email: 'zsahin@esenyurt.edu.tr',

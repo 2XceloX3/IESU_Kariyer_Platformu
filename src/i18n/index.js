@@ -43,7 +43,7 @@ export const UI_PHRASE_MAP = {
   'İlanlar': { en: 'Job Listings', ar: 'الوظائف', de: 'Stellenangebote' },
   'Öğrenci Kulüpleri': { en: 'Student Clubs', ar: 'الأندية الطلابية', de: 'Studentenclubs' },
   'Kulüpler': { en: 'Clubs', ar: 'الأندية', de: 'Clubs' },
-  'Mezunlar Derneği': { en: 'Alumni Association', ar: 'جمعية الخريجين', de: 'Alumni-Vereinigung' },
+  'İESÜ Mezunlar Portalı': { en: 'Alumni Association', ar: 'جمعية الخريجين', de: 'Alumni-Vereinigung' },
   'Birlik Ağı': { en: 'Unity Network', ar: 'شبكة الاتحاد', de: 'Einheitsnetzwerk' },
   'Mezun Bilgi Sistemi': { en: 'Alumni Information System', ar: 'نظام معلومات الخريجين', de: 'Alumni-Informationssystem' },
   'Kariyer Check-Up': { en: 'Career Check-Up', ar: 'فحص المسار المهني', de: 'Karriere-Check-Up' },

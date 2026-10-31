@@ -80,7 +80,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     const defaults = [
       { id: 'st-1', authorName: 'İESÜ Kariyer Merkezi', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: '2026 Bahar Dönemi Zorunlu Staj & KGM Başvuruları Başladı!', createdAt: '1s önce' },
       { id: 'st-2', authorName: 'Yapay Zeka Kulübü', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Prompt Mühendisliği & CV Atölyesi B-Blok Amfide!', createdAt: '3s önce' },
-      { id: 'st-3', authorName: 'İESÜ Mezunlar Derneği', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
+      { id: 'st-3', authorName: 'İESÜ Mezunlar Portalı', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
     ];
     try {
       const saved = JSON.parse(localStorage.getItem('iesu_campus_stories_v1') || '[]');

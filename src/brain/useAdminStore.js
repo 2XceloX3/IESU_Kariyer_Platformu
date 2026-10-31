@@ -39,7 +39,7 @@ const initialApplications = []; // F-ATS-010: no fake seed without companyId
 const initialStaffList = [
   {
     id: 'STAFF-1',
-    name: 'Zuhal ŞAHİN',
+    name: 'Kariyer Geliştirme Koordinatörlüğü',
     title: 'Kariyer Geliştirme Ofis Sorumlusu',
     phone: '444 9 123 / 1322',
     email: 'zsahin@esenyurt.edu.tr',

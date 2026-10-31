@@ -61,7 +61,7 @@ const CMSCareerFair = () => {
   // Dynamic Live Stage Sessions State
   const [stageSessions, setStageSessions] = useState([
     { id: 'SESS-1', time: '10:30 - 11:15', speaker: 'Esenyurt Bilişim & İK Direktörlüğü', company: 'Trendyol Tech', topic: 'Yapay Zeka ve Yazılım Sektöründe Kariyer Fırsatları', status: 'CANLI SAHNEDE', isLive: true },
-    { id: 'SESS-2', time: '11:30 - 12:15', speaker: 'Zuhal ŞAHİN', company: 'İESÜ Kariyer Geliştirme Ofisi', topic: 'Geleceğin Yetkinlikleri ve Etkili CV Hazırlama', status: 'Sıradaki', isLive: false },
+    { id: 'SESS-2', time: '11:30 - 12:15', speaker: 'Kariyer Geliştirme Koordinatörlüğü', company: 'İESÜ Kariyer Geliştirme Ofisi', topic: 'Geleceğin Yetkinlikleri ve Etkili CV Hazırlama', status: 'Sıradaki', isLive: false },
     { id: 'SESS-3', time: '14:00 - 15:00', speaker: 'Caner DEMİR', company: 'Garanti BBVA Teknoloji', topic: 'Fintech ve Dijital Dönüşüm Zirvesi', status: 'Bekliyor', isLive: false }
   ]);
   const [newSession, setNewSession] = useState({ time: '', speaker: '', company: '', topic: '' });

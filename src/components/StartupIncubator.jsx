@@ -144,7 +144,7 @@ export default function StartupIncubator({ setView, currentUser, userRole, setSe
 
     try {
       const response = await generateAIResponse(prompt, "Sadece geçerli JSON dön");
-      let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
+      let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
       const data = JSON.parse(cleanJson);
       setCanvas(data);
       try {

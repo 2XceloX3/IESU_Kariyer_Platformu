@@ -25,7 +25,7 @@ export default function CMSCareerCounseling() {
     evaluationNotes: '',
     actionPlan: '',
     verifiedSkills: 'React, Node.js, İletişim',
-    counselorName: 'Zuhal ŞAHİN (KGM Ofis Sorumlusu)'
+    counselorName: 'Kariyer Geliştirme Koordinatörlüğü (KGM Ofis Sorumlusu)'
   });
 
   const [appointments, setAppointments] = useState([
@@ -34,7 +34,7 @@ export default function CMSCareerCounseling() {
       studentName: 'Alperen Yılmaz', 
       studentId: 'STU-001',
       department: 'Yazılım Mühendisliği', 
-      counselor: 'Zuhal ŞAHİN', 
+      counselor: 'Kariyer Geliştirme Koordinatörlüğü',
       type: 'Bire Bir CV & Portfolyo İnceleme', 
       date: '2026-08-05 14:00', 
       location: 'KGM Görüşme Odası 2 / Online Zoom', 
@@ -65,7 +65,7 @@ export default function CMSCareerCounseling() {
       studentName: 'Mert Demir', 
       studentId: 'STU-003',
       department: 'Biyomedikal Mühendisliği', 
-      counselor: 'Zuhal ŞAHİN', 
+      counselor: 'Kariyer Geliştirme Koordinatörlüğü',
       type: 'Kariyer Yönlendirme & Yüksek Lisans', 
       date: '2026-08-06 15:30', 
       location: 'Online Teams', 
@@ -89,7 +89,7 @@ export default function CMSCareerCounseling() {
       studentName: 'Caner Şahin',
       studentId: 'STU-005',
       department: 'Mimarlık',
-      counselor: 'Zuhal ŞAHİN',
+      counselor: 'Kariyer Geliştirme Koordinatörlüğü',
       type: 'Yurt Dışı Kariyer Fırsatları',
       date: '2026-08-07 14:30',
       location: 'KGM Görüşme Odası 1',
@@ -120,7 +120,7 @@ export default function CMSCareerCounseling() {
       studentName: 'Burak Arslan',
       studentId: 'STU-007',
       department: 'Veri Bilimi',
-      counselor: 'Zuhal ŞAHİN',
+      counselor: 'Kariyer Geliştirme Koordinatörlüğü',
       type: 'Teknik Mülakat Hazırlığı',
       date: '2026-08-08 16:00',
       location: 'Online Zoom',
@@ -142,7 +142,7 @@ export default function CMSCareerCounseling() {
   ]);
 
   const counselorsList = [
-    { name: 'Zuhal ŞAHİN', title: 'KGM Kıdemli Danışman & Ofis Sorumlusu', email: 'zuhal.sahin@iesu.edu.tr', totalAppts: 18, rating: 4.9, avatar: 'ZŞ' },
+    { name: 'Kariyer Geliştirme Koordinatörlüğü', title: 'KGM Kıdemli Danışman & Ofis Sorumlusu', email: 'zuhal.sahin@iesu.edu.tr', totalAppts: 18, rating: 4.9, avatar: 'ZŞ' },
     { name: 'Mutlu Gülsev YAĞIZ', title: 'Kariyer Geliştirme Uzmanı', email: 'mgulsev@iesu.edu.tr', totalAppts: 22, rating: 5.0, avatar: 'MY' }
   ];
 
@@ -158,7 +158,7 @@ export default function CMSCareerCounseling() {
       evaluationNotes: appt.evaluation?.evaluationNotes || '',
       actionPlan: appt.evaluation?.actionPlan || '',
       verifiedSkills: appt.evaluation?.verifiedSkills || 'İletişim, Problem Çözme',
-      counselorName: appt.counselor || 'Zuhal ŞAHİN'
+      counselorName: appt.counselor || 'Kariyer Geliştirme Koordinatörlüğü'
     });
   };
 
