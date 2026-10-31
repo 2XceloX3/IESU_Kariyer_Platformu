@@ -27,7 +27,7 @@ export const tr = {
     jobs: 'İş & Staj İlanları',
     clubs: 'Öğrenci Kulüpleri',
     events: 'Etkinlikler',
-    alumniAssoc: 'Mezunlar Derneği',
+    alumniAssoc: 'İESÜ Mezunlar Portalı',
     unityNetwork: 'Birlik Ağı',
     atsBoard: 'Aday Takip (ATS)',
     protocols: 'Kurumsal Protokoller',

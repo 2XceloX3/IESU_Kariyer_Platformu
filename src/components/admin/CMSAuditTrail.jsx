@@ -31,7 +31,7 @@ const INITIAL_LOGS = [
   {
     id: 'LOG-1001',
     user: {
-      name: 'Zuhal ŞAHİN',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       role: 'Süper Admin',
       email: 'zuhal.sahin@esenyurt.edu.tr',
       initials: 'ZŞ',
@@ -41,7 +41,7 @@ const INITIAL_LOGS = [
     },
     actionType: 'Ekleme',
     title: 'Yeni Haber Yayınlandı',
-    detail: 'Zuhal ŞAHİN yeni bir haber ekledi: "Kariyer Fuarı Duyurusu"',
+    detail: 'Kariyer Geliştirme Koordinatörlüğü yeni bir haber ekledi: "Kariyer Fuarı Duyurusu"',
     target: 'Kariyer Fuarı Duyurusu',
     category: 'Haber & Duyuru',
     timestamp: '2026-08-02T14:15:00',
@@ -94,7 +94,7 @@ const INITIAL_LOGS = [
   {
     id: 'LOG-1004',
     user: {
-      name: 'Zuhal ŞAHİN',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       role: 'Süper Admin',
       email: 'zuhal.sahin@esenyurt.edu.tr',
       initials: 'ZŞ',
@@ -104,7 +104,7 @@ const INITIAL_LOGS = [
     },
     actionType: 'Sistem',
     title: 'Platform Ayarı Değiştirildi',
-    detail: 'Zuhal ŞAHİN platform ayarını güncelledi: KGB Kariyer Gelişim Belgesi Sistemi aktifleştirildi',
+    detail: 'Kariyer Geliştirme Koordinatörlüğü platform ayarını güncelledi: KGB Kariyer Gelişim Belgesi Sistemi aktifleştirildi',
     target: 'KGB Kariyer & Yetkinlik Modülü',
     category: 'Sistem Ayarları',
     timestamp: '2026-08-02T11:20:00',
@@ -157,7 +157,7 @@ const INITIAL_LOGS = [
   {
     id: 'LOG-1007',
     user: {
-      name: 'Zuhal ŞAHİN',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       role: 'Süper Admin',
       email: 'zuhal.sahin@esenyurt.edu.tr',
       initials: 'ZŞ',
@@ -167,7 +167,7 @@ const INITIAL_LOGS = [
     },
     actionType: 'Sistem',
     title: 'Kullanıcı Yetki Revizyonu',
-    detail: 'Zuhal ŞAHİN kullanıcı yetkisi değiştirdi: Ali Yılmaz → Editör',
+    detail: 'Kariyer Geliştirme Koordinatörlüğü kullanıcı yetkisi değiştirdi: Ali Yılmaz → Editör',
     target: 'Ali Yılmaz Yetki Değişimi',
     category: 'Kullanıcı Yönetimi',
     timestamp: '2026-08-01T16:50:00',
@@ -262,7 +262,7 @@ const INITIAL_LOGS = [
   {
     id: 'LOG-1012',
     user: {
-      name: 'Zuhal ŞAHİN',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       role: 'Süper Admin',
       email: 'zuhal.sahin@esenyurt.edu.tr',
       initials: 'ZŞ',
@@ -272,7 +272,7 @@ const INITIAL_LOGS = [
     },
     actionType: 'Sistem',
     title: 'Manuel Veritabanı Yedeği',
-    detail: 'Zuhal ŞAHİN veritabanı yedeği aldı: "Manual_Backup_20260802"',
+    detail: 'Kariyer Geliştirme Koordinatörlüğü veritabanı yedeği aldı: "Manual_Backup_20260802"',
     target: 'Sistem Veritabanı Yedeği',
     category: 'Sistem Ayarları',
     timestamp: '2026-07-29T10:00:00',
@@ -367,7 +367,7 @@ const INITIAL_LOGS = [
   {
     id: 'LOG-1017',
     user: {
-      name: 'Zuhal ŞAHİN',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       role: 'Süper Admin',
       email: 'zuhal.sahin@esenyurt.edu.tr',
       initials: 'ZŞ',
@@ -377,7 +377,7 @@ const INITIAL_LOGS = [
     },
     actionType: 'Sistem',
     title: 'Güvenlik Politikası Güncellemesi',
-    detail: 'Zuhal ŞAHİN güvenlik politikasını güncelledi: 2FA Personel Zorunluluğu',
+    detail: 'Kariyer Geliştirme Koordinatörlüğü güvenlik politikasını güncelledi: 2FA Personel Zorunluluğu',
     target: '2FA Güvenlik Protokolü',
     category: 'Sistem Ayarları',
     timestamp: '2026-07-20T15:00:00',
@@ -411,7 +411,7 @@ const INITIAL_LOGS = [
 // Unique staff members for dropdown filter
 const STAFF_LIST = [
   { name: 'Tümü', role: 'Tüm Personeller' },
-  { name: 'Zuhal ŞAHİN', role: 'Süper Admin' },
+  { name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'Süper Admin' },
   { name: 'Ahmet YILDIZ', role: 'Kariyer Uzmanı' },
   { name: 'Dr. Elif KAYA', role: 'Akademik Koordinatör' },
   { name: 'Canan ÖZTÜRK', role: 'İçerik Editörü' },

@@ -21,7 +21,7 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
     },
     {
       id: 'staff-2',
-      name: 'Zuhal ŞAHİN',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       title: 'Memur',
       email: 'zuhalsahin@esenyurt.edu.tr',
       photo: 'https://www.esenyurt.edu.tr/uploads/staffs/405.jpg'

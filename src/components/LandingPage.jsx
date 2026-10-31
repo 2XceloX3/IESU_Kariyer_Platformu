@@ -721,7 +721,7 @@ export default function LandingPage({ setView, currentUser, userRole }) {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {[
                           { name: "Öğr. Gör. Mutlu Gülsev YAĞIZ", title: "Müdür", phone: "444 9 123", email: "mutluyagiz@esenyurt.edu.tr", img: "https://www.esenyurt.edu.tr/uploads/staffs/278.jpg" },
-                          { name: "Zuhal ŞAHİN", title: "Memur", email: "zuhalsahin@esenyurt.edu.tr", img: "https://www.esenyurt.edu.tr/uploads/staffs/405.jpg" }
+                          { name: "Kariyer Geliştirme Koordinatörlüğü", title: "Memur", email: "zuhalsahin@esenyurt.edu.tr", img: "https://www.esenyurt.edu.tr/uploads/staffs/405.jpg" }
                         ].map((member, idx) => (
                           <div key={idx} className="bg-slate-50 rounded-2xl p-5 flex items-center gap-5 border border-slate-200 hover:shadow-lg transition-all group hover:-translate-y-1">
                             <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden shrink-0 border-4 border-white shadow-md group-hover:scale-105 transition-transform">
