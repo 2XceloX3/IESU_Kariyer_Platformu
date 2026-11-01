@@ -6,7 +6,7 @@ import { Users, Plus, Edit2, Trash2, Phone, Mail, ExternalLink, ShieldCheck, Ima
 const defaultStaffList = [
   {
     id: 'STAFF-1',
-    name: 'Zuhal ŞAHİN',
+    name: 'Kariyer Geliştirme Koordinatörlüğü',
     title: 'Kariyer Geliştirme Ofis Sorumlusu',
     phone: '444 9 123 (Dahili: 1102)',
     email: 'zsahin@esenyurt.edu.tr',
@@ -15,7 +15,7 @@ const defaultStaffList = [
   },
   {
     id: 'STAFF-2',
-    name: 'Mutlu Gülsev YAĞIZ',
+    name: 'Kariyer Geliştirme Koordinatörlüğü',
     title: 'Kariyer Geliştirme Ofisi Sorumlusu',
     phone: '444 9 123 (Dahili: 1102)',
     email: 'myagiz@esenyurt.edu.tr',
@@ -198,7 +198,7 @@ export default function CMSStaff() {
                   <input
                     type="text"
                     required
-                    placeholder="Örn: Öğr. Gör. Mutlu Gülsev YAĞIZ"
+                    placeholder="Örn: Kariyer Geliştirme Koordinatörlüğü"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#990000] font-bold"

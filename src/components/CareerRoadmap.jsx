@@ -386,7 +386,7 @@ export default function CareerRoadmap({ setView, currentUser, userRole, setSelec
 
     try {
       const response = await generateAIResponse(prompt, "Sadece geçerli JSON dön");
-      let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
+      let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
       const data = JSON.parse(cleanJson);
       setRoadmap(data);
       setSelectedSectorId('custom');

@@ -57,7 +57,7 @@ export default function MetaverseLibrary({ setView, currentUser, userRole, setSe
     setTimeout(async () => {
       try {
         const response = await generateAIResponse(prompt, "Sadece JSON dön");
-        let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').replace(/^```\s*/, '').trim();
+        let cleanJson = response.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
         const data = JSON.parse(cleanJson);
         setResults(data);
         setIsSearching(false);

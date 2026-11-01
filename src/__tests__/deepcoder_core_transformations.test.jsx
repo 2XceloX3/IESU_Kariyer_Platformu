@@ -89,7 +89,7 @@ describe('DeepCoder Core Transformations Verification', () => {
       const cleanJson = sampleResponse
         .replace(/^```json\s*/i, '')
         .replace(/\s*```$/, '')
-        .replace(/^```\s*/, '')
+
         .trim();
       const parsed = JSON.parse(cleanJson);
       expect(parsed.title).toBe('Learn JSON Schema');

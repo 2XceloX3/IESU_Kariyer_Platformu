@@ -12,16 +12,16 @@ export default function AboutUsPage({ setView, currentUser, userRole, setSelecte
   const defaultStaff = [
     {
       id: 'staff-1',
-      name: 'Öğr. Gör. Mutlu Gülsev YAĞIZ',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       title: 'Kariyer Geliştirme Ofis Müdürü',
       phone: '444 9 123',
-      email: 'mutluyagiz@esenyurt.edu.tr',
+      email: 'kgm@iesu.edu.tr',
       photo: 'https://www.esenyurt.edu.tr/uploads/staffs/278.jpg',
       yokLink: 'http://akademik.yok.gov.tr/AkademikArama/AkademisyenGorevOgrenimBilgileri?islem=direct&authorId=CAC066B35D650BC1'
     },
     {
       id: 'staff-2',
-      name: 'Zuhal ŞAHİN',
+      name: 'Kariyer Geliştirme Koordinatörlüğü',
       title: 'Memur',
       email: 'zuhalsahin@esenyurt.edu.tr',
       photo: 'https://www.esenyurt.edu.tr/uploads/staffs/405.jpg'

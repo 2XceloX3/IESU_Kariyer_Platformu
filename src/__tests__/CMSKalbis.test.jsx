@@ -31,7 +31,7 @@ describe('KALBİS Kalite Güvencesi Bilgi Yönetim Sistemi (CMSKalbis)', () => {
   });
 
   it('toggles role switcher between Akademik Personel and Koordinatörlük Yöneticisi', () => {
-    const currentUser = { id: 'usr_admin', name: 'Mutlu Gülsev YAĞIZ', role: 'academic' };
+    const currentUser = { id: 'usr_admin', name: 'Akademik Kalite Sorumlusu', role: 'academic' };
     render(<CMSKalbis currentUser={currentUser} setView={vi.fn()} />);
 
     const roleBtn = screen.getByTitle('Kullanıcı Rolü Değiştir');
@@ -47,7 +47,7 @@ describe('KALBİS Kalite Güvencesi Bilgi Yönetim Sistemi (CMSKalbis)', () => {
   });
 
   it('navigates through sidebar sub-modules (Komisyonlar, DÖİF, Ders Dosyası)', () => {
-    const currentUser = { id: 'usr_admin', name: 'Mutlu Gülsev YAĞIZ', role: 'academic' };
+    const currentUser = { id: 'usr_admin', name: 'Akademik Kalite Sorumlusu', role: 'academic' };
     render(<CMSKalbis currentUser={currentUser} setView={vi.fn()} />);
 
     // Click Komisyon İşlemleri
@@ -70,7 +70,7 @@ describe('KALBİS Kalite Güvencesi Bilgi Yönetim Sistemi (CMSKalbis)', () => {
   });
 
   it('opens and closes Süreç Kartı Bilgi Modalı and Yardım Modalı', () => {
-    const currentUser = { id: 'usr_admin', name: 'Mutlu Gülsev YAĞIZ', role: 'academic' };
+    const currentUser = { id: 'usr_admin', name: 'Akademik Kalite Sorumlusu', role: 'academic' };
     render(<CMSKalbis currentUser={currentUser} setView={vi.fn()} />);
 
     // Süreç Bilgisi modal
@@ -85,7 +85,7 @@ describe('KALBİS Kalite Güvencesi Bilgi Yönetim Sistemi (CMSKalbis)', () => {
   });
 
   it('marks all notifications as read and updates count', () => {
-    const currentUser = { id: 'usr_admin', name: 'Mutlu Gülsev YAĞIZ', role: 'academic' };
+    const currentUser = { id: 'usr_admin', name: 'Akademik Kalite Sorumlusu', role: 'academic' };
     render(<CMSKalbis currentUser={currentUser} setView={vi.fn()} />);
 
     const markAllBtn = screen.getByText('Tümünü okundu yap');

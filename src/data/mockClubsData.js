@@ -518,7 +518,7 @@ export const initialClubs = [
     establishedYear: 2022,
     status: 'Aktif',
     memberCount: 165,
-    advisor: 'Dr. Öğr. Üyesi Mutlu Gülsev Yağız',
+    advisor: 'Kariyer Geliştirme Koordinatörlüğü',
     advisorEmail: 'myagiz@esenyurt.edu.tr',
     presidentId: 'STU-024',
     president: {
@@ -547,7 +547,7 @@ export const initialClubs = [
     ],
     boardMembers: [
       { id: 'BM-401', name: 'Caner Arslan', role: 'Kulüp Başkanı', department: 'Psikoloji (3. Sınıf)', studentNo: '2023040188', email: 'caner.arslan@ogr.esenyurt.edu.tr' },
-      { id: 'BM-402', name: 'Dr. Öğr. Üyesi Mutlu Gülsev Yağız', role: 'Akademik Danışman', department: 'İktisadi ve İdari Bilimler', email: 'myagiz@esenyurt.edu.tr' }
+      { id: 'BM-402', name: 'Kariyer Geliştirme Koordinatörlüğü', role: 'Akademik Danışman', department: 'İktisadi ve İdari Bilimler', email: 'myagiz@esenyurt.edu.tr' }
     ],
     events: [
       {
