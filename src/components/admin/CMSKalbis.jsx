@@ -27,9 +27,6 @@ export default function CMSKalbis({ currentUser, setView }) {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [globalSearch, setGlobalSearch] = useState('');
 
-  // DÖİF detay paneli için seçili kayıt
-  const [selectedDoif, setSelectedDoif] = useState(null);
-
   // Active Role Switcher State
   const [activeRole, setActiveRole] = useState(KALBIS_ROLES[0]);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -43,7 +40,6 @@ export default function CMSKalbis({ currentUser, setView }) {
       return KALBIS_NOTIFICATIONS;
     }
   });
-  const [showNotificationsMenu, setShowNotificationsMenu] = useState(false);
 
   // Personal Notes (Not Defteri) State
   const [notes, setNotes] = useState(() => {
@@ -71,7 +67,6 @@ export default function CMSKalbis({ currentUser, setView }) {
       return [];
     }
   });
-  const [showNotesMenu, setShowNotesMenu] = useState(false);
   const [showNewNoteModal, setShowNewNoteModal] = useState(false);
   const [newNoteForm, setNewNoteForm] = useState({
     title: '',
@@ -87,7 +82,6 @@ export default function CMSKalbis({ currentUser, setView }) {
   const [showYardimModal, setShowYardimModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewDocTitle, setPreviewDocTitle] = useState('');
-  const [showMessagesDrawer, setShowMessagesDrawer] = useState(false);
 
   // DÖİF (Düzeltici ve Önleyici Faaliyet) State
   const [doifList, setDoifList] = useState(() => {
@@ -235,7 +229,7 @@ export default function CMSKalbis({ currentUser, setView }) {
     <div className="space-y-6 font-sans antialiased text-slate-900 animate-fade-in pb-12">
       
       {/* ─────────────────────────────────────────────────────────────
-          1. KURUMSAL HERO BANNER (Site Mimarisine Tam Uyumlu)
+          1. KURUMSAL HEADER BANNER (Site Mimarisine Tam Uyumlu)
          ───────────────────────────────────────────────────────────── */}
       <div className="bg-gradient-to-r from-[#990000] via-red-800 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-xl border border-red-800/40 relative overflow-hidden">
         {/* Dekoratif Arka Plan Izgarası ve Işık Efektleri */}
@@ -281,8 +275,6 @@ export default function CMSKalbis({ currentUser, setView }) {
               <span>Süreç Bilgisi</span>
             </button>
 
-            {/* Not Defteri */}
-
             {/* Yardım & Eğitim */}
             <button
               onClick={() => setShowYardimModal(true)}
@@ -292,139 +284,46 @@ export default function CMSKalbis({ currentUser, setView }) {
               <span className="hidden sm:inline">Yardım ve Eğitim</span>
             </button>
 
-            {/* Yeni DÖİF - Hero CTA */}
-            <button
-              onClick={() => { setShowNewDoifModal(true); setActiveMenu('doif'); }}
-              className="px-4 py-2 rounded-xl bg-white text-[#990000] text-xs font-black transition flex items-center gap-2 shadow-md hover:bg-red-50 cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>+ Yeni DÖİF Talebi Aç</span>
-            </button>
-
+            {/* Rol Seçici (Kullanıcı Rolü Değiştir) */}
             <div className="relative">
               <button
-                onClick={() => setShowNotesMenu(!showNotesMenu)}
+                onClick={() => setShowRoleMenu(!showRoleMenu)}
                 className="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition flex items-center gap-2 border border-white/20 backdrop-blur-md cursor-pointer shadow-xs"
-                title="Notlarım & Hatırlatmalar"
+                title="Kullanıcı Rolü Değiştir"
               >
-                <FileText className="w-3.5 h-3.5 text-sky-300" />
-                <span>Notlarım</span>
-                {notes.length > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-red-600 text-white text-[10px] font-black">
-                    {notes.length}
-                  </span>
-                )}
+                <Users className="w-3.5 h-3.5 text-rose-300" />
+                <span className="text-white/80 hidden sm:inline text-[11px]">Rol:</span>
+                <span className="font-black text-white">{activeRole.title}</span>
+                <ChevronDown className="w-3 h-3 text-white/60 ml-0.5" />
               </button>
 
-              {/* Notlarım Açılır Menüsü */}
-              {showNotesMenu && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 text-slate-900 animate-fade-in">
-                  <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-4 text-white flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-amber-400" />
-                      <span className="font-black text-sm">Notlarım & Hatırlatıcı</span>
-                    </div>
+              {showRoleMenu && (
+                <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 text-slate-900 animate-fade-in">
+                  <div className="p-2 border-b border-slate-100 mb-1">
+                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Kullanıcı Rolü Değiştir</span>
+                  </div>
+                  {KALBIS_ROLES.map(role => (
                     <button
+                      key={role.id}
                       onClick={() => {
-                        setShowNotesMenu(false);
-                        setShowNewNoteModal(true);
+                        setActiveRole(role);
+                        setShowRoleMenu(false);
+                        toast.success(`Rol "${role.title}" olarak değiştirildi.`);
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                      className={`w-full text-left p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-between ${
+                        activeRole.id === role.id ? 'bg-red-50 text-[#990000] font-black' : 'text-slate-700 hover:bg-slate-50'
+                      }`}
                     >
-                      <Plus className="w-3.5 h-3.5" /> Yeni Not
-                    </button>
-                  </div>
-
-                  <div className="max-h-72 overflow-y-auto p-3 space-y-2">
-                    {notes.length === 0 ? (
-                      <div className="text-center py-6 text-xs text-slate-400">Henüz kayıtlı bir notunuz yok.</div>
-                    ) : (
-                      notes.map(note => (
-                        <div key={note.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition group">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-black text-xs text-slate-900">{note.title}</span>
-                            <button
-                              onClick={() => handleDeleteNote(note.id)}
-                              className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-600 transition cursor-pointer"
-                              title="Notu Sil"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{note.content}</p>
-                          <div className="mt-2 flex items-center justify-between text-[10px] text-slate-400 font-bold">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-[#990000]" /> {note.targetDate}
-                            </span>
-                            <span className="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">{note.alertType}</span>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Komisyon Mesajlaşması */}
-            <button
-              onClick={() => setShowMessagesDrawer(true)}
-              className="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition flex items-center gap-2 border border-white/20 backdrop-blur-md cursor-pointer shadow-xs"
-              title="Komisyon Mesajları"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Mesajlar</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            </button>
-
-            {/* Bildirimler */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotificationsMenu(!showNotificationsMenu)}
-                className="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition flex items-center gap-2 border border-white/20 backdrop-blur-md cursor-pointer shadow-xs"
-                title="Sistem Bildirimleri"
-              >
-                <Bell className="w-3.5 h-3.5 text-amber-300" />
-                <span>Bildirimler</span>
-                {unreadNotificationsCount > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-[#990000] text-white text-[10px] font-black">
-                    {unreadNotificationsCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Bildirimler Açılır Paneli */}
-              {showNotificationsMenu && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 text-slate-900 animate-fade-in">
-                  <div className="bg-gradient-to-r from-red-900 to-slate-900 p-4 text-white flex items-center justify-between">
-                    <div className="font-black text-sm flex items-center gap-2">
-                      <Bell className="w-4 h-4 text-amber-300" />
-                      <span>Sistem Bildirimleri</span>
-                    </div>
-                    <button
-                      onClick={handleMarkAllNotificationsRead}
-                      className="text-[11px] font-bold text-amber-200 hover:underline cursor-pointer"
-                    >
-                      Tümünü Okundu Say
-                    </button>
-                  </div>
-
-                  <div className="max-h-72 overflow-y-auto p-3 space-y-2">
-                    {notifications.map(n => (
-                      <div key={n.id} className={`p-3 rounded-xl border text-xs transition ${n.read ? 'bg-white border-slate-200 text-slate-600' : 'bg-red-50/50 border-red-200 text-slate-900'}`}>
-                        <div className="font-bold flex items-center justify-between mb-0.5">
-                          <span>{n.title}</span>
-                          <span className="text-[10px] text-slate-400 font-medium">{n.date}</span>
-                        </div>
-                        <p className="text-slate-600 text-[11px] leading-relaxed">{n.message}</p>
+                      <div>
+                        <div>{role.title}</div>
+                        <div className="text-[10px] text-slate-400 font-normal">{role.department}</div>
                       </div>
-                    ))}
-                  </div>
+                      {activeRole.id === role.id && <Check className="w-4 h-4 text-[#990000]" />}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-
-            {/* Yardım ve Eğitim */}
           </div>
         </div>
 
@@ -448,136 +347,7 @@ export default function CMSKalbis({ currentUser, setView }) {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. ARAMA VE ROL FİLTRELEME ÇUBUĞU (TOOLBAR)
-         ───────────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Arama Kutusu */}
-        <div className="relative flex-1 max-w-lg">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            value={globalSearch}
-            onChange={(e) => setGlobalSearch(e.target.value)}
-            placeholder="Süreç kartı, ölçüt, komisyon veya DÖİF ara... (Ctrl+K)"
-            className="w-full pl-9 pr-14 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 focus:border-[#990000] focus:ring-2 focus:ring-red-100 text-xs font-semibold text-slate-800 placeholder:text-slate-400 outline-none transition-all shadow-inner"
-          />
-          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-extrabold text-slate-400 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-2xs">
-            Ctrl+K
-          </span>
-        </div>
-
-        {/* Rol Seçici Menüsü + İkonlar */}
-        <div className="flex items-center gap-2">
-          {/* Mesaj İkonu */}
-          <button
-            onClick={() => setShowMessagesDrawer(true)}
-            className="relative p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 hover:text-[#990000] transition cursor-pointer"
-            title="Komisyon Mesajlaşması"
-          >
-            <MessageSquare size={16} />
-          </button>
-
-          {/* Bildirim İkonu */}
-          <div className="relative">
-            <button
-              onClick={() => setShowNotificationsMenu(v => !v)}
-              className="relative p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 hover:text-[#990000] transition cursor-pointer"
-              title="Bildirimler"
-            >
-              <Bell size={16} />
-              {unreadNotificationsCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#990000] text-white text-[9px] font-black flex items-center justify-center">
-                  {unreadNotificationsCount}
-                </span>
-              )}
-            </button>
-            {showNotificationsMenu && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 animate-fade-in">
-                <div className="bg-gradient-to-r from-[#990000] to-red-900 p-4 text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-amber-300" />
-                    <span className="font-black text-sm">Bildirimler</span>
-                    {unreadNotificationsCount > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-black">{unreadNotificationsCount}</span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => { handleMarkAllNotificationsRead(); setShowNotificationsMenu(false); }}
-                    className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-                  >
-                    <CheckCircle2 size={12} /> Tümünü Okundu Say
-                  </button>
-                </div>
-                <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
-                  {notifications.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-slate-400">Bildirim yok.</div>
-                  ) : notifications.slice(0,5).map(n => (
-                    <div key={n.id} className={`p-3.5 flex items-start gap-3 ${!n.read ? 'bg-red-50/50' : ''}`}>
-                      <div className={`mt-0.5 shrink-0 w-2 h-2 rounded-full ${!n.read ? 'bg-[#990000]' : 'bg-slate-200'}`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="font-black text-xs text-slate-900 truncate">{n.title}</div>
-                        <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
-                      </div>
-                      <span className="text-[10px] text-slate-400 shrink-0">{n.date}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Kullanıcı Avatarı */}
-          <SafeAvatar
-            name={currentUser?.name || activeRole?.name || 'KGM'}
-            size="sm"
-            className="border-2 border-slate-200 cursor-pointer hover:border-[#990000] transition"
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowRoleMenu(!showRoleMenu)}
-              className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-2 transition cursor-pointer shadow-xs"
-              title="Kullanıcı Rolü Değiştir"
-            >
-              <Users className="w-3.5 h-3.5 text-[#990000]" />
-              <span className="text-[11px] text-slate-500 font-semibold hidden sm:inline">Aktif Rol:</span>
-              <span className="font-black text-slate-900">{activeRole.title}</span>
-              <ChevronDown className="w-3 h-3 text-slate-400 ml-1" />
-            </button>
-
-            {showRoleMenu && (
-              <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-fade-in">
-                <div className="p-2 border-b border-slate-100 mb-1">
-                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Kullanıcı Rolü Değiştir</span>
-                </div>
-                {KALBIS_ROLES.map(role => (
-                  <button
-                    key={role.id}
-                    onClick={() => {
-                      setActiveRole(role);
-                      setShowRoleMenu(false);
-                      toast.success(`Rol "${role.title}" olarak değiştirildi.`);
-                    }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-between ${
-                      activeRole.id === role.id ? 'bg-red-50 text-[#990000] font-black' : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div>
-                      <div>{role.title}</div>
-                      <div className="text-[10px] text-slate-400 font-normal">{role.department}</div>
-                    </div>
-                    {activeRole.id === role.id && <Check className="w-4 h-4 text-[#990000]" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-          3. MODÜL ALT GEZİNME SEKMELERİ (Yatay & Ferah Tasarım)
+          2. MODÜL ALT GEZİNME SEKMELERİ (Yatay & Ferah Tasarım)
          ───────────────────────────────────────────────────────────── */}
       <div className="bg-white rounded-2xl p-2 border border-slate-200/80 shadow-xs overflow-x-auto hide-scrollbar">
         <div className="flex items-center gap-1.5 min-w-max">
@@ -589,7 +359,6 @@ export default function CMSKalbis({ currentUser, setView }) {
             { id: 'veri_toplama', label: 'Veri Toplama Görevleri', icon: <FileCheck size={15} /> },
             { id: 'fikir', label: 'Bir Fikrim Var', icon: <Sparkles size={15} /> },
             { id: 'gorev_tanimlari', label: 'Görev Tanımlarım', icon: <Award size={15} /> },
-            { id: 'mentorluk', label: 'Mentorluk Eşleşmelerim', icon: <UserCheck size={15} /> },
             { id: 'yardim', label: 'Yardım & Dokümanlar', icon: <HelpCircle size={15} /> }
           ].map(item => {
             const isActive = activeMenu === item.id;
@@ -619,7 +388,7 @@ export default function CMSKalbis({ currentUser, setView }) {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. MODÜL İÇERİK ALANI (Geniş & Net Görünümler)
+          3. MODÜL İÇERİK ALANI (Geniş, Tam Genişlik & Net Görünümler)
          ───────────────────────────────────────────────────────────── */}
       <div className="space-y-6">
         
@@ -714,58 +483,8 @@ export default function CMSKalbis({ currentUser, setView }) {
               </div>
             </div>
 
-            {/* BİLDİRİMLER KARTI */}
-            <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
-              <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center font-bold">
-                    <Bell size={18} />
-                  </div>
-                  <h3 className="font-black text-slate-900 text-sm sm:text-base">Sistem Bildirimleri</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleMarkAllNotificationsRead}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <CheckCircle2 size={14} /> Tümünü okundu yap
-                  </button>
-                  <button
-                    onClick={() => setShowNotificationsMenu(true)}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
-                  >
-                    Tüm bildirimler
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-5">
-                {notifications.filter(n => !n.read).length === 0 ? (
-                  <div className="p-4 rounded-2xl bg-red-50/70 border border-red-200 flex items-center gap-3 text-red-700">
-                    <Info className="w-5 h-5 shrink-0" />
-                    <span className="text-xs font-bold">Okunmamış bildirim bulunamadı.</span>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {notifications.filter(n => !n.read).map(n => (
-                      <div key={n.id} className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/80 flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-2.5">
-                          <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                          <div>
-                            <div className="font-black text-xs text-slate-900">{n.title}</div>
-                            <p className="text-xs text-slate-600 mt-0.5">{n.message}</p>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-slate-400 shrink-0">{n.date}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
             {/* PUKÖ DÖNGÜSÜ & HIZLI İZLEME PANOLARI */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { phase: 'Planla (P)', count: doifList.filter(d => d.pukoLetter === 'P').length, desc: 'Hedef, kaynak ve zaman planı', color: 'border-blue-200 bg-blue-50/50 text-blue-800' },
                 { phase: 'Uygula (U)', count: doifList.filter(d => d.pukoLetter === 'U').length, desc: 'Süreç ve kanıt yürütme', color: 'border-amber-200 bg-amber-50/50 text-amber-800' },
@@ -789,7 +508,49 @@ export default function CMSKalbis({ currentUser, setView }) {
               ))}
             </div>
 
-            {/* AKTİF SÜREÇ KARTLARI TABLOSU */}
+            {/* BİLDİRİMLER KARTI */}
+            <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
+              <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center font-bold">
+                    <Bell size={18} />
+                  </div>
+                  <h3 className="font-black text-slate-900 text-sm sm:text-base">Sistem Bildirimleri</h3>
+                </div>
+                <button
+                  onClick={handleMarkAllNotificationsRead}
+                  className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <CheckCircle2 size={14} /> Tümünü okundu yap
+                </button>
+              </div>
+
+              <div className="p-5">
+                {notifications.filter(n => !n.read).length === 0 ? (
+                  <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-center gap-3 text-emerald-700">
+                    <Info className="w-5 h-5 shrink-0" />
+                    <span className="text-xs font-bold">Okunmamış bildirim bulunamadı.</span>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {notifications.filter(n => !n.read).map(n => (
+                      <div key={n.id} className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/80 flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-2.5">
+                          <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                          <div>
+                            <div className="font-black text-xs text-slate-900">{n.title}</div>
+                            <p className="text-xs text-slate-600 mt-0.5">{n.message}</p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-400 shrink-0">{n.date}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ÖNCELİKLİ KALİTE SÜREÇ KARTLARI */}
             <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -830,11 +591,12 @@ export default function CMSKalbis({ currentUser, setView }) {
           </div>
         )}
 
-        {/* ── GÖRÜNÜM 2: DÖİF TALEPLERİM ── */}
+        {/* ── GÖRÜNÜM 2: DÖİF TALEPLERİM (Tam Genişlik Tablo - Sol/Sağ Panel Bölünmesi Yok) ── */}
         {activeMenu === 'doif' && (
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex flex-wrap gap-1.5">
+            {/* Üst Filtre & Arama Araç Çubuğu */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {['all', 'P', 'U', 'K', 'Ö'].map(f => (
                   <button
                     key={f}
@@ -842,7 +604,7 @@ export default function CMSKalbis({ currentUser, setView }) {
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
                       doifFilter === f
                         ? 'bg-[#990000] text-white shadow-xs'
-                        : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                        : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100'
                     }`}
                   >
                     {f === 'all' ? "Tüm DÖİF'ler" : `${f} Fazı`}
@@ -850,18 +612,28 @@ export default function CMSKalbis({ currentUser, setView }) {
                 ))}
               </div>
 
-              <button
-                onClick={() => setShowNewDoifModal(true)}
-                className="px-4 py-2 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer self-start"
-              >
-                <Plus size={16} /> Yeni DÖİF Talebi Aç
-              </button>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={globalSearch}
+                    onChange={(e) => setGlobalSearch(e.target.value)}
+                    placeholder="DÖİF No veya konu ara..."
+                    className="pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#990000] w-48 sm:w-60"
+                  />
+                </div>
+                <button
+                  onClick={() => setShowNewDoifModal(true)}
+                  className="px-4 py-2 rounded-xl bg-[#990000] hover:bg-red-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer shrink-0"
+                >
+                  <Plus size={16} /> Yeni DÖİF Talebi Aç
+                </button>
+              </div>
             </div>
 
-            {/* 2 Kolon: Sol Tablo + Sağ Detay */}
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Sol: DÖİF Tablosu */}
-              <div className="flex-1 min-w-0 bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
+            {/* Tam Genişlik Tablo */}
+            <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-black uppercase text-[10px] tracking-wider">
@@ -877,10 +649,10 @@ export default function CMSKalbis({ currentUser, setView }) {
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                     {filteredDoif.map(doif => (
-                      <tr key={doif.id} onClick={() => setSelectedDoif(doif)} className={`hover:bg-red-50/50 transition cursor-pointer ${selectedDoif?.id === doif.id ? 'bg-red-50/70 border-l-2 border-[#990000]' : ''}`}>
+                      <tr key={doif.id} className="hover:bg-slate-50/70 transition">
                         <td className="py-3.5 px-4">
                           <span className="font-mono font-black text-[#990000]">{doif.id}</span>
-                          <div className="font-bold text-slate-900 mt-0.5 line-clamp-1">{doif.title}</div>
+                          <div className="font-bold text-slate-900 mt-0.5">{doif.title}</div>
                         </td>
                         <td className="py-3.5 px-4 font-semibold text-slate-800">{doif.department}</td>
                         <td className="py-3.5 px-4 font-bold text-slate-600">{doif.targetDate}</td>
@@ -910,7 +682,7 @@ export default function CMSKalbis({ currentUser, setView }) {
                         <td className="py-3.5 px-4 text-right">
                           <button
                             onClick={() => handleOpenDocPreview(`${doif.id} DÖİF Dosyası ve Kök Neden Analizi`)}
-                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-[#990000] hover:text-white transition font-bold text-[11px] cursor-pointer"
+                            className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#990000] hover:text-white transition font-bold text-[11px] cursor-pointer"
                           >
                             Dosya
                           </button>
@@ -919,90 +691,6 @@ export default function CMSKalbis({ currentUser, setView }) {
                     ))}
                   </tbody>
                 </table>
-                </div>
-              </div>
-
-              {/* Sağ: Seçili DÖİF Detay Paneli */}
-              <div className="lg:w-72 xl:w-80 shrink-0">
-                {selectedDoif ? (
-                  <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-5 space-y-4 sticky top-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                      <div>
-                        <span className="font-mono text-xs font-black text-[#990000]">{selectedDoif.id}</span>
-                        <div className="font-black text-sm text-slate-900 mt-1 leading-snug">{selectedDoif.title}</div>
-                      </div>
-                      <button
-                        onClick={() => setSelectedDoif(null)}
-                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 cursor-pointer shrink-0"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-
-                    <div className="space-y-3 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-slate-900 text-white font-black text-xs shrink-0">{selectedDoif.pukoLetter}</span>
-                        <span className="font-bold text-slate-700">{selectedDoif.pukoPhase}</span>
-                        <span className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-black ${
-                          selectedDoif.status === 'Tamamlandı' ? 'bg-emerald-100 text-emerald-800' :
-                          selectedDoif.status === 'Uygulamada' ? 'bg-amber-100 text-amber-800' :
-                          'bg-slate-100 text-slate-700'
-                        }`}>{selectedDoif.status}</span>
-                      </div>
-
-                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                        <div>
-                          <div className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1">Sorumlu Birim</div>
-                          <div className="font-bold text-slate-800">{selectedDoif.department}</div>
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1">Hedef Tarih</div>
-                          <div className="font-bold text-slate-800">{selectedDoif.targetDate}</div>
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1">Öncelik</div>
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                            selectedDoif.priority === 'Kritik' ? 'bg-red-100 text-red-800' :
-                            selectedDoif.priority === 'Yüksek' ? 'bg-amber-100 text-amber-800' :
-                            'bg-blue-100 text-blue-800'
-                          }`}>{selectedDoif.priority}</span>
-                        </div>
-                      </div>
-
-                      {selectedDoif.rootCause && (
-                        <div>
-                          <div className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1">Kök Neden</div>
-                          <p className="text-slate-600 leading-relaxed">{selectedDoif.rootCause}</p>
-                        </div>
-                      )}
-
-                      {selectedDoif.plannedAction && (
-                        <div>
-                          <div className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1">Planlanan Faaliyet</div>
-                          <p className="text-slate-600 leading-relaxed">{selectedDoif.plannedAction}</p>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                        <span className="text-slate-500">Kanıt Sayısı: <strong className="text-slate-900">{selectedDoif.evidenceCount || 0}</strong></span>
-                        <button
-                          onClick={() => handleOpenDocPreview(`${selectedDoif.id} DÖİF Dosyası`)}
-                          className="px-3 py-1.5 rounded-xl bg-[#990000] hover:bg-red-800 text-white font-bold text-[11px] transition cursor-pointer flex items-center gap-1"
-                        >
-                          <Eye size={12} /> Dosya
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-slate-50 rounded-3xl border border-dashed border-slate-300 p-8 flex flex-col items-center justify-center text-center gap-3 h-full min-h-48">
-                    <ShieldCheck className="w-10 h-10 text-slate-300" />
-                    <div>
-                      <div className="text-xs font-black text-slate-400">DÖİF Detayı</div>
-                      <p className="text-[11px] text-slate-400 mt-1">Tablodan bir kayıt seçin</p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -1011,20 +699,33 @@ export default function CMSKalbis({ currentUser, setView }) {
         {/* ── GÖRÜNÜM 3: KOMİSYONLAR ── */}
         {activeMenu === 'komisyonlar' && (
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-1.5">
-              {['Tümü', 'Rektörlük', 'Akademik Birim', 'Program', 'Tutarlılık', 'İdari Birim', 'UYGAR'].map(t => (
-                <button
-                  key={t}
-                  onClick={() => setCommissionTypeFilter(t)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                    commissionTypeFilter === t
-                      ? 'bg-[#990000] text-white shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="flex flex-wrap gap-1.5">
+                {['Tümü', 'Rektörlük', 'Akademik Birim', 'Program', 'Tutarlılık', 'İdari Birim', 'UYGAR'].map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setCommissionTypeFilter(t)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                      commissionTypeFilter === t
+                        ? 'bg-[#990000] text-white shadow-xs'
+                        : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={globalSearch}
+                  onChange={(e) => setGlobalSearch(e.target.value)}
+                  placeholder="Komisyon ara..."
+                  className="pl-8 pr-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#990000] w-48 sm:w-60"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1042,13 +743,7 @@ export default function CMSKalbis({ currentUser, setView }) {
 
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-1.5 text-slate-600 font-bold">
-                      {/* Mini avatar grubu */}
-                      <div className="flex -space-x-1.5 mr-1">
-                        {['KK','MB','AY'].slice(0, Math.min(3, com.membersCount || 3)).map((initials, ai) => (
-                          <SafeAvatar key={ai} name={initials} size="xs"
-                            className="border-2 border-white ring-1 ring-slate-100 text-[8px]" />
-                        ))}
-                      </div>
+                      <Users size={14} className="text-[#990000]" />
                       <span>{com.membersCount} Üye</span>
                     </div>
                     <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold text-[11px]">
@@ -1239,8 +934,8 @@ export default function CMSKalbis({ currentUser, setView }) {
           </div>
         )}
 
-        {/* ── GÖRÜNÜM 8: YARDIM & MENTORLUK ── */}
-        {(activeMenu === 'yardim' || activeMenu === 'mentorluk') && (
+        {/* ── GÖRÜNÜM 8: YARDIM & DOKÜMANLAR ── */}
+        {activeMenu === 'yardim' && (
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-6 sm:p-8 space-y-4">
             <h3 className="font-black text-base text-slate-900">Yardım Videoları ve Akreditasyon Kılavuzları</h3>
             <p className="text-xs text-slate-500">KALBİS Kalite Güvencesi Sistemini etkin kullanmak için rehber dokümanlar</p>
@@ -1269,7 +964,7 @@ export default function CMSKalbis({ currentUser, setView }) {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          5. MODALLAR (SÜREÇ KARTI, YARDIM, DOSYA ÖNİZLEME, YENİ DÖİF, NOT)
+          4. MODALLAR (SÜREÇ KARTI, YARDIM, DOSYA ÖNİZLEME, YENİ DÖİF)
          ───────────────────────────────────────────────────────────── */}
       {/* SÜREÇ KARTI BİLGİSİ MODALI */}
       {showSurecKartModal && selectedProcessCard && (
@@ -1541,105 +1236,6 @@ export default function CMSKalbis({ currentUser, setView }) {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* YENİ NOT EKLEME MODALI */}
-      {showNewNoteModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-4 text-white flex items-center justify-between">
-              <span className="font-black text-sm">Yeni Not Oluştur</span>
-              <button onClick={() => setShowNewNoteModal(false)} className="text-white hover:text-red-400 cursor-pointer">
-                <X size={18} />
-              </button>
-            </div>
-            <form onSubmit={handleAddNote} className="p-5 space-y-3 text-xs">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Not Başlığı *</label>
-                <input
-                  required
-                  type="text"
-                  value={newNoteForm.title}
-                  onChange={(e) => setNewNoteForm({ ...newNoteForm, title: e.target.value })}
-                  placeholder="Örn: Komisyon toplantı hazırlığı"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#990000]"
-                />
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Not Metni</label>
-                <textarea
-                  rows={3}
-                  value={newNoteForm.content}
-                  onChange={(e) => setNewNoteForm({ ...newNoteForm, content: e.target.value })}
-                  placeholder="Çalışma notlarınızı buraya yazın..."
-                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-[#990000] resize-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Hedef Tarih</label>
-                  <input
-                    type="date"
-                    value={newNoteForm.targetDate}
-                    onChange={(e) => setNewNoteForm({ ...newNoteForm, targetDate: e.target.value })}
-                    className="w-full p-2 rounded-xl border border-slate-200 text-xs font-semibold"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Uyarı Tipi</label>
-                  <select
-                    value={newNoteForm.alertType}
-                    onChange={(e) => setNewNoteForm({ ...newNoteForm, alertType: e.target.value })}
-                    className="w-full p-2 rounded-xl border border-slate-200 text-xs font-semibold"
-                  >
-                    <option>Anlık + Mesajlı (Varsayılan)</option>
-                    <option>Anlık</option>
-                    <option>Sessiz</option>
-                  </select>
-                </div>
-              </div>
-              <div className="pt-2 flex justify-end gap-2">
-                <button type="button" onClick={() => setShowNewNoteModal(false)} className="px-4 py-2 rounded-xl bg-slate-100 font-bold cursor-pointer">Vazgeç</button>
-                <button type="submit" className="px-5 py-2 rounded-xl bg-[#990000] text-white font-bold cursor-pointer">Kaydet</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MESAJLAŞMA ÇEKMECESİ */}
-      {showMessagesDrawer && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex justify-end animate-fade-in">
-          <div className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col">
-            <div className="p-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between">
-              <div>
-                <h3 className="font-black text-sm">KALBİS Komisyon Mesajlaşması</h3>
-                <p className="text-[10px] text-slate-400">Komisyon üyeleriyle anlık ve grup yazışmaları</p>
-              </div>
-              <button onClick={() => setShowMessagesDrawer(false)} className="text-white hover:text-red-400 cursor-pointer">
-                <X size={18} />
-              </button>
-            </div>
-            <div className="p-4 flex-1 overflow-y-auto space-y-3 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700">
-                <div className="font-bold text-slate-900 mb-1">Rektörlük Kalite Komisyonu Grubu</div>
-                <p className="text-[11px]">2026 KİDR taslağı sistem kanıt havuzuna eklenmiştir. Lütfen inceleyiniz.</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Dün, 16:45</span>
-              </div>
-              <div className="p-3 rounded-2xl bg-red-50/70 border border-red-200 text-slate-800">
-                <div className="font-bold text-[#990000] mb-1">Kalite Koordinatörlüğü</div>
-                <p className="text-[11px]">Sivil Havacılık programı simülatör DÖİF planı onaylandı.</p>
-                <span className="text-[10px] text-slate-400 mt-1 block">Bugün, 11:10</span>
-              </div>
-            </div>
-            <div className="p-3 border-t border-slate-200 flex gap-2">
-              <input type="text" placeholder="Mesaj yazın... (Enter gönderir)" className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs outline-none focus:border-[#990000]" />
-              <button onClick={() => toast.success('Mesajınız komisyon üyelerine iletildi.')} className="px-4 py-2 rounded-xl bg-[#990000] text-white text-xs font-bold cursor-pointer">
-                <Send size={14} />
-              </button>
-            </div>
           </div>
         </div>
       )}
