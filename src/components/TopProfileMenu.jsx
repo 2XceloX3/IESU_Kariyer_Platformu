@@ -10,11 +10,15 @@ import Logo from './Logo';
 import useAppStore, { coreStore } from '../store/useAppStore';
 import CompanyManagementModal from './CompanyManagementModal';
 import SafeAvatar from './shared/SafeAvatar';
+import ThemeToggle from './shared/ThemeToggle';
+import LanguageSwitcher from './shared/LanguageSwitcher';
 import { signOut } from 'firebase/auth';
 import { auth } from '../utils/firebase';
 
-export default function TopProfileMenu({ currentUser, userRole, setView, setSelectedUserId, academicRole, currentView, setCurrentUser, isDark = false }) {
+export default function TopProfileMenu({ currentUser, userRole, setView, setSelectedUserId, academicRole, currentView, setCurrentUser, isDark: isDarkProp = false }) {
   const [showCompanyModal, setShowCompanyModal] = useState(false);
+  const storeDarkMode = useAppStore(state => state?.darkMode);
+  const isDark = Boolean(isDarkProp || storeDarkMode);
   const activeFrame = useAppStore(state => state?.activeFrame);
   const alumniAssocBoard = useAppStore?.(state => state.alumniAssocBoard) || [];
   const [isOpen, setIsOpen] = useState(false);
@@ -104,8 +108,10 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
       coreStore?.persist?.clearStorage?.();
     } catch { /* intentional */ }
 
-    // 3) TÜM localStorage ve sessionStorage oturum anahtarlarını temizle
-    const keysToRemove = [ 'iesu_mock_user', 'iesu_user', 'iesu_user_role_v1', 'iesu_remember_me', 'iesu_view_v1', 'iesu_posts', 'iesu_mentorships_v2', 'iesu_company_candidate_chats_v1', 'iesu_audit_log_v1', 'iesu_incubator_projects_v1', 'iesu_mentorship_requests_v1', 'iesu_messages_v2', 'iesu_applications_v1', 'iesu_notifications_v1', 'iesu_app_session_v1', 'iesu_active_portal_branch', 'iesu-career-shared-store', 'iesu-career-admin-store', 'iesu_staff_accounts_v1', 'iesu_academic_radar_v1', 'iesu_document_tracking_v1', 'iesu_candidate_pool_v1', 'iesu_admin_messages_v1', 'iesu_platform_messages_audit_v1' ]; keysToRemove.forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } }); Object.keys(localStorage).filter(k => k.startsWith('iesu_') || k.startsWith('igu_')).forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
+    // 3) TÜM localStorage ve sessionStorage oturum anahtarlarını temizle (iesu_theme tercihini koru)
+    const savedTheme = (() => { try { return localStorage.getItem('iesu_theme'); } catch { return null; } })();
+    const keysToRemove = [ 'iesu_mock_user', 'iesu_user', 'iesu_user_role_v1', 'iesu_remember_me', 'iesu_view_v1', 'iesu_posts', 'iesu_mentorships_v2', 'iesu_company_candidate_chats_v1', 'iesu_audit_log_v1', 'iesu_incubator_projects_v1', 'iesu_mentorship_requests_v1', 'iesu_messages_v2', 'iesu_applications_v1', 'iesu_notifications_v1', 'iesu_app_session_v1', 'iesu_active_portal_branch', 'iesu-career-shared-store', 'iesu-career-admin-store', 'iesu_staff_accounts_v1', 'iesu_academic_radar_v1', 'iesu_document_tracking_v1', 'iesu_candidate_pool_v1', 'iesu_admin_messages_v1', 'iesu_platform_messages_audit_v1' ]; keysToRemove.forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } }); Object.keys(localStorage).filter(k => (k.startsWith('iesu_') || k.startsWith('igu_')) && k !== 'iesu_theme').forEach(k => { try { localStorage.removeItem(k); } catch { /* intentional */ } });
+    if (savedTheme) { try { localStorage.setItem('iesu_theme', savedTheme); } catch { /* intentional */ } }
 
     try { 
       sessionStorage.clear(); 
@@ -161,6 +167,8 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
   if (!effectiveCurrentUser) {
     return (
       <div className="flex items-center gap-2">
+        <LanguageSwitcher variant={isDark ? 'dark' : 'compact'} />
+        <ThemeToggle variant="surface" isDark={isDark} />
         <button 
           onClick={() => setView?.('login')}
           className="flex items-center gap-2 bg-[#990000] hover:bg-[#163B65] text-white px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md hover:shadow-lg"
@@ -172,7 +180,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
+      <LanguageSwitcher variant={isDark ? 'dark' : 'compact'} />
+      <ThemeToggle variant="surface" isDark={isDark} />
       <div className="relative z-[100]" ref={menuRef}>
         <button 
           onClick={() => setIsOpen(!isOpen)} 
@@ -181,16 +191,16 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
           aria-haspopup="true" 
           className={`flex items-center gap-2.5 p-1 sm:pr-3 rounded-full transition-all duration-200 shadow-sm hover:shadow cursor-pointer ${
             isDark 
-              ? 'bg-[#111c33]/90 hover:bg-[#182847] border border-cyan-500/30 text-white shadow-[0_0_12px_rgba(34,211,238,0.15)]' 
+              ? 'bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-slate-100' 
               : 'bg-slate-50/90 hover:bg-slate-100/90 border border-slate-200/80'
           }`}
         >
-          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 flex items-center justify-center p-0.5 ${isDark ? 'bg-white/15 border-white/20' : 'bg-white'} border-2 ${
-            effectiveBranch === 'student' ? 'border-[#990000]/40' :
-            effectiveBranch === 'alumni' ? 'border-emerald-600/40' :
-            effectiveBranch === 'academic' ? 'border-purple-700/40' :
-            effectiveBranch === 'company' ? 'border-blue-700/40' :
-            'border-amber-500/40'
+          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full shrink-0 flex items-center justify-center p-0.5 ${isDark ? 'bg-slate-900 border-slate-600' : 'bg-white'} border-2 ${
+            effectiveBranch === 'student' ? (isDark ? 'border-rose-500/60' : 'border-[#990000]/40') :
+            effectiveBranch === 'alumni' ? (isDark ? 'border-emerald-500/60' : 'border-emerald-600/40') :
+            effectiveBranch === 'academic' ? (isDark ? 'border-purple-400/60' : 'border-purple-700/40') :
+            effectiveBranch === 'company' ? (isDark ? 'border-blue-400/60' : 'border-blue-700/40') :
+            'border-amber-500/60'
           } shadow-inner ${activeFrame ? activeFrame : ''}`}>
             {effectiveBranch === 'admin' ? (
               <Logo size="sm" variant={isDark ? "white" : "default"} className="w-full h-full justify-center" />
@@ -205,46 +215,46 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
           </div>
 
           <div className="hidden md:flex flex-col text-left">
-            <span className={`text-[12px] font-black leading-tight truncate max-w-[135px] ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <span className={`text-[12px] font-black leading-tight truncate max-w-[135px] ${isDark ? 'text-slate-100' : 'text-gray-900'}`}>
               {branchUserName}
             </span>
             <span className={`text-[10px] font-bold uppercase tracking-wider ${
-              effectiveBranch === 'student' ? 'text-[#990000]' :
+              effectiveBranch === 'student' ? (isDark ? 'text-rose-400' : 'text-[#990000]') :
               effectiveBranch === 'alumni' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') :
-              effectiveBranch === 'academic' ? (isDark ? 'text-purple-400' : 'text-purple-700') :
-              effectiveBranch === 'company' ? (isDark ? 'text-blue-400' : 'text-blue-700') :
+              effectiveBranch === 'academic' ? (isDark ? 'text-purple-300' : 'text-purple-700') :
+              effectiveBranch === 'company' ? (isDark ? 'text-sky-400' : 'text-blue-700') :
               (isDark ? 'text-amber-400' : 'text-amber-600')
             }`}>
               {isAdmin ? getRoleLabel('admin') : getRoleLabel(effectiveBranch)}
             </span>
           </div>
 
-          <ChevronDown size={14} className={`transition-transform duration-200 ml-0.5 ${isDark ? 'text-slate-300' : 'text-gray-500'} ${isOpen ? 'rotate-180 text-[#990000]' : ''}`} />
+          <ChevronDown size={14} className={`transition-transform duration-200 ml-0.5 ${isDark ? 'text-slate-400' : 'text-gray-500'} ${isOpen ? 'rotate-180 text-rose-500' : ''}`} />
         </button>
 
       {isOpen && (
-        <div role="menu" className="absolute right-0 mt-2 w-[280px] bg-white rounded-2xl shadow-[0_12px_45px_rgba(0,0,0,0.2)] border border-gray-100 py-2 z-[9999] animate-fade-in origin-top-right transition-all duration-200">
+        <div role="menu" className="absolute right-0 mt-2 w-[285px] bg-white dark:bg-[#131c31] rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.35)] border border-gray-100 dark:border-slate-700/80 py-2 z-[9999] animate-fade-in origin-top-right transition-all duration-200">
           
           {isAdmin ? (
             <>
               {/* ADMIN HEADER */}
-              <div className="px-4 py-3 border-b border-gray-50 bg-orange-50/20">
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-orange-50/30 dark:bg-amber-500/10">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <p className="text-[14px] font-black text-gray-900 truncate flex-1 transition-all duration-200">
+                  <p className="text-[14px] font-black text-gray-900 dark:text-slate-100 truncate flex-1 transition-all duration-200">
                     Kariyer Geliştirme Koordinatörlüğü
                   </p>
-                  <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-black uppercase tracking-wider shrink-0 transition-all duration-200">
+                  <span className="bg-orange-100 dark:bg-amber-500/20 text-orange-600 dark:text-amber-300 px-2 py-0.5 rounded flex items-center gap-1 text-[10px] font-black uppercase tracking-wider shrink-0 transition-all duration-200">
                     <Crown size={12} /> SÜPER ADMIN
                   </span>
                 </div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 transition-all duration-200">
-                  <ShieldCheck size={12} className="text-gray-500" /> SÜPER ADMIN <span className="text-orange-500">• TÜM PANELLER</span>
+                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5 transition-all duration-200">
+                  <ShieldCheck size={12} className="text-gray-500 dark:text-slate-400" /> SÜPER ADMIN <span className="text-orange-500 dark:text-amber-400">• TÜM PANELLER</span>
                 </p>
               </div>
 
               {/* PANEL SWITCHER GRID (6 BUTONLU HIZLI PANEL GEÇİŞİ) */}
-              <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Portallar</p>
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">Portallar</p>
                 <div className="grid grid-cols-2 gap-2">
                   
                   {/* 1. Yönetim Paneli */}
@@ -259,14 +269,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       (userRole === 'admin' && currentView === 'admin_cms')
-                        ? 'bg-amber-600 text-white font-black border-amber-600 shadow-amber-950/20' 
-                        : 'bg-white hover:bg-amber-50 text-slate-700 font-bold border-slate-200 hover:border-amber-300'
+                        ? 'bg-amber-600 text-white font-black border-amber-500 shadow-amber-950/20' 
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-amber-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-amber-300 dark:hover:border-amber-500/50'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin_cms' ? 'bg-white/20 text-white' : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 group-hover:bg-amber-600 group-hover:text-white'}`}>
                       <LayoutDashboard size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin_cms' ? 'text-white' : 'text-slate-800'}`}>Yönetim Paneli</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin_cms' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Yönetim Paneli</span>
                   </button>
 
                   {/* 2. Kariyer Merkezi */}
@@ -282,13 +292,13 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       (userRole === 'admin' && currentView === 'admin')
                         ? 'bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white font-black border-amber-500 shadow-amber-950/30' 
-                        : 'bg-white hover:bg-amber-50 text-slate-700 font-bold border-slate-200 hover:border-amber-400'
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-amber-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-amber-400 dark:hover:border-amber-500/50'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700 group-hover:bg-amber-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'admin' && currentView === 'admin' ? 'bg-white/20 text-white' : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 group-hover:bg-amber-600 group-hover:text-white'}`}>
                       <Crown size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin' ? 'text-white' : 'text-slate-800'}`}>Kariyer Merkezi</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'admin' && currentView === 'admin' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Kariyer Merkezi</span>
                   </button>
 
                   {/* 3. Mezun Portalı */}
@@ -302,14 +312,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       userRole === 'alumni' || currentView === 'alumni'
-                        ? 'bg-emerald-600 text-white font-black border-emerald-700 shadow-emerald-900/20' 
-                        : 'bg-white hover:bg-emerald-50 text-slate-700 font-bold border-slate-200 hover:border-emerald-300'
+                        ? 'bg-emerald-600 text-white font-black border-emerald-500 shadow-emerald-900/20' 
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-500/50'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'alumni' || currentView === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'alumni' || currentView === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 group-hover:bg-emerald-600 group-hover:text-white'}`}>
                       <UsersIcon size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'alumni' || currentView === 'alumni' ? 'text-white' : 'text-slate-800'}`}>Mezun Portalı</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'alumni' || currentView === 'alumni' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Mezun Portalı</span>
                   </button>
 
                   {/* 4. Öğrenci Portalı */}
@@ -323,14 +333,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       userRole === 'student' || currentView === 'student'
-                        ? 'bg-rose-600 text-white font-black border-rose-600 shadow-rose-900/20' 
-                        : 'bg-white hover:bg-rose-50 text-slate-700 font-bold border-slate-200 hover:border-rose-300'
+                        ? 'bg-rose-600 text-white font-black border-rose-500 shadow-rose-900/20' 
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-rose-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-rose-300 dark:hover:border-rose-500/50'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'student' || currentView === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700 group-hover:bg-rose-600 group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'student' || currentView === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 group-hover:bg-rose-600 group-hover:text-white'}`}>
                       <GraduationCap size={16} />
                     </div>
-                    <span className={`text-[11px] font-black leading-tight text-center ${userRole === 'student' || currentView === 'student' ? 'text-white' : 'text-slate-800'}`}>Öğrenci Portalı</span>
+                    <span className={`text-[11px] font-black leading-tight text-center ${userRole === 'student' || currentView === 'student' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Öğrenci Portalı</span>
                   </button>
 
                   {/* 5. Akademik Portal */}
@@ -344,14 +354,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       userRole === 'academic' || currentView === 'academic'
-                        ? 'bg-[#4C1D95] text-white font-black border-purple-900 shadow-purple-950/20' 
-                        : 'bg-white hover:bg-purple-50 text-slate-700 font-bold border-slate-200 hover:border-purple-300'
+                        ? 'bg-[#4C1D95] text-white font-black border-purple-500 shadow-purple-950/20' 
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-purple-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500/50'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'academic' || currentView === 'academic' ? 'bg-white/20 text-white' : 'bg-purple-100 text-[#4C1D95] group-hover:bg-[#4C1D95] group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${userRole === 'academic' || currentView === 'academic' ? 'bg-white/20 text-white' : 'bg-purple-100 dark:bg-purple-500/20 text-[#4C1D95] dark:text-purple-300 group-hover:bg-[#4C1D95] group-hover:text-white'}`}>
                       <BookOpen size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${userRole === 'academic' || currentView === 'academic' ? 'text-white' : 'text-slate-800'}`}>Akademik Portal</span>
+                    <span className={`text-[11px] font-bold ${userRole === 'academic' || currentView === 'academic' ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Akademik Portal</span>
                   </button>
 
                   {/* 6. Firma Portalı */}
@@ -365,14 +375,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     }} 
                     className={`flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl transition-all duration-200 group border shadow-xs cursor-pointer ${
                       userRole === 'company' || userRole === 'employer' || currentView === 'company'
-                        ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white font-black border-blue-800 shadow-blue-950/30' 
-                        : 'bg-white hover:bg-blue-50 text-slate-700 font-bold border-slate-200 hover:border-blue-300'
+                        ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white font-black border-blue-500 shadow-blue-950/30' 
+                        : 'bg-white dark:bg-slate-800/90 hover:bg-blue-50 dark:hover:bg-slate-700/90 text-slate-700 dark:text-slate-200 font-bold border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500/50'
                     }`}
                   >
-                    <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-900 group-hover:bg-[#0A2342] group-hover:text-white'}`}>
+                    <div className={`p-1 rounded-lg transition-all duration-200 ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-900 dark:text-blue-300 group-hover:bg-[#0A2342] group-hover:text-white'}`}>
                       <Building2 size={16} />
                     </div>
-                    <span className={`text-[11px] font-bold ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'text-white' : 'text-slate-800'}`}>Firma Portalı</span>
+                    <span className={`text-[11px] font-bold ${(userRole === 'company' || userRole === 'employer' || currentView === 'company') ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>Firma Portalı</span>
                   </button>
                 </div>
               </div>
@@ -384,39 +394,39 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   if (setSelectedUserId) setSelectedUserId('admin_1513');
                   useAppStore.getState().setSelectedUserId?.('admin_1513');
                   setView?.('user_profile'); 
-                }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
-                  <User size={16} className="text-amber-600 group-hover:scale-110 transition-all duration-200" /> Kurumsal Profilim (KGM)
+                }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
+                  <User size={16} className="text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-all duration-200" /> Kurumsal Profilim (KGM)
                 </button>
-                <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
-                  <Calendar size={16} className="text-gray-500 group-hover:text-gray-700 transition-all duration-200" /> Takvim
+                <button role="menuitem" onClick={() => { setIsOpen(false); setView?.('calendar'); }} className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 group cursor-pointer">
+                  <Calendar size={16} className="text-gray-500 dark:text-slate-400 group-hover:text-gray-700 dark:group-hover:text-slate-200 transition-all duration-200" /> Takvim
                 </button>
               </div>
 
               {/* LOGOUT */}
-              <div className="border-t border-gray-50 mt-1 py-1">
-                <button role="menuitem" onClick={handleLogout} className="w-full text-left px-4 py-2 text-[13px] font-bold text-red-600 hover:bg-red-50 transition-all duration-200 flex items-center gap-3 group">
-                  <LogOut size={16} className="text-red-500 group-hover:text-red-600 transition-all duration-200" /> Çıkış Yap
+              <div className="border-t border-gray-50 dark:border-slate-800 mt-1 py-1">
+                <button role="menuitem" onClick={handleLogout} className="w-full text-left px-4 py-2 text-[13px] font-bold text-red-600 dark:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-950/40 transition-all duration-200 flex items-center gap-3 group">
+                  <LogOut size={16} className="text-red-500 dark:text-rose-400 group-hover:text-red-600 transition-all duration-200" /> Çıkış Yap
                 </button>
               </div>
             </>
           ) : (
             <>
               {/* NORMAL USER HEADER */}
-              <div className="px-4 py-3 border-b border-gray-50">
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800">
                 <div className="flex items-center gap-1.5 mb-0.5">
-                  <p className="text-sm font-black text-gray-900 truncate flex items-center gap-1 transition-all duration-200">
+                  <p className="text-sm font-black text-gray-900 dark:text-slate-100 truncate flex items-center gap-1 transition-all duration-200">
                     {branchUserName}
                     {effectiveCurrentUser?.badge && <ShieldCheck size={14} className="text-red-500 shrink-0" title={effectiveCurrentUser?.badge} />}
                   </p>
                 </div>
-                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-0.5 flex items-center gap-1 transition-all duration-200">
+                <p className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mt-0.5 flex items-center gap-1 transition-all duration-200">
                   <Shield size={10} /> {getRoleLabel(effectiveBranch)}
                 </p>
               </div>
               
               {/* PANEL SWITCHER GRID (YÖNETİM BAŞTA -> KARİYER MERKEZİ -> MEZUN -> ÖĞRENCİ -> AKADEMİK -> FİRMA) */}
-              <div className="px-4 py-3 border-b border-gray-50 bg-slate-50/50">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Portallar</p>
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">Portallar</p>
                 <div className="flex flex-col gap-1.5">
                   <div className="grid grid-cols-4 gap-1">
                     <button 
@@ -429,14 +439,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
                         effectiveBranch === 'alumni' 
-                          ? 'bg-emerald-600 text-white font-black border-emerald-700 shadow-emerald-900/20' 
-                          : 'bg-white hover:bg-emerald-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-emerald-200'
+                          ? 'bg-emerald-600 text-white font-black border-emerald-500 shadow-emerald-900/20' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-emerald-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'alumni' ? 'bg-white/20 text-white' : 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 group-hover:bg-emerald-600 group-hover:text-white'}`}>
                         <UsersIcon size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'alumni' ? 'text-white' : 'text-gray-700'}`}>Mezun</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'alumni' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Mezun</span>
                     </button>
 
                     <button 
@@ -449,14 +459,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
                         effectiveBranch === 'student' 
-                          ? 'bg-rose-600 text-white font-black border-rose-700 shadow-rose-900/20' 
-                          : 'bg-white hover:bg-rose-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-rose-200'
+                          ? 'bg-rose-600 text-white font-black border-rose-500 shadow-rose-900/20' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-rose-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-rose-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'student' ? 'bg-white/20 text-white' : 'bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 group-hover:bg-rose-600 group-hover:text-white'}`}>
                         <GraduationCap size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'student' ? 'text-white' : 'text-gray-700'}`}>Öğrenci</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'student' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Öğrenci</span>
                     </button>
 
                     <button 
@@ -469,14 +479,14 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
                         effectiveBranch === 'academic' 
-                          ? 'bg-indigo-600 text-white font-black border-indigo-700 shadow-indigo-900/20' 
-                          : 'bg-white hover:bg-indigo-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-indigo-200'
+                          ? 'bg-indigo-600 text-white font-black border-indigo-500 shadow-indigo-900/20' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-indigo-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-indigo-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'academic' ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'academic' ? 'bg-white/20 text-white' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white'}`}>
                         <BookOpen size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'academic' ? 'text-white' : 'text-gray-700'}`}>Akademik</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'academic' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Akademik</span>
                     </button>
 
                     <button 
@@ -489,20 +499,20 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       }} 
                       className={`flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all duration-200 group border shadow-sm ${
                         effectiveBranch === 'company' 
-                          ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white font-black border-blue-800 shadow-blue-950/20' 
-                          : 'bg-white hover:bg-blue-50 text-gray-700 font-bold border-gray-100 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200'
+                          ? 'bg-gradient-to-r from-slate-950 via-[#0A2342] to-blue-950 text-white font-black border-blue-500 shadow-blue-950/20' 
+                          : 'bg-white dark:bg-slate-800/90 hover:bg-blue-50 dark:hover:bg-slate-700/90 text-gray-700 dark:text-slate-200 font-bold border-gray-100 dark:border-slate-700 hover:-translate-y-0.5 active:scale-95 hover:border-blue-200'
                       }`}
                     >
-                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'company' ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-900 group-hover:bg-[#0A2342] group-hover:text-white'}`}>
+                      <div className={`p-1.5 rounded-lg transition-all duration-200 ${effectiveBranch === 'company' ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-500/20 text-blue-900 dark:text-blue-300 group-hover:bg-[#0A2342] group-hover:text-white'}`}>
                         <Building2 size={16} />
                       </div>
-                      <span className={`text-[10px] font-bold ${effectiveBranch === 'company' ? 'text-white' : 'text-gray-700'}`}>Firma</span>
+                      <span className={`text-[10px] font-bold ${effectiveBranch === 'company' ? 'text-white' : 'text-gray-700 dark:text-slate-200'}`}>Firma</span>
                     </button>
                   </div>
                 </div>
               </div>
 
-              <div className="py-1 border-b border-gray-50">
+              <div className="py-1 border-b border-gray-50 dark:border-slate-800">
                 <button 
                   role="menuitem"
                   onClick={() => { 
@@ -513,26 +523,26 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                     if (store?.setSelectedUserId) store.setSelectedUserId(selfId);
                     setView?.('user_profile'); 
                   }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
                 >
-                  <User size={16} className="text-slate-500" /> Profilimi Görüntüle
+                  <User size={16} className="text-slate-500 dark:text-slate-400" /> Profilimi Görüntüle
                 </button>
 
                 <button 
                   role="menuitem"
                   onClick={() => { setIsOpen(false); setView?.('profile_update'); }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
                 >
-                  <Settings size={16} className="text-slate-500" /> Profilimi Düzenle
+                  <Settings size={16} className="text-slate-500 dark:text-slate-400" /> Profilimi Düzenle
                 </button>
 
                 {(effectiveBranch === 'student' || userRole === 'student') && (
                   <button 
                     role="menuitem"
                     onClick={() => { setIsOpen(false); setView?.('student_kgb'); }}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-[#990000] hover:bg-red-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-[#990000] dark:text-rose-400 hover:bg-red-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
                   >
-                    <BookOpen size={16} className="text-[#990000]" /> KGB Kariyer Karnem
+                    <BookOpen size={16} className="text-[#990000] dark:text-rose-400" /> KGB Kariyer Karnem
                   </button>
                 )}
 
@@ -546,9 +556,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                       setView?.('applications');
                     }
                   }}
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 hover:bg-slate-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
                 >
-                  <Briefcase size={16} className="text-slate-500" /> 
+                  <Briefcase size={16} className="text-slate-500 dark:text-slate-400" /> 
                   {effectiveBranch === 'company' || userRole === 'company' || userRole === 'employer' ? 'Aday Takip Panosu (ATS)' : 'Başvurularım'}
                 </button>
 
@@ -556,9 +566,9 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   <button 
                     role="menuitem"
                     onClick={() => { setIsOpen(false); setView?.('global_map'); }}
-                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 hover:bg-emerald-50 transition-all duration-200 flex items-center gap-3 cursor-pointer"
+                    className="w-full text-left px-4 py-2 text-[13px] font-bold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-all duration-200 flex items-center gap-3 cursor-pointer"
                   >
-                    <Globe size={16} className="text-emerald-600" /> Küresel Mezun Haritası
+                    <Globe size={16} className="text-emerald-600 dark:text-emerald-400" /> Küresel Mezun Haritası
                   </button>
                 )}
               </div>
@@ -568,20 +578,20 @@ export default function TopProfileMenu({ currentUser, userRole, setView, setSele
                   role="menuitem"
                   onClick={() => { setIsOpen(false); setView?.('calendar'); }}
                   className={`w-full text-left px-4 py-2 text-[13px] font-bold transition-all duration-200 flex items-center gap-3 group cursor-pointer ${
-                    effectiveBranch === 'alumni' ? 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-800' : 'text-gray-700 hover:bg-[#990000]/10 hover:text-[#990000]'
+                    effectiveBranch === 'alumni' ? 'text-gray-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 hover:text-emerald-800 dark:hover:text-emerald-300' : 'text-gray-700 dark:text-slate-200 hover:bg-[#990000]/10 dark:hover:bg-slate-800 hover:text-[#990000] dark:hover:text-rose-300'
                   }`}
                 >
-                  <Calendar size={16} className={`text-gray-500 transition-all duration-200 ${userRole === 'alumni' ? 'group-hover:text-emerald-700' : 'group-hover:text-[#990000]'}`} /> Takvim
+                  <Calendar size={16} className={`text-gray-500 dark:text-slate-400 transition-all duration-200 ${userRole === 'alumni' ? 'group-hover:text-emerald-700 dark:group-hover:text-emerald-300' : 'group-hover:text-[#990000] dark:group-hover:text-rose-300'}`} /> Takvim
                 </button>
               </div>
 
-              <div className="border-t border-gray-50 mt-1 py-1">
+              <div className="border-t border-gray-50 dark:border-slate-800 mt-1 py-1">
                 <button 
                   role="menuitem"
                   onClick={handleLogout} 
-                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 flex items-center gap-3 group"
+                  className="w-full text-left px-4 py-2 text-[13px] font-bold text-gray-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-rose-950/40 hover:text-red-600 dark:hover:text-rose-400 transition-all duration-200 flex items-center gap-3 group"
                 >
-                  <LogOut size={16} className="text-gray-500 group-hover:text-red-600 transition-all duration-200" /> Çıkış Yap
+                  <LogOut size={16} className="text-gray-500 dark:text-slate-400 group-hover:text-red-600 dark:group-hover:text-rose-400 transition-all duration-200" /> Çıkış Yap
                 </button>
               </div>
             </>

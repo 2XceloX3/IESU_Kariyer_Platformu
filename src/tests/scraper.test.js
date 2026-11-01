@@ -3,6 +3,9 @@ import {
   fetchIesuKariyerData,
   scrapeLiveOrFallback,
   parseIesuHtmlPayload,
+  parseIesuRssXml,
+  deduplicateFeedItems,
+  cleanScrapedText,
   extractAnnouncements,
   extractEvents,
   extractOfficeInfo,
@@ -189,6 +192,64 @@ describe('İESU Kariyer Web Scraper Engine & Data Pipeline', () => {
       expect(parsed.officeInfo.title).toBe(MOCK_IESU_KARIYER_DATA.officeInfo.title);
       expect(parsed.announcements).toEqual(MOCK_IESU_KARIYER_DATA.announcements);
       expect(parsed.events).toEqual(MOCK_IESU_KARIYER_DATA.events);
+    });
+  });
+
+  describe('parseIesuRssXml and deduplicateFeedItems', () => {
+    it('should parse RSS 2.0 XML into news, events, and announcements', () => {
+      const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
+        <rss version="2.0">
+          <channel>
+            <title>İstanbul Esenyurt Üniversitesi RSS</title>
+            <item>
+              <title><![CDATA[İESÜ Bahar Kariyer Sempozyumu ve Sektör Buluşması]]></title>
+              <link>https://www.esenyurt.edu.tr/etkinlik/bahar-kariyer-sempozyumu</link>
+              <pubDate>Wed, 15 Apr 2026 10:00:00 GMT</pubDate>
+              <category>Etkinlik</category>
+              <description><![CDATA[<p>Sektör liderleriyle kariyer buluşması.</p>]]></description>
+            </item>
+            <item>
+              <title>2026 Yaz Stajı Başvuru Takvimi Duyurusu</title>
+              <link>/duyuru/yaz-staji-2026</link>
+              <pubDate>Mon, 13 Apr 2026 09:00:00 GMT</pubDate>
+              <category>Duyuru</category>
+              <description>Zorunlu yaz stajı takvimi açıklanmıştır.</description>
+            </item>
+            <item>
+              <title>Üniversitemiz TÜBİTAK 2209-A Projelerinde Rekor Kırdı</title>
+              <link>https://www.esenyurt.edu.tr/haber/tubitak-rekoru</link>
+              <pubDate>Sun, 12 Apr 2026 08:00:00 GMT</pubDate>
+              <category>Haber</category>
+              <description>Öğrencilerimizin araştırma projeleri kabul edildi.</description>
+            </item>
+          </channel>
+        </rss>`;
+
+      const parsed = parseIesuRssXml(rssXml);
+      expect(parsed.events.length).toBe(1);
+      expect(parsed.events[0].title).toBe('İESÜ Bahar Kariyer Sempozyumu ve Sektör Buluşması');
+      expect(parsed.announcements.length).toBe(1);
+      expect(parsed.announcements[0].link).toBe('https://www.esenyurt.edu.tr/duyuru/yaz-staji-2026');
+      expect(parsed.news.length).toBe(1);
+      expect(parsed.news[0].title).toBe('Üniversitemiz TÜBİTAK 2209-A Projelerinde Rekor Kırdı');
+    });
+
+    it('should deduplicate feed items by normalized title and preserve order', () => {
+      const existing = [
+        { id: '1', title: 'İESÜ Kariyer Günleri Başladı', url: 'https://www.esenyurt.edu.tr/1' },
+        { id: '2', title: 'Teknofest Başvuruları', url: 'https://www.esenyurt.edu.tr/2' }
+      ];
+      const incoming = [
+        { id: 'new-1', title: '<b>İESÜ Kariyer Günleri Başladı</b>', url: 'https://www.esenyurt.edu.tr/1-updated' },
+        { id: 'new-3', title: 'Yeni Sanayi İş Birliği Protokolü', url: 'https://www.esenyurt.edu.tr/3' }
+      ];
+
+      const merged = deduplicateFeedItems(existing, incoming, 10);
+      expect(merged.length).toBe(3);
+      expect(merged[0].id).toBe('new-1');
+      expect(merged[1].id).toBe('new-3');
+      expect(merged[2].id).toBe('2');
+      expect(cleanScrapedText('<p>Merhaba &amp; Dünya</p>')).toBe('Merhaba & Dünya');
     });
   });
 });

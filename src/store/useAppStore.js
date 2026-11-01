@@ -41,6 +41,27 @@ const mapRoleToHive = (role) => {
   return undefined;
 };
 
+const applyThemeClassToDOM = (isDark) => {
+  if (typeof document !== 'undefined' && document.documentElement) {
+    document.documentElement.classList.toggle('dark', Boolean(isDark));
+    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+  }
+};
+
+const getInitialDarkMode = () => {
+  try {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('iesu_theme');
+      if (saved === 'dark' || saved === 'light') {
+        const isDark = saved === 'dark';
+        applyThemeClassToDOM(isDark);
+        return isDark;
+      }
+    }
+  } catch { /* intentional */ }
+  return false;
+};
+
 // ── Core Zustand Store (Strictly Session / Routing & App Context) ───────────────
 export const coreStore = create(
   persist(
@@ -81,9 +102,11 @@ export const coreStore = create(
       selectedUserId: null,
       setSelectedUserId: (id) => set({ selectedUserId: id }),
 
-      // 7. selectedGroupId
+      // 7. selectedGroupId & selectedClubId
       selectedGroupId: null,
       setSelectedGroupId: (id) => set({ selectedGroupId: id }),
+      selectedClubId: null,
+      setSelectedClubId: (id) => set({ selectedClubId: id }),
 
       // 8. activePortalBranch
       activePortalBranch: 'student',
@@ -105,6 +128,22 @@ export const coreStore = create(
       addFollowedUserId: (id) => set(state => ({ followedUserIds: [...new Set([...state.followedUserIds, id])] })),
       removeFollowedUserId: (id) => set(state => ({ followedUserIds: state.followedUserIds.filter(fid => fid !== id) })),
 
+      followedClubIds: ['CLUB-001'],
+      setFollowedClubIds: (ids) => set({ followedClubIds: Array.isArray(ids) ? ids.map(String) : [] }),
+      toggleFollowClub: (clubId) => {
+        if (!clubId) return;
+        const normalizedId = String(clubId);
+        set((state) => {
+          const current = Array.isArray(state.followedClubIds) ? state.followedClubIds.map(String) : [];
+          const exists = current.includes(normalizedId);
+          return {
+            followedClubIds: exists
+              ? current.filter((id) => id !== normalizedId)
+              : [...current, normalizedId],
+          };
+        });
+      },
+
       // Internationalization (TR / EN)
       language: (typeof window !== 'undefined' && localStorage.getItem('iesu_preferred_language')) || 'tr',
       setLanguage: (lang) => {
@@ -116,6 +155,34 @@ export const coreStore = create(
         try { if (typeof window !== 'undefined') localStorage.setItem('iesu_preferred_language', safe); } catch (_) {}
         try { eventBus.emit('language:changed', { language: safe }); eventBus.emit('i18n:languageChanged', { language: safe }); } catch (_) {}
         set({ language: safe });
+      },
+
+      // Global Dark Mode ('light' | 'dark')
+      darkMode: getInitialDarkMode(),
+      theme: getInitialDarkMode() ? 'dark' : 'light',
+      setDarkMode: (isDark) => {
+        const nextDark = Boolean(isDark);
+        const nextTheme = nextDark ? 'dark' : 'light';
+        applyThemeClassToDOM(nextDark);
+        try { if (typeof window !== 'undefined') localStorage.setItem('iesu_theme', nextTheme); } catch (_) {}
+        try { eventBus.emit('theme:changed', { theme: nextTheme, darkMode: nextDark }); } catch (_) {}
+        set({ darkMode: nextDark, theme: nextTheme });
+      },
+      setTheme: (nextThemeInput) => {
+        const nextDark = nextThemeInput === 'dark';
+        const nextTheme = nextDark ? 'dark' : 'light';
+        applyThemeClassToDOM(nextDark);
+        try { if (typeof window !== 'undefined') localStorage.setItem('iesu_theme', nextTheme); } catch (_) {}
+        try { eventBus.emit('theme:changed', { theme: nextTheme, darkMode: nextDark }); } catch (_) {}
+        set({ darkMode: nextDark, theme: nextTheme });
+      },
+      toggleDarkMode: () => {
+        const nextDark = !get().darkMode;
+        const nextTheme = nextDark ? 'dark' : 'light';
+        applyThemeClassToDOM(nextDark);
+        try { if (typeof window !== 'undefined') localStorage.setItem('iesu_theme', nextTheme); } catch (_) {}
+        try { eventBus.emit('theme:changed', { theme: nextTheme, darkMode: nextDark }); } catch (_) {}
+        set({ darkMode: nextDark, theme: nextTheme });
       },
 
       // 9. logAction (audit logger with DOMPurify sanitization & circular ref defense)
@@ -203,6 +270,7 @@ export const coreStore = create(
           previousHive: null,
           selectedUserId: null,
           selectedGroupId: null,
+          selectedClubId: null,
           activePortalBranch: 'student',
           userBP: 150,
           purchasedItems: [],
@@ -212,7 +280,8 @@ export const coreStore = create(
           liveRooms: [],
           focusMode: false,
           ghostMode: false,
-          followedUserIds: []
+          followedUserIds: [],
+          followedClubIds: []
         });
         try { useSharedStore.getState().reset?.(); } catch { /* intentional */ }
         try { useAdminStore.getState().reset?.(); } catch { /* intentional */ }
@@ -270,8 +339,17 @@ export const coreStore = create(
           activePortalBranch: safeBranch,
           activeHive: state.activeHive,
           followedUserIds: state.followedUserIds || [],
+          followedClubIds: state.followedClubIds || ['CLUB-001'],
           language: state.language || 'tr'
         };
+      },
+      onRehydrateStorage: () => (state) => {
+        const isDark = getInitialDarkMode();
+        applyThemeClassToDOM(isDark);
+        if (state) {
+          state.darkMode = isDark;
+          state.theme = isDark ? 'dark' : 'light';
+        }
       }
     }
   )
@@ -286,6 +364,8 @@ let _cachedState = null;
 let _lastCore = null;
 let _lastShared = null;
 let _lastAdmin = null;
+const _stableSharedSetters = {};
+const _stableAdminSetters = {};
 
 export function getFacadeState() {
   const core = coreStore.getState();
@@ -301,20 +381,26 @@ export function getFacadeState() {
   _lastShared = shared;
   _lastAdmin = admin;
 
-  // Build stable aliases / dynamic setters
+  // Build stable aliases / dynamic setters (cached by key so references never change)
   const dynamicSetters = {};
   for (const key of Object.keys(shared)) {
     const setterName = 'set' + key.charAt(0).toUpperCase() + key.slice(1);
     if (!(setterName in shared) && !(setterName in core)) {
-      dynamicSetters[setterName] = (val) =>
-        useSharedStore.setState((s) => ({ [key]: typeof val === 'function' ? val(s[key]) : val }));
+      if (!_stableSharedSetters[setterName]) {
+        _stableSharedSetters[setterName] = (val) =>
+          useSharedStore.setState((s) => ({ [key]: typeof val === 'function' ? val(s[key]) : val }));
+      }
+      dynamicSetters[setterName] = _stableSharedSetters[setterName];
     }
   }
   for (const key of Object.keys(admin)) {
     const setterName = 'set' + key.charAt(0).toUpperCase() + key.slice(1);
     if (!(setterName in admin) && !(setterName in shared) && !(setterName in core)) {
-      dynamicSetters[setterName] = (val) =>
-        useAdminStore.setState((s) => ({ [key]: typeof val === 'function' ? val(s[key]) : val }));
+      if (!_stableAdminSetters[setterName]) {
+        _stableAdminSetters[setterName] = (val) =>
+          useAdminStore.setState((s) => ({ [key]: typeof val === 'function' ? val(s[key]) : val }));
+      }
+      dynamicSetters[setterName] = _stableAdminSetters[setterName];
     }
   }
 

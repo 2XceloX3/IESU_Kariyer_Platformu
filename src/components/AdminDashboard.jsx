@@ -654,10 +654,10 @@ export default function AdminDashboard({
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans relative">
 
       {/* ── HEADER ─────────────────────────────────────── */}
-      <header className="bg-white border-b border-gray-100 px-5 py-3 flex items-center gap-4 shrink-0 sticky top-0 z-40">
+      <header className="bg-white dark:bg-[#131c31] border-b border-gray-100 dark:border-slate-800 px-5 py-3 flex items-center gap-4 shrink-0 sticky top-0 z-40">
         
-        <div className="flex items-center gap-3 pr-4 border-r border-gray-100 shrink-0">
-          <Logo className="w-9 h-9 text-amber-700 bg-amber-50 rounded-xl p-1.5" />
+        <div className="flex items-center gap-3 pr-4 border-r border-gray-100 dark:border-slate-800 shrink-0">
+          <Logo className="w-9 h-9 text-amber-700 bg-amber-50 dark:bg-amber-500/15 rounded-xl p-1.5" />
           <div 
             role="button"
             tabIndex={0}
@@ -666,8 +666,8 @@ export default function AdminDashboard({
             className="hidden sm:block cursor-pointer select-none group"
             title="Güvenlik Doğrulama Kodu"
           >
-            <h1 className="text-[14px] font-black text-gray-900 leading-tight group-hover:text-amber-800 transition">Yönetici Paneli</h1>
-            <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <h1 className="text-[14px] font-black text-gray-900 dark:text-slate-100 leading-tight group-hover:text-amber-800 dark:group-hover:text-amber-300 transition">Yönetici Paneli</h1>
+            <p className="text-[10px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
               <span>{academicRole === 'super_admin' ? 'SÜPER ADMİN' : 'KARİYER OFİSİ'}</span>
               {isAuditUnlocked && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" title="Denetim Masası Aktif" />}
             </p>
@@ -682,11 +682,11 @@ export default function AdminDashboard({
               className={`group flex items-center gap-1.5 px-4 py-2 text-[12px] font-bold transition-all duration-300 whitespace-nowrap rounded-xl ${
                 activeCategory === cat.id 
                   ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border border-amber-500 font-black shadow-md shadow-amber-500/25'
-                  : 'text-gray-500 hover:text-amber-800 hover:bg-amber-50/50 border border-transparent hover:shadow-sm'
+                  : 'text-gray-600 dark:text-slate-300 hover:text-amber-800 dark:hover:text-amber-300 hover:bg-amber-50/50 dark:hover:bg-slate-800 border border-transparent hover:shadow-sm'
               }`}
             >
               <span className={`transition-transform duration-300 group-hover:scale-110 ${
-                activeCategory === cat.id ? 'text-white font-black' : 'text-gray-500 group-hover:text-amber-600'
+                activeCategory === cat.id ? 'text-white font-black' : 'text-gray-500 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-300'
               }`}>
                 {cat.icon}
               </span>
@@ -700,12 +700,12 @@ export default function AdminDashboard({
         <div className="flex items-center gap-3 shrink-0">
           <div className="hidden lg:flex items-center gap-2 mr-2">
             {pending>0&&(
-              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer hover:bg-amber-100 transition" onClick={()=>{setSearchQuery(''); setActiveCategory('genel'); setActiveTab('operasyon');}}>
+              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer hover:bg-amber-100 dark:hover:bg-amber-500/25 transition" onClick={()=>{setSearchQuery(''); setActiveCategory('genel'); setActiveTab('operasyon');}}>
                 <ClipboardList size={13}/> {pending} Onay
               </div>
             )}
             {unread>0&&(
-              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-1.5 bg-red-50 border border-red-200 text-red-700 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer hover:bg-red-100 transition" onClick={()=>{setSearchQuery(''); setActiveCategory('genel'); setActiveTab('mesajlar');}}>
+              <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  className="flex items-center gap-1.5 bg-red-50 dark:bg-rose-500/15 border border-red-200 dark:border-rose-500/30 text-red-700 dark:text-rose-300 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer hover:bg-red-100 dark:hover:bg-rose-500/25 transition" onClick={()=>{setSearchQuery(''); setActiveCategory('genel'); setActiveTab('mesajlar');}}>
                 <Bell size={13}/> {unread} Mesaj
               </div>
             )}
@@ -715,31 +715,31 @@ export default function AdminDashboard({
       </header>
 
       {/* Alt Sekme Butonları (seçili kategorinin panelleri) */}
-      <div className="bg-white border-b border-gray-200 shadow-sm shrink-0 sticky top-[65px] z-30">
+      <div className="bg-white dark:bg-[#131c31] border-b border-gray-200 dark:border-slate-800 shadow-sm shrink-0 sticky top-[65px] z-30">
         <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-2.5">
           <div className="flex flex-wrap gap-2">
-            {searchQuery && <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider self-center mr-1">"{searchQuery}" araması:</span>}
+            {searchQuery && <span className="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider self-center mr-1">"{searchQuery}" araması:</span>}
             {filteredPanels.map(tab => {
               const catId = PANEL_CATEGORIES.find(c => c.panels.includes(tab.id))?.id || 'genel';
               const activeThemeClass = 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black border-amber-500 shadow-md shadow-amber-500/25';
               const theme = {
-                genel: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                kullanici: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                icerik: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-                sistem: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
-              }[catId] || { active: activeThemeClass, hoverText: 'group-hover:text-amber-600', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' };
+                genel: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600 dark:group-hover:text-amber-300', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                kullanici: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600 dark:group-hover:text-amber-300', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                icerik: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600 dark:group-hover:text-amber-300', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+                sistem: { active: activeThemeClass, hoverText: 'group-hover:text-amber-600 dark:group-hover:text-amber-300', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' },
+              }[catId] || { active: activeThemeClass, hoverText: 'group-hover:text-amber-600 dark:group-hover:text-amber-300', iconGlow: 'shadow-sm', hoverGlow: 'group-hover:shadow-sm' };
 
               return (
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(tab.id); setSearchQuery(''); }}
-                  className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all duration-300 border ${
+                  className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all duration-300 border cursor-pointer ${
                     activeTab === tab.id
                       ? theme.active
-                      : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200 hover:border-gray-300'
+                      : 'bg-white dark:bg-slate-800/80 text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700/80 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
                   }`}
                 >
-                  <span className={`transition-transform duration-300 group-hover:scale-110 ${activeTab === tab.id ? `text-white ${theme.iconGlow}` : `text-gray-500 ${theme.hoverText} ${theme.hoverGlow}`}`}>{tab.icon}</span>
+                  <span className={`transition-transform duration-300 group-hover:scale-110 ${activeTab === tab.id ? `text-white ${theme.iconGlow}` : `text-gray-500 dark:text-slate-400 ${theme.hoverText} ${theme.hoverGlow}`}`}>{tab.icon}</span>
                   <span className={activeTab === tab.id ? 'text-white' : theme.hoverText}>{tab.label}</span>
                 </button>
               );

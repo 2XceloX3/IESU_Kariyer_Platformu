@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal, Heart, MessageCircle, Bookmark, Send, Briefcase, FileText, Download, ShieldCheck, X, Edit2, Trash2, Crown, Award, ClipboardList, CheckCircle2, Copy, Share2, Building2, MapPin, Calendar, Sparkles, ChevronLeft, ChevronRight, Tag, Users, Ticket } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import useAppStore from '../store/useAppStore';
@@ -10,21 +11,81 @@ import DOMPurify from 'dompurify';
 import { getTenantConfig } from '../config/tenantConfig';
 
 
+const EMPTY_ARRAY = [];
+
 const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessages, setSelectedUserId, setView }) {
+  const navigate = useNavigate();
   const storeCurrentUser = useAppStore(state => state.currentUser);
   const effectiveCurrentUser = currentUser || storeCurrentUser;
   const sendMessage = useAppStore(state => state.sendMessage);
   const activeFrame = useAppStore(state => state.activeFrame);
   const storeSetSelectedUserId = useAppStore(state => state.setSelectedUserId);
+  const storeSetSelectedClubId = useAppStore(state => state.setSelectedClubId);
+  const followedClubIds = useAppStore(state => state.followedClubIds || EMPTY_ARRAY);
+  const toggleFollowClub = useAppStore(state => state.toggleFollowClub);
   const storeSetView = useAppStore(state => state.setView);
   const activeSetSelectedUserId = setSelectedUserId || storeSetSelectedUserId;
   const activeSetView = setView || storeSetView;
 
+  const navigateToView = useCallback((targetView) => {
+    const clean = String(targetView || '').replace(/^\//, '');
+    if (!clean) return;
+    if (typeof activeSetView === 'function') {
+      activeSetView(clean);
+    } else {
+      navigate('/' + clean);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeSetView, navigate]);
+
+  const isClubRelatedPost = Boolean(
+    post?.clubId ||
+    post?.isClubPost ||
+    post?.author?.role === 'club' ||
+    (typeof post?.feedType === 'string' && post.feedType.startsWith('club'))
+  );
+  const isFollowingClub = Boolean(post?.clubId && followedClubIds.map(String).includes(String(post.clubId)));
+
+  const handleOpenClubProfile = (e) => {
+    e?.stopPropagation?.();
+    if (post?.clubId) {
+      storeSetSelectedClubId?.(String(post.clubId));
+      useAppStore.getState().setSelectedClubId?.(String(post.clubId));
+    }
+    navigateToView('club_portal');
+  };
+
+  const handleToggleClubFollow = (e) => {
+    e?.stopPropagation?.();
+    if (!post?.clubId) return;
+    toggleFollowClub?.(String(post.clubId));
+    const clubTitle = post?.clubName || (typeof post?.author === 'string' ? post.author : post?.author?.name) || 'Kulüp';
+    window.toast?.success?.(
+      isFollowingClub
+        ? `${clubTitle} takipten çıkarıldı.`
+        : `${clubTitle} takip edilen kulüplere eklendi!`
+    );
+  };
+
   const handleProfileClick = (e) => {
-    e.stopPropagation();
-    const targetUserId = post?.authorId || post?.author?.id || post?.userId || post?.authorName || (typeof post?.author === 'string' ? post.author : post?.author?.name);
-    const authorName = post?.authorName || (typeof post?.author === 'object' ? post.author?.name : (typeof post?.author === 'string' ? post.author : ''));
-    if (targetUserId && activeSetSelectedUserId && activeSetView) {
+    e?.stopPropagation?.();
+    if (isClubRelatedPost && post?.clubId) {
+      handleOpenClubProfile(e);
+      return;
+    }
+    const authorName = post?.authorName || (typeof post?.author === 'object' ? post?.author?.name : (typeof post?.author === 'string' ? post.author : '')) || '';
+    const isInstitutionalAuthor =
+      post?.author?.role === 'admin' ||
+      /kariyer geliştirme|i̇esü haber|esenyurt üniversitesi|kurumsal iletişim|bilim iletişimi/i.test(authorName);
+    const targetUserId =
+      post?.authorId ||
+      post?.author?.id ||
+      post?.jobData?.companyId ||
+      post?.userId ||
+      (isInstitutionalAuthor ? 'admin_1513' : null) ||
+      authorName;
+
+    if (targetUserId) {
       const isSelf = targetUserId === 'self' || (effectiveCurrentUser && (
         targetUserId === effectiveCurrentUser.id ||
         targetUserId === effectiveCurrentUser.uid ||
@@ -32,14 +93,25 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
         (effectiveCurrentUser.name && String(targetUserId).trim().toLowerCase() === effectiveCurrentUser.name.trim().toLowerCase()) ||
         (effectiveCurrentUser.name && authorName && effectiveCurrentUser.name.trim().toLowerCase() === String(authorName).trim().toLowerCase())
       ));
-      activeSetSelectedUserId(isSelf ? (effectiveCurrentUser?.id || targetUserId) : targetUserId);
-      activeSetView(isSelf ? 'user_profile' : 'public_profile');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const finalTargetId = isSelf ? (effectiveCurrentUser?.id || targetUserId) : targetUserId;
+      try {
+        sessionStorage.setItem('iesu_last_clicked_author', JSON.stringify({
+          id: finalTargetId,
+          name: authorName || 'İESÜ Üyesi',
+          role: post?.author?.role || (post?.isJob || post?.isCareerOpportunity ? 'company' : isInstitutionalAuthor ? 'admin' : 'student'),
+          title: post?.author?.title || post?.role || '',
+          department: post?.author?.department || '',
+          avatar: post?.authorAvatar || post?.author?.avatar || post?.author?.logo || null,
+        }));
+      } catch (_) {}
+      activeSetSelectedUserId?.(finalTargetId);
+      useAppStore.getState().setSelectedUserId?.(finalTargetId);
+      navigateToView(isSelf ? 'user_profile' : 'public_profile');
     }
   };
 
   // ─── İŞ & STAJ BAŞVURU SİSTEMİ ───
-  const applications = useAppStore(state => state.applications) || [];
+  const applications = useAppStore(state => state.applications || EMPTY_ARRAY);
   const setApplications = useAppStore(state => state.setApplications);
   const addApplication = useAppStore(state => state.addApplication);
   const addNotification = useAppStore(state => state.addNotification);
@@ -584,18 +656,54 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-[var(--border-soft)] shadow-[var(--shadow-soft)] overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
       {/* Header */}
+      {isClubRelatedPost && post.priorityReason && (
+        <div className="px-4 py-2 bg-slate-50/90 border-b border-slate-100 flex items-center justify-between gap-2 text-[11px]">
+          <div className="flex items-center gap-1.5 font-bold text-slate-700">
+            <Users size={13} className="text-[#990000]" />
+            <span>{post.priorityReason}</span>
+            {post.membershipState?.isMember && (
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">
+                Üyesisin
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {post.clubId && (
+              <button
+                type="button"
+                onClick={handleToggleClubFollow}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition cursor-pointer ${
+                  isFollowingClub
+                    ? 'bg-slate-200/80 text-slate-700 hover:bg-slate-300'
+                    : 'bg-red-50 text-[#990000] border border-red-200 hover:bg-red-100'
+                }`}
+              >
+                {isFollowingClub ? 'Takip Ediliyor ✓' : '+ Kulübü Takip Et'}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleOpenClubProfile}
+              className="text-[11px] font-bold text-[#990000] hover:underline flex items-center gap-0.5 cursor-pointer"
+            >
+              <span>Kulüp Sayfası</span>
+              <ChevronRight size={12} />
+            </button>
+          </div>
+        </div>
+      )}
       <div className="p-4 flex justify-between items-center">
         <div onClick={handleProfileClick} className="flex items-center gap-3 cursor-pointer group hover:opacity-90 transition-opacity">
           <SafeAvatar
-            src={post?.author?.avatar}
-            name={typeof post.author === 'string' ? post.author : post?.author?.name}
+            src={post?.authorAvatar || post?.clubLogo || post?.author?.avatar || post?.author?.logo}
+            name={typeof post.author === 'string' ? post.author : (post?.author?.name || post?.clubName)}
             isAdmin={post?.author?.role === 'admin'}
             size="lg"
             className="shadow-sm border border-gray-100"
           />
           <div className="flex flex-col">
             <h4 className="font-bold text-[14px] text-gray-900 leading-tight group-hover:text-[#990000] transition-colors flex items-center flex-wrap">
-              {typeof post.author === 'string' ? post.author : (post.author?.name || 'Kullanıcı')}
+              {typeof post.author === 'string' ? post.author : (post.author?.name || post.clubName || 'Kullanıcı')}
               {Array.isArray(post.coAuthors) && post.coAuthors.length > 0 && (
                 <span className="text-gray-500 font-normal ml-1">
                   ve <span className="font-bold text-gray-800">{post.coAuthors.map(a => a.name).join(', ')}</span>
@@ -603,10 +711,10 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
               )}
               {post.author?.role === 'admin' && <ShieldCheck size={14} className="text-red-500 ml-1.5" title="Yönetici" />}
               {post.author?.role === 'company' && <ShieldCheck size={14} className="text-amber-500 ml-1.5" title="Onaylı Firma" />}
-              {post.author?.role === 'club' && <ShieldCheck size={14} className="text-emerald-500 ml-1.5" title="Onaylı Kulüp" />}
+              {(post.author?.role === 'club' || isClubRelatedPost) && <ShieldCheck size={14} className="text-emerald-500 ml-1.5" title="Onaylı Kulüp" />}
               {renderBadges(post.author?.badge || post.author?.badges)}
             </h4>
-            <p className="text-[12px] text-gray-500 font-medium">{post.author?.title || post.author?.department}</p>
+            <p className="text-[12px] text-gray-500 font-medium">{post.role || post.author?.title || post.author?.department || (post.clubCategory ? `Öğrenci Kulübü • ${post.clubCategory}` : '')}</p>
             <p className="text-[10px] text-gray-500 font-medium">{post.time}</p>
           </div>
         </div>
@@ -663,7 +771,26 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
             <span>{post.milestone}</span>
           </div>
         )}
+        {post.title && (!post.content || !String(post.content).trim().startsWith(String(post.title).trim())) && (!isEventPost || post.title !== post.eventTitle) && (
+          <h3 className="text-[15px] font-black text-slate-900 mb-1.5 leading-snug">{post.title}</h3>
+        )}
         <p className="text-[15px] text-gray-800 font-medium leading-snug whitespace-pre-wrap break-words">{post.content}</p>
+        {post.isJob && !post.isCareerOpportunity && (
+          <div className="mt-3 p-3 bg-gradient-to-r from-slate-50 via-indigo-50/50 to-slate-50 border border-indigo-100 rounded-2xl flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-9 h-9 rounded-xl bg-indigo-600/10 text-indigo-700 flex items-center justify-center shrink-0">
+                <Briefcase size={16} />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-black text-slate-900 truncate">{cleanJobTitle}</div>
+                <div className="text-[11px] font-semibold text-slate-500 truncate">{companyName} • 📍 {jobLocation}</div>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-black uppercase tracking-wider shrink-0">
+              {jobType}
+            </span>
+          </div>
+        )}
         {post.poll && Array.isArray(post.poll.options) && (
           <div className="mt-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
             <div className="text-xs font-bold text-[#1e3a5f]">{post.poll.question}</div>
@@ -865,25 +992,37 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
             </div>
           );
         })()
-      ) : post.image ? (
+      ) : (post.image || post.imageUrl) ? (
         (() => {
-          const postAspect = post.aspectRatio || '1:1';
+          const mediaSrc = post.image || post.imageUrl;
+          const isPosterMedia = Boolean(
+            isEventPost ||
+            post.isGeneralEvent ||
+            post.feedType === 'event' ||
+            post.feedType === 'general_event' ||
+            post.feedType === 'club_event' ||
+            post.feedType === 'news' ||
+            post.feedType === 'announcement' ||
+            String(mediaSrc).includes('esenyurt.edu.tr/uploads/')
+          );
+          const postAspect = post.aspectRatio || (isPosterMedia ? '4:5' : '1:1');
           const aspectClass = postAspect === '4:5' 
-            ? 'aspect-[4/5] max-h-[560px]' 
+            ? 'aspect-[4/5] max-h-[540px]' 
             : postAspect === '1.91:1' 
               ? 'aspect-[1.91/1] max-h-[380px]' 
               : 'aspect-square max-h-[500px]';
+          const fallbackUrl = 'https://www.esenyurt.edu.tr/uploads/2026/10/nz19buzmdccs4-mimari-kultur-ve-sanat-kulubunden-teknik-gezi-novawood-showroom-ziyareti.jpg';
 
           return (
-            <div className={`w-full ${aspectClass} bg-black/90 relative group cursor-pointer overflow-hidden border-y border-gray-100 select-none flex items-center justify-center`} onDoubleClick={handleDoubleTap}>
+            <div className={`w-full ${aspectClass} bg-slate-100 relative group cursor-pointer overflow-hidden border-y border-gray-100 select-none flex items-center justify-center`} onDoubleClick={handleDoubleTap}>
               <img 
-                src={post.image} 
-                alt="Post Cover" 
+                src={mediaSrc} 
+                alt={post.title || 'Post Cover'} 
                 loading="lazy" 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                className={`relative z-10 w-full h-full ${isPosterMedia ? 'object-cover object-top group-hover:scale-[1.02]' : 'object-cover group-hover:scale-105'} transition-transform duration-500`} 
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80';
+                  e.target.src = fallbackUrl;
                 }}
               />
               {showHeart && (
@@ -1222,8 +1361,8 @@ const PostCard = memo(function PostCard({ post, currentUser, setPosts, setMessag
         </div>
       )}
 
-      {/* Fast Action for General Events */}
-      {post.isGeneralEvent && (
+      {/* Fast Action for General Events (only when not already rendered by isEventPost card) */}
+      {post.isGeneralEvent && !isEventPost && (
         <div className="px-4 pb-4">
           <button 
             type="button"

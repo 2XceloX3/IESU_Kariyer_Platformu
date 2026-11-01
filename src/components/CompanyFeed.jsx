@@ -435,22 +435,51 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
           
         {/* Create Post Native View */}
         {activeTab === 'create_post' && (
-          <div className="bg-white rounded-xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
-             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-              <Star className="text-orange-500 fill-current" size={24} /> Gönderi Paylaş & Düzenle
-             </h2>
-             <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+          <div className="space-y-5 animate-fade-in mb-6">
+            <div className="bg-white dark:bg-[#131c31] rounded-2xl w-full p-4 sm:p-6 shadow-xs border border-slate-200/90 dark:border-slate-800">
+              <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3.5 mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <Star className="fill-current" size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 leading-tight">
+                      Kurumsal Duyuru & Gönderi Paylaş
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      Şirket haberlerinizi, staj programlarınızı ve etkinliklerinizi öğrencilerle paylaşın.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('feed')}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 transition cursor-pointer shrink-0"
+                >
+                  ← Akışa Dön
+                </button>
+              </div>
+              <PostComposer
+                currentUser={effectiveCurrentUser}
+                userRole={userRole}
+                posts={posts}
+                setPosts={setPosts}
+                defaultExpanded={true}
+                embedded={true}
+              />
+            </div>
           </div>
         )}
 
         {/* Explore Native View */}
         {activeTab === 'search' && (
-          <ExploreFeed posts={posts} />
+          <ExploreFeed posts={posts} setView={setView} setSelectedUserId={setSelectedUserId} currentUser={effectiveCurrentUser} hideDock={true} onBack={() => setActiveTab('feed')} />
         )}
 
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+          <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           {/* Kurumsal Hızlı Erişim & Yönetim Araçları */}
           <div className="bg-white rounded-2xl p-4 sm:p-5 border border-blue-100 shadow-xs">
             <div className="flex items-center justify-between mb-3 px-1">
@@ -509,18 +538,10 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
           <div className="space-y-6">
             {(() => {
               const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
-              // Firma akışında sadece yönetici / Kariyer Geliştirme Merkezi resmi içerikleri gösterilir
-              const adminOnlyItems = allItems.filter(item => {
-                const authorName = typeof item.author === 'string' ? item.author : item.author?.name || item.authorName;
-                const authorRole = item.author?.role;
-                const isOfficial = item.isOfficial || item.type === 'announcement' || item.type === 'news' || item.type === 'event';
-                const isAdmin = authorRole === 'admin' || authorName === 'Kariyer Geliştirme Merkezi' || authorName === 'Kariyer Geliştirme Koordinatörlüğü';
-                return isOfficial || isAdmin;
-              });
 
-              const filtered = adminOnlyItems.filter(post => 
+              const filtered = allItems.filter(post => 
                 (post.content || post.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-                (post.author?.name || post.authorName || '').toLowerCase().includes(searchQuery.toLowerCase())
+                (post.author?.name || post.authorName || (typeof post.author === 'string' ? post.author : '')).toLowerCase().includes(searchQuery.toLowerCase())
               );
               
               if (filtered.length === 0) {
@@ -534,7 +555,7 @@ export default function CompanyFeed({ setView, setSelectedUserId, currentUser, u
               }
               
               return filtered.map(post => (
-                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser}  students={students || []} alumni={alumni || []} setPosts={setPosts} />
+                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || []} alumni={alumni || []} setPosts={setPosts} setView={setView} setSelectedUserId={setSelectedUserId} />
               ));
             })()}
           </div>

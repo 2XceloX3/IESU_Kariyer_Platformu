@@ -1,8 +1,9 @@
 // @ts-check
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getStorage } from "firebase/storage";
+import appletConfig from "./firebase-applet-config.json";
 
 const isTestEnv =
   typeof import.meta !== "undefined" &&
@@ -10,25 +11,21 @@ const isTestEnv =
   (import.meta.env.MODE === "test" || Boolean(import.meta.env.VITEST));
 
 const firebaseConfig = {
-  apiKey: import.meta.env?.VITE_FIREBASE_API_KEY || (isTestEnv ? "test-api-key" : undefined),
-  authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN || (isTestEnv ? "iesu-test.firebaseapp.com" : undefined),
-  projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID || (isTestEnv ? "iesu-kariyer-platformu" : undefined),
-  storageBucket: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET || (isTestEnv ? "iesu-test.firebasestorage.app" : undefined),
-  messagingSenderId: import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID || (isTestEnv ? "000000000000" : undefined),
-  appId: import.meta.env?.VITE_FIREBASE_APP_ID || (isTestEnv ? "1:000000000000:web:test" : undefined),
-  measurementId: import.meta.env?.VITE_FIREBASE_MEASUREMENT_ID || undefined,
+  apiKey: import.meta.env?.VITE_FIREBASE_API_KEY || appletConfig?.apiKey || (isTestEnv ? "test-api-key" : undefined),
+  authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN || appletConfig?.authDomain || (isTestEnv ? "iesu-test.firebaseapp.com" : undefined),
+  projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID || appletConfig?.projectId || (isTestEnv ? "iesu-kariyer-platformu" : undefined),
+  storageBucket: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET || appletConfig?.storageBucket || (isTestEnv ? "iesu-test.firebasestorage.app" : undefined),
+  messagingSenderId: import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID || appletConfig?.messagingSenderId || (isTestEnv ? "000000000000" : undefined),
+  appId: import.meta.env?.VITE_FIREBASE_APP_ID || appletConfig?.appId || (isTestEnv ? "1:000000000000:web:test" : undefined),
+  measurementId: import.meta.env?.VITE_FIREBASE_MEASUREMENT_ID || appletConfig?.measurementId || undefined,
+  firestoreDatabaseId: appletConfig?.firestoreDatabaseId || undefined,
 };
-
-if (!isTestEnv && (!firebaseConfig.apiKey || !firebaseConfig.projectId)) {
-  console.warn(
-    "[Firebase] Eksik ortam değişkeni tespit edildi. Lütfen .env dosyanızda VITE_FIREBASE_* değişkenlerinin tanımlı olduğundan emin olun."
-  );
-}
 
 let app = null;
 let _db = null;
 let _auth = null;
 let _storage = null;
+let _googleProvider = null;
 
 try {
   if (firebaseConfig.apiKey && firebaseConfig.projectId) {
@@ -44,12 +41,24 @@ try {
   }
 }
 
-try { _db = app ? getFirestore(app) : null; } catch (e) { console.warn("[Firebase] Firestore init failed:", e?.message); }
+try {
+  _db = app
+    ? firebaseConfig.firestoreDatabaseId
+      ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
+      : getFirestore(app)
+    : null;
+} catch (e) {
+  console.warn("[Firebase] Firestore init failed:", e?.message);
+}
+
 try { _auth = app ? getAuth(app) : null; } catch (e) { console.warn("[Firebase] Auth init failed:", e?.message); }
 try { _storage = app ? getStorage(app) : null; } catch (e) { console.warn("[Firebase] Storage init failed:", e?.message); }
+try { _googleProvider = new GoogleAuthProvider(); } catch (_) {}
 
 export const analytics = null;
 export const db = _db;
 export const auth = _auth;
 export const storage = _storage;
+export const googleProvider = _googleProvider;
+export const isFirebaseConfigured = Boolean(app && _db);
 export default app;

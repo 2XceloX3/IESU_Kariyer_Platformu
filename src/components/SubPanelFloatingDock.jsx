@@ -57,11 +57,11 @@ export default function SubPanelFloatingDock({
 
   // Tema Renkleri
   const borderColor = 
-    isAlumni ? 'border-emerald-100' :
-    isAcademic ? 'border-purple-200' :
-    isCompany ? 'border-blue-200' :
-    isAdmin ? 'border-amber-200' :
-    'border-red-100';
+    isAlumni ? 'border-emerald-100 dark:border-emerald-500/40' :
+    isAcademic ? 'border-purple-200 dark:border-purple-500/40' :
+    isCompany ? 'border-blue-200 dark:border-blue-500/40' :
+    isAdmin ? 'border-amber-200 dark:border-amber-500/40' :
+    'border-red-100 dark:border-rose-500/40';
 
   const shadowColor = 
     isAlumni ? 'shadow-[0_15px_40px_rgba(5,150,105,0.18)]' :
@@ -78,18 +78,18 @@ export default function SubPanelFloatingDock({
     'bg-[#990000]';
 
   const primaryText = 
-    isAlumni ? 'text-[#059669]' :
-    isAcademic ? 'text-[#7c3aed]' :
-    isCompany ? 'text-[#1e3a5f]' :
-    isAdmin ? 'text-[#b45309]' :
-    'text-[#990000]';
+    isAlumni ? 'text-[#059669] dark:text-emerald-300' :
+    isAcademic ? 'text-[#7c3aed] dark:text-purple-300' :
+    isCompany ? 'text-[#1e3a5f] dark:text-sky-300' :
+    isAdmin ? 'text-[#b45309] dark:text-amber-300' :
+    'text-[#990000] dark:text-rose-300';
 
   const hoverBg = 
-    isAlumni ? 'hover:bg-emerald-50' :
-    isAcademic ? 'hover:bg-purple-50' :
-    isCompany ? 'hover:bg-blue-50' :
-    isAdmin ? 'hover:bg-amber-50' :
-    'hover:bg-red-50';
+    isAlumni ? 'hover:bg-emerald-50 dark:hover:bg-slate-800' :
+    isAcademic ? 'hover:bg-purple-50 dark:hover:bg-slate-800' :
+    isCompany ? 'hover:bg-blue-50 dark:hover:bg-slate-800' :
+    isAdmin ? 'hover:bg-amber-50 dark:hover:bg-slate-800' :
+    'hover:bg-red-50 dark:hover:bg-slate-800';
 
   const gradientAction1 = 
     isAlumni ? 'bg-gradient-to-tr from-emerald-800 via-[#059669] to-teal-600 shadow-emerald-900/40 border-emerald-300/40' :
@@ -124,7 +124,7 @@ export default function SubPanelFloatingDock({
 
   return (
     <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
-      <div className={`bg-white/95 backdrop-blur-2xl border-2 ${borderColor} p-2 sm:p-2.5 rounded-full ${shadowColor} flex items-center justify-between px-4 text-gray-800`}>
+      <div className={`bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 ${borderColor} p-2 sm:p-2.5 rounded-full ${shadowColor} flex items-center justify-between px-4 text-gray-800 dark:text-slate-100`}>
         
         {/* 1. AKIŞ / ANA SAYFA */}
         <button 
@@ -137,7 +137,7 @@ export default function SubPanelFloatingDock({
           className={`p-2.5 rounded-full transition-all flex items-center justify-center cursor-pointer ${
             activeTab === 'feed' || activeTab === 'home' || activeTab === homeView
               ? `${primaryBg} text-white shadow-md` 
-              : `text-slate-600 hover:${primaryText} ${hoverBg}`
+              : `text-slate-600 dark:text-slate-300 hover:${primaryText} ${hoverBg}`
           }`} 
           title="Akış & Ana Sayfa"
         >

@@ -17,13 +17,13 @@ export default function AdminOmniDock({ activeTab, setActiveTab, setView, setSel
 
   return (
     <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[999] animate-fade-in-up w-[95%] max-w-[420px]">
-      <div className={`bg-white/95 backdrop-blur-2xl border-2 ${
+      <div className={`bg-white/95 dark:bg-[#131c31]/95 backdrop-blur-2xl border-2 ${
         isEmerald 
-          ? 'border-emerald-100 shadow-[0_15px_40px_rgba(6,78,59,0.18)]' 
+          ? 'border-emerald-100 dark:border-emerald-500/40 shadow-[0_15px_40px_rgba(6,78,59,0.18)]' 
           : isAmber
-            ? 'border-amber-400/70 shadow-[0_15px_40px_rgba(217,119,6,0.22)]'
-            : 'border-red-100 shadow-[0_15px_40px_rgba(153,0,0,0.18)]'
-      } p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-gray-800`}>
+            ? 'border-amber-400/70 dark:border-amber-500/40 shadow-[0_15px_40px_rgba(217,119,6,0.22)]'
+            : 'border-red-100 dark:border-rose-500/40 shadow-[0_15px_40px_rgba(153,0,0,0.18)]'
+      } p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-gray-800 dark:text-slate-100`}>
         
         {/* 1. AKIŞ / ANA SAYFA (EV BUTONU) */}
         <button 
@@ -54,10 +54,10 @@ export default function AdminOmniDock({ activeTab, setActiveTab, setView, setSel
                     ? 'bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-md shadow-amber-500/30 border border-yellow-200/50'
                     : 'bg-[#990000] text-white shadow-md') 
               : (isEmerald 
-                  ? 'text-slate-600 hover:text-emerald-700 hover:bg-emerald-50' 
+                  ? 'text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-slate-800' 
                   : isAmber
-                    ? 'text-slate-600 hover:text-amber-700 hover:bg-amber-50'
-                    : 'text-slate-600 hover:text-[#990000] hover:bg-red-50')
+                    ? 'text-slate-600 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-slate-800'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-[#990000] dark:hover:text-rose-300 hover:bg-red-50 dark:hover:bg-slate-800')
           }`}
           title="Akış & Ana Sayfa"
         >

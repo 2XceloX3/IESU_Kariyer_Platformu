@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, ArrowRight, ChevronRight, CheckCircle2, X, FileText, User, GraduationCap, Calendar, BookOpen, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, ChevronRight, ArrowRight } from 'lucide-react';
 import Logo from './Logo';
-import corporateData from '../data/knowledge_base/corporate_hierarchy.json';
 import useAppStore from '../store/useAppStore';
 import ContactModal from './ContactModal';
+import FooterNewsletterModals from './shared/FooterNewsletterModals';
+import { toast } from './shared/Toast';
 
 // Authentic Social Brand SVG Components
 const FacebookIcon = ({ size = 14 }) => (
@@ -37,21 +38,15 @@ const XIcon = ({ size = 14, className = "" }) => (
 );
 
 export default function SubPanelFooter({ setView, theme = 'red' }) {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-  const [consentGiven, setConsentGiven] = useState(false);
   const [showKvkkModal, setShowKvkkModal] = useState(false);
   const [showSubscriberModal, setShowSubscriberModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [, setKvkkAgreed] = useState(false);
 
   const isEmerald = theme === 'emerald';
   const waveBgClass = isEmerald ? 'text-[#064E3B]' : 'text-[#8F0808]';
   const waveOpacityFill = isEmerald ? '#022C22' : '#750606';
   const footerBgClass = isEmerald ? 'bg-[#064E3B]' : 'bg-[#8F0808]';
-  const buttonHoverClass = isEmerald ? 'hover:text-[#064E3B]' : 'hover:text-[#8F0808]';
-  const kvkkAgreedState = useState(false);
-  const kvkkAgreed = kvkkAgreedState[0];
-  const setKvkkAgreed = kvkkAgreedState[1];
 
   const siteConfig = useAppStore(state => state.siteConfig);
   const addNewsletterSubscriber = useAppStore(state => state.addNewsletterSubscriber);
@@ -64,22 +59,20 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
     birthDate: ''
   });
 
-  const handleOpenForm = (e) => {
-    e.preventDefault();
-    if (!email) return;
-    setShowSubscriberModal(true);
-  };
-
   const handleFinalSubmit = (e) => {
     e.preventDefault();
     if (!form.fullName || !form.department || !form.birthDate) {
-      if (window.toast) window.toast.error("Lütfen zorunlu alanları doldurun.");
+      if (toast && typeof toast.error === 'function') {
+        toast.error("Lütfen zorunlu alanları doldurun.");
+      } else if (window.toast) {
+        window.toast.error("Lütfen zorunlu alanları doldurun.");
+      }
       return;
     }
 
     const newSub = {
       id: 'SUB-' + Date.now(),
-      email: email,
+      email: '',
       fullName: form.fullName,
       faculty: form.faculty,
       department: form.department,
@@ -94,8 +87,6 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
     }
 
     setShowSubscriberModal(false);
-    setSubscribed(true);
-    setEmail('');
     setForm({
       fullName: '',
       faculty: 'Mühendislik ve Mimarlık Fakültesi',
@@ -103,198 +94,32 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
       grade: '1. Sınıf',
       birthDate: ''
     });
-    setTimeout(() => setSubscribed(false), 5000);
+    if (toast && typeof toast.success === 'function') {
+      toast.success("Bülten aboneliğiniz başarıyla kaydedildi.");
+    } else if (window.toast) {
+      window.toast.success("Bülten aboneliğiniz başarıyla kaydedildi.");
+    }
+  };
+
+  const handleNavigate = (targetView) => {
+    if (typeof setView === 'function') {
+      setView(targetView);
+    }
   };
 
   return (
     <div className="w-full flex flex-col mt-auto font-sans">
-      
-      {/* KVKK MODAL POPUP */}
-      {showKvkkModal && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative space-y-4">
-            <button 
-              onClick={() => setShowKvkkModal(false)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
-            >
-              <X size={18} />
-            </button>
+      <FooterNewsletterModals
+        showKvkkModal={showKvkkModal}
+        setShowKvkkModal={setShowKvkkModal}
+        setKvkkAgreed={setKvkkAgreed}
+        showSubscriberModal={showSubscriberModal}
+        setShowSubscriberModal={setShowSubscriberModal}
+        form={form}
+        setForm={setForm}
+        onSubmitSubscriber={handleFinalSubmit}
+      />
 
-            <div className="flex items-center gap-3 border-b pb-3 border-slate-100">
-              <div className="p-2.5 bg-red-50 text-[#990000] rounded-2xl">
-                <FileText size={20} />
-              </div>
-              <div>
-                <h3 className="font-black text-sm text-slate-900 uppercase tracking-tight">KVKK Aydınlatma Metni</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase">İstanbul Esenyurt Üniversitesi</p>
-              </div>
-            </div>
-
-            <div className="text-xs leading-relaxed text-slate-600 space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-              <p className="font-medium">
-                <strong>6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK')</strong> uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla <strong>İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi</strong> tarafından işlenmektedir.
-              </p>
-
-              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
-                <h4 className="font-bold text-slate-800 text-xs flex items-center gap-1.5 text-[#990000]">
-                  1. İşlenme Amacı
-                </h4>
-                <p className="text-[11px]">
-                  Öğrenci ve mezunlarımızın iş/staj olanaklarından faydalanması, kariyer etkinliklerine katılımı ve istatistiksel raporlamalar yapılması.
-                </p>
-
-                <h4 className="font-bold text-slate-800 text-xs flex items-center gap-1.5 text-[#990000]">
-                  2. Verilerin Aktarımı
-                </h4>
-                <p className="text-[11px]">
-                  İzniniz doğrultusunda, işbirliği yapılan kurum ve kuruluşlarla (işverenlerle) staj ve iş başvurularınız kapsamında paylaşılabilir.
-                </p>
-
-                <h4 className="font-bold text-slate-800 text-xs flex items-center gap-1.5 text-[#990000]">
-                  3. Haklarınız
-                </h4>
-                <p className="text-[11px]">
-                  KVKK Madde 11 uyarınca; verilerinizin işlenip işlenmediğini öğrenme, düzeltme talep etme ve silinmesini isteme hakkına sahipsiniz. Başvurularınızı <a href="mailto:kvkk@esenyurt.edu.tr" className="text-[#990000] underline font-bold">kvkk@esenyurt.edu.tr</a> adresine iletebilirsiniz.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => {
-                  setKvkkAgreed(true);
-                  setShowKvkkModal(false);
-                }}
-                className="px-5 py-2.5 bg-[#990000] text-white text-xs font-bold rounded-xl hover:bg-red-800 transition shadow-md"
-              >
-                Okudum, Anladım
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SUBSCRIBER REGISTRATION FORM MODAL */}
-      {showSubscriberModal && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white text-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative space-y-4">
-            <button 
-              onClick={() => setShowSubscriberModal(false)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="flex items-center gap-3 border-b pb-3 border-slate-100">
-              <div className="p-2.5 bg-red-50 text-[#990000] rounded-2xl">
-                <User size={20} />
-              </div>
-              <div>
-                <h3 className="font-black text-sm text-slate-900 uppercase tracking-tight">E-Bülten Kayıt Detayı</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Öğrenci & Mezun Profil Bilgisi</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleFinalSubmit} className="space-y-3">
-              <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">Ad Soyad *</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-2.5 text-slate-400" size={14} />
-                  <input
-                    type="text"
-                    required
-                    placeholder="Adınız ve Soyadınız..."
-                    value={form.fullName}
-                    onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#990000]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">Fakülte / Meslek Yüksekokulu</label>
-                <div className="relative">
-                  <GraduationCap className="absolute left-3 top-2.5 text-slate-400" size={14} />
-                  <select
-                    value={form.faculty}
-                    onChange={(e) => setForm({ ...form, faculty: e.target.value })}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#990000]"
-                  >
-                    <option value="Mühendislik ve Mimarlık Fakültesi">Mühendislik ve Mimarlık Fakültesi</option>
-                    <option value="İktisadi, İdari ve Sosyal Bilimler Fakültesi">İktisadi, İdari ve Sosyal Bilimler Fakültesi</option>
-                    <option value="Sanat ve Tasarım Fakültesi">Sanat ve Tasarım Fakültesi</option>
-                    <option value="Beden Eğitimi ve Spor Yüksekokulu (BESYO)">BESYO</option>
-                    <option value="Meslek Yüksekokulu (MYO)">Meslek Yüksekokulu (MYO)</option>
-                    <option value="Sağlık Hizmetleri Meslek Yüksekokulu (SHMYO)">Sağlık Hizmetleri MYO (SHMYO)</option>
-                    <option value="Mezun / Diğer">Mezun / Diğer</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold text-slate-700 block mb-1">Bölüm / Program *</label>
-                <div className="relative">
-                  <BookOpen className="absolute left-3 top-2.5 text-slate-400" size={14} />
-                  <input
-                    type="text"
-                    required
-                    placeholder="Örn: Yazılım Mühendisliği, İlk ve Acil Yardım..."
-                    value={form.department}
-                    onChange={(e) => setForm({ ...form, department: e.target.value })}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#990000]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Sınıf</label>
-                  <select
-                    value={form.grade}
-                    onChange={(e) => setForm({ ...form, grade: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#990000]"
-                  >
-                    <option value="Hazırlık">Hazırlık</option>
-                    <option value="1. Sınıf">1. Sınıf</option>
-                    <option value="2. Sınıf">2. Sınıf</option>
-                    <option value="3. Sınıf">3. Sınıf</option>
-                    <option value="4. Sınıf">4. Sınıf</option>
-                    <option value="Mezun">Mezun</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">Doğum Tarihi *</label>
-                  <input
-                    type="date"
-                    required
-                    value={form.birthDate}
-                    onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#990000]"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowSubscriberModal(false)}
-                  className="px-4 py-2 bg-slate-100 text-slate-600 text-xs font-bold rounded-xl hover:bg-slate-200 transition"
-                >
-                  İptal
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#990000] text-white text-xs font-bold rounded-xl hover:bg-red-800 transition shadow-md"
-                >
-                  Kaydı Tamamla
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      
       {/* 🌊 TOP ORGANIC SVG WAVE DIVIDER TRANSITION */}
       <div className="w-full overflow-hidden leading-none bg-[#F8FAFC]">
         <svg 
@@ -325,12 +150,11 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
         {/* Social Top Circle Strip Header */}
         <div className="max-w-[1250px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4 pb-6 mb-8 border-b border-white/20 relative z-10">
           <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             <h4 className="font-extrabold text-sm text-white tracking-wide uppercase">Resmî Sosyal Medya Hesaplarımız</h4>
           </div>
           
           <div className="flex items-center gap-3">
-            <a href="https://x.com/iesuniversitesi" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white hover:text-[#8F0808] text-white flex items-center justify-center transition border border-white/20 shadow-md">
+            <a href="https://x.com/iesuniversitesi" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white hover:text-[#8F0808] text-white flex items-center justify-center transition border border-white/20 shadow-md">
               <XIcon size={16} />
             </a>
             <a href="https://www.facebook.com/iesuniversitesi/?locale=tr_TR" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white hover:text-[#8F0808] text-white flex items-center justify-center transition border border-white/20 shadow-md">
@@ -348,7 +172,7 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
           </div>
         </div>
 
-        <div className="max-w-[1250px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 relative z-10">
+        <div className="max-w-[1250px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10 relative z-10">
           
           {/* Column 1: Logo, Mission & Social Circle Icons */}
           <div className="space-y-4">
@@ -451,31 +275,14 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
             </div>
           </div>
 
-          {/* Column 4: Current opportunities */}
-          <div className={`${isEmerald ? 'bg-[#022C22]/80 border-emerald-500/30' : 'bg-[#660000]/80 border-white/20'} backdrop-blur-md p-5 rounded-3xl border shadow-2xl space-y-3`}>
-            <h4 className="text-xs font-black text-white uppercase tracking-wider border-b border-white/20 pb-1.5">
-              Güncel fırsatlar
-            </h4>
-            <p className="text-[11px] text-white/90 leading-relaxed font-medium">
-              İş ve staj ilanlarını görüntüleyin. E-posta aboneliği bu portalda henüz etkin değil.
-            </p>
-            <button
-              type="button"
-              onClick={() => setView?.('jobs')}
-              className={`inline-flex min-h-10 items-center gap-2 rounded-xl bg-white px-4 py-2 text-xs font-black ${isEmerald ? 'text-[#064E3B]' : 'text-[#990000]'} transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
-            >
-              İlanlara göz at <ArrowRight size={15} />
-            </button>
-          </div>
-
         </div>
 
         {/* Bottom Copyright & Legal Links */}
         <div className="max-w-[1250px] mx-auto pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-white/90 relative z-10">
           <p>2026 © İstanbul Esenyurt Üniversitesi Bilgi İşlem Daire Başkanlığı tarafından hazırlanmıştır.</p>
           <div className="flex items-center gap-4 text-white">
-            <button onClick={() => setView && setView('gizlilik')} className="hover:underline transition cursor-pointer">Gizlilik Politikası</button>
-            <button onClick={() => setView && setView('kullanim')} className="hover:underline transition cursor-pointer">Kullanım Koşulları</button>
+            <button onClick={() => handleNavigate('gizlilik')} className="hover:underline transition cursor-pointer">Gizlilik Politikası</button>
+            <button onClick={() => handleNavigate('kullanim')} className="hover:underline transition cursor-pointer">Kullanım Koşulları</button>
             <button onClick={() => setShowKvkkModal(true)} className="hover:underline transition cursor-pointer">KVKK Aydınlatma Metni</button>
           </div>
         </div>
@@ -491,4 +298,6 @@ export default function SubPanelFooter({ setView, theme = 'red' }) {
   );
 }
 
-
+// Named exports to ensure no ReferenceError if any external script expects ArrowRight from SubPanelFooter
+SubPanelFooter.ArrowRight = ArrowRight;
+export { ArrowRight };

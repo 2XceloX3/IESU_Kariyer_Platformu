@@ -59,22 +59,27 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
   const adminActiveTab = useAppStore(state => state.adminActiveTab);
   const setAdminActiveTab = useAppStore(state => state.setAdminActiveTab);
 
-  const [activeTab, setActiveTabState] = useState(() => initialTab || adminActiveTab || 'feed'); // 'feed' | 'create_post' | 'search' | 'surveys' | 'cms'
+  const VALID_FEED_TABS = new Set(['feed', 'create_post', 'search', 'surveys']);
+  const normalizeTab = (t) => (VALID_FEED_TABS.has(t) ? t : 'feed');
+
+  const [activeTab, setActiveTabState] = useState(() => normalizeTab(initialTab || adminActiveTab || 'feed'));
 
   const setActiveTab = (tab) => {
-    setActiveTabState(tab);
-    if (setAdminActiveTab) setAdminActiveTab(tab);
+    const safeTab = normalizeTab(tab);
+    setActiveTabState(safeTab);
+    if (setAdminActiveTab) setAdminActiveTab(safeTab);
   };
 
   useEffect(() => {
     if (initialTab) {
-      setActiveTabState(initialTab);
-      if (setAdminActiveTab) setAdminActiveTab(initialTab);
+      const safeTab = normalizeTab(initialTab);
+      setActiveTabState(safeTab);
+      if (setAdminActiveTab) setAdminActiveTab(safeTab);
     }
   }, [initialTab]);
 
   useEffect(() => {
-    if (!initialTab && adminActiveTab && adminActiveTab !== activeTab) {
+    if (!initialTab && adminActiveTab && VALID_FEED_TABS.has(adminActiveTab) && adminActiveTab !== activeTab) {
       setActiveTabState(adminActiveTab);
     }
   }, [adminActiveTab, initialTab]);
@@ -425,11 +430,72 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
 
           {/* Create Post Native View (If activeTab === 'create_post') */}
           {activeTab === 'create_post' && (
-            <div className="bg-white rounded-2xl w-full p-5 shadow-xs border border-slate-200/80 animate-fade-in mb-6">
-              <h2 className="text-lg font-black text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                <Star className="text-amber-500 fill-current" size={20} /> Resmî KGM Duyurusu & Gönderisi Paylaş
-              </h2>
-              <PostComposer currentUser={currentUser} userRole="admin" posts={posts} setPosts={setPosts} />
+            <div className="space-y-5 animate-fade-in mb-6">
+              <div className="bg-white dark:bg-[#131c31] rounded-2xl w-full p-5 shadow-xs border border-slate-200/80 dark:border-slate-800">
+                <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3.5 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center shrink-0">
+                      <Star className="fill-current" size={18} />
+                    </div>
+                    <div>
+                      <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 leading-tight">
+                        Resmî KGM Duyurusu & Gönderisi Paylaş
+                      </h2>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        Medya, karusel, etkinlik ve ortak yazar ekleyerek tüm portallarda yayınlayın.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('feed')}
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 transition cursor-pointer shrink-0"
+                  >
+                    ← Akışa Dön
+                  </button>
+                </div>
+                <PostComposer
+                  currentUser={currentUser}
+                  userRole="admin"
+                  posts={posts}
+                  setPosts={setPosts}
+                  defaultExpanded={true}
+                  embedded={true}
+                />
+              </div>
+
+              {/* Recent Published Posts Section on Create Post Screen */}
+              {(() => {
+                const recentItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
+                return (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between px-1">
+                      <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Son Yayınlanan Gönderiler & Duyurular ({recentItems.length})
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('feed')}
+                        className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
+                      >
+                        Tüm Akışı Gör →
+                      </button>
+                    </div>
+                    {recentItems.slice(0, 5).map(post => (
+                      <PostCard
+                        key={post.id}
+                        post={post}
+                        currentUser={currentUser}
+                        students={students || []}
+                        alumni={alumni || []}
+                        setPosts={setPosts}
+                        setView={setView}
+                        setSelectedUserId={setSelectedUserId}
+                      />
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
           )}
 
@@ -448,9 +514,10 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
           {/* MAIN FEED STREAM */}
           {activeTab === 'feed' && (
             <div className="w-full shrink-0 flex flex-col gap-5 animate-fade-in">
+              <PostComposer currentUser={currentUser} userRole="admin" posts={posts} setPosts={setPosts} />
               
               {/* ══════ PORTAL STREAM FILTER TABS ══════ */}
-              <div className="bg-white rounded-2xl p-2 border border-slate-200/80 shadow-xs space-y-1.5">
+              <div className="bg-white dark:bg-[#131c31] rounded-2xl p-2 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-1.5">
                 <div className="flex items-center justify-between px-3 pt-1 text-[11px] font-black text-slate-400 uppercase tracking-wider">
                   <span>Portal Akış Gözlemcisi</span>
                   <span className="text-amber-600 font-bold">Genel Bakış</span>
@@ -661,23 +728,23 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                     if (branchFilter === 'all') return true;
                     
                     if (branchFilter === 'student') {
-                      return item.author?.role === 'student' || item.type === 'student_post' || item.type === 'club_event' || item.authorRole === 'student';
+                      return item.author?.role === 'student' || item.type === 'student_post' || item.type === 'club_event' || item.feedType === 'club_event' || item.feedType === 'club_post' || item.isClubPost || Boolean(item.clubId) || item.authorRole === 'student';
                     }
                     if (branchFilter === 'alumni') {
                       return item.author?.role === 'alumni' || item.authorRole === 'alumni' || item.category === 'Mezun' || item.source === 'alumni' || item.type === 'alumni_post';
                     }
                     if (branchFilter === 'company') {
-                      return item.type === 'job' || item.type === 'internship' || item.author?.role === 'company' || item.author?.role === 'employer' || Boolean(item.companyName);
+                      return item.isJob || item.isCareerOpportunity || item.feedType === 'job' || item.feedType === 'career_opp' || item.type === 'job' || item.type === 'internship' || item.author?.role === 'company' || item.author?.role === 'employer' || Boolean(item.companyName);
                     }
                     if (branchFilter === 'academic') {
-                      return item.author?.role === 'academic' || item.author?.role === 'academic_staff' || item.type === 'academic_announcement' || item.category === 'Akademik' || item.source === 'academic';
+                      return item.author?.role === 'academic' || item.author?.role === 'academic_staff' || item.type === 'academic_announcement' || item.category === 'Akademik' || item.source === 'academic' || item.isGeneralEvent || item.feedType === 'event';
                     }
                     return true;
                   });
 
                   const filtered = branchFilteredItems.filter(post => 
                     (post.content || post.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-                    (post.author?.name || post.authorName || '').toLowerCase().includes(searchQuery.toLowerCase())
+                    (post.author?.name || post.authorName || (typeof post.author === 'string' ? post.author : '')).toLowerCase().includes(searchQuery.toLowerCase())
                   );
 
                   if (filtered.length === 0) {
@@ -716,7 +783,9 @@ export default function AdminFeed({ setView, setSelectedUserId, currentUser, use
                       currentUser={currentUser} 
                       students={students || []} 
                       alumni={alumni || []} 
-                      setPosts={setPosts} 
+                      setPosts={setPosts}
+                      setView={setView}
+                      setSelectedUserId={setSelectedUserId}
                     />
                   ));
                 })()}

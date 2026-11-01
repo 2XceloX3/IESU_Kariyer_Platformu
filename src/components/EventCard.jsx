@@ -1,25 +1,24 @@
 import React from 'react';
-import { Calendar, MapPin, User, ExternalLink, Tag } from 'lucide-react';
+import { Calendar, MapPin, User, ExternalLink } from 'lucide-react';
+import SafeEventImage from './shared/SafeEventImage';
 
 export default function EventCard({ event, onSelect }) {
   if (!event) return null;
 
   return (
     <div
-      className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+      className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
       data-testid={`event-card-${event.id || 'item'}`}
     >
-      <div className="relative h-44 bg-slate-100 overflow-hidden">
-        <img
-          src={event.image || event.imageUrl || '/assets/events/default.jpg'}
+      <div className="relative aspect-[4/5] bg-slate-100 overflow-hidden">
+        <SafeEventImage
+          src={event.image || event.imageUrl}
           alt={event.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800';
-          }}
+          fallbackType="event"
+          mode="poster"
+          className="w-full h-full"
         />
-        <div className="absolute top-3 left-3 bg-[#A80016] text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+        <div className="absolute top-3 left-3 z-20 bg-[#A80016] text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
           {event.status || 'Etkinlik'}
         </div>
       </div>

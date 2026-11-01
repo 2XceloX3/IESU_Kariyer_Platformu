@@ -462,6 +462,21 @@ export async function runFullSync(onProgress) {
       const combined = [...eventItems, ...existing].slice(0, 50);
       localStorage.setItem('iesu_events_v2', JSON.stringify(combined));
     }
+
+    const isTestEnv = typeof process !== 'undefined' && (process.env?.NODE_ENV === 'test' || import.meta.env?.MODE === 'test');
+    if (!isTestEnv && (newsItems.length > 0 || annItems.length > 0 || eventItems.length > 0)) {
+      import('./dbSync').then(({ saveScrapedFeedToFirestore }) => {
+        saveScrapedFeedToFirestore({
+          news: newsItems,
+          events: eventItems,
+          announcements: annItems,
+          source: 'live',
+          status: 'success',
+          feedFormat: 'sync-engine',
+          lastUpdated: new Date().toISOString()
+        }).catch(() => {});
+      }).catch(() => {});
+    }
   } catch (err) {
     console.warn("Auto-hydration error:", err);
   }

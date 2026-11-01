@@ -28,20 +28,47 @@
     --shadow-soft: 0 12px 32px rgba(10, 35, 66, 0.12);
   }
 
+  .dark {
+    --brand-bg: #0b1120;
+    --surface-white: #131c31;
+    --surface-soft: #1e293b;
+    --surface-glass: rgba(19, 28, 49, 0.92);
+    --border-soft: rgba(148, 163, 184, 0.16);
+    --shadow-soft: 0 12px 32px rgba(2, 6, 23, 0.55);
+    --brand-navy: #93c5fd;
+    --brand-soft-blue: rgba(59, 130, 246, 0.18);
+    --brand-soft-red: rgba(225, 29, 72, 0.18);
+  }
+
   * {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(10, 35, 66, 0.25) transparent;
   }
   *::-webkit-scrollbar {
-    display: none;
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(10, 35, 66, 0.25);
+    border-radius: 10px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(10, 35, 66, 0.45);
   }
   html, body, #root {
     font-family: 'Inter', sans-serif;
   }
   body {
-    @apply text-gray-900;
+    @apply text-gray-900 dark:text-slate-100 transition-colors duration-200;
     background-color: var(--brand-bg);
     font-family: 'Inter', sans-serif;
+  }
+  html.dark body {
+    background-color: #0b1120;
+    color: #e2e8f0;
   }
 
   ::selection {
@@ -72,6 +99,23 @@
     background: rgba(10, 35, 66, 0.5);
   }
   .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  @keyframes marquee_40s_linear_infinite {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: marquee_40s_linear_infinite 40s linear infinite;
+  }
+  @keyframes aurora {
+    0% { background-position: 50% 50%, 50% 50%; }
+    50% { background-position: 100% 50%, 0% 50%; }
+    100% { background-position: 50% 50%, 50% 50%; }
+  }
+  .animate-aurora {
+    animation: aurora 15s ease infinite;
+    background-size: 200% 200%;
+  }
 
   .animate-fade-in {
     animation: fadeIn 0.25s ease-in-out;
@@ -201,3 +245,705 @@ html[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]),
 html[dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 1;
 }
+
+/* === Global Dark Mode Adaptation Layer (html.dark) === */
+html.dark {
+  color-scheme: dark;
+}
+
+/* 1. Page & Section Canvas Backgrounds */
+html.dark .bg-\[\#f8f9fc\],
+html.dark .bg-\[\#F8F9FC\],
+html.dark .bg-\[\#F8FAFC\],
+html.dark .bg-\[\#f8fafc\],
+html.dark .bg-\[\#fdfdfd\],
+html.dark .bg-\[\#F0F4F8\],
+html.dark .bg-\[\#f4f6f9\],
+html.dark .bg-\[\#F8FAFF\],
+html.dark .bg-\[\#F4F7FA\],
+html.dark .bg-\[\#F0F2F5\],
+html.dark .bg-\[\#f3f2ee\],
+html.dark .bg-\[\#f3f2ef\],
+html.dark .bg-gray-50.min-h-screen,
+html.dark .bg-slate-50.min-h-screen {
+  background-color: #0b1120 !important;
+}
+
+/* 2. Primary Surfaces, Cards, Modals, Menus & Containers */
+html.dark div.bg-white,
+html.dark section.bg-white,
+html.dark article.bg-white,
+html.dark aside.bg-white,
+html.dark main.bg-white,
+html.dark header.bg-white,
+html.dark footer.bg-white,
+html.dark nav.bg-white,
+html.dark table.bg-white,
+html.dark thead.bg-white,
+html.dark tbody.bg-white,
+html.dark tr.bg-white,
+html.dark td.bg-white,
+html.dark th.bg-white,
+html.dark form.bg-white,
+html.dark ul.bg-white,
+html.dark li.bg-white,
+html.dark label.bg-white,
+html.dark button.bg-white,
+html.dark a.bg-white,
+html.dark span.bg-white:not(.w-2):not(.w-1\.5):not(.w-2\.5):not(.w-3):not(.h-2),
+html.dark .bg-\[\#f8f9fa\],
+html.dark .bg-\[\#EEF3F8\],
+html.dark .bg-\[\#E1F3FB\],
+html.dark .bg-white\/95,
+html.dark .bg-white\/90,
+html.dark .bg-white\/85,
+html.dark .bg-white\/80,
+html.dark .bg-white\/70,
+html.dark .bg-white\/60,
+html.dark .bg-white\/50 {
+  background-color: #131c31 !important;
+  color: #e2e8f0;
+}
+
+/* 2b. Light Gradient Quick-Action, Banner & Menu Cards (All Portals & Sub-Flows) */
+html.dark [class*="to-white"]:not([class*="bg-clip-text"]),
+html.dark [class*="via-white"]:not([class*="bg-clip-text"]),
+html.dark .from-white:not([class*="bg-clip-text"]),
+html.dark .from-white\/90:not([class*="bg-clip-text"]),
+html.dark .from-slate-50,
+html.dark .from-slate-50\/60,
+html.dark .from-slate-100,
+html.dark .from-gray-50,
+html.dark .from-red-50,
+html.dark .from-red-50\/70,
+html.dark .from-red-50\/80,
+html.dark .from-rose-50,
+html.dark .from-amber-50,
+html.dark .from-amber-50\/70,
+html.dark .from-amber-50\/80,
+html.dark .from-amber-100,
+html.dark .from-orange-50,
+html.dark .from-yellow-50,
+html.dark .from-emerald-50,
+html.dark .from-emerald-50\/40,
+html.dark .from-emerald-50\/70,
+html.dark .from-emerald-50\/80,
+html.dark .from-teal-50,
+html.dark .from-teal-50\/40,
+html.dark .from-cyan-50\/40,
+html.dark .from-blue-50,
+html.dark .from-blue-50\/40,
+html.dark .from-blue-50\/70,
+html.dark .from-blue-50\/80,
+html.dark .from-sky-50,
+html.dark .from-indigo-50,
+html.dark .from-indigo-50\/40,
+html.dark .from-indigo-50\/70,
+html.dark .from-indigo-50\/80,
+html.dark .from-purple-50,
+html.dark .from-purple-50\/40,
+html.dark .from-purple-50\/80,
+html.dark .from-purple-100 {
+  background-image: none !important;
+  background-color: #18233c !important;
+  border-color: #293856 !important;
+  color: #f1f5f9 !important;
+}
+html.dark button[class*="to-white"]:hover,
+html.dark a[class*="to-white"]:hover,
+html.dark button.from-purple-100:hover,
+html.dark button.from-purple-50:hover,
+html.dark button.from-indigo-50:hover,
+html.dark button.from-amber-50:hover,
+html.dark button.from-emerald-50:hover,
+html.dark button.from-red-50:hover,
+html.dark button.from-blue-50:hover {
+  background-color: #1e2d4a !important;
+  border-color: #3b4f75 !important;
+}
+
+/* 2c. Surface Buttons & Menu Triggers (excluding solid white CTA buttons inside dark banners) */
+html.dark button.bg-white:not(.text-\[\#990000\]):not(.text-emerald-900):not(.text-indigo-950):not(.text-slate-900),
+html.dark a.bg-white:not(.text-\[\#990000\]):not(.text-emerald-900):not(.text-indigo-950):not(.text-slate-900),
+html.dark button.bg-white.border,
+html.dark a.bg-white.border {
+  background-color: #1a253d !important;
+  border-color: #293856 !important;
+  color: #f1f5f9 !important;
+}
+html.dark button.bg-white:not(.text-\[\#990000\]):not(.text-emerald-900):hover,
+html.dark a.bg-white:not(.text-\[\#990000\]):not(.text-emerald-900):hover,
+html.dark button.bg-white.border:hover,
+html.dark a.bg-white.border:hover {
+  background-color: #243352 !important;
+  border-color: #3b4f75 !important;
+}
+
+/* 3. Secondary & Muted Surfaces */
+html.dark .bg-slate-50,
+html.dark .bg-gray-50,
+html.dark .bg-slate-50\/90,
+html.dark .bg-slate-50\/80,
+html.dark .bg-slate-50\/70,
+html.dark .bg-slate-50\/60,
+html.dark .bg-slate-50\/50,
+html.dark .bg-slate-50\/40,
+html.dark .bg-slate-50\/30,
+html.dark .bg-gray-50\/80,
+html.dark .bg-gray-50\/70,
+html.dark .bg-gray-50\/60,
+html.dark .bg-gray-50\/50,
+html.dark .bg-gray-50\/40,
+html.dark .bg-gray-50\/30 {
+  background-color: #162038 !important;
+}
+
+html.dark div.bg-slate-50,
+html.dark div.bg-gray-50,
+html.dark div.bg-slate-50\/80,
+html.dark .bg-slate-100,
+html.dark .bg-gray-100,
+html.dark .bg-slate-100\/90,
+html.dark .bg-slate-100\/80,
+html.dark .bg-slate-100\/70,
+html.dark .bg-slate-100\/60,
+html.dark .bg-slate-100\/50,
+html.dark .bg-gray-100\/80,
+html.dark .bg-gray-100\/70,
+html.dark .bg-gray-100\/60,
+html.dark .bg-gray-100\/50,
+html.dark .bg-slate-200,
+html.dark .bg-gray-200,
+html.dark .bg-slate-200\/70,
+html.dark .bg-slate-200\/60,
+html.dark .bg-gray-200\/60 {
+  background-color: #1e293b !important;
+}
+
+/* 3b. Interactive Menu & Button Hover States (prevents white/pastel flash on hover in dark mode) */
+html.dark .hover\:bg-white:hover,
+html.dark .hover\:bg-gray-50:hover,
+html.dark .hover\:bg-gray-50\/80:hover,
+html.dark .hover\:bg-gray-50\/70:hover,
+html.dark .hover\:bg-gray-50\/60:hover,
+html.dark .hover\:bg-gray-50\/50:hover,
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-50\/80:hover,
+html.dark .hover\:bg-slate-50\/70:hover,
+html.dark .hover\:bg-slate-50\/60:hover,
+html.dark .hover\:bg-slate-50\/50:hover,
+html.dark .hover\:bg-gray-100:hover,
+html.dark .hover\:bg-gray-100\/80:hover,
+html.dark .hover\:bg-gray-100\/60:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-slate-100\/90:hover,
+html.dark .hover\:bg-slate-100\/80:hover,
+html.dark .hover\:bg-slate-100\/70:hover,
+html.dark .hover\:bg-gray-200:hover,
+html.dark .hover\:bg-slate-200:hover,
+html.dark .hover\:bg-slate-200\/80:hover,
+html.dark .hover\:bg-slate-200\/70:hover,
+html.dark .hover\:bg-slate-200\/60:hover {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+html.dark .hover\:bg-red-50:hover,
+html.dark .hover\:bg-red-50\/70:hover,
+html.dark .hover\:bg-red-50\/60:hover,
+html.dark .hover\:bg-red-50\/50:hover,
+html.dark .hover\:bg-red-50\/40:hover,
+html.dark .hover\:bg-red-50\/30:hover,
+html.dark .hover\:bg-red-50\/20:hover,
+html.dark .hover\:bg-rose-50:hover,
+html.dark .hover\:bg-rose-50\/50:hover,
+html.dark .hover\:bg-rose-50\/30:hover,
+html.dark .hover\:bg-red-100:hover,
+html.dark .hover\:bg-red-200:hover,
+html.dark .hover\:bg-rose-100:hover,
+html.dark .hover\:bg-rose-100\/70:hover,
+html.dark .hover\:bg-rose-200:hover {
+  background-color: rgba(225, 29, 72, 0.22) !important;
+}
+html.dark .hover\:bg-emerald-50:hover,
+html.dark .hover\:bg-emerald-50\/60:hover,
+html.dark .hover\:bg-emerald-50\/30:hover,
+html.dark .hover\:bg-teal-50:hover,
+html.dark .hover\:bg-teal-50\/50:hover,
+html.dark .hover\:bg-teal-50\/30:hover,
+html.dark .hover\:bg-green-50:hover,
+html.dark .hover\:bg-emerald-100:hover,
+html.dark .hover\:bg-emerald-100\/70:hover,
+html.dark .hover\:bg-emerald-200:hover,
+html.dark .hover\:bg-green-100:hover,
+html.dark .hover\:bg-teal-100:hover,
+html.dark .hover\:bg-\[\#DCF8C6\]:hover {
+  background-color: rgba(16, 185, 129, 0.22) !important;
+}
+html.dark .hover\:bg-amber-50:hover,
+html.dark .hover\:bg-amber-50\/60:hover,
+html.dark .hover\:bg-amber-50\/50:hover,
+html.dark .hover\:bg-amber-50\/40:hover,
+html.dark .hover\:bg-amber-50\/30:hover,
+html.dark .hover\:bg-orange-50:hover,
+html.dark .hover\:bg-yellow-50:hover,
+html.dark .hover\:bg-amber-100:hover,
+html.dark .hover\:bg-amber-200:hover,
+html.dark .hover\:bg-amber-200\/50:hover,
+html.dark .hover\:bg-orange-100:hover {
+  background-color: rgba(245, 158, 11, 0.22) !important;
+}
+html.dark .hover\:bg-purple-50:hover,
+html.dark .hover\:bg-purple-50\/60:hover,
+html.dark .hover\:bg-purple-50\/50:hover,
+html.dark .hover\:bg-purple-50\/40:hover,
+html.dark .hover\:bg-indigo-50:hover,
+html.dark .hover\:bg-indigo-50\/50:hover,
+html.dark .hover\:bg-indigo-50\/30:hover,
+html.dark .hover\:bg-violet-50:hover,
+html.dark .hover\:bg-fuchsia-50:hover,
+html.dark .hover\:bg-purple-100:hover,
+html.dark .hover\:bg-purple-100\/70:hover,
+html.dark .hover\:bg-purple-100\/60:hover,
+html.dark .hover\:bg-purple-100\/50:hover,
+html.dark .hover\:bg-indigo-100:hover,
+html.dark .hover\:bg-indigo-200:hover {
+  background-color: rgba(139, 92, 246, 0.22) !important;
+}
+html.dark .hover\:bg-blue-50:hover,
+html.dark .hover\:bg-blue-50\/60:hover,
+html.dark .hover\:bg-blue-50\/50:hover,
+html.dark .hover\:bg-blue-50\/40:hover,
+html.dark .hover\:bg-blue-50\/30:hover,
+html.dark .hover\:bg-blue-50\/20:hover,
+html.dark .hover\:bg-sky-50:hover,
+html.dark .hover\:bg-cyan-50:hover,
+html.dark .hover\:bg-cyan-50\/50:hover,
+html.dark .hover\:bg-blue-100:hover,
+html.dark .hover\:bg-blue-100\/70:hover,
+html.dark .hover\:bg-blue-100\/50:hover,
+html.dark .hover\:bg-blue-200:hover,
+html.dark .hover\:bg-cyan-100:hover,
+html.dark .hover\:bg-sky-100:hover {
+  background-color: rgba(59, 130, 246, 0.22) !important;
+}
+
+/* 4. Pastel Tinted Badges, Alert Boxes & Icon Containers */
+html.dark .bg-red-50,
+html.dark .bg-red-50\/90,
+html.dark .bg-red-50\/80,
+html.dark .bg-red-50\/70,
+html.dark .bg-red-50\/60,
+html.dark .bg-red-50\/50,
+html.dark .bg-red-50\/40,
+html.dark .bg-red-50\/30,
+html.dark .bg-red-50\/20,
+html.dark .bg-red-50\/10,
+html.dark .bg-red-100,
+html.dark .bg-red-100\/80,
+html.dark .bg-red-100\/70,
+html.dark .bg-red-100\/60,
+html.dark .bg-red-100\/50,
+html.dark .bg-red-200,
+html.dark .bg-rose-50,
+html.dark .bg-rose-50\/80,
+html.dark .bg-rose-50\/70,
+html.dark .bg-rose-50\/60,
+html.dark .bg-rose-50\/50,
+html.dark .bg-rose-100,
+html.dark .bg-rose-100\/80,
+html.dark .bg-rose-100\/70,
+html.dark .bg-rose-200,
+html.dark .bg-pink-50,
+html.dark .bg-\[\#fef2f2\],
+html.dark .bg-\[\#fff1f2\] {
+  background-color: rgba(225, 29, 72, 0.18) !important;
+}
+html.dark .bg-indigo-50,
+html.dark .bg-indigo-50\/80,
+html.dark .bg-indigo-50\/70,
+html.dark .bg-indigo-50\/60,
+html.dark .bg-indigo-50\/50,
+html.dark .bg-indigo-50\/40,
+html.dark .bg-indigo-50\/20,
+html.dark .bg-indigo-100,
+html.dark .bg-indigo-100\/80,
+html.dark .bg-indigo-100\/70,
+html.dark .bg-indigo-100\/60,
+html.dark .bg-indigo-100\/50 {
+  background-color: rgba(99, 102, 241, 0.18) !important;
+}
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-50\/80,
+html.dark .bg-emerald-50\/70,
+html.dark .bg-emerald-50\/60,
+html.dark .bg-emerald-50\/50,
+html.dark .bg-emerald-50\/40,
+html.dark .bg-emerald-50\/30,
+html.dark .bg-emerald-50\/20,
+html.dark .bg-emerald-50\/10,
+html.dark .bg-emerald-100,
+html.dark .bg-emerald-100\/80,
+html.dark .bg-emerald-100\/70,
+html.dark .bg-emerald-100\/60,
+html.dark .bg-emerald-100\/50,
+html.dark .bg-emerald-200,
+html.dark .bg-emerald-200\/80,
+html.dark .bg-teal-50,
+html.dark .bg-teal-50\/80,
+html.dark .bg-teal-50\/70,
+html.dark .bg-teal-50\/60,
+html.dark .bg-teal-50\/50,
+html.dark .bg-teal-100,
+html.dark .bg-teal-100\/80,
+html.dark .bg-teal-100\/70,
+html.dark .bg-green-50,
+html.dark .bg-green-50\/70,
+html.dark .bg-green-50\/50,
+html.dark .bg-green-100,
+html.dark .bg-green-100\/70,
+html.dark .bg-lime-50 {
+  background-color: rgba(16, 185, 129, 0.18) !important;
+}
+html.dark .bg-amber-50,
+html.dark .bg-amber-50\/90,
+html.dark .bg-amber-50\/80,
+html.dark .bg-amber-50\/70,
+html.dark .bg-amber-50\/60,
+html.dark .bg-amber-50\/50,
+html.dark .bg-amber-50\/40,
+html.dark .bg-amber-50\/30,
+html.dark .bg-amber-50\/20,
+html.dark .bg-amber-100,
+html.dark .bg-amber-100\/80,
+html.dark .bg-amber-100\/70,
+html.dark .bg-amber-100\/60,
+html.dark .bg-amber-100\/50,
+html.dark .bg-amber-200,
+html.dark .bg-amber-200\/60,
+html.dark .bg-orange-50,
+html.dark .bg-orange-50\/80,
+html.dark .bg-orange-50\/70,
+html.dark .bg-orange-50\/60,
+html.dark .bg-orange-50\/50,
+html.dark .bg-orange-50\/30,
+html.dark .bg-orange-100,
+html.dark .bg-orange-100\/80,
+html.dark .bg-orange-100\/70,
+html.dark .bg-orange-100\/50,
+html.dark .bg-yellow-50,
+html.dark .bg-yellow-50\/80,
+html.dark .bg-yellow-50\/70,
+html.dark .bg-yellow-100,
+html.dark .bg-yellow-100\/80,
+html.dark .bg-yellow-100\/70,
+html.dark .bg-yellow-200 {
+  background-color: rgba(245, 158, 11, 0.18) !important;
+}
+html.dark .bg-purple-50,
+html.dark .bg-purple-50\/80,
+html.dark .bg-purple-50\/70,
+html.dark .bg-purple-50\/60,
+html.dark .bg-purple-50\/50,
+html.dark .bg-purple-50\/40,
+html.dark .bg-purple-100,
+html.dark .bg-purple-100\/80,
+html.dark .bg-purple-100\/70,
+html.dark .bg-purple-100\/60,
+html.dark .bg-purple-100\/50,
+html.dark .bg-violet-50,
+html.dark .bg-violet-50\/70,
+html.dark .bg-violet-100,
+html.dark .bg-violet-100\/70,
+html.dark .bg-fuchsia-50,
+html.dark .bg-fuchsia-100 {
+  background-color: rgba(168, 85, 247, 0.18) !important;
+}
+html.dark .bg-blue-50,
+html.dark .bg-blue-50\/90,
+html.dark .bg-blue-50\/80,
+html.dark .bg-blue-50\/70,
+html.dark .bg-blue-50\/60,
+html.dark .bg-blue-50\/50,
+html.dark .bg-blue-50\/40,
+html.dark .bg-blue-50\/30,
+html.dark .bg-blue-50\/20,
+html.dark .bg-blue-100,
+html.dark .bg-blue-100\/80,
+html.dark .bg-blue-100\/70,
+html.dark .bg-blue-100\/60,
+html.dark .bg-blue-100\/50,
+html.dark .bg-sky-50,
+html.dark .bg-sky-50\/70,
+html.dark .bg-sky-100,
+html.dark .bg-sky-100\/70,
+html.dark .bg-cyan-50,
+html.dark .bg-cyan-100,
+html.dark .bg-cyan-100\/70 {
+  background-color: rgba(59, 130, 246, 0.18) !important;
+}
+
+/* 5. Typography & Portal Brand Contrast Adaptation */
+html.dark .text-slate-950,
+html.dark .text-gray-950,
+html.dark .text-slate-900,
+html.dark .text-gray-900,
+html.dark .text-\[\#111B21\] {
+  color: #f1f5f9 !important;
+}
+html.dark nav h1 {
+  color: #ffffff !important;
+}
+html.dark .text-slate-800,
+html.dark .text-gray-800 {
+  color: #e2e8f0 !important;
+}
+html.dark .text-slate-700,
+html.dark .text-gray-700 {
+  color: #cbd5e1 !important;
+}
+html.dark .text-slate-600,
+html.dark .text-gray-600 {
+  color: #94a3b8 !important;
+}
+html.dark .text-slate-500,
+html.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+/* Portal Brand Accent Colors (Luminous & Eye-Friendly in Dark Mode) */
+/* Student Crimson / Rose */
+html.dark .text-\[\#990000\],
+html.dark .text-\[\#A80016\],
+html.dark .text-\[\#800000\],
+html.dark .text-\[\#7A0000\],
+html.dark .text-\[\#8F0808\],
+html.dark .text-\[\#dc2626\],
+html.dark .text-\[\#E53935\],
+html.dark .text-red-950,
+html.dark .text-red-900,
+html.dark .text-red-800,
+html.dark .text-red-700,
+html.dark .text-rose-950,
+html.dark .text-rose-900,
+html.dark .text-rose-800,
+html.dark .text-rose-700 {
+  color: #fb7185 !important;
+}
+/* Alumni Emerald / Teal */
+html.dark .text-\[\#059669\],
+html.dark .text-\[\#047857\],
+html.dark .text-\[\#064E3B\],
+html.dark .text-\[\#0F766E\],
+html.dark .text-\[\#00A884\],
+html.dark .text-emerald-950,
+html.dark .text-emerald-900,
+html.dark .text-emerald-800,
+html.dark .text-emerald-700,
+html.dark .text-teal-950,
+html.dark .text-teal-900,
+html.dark .text-teal-800,
+html.dark .text-teal-700,
+html.dark .text-green-800,
+html.dark .text-green-700 {
+  color: #34d399 !important;
+}
+/* Academic Purple / Indigo */
+html.dark .text-\[\#4C1D95\],
+html.dark .text-\[\#4c1d95\],
+html.dark .text-\[\#312e81\],
+html.dark .text-\[\#5B21B6\],
+html.dark .text-\[\#6D28D9\],
+html.dark .text-\[\#7c3aed\],
+html.dark .text-purple-950,
+html.dark .text-purple-900,
+html.dark .text-purple-800,
+html.dark .text-purple-700,
+html.dark .text-indigo-950,
+html.dark .text-indigo-900,
+html.dark .text-indigo-800,
+html.dark .text-indigo-700,
+html.dark .text-violet-950,
+html.dark .text-violet-900,
+html.dark .text-violet-800,
+html.dark .text-violet-700 {
+  color: #c4b5fd !important;
+}
+/* Company Navy / Blue */
+html.dark .text-\[\#0A2342\],
+html.dark .text-\[\#1e3a5f\],
+html.dark .text-\[\#071A30\],
+html.dark .text-\[\#003399\],
+html.dark .text-\[\#0A66C2\],
+html.dark .text-blue-950,
+html.dark .text-blue-900,
+html.dark .text-blue-800,
+html.dark .text-blue-700,
+html.dark .text-sky-900,
+html.dark .text-sky-800,
+html.dark .text-sky-700,
+html.dark .text-cyan-950,
+html.dark .text-cyan-900,
+html.dark .text-cyan-800,
+html.dark .text-cyan-700 {
+  color: #93c5fd !important;
+}
+/* Admin Amber / Gold */
+html.dark .text-\[\#b45309\],
+html.dark .text-\[\#92400e\],
+html.dark .text-amber-950,
+html.dark .text-amber-900,
+html.dark .text-amber-800,
+html.dark .text-amber-700,
+html.dark .text-orange-900,
+html.dark .text-orange-800,
+html.dark .text-orange-700,
+html.dark .text-yellow-800,
+html.dark .text-yellow-700 {
+  color: #fbbf24 !important;
+}
+
+/* Hover state for converted bg-white buttons/links */
+html.dark button.bg-white:hover,
+html.dark a.bg-white:hover {
+  background-color: #1e293b !important;
+}
+
+/* Force all İESÜ logos to render crisp white in dark mode */
+html.dark img[data-iesu-logo="true"],
+html.dark img[src*="iesu-logo.svg"],
+html.dark img[src*="/logo.svg"] {
+  filter: brightness(0) invert(1) !important;
+}
+
+/* 6. Borders & Dividers */
+html.dark .border-slate-50,
+html.dark .border-gray-50,
+html.dark .border-slate-100,
+html.dark .border-slate-100\/60,
+html.dark .border-slate-100\/50,
+html.dark .border-gray-100,
+html.dark .border-gray-100\/80,
+html.dark .border-slate-200,
+html.dark .border-slate-200\/90,
+html.dark .border-slate-200\/85,
+html.dark .border-slate-200\/80,
+html.dark .border-slate-200\/70,
+html.dark .border-slate-200\/60,
+html.dark .border-slate-200\/50,
+html.dark .border-slate-200\/40,
+html.dark .border-gray-200,
+html.dark .border-gray-200\/90,
+html.dark .border-gray-200\/80,
+html.dark .border-gray-200\/70,
+html.dark .border-gray-200\/60,
+html.dark .border-slate-300,
+html.dark .border-slate-300\/80,
+html.dark .border-gray-300,
+html.dark .border-red-50,
+html.dark .border-red-100,
+html.dark .border-red-100\/80,
+html.dark .border-red-100\/60,
+html.dark .border-red-100\/50,
+html.dark .border-red-200,
+html.dark .border-red-200\/80,
+html.dark .border-red-200\/70,
+html.dark .border-red-200\/60,
+html.dark .border-red-200\/50,
+html.dark .border-red-300,
+html.dark .border-rose-50,
+html.dark .border-rose-100,
+html.dark .border-rose-200,
+html.dark .border-rose-200\/80,
+html.dark .border-rose-200\/60,
+html.dark .border-rose-300,
+html.dark .border-emerald-50,
+html.dark .border-emerald-100,
+html.dark .border-emerald-100\/60,
+html.dark .border-emerald-200,
+html.dark .border-emerald-200\/80,
+html.dark .border-emerald-200\/70,
+html.dark .border-emerald-200\/60,
+html.dark .border-emerald-300,
+html.dark .border-teal-50,
+html.dark .border-teal-100,
+html.dark .border-teal-200,
+html.dark .border-teal-300,
+html.dark .border-green-100,
+html.dark .border-green-200,
+html.dark .border-green-200\/50,
+html.dark .border-amber-50,
+html.dark .border-amber-100,
+html.dark .border-amber-100\/70,
+html.dark .border-amber-100\/60,
+html.dark .border-amber-200,
+html.dark .border-amber-200\/90,
+html.dark .border-amber-200\/80,
+html.dark .border-amber-200\/70,
+html.dark .border-amber-200\/60,
+html.dark .border-amber-300,
+html.dark .border-orange-50,
+html.dark .border-orange-100,
+html.dark .border-orange-200,
+html.dark .border-yellow-100,
+html.dark .border-yellow-200,
+html.dark .border-purple-50,
+html.dark .border-purple-100,
+html.dark .border-purple-100\/60,
+html.dark .border-purple-200,
+html.dark .border-purple-200\/80,
+html.dark .border-purple-200\/70,
+html.dark .border-purple-200\/60,
+html.dark .border-purple-300,
+html.dark .border-violet-100,
+html.dark .border-violet-200,
+html.dark .border-fuchsia-200,
+html.dark .border-indigo-50,
+html.dark .border-indigo-100,
+html.dark .border-indigo-100\/60,
+html.dark .border-indigo-100\/50,
+html.dark .border-indigo-200,
+html.dark .border-indigo-200\/80,
+html.dark .border-indigo-300,
+html.dark .border-blue-50,
+html.dark .border-blue-100,
+html.dark .border-blue-100\/60,
+html.dark .border-blue-200,
+html.dark .border-blue-200\/80,
+html.dark .border-blue-200\/70,
+html.dark .border-blue-300,
+html.dark .border-sky-50,
+html.dark .border-sky-100,
+html.dark .border-sky-200,
+html.dark .border-cyan-50,
+html.dark .border-cyan-200,
+html.dark .border-cyan-300,
+html.dark .border-\[\#D1EAF4\] {
+  border-color: #24324d !important;
+}
+html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #24324d !important;
+}
+
+/* 7. Form Controls (Inputs, Textareas, Selects) */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(.bg-transparent),
+html.dark textarea:not(.bg-transparent),
+html.dark select:not(.bg-transparent) {
+  background-color: #1a253d !important;
+  color: #f1f5f9 !important;
+  border-color: #2e3f5e !important;
+}
+html.dark input.bg-transparent,
+html.dark textarea.bg-transparent {
+  background-color: transparent !important;
+  color: #f1f5f9 !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+
+

@@ -2,15 +2,25 @@ import React, { useState } from 'react';
 import { ChevronRight, Mail, ArrowRight, CheckCircle } from 'lucide-react';
 import Logo from '../Logo';
 import { getTenantConfig } from '../../config/tenantConfig';
+import useAppStore from '../../store/useAppStore';
 
 export default function Footer({ setSelectedItem, legalData, setView }) {
   const tenant = getTenantConfig();
+  const addNewsletterSubscriber = useAppStore(state => state.addNewsletterSubscriber);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   const handleSubscribe = (e) => {
     e.preventDefault();
     if(email) {
+      addNewsletterSubscriber?.({
+        id: 'SUB-' + Date.now(),
+        tenantId: tenant?.id || 'iesu',
+        email,
+        date: new Date().toLocaleString('tr-TR'),
+        kvkkConsent: true,
+        status: 'Onaylandı (KVKK İzinli)'
+      });
       setIsSubscribed(true);
       setTimeout(() => {
         setIsSubscribed(false);
@@ -45,16 +55,16 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
               {tenant.institutionName} Kariyer Geliştirme Merkezi olarak amacımız; öğrencilerimizi ve mezunlarımızı; kişisel farkındalığı yüksek, gelişmeleri yakından takip eden, kurumsal ve toplumsal gelişime katma değer yaratan bireyler olmaları yönünde desteklemektir.
             </p>
             <div className="flex gap-3">
-              <a href="https://tr-tr.facebook.com/iesuedu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
+              <a href="https://www.facebook.com/iesuniversitesi/?locale=tr_TR" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
               </a>
-              <a href="https://www.instagram.com/iesuedu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
+              <a href="https://www.instagram.com/iesukariyer/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
               </a>
-              <a href="https://www.youtube.com/@IesuUniversitesi" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
+              <a href="https://www.youtube.com/@%C4%B0stanbulEsenyurt%C3%9Cniversitesi" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
               </a>
-              <a href="https://www.linkedin.com/school/iesuedu/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
+              <a href="https://www.linkedin.com/in/istanbul-esenyurt-%C3%BCniversitesi-kariyer-ofisi-4a03ba16b/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white flex items-center justify-center text-white hover:text-iesu-primary transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect width="4" height="12" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg>
               </a>
             </div>
@@ -65,7 +75,7 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
             <h3 className="text-lg font-black text-white mb-6 flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-iesu-accent"></span> Hızlı Bağlantılar</h3>
             <ul className="space-y-3 font-medium text-[14px]">
               <li><a href="https://obs.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Öğrenci Bilgi Sistemi (OBS)</a></li>
-              <li><a href="https://esuzemi.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Esuzemi (Uzaktan Eğitim)</a></li>
+              <li><a href="https://eslms.esenyurt.edu.tr/almsp" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Esuzemi (Uzaktan Eğitim)</a></li>
               <li><a href="https://kutuphane.esenyurt.edu.tr/" target="_blank" rel="noopener noreferrer" className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> Merkez Kütüphane</a></li>
               <li><button onClick={() => setView('staj')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> İsteğe Bağlı Staj Süreçleri</button></li>
               <li><button onClick={() => setView('sem')} className="text-red-100 hover:text-iesu-accent hover:translate-x-1 transition-all flex items-center gap-2"><ChevronRight size={14} /> SEM (Sürekli Eğitim Merkezi)</button></li>
@@ -80,21 +90,21 @@ export default function Footer({ setSelectedItem, legalData, setView }) {
                 <div className="bg-white/20 p-2 rounded-lg mt-0.5"><Mail size={16} className="text-white" /></div>
                 <div>
                   <span className="block text-[11px] text-red-200 uppercase tracking-wider font-bold mb-0.5">E-Posta</span>
-                  <a href="mailto:kariyer@esenyurt.edu.tr" className="hover:text-iesu-accent transition">kariyer@esenyurt.edu.tr</a>
+                  <a href={`mailto:${tenant.supportEmail || 'kariyer@esenyurt.edu.tr'}`} className="hover:text-iesu-accent transition">{tenant.supportEmail || 'kariyer@esenyurt.edu.tr'}</a>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <div className="bg-white/20 p-2 rounded-lg mt-0.5"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
                 <div>
                   <span className="block text-[11px] text-red-200 uppercase tracking-wider font-bold mb-0.5">Telefon</span>
-                  <a href="tel:+902126990990" className="hover:text-iesu-accent transition">+90 212 699 09 90</a>
+                  <a href="tel:4449123" className="hover:text-iesu-accent transition">{tenant.phone || '444 9 123 / 1322'}</a>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <div className="bg-white/20 p-2 rounded-lg mt-0.5"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
                 <div>
                   <span className="block text-[11px] text-red-200 uppercase tracking-wider font-bold mb-0.5">Adres</span>
-                  <a href="https://maps.app.goo.gl/9QZJ2jXvP" target="_blank" rel="noopener noreferrer" className="hover:text-iesu-accent transition leading-snug">Cihangir Mah. Şehit Jandarma Komando Er Hakan Öner Sk. No:1 Avcılar / İSTANBUL</a>
+                  <span className="leading-snug">{tenant.address || 'Zafer Mah. Adile Naşit Bulv. No:1, Esenyurt / İstanbul'}</span>
                 </div>
               </li>
             </ul>

@@ -1,38 +1,43 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
-import { Newspaper, Clock, MapPin, Share2, X, Check } from 'lucide-react';
+import { Newspaper, Clock, MapPin, Share2, X, Check, RefreshCw, ExternalLink } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+
+const EMPTY_ARRAY = [];
 
 const DEFAULT_NEWS = [
   {
     id: 'h1',
-    title: 'Yeni Kariyer Fuarı Duyuruldu',
+    title: 'Yeni Kariyer Fuarı & Sanayi İşbirliği Zirvesi Duyuruldu',
     time: '12 saat önce',
     readers: '4.2B okuyucu',
-    category: 'Fuar',
-    summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından düzenlenen 2026 Ulusal Kariyer Fuarı için kayıtlar başladı. 50+ lider savunma, bilişim ve sanayi firması kampüsümüzde stajyer ve mezun adaylarla buluşuyor.',
+    category: 'Fuar & Sanayi',
+    summary: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi tarafından düzenlenen 2026 Ulusal Kariyer Fuarı ve Üniversite-Sanayi İşbirliği protokolleri kapsamında 50+ lider savunma, bilişim, lojistik ve üretim firması Mavi Yaka (MYO) ve Beyaz Yaka (Fakülte) adaylarla buluşuyor.',
     location: 'Ana Kampüs Konferans Salonu',
-    date: '15 Nisan 2026'
+    date: '15 Nisan 2026',
+    url: 'https://www.esenyurt.edu.tr/'
   },
   {
     id: 'h2',
-    title: 'Yapay Zeka ve İstihdam Raporu',
+    title: 'YÖK Akreditasyon ve Akademik Sempozyum Takvimi Açıklandı',
     time: '1 gün önce',
     readers: '3.1B okuyucu',
-    category: 'Rapor',
-    summary: 'İESÜ Araştırma OS Merkezi tarafından hazırlanan 2026 Yapay Zeka ve Geleceğin Meslekleri raporu yayımlandı. Rapor, veri analitiği, istem mühendisliği ve yapay zeka entegrasyonunun mezun istihdamındaki %45 artışını belgeliyor.',
+    category: 'YÖK & Akademi',
+    summary: 'İESÜ Araştırma OS Merkezi ve YÖK Kalite Kurulu (YÖKAK) süreçleri kapsamında 2026 Uluslararası Uygulamalı Bilimler, Mühendislik ve Mesleki Eğitim Sempozyumu bildiri çağrısı yayımlandı.',
     location: 'İESÜ Ar-Ge OS Merkezi',
-    date: '10 Nisan 2026'
+    date: '10 Nisan 2026',
+    url: 'https://www.esenyurt.edu.tr/'
   },
   {
     id: 'h3',
-    title: 'Mezunlar Zirvesi Başlıyor',
+    title: 'Mezunlar Zirvesi ve Mavi-Beyaz Yaka İstihdam Köprüsü',
     time: '2 gün önce',
     readers: '8.4B okuyucu',
     category: 'Zirve',
-    summary: 'Geleneksel İESÜ Mezunlar ve Sektör Zirvesi bu yıl hibrit katılım modeliyle kapılarını açıyor. Türkiye ve dünyadaki mezunlarımız deneyimlerini aktif öğrencilerimizle paylaşacak.',
+    summary: 'Geleneksel İESÜ Mezunlar ve Sektör Zirvesi bu yıl hibrit katılım modeliyle kapılarını açıyor. Türkiye ve dünyadaki mezunlarımız hem teknik saha (Mavi Yaka) hem kurumsal yönetim (Beyaz Yaka) deneyimlerini aktif öğrencilerimizle paylaşacak.',
     location: 'İESÜ Kültür Merkezi & Online Stream',
-    date: '22 Nisan 2026'
+    date: '22 Nisan 2026',
+    url: 'https://www.esenyurt.edu.tr/'
   }
 ];
 
@@ -41,62 +46,64 @@ const BRANCH_CONFIGS = {
     title: 'KGM Haberleri',
     badge: 'Canlı',
     liveDot: 'bg-[#990000]',
-    headerBg: 'bg-red-50 text-[#990000]',
+    headerBg: 'bg-red-50 text-[#990000] dark:bg-red-950/50 dark:text-red-400',
     glow: 'bg-red-600/5',
-    hoverText: 'group-hover/item:text-[#990000]',
+    hoverText: 'group-hover/item:text-[#990000] dark:group-hover/item:text-red-400',
     hoverDot: 'group-hover/item:bg-[#990000]',
-    badgeStyle: 'bg-red-50 text-[#990000] border-red-100',
+    badgeStyle: 'bg-red-50 text-[#990000] border-red-100 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900/50',
     modalTheme: 'from-slate-950 via-[#990000] to-red-950'
   },
   alumni: {
     title: 'KGM Haberleri',
     badge: 'Canlı',
     liveDot: 'bg-emerald-600',
-    headerBg: 'bg-emerald-50 text-emerald-700',
+    headerBg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400',
     glow: 'bg-emerald-600/5',
-    hoverText: 'group-hover/item:text-emerald-700',
+    hoverText: 'group-hover/item:text-emerald-700 dark:group-hover/item:text-emerald-400',
     hoverDot: 'group-hover/item:bg-emerald-600',
-    badgeStyle: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+    badgeStyle: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/50',
     modalTheme: 'from-slate-950 via-emerald-800 to-teal-950'
   },
   academic: {
     title: 'KGM Haberleri',
     badge: 'Canlı',
     liveDot: 'bg-[#4C1D95]',
-    headerBg: 'bg-purple-50 text-[#4C1D95]',
+    headerBg: 'bg-purple-50 text-[#4C1D95] dark:bg-purple-950/50 dark:text-purple-400',
     glow: 'bg-purple-600/5',
-    hoverText: 'group-hover/item:text-[#4C1D95]',
+    hoverText: 'group-hover/item:text-[#4C1D95] dark:group-hover/item:text-purple-400',
     hoverDot: 'group-hover/item:bg-[#4C1D95]',
-    badgeStyle: 'bg-purple-50 text-[#4C1D95] border-purple-100',
+    badgeStyle: 'bg-purple-50 text-[#4C1D95] border-purple-100 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-900/50',
     modalTheme: 'from-slate-950 via-[#4C1D95] to-indigo-950'
   },
   company: {
     title: 'KGM Haberleri',
     badge: 'Canlı',
     liveDot: 'bg-[#0A2342]',
-    headerBg: 'bg-blue-50 text-[#0A2342]',
+    headerBg: 'bg-blue-50 text-[#0A2342] dark:bg-blue-950/50 dark:text-blue-400',
     glow: 'bg-blue-600/5',
-    hoverText: 'group-hover/item:text-[#0A2342]',
+    hoverText: 'group-hover/item:text-[#0A2342] dark:group-hover/item:text-blue-400',
     hoverDot: 'group-hover/item:bg-[#0A2342]',
-    badgeStyle: 'bg-blue-50 text-[#0A2342] border-blue-100',
+    badgeStyle: 'bg-blue-50 text-[#0A2342] border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/50',
     modalTheme: 'from-slate-950 via-[#0A2342] to-blue-950'
   },
   admin: {
     title: 'KGM Haberleri',
     badge: 'Canlı',
     liveDot: 'bg-amber-600',
-    headerBg: 'bg-amber-50 text-amber-800',
+    headerBg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-400',
     glow: 'bg-amber-600/5',
-    hoverText: 'group-hover/item:text-amber-800',
+    hoverText: 'group-hover/item:text-amber-800 dark:group-hover/item:text-amber-400',
     hoverDot: 'group-hover/item:bg-amber-800',
-    badgeStyle: 'bg-amber-50 text-amber-800 border-amber-100',
+    badgeStyle: 'bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/50',
     modalTheme: 'from-slate-950 via-amber-800 to-slate-900'
   }
 };
 
 export default function BranchNewsWidget({ branch, currentUser }) {
   const storeActiveBranch = useAppStore(state => state.activePortalBranch);
-  const storeNews = useAppStore(state => state.news) || [];
+  const storeNews = useAppStore(state => state.news || EMPTY_ARRAY);
+  const refreshScrapedData = useAppStore(state => state.refreshScrapedData);
+  const isScraping = useAppStore(state => state.isScraping);
 
   const effectiveBranch = useMemo(() => {
     if (branch) return branch;
@@ -126,7 +133,7 @@ export default function BranchNewsWidget({ branch, currentUser }) {
 
   const newsList = useMemo(() => {
     if (storeNews && storeNews.length >= 3) {
-      return storeNews.slice(0, 3).map((item, idx) => ({
+      return storeNews.slice(0, 4).map((item, idx) => ({
         id: item.id || `news_${idx}`,
         title: item.title,
         time: item.date ? `${item.date}` : 'Yeni',
@@ -134,11 +141,20 @@ export default function BranchNewsWidget({ branch, currentUser }) {
         category: item.category || 'Haber',
         summary: item.summary || item.content || item.description || '',
         location: item.location || 'İESÜ Kampüs',
-        date: item.date || 'Nisan 2026'
+        date: item.date || 'Nisan 2026',
+        url: item.url || 'https://www.esenyurt.edu.tr/'
       }));
     }
     return DEFAULT_NEWS;
   }, [storeNews]);
+
+  const handleLiveSync = async (e) => {
+    e.stopPropagation();
+    if (typeof refreshScrapedData === 'function') {
+      await refreshScrapedData();
+      window.toast && window.toast.success('esenyurt.edu.tr güncel haber ve etkinlikleri senkronize edildi.');
+    }
+  };
 
   const handleShare = (item) => {
     if (navigator.clipboard) {
@@ -152,7 +168,7 @@ export default function BranchNewsWidget({ branch, currentUser }) {
   return (
     <>
       {/* ─── ESKİ GÖRÜNÜMÜNE SADIK ULTRA-ŞIK KGM HABERLERİ KARTI ─── */}
-      <div className="relative bg-white rounded-[24px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
+      <div className="relative bg-white dark:bg-[#111827] rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
         {/* Ambient Glow */}
         <div className={`absolute top-0 right-0 w-32 h-32 ${cfg.glow} rounded-full blur-3xl -mr-10 -mt-10 transition-transform duration-700 group-hover:scale-150 pointer-events-none`}></div>
         
@@ -163,11 +179,24 @@ export default function BranchNewsWidget({ branch, currentUser }) {
               <div className={`p-2 rounded-xl ${cfg.headerBg}`}>
                 <Newspaper size={16} strokeWidth={2.5} />
               </div>
-              <h3 className="font-black text-slate-900 text-[15px] tracking-tight">{cfg.title}</h3>
+              <h3 className="font-black text-slate-900 dark:text-slate-100 text-[15px] tracking-tight">{cfg.title}</h3>
             </div>
-            <div className={`flex items-center gap-1.5 px-2.5 py-1 border rounded-full ${cfg.badgeStyle}`}>
-              <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${cfg.liveDot}`}></div>
-              <span className="text-[9px] font-black uppercase tracking-wider">{cfg.badge}</span>
+            <div className="flex items-center gap-1.5">
+              {typeof refreshScrapedData === 'function' && (
+                <button
+                  type="button"
+                  onClick={handleLiveSync}
+                  disabled={isScraping}
+                  title="esenyurt.edu.tr Canlı Senkronize Et"
+                  className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                >
+                  <RefreshCw size={12} className={isScraping ? 'animate-spin text-emerald-500' : ''} />
+                </button>
+              )}
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 border rounded-full ${cfg.badgeStyle}`}>
+                <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${cfg.liveDot}`}></div>
+                <span className="text-[9px] font-black uppercase tracking-wider">{cfg.badge}</span>
+              </div>
             </div>
           </div>
           
@@ -179,15 +208,15 @@ export default function BranchNewsWidget({ branch, currentUser }) {
                 onClick={() => setSelectedNewsItem(newsItem)} 
                 className="group/item cursor-pointer flex gap-3 items-start"
               >
-                <div className={`w-1.5 h-1.5 rounded-full bg-slate-200 mt-2 ${cfg.hoverDot} group-hover/item:scale-150 transition-all duration-300`}></div>
+                <div className={`w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 mt-2 ${cfg.hoverDot} group-hover/item:scale-150 transition-all duration-300`}></div>
                 <div className="flex flex-col">
-                  <span className={`text-[13px] font-bold text-slate-800 ${cfg.hoverText} transition-colors leading-snug`}>
+                  <span className={`text-[13px] font-bold text-slate-800 dark:text-slate-200 ${cfg.hoverText} transition-colors leading-snug`}>
                     {newsItem.title}
                   </span>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-semibold text-slate-500">{newsItem.time}</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span className="text-[10px] font-semibold text-slate-500">{newsItem.readers}</span>
+                    <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{newsItem.time}</span>
+                    <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                    <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{newsItem.readers}</span>
                   </div>
                 </div>
               </div>

@@ -32,16 +32,16 @@ export default function CoAuthorSelector() {
   );
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-3 space-y-2">
+    <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50/70 dark:bg-slate-800/70 p-3 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Users size={16} className="text-red-600" />
-          <span className="text-xs font-bold text-gray-800">Ortak Yazarlık (Co-Author)</span>
+          <Users size={16} className="text-red-600 dark:text-rose-400" />
+          <span className="text-xs font-bold text-gray-800 dark:text-slate-100">Ortak Yazarlık (Co-Author)</span>
         </div>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 transition"
+          className="flex items-center gap-1 text-xs font-bold text-red-600 dark:text-rose-400 hover:text-red-700 dark:hover:text-rose-300 transition cursor-pointer"
         >
           <UserPlus size={14} />
           <span>{isOpen ? 'Kapat' : 'Ortak Yazar Davet Et'}</span>
@@ -54,19 +54,19 @@ export default function CoAuthorSelector() {
           {coAuthors.map(author => (
             <div
               key={author.id}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-300 shadow-xs"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 shadow-xs"
             >
               <SafeAvatar
                 src={author.avatar}
                 alt={author.name}
                 className="w-5 h-5 rounded-full object-cover"
               />
-              <span className="text-xs font-bold text-gray-800">{author.name}</span>
-              <span className="text-[10px] text-gray-500 font-mono">({author.title})</span>
+              <span className="text-xs font-bold text-gray-800 dark:text-slate-100">{author.name}</span>
+              <span className="text-[10px] text-gray-500 dark:text-slate-400 font-mono">({author.title})</span>
               <button
                 type="button"
                 onClick={() => removeCoAuthor(author.id)}
-                className="text-gray-400 hover:text-red-600 ml-0.5"
+                className="text-gray-400 hover:text-red-600 dark:hover:text-rose-400 ml-0.5 cursor-pointer"
               >
                 <X size={12} />
               </button>
@@ -77,13 +77,13 @@ export default function CoAuthorSelector() {
 
       {/* Dropdown Directory Selector */}
       {isOpen && (
-        <div className="mt-2 bg-white rounded-xl border border-gray-200 p-2 shadow-lg animate-in fade-in duration-150">
+        <div className="mt-2 bg-white dark:bg-[#131c31] rounded-xl border border-gray-200 dark:border-slate-700 p-2 shadow-lg animate-in fade-in duration-150">
           <input
             type="text"
             placeholder="Kulüp veya öğrenci adı ara..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full px-3 py-1.5 mb-2 rounded-lg border border-gray-200 text-xs focus:outline-none focus:border-red-500"
+            className="w-full px-3 py-1.5 mb-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 text-xs focus:outline-none focus:border-red-500"
           />
 
           <div className="max-h-40 overflow-y-auto space-y-1">
@@ -100,8 +100,8 @@ export default function CoAuthorSelector() {
                       addCoAuthor(item);
                     }
                   }}
-                  className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition ${
-                    isSelected ? 'bg-red-50 text-red-900 font-bold' : 'hover:bg-gray-100 text-gray-800'
+                  className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition cursor-pointer ${
+                    isSelected ? 'bg-red-50 dark:bg-rose-950/40 text-red-900 dark:text-rose-300 font-bold' : 'hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-800 dark:text-slate-200'
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -112,10 +112,10 @@ export default function CoAuthorSelector() {
                     />
                     <div className="truncate">
                       <p className="text-xs truncate">{item.name}</p>
-                      <p className="text-[10px] text-gray-500">{item.title}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-slate-400">{item.title}</p>
                     </div>
                   </div>
-                  {isSelected && <Check size={14} className="text-red-600 shrink-0" />}
+                  {isSelected && <Check size={14} className="text-red-600 dark:text-rose-400 shrink-0" />}
                 </button>
               );
             })}

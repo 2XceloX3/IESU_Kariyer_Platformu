@@ -125,6 +125,8 @@ export const initialClubs = [
         status: 'Yaklaşan',
         description: '24 saat kesintisiz kodlama maratonunda sürdürülebilir şehirler ve üretken yapay zeka alanında inovatif projeler yarışıyor. 60.000 ₺ toplam ödül!',
         speaker: 'Logo Yazılım & Trendyol Mühendislik Mentorları',
+        image: 'https://www.esenyurt.edu.tr/uploads/2026/05/mmfe36bkaqbg1-egitimin-gelecegini-yeniden-sekillendiren-iki-buyuk-guc-bir-arada-yapay-zekâ-ve-sosyal-ogrenme.jfif',
+        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/05/mmfe36bkaqbg1-egitimin-gelecegini-yeniden-sekillendiren-iki-buyuk-guc-bir-arada-yapay-zekâ-ve-sosyal-ogrenme.jfif',
         certificate: true
       },
       {
@@ -139,6 +141,8 @@ export const initialClubs = [
         status: 'Yaklaşan',
         description: 'Büyük ölçekli bulut mimarileri ve savunma sanayiinde yazılım mühendisliği kariyeri üzerine canlı soru-cevap oturumu.',
         speaker: 'Baykar Teknoloji & Havelsan Baş Mimarları',
+        image: 'https://www.esenyurt.edu.tr/uploads/2026/07/z5st7op8uiqwp-gelecegi-sekillendiren-teknolojiyle-tanisin.jpg',
+        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/07/z5st7op8uiqwp-gelecegi-sekillendiren-teknolojiyle-tanisin.jpg',
         certificate: true
       },
       {
@@ -153,6 +157,8 @@ export const initialClubs = [
         status: 'Tamamlandı',
         description: 'Sıfırdan ileri seviyeye React 19, TypeScript ve Tailwind CSS ile gerçek dünya projesi geliştirme atölyesi.',
         speaker: 'Kulüp Eğitmen Ekibi',
+        image: 'https://www.esenyurt.edu.tr/uploads/2026/05/n7aq87033zh6y-siber-dunyanin-kapilarini-araliyoruz.jpg',
+        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/05/n7aq87033zh6y-siber-dunyanin-kapilarini-araliyoruz.jpg',
         certificate: true
       }
     ],
@@ -380,7 +386,9 @@ export const initialClubs = [
         quota: 120,
         registeredCount: 74,
         status: 'Yaklaşan',
-        description: '10 finalist öğrenci girişimi 5 yatırımcı jürisi önünde 3 dakikalık sunumlarını yapacak.'
+        description: '10 finalist öğrenci girişimi 5 yatırımcı jürisi önünde 3 dakikalık sunumlarını yapacak.',
+        image: 'https://www.esenyurt.edu.tr/uploads/2026/07/oh0lm0qvjbwgc-iii-yonetim-bilimleri-sempozyumu.jfif',
+        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/07/oh0lm0qvjbwgc-iii-yonetim-bilimleri-sempozyumu.jfif'
       }
     ],
     announcements: [
@@ -466,7 +474,9 @@ export const initialClubs = [
         quota: 100,
         registeredCount: 65,
         status: 'Yaklaşan',
-        description: 'Uluslararası indeksli dergilerde araştırma makalesi yazımı ve patent tarama teknikleri.'
+        description: 'Uluslararası indeksli dergilerde araştırma makalesi yazımı ve patent tarama teknikleri.',
+        image: 'https://www.esenyurt.edu.tr/uploads/2026/10/jjx116fpj1fw4-fikirden-projeye-tubitak-2209-a-ve-2209-b-egitimi.png',
+        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/10/jjx116fpj1fw4-fikirden-projeye-tubitak-2209-a-ve-2209-b-egitimi.png'
       }
     ],
     announcements: [
@@ -550,7 +560,9 @@ export const initialClubs = [
         quota: 50,
         registeredCount: 42,
         status: 'Yaklaşan',
-        description: 'Öğrenciler kurumsal İK uzmanlarıyla canlı vaka mülakatlarına katılacak.'
+        description: 'Öğrenciler kurumsal İK uzmanlarıyla canlı vaka mülakatlarına katılacak.',
+        image: 'https://www.esenyurt.edu.tr/uploads/2026/10/wwsywtvoiujec-fizyoterapide-kariyer-yolculugu.jpg',
+        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/10/wwsywtvoiujec-fizyoterapide-kariyer-yolculugu.jpg'
       }
     ],
     announcements: [
@@ -637,7 +649,9 @@ export const initialClubs = [
         quota: 150,
         registeredCount: 92,
         status: 'Yaklaşan',
-        description: 'İHA mekanik tasarımı, ROS2 haberleşme mimarisi ve sensör füzyonu üzerine pratik kodlama oturumu.'
+        description: 'İHA mekanik tasarımı, ROS2 haberleşme mimarisi ve sensör füzyonu üzerine pratik kodlama oturumu.',
+        image: 'https://www.esenyurt.edu.tr/uploads/2026/10/a0ne1dli7schi-gokyuzunun-gelecegi-ucaklarda-robotiklesme-akilli-teknolojiler-ve-pilotajin-donusumu.png',
+        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/10/a0ne1dli7schi-gokyuzunun-gelecegi-ucaklarda-robotiklesme-akilli-teknolojiler-ve-pilotajin-donusumu.png'
       }
     ],
     announcements: [

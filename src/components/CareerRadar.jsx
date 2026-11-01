@@ -67,13 +67,12 @@ export default function CareerRadar({ announcements: propAnnouncements, events: 
           <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
             key={idx}
             onClick={() => setView && setView(item.link)}
-            className="flex-shrink-0 w-36 h-36 relative overflow-hidden rounded-[24px] border border-white/50 shadow-sm hover:shadow-md transition-all cursor-pointer snap-start group"
-            style={{ background: 'linear-gradient(145deg, #ffffff 0%, #f9f9fb 100%)' }}
+            className="flex-shrink-0 w-36 h-36 relative overflow-hidden rounded-[24px] bg-gradient-to-br from-white to-[#f9f9fb] dark:from-[#131c31] dark:to-[#18233c] border border-white/50 dark:border-slate-700/80 shadow-sm hover:shadow-md transition-all cursor-pointer snap-start group"
           >
             <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-br from-[var(--brand-blue)] to-[var(--brand-secondary)]"></div>
             
             <div className="flex flex-col h-full justify-between p-4 relative z-10">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm border border-white transition-transform duration-300 group-hover:-translate-y-1 ${item.color.replace('bg-', 'bg-white text-')}`}>
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm border border-white dark:border-slate-700 transition-transform duration-300 group-hover:-translate-y-1 ${item.color.replace('bg-', 'bg-white dark:bg-slate-800 text-')}`}>
                 {/* Ensure icon inherits color by overriding inner bg if needed, or just keep original color */}
                 <div className={item.color.split(' ')[1]}>
                   {item.icon}
@@ -81,7 +80,7 @@ export default function CareerRadar({ announcements: propAnnouncements, events: 
               </div>
               
               <div>
-                <h3 className="font-black text-[13px] text-gray-900 leading-tight line-clamp-2 mb-1 group-hover:text-[var(--brand-navy)] transition-colors">
+                <h3 className="font-black text-[13px] text-gray-900 dark:text-slate-100 leading-tight line-clamp-2 mb-1 group-hover:text-[var(--brand-navy)] transition-colors">
                   {item.title}
                 </h3>
                 <p className="text-[10px] font-bold text-gray-500 line-clamp-1 uppercase tracking-wide">

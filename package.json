@@ -5,7 +5,7 @@
   "description": "İstanbul Esenyurt Üniversitesi Kariyer, Staj ve Mezun Platformu",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3000 --host 0.0.0.0",
     "build": "vite build",
     "lint": "oxlint src vite.config.js vitest.config.js",
     "preview": "vite preview",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
+    "@google/genai": "^2.32.0",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.5.7",
     "@supabase/supabase-js": "^2.110.7",

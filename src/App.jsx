@@ -19,6 +19,7 @@ const AboutUsPage = lazy(() => import('./components/AboutUsPage')), EventsPage =
 const DynamicContentPage = lazy(() => import('./components/DynamicContentPage'));
 const GlobalAlumniMap = lazy(() => import('./components/GlobalAlumniMap'));
 const ProfileUpdate = lazy(() => import('./components/ProfileUpdate'));
+const JobCreator = lazy(() => import('./components/JobCreator'));
 
 window.toast = toast;
 const PUBLIC_NEWS = new Set(['haberler', 'duyurular', 'etkinlikler', 'news', 'events', 'events_list', 'etkinliklerimiz']);
@@ -36,18 +37,18 @@ const ADMIN_CMS = new Set([
   'world_map', 'kalbis', 'cms_kalbis'
 ]);
 const ALUMNI_ROUTES = new Set(['alumni', 'mbs', 'alumni_card', 'alumni_assoc_portal', 'mezun_dernek', 'birlik_agi', 'alumni_dao']), ACADEMIC_ROUTES = new Set(['academic', 'research_hub', 'academic_catalog', 'counseling_approvals', 'academic_onboarding']);
-const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job']);
+const COMPANY_ROUTES = new Set(['company', 'company_ats', 'create_job', 'job_creator', 'post_job', 'post-job']);
 const STUDENT_EXCLUSIVE_ROUTES = new Set([
   'student', 'feed', 'student_kgb', 'student_analytics', 'career_test', 
   'career_roadmap', 'startup_incubator', 'smart_certs', 'digital_portfolio', 
-  'reward_store', 'metaverse_library', 'hackathon_market', 'clubs', 'club_portal', 
+  'reward_store', 'metaverse_library', 'hackathon_market', 
   'club_admin', 'sem', 'staj', 'anka_chat', 'skills', 'skill_tree', 'mentor_match', 'knowledge_portal', 'student_onboarding', 'onboarding', 'ats_scanner', 'ats_resume_scanner', 'ats_optimizer'
 ]);
 const SHARED_ROUTES = new Set([
   'user_profile', 'public_profile', 'profile_update', 'messaging', 'notifications', 
   'calendar', 'groups', 'group_profile', 'network', 'career_network', 'live_rooms', 
   'mentor_booking', 'virtual_fair', 'wallet', 'campus_map', 'explore', 'leaderboard', 'global_map',
-  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services', 'ats_scanner'
+  'jobs', 'cvbuilder', 'interview_sim', 'applications', 'news', 'events', 'events_list', 'contact', 'contact_us', 'about_us', 'services', 'ats_scanner', 'clubs', 'club_portal'
 ]);
 
 const LEGAL_PAGE_ALIASES = {
@@ -120,8 +121,20 @@ export default function App() {
   const [authenticatedUserId, setAuthenticatedUserId] = useState(null), [isAuthStateResolved, setIsAuthStateResolved] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false), [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const { userRole, setUserRole, siteConfig, activePortalBranch, setActivePortalBranch } = useAppStore();
+  const userRole = useAppStore((state) => state.userRole);
+  const setUserRole = useAppStore((state) => state.setUserRole);
+  const siteConfig = useAppStore((state) => state.siteConfig);
+  const activePortalBranch = useAppStore((state) => state.activePortalBranch);
+  const setActivePortalBranch = useAppStore((state) => state.setActivePortalBranch);
+  const darkMode = useAppStore((state) => state.darkMode);
   const storeCurrentUser = useAppStore((state) => state.currentUser);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.toggle('dark', Boolean(darkMode));
+      document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light';
+    }
+  }, [darkMode]);
 
   // Zustand store'daki currentUser null'a düştüğünde (logout) React local state'i de senkronize et.
   useEffect(() => {
@@ -230,11 +243,11 @@ export default function App() {
   useEffect(() => {
     if (!pathView) return;
     if (ACADEMIC_ROUTES.has(pathView) && (effectiveRole === 'academic' || isAdmin)) setActivePortalBranch?.('academic');
-    else if (COMPANY_ROUTES.has(pathView) && (['company', 'employer'].includes(effectiveRole) || isAdmin)) setActivePortalBranch?.('company');
+    else if (COMPANY_ROUTES.has(pathView) && (['company', 'employer'].includes(effectiveRole) || (isAdmin && !(activePortalBranch === 'admin' && (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job'))))) setActivePortalBranch?.('company');
     else if (ALUMNI_ROUTES.has(pathView) && (effectiveRole === 'alumni' || isAdmin)) setActivePortalBranch?.('alumni');
     else if ((ADMIN_CMS.has(pathView) || pathView === 'admin') && isAdmin) setActivePortalBranch?.('admin');
     else if (STUDENT_EXCLUSIVE_ROUTES.has(pathView) && (effectiveRole === 'student' || isAdmin)) setActivePortalBranch?.('student');
-  }, [pathView, setActivePortalBranch, isAdmin, effectiveRole]);
+  }, [pathView, setActivePortalBranch, isAdmin, effectiveRole, activePortalBranch]);
 
   useEffect(() => {
     let isInitialBoot = true;
@@ -356,11 +369,12 @@ export default function App() {
     if (pathView === 'birlik_agi' || pathView === 'mezun_dernek') return <AlumniHive currentUser={currentUser} setView={setView} />;
     if (ALUMNI_ROUTES.has(pathView)) return (effectiveRole === 'alumni' || isAdmin) ? <AlumniHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
     if (ACADEMIC_ROUTES.has(pathView)) return (effectiveRole === 'academic' || isAdmin) ? <AcademicHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
-    if (COMPANY_ROUTES.has(pathView)) return (effectiveRole === 'company' || effectiveRole === 'employer' || isAdmin) ? <CompanyHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
+    if (COMPANY_ROUTES.has(pathView) && !(currentBranch === 'admin' && isAdmin && (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job'))) return (effectiveRole === 'company' || effectiveRole === 'employer' || isAdmin) ? <CompanyHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
     if (STUDENT_EXCLUSIVE_ROUTES.has(pathView)) return (effectiveRole === 'student' || isAdmin) ? <StudentHive currentUser={currentUser} setView={setView} /> : renderHomeHiveForRole();
 
     // Admin branch handling for shared / other views
     if (currentBranch === 'admin' && isAdmin) {
+      if (pathView === 'job_creator' || pathView === 'create_job' || pathView === 'post_job' || pathView === 'post-job') return <JobCreator setView={setView} currentUser={currentUser} userRole="admin" />;
       if (pathView === 'profile_update') return <ProfileUpdate setView={setView} currentUser={currentUser} userRole="admin" setSelectedUserId={s.setSelectedUserId} />;
       if (pathView === 'jobs') return <JobsAndInternships setView={setView} previousView="admin" currentUser={currentUser} userRole="admin" />;
       if (pathView === 'user_profile') return <UserProfile userId={currentUser?.id || (currentUser?.uid || currentUser?.id || 'self')} viewerHive="admin" setView={setView} previousView="admin" currentUser={currentUser} setSelectedUserId={s.setSelectedUserId} />;
@@ -405,7 +419,7 @@ export default function App() {
           (pathView === 'contact' || pathView === 'contact_us') ? <ContactPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'about_us') ? <AboutUsPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'services') ? <ServicesPage setView={setView} currentUser={null} userRole={null} />
-          : (pathView === 'events_list') ? <EventsPage setView={setView} currentUser={null} userRole={null} />
+          : (pathView === 'events_list' || pathView === 'etkinlikler' || pathView === 'events' || pathView === 'etkinliklerimiz') ? <EventsPage setView={setView} currentUser={null} userRole={null} />
           : (pathView === 'register') ? <Register setView={setView} setCurrentUser={setCurrentUser} setStudents={store.setStudents} setAlumni={store.setAlumni} setAcademicStaff={store.setAcademicStaff} setCompanies={store.setCompanies} setUserRole={setUserRole} />
           : (pathView === 'forgot_password') ? <ForgotPassword setView={setView} />
           : (pathView === 'jobs') ? <JobsAndInternships setView={setView} currentUser={null} userRole={null} />

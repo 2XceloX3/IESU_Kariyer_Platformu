@@ -8,6 +8,7 @@ import useAppStore from '../store/useAppStore';
 import eventBus from '../brain/eventBus';
 import Logo from './Logo';
 import SafeAvatar from './shared/SafeAvatar';
+import AdminOmniDock from './AdminOmniDock';
 import { getTenantConfig } from '../config/tenantConfig';
 import { generateAIResponse } from '../lib/gemini';
 import { auth, db } from '../utils/firebase';
@@ -441,7 +442,7 @@ Sunduğumuz Olanaklar:
                       3 Kovan Aktif
                     </span>
                   </div>
-                  <p className="text-[11px] text-amber-900/80 font-medium">
+                  <p className="text-[11px] text-amber-900/80 dark:text-amber-200/90 font-medium">
                     Bu ilanın tek tıklamayla hangi kovanların beslemelerine ve başvuru havuzlarına dağıtılacağını belirleyin:
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
@@ -698,7 +699,7 @@ Sunduğumuz Olanaklar:
               <h4 className="font-black text-blue-950 text-xs uppercase tracking-wider">
                 Canlı İlan Önizlemesi (Live Preview)
               </h4>
-              <p className="text-[11px] text-blue-900/80 font-medium leading-relaxed mt-0.5">
+              <p className="text-[11px] text-blue-900/80 dark:text-blue-200/90 font-medium leading-relaxed mt-0.5">
                 Bu ilan, üniversitemiz öğrenci ve mezunlarının İş & Staj Portalında tam olarak bu kart biçiminde görüntülenecektir.
               </p>
             </div>
@@ -792,8 +793,10 @@ Sunduğumuz Olanaklar:
 
       </main>
 
-      {/* ─── 4. ALT NAVİGASYON DOCK'U (YALNIZCA FİRMA KOVANI İÇİN) ─── */}
-      {!isAdmin && (
+      {/* ─── 4. ALT NAVİGASYON DOCK'U ─── */}
+      {isAdmin ? (
+        <AdminOmniDock activeView="job_creator" setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} />
+      ) : (
         <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up w-[95%] max-w-[420px]">
           <div className="bg-white/95 backdrop-blur-2xl border-2 border-blue-200 shadow-[0_15px_40px_rgba(10,35,66,0.22)] p-2 sm:p-2.5 rounded-full flex items-center justify-between px-4 text-slate-800">
             

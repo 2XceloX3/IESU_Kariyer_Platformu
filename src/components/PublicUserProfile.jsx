@@ -116,18 +116,43 @@ export default function PublicUserProfile({
       return;
     }
 
-    // A. Admin Kontrolü
-    if (targetId === 'admin_1513' || targetId === 'admin') {
+    const normStr = (val) => String(val || '').trim().toLocaleLowerCase('tr-TR');
+    const targetNorm = normStr(targetId);
+
+    let clickedAuthorMeta = null;
+    try {
+      const rawClicked = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('iesu_last_clicked_author') : null;
+      if (rawClicked) {
+        const parsed = JSON.parse(rawClicked);
+        if (parsed && (String(parsed.id) === String(targetId) || normStr(parsed.name) === targetNorm)) {
+          clickedAuthorMeta = parsed;
+        }
+      }
+    } catch (_) {}
+
+    // A. Admin & Kurumsal Birim Kontrolü
+    if (
+      targetId === 'admin_1513' ||
+      targetId === 'admin' ||
+      targetNorm === 'kariyer geliştirme koordinatörlüğü' ||
+      targetNorm === 'i̇esü kariyer geliştirme koordinatörlüğü' ||
+      targetNorm === 'iesü kariyer geliştirme koordinatörlüğü' ||
+      targetNorm === 'kariyer geliştirme merkezi' ||
+      targetNorm === 'i̇esü haber merkezi' ||
+      targetNorm === 'iesü haber merkezi'
+    ) {
       setUser({
         id: 'admin_1513',
-        name: 'Kariyer Geliştirme Merkezi',
+        name: clickedAuthorMeta?.name && !/admin_1513|admin/i.test(clickedAuthorMeta.name)
+          ? clickedAuthorMeta.name
+          : 'Kariyer Geliştirme Merkezi',
         role: 'admin',
-        title: 'Süper Yönetici & Koordinatör',
-        department: 'Kariyer Geliştirme Merkezi (KGM)',
-        email: 'kgm@esenyurt.edu.tr',
+        title: clickedAuthorMeta?.title || 'Süper Yönetici & Koordinatör',
+        department: 'Kariyer Geliştirme Koordinatörlüğü (KGM)',
+        email: 'kariyer@esenyurt.edu.tr',
         avatar: '/iesu-logo.svg',
         badges: ['verified', 'top_voice'],
-        bio: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi kurumsal koordinasyon, ekosistem moderasyonu ve öğrenci-mezun-sanayi köprüsü yönetim birimi.'
+        bio: 'İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü kurumsal koordinasyon, ekosistem moderasyonu ve öğrenci-mezun-sanayi köprüsü yönetim birimi.'
       });
       setUserType('admin');
       setIsLoading(false);
@@ -135,7 +160,7 @@ export default function PublicUserProfile({
     }
 
     // A2. Doğrulanmış Mentör Rehberi Kontrolü (mnt_ öneki veya isim eşleşmesi)
-    const foundMentor = MENTORS_MAP[targetId] || VERIFIED_MENTORS.find(m => m.id === targetId || m.name?.toLowerCase() === String(targetId).toLowerCase());
+    const foundMentor = MENTORS_MAP[targetId] || VERIFIED_MENTORS.find(m => m.id === targetId || normStr(m.name) === targetNorm);
     if (foundMentor) {
       setUser(foundMentor);
       setUserType(foundMentor.role || 'alumni');
@@ -143,22 +168,23 @@ export default function PublicUserProfile({
       return;
     }
 
+    const allStudentsPool = [...(students || []), ...(generateStudents ? generateStudents() : [])];
+    const allAlumniPool = [...(alumni || []), ...(generateAlumni ? generateAlumni() : [])];
+    const allAcademicPool = [...(academicStaff || []), ...(generateAcademicStaff ? generateAcademicStaff() : [])];
+    const allCompanyPool = [...(companies || []), ...(generateCompanies ? generateCompanies() : [])];
+
     // B. ID Öneklerine Göre Arama (STU-, ALU-, ACAD-, CMP-)
     if (typeof targetId === 'string') {
       if (targetId.startsWith('STU-')) {
-        let found = (students || []).find(s => s.id === targetId);
-        if (!found) {
-          const allStudents = generateStudents ? generateStudents() : [];
-          found = allStudents.find(s => s.id === targetId);
-        }
+        const found = allStudentsPool.find(s => s.id === targetId);
         setUser(found || {
           id: targetId,
-          name: 'Alperen Yılmaz',
+          name: clickedAuthorMeta?.name || 'Alperen Yılmaz',
           role: 'student',
-          department: 'Yazılım Mühendisliği',
+          department: clickedAuthorMeta?.department || 'Yazılım Mühendisliği',
           grade: '3. Sınıf',
           gpa: '3.84',
-          avatar: null,
+          avatar: clickedAuthorMeta?.avatar || null,
           email: 'ogrenci@esenyurt.edu.tr',
           badges: ['verified', 'top_voice'],
           bio: 'İstanbul Esenyurt Üniversitesi Yazılım Mühendisliği öğrencisi. Büyük veri, dağıtık sistemler ve otonom sistemler alanında araştırmalar yapıyorum.'
@@ -169,11 +195,7 @@ export default function PublicUserProfile({
       }
 
       if (targetId.startsWith('ALU-') || targetId.startsWith('ALM-')) {
-        let found = (alumni || []).find(a => a.id === targetId);
-        if (!found) {
-          const allAlumni = generateAlumni ? generateAlumni() : [];
-          found = allAlumni.find(a => a.id === targetId);
-        }
+        const found = allAlumniPool.find(a => a.id === targetId);
         setUser(found || (targetId === 'ALU-001' ? {
           id: 'ALU-001',
           name: 'Caner Öztürk',
@@ -202,14 +224,14 @@ export default function PublicUserProfile({
           bio: 'İESÜ 2022 Mezunu. Otomotiv sanayisinde tedarik zinciri ve yalın üretim süreçlerini yönetiyorum.'
         } : {
           id: targetId,
-          name: 'İESÜ Mezunu',
+          name: clickedAuthorMeta?.name || 'İESÜ Mezunu',
           role: 'alumni',
-          department: 'Mühendislik Fakültesi',
+          department: clickedAuthorMeta?.department || 'Mühendislik Fakültesi',
           graduationYear: '2023',
           gradYear: '2023',
-          title: 'Uzman',
+          title: clickedAuthorMeta?.title || 'Uzman',
           company: 'Sektör Lideri',
-          avatar: null,
+          avatar: clickedAuthorMeta?.avatar || null,
           email: 'alumni@mezun.esenyurt.edu.tr',
           badges: ['verified']
         })));
@@ -219,8 +241,20 @@ export default function PublicUserProfile({
       }
 
       if (targetId.startsWith('ACAD-') || targetId.startsWith('ACD-')) {
-        let found = (academicStaff || []).find(a => a.id === targetId);
-        if (found && targetId === 'ACAD-001' && found.name !== 'Doç. Dr. Zeynep Çelik') {
+        let found = allAcademicPool.find(a => a.id === targetId);
+        if (clickedAuthorMeta?.name && clickedAuthorMeta.name !== 'İESÜ Üyesi') {
+          found = {
+            ...(found || {}),
+            id: targetId,
+            name: clickedAuthorMeta.name,
+            role: 'academic',
+            title: clickedAuthorMeta.title || found?.title || 'Öğretim Üyesi',
+            department: clickedAuthorMeta.department || found?.department || 'Mühendislik ve Mimarlık Fakültesi',
+            avatar: clickedAuthorMeta.avatar || found?.avatar || null,
+            badges: ['verified', 'phd'],
+            bio: `${clickedAuthorMeta.name} — İstanbul Esenyurt Üniversitesi akademik kadro üyesi, bilimsel araştırma ve sanayi projeleri danışmanı.`
+          };
+        } else if (found && targetId === 'ACAD-001' && found.name !== 'Doç. Dr. Zeynep Çelik') {
           found = { ...found, name: 'Doç. Dr. Zeynep Çelik', title: 'Bölüm Başkanı', department: 'Yazılım Mühendisliği' };
         }
         setUser(found || {
@@ -240,10 +274,10 @@ export default function PublicUserProfile({
       }
 
       // D. Firma / Kurumsal Kontrolü (CMP- öneki veya username/isim eşleşmesi)
-      const foundCompany = (companies || []).find(c => 
+      const foundCompany = allCompanyPool.find(c => 
         c.id === targetId || 
-        c.username === targetId ||
-        (c.name && c.name.toLowerCase() === targetId.toLowerCase())
+        normStr(c.username) === targetNorm ||
+        (c.name && (normStr(c.name) === targetNorm || targetNorm.includes(normStr(c.name)) || normStr(c.name).includes(targetNorm)))
       );
 
       if (foundCompany) {
@@ -258,15 +292,15 @@ export default function PublicUserProfile({
       }
 
       if (targetId.startsWith('CMP-') || targetId.startsWith('cmp_')) {
-        const fallbackName = targetId.replace(/^(CMP-|cmp_)/i, 'Kurumsal Paydaş ').trim();
+        const fallbackName = clickedAuthorMeta?.name || targetId.replace(/^(CMP-|cmp_)/i, 'Kurumsal Paydaş ').trim();
         setUser({
           id: targetId,
           name: fallbackName,
           sector: 'Teknoloji & Sanayi',
           location: 'İstanbul, TR',
           foundingYear: '2015',
-          description: `${fallbackName} — İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Merkezi onaylı kurumsal staj ve istihdam paydaşı.`,
-          avatar: null,
+          description: `${fallbackName} — İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü onaylı kurumsal staj ve istihdam paydaşı.`,
+          avatar: clickedAuthorMeta?.avatar || null,
           role: 'company',
           badges: ['verified', 'corporate_partner']
         });
@@ -276,20 +310,20 @@ export default function PublicUserProfile({
       }
     }
 
-    // C. Genel Koleksiyon Taraması
-    let foundUser = (students || []).find(s => s.id === targetId || s.id === parseInt(targetId));
+    // C. Genel Koleksiyon Taraması (ID veya İsim Eşleşmesi)
+    let foundUser = allStudentsPool.find(s => s.id === targetId || s.id === parseInt(targetId) || normStr(s.name) === targetNorm);
     if (foundUser) { setUser(foundUser); setUserType('student'); setIsLoading(false); return; }
 
-    foundUser = (alumni || []).find(a => a.id === targetId || a.id === parseInt(targetId));
+    foundUser = allAlumniPool.find(a => a.id === targetId || a.id === parseInt(targetId) || normStr(a.name) === targetNorm);
     if (foundUser) { setUser(foundUser); setUserType('alumni'); setIsLoading(false); return; }
 
-    foundUser = (academicStaff || []).find(a => a.id === targetId || a.id === parseInt(targetId));
+    foundUser = allAcademicPool.find(a => a.id === targetId || a.id === parseInt(targetId) || normStr(a.name) === targetNorm);
     if (foundUser) { setUser(foundUser); setUserType('academic'); setIsLoading(false); return; }
 
-    foundUser = (companies || []).find(c => 
+    foundUser = allCompanyPool.find(c => 
       c.id === targetId || 
-      c.username === targetId || 
-      (c.name && c.name.toLowerCase() === targetId.toLowerCase()) || 
+      normStr(c.username) === targetNorm || 
+      (c.name && (normStr(c.name) === targetNorm || targetNorm.includes(normStr(c.name)))) || 
       c.id === parseInt(targetId)
     );
     if (foundUser) { 
@@ -299,14 +333,38 @@ export default function PublicUserProfile({
       return; 
     }
 
-    // Fallback: Öğrenci
+    // D2. Gönderiden tıklanan yazar metadatası varsa zengin profil oluştur
+    if (clickedAuthorMeta && clickedAuthorMeta.name) {
+      const metaRole = clickedAuthorMeta.role === 'employer' ? 'company' : (clickedAuthorMeta.role || 'student');
+      setUser({
+        id: targetId,
+        name: clickedAuthorMeta.name,
+        role: metaRole,
+        title: clickedAuthorMeta.title || (metaRole === 'company' ? 'Kurumsal İş Ortağı' : 'Kampüs Ağı Üyesi'),
+        department: clickedAuthorMeta.department || 'İstanbul Esenyurt Üniversitesi',
+        sector: metaRole === 'company' ? (clickedAuthorMeta.title || 'Sanayi & Teknoloji Paydaşı') : '',
+        location: 'İstanbul, Türkiye',
+        avatar: clickedAuthorMeta.avatar || null,
+        badges: ['verified'],
+        bio: `${clickedAuthorMeta.name} — İstanbul Esenyurt Üniversitesi Kariyer ve Mezun Ekosistemi doğrulanmış profili.`,
+        description: `${clickedAuthorMeta.name} — İstanbul Esenyurt Üniversitesi Kariyer Geliştirme Koordinatörlüğü iş birliği paydaşı.`
+      });
+      setUserType(metaRole);
+      setIsLoading(false);
+      return;
+    }
+
+    // Fallback: Öğrenci veya İsim Tabanlı Profil
+    const readableName = typeof targetId === 'string' && targetId.length > 2 && !/^(USR|STU|ALU|ACAD|CMP)[-_]/i.test(targetId)
+      ? targetId
+      : 'İESÜ Üyesi';
     setUser({
       id: targetId,
-      name: 'İESÜ Üyesi',
+      name: readableName,
       role: 'student',
       department: 'İstanbul Esenyurt Üniversitesi',
       avatar: null,
-      bio: 'İstanbul Esenyurt Üniversitesi Kampüs ve Kariyer Ağı üyesi.'
+      bio: `${readableName} — İstanbul Esenyurt Üniversitesi Kampüs ve Kariyer Ağı üyesi.`
     });
     setUserType('student');
     setIsLoading(false);

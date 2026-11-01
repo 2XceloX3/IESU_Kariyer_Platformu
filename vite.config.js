@@ -1,14 +1,200 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import {
+  MOCK_IESU_KARIYER_DATA,
+  parseIesuRssXml,
+  parseIesuHtmlPayload,
+  deduplicateFeedItems,
+  OFFICIAL_IESU_INSTAGRAM_POSTS,
+  deduplicateSocialMediaPosts,
+  fetchInstagramGraphMedia
+} from './src/services/scraper.js';
+
+function iesuRssScraperPlugin() {
+  let cachedPayload = null;
+  let lastFetchTime = 0;
+  let backgroundInterval = null;
+  const REFRESH_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+
+  const performUpstreamScrape = async () => {
+    const targets = [
+      { url: 'https://www.esenyurt.edu.tr/haberler', kind: 'news' },
+      { url: 'https://www.esenyurt.edu.tr/etkinlikler', kind: 'events' },
+      { url: 'https://www.esenyurt.edu.tr/duyurular', kind: 'announcements' },
+      { url: 'https://www.esenyurt.edu.tr/rss', kind: 'rss' }
+    ];
+
+    const liveNews = [];
+    const liveEvents = [];
+    const liveAnnouncements = [];
+    let reachedUpstream = false;
+
+    const [igSettled] = await Promise.allSettled([
+      fetchInstagramGraphMedia({
+        accessToken: process.env.INSTAGRAM_ACCESS_TOKEN || process.env.VITE_INSTAGRAM_ACCESS_TOKEN || '',
+        userId: process.env.INSTAGRAM_USER_ID || process.env.VITE_INSTAGRAM_USER_ID || 'me',
+        apiVersion: process.env.INSTAGRAM_GRAPH_API_VERSION || 'v21.0',
+        limit: 16,
+        timeoutMs: 4500
+      }),
+      ...targets.map(async (target) => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 5000);
+        try {
+          const response = await fetch(target.url, {
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (compatible; IESU-Kariyer-RSS-Scraper/2.0; +https://www.esenyurt.edu.tr)',
+              'Accept': 'application/rss+xml, application/xml, text/xml, text/html, */*'
+            }
+          });
+          if (!response.ok) return;
+          const body = await response.text();
+          if (!body || body.length < 80) return;
+          reachedUpstream = true;
+
+          if (/<(?:rss|feed)\b/i.test(body)) {
+            const parsedRss = parseIesuRssXml(body);
+            liveNews.push(...parsedRss.news);
+            liveEvents.push(...parsedRss.events);
+            liveAnnouncements.push(...parsedRss.announcements);
+          } else {
+            const parsedHtml = parseIesuHtmlPayload(body);
+            if (target.kind === 'news' && Array.isArray(parsedHtml.news)) {
+              liveNews.push(...parsedHtml.news);
+            } else if (target.kind === 'events' && Array.isArray(parsedHtml.events)) {
+              liveEvents.push(...parsedHtml.events);
+            } else if (target.kind === 'announcements' && Array.isArray(parsedHtml.announcements)) {
+              liveAnnouncements.push(...parsedHtml.announcements);
+            }
+          }
+        } catch (_) {
+          // graceful fallback per target
+        } finally {
+          clearTimeout(timer);
+        }
+      })
+    ]);
+
+    const igPosts = igSettled.status === 'fulfilled' && Array.isArray(igSettled.value?.posts)
+      ? igSettled.value.posts
+      : OFFICIAL_IESU_INSTAGRAM_POSTS;
+
+    const cleanNews = liveNews.length > 0
+      ? deduplicateFeedItems([], liveNews, 20)
+      : deduplicateFeedItems([], MOCK_IESU_KARIYER_DATA.news, 20);
+    const cleanEvents = liveEvents.length > 0
+      ? deduplicateFeedItems([], liveEvents, 20)
+      : deduplicateFeedItems([], MOCK_IESU_KARIYER_DATA.events, 20);
+    const cleanAnnouncements = liveAnnouncements.length > 0
+      ? deduplicateFeedItems([], liveAnnouncements, 20)
+      : deduplicateFeedItems([], MOCK_IESU_KARIYER_DATA.announcements, 20);
+    const cleanSocialMedia = deduplicateSocialMediaPosts([], igPosts, 20);
+
+    cachedPayload = {
+      ok: true,
+      source: 'live',
+      upstreamReached: reachedUpstream,
+      instagramSource: igSettled.status === 'fulfilled' ? igSettled.value?.source : 'official-fallback',
+      feedFormat: 'rss+html-scraper+instagram-graph',
+      fetchedAt: new Date().toISOString(),
+      officeInfo: MOCK_IESU_KARIYER_DATA.officeInfo,
+      news: cleanNews,
+      events: cleanEvents,
+      announcements: cleanAnnouncements,
+      socialMedia: cleanSocialMedia
+    };
+    lastFetchTime = Date.now();
+    return cachedPayload;
+  };
+
+  const startBackgroundWorker = () => {
+    if (backgroundInterval) return;
+    const bootTimer = setTimeout(() => {
+      performUpstreamScrape().catch(() => {});
+    }, 1500);
+    if (typeof bootTimer.unref === 'function') {
+      bootTimer.unref();
+    }
+    backgroundInterval = setInterval(() => {
+      performUpstreamScrape().catch(() => {});
+    }, REFRESH_INTERVAL_MS);
+    if (typeof backgroundInterval.unref === 'function') {
+      backgroundInterval.unref();
+    }
+  };
+
+  const handleScrapeRequest = async (req, res) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+
+    const force = req.url && req.url.includes('force=1');
+    if (!cachedPayload || force || Date.now() - lastFetchTime > REFRESH_INTERVAL_MS) {
+      await performUpstreamScrape();
+    }
+
+    res.statusCode = 200;
+    res.end(JSON.stringify(cachedPayload));
+  };
+
+  const handleInstagramFeedRequest = async (req, res) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+
+    const force = req.url && req.url.includes('force=1');
+    if (!cachedPayload || force || Date.now() - lastFetchTime > REFRESH_INTERVAL_MS) {
+      await performUpstreamScrape();
+    }
+
+    res.statusCode = 200;
+    res.end(
+      JSON.stringify({
+        ok: true,
+        source: cachedPayload?.instagramSource || 'instagram-graph-api',
+        fetchedAt: cachedPayload?.fetchedAt || new Date().toISOString(),
+        socialMedia: cachedPayload?.socialMedia || OFFICIAL_IESU_INSTAGRAM_POSTS
+      })
+    );
+  };
+
+  return {
+    name: 'iesu-rss-scraper-middleware',
+    configureServer(server) {
+      startBackgroundWorker();
+      server.middlewares.use('/api/iesu-rss-scraper', (req, res) => {
+        handleScrapeRequest(req, res);
+      });
+      server.middlewares.use('/api/iesu-instagram-feed', (req, res) => {
+        handleInstagramFeedRequest(req, res);
+      });
+    },
+    configurePreviewServer(server) {
+      startBackgroundWorker();
+      server.middlewares.use('/api/iesu-rss-scraper', (req, res) => {
+        handleScrapeRequest(req, res);
+      });
+      server.middlewares.use('/api/iesu-instagram-feed', (req, res) => {
+        handleInstagramFeedRequest(req, res);
+      });
+    }
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 5175,
+    port: 3000,
     host: true,
     hmr: {
       overlay: false
+    },
+    proxy: {
+      '/api/esenyurt-live': {
+        target: 'https://www.esenyurt.edu.tr',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/esenyurt-live/, '')
+      }
     }
   },
   esbuild: {
@@ -18,6 +204,7 @@ export default defineConfig({
     entries: ['index.html']
   },
   plugins: [
+    iesuRssScraperPlugin(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -26,7 +213,7 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        maximumFileSizeToCacheInBytes: 500 * 1024, // 500KB limit
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit for unminified & production bundles
         globIgnores: [
           '**/admin-cms-core*.js',
           '**/admin-cms-academic*.js',
@@ -182,6 +369,7 @@ export default defineConfig({
       '**/.agents/**',
       '**/.{idea,git,cache,output,temp}/**',
       '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
+      '**/*.node.test.js',
     ],
   },
 });

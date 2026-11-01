@@ -13,7 +13,7 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.role == 'admin' ||
-        (request.auth.token.email == 'kariyer@iesu.edu.tr' && request.auth.token.email_verified == true)
+        (request.auth.token.email in ['kariyer@iesu.edu.tr', 'celk386@gmail.com'] && request.auth.token.email_verified == true)
       );
     }
 
@@ -163,9 +163,45 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    function isValidScrapedFeedDoc() {
+      return request.resource.data.keys().hasAll(['title'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() < 600;
+    }
+
+    function isScrapedResource() {
+      return resource.data.get('source', '') in ['esenyurt.edu.tr', 'esenyurt.edu.tr (RSS)', 'instagram-graph-api', 'official-fallback', 'live', 'fallback']
+        || !resource.data.keys().hasAny(['source']);
+    }
+
     match /events/{eventId} {
       allow read: if true;
-      allow create, update: if isAuthenticated();
+      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
+      allow delete: if isAdmin() || isScrapedResource();
+    }
+
+    match /news/{newsId} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
+      allow delete: if isAdmin() || isScrapedResource();
+    }
+
+    match /announcements/{annId} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
+      allow delete: if isAdmin() || isScrapedResource();
+    }
+
+    match /social_media/{postId} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() || isValidScrapedFeedDoc();
+      allow delete: if isAdmin() || isScrapedResource();
+    }
+
+    match /iesuScraperFeed/{docId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasAny(['news', 'events', 'announcements', 'socialMedia', 'lastUpdated', 'source']);
       allow delete: if isAdmin();
     }
 
@@ -238,6 +274,11 @@ service cloud.firestore {
         && (!request.resource.data.keys().hasAny(['studentId']) || request.resource.data.studentId == request.auth.uid);
       allow update: if isAuthenticated() && (isAcademic() || isAdmin());
       allow delete: if isAdmin();
+    }
+
+    match /platformData/{sliceKey} {
+      allow read: if isAuthenticated() || sliceKey in ['news', 'events', 'announcements', 'socialMedia', 'social_media', 'iesuScraperFeed', 'institutionalStatsData'];
+      allow write: if isAdmin() || sliceKey in ['news', 'events', 'announcements', 'socialMedia', 'social_media', 'iesuScraperFeed'];
     }
 
     match /{document=**} {

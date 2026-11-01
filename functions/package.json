@@ -1,0 +1,14 @@
+{
+  "name": "iesu-kariyer-cloud-functions",
+  "version": "1.0.0",
+  "description": "İstanbul Esenyurt Üniversitesi (esenyurt.edu.tr) Haber ve Etkinlik Arka Plan Scraper & Firestore Senkronizasyon Bulut Fonksiyonları",
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.5.0",
+    "firebase-functions": "^6.0.1"
+  }
+}

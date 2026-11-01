@@ -4,6 +4,7 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import NavIcon from './shared/NavIcon';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import AdminOmniDock from './AdminOmniDock';
 import useAppStore from '../store/useAppStore';
 
 export default function CalendarView({ currentUser, setView, userRole, setSelectedUserId, academicRole }) {
@@ -337,7 +338,9 @@ export default function CalendarView({ currentUser, setView, userRole, setSelect
       )}
 
       {/* Dock navigation */}
-      {effectiveRole === 'admin' ? null : (
+      {effectiveRole === 'admin' ? (
+        <AdminOmniDock activeView="calendar" setView={setView} setSelectedUserId={setSelectedUserId} currentUser={currentUser} />
+      ) : (
         <SubPanelFloatingDock currentUser={currentUser} setView={setView} setSelectedUserId={setSelectedUserId} userRole={effectiveRole} activeTab="calendar" />
       )}
     </div>

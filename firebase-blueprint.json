@@ -1,0 +1,162 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "İESÜ Kariyer & Mezun Platformu kullanıcı profili (öğrenci, mezun, işveren, akademisyen, yönetici)",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Ad Soyad" },
+        "email": { "type": "string", "format": "email", "description": "Kurumsal veya kişisel e-posta" },
+        "role": { "type": "string", "enum": ["student", "alumni", "company", "employer", "academic", "admin"] },
+        "department": { "type": "string", "description": "Bölüm veya birim" },
+        "avatar": { "type": "string", "description": "Profil görseli URL" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "role"]
+    },
+    "Job": {
+      "title": "Job",
+      "description": "İş ve staj ilanları (Mavi Yaka / Beyaz Yaka)",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "company": { "type": "string" },
+        "companyId": { "type": "string" },
+        "location": { "type": "string" },
+        "type": { "type": "string" },
+        "collarType": { "type": "string", "enum": ["blue", "white", "hybrid"] }
+      },
+      "required": ["title", "companyId"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Sosyal akış ve kulüp paylaşımları",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string" },
+        "content": { "type": "string" },
+        "image": { "type": "string" },
+        "likes": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["content"]
+    },
+    "PlatformDataSlice": {
+      "title": "PlatformDataSlice",
+      "description": "Arı Kovanı (Beehive) merkezi yönetim paneli senkronizasyon dilimleri",
+      "type": "object",
+      "properties": {
+        "data": { "type": "array" },
+        "totalCount": { "type": "number" },
+        "lastSynced": { "type": "string", "format": "date-time" },
+        "version": { "type": "number" }
+      },
+      "required": ["lastSynced"]
+    },
+    "ScrapedFeedItem": {
+      "title": "ScrapedFeedItem",
+      "description": "İstanbul Esenyurt Üniversitesi (esenyurt.edu.tr) RSS ve Web Scraper üzerinden çekilen güncel haber, duyuru veya etkinlik kaydı",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "category": { "type": "string" },
+        "summary": { "type": "string" },
+        "content": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "url": { "type": "string" },
+        "link": { "type": "string" },
+        "location": { "type": "string" },
+        "source": { "type": "string" },
+        "syncedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title"]
+    },
+    "ScrapedFeedSnapshot": {
+      "title": "ScrapedFeedSnapshot",
+      "description": "esenyurt.edu.tr RSS, Web Scraper ve Instagram Graph API toplu senkronizasyon paketi",
+      "type": "object",
+      "properties": {
+        "news": { "type": "array" },
+        "events": { "type": "array" },
+        "announcements": { "type": "array" },
+        "socialMedia": { "type": "array" },
+        "source": { "type": "string" },
+        "status": { "type": "string" },
+        "feedFormat": { "type": "string" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["lastUpdated"]
+    },
+    "SocialMediaPost": {
+      "title": "SocialMediaPost",
+      "description": "İstanbul Esenyurt Üniversitesi resmi Instagram Graph API sosyal medya paylaşım kaydı",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "instagramId": { "type": "string" },
+        "platform": { "type": "string" },
+        "username": { "type": "string" },
+        "authorName": { "type": "string" },
+        "title": { "type": "string" },
+        "caption": { "type": "string" },
+        "summary": { "type": "string" },
+        "content": { "type": "string" },
+        "mediaType": { "type": "string", "enum": ["IMAGE", "VIDEO", "CAROUSEL_ALBUM"] },
+        "mediaUrl": { "type": "string" },
+        "thumbnailUrl": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "permalink": { "type": "string" },
+        "url": { "type": "string" },
+        "link": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "date": { "type": "string" },
+        "likes": { "type": "number" },
+        "comments": { "type": "number" },
+        "category": { "type": "string" },
+        "source": { "type": "string" },
+        "syncedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Kullanıcı profilleri"
+    },
+    "/jobs/{jobId}": {
+      "schema": { "$ref": "#/entities/Job" },
+      "description": "İş ve staj ilanları"
+    },
+    "/posts/{postId}": {
+      "schema": { "$ref": "#/entities/Post" },
+      "description": "Sosyal akış gönderileri"
+    },
+    "/platformData/{sliceKey}": {
+      "schema": { "$ref": "#/entities/PlatformDataSlice" },
+      "description": "Merkezi Arı Kovanı (Beehive) veri dilimleri"
+    },
+    "/news/{newsId}": {
+      "schema": { "$ref": "#/entities/ScrapedFeedItem" },
+      "description": "esenyurt.edu.tr güncel haber kayıtları"
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/ScrapedFeedItem" },
+      "description": "esenyurt.edu.tr güncel etkinlik kayıtları"
+    },
+    "/announcements/{annId}": {
+      "schema": { "$ref": "#/entities/ScrapedFeedItem" },
+      "description": "esenyurt.edu.tr güncel duyuru kayıtları"
+    },
+    "/social_media/{postId}": {
+      "schema": { "$ref": "#/entities/SocialMediaPost" },
+      "description": "Üniversitenin Instagram Graph API üzerinden çekilen resmi sosyal medya paylaşımları"
+    },
+    "/iesuScraperFeed/{docId}": {
+      "schema": { "$ref": "#/entities/ScrapedFeedSnapshot" },
+      "description": "RSS, Web Scraper ve Instagram Graph API son senkronizasyon paketi"
+    }
+  }
+}

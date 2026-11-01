@@ -5,6 +5,7 @@ import { Search, LogIn, Menu, X } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { getTenantConfig } from '../config/tenantConfig';
 import LanguageSwitcher from './shared/LanguageSwitcher';
+import ThemeToggle from './shared/ThemeToggle';
 import { useTranslation } from '../i18n';
 
 export default function MainHeader({ setView, currentUser, userRole }) {
@@ -12,6 +13,7 @@ export default function MainHeader({ setView, currentUser, userRole }) {
   const [searchQuery, setSearchQuery] = useState('');
   const siteConfig = useAppStore(state => state.siteConfig);
   const activePortalBranch = useAppStore(state => state.activePortalBranch);
+  const darkMode = useAppStore(state => state.darkMode);
   const tenant = getTenantConfig();
   const { t } = useTranslation();
 
@@ -34,13 +36,23 @@ export default function MainHeader({ setView, currentUser, userRole }) {
     return (role === 'employer' || role === 'company') ? 'company' : role === 'alumni' ? 'alumni' : role === 'academic' ? 'academic' : 'student';
   };
 
+  const navBgColor = darkMode
+    ? '#0b1120'
+    : (siteConfig?.primaryColor || tenant.colors?.primary || '#990000');
+
   return (
     <header className="sticky top-0 z-50 shadow-2xl">
-      {/* Dynamic Crimson Red Navbar with corporate primary color */}
+      {/* Dynamic Crimson Red / Dark Obsidian Navbar */}
       <nav 
-        style={{ backgroundColor: siteConfig?.primaryColor || tenant.colors?.primary || '#990000' }}
-        className="text-white relative border-b border-red-950/60 transition-colors duration-300 shadow-md"
+        style={{ backgroundColor: navBgColor }}
+        className={`text-white relative border-b transition-colors duration-300 shadow-md ${
+          darkMode ? 'border-red-900/60' : 'border-red-950/60'
+        }`}
       >
+        {/* Top Crimson Accent Line in Dark Mode */}
+        {darkMode && (
+          <div className="h-1 w-full bg-gradient-to-r from-[#990000] via-red-600 to-[#990000]" />
+        )}
         {/* Subtle Background Accent Grid Pattern matching footer */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
 
@@ -65,7 +77,7 @@ export default function MainHeader({ setView, currentUser, userRole }) {
           </div>
 
           {/* CENTER & RIGHT GROUP: Search Bar + Nav Links */}
-          <div className="flex items-center gap-4 md:gap-6 overflow-x-auto py-1">
+          <div className="flex items-center gap-2.5 md:gap-5 overflow-x-auto py-1">
             {/* Search Bar */}
             <form onSubmit={submitSearch} role="search" className="relative hidden md:block w-40 lg:w-52 flex-shrink-0">
               <Search className="absolute left-3 top-2.5 text-white/60" size={14} />
@@ -88,9 +100,12 @@ export default function MainHeader({ setView, currentUser, userRole }) {
               <button onClick={() => setView && setView('haberler')} className="hover:text-white hover:scale-105 transition-all">{t('nav.news')}</button>
             </div>
 
-            {/* Language Switcher */}
-            <div className="hidden sm:block flex-shrink-0">
-              <LanguageSwitcher />
+            {/* Language Switcher & Theme Toggle */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="hidden sm:block">
+                <LanguageSwitcher />
+              </div>
+              <ThemeToggle variant="header" />
             </div>
 
             {/* FAR RIGHT: User Avatar or Portala Giriş Button */}
@@ -143,7 +158,8 @@ export default function MainHeader({ setView, currentUser, userRole }) {
                 {t('common.search')}
               </button>
             </form>
-            <div className="flex justify-end pb-1 border-b border-white/10">
+            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+              <ThemeToggle variant="header" />
               <LanguageSwitcher variant="pill" />
             </div>
             <div className="flex flex-col space-y-2 text-sm font-bold text-white/90">

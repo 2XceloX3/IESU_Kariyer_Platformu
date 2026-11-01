@@ -31,6 +31,9 @@ import AlumniCoffeeChatModal from './student/AlumniCoffeeChatModal';
 import ATSResumeScannerModal from './student/ATSResumeScannerModal';
 import { VERIFIED_MENTORS } from '../data/mentorsData';
 import { initialClubs } from '../data/mockClubsData';
+import { canManageClub, getClubMembershipState, canViewClubContent } from '../utils/clubSocialNetwork';
+
+const EMPTY_ARRAY = [];
 
 export default function StudentFeed({ setView, setSelectedUserId, currentUser, userRole, academicRole, setSelectedGroupId, initialTab = 'feed' }) {
   const [footerModal, setFooterModal] = useState(null);
@@ -47,11 +50,15 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const alumni = useAppStore(state => state.alumni);
   const companies = useAppStore(state => state.companies);
   const featuredOpportunities = useAppStore(state => state.featuredOpportunities);
+  const storeFollowedClubIds = useAppStore(state => state.followedClubIds);
+  const followedClubIds = Array.isArray(storeFollowedClubIds) ? storeFollowedClubIds : EMPTY_ARRAY;
+  const toggleFollowClub = useAppStore(state => state.toggleFollowClub);
+  const setSelectedClubId = useAppStore(state => state.setSelectedClubId);
   const [stories, setStories] = useState(() => {
     const defaults = [
       { id: 'st-1', authorName: 'İESÜ Kariyer Merkezi', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: '2026 Bahar Dönemi Zorunlu Staj & KGM Başvuruları Başladı!', createdAt: '1s önce' },
       { id: 'st-2', authorName: 'Yapay Zeka Kulübü', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Prompt Mühendisliği & CV Atölyesi B-Blok Amfide!', createdAt: '3s önce' },
-      { id: 'st-3', authorName: 'İESÜ Mezunlar Derneği', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
+      { id: 'st-3', authorName: 'İESÜ Mezunlar Portalı', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
     ];
     try {
       const saved = JSON.parse(localStorage.getItem('iesu_campus_stories_v1') || '[]');
@@ -101,8 +108,8 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
   const [selectedAlumnusForChat, setSelectedAlumnusForChat] = useState(null);
   const [showAtsModal, setShowAtsModal] = useState(false);
   const [showCareerHubModal, setShowCareerHubModal] = useState(false);
-  const followedUserIds = useAppStore(state => state.followedUserIds) || [];
-  const EMPTY_ARRAY = useMemo(() => [], []);
+  const storeFollowedUserIds = useAppStore(state => state.followedUserIds);
+  const followedUserIds = Array.isArray(storeFollowedUserIds) ? storeFollowedUserIds : EMPTY_ARRAY;
 
   // Guarantee Student branch isolation
   useEffect(() => {
@@ -139,69 +146,28 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
     return gradeFromPercent(careerProgress.percent);
   }, [careerProgress.percent]);
 
-  const clubFeedItems = useMemo(() => {
-    const items = [];
-    (clubList || []).forEach(club => {
-      // 1. Kulüp Duyuruları
-      if (Array.isArray(club.announcements)) {
-        club.announcements.forEach(ann => {
-          items.push({
-            id: `club-ann-${club.id}-${ann.id}`,
-            clubId: club.id,
-            clubName: club.name,
-            isClubPost: true,
-            author: {
-              name: club.name,
-              role: 'club',
-              avatar: club.logo || '/iesu-logo.svg',
-              title: `Öğrenci Kulübü • ${club.category || 'Topluluk'}`
-            },
-            content: `📢 ${ann.title || ''}\n\n${ann.content || ''}\n\n👤 Duyuran: ${ann.author || club.president?.name || 'Kulüp Yönetimi'}`,
-            image: club.coverImage || null,
-            time: ann.date || 'Yakın Zamanda',
-            createdAt: ann.date ? new Date().toISOString() : new Date().toISOString(),
-            likes: 18,
-            comments: 3,
-            likedBy: [],
-            status: 'Yayında',
-          });
-        });
-      }
-
-      // 2. Kulüp Etkinlikleri & Hackathonlar
-      if (Array.isArray(club.events)) {
-        club.events.forEach(evt => {
-          items.push({
-            id: `club-evt-${club.id}-${evt.id}`,
-            clubId: club.id,
-            clubName: club.name,
-            isClubPost: true,
-            author: {
-              name: club.name,
-              role: 'club',
-              avatar: club.logo || '/iesu-logo.svg',
-              title: `🎉 ${club.shortName || 'Kulüp'} Etkinliği • ${evt.category || 'Etkinlik'}`
-            },
-            content: `🎉 ${evt.title || ''}\n\n${evt.description || ''}\n\n📅 Tarih: ${evt.date || ''} • ${evt.time || ''}\n📍 Mekan: ${evt.location || 'Kampüs'}\n👥 Kontenjan: ${evt.quota || 'Açık'} (Kayıtlı: ${evt.registeredCount || 0})${evt.speaker ? `\n🎙️ Konuşmacı: ${evt.speaker}` : ''}${evt.certificate ? '\n📜 Katılım Sertifikalı' : ''}`,
-            image: club.coverImage || null,
-            time: evt.date || 'Yakın Zamanda',
-            createdAt: new Date().toISOString(),
-            likes: 29,
-            comments: 7,
-            likedBy: [],
-            status: 'Yayında',
-          });
-        });
-      }
-    });
-
-    const regularClubPosts = (posts || []).filter(p => p.isClubPost || p.clubId || p.author?.role === 'club');
-    return [...items, ...regularClubPosts];
-  }, [clubList, posts]);
-
   const allFeedItems = useMemo(() => {
-    return combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
-  }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities]);
+    const combined = combineFeedItems({
+      posts,
+      clubs: clubList,
+      events,
+      news,
+      announcements,
+      jobs,
+      generalEvents,
+      careerOpportunities,
+      user: effectiveCurrentUser,
+      followedClubIds,
+      followedUserIds,
+    });
+    const seen = new Set(combined.map(i => String(i.id)));
+    const fallbackPosts = (posts || []).filter(p => p && typeof p === 'object' && !seen.has(String(p.id)) && p.status !== 'draft' && p.status !== 'cancelled');
+    return [...combined, ...fallbackPosts];
+  }, [posts, clubList, events, news, announcements, jobs, generalEvents, careerOpportunities, effectiveCurrentUser, followedClubIds, followedUserIds]);
+
+  const clubFeedItems = useMemo(() => {
+    return allFeedItems.filter(p => p && (p.isClubPost || p.clubId || p.author?.role === 'club' || (typeof p.feedType === 'string' && p.feedType.startsWith('club'))));
+  }, [allFeedItems]);
 
   const filteredFeedItems = useMemo(() => {
     const q = searchQuery ? searchQuery.trim().toLocaleLowerCase('tr-TR') : '';
@@ -209,33 +175,31 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
     if (feedFilter === 'clubs') {
       return clubFeedItems.filter(post => {
         if (!q) return true;
-        const c = (post.content || '').toLocaleLowerCase('tr-TR');
-        const a = (post.author?.name || '').toLocaleLowerCase('tr-TR');
+        const c = (post.content || post.title || '').toLocaleLowerCase('tr-TR');
+        const a = (typeof post.author === 'string' ? post.author : (post.author?.name || post.clubName || '')).toLocaleLowerCase('tr-TR');
         return c.includes(q) || a.includes(q);
       });
     }
 
     return allFeedItems.filter(post => {
       if (q) {
-        const c = (post.content || '').toLocaleLowerCase('tr-TR');
-        const a = (post.author?.name || '').toLocaleLowerCase('tr-TR');
+        const c = (post.content || post.title || '').toLocaleLowerCase('tr-TR');
+        const a = (typeof post.author === 'string' ? post.author : (post.author?.name || post.clubName || '')).toLocaleLowerCase('tr-TR');
         if (!c.includes(q) && !a.includes(q)) return false;
       }
       if (feedFilter === 'following') {
-        if (followedUserIds.length === 0) return true;
+        const isFollowedClubPost = post.clubId && followedClubIds.map(String).includes(String(post.clubId));
+        const isMemberClubPost = post.membershipState?.isMember;
+        if (isFollowedClubPost || isMemberClubPost) return true;
+        if (followedUserIds.length === 0 && followedClubIds.length === 0) return true;
         return followedUserIds.includes(post.author?.id) || followedUserIds.includes(post.authorId) || post.author?.id === effectiveCurrentUser?.id;
       }
       return true;
     });
-  }, [allFeedItems, clubFeedItems, searchQuery, feedFilter, followedUserIds, effectiveCurrentUser?.id]);
+  }, [allFeedItems, clubFeedItems, searchQuery, feedFilter, followedUserIds, followedClubIds, effectiveCurrentUser?.id]);
 
-
-  // Removed mock stories and defaultPosts
-  
   const getManagedClubs = () => {
-    if (userRole === 'admin' || effectiveCurrentUser?.role === 'admin') return clubs || [];
-    if (!effectiveCurrentUser?.name) return [];
-    return (clubs || []).filter(c => c.president?.name === effectiveCurrentUser?.name);
+    return (clubList || []).filter(c => canManageClub(c, effectiveCurrentUser));
   };
   const isClubAdmin = getManagedClubs().length > 0;
 
@@ -391,24 +355,105 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             </button>
           </div>
 
-          {/* Öğrenci Kariyer Takip & Hızlı Kısayollar (LinkedIn / Handshake Standardı) */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-3.5 text-left transition-all hover:border-red-200">
-            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
+          {/* TARGET AREA A: KARİYER & GELİŞİM ARAÇLARI (Önceliklendirilmiş Öğrenci Deneyimi) */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] p-4 text-left transition-all hover:border-red-200">
+            <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse shrink-0"></span>
-                <h4 className="text-[12px] font-black leading-tight text-gray-900">Kariyer & Gelişim Araçları</h4>
+                <div>
+                  <h4 className="text-[12px] font-black leading-tight text-gray-900">Kariyer & Gelişim Araçları</h4>
+                  <p className="text-[10px] text-slate-500 font-medium">Adım adım kariyer hazırlığı</p>
+                </div>
               </div>
               <button 
                 onClick={() => setShowCareerHubModal(true)}
-                className="text-[10px] font-bold text-[#990000] hover:underline cursor-pointer flex items-center gap-0.5"
+                className="text-[10px] font-bold text-[#990000] bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-0.5"
               >
-                <span>Tümü</span>
+                <span>Tüm Araçlar</span>
                 <ChevronRight size={12} />
               </button>
             </div>
 
+            {/* Kişiselleştirilmiş Sıradaki Önerilen Adım */}
+            {(() => {
+              const myAppCount = (applications || []).filter(a => a.applicantId === effectiveCurrentUser?.id || a.applicantEmail === effectiveCurrentUser?.email).length;
+              const nextStep = careerProgress.percent < 50
+                ? {
+                    label: 'Sıradaki Adım: Özgeçmiş & ATS Kontrolü',
+                    desc: 'Staj başvuruları öncesi CV uyumunu analiz et',
+                    cta: 'CV Analizini Aç',
+                    onClick: () => setShowAtsModal(true),
+                  }
+                : myAppCount === 0
+                ? {
+                    label: 'Sıradaki Adım: Staj & İş Fırsatlarını İncele',
+                    desc: `${(jobs || []).length || 12}+ açık pozisyon seni bekliyor`,
+                    cta: 'İlanlara Göz At',
+                    onClick: () => setView('jobs'),
+                  }
+                : {
+                    label: 'Sıradaki Adım: Mezun Mentörle Görüş',
+                    desc: 'Sektördeki İESÜ mezunlarından 15 dk kariyer tavsiyesi al',
+                    cta: 'Mentör Bul',
+                    onClick: () => setShowCoffeeChatModal(true),
+                  };
+
+              return (
+                <div className="mb-3 p-2.5 rounded-xl bg-gradient-to-br from-red-50/80 via-white to-amber-50/50 border border-red-100">
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <span className="text-[10px] font-black text-[#990000] uppercase tracking-wider flex items-center gap-1">
+                      <Sparkles size={11} /> Önerilen Adım
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-600">%{careerProgress.percent} Hazır</span>
+                  </div>
+                  <p className="text-[11px] font-bold text-slate-900 leading-snug">{nextStep.label}</p>
+                  <p className="text-[10px] text-slate-600 mt-0.5">{nextStep.desc}</p>
+                  <button
+                    type="button"
+                    onClick={nextStep.onClick}
+                    className="mt-2 w-full py-1.5 px-2.5 bg-[#990000] hover:bg-red-800 text-white rounded-lg text-[10px] font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
+                  >
+                    <span>{nextStep.cta}</span>
+                    <ArrowRight size={11} />
+                  </button>
+                </div>
+              );
+            })()}
+
+            {/* Birincil Kariyer Araçları (Öncelikli Eylemler) */}
             <div className="space-y-1">
-              {/* Başvuru Radarı */}
+              <button
+                onClick={() => setView('cvbuilder')}
+                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <FileText size={14} />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-indigo-700 transition-colors block truncate">Özgeçmiş (CV) & ATS</span>
+                    <span className="text-[9px] text-gray-500 block truncate">CV oluştur ve İK uyumunu ölç</span>
+                  </div>
+                </div>
+                <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">CV</span>
+              </button>
+
+              <button
+                onClick={() => setView('jobs')}
+                className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Bookmark size={14} />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-blue-700 transition-colors block truncate">Kaydedilen İlanlar</span>
+                    <span className="text-[9px] text-gray-500 block truncate">Açık staj ve yarı zamanlı fırsatlar</span>
+                  </div>
+                </div>
+                <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">{(jobs || []).length || 12} İlan</span>
+              </button>
+
               <button
                 onClick={() => setView('radar')}
                 className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
@@ -420,30 +465,28 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                   </div>
                   <div className="min-w-0">
                     <span className="text-[11px] font-bold text-gray-800 group-hover:text-[#990000] transition-colors block truncate">Başvuru Radarım</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Aktif İK havuz takibi</span>
+                    <span className="text-[9px] text-gray-500 block truncate">Yaptığın başvuruların durumu</span>
                   </div>
                 </div>
                 <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-50 text-[#990000]">Canlı</span>
               </button>
 
-              {/* Kaydedilen İlanlar */}
               <button
-                onClick={() => setView('jobs')}
+                onClick={() => setShowMentorsModal(true)}
                 className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Bookmark size={14} />
+                  <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <GraduationCap size={14} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-blue-700 transition-colors block truncate">Kaydedilen İlanlar</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Staj & iş fırsatları</span>
+                    <span className="text-[11px] font-bold text-gray-800 group-hover:text-amber-700 transition-colors block truncate">Mentörlük & Rehberlik</span>
+                    <span className="text-[9px] text-gray-500 block truncate">Mezun ve akademisyen eşleşmesi</span>
                   </div>
                 </div>
-                <ChevronRight size={13} className="text-gray-300 group-hover:text-blue-700 transition-colors" />
+                <ChevronRight size={13} className="text-gray-400 group-hover:text-amber-700 transition-colors" />
               </button>
 
-              {/* Kulüpler & Kampüs Toplulukları */}
               <button
                 onClick={() => setView('club_portal')}
                 className="w-full p-2 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between group cursor-pointer text-left"
@@ -454,21 +497,21 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                   </div>
                   <div className="min-w-0">
                     <span className="text-[11px] font-bold text-gray-800 group-hover:text-emerald-700 transition-colors block truncate">Kulüp & Topluluklar</span>
-                    <span className="text-[9px] text-gray-400 block truncate">Etkinlikler & Görevler</span>
+                    <span className="text-[9px] text-gray-500 block truncate">{clubList.length} kulüp • etkinlik & üyelik</span>
                   </div>
                 </div>
                 <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">+15 KGB</span>
               </button>
             </div>
 
-            {/* Hub Açma Düğmesi (İhtiyaç duyan öğrenci tek tıkla 8 aracı açabilir) */}
+            {/* Tüm Kariyer & Gelişim Araçları Merkezi Butonu */}
             <button
               onClick={() => setShowCareerHubModal(true)}
-              className="w-full mt-2.5 py-2 px-3 bg-slate-50 hover:bg-red-50 hover:text-[#990000] text-slate-700 rounded-xl text-[10px] font-bold border border-slate-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs group"
+              className="w-full mt-3 py-2 px-3 bg-slate-50 hover:bg-red-50 hover:text-[#990000] text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200/80 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs group"
             >
-              <Sparkles size={12} className="text-[#990000] group-hover:scale-110 transition-transform" />
+              <Compass size={13} className="text-[#990000] group-hover:scale-110 transition-transform" />
               <span>Gelişim Araçları Merkezi (8 Araç)</span>
-              <ChevronRight size={11} className="text-slate-400 group-hover:text-[#990000] transition-colors" />
+              <ChevronRight size={12} className="text-slate-400 group-hover:text-[#990000] transition-colors" />
             </button>
           </div>
         </div>
@@ -478,11 +521,57 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
           
         {/* Create Post Native View */}
         {activeTab === 'create_post' && (
-          <div className="bg-white rounded-xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
-             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-              <Plus className="text-[#990000]" size={24} strokeWidth={2.5} /> Gönderi Paylaş & Düzenle
-             </h2>
-             <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+          <div className="space-y-5 animate-fade-in mb-6">
+            <div className="bg-white dark:bg-[#131c31] rounded-2xl w-full p-4 sm:p-6 shadow-xs border border-slate-200/90 dark:border-slate-800">
+              <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3.5 mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-rose-950/50 text-[#990000] dark:text-rose-400 flex items-center justify-center shrink-0">
+                    <Plus size={20} strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 leading-tight">
+                      Gönderi Paylaş & Düzenle
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      Proje, staj deneyimi, etkinlik veya kampüs paylaşımınızı yayınlayın.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('feed')}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 transition cursor-pointer shrink-0"
+                >
+                  ← Akışa Dön
+                </button>
+              </div>
+              <PostComposer
+                currentUser={effectiveCurrentUser}
+                userRole={userRole}
+                posts={posts}
+                setPosts={setPosts}
+                defaultExpanded={true}
+                embedded={true}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Son Paylaşımlar ({filteredFeedItems.length})
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('feed')}
+                  className="text-xs font-bold text-[#990000] dark:text-rose-400 hover:underline cursor-pointer"
+                >
+                  Tüm Akışı Gör →
+                </button>
+              </div>
+              {filteredFeedItems.slice(0, 5).map(post => (
+                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} setView={setView} setSelectedUserId={setSelectedUserId} />
+              ))}
+            </div>
           </div>
         )}
 
@@ -494,6 +583,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
         {/* FEED TAB */}
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+          <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           {/* MOBİL HIZLI ERİŞİM KOKPİTİ (LG ALTINDA GİZLENEN SOL/SAĞ PANELİN MOBİL KÖPRÜSÜ) */}
           <div className="lg:hidden bg-gradient-to-r from-red-950 via-[#990000] to-slate-900 rounded-2xl p-4 text-white shadow-md border border-red-800/40 space-y-3">
             <div className="flex items-center justify-between">
@@ -550,7 +640,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               onClick={() => setFeedFilter('following')} 
               className={`pb-3 font-semibold text-[15px] transition-colors relative shrink-0 cursor-pointer ${feedFilter === 'following' ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'}`}
             >
-              Ağım
+              Ağım & Takip Ettiklerim
               {feedFilter === 'following' && <div className="absolute bottom-0 left-0 w-full h-[3px] bg-red-600 rounded-t-full"></div>}
             </button>
             <button 
@@ -575,12 +665,12 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
                     <Users size={17} />
                   </div>
                   <div>
-                    <h4 className="text-sm font-black text-gray-900 leading-tight">Aktif Öğrenci Kulüpleri</h4>
-                    <p className="text-[11px] text-gray-500 font-medium">Topluluklara katıl, etkinlik ve projelerde rol al</p>
+                    <h4 className="text-sm font-black text-gray-900 leading-tight">Üniversite Kulüp Sosyal Ağı</h4>
+                    <p className="text-[11px] text-gray-600 font-medium">Üye olduğun ve takip ettiğin kulüplerin paylaşımları öncelikli listelenir</p>
                   </div>
                 </div>
                 <button
-                  onClick={() => setView('club_portal')}
+                  onClick={() => { setSelectedClubId?.(null); setView('club_portal'); }}
                   className="text-xs font-black text-[#990000] hover:text-red-800 flex items-center gap-1.5 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-red-200/80 shadow-2xs hover:shadow-xs transition active:scale-95"
                 >
                   <span>Kulüpler Portalı</span>
@@ -589,27 +679,62 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {clubList.slice(0, 3).map(club => (
-                  <div key={club.id} className="bg-white rounded-xl p-3.5 border border-gray-200/70 shadow-2xs flex flex-col justify-between hover:border-red-200 hover:shadow-xs transition-all">
-                    <div className="flex items-start gap-3 mb-2.5">
-                      <SafeAvatar src={club.logo} alt={club.name} name={club.name} size="md" className="shrink-0 rounded-xl" />
-                      <div className="min-w-0 flex-1">
-                        <h5 className="text-xs font-bold text-gray-900 truncate leading-snug">{club.name}</h5>
-                        <span className="text-[10px] text-gray-400 font-semibold block truncate">{club.category}</span>
-                        <span className="inline-block mt-1 text-[10px] font-bold text-[#990000] bg-red-50 px-2 py-0.5 rounded-full">
-                          👥 {club.memberCount || 100}+ Üye
-                        </span>
+                {clubList.slice(0, 3).map(club => {
+                  const mState = getClubMembershipState(club, effectiveCurrentUser, followedClubIds);
+                  return (
+                    <div key={club.id} className="bg-white rounded-xl p-3.5 border border-gray-200/70 shadow-2xs flex flex-col justify-between hover:border-red-200 hover:shadow-xs transition-all">
+                      <div>
+                        <div className="flex items-start gap-3 mb-2">
+                          <SafeAvatar src={club.logo} alt={club.name} name={club.name} size="md" className="shrink-0 rounded-xl" />
+                          <div className="min-w-0 flex-1">
+                            <h5
+                              onClick={() => { setSelectedClubId?.(String(club.id)); setView('club_portal'); }}
+                              className="text-xs font-bold text-gray-900 hover:text-[#990000] truncate leading-snug cursor-pointer"
+                            >
+                              {club.name}
+                            </h5>
+                            <span className="text-[10px] text-gray-500 font-semibold block truncate">{club.category}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-wrap mb-2.5">
+                          <span className="text-[10px] font-bold text-[#990000] bg-red-50 px-2 py-0.5 rounded-full">
+                            👥 {club.memberCount || 100}+ Üye
+                          </span>
+                          {mState.isMember ? (
+                            <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+                              Üyesisin
+                            </span>
+                          ) : mState.isPending ? (
+                            <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">
+                              Başvurun İnceleniyor
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                        <button
+                          type="button"
+                          onClick={() => toggleFollowClub?.(String(club.id))}
+                          className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold transition cursor-pointer ${
+                            mState.isFollowing
+                              ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                              : 'bg-red-50 text-[#990000] hover:bg-red-100'
+                          }`}
+                        >
+                          {mState.followLabel}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedClubId?.(String(club.id)); setView('club_portal'); }}
+                          className="flex-1 py-1.5 px-2 bg-[#990000] hover:bg-red-800 text-white rounded-lg text-[10px] font-bold transition flex items-center justify-center gap-0.5 cursor-pointer"
+                        >
+                          <span>Kulüp Detayı</span>
+                          <ChevronRight size={12} />
+                        </button>
                       </div>
                     </div>
-                    <button
-                      onClick={() => setView('club_portal')}
-                      className="w-full mt-1 py-1.5 px-2 bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-[#990000] rounded-lg text-[11px] font-bold transition flex items-center justify-center gap-1 cursor-pointer border border-slate-100"
-                    >
-                      <span>Kulüp Detayları</span>
-                      <ChevronRight size={13} />
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -657,7 +782,7 @@ export default function StudentFeed({ setView, setSelectedUserId, currentUser, u
             ) : (
               <>
                 {filteredFeedItems.slice(0, visibleFeedCount).map(post => (
-                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} />
+                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} setView={setView} setSelectedUserId={setSelectedUserId} />
                 ))}
 
                 {visibleFeedCount < filteredFeedItems.length && (
@@ -1320,10 +1445,10 @@ groups={groups}
         />
       )}
 
-      {/* 8'Lİ KARİYER & GELİŞİM ARAÇLARI KOKPİT MODALI */}
+      {/* TARGET AREA A: KARİYER & GELİŞİM ARAÇLARI MERKEZİ (Yapılandırılmış Öğrenci Kariyer Deneyimi) */}
       {showCareerHubModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 sm:p-8 relative">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 sm:p-8 relative space-y-6">
             <button
               onClick={() => setShowCareerHubModal(false)}
               className="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer"
@@ -1332,199 +1457,344 @@ groups={groups}
               <X size={18} />
             </button>
 
-            <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-[#990000] text-white flex items-center justify-center shadow-md">
-                <Sparkles size={24} />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse"></span>
-                  <span className="text-[11px] font-bold text-[#990000] uppercase tracking-wider">İESÜ Öğrenci Gelişim Ekosistemi</span>
+            {/* Başlık & Kurumsal Bağlam */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 pr-10">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-700 to-[#990000] text-white flex items-center justify-center shadow-md shrink-0">
+                  <Compass size={24} />
                 </div>
-                <h3 className="text-xl font-black text-slate-900">Kariyer & Gelişim Araçları Merkezi</h3>
-                <p className="text-xs text-slate-500 font-medium">8 yapay zekâ simülatörü, staj evrak masası ve topluluk görevleriyle KGB Transkriptinizi güçlendirin.</p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#990000] inline-block animate-pulse"></span>
+                    <span className="text-[11px] font-bold text-[#990000] uppercase tracking-wider">İESÜ Öğrenci Gelişim Ekosistemi • Kariyer Geliştirme Koordinatörlüğü</span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900">Kariyer & Gelişim Araçları Merkezi</h3>
+                  <p className="text-xs text-slate-600 font-medium mt-0.5">
+                    Özgeçmiş hazırlığından staj başvurusuna, mezun mentörlüğünden kampüs topluluklarına kadar tüm kariyer adımlarınız tek merkezde.
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* 4 Grup - 8 Araç Kartları Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* 1. Kariyer Haritası */}
-              <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 hover:border-blue-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
-                      <Compass size={18} />
+            {/* 1. BÖLÜM: KİŞİSEL KARİYER DURUMU & ÖNERİLEN SONRAKİ ADIM */}
+            {(() => {
+              const myApps = (applications || []).filter(a => a.applicantId === effectiveCurrentUser?.id || a.applicantEmail === effectiveCurrentUser?.email);
+              const myClubsCount = (clubList || []).filter(c => getClubMembershipState(c, effectiveCurrentUser, followedClubIds).isMember).length;
+              const recommended = careerProgress.percent < 50
+                ? {
+                    title: 'Özgeçmişini (CV) Oluştur ve ATS Uyumunu Kontrol Et',
+                    reason: 'Staj ve iş başvurularında İK sistemlerinden yüksek skor almak için ilk adım olarak özgeçmişinizi tamamlayın.',
+                    actionLabel: 'Özgeçmiş & ATS Kontrolüne Başla',
+                    action: () => { setShowCareerHubModal(false); setShowAtsModal(true); },
+                  }
+                : myApps.length === 0
+                ? {
+                    title: 'Bölümüne Uygun Staj ve İş İlanlarına Başvur',
+                    reason: `Kariyer hazırlık skorun %${careerProgress.percent}. Şimdi açık staj ve yarı zamanlı iş fırsatlarına başvurarak deneyim kazanabilirsin.`,
+                    actionLabel: 'Açık İlanları İncele',
+                    action: () => { setShowCareerHubModal(false); setView('jobs'); },
+                  }
+                : {
+                    title: 'Mezun Mentörlerle 15 Dakikalık Online Kariyer Görüşmesi Planla',
+                    reason: 'Başvuruların devam ederken sektördeki İESÜ mezunlarından mülakat ve kariyer planlama tavsiyesi al.',
+                    actionLabel: 'Mezun Mentörleri Gör',
+                    action: () => { setShowCareerHubModal(false); setShowCoffeeChatModal(true); },
+                  };
+
+              return (
+                <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-[#990000] text-white p-5 sm:p-6 shadow-md">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-center">
+                    <div className="lg:col-span-2 space-y-2">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/15 text-amber-300 border border-white/15">
+                        <Sparkles size={12} /> Senin İçin Önerilen Sonraki Adım
+                      </span>
+                      <h4 className="text-base sm:text-lg font-black text-white leading-snug">{recommended.title}</h4>
+                      <p className="text-xs text-slate-200 leading-relaxed">{recommended.reason}</p>
+                      <div className="pt-2 flex flex-wrap items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={recommended.action}
+                          className="px-4 py-2.5 bg-white text-[#990000] hover:bg-red-50 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                        >
+                          <span>{recommended.actionLabel}</span>
+                          <ArrowRight size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setShowCareerHubModal(false); setView('student_kgb'); }}
+                          className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl text-xs font-bold transition cursor-pointer"
+                        >
+                          KGB Transkript Karnem (%{careerProgress.percent})
+                        </button>
+                      </div>
                     </div>
-                    <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Faz 1 - 4 Rota</span>
+
+                    <div className="grid grid-cols-3 lg:grid-cols-1 gap-2.5 bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-300 font-semibold">KGB Hazırlık</span>
+                        <strong className="text-amber-300 font-black">%{careerProgress.percent ?? 0} ({careerGrade?.letter || 'BA'})</strong>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-white/10 pt-2">
+                        <span className="text-slate-300 font-semibold">Aktif Başvurularım</span>
+                        <strong className="text-white font-black">{myApps.length} Başvuru</strong>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-white/10 pt-2">
+                        <span className="text-slate-300 font-semibold">Üye Olunan Kulüp</span>
+                        <strong className="text-emerald-300 font-black">{myClubsCount} Kulüp</strong>
+                      </div>
+                    </div>
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">Kariyer Haritası & Yol Planı</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">Bölümünüze ve hedeflerinize özel 4 fazlı akademik ve sektörel gelişim kilometre taşlarını takip edin.</p>
                 </div>
-                <button
+              );
+            })()}
+
+            {/* 2. BÖLÜM: ÖNCELİKLİ KARİYER & BAŞVURU İŞLEMLERİ (3 Ana Sütun) */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-700">1. Öncelikli Kariyer & Başvuru İşlemleri</h4>
+                <span className="text-[11px] font-semibold text-slate-500">Temel öğrenci iş akışları</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Özgeçmiş & ATS */}
+                <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 hover:border-indigo-300 transition-all flex flex-col justify-between shadow-2xs">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center border border-indigo-100">
+                        <FileText size={20} />
+                      </div>
+                      <span className="text-[10px] font-bold bg-indigo-50 text-indigo-800 px-2.5 py-0.5 rounded-full">CV & ATS</span>
+                    </div>
+                    <h5 className="font-black text-slate-900 text-sm">ATS CV Tarayıcı & Optimizasyon</h5>
+                    <p className="text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">
+                      Kurumsal standartlarda özgeçmiş oluşturun veya mevcut CV'nizi İK filtrelerine (ATS) karşı test edin.
+                    </p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setShowCareerHubModal(false); setShowAtsModal(true); }}
+                      className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer text-center"
+                    >
+                      CV'mi Tara (Akışta Aç)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowCareerHubModal(false); setView('cvbuilder'); }}
+                      className="py-2 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 rounded-xl text-xs font-bold transition cursor-pointer text-center"
+                    >
+                      CV Oluştur
+                    </button>
+                  </div>
+                </div>
+
+                {/* Staj & İş Fırsatları */}
+                <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 hover:border-[#990000]/40 transition-all flex flex-col justify-between shadow-2xs">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-red-50 text-[#990000] flex items-center justify-center border border-red-100">
+                        <Briefcase size={20} />
+                      </div>
+                      <span className="text-[10px] font-bold bg-red-50 text-[#990000] px-2.5 py-0.5 rounded-full">{(jobs || []).length || 12} Açık İlan</span>
+                    </div>
+                    <h5 className="font-black text-slate-900 text-sm">Resmî Staj Portalı</h5>
+                    <p className="text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">
+                      Zorunlu/gönüllü staj süreçlerini yönetin, açık iş ilanlarına başvurun ve Başvuru Radarından durumu izleyin.
+                    </p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setShowCareerHubModal(false); setView('jobs'); }}
+                      className="flex-1 py-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition cursor-pointer text-center"
+                    >
+                      İlanlara Git
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowCareerHubModal(false); setView('staj'); }}
+                      className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition cursor-pointer text-center"
+                    >
+                      Staj Masası
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mentörlük & Kariyer Danışmanlığı */}
+                <div className="p-5 rounded-2xl bg-white border-2 border-slate-200 hover:border-emerald-300 transition-all flex flex-col justify-between shadow-2xs">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+                        <GraduationCap size={20} />
+                      </div>
+                      <span className="text-[10px] font-bold bg-emerald-50 text-emerald-800 px-2.5 py-0.5 rounded-full">{VERIFIED_MENTORS?.length || 8} Aktif Mentör</span>
+                    </div>
+                    <h5 className="font-black text-slate-900 text-sm">Mentörlük & Kariyer Rehberliği</h5>
+                    <p className="text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">
+                      Mezun profesyoneller ve akademisyenlerle birebir mentörlük eşleşmesi yapın veya 15 dk online görüşme planlayın.
+                    </p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setShowCareerHubModal(false); setShowMentorsModal(true); }}
+                      className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition cursor-pointer text-center"
+                    >
+                      Mentör Eşleşmesi
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowCareerHubModal(false); setShowCoffeeChatModal(true); }}
+                      className="flex-1 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-bold transition cursor-pointer text-center"
+                    >
+                      15 Dk Sohbet
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. BÖLÜM: KARİYER PLANLAMA, BECERİ GELİŞİMİ VE TOPLULUKLAR */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-black uppercase tracking-wider text-slate-700">2. Kariyer Planlama, Beceri Gelişimi & Kampüs</h4>
+                <span className="text-[11px] font-semibold text-slate-500">Tamamlanan her adım KGB puanınızı artırır</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div
                   onClick={() => { setShowCareerHubModal(false); setView('career_roadmap'); }}
-                  className="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="p-3.5 rounded-2xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200 hover:border-blue-300 transition flex items-start gap-3 text-left cursor-pointer group"
                 >
-                  <span>Yol Haritasına Git</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              {/* 2. Mülakat Simülatörü */}
-              <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 hover:border-emerald-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                      <Sparkles size={18} />
-                    </div>
-                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">+10 KGB Puanı</span>
+                  <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                    <Compass size={18} />
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">AI Mülakat Simülatörü</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">Kamera veya sesle STAR metodunda gerçekçi mülakat sorularına cevap verin; yapay zekâ analiz raporu alın.</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-blue-700">Kariyer Haritası & Yol Planı</h5>
+                      <span className="text-[10px] font-black text-blue-700">Yol Haritasına Git</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">Sınıf seviyene göre dönemlik gelişim hedefleri ve kontrol listesi.</p>
+                  </div>
                 </div>
+
                 <button
+                  type="button"
                   onClick={() => { setShowCareerHubModal(false); setView('interview_simulator'); }}
-                  className="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="p-3.5 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-300 transition flex items-start gap-3 text-left cursor-pointer group"
                 >
-                  <span>Mülakat Odasını Aç</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              {/* 3. ATS CV Tarayıcı */}
-              <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 hover:border-indigo-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
-                      <FileText size={18} />
-                    </div>
-                    <span className="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">ATS Skoru</span>
+                  <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <Sparkles size={18} />
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">ATS CV Tarayıcı & Optimizasyon</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">Özgeçmişinizi kurumsal İK filtrelerine karşı test edin, eksik anahtar kelimeleri ve format hatalarını tespit edin.</p>
-                </div>
-                <button
-                  onClick={() => { setShowCareerHubModal(false); setShowAtsModal(true); }}
-                  className="mt-4 w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                >
-                  <span>CV'mi Tara (Akışta Aç)</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              {/* 4. Kariyer Testi */}
-              <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 hover:border-purple-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
-                      <Target size={18} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-emerald-700">AI Mülakat Simülatörü</h5>
+                      <span className="text-[10px] font-bold text-emerald-700">+10 KGB Puanı</span>
                     </div>
-                    <span className="text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">Holland RIASEC</span>
+                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">Gerçekçi İK sorularıyla pratik yap ve geri bildirim al.</p>
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">Holland Kariyer Eğilim Testi</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">Yetkinliklerinizi ve ilgi alanlarınızı bilimsel envanterle ölçün; kişiselleştirilmiş rol önerileri kazanın.</p>
-                </div>
+                </button>
+
                 <button
+                  type="button"
                   onClick={() => { setShowCareerHubModal(false); setView('career_test'); }}
-                  className="mt-4 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="p-3.5 rounded-2xl bg-slate-50 hover:bg-purple-50/60 border border-slate-200 hover:border-purple-300 transition flex items-start gap-3 text-left cursor-pointer group"
                 >
-                  <span>Testi Çöz / İncele</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              {/* 5. Başvuru Radarı */}
-              <div className="p-4 rounded-2xl bg-red-50/50 border border-red-100 hover:border-red-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center">
-                      <Radar size={18} />
-                    </div>
-                    <span className="text-[10px] font-bold bg-red-100 text-[#990000] px-2 py-0.5 rounded-full">Canlı İK Havuzu</span>
+                  <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                    <Target size={18} />
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">Başvuru Radarı</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">Yaptığınız staj ve iş başvurularının İK tarafından incelenme durumunu ve VIP protokol önceliklerini izleyin.</p>
-                </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-purple-700">Holland Kariyer Eğilim Testi</h5>
+                      <ChevronRight size={14} className="text-slate-400 group-hover:text-purple-700" />
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">İlgi alanlarını ve güçlü yönlerini ölçerek uygun uzmanlık alanlarını keşfet.</p>
+                  </div>
+                </button>
+
                 <button
+                  type="button"
                   onClick={() => { setShowCareerHubModal(false); setView('radar'); }}
-                  className="mt-4 w-full py-2 bg-[#990000] hover:bg-red-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="p-3.5 rounded-2xl bg-slate-50 hover:bg-red-50/60 border border-slate-200 hover:border-red-300 transition flex items-start gap-3 text-left cursor-pointer group"
                 >
-                  <span>Başvuru Radarına Git</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              {/* 6. Staj Portalı */}
-              <div className="p-4 rounded-2xl bg-teal-50/50 border border-teal-100 hover:border-teal-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center">
-                      <Briefcase size={18} />
-                    </div>
-                    <span className="text-[10px] font-bold bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full">SGK & Form-1</span>
+                  <div className="w-9 h-9 rounded-xl bg-red-100 text-[#990000] flex items-center justify-center shrink-0">
+                    <Radar size={18} />
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">Resmî Staj Portalı</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">Zorunlu ve gönüllü staj başvuruları, Form-1 onayları ve dijital staj defteri teslim masası.</p>
-                </div>
-                <button
-                  onClick={() => { setShowCareerHubModal(false); setView('staj'); }}
-                  className="mt-4 w-full py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                >
-                  <span>Staj Masasını Aç</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              {/* 7. Kuluçka Merkezi */}
-              <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 hover:border-amber-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-                      <Rocket size={18} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-[#990000]">Başvuru Radarım</h5>
+                      <ChevronRight size={14} className="text-slate-400 group-hover:text-[#990000]" />
                     </div>
-                    <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">TTO & BİGG</span>
+                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">Staj ve iş başvurularının kurumsal İK inceleme aşamalarını takip et.</p>
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">Kuluçka Merkezi (TTO)</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">Teknoloji Transfer Ofisi bünyesinde girişim fikrinizi ticarileştirin, hibe ve tohum fon desteği alın.</p>
-                </div>
+                </button>
+
                 <button
+                  type="button"
                   onClick={() => { setShowCareerHubModal(false); setView('startup_incubator'); }}
-                  className="mt-4 w-full py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="p-3.5 rounded-2xl bg-slate-50 hover:bg-amber-50/60 border border-slate-200 hover:border-amber-300 transition flex items-start gap-3 text-left cursor-pointer group"
                 >
-                  <span>Kuluçka Merkezine Git</span>
-                  <ArrowRight size={13} />
-                </button>
-              </div>
-
-              {/* 8. Kulüpler Portalı */}
-              <div className="p-4 rounded-2xl bg-rose-50/50 border border-rose-100 hover:border-rose-300 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center">
-                      <Users size={18} />
-                    </div>
-                    <span className="text-[10px] font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">+15 KGB Üyelik</span>
+                  <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                    <Rocket size={18} />
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm">Öğrenci Kulüpleri Portalı</h4>
-                  <p className="text-xs text-slate-600 font-medium mt-1">40+ aktif öğrenci topluluğuna katılın, etkinliklere QR bilet alın ve kulüp içi görev masasında rol alın.</p>
-                </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-amber-700">Kuluçka Merkezi (TTO)</h5>
+                      <ChevronRight size={14} className="text-slate-400 group-hover:text-amber-700" />
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">Proje ve girişim fikirlerin için ön kuluçka ve mentorluk başvurusu yap.</p>
+                  </div>
+                </button>
+
                 <button
+                  type="button"
                   onClick={() => { setShowCareerHubModal(false); setView('club_portal'); }}
-                  className="mt-4 w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  className="p-3.5 rounded-2xl bg-slate-50 hover:bg-rose-50/60 border border-slate-200 hover:border-rose-300 transition flex items-start gap-3 text-left cursor-pointer group"
                 >
-                  <span>Kulüpleri Keşfet</span>
-                  <ArrowRight size={13} />
+                  <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                    <Users size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-bold text-slate-900 text-xs group-hover:text-rose-700">Öğrenci Kulüpleri Portalı</h5>
+                      <span className="text-[10px] font-bold text-rose-700">+15 KGB Üyelik</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">{clubList.length} öğrenci kulübünü keşfet, etkinliklere katıl ve puan kazan.</p>
+                  </div>
                 </button>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-medium">Tamamlanan her modül KGB Transkriptinize doğrudan yansır.</span>
-              <button
-                onClick={() => setShowCareerHubModal(false)}
-                className="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer"
-              >
-                Kapat
-              </button>
+            {/* 4. BÖLÜM: YAKLAŞAN KARİYER ETKİNLİKLERİ & DUYURULAR */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-[#990000] flex items-center justify-center shrink-0">
+                  <Calendar size={18} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-[#990000] uppercase tracking-wider block">Yaklaşan Kariyer & Kampüs Etkinliği</span>
+                  <h5 className="text-xs sm:text-sm font-black text-slate-900">
+                    {(events && events[0]?.title) || (clubList && clubList[0]?.events?.[0]?.title) || 'İESÜ Güz Dönemi Kariyer Günleri & Sektör Buluşması'}
+                  </h5>
+                  <p className="text-[11px] text-slate-600 font-medium">
+                    {(events && events[0]?.date) || (clubList && clubList[0]?.events?.[0]?.date) || '15 Ekim 2026'} • {(events && events[0]?.location) || 'Ömer Halisdemir Konferans Salonu'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => { setShowCareerHubModal(false); setView('events'); }}
+                  className="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 rounded-xl text-xs font-bold transition cursor-pointer"
+                >
+                  Tüm Etkinlikler
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCareerHubModal(false)}
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                >
+                  Kapat
+                </button>
+              </div>
             </div>
           </div>
         </div>

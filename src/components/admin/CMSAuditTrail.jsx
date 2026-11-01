@@ -418,8 +418,12 @@ const STAFF_LIST = [
   { name: 'Mehmet DEMİR', role: 'Sistem Yöneticisi' }
 ];
 
+const EMPTY_LOGS = [];
+
 export default function CMSAuditTrail() {
-  const storeLogs = useAdminStore((state) => state.auditLogs) || useAppStore((state) => state.auditLogs) || [];
+  const adminLogs = useAdminStore((state) => state.auditLogs);
+  const appLogs = useAppStore((state) => state.auditLogs);
+  const storeLogs = adminLogs || appLogs || EMPTY_LOGS;
 
   // State initialization with localStorage & store persistence
   const [logs, setLogs] = useState(() => {

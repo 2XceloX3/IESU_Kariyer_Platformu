@@ -4,6 +4,8 @@ import useAppStore from '../store/useAppStore';
 import MainHeader from './MainHeader';
 import MainFooter from './MainFooter';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import SafeEventImage from './shared/SafeEventImage';
+import { cleanScrapedText, normalizeTitleForDedup, normalizeScrapedImageUrl } from '../services/scraper';
 
 export default function PublicNewsView({ setView, currentUser, userRole }) {
   const news = useAppStore(state => state.news) || [];
@@ -12,13 +14,48 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
 
-  const combinedItems = [
-    ...news.map(n => ({ ...n, itemType: 'Haber', badge: '🔥 Resmî Haber' })),
-    ...announcements.map(a => ({ ...a, itemType: 'Duyuru', badge: '📢 Duyuru' }))
-  ];
+  const combinedItems = React.useMemo(() => {
+    const rawList = [
+      ...news.map(n => ({ ...n, itemType: 'Haber', badge: '🔥 Resmî Haber' })),
+      ...announcements.map(a => ({ ...a, itemType: 'Duyuru', badge: '📢 Duyuru' }))
+    ];
+    const seen = new Set();
+    const seenImgs = new Set();
+    const result = [];
+
+    for (const item of rawList) {
+      if (!item) continue;
+      const cleanTitle = cleanScrapedText(item.title || item.name || '');
+      const key = normalizeTitleForDedup(cleanTitle);
+      if (!key || key.length < 6 || seen.has(key)) continue;
+
+      const fallbackType = item.itemType === 'Duyuru' ? 'announcement' : 'news';
+      const normalizedImg = normalizeScrapedImageUrl(item.imageUrl || item.image || '', fallbackType);
+      const isUniqueUpload =
+        normalizedImg.includes('/uploads/') &&
+        !normalizedImg.includes('bm3ic54a7zlig-2026-ozyes') &&
+        !normalizedImg.includes('ygwdtig4tykmo-cumhuriyetimizin-103-yil-donumu');
+
+      if (isUniqueUpload && seenImgs.has(normalizedImg)) continue;
+
+      seen.add(key);
+      if (isUniqueUpload) seenImgs.add(normalizedImg);
+
+      const cleanDesc = cleanScrapedText(item.description || item.content || item.summary || cleanTitle);
+      result.push({
+        ...item,
+        title: cleanTitle,
+        description: cleanDesc,
+        summary: cleanDesc,
+        imageUrl: normalizedImg
+      });
+    }
+
+    return result;
+  }, [news, announcements]);
 
   const filteredItems = combinedItems.filter(item => {
-    const titleMatch = (item.title || item.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const titleMatch = (item.title || item.name || '').toLocaleLowerCase('tr-TR').includes(searchQuery.toLocaleLowerCase('tr-TR'));
     const typeMatch = activeTab === 'all' || (activeTab === 'news' && item.itemType === 'Haber') || (activeTab === 'announcements' && item.itemType === 'Duyuru');
     return titleMatch && typeMatch;
   });
@@ -94,17 +131,19 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
                   onClick={() => setSelectedItem(item)}
                   className="group bg-white border border-slate-200/80 hover:border-red-500/40 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer flex flex-col justify-between relative"
                 >
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#990000]"></div>
+                  <div className="absolute top-0 left-0 right-0 h-1.5 z-30 bg-[#990000]"></div>
 
                   <div>
                     {(item.imageUrl || item.image) && (
-                      <div className="w-full h-52 bg-slate-100 overflow-hidden relative">
-                        <img 
-                          src={item.imageUrl || item.image} 
-                          alt={item.title} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      <div className="w-full h-56 bg-slate-100 overflow-hidden relative">
+                        <SafeEventImage
+                          src={item.imageUrl || item.image}
+                          alt={item.title}
+                          fallbackType={item.itemType === 'Duyuru' ? 'announcement' : 'news'}
+                          mode="poster"
+                          className="w-full h-full"
                         />
-                        <div className="absolute top-4 left-4">
+                        <div className="absolute top-4 left-4 z-20">
                           <span className="bg-white/90 backdrop-blur-md text-[#990000] text-[10px] font-black px-3 py-1 rounded-full border border-red-100 shadow-sm">
                             {item.badge}
                           </span>
@@ -119,11 +158,11 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
                       </div>
 
                       <h2 className="text-lg font-black text-slate-900 group-hover:text-[#990000] transition-colors leading-snug mb-3">
-                        {(item.title || item.name || '').replace(/<[^>]+>/g, '')}
+                        {item.title}
                       </h2>
 
                       <p className="text-slate-600 text-xs leading-relaxed line-clamp-3 font-medium">
-                        {(item.description || item.content || item.summary || '').replace(/<[^>]+>/g, '')}
+                        {item.description || item.summary}
                       </p>
                     </div>
                   </div>
@@ -149,14 +188,20 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
           <div className="bg-white border border-slate-200 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col animate-fade-in">
             <button 
               onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition"
+              className="absolute top-4 right-4 z-30 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition"
             >
               <X size={18} />
             </button>
 
             {(selectedItem.imageUrl || selectedItem.image) && (
-              <div className="w-full h-64 shrink-0 bg-slate-100 relative">
-                <img src={selectedItem.imageUrl || selectedItem.image} alt="Detail" className="w-full h-full object-cover" />
+              <div className="w-full h-72 shrink-0 bg-slate-900 relative">
+                <SafeEventImage
+                  src={selectedItem.imageUrl || selectedItem.image}
+                  alt={selectedItem.title}
+                  fallbackType={selectedItem.itemType === 'Duyuru' ? 'announcement' : 'news'}
+                  mode="poster"
+                  imgClassName="p-2"
+                />
               </div>
             )}
 
@@ -169,11 +214,11 @@ export default function PublicNewsView({ setView, currentUser, userRole }) {
               </div>
 
               <h2 className="text-2xl font-black text-slate-900 leading-tight">
-                {(selectedItem.title || selectedItem.name || '').replace(/<[^>]+>/g, '')}
+                {selectedItem.title}
               </h2>
 
               <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line font-medium">
-                {(selectedItem.description || selectedItem.content || selectedItem.summary || '').replace(/<[^>]+>/g, '')}
+                {selectedItem.description || selectedItem.summary}
               </p>
 
               <div className="pt-6 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500 font-bold">

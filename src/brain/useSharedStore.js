@@ -19,6 +19,8 @@ import {
 } from '../utils/mockData';
 import { liveEventData, liveAnnouncementData, liveNewsData } from '../utils/liveData';
 import { innerPagesData } from '../utils/innerPagesData';
+import { OFFICIAL_IESU_INSTAGRAM_POSTS } from '../services/instagramService';
+import { deduplicateFeedItems, normalizeTitleForDedup } from '../services/scraper';
 
 const initialStories = [
   {
@@ -35,6 +37,12 @@ const initialStories = [
   }
 ];
 
+function isSameItemTitle(a, b) {
+  const ka = normalizeTitleForDedup(a?.title || a?.content || '');
+  const kb = normalizeTitleForDedup(b?.title || b?.content || '');
+  return Boolean(ka && kb && ka.length >= 6 && ka === kb);
+}
+
 /**
  * Returns fresh clone of initial shared state to prevent cross-test and cross-session contamination.
  */
@@ -45,9 +53,10 @@ export const getInitialSharedState = () => ({
   swipedJobs: [],
   internships: Array.isArray(initialInternships) ? [...initialInternships] : [],
   voluntaryInternships: Array.isArray(initialVoluntaryInternships) ? [...initialVoluntaryInternships] : [],
-  events: Array.isArray(liveEventData) ? [...liveEventData] : [],
-  news: Array.isArray(liveNewsData) ? [...liveNewsData] : [],
-  announcements: Array.isArray(liveAnnouncementData) ? [...liveAnnouncementData] : [],
+  events: Array.isArray(liveEventData) ? deduplicateFeedItems([], liveEventData, 25) : [],
+  news: Array.isArray(liveNewsData) ? deduplicateFeedItems([], liveNewsData, 25) : [],
+  announcements: Array.isArray(liveAnnouncementData) ? deduplicateFeedItems([], liveAnnouncementData, 25) : [],
+  socialMedia: Array.isArray(OFFICIAL_IESU_INSTAGRAM_POSTS) ? [...OFFICIAL_IESU_INSTAGRAM_POSTS] : [],
   generalEvents: Array.isArray(initialGeneralEvents) ? [...initialGeneralEvents] : [],
   careerOpportunities: Array.isArray(initialCareerOpportunities) ? [...initialCareerOpportunities] : [],
   featuredOpportunities: Array.isArray(initialFeatured) ? [...initialFeatured] : [],
@@ -65,12 +74,30 @@ export const useSharedStore = create(
       const setter = (key) => (val) =>
         set((state) => ({ [key]: typeof val === 'function' ? val(state[key]) : val }));
 
+      const dedupFeedSetter = (key) => (val) =>
+        set((state) => {
+          const nextArr = typeof val === 'function' ? val(state[key]) : val;
+          const fallbackPool =
+            key === 'events' ? liveEventData : key === 'news' ? liveNewsData : key === 'announcements' ? liveAnnouncementData : [];
+          return {
+            [key]: Array.isArray(nextArr)
+              ? deduplicateFeedItems(fallbackPool, nextArr, 25)
+              : deduplicateFeedItems([], fallbackPool, 25)
+          };
+        });
+
       return {
         // Read-shared collections
         ...getInitialSharedState(),
 
         setPosts: setter('posts'),
-        addPost: (post) => set((s) => ({ posts: [post, ...(s.posts || []).filter(p => p?.id !== post?.id)] })),
+        addPost: (post) =>
+          set((s) => ({
+            posts: [
+              post,
+              ...(s.posts || []).filter((p) => p?.id !== post?.id && !isSameItemTitle(p, post))
+            ]
+          })),
 
         setStories: setter('stories'),
 
@@ -85,13 +112,30 @@ export const useSharedStore = create(
 
         setVoluntaryInternships: setter('voluntaryInternships'),
 
-        setEvents: setter('events'),
-        addEvent: (evt) => set((s) => ({ events: [evt, ...(s.events || []).filter(e => e?.id !== evt?.id)] })),
+        setEvents: dedupFeedSetter('events'),
+        addEvent: (evt) =>
+          set((s) => ({
+            events: deduplicateFeedItems(
+              (s.events || []).filter((e) => e?.id !== evt?.id && !isSameItemTitle(e, evt)),
+              [evt],
+              25
+            )
+          })),
 
-        setNews: setter('news'),
+        setNews: dedupFeedSetter('news'),
 
-        setAnnouncements: setter('announcements'),
-        addAnnouncement: (ann) => set((s) => ({ announcements: [ann, ...(s.announcements || []).filter(a => a?.id !== ann?.id)] })),
+        setAnnouncements: dedupFeedSetter('announcements'),
+        addAnnouncement: (ann) =>
+          set((s) => ({
+            announcements: deduplicateFeedItems(
+              (s.announcements || []).filter((a) => a?.id !== ann?.id && !isSameItemTitle(a, ann)),
+              [ann],
+              25
+            )
+          })),
+
+        setSocialMedia: setter('socialMedia'),
+        addSocialMediaPost: (post) => set((s) => ({ socialMedia: [post, ...(s.socialMedia || []).filter(p => p?.id !== post?.id)] })),
 
         setGeneralEvents: setter('generalEvents'),
 
@@ -103,22 +147,65 @@ export const useSharedStore = create(
 
         setInnerPagesData: setter('innerPagesData'),
 
-        // Scraper Synchronization Pipeline
+        // Scraper & Firestore Synchronization Pipeline
         setLastUpdated: setter('lastUpdated'),
         setSource: setter('source'),
         setStatus: setter('status'),
         setIsScraperLoading: setter('isScraperLoading'),
+
+        hydrateFromFirestore: async () => {
+          try {
+            const [{ loadScrapedFeedFromFirestore }, { deduplicateSocialMediaPosts }] = await Promise.all([
+              import('../services/dbSync'),
+              import('../services/scraper')
+            ]);
+            const res = await loadScrapedFeedFromFirestore();
+            if (res && res.success && res.data) {
+              set((state) => ({
+                news: res.data.news?.length > 0
+                  ? deduplicateFeedItems([], res.data.news, 20)
+                  : deduplicateFeedItems([], state.news, 20),
+                events: res.data.events?.length > 0
+                  ? deduplicateFeedItems([], res.data.events, 20)
+                  : deduplicateFeedItems([], state.events, 20),
+                announcements: res.data.announcements?.length > 0
+                  ? deduplicateFeedItems([], res.data.announcements, 20)
+                  : deduplicateFeedItems([], state.announcements, 20),
+                socialMedia: res.data.socialMedia?.length > 0
+                  ? deduplicateSocialMediaPosts([], res.data.socialMedia, 20)
+                  : deduplicateSocialMediaPosts([], state.socialMedia, 20),
+                lastUpdated: res.data.lastUpdated || state.lastUpdated,
+                source: res.data.source || 'firestore',
+                status: res.data.status || 'aktif'
+              }));
+              return res.data;
+            }
+          } catch (err) {
+            console.warn('[SharedStore] Firestore hydration warning:', err?.message);
+          }
+          return null;
+        },
 
         refreshScrapedData: async (forceRefresh = false) => {
           set({ isScraperLoading: true });
           let lastErr = null;
           for (let attempt = 0; attempt < 2; attempt++) {
             try {
-              const { scrapeLiveOrFallback } = await import('../services/scraper');
-              const data = await scrapeLiveOrFallback({ forceRefresh });
-              set((state) => ({
-                ...(data.announcements && Array.isArray(data.announcements) && data.announcements.length > 0 ? { announcements: data.announcements } : {}),
-                ...(data.events && Array.isArray(data.events) && data.events.length > 0 ? { events: data.events } : {}),
+              const { scrapeLiveOrFallback, deduplicateSocialMediaPosts } = await import('../services/scraper');
+              const data = await scrapeLiveOrFallback({ forceRefresh, persistToFirestore: true });
+              set(() => ({
+                ...(data.announcements && Array.isArray(data.announcements) && data.announcements.length > 0
+                  ? { announcements: deduplicateFeedItems([], data.announcements, 20) }
+                  : {}),
+                ...(data.events && Array.isArray(data.events) && data.events.length > 0
+                  ? { events: deduplicateFeedItems([], data.events, 20) }
+                  : {}),
+                ...(data.news && Array.isArray(data.news) && data.news.length > 0
+                  ? { news: deduplicateFeedItems([], data.news, 20) }
+                  : {}),
+                ...(data.socialMedia && Array.isArray(data.socialMedia) && data.socialMedia.length > 0
+                  ? { socialMedia: deduplicateSocialMediaPosts([], data.socialMedia, 20) }
+                  : {}),
                 lastUpdated: data.lastUpdated || new Date().toISOString(),
                 source: data.source || 'live',
                 status: data.status || 'aktif',
@@ -144,7 +231,7 @@ export const useSharedStore = create(
       };
     },
     {
-      name: 'iesu-career-shared-store',
+      name: 'iesu-career-shared-store-v2',
       partialize: (state) => ({
         posts: Array.isArray(state.posts) ? state.posts.slice(0, 100).map(p => {
           if (!p || typeof p !== 'object') return p;
@@ -168,9 +255,10 @@ export const useSharedStore = create(
         swipedJobs: Array.isArray(state.swipedJobs) ? state.swipedJobs.slice(-100) : [],
         internships: Array.isArray(state.internships) ? state.internships.slice(0, 50) : [],
         voluntaryInternships: Array.isArray(state.voluntaryInternships) ? state.voluntaryInternships.slice(0, 50) : [],
-        events: Array.isArray(state.events) ? state.events.slice(0, 50) : [],
-        news: Array.isArray(state.news) ? state.news.slice(0, 50) : [],
-        announcements: Array.isArray(state.announcements) ? state.announcements.slice(0, 50) : [],
+        events: Array.isArray(state.events) ? state.events.slice(0, 25) : [],
+        news: Array.isArray(state.news) ? state.news.slice(0, 25) : [],
+        announcements: Array.isArray(state.announcements) ? state.announcements.slice(0, 25) : [],
+        socialMedia: Array.isArray(state.socialMedia) ? state.socialMedia.slice(0, 24) : [],
         generalEvents: Array.isArray(state.generalEvents) ? state.generalEvents.slice(0, 50) : [],
         careerOpportunities: Array.isArray(state.careerOpportunities) ? state.careerOpportunities.slice(0, 50) : [],
         featuredOpportunities: Array.isArray(state.featuredOpportunities) ? state.featuredOpportunities.slice(0, 50) : [],
@@ -178,7 +266,45 @@ export const useSharedStore = create(
         lastUpdated: state.lastUpdated,
         source: state.source,
         status: state.status
-      })
+      }),
+      merge: (persistedState, currentState) => {
+        const p = persistedState && typeof persistedState === 'object' ? persistedState : {};
+        const mergeByIdWithDefaults = (defaults = [], persisted = []) => {
+          const defMap = new Map((defaults || []).filter(Boolean).map(item => [String(item.id), item]));
+          const result = [];
+          const seen = new Set();
+          if (Array.isArray(persisted)) {
+            for (const item of persisted) {
+              if (!item || typeof item !== 'object') continue;
+              const idStr = String(item.id || '');
+              if (idStr && seen.has(idStr)) continue;
+              if (idStr) seen.add(idStr);
+              const defItem = idStr ? defMap.get(idStr) : null;
+              result.push(defItem ? { ...defItem, ...item, isJob: defItem.isJob ?? item.isJob, jobData: item.jobData || defItem.jobData, eventPost: defItem.eventPost ?? item.eventPost, isGeneralEvent: defItem.isGeneralEvent ?? item.isGeneralEvent, authorId: item.authorId || defItem.authorId, author: (typeof defItem.author === 'object' && defItem.author) ? defItem.author : item.author } : item);
+            }
+          }
+          for (const defItem of (defaults || [])) {
+            if (!defItem || typeof defItem !== 'object') continue;
+            const idStr = String(defItem.id || '');
+            if (idStr && !seen.has(idStr)) {
+              seen.add(idStr);
+              result.push(defItem);
+            }
+          }
+          return result;
+        };
+        return {
+          ...currentState,
+          ...p,
+          posts: mergeByIdWithDefaults(initialPosts, p.posts),
+          jobs: mergeByIdWithDefaults(initialJobs, p.jobs),
+          generalEvents: mergeByIdWithDefaults(initialGeneralEvents, p.generalEvents),
+          careerOpportunities: mergeByIdWithDefaults(initialCareerOpportunities, p.careerOpportunities),
+          events: deduplicateFeedItems(liveEventData, Array.isArray(p.events) ? p.events : [], 25),
+          news: deduplicateFeedItems(liveNewsData, Array.isArray(p.news) ? p.news : [], 25),
+          announcements: deduplicateFeedItems(liveAnnouncementData, Array.isArray(p.announcements) ? p.announcements : [], 25)
+        };
+      }
     }
   )
 );

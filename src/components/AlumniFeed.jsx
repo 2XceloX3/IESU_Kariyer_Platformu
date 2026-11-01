@@ -80,7 +80,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
     const defaults = [
       { id: 'st-1', authorName: 'İESÜ Kariyer Merkezi', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: '2026 Bahar Dönemi Zorunlu Staj & KGM Başvuruları Başladı!', createdAt: '1s önce' },
       { id: 'st-2', authorName: 'Yapay Zeka Kulübü', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Prompt Mühendisliği & CV Atölyesi B-Blok Amfide!', createdAt: '3s önce' },
-      { id: 'st-3', authorName: 'İESÜ Mezunlar Derneği', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
+      { id: 'st-3', authorName: 'İESÜ Mezunlar Portalı', authorAvatar: '/official_pdf_logo.png', mediaUrl: '/official_pdf_logo.png', caption: 'Mezun-Öğrenci Mentorluk Eşleşmeleri Açıldı!', createdAt: '5s önce' }
     ];
     try {
       const saved = JSON.parse(localStorage.getItem('iesu_campus_stories_v1') || '[]');
@@ -101,8 +101,19 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
   const EMPTY_ARRAY = useMemo(() => [], []);
 
   const allFeedItems = useMemo(() => {
-    return combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);
-  }, [posts, events, news, announcements, jobs, generalEvents, careerOpportunities]);
+    return combineFeedItems({
+      posts,
+      clubs: clubs || [],
+      events,
+      news,
+      announcements,
+      jobs,
+      generalEvents,
+      careerOpportunities,
+      user: effectiveCurrentUser,
+      followedUserIds,
+    });
+  }, [posts, clubs, events, news, announcements, jobs, generalEvents, careerOpportunities, effectiveCurrentUser, followedUserIds]);
 
   const filteredFeedItems = useMemo(() => {
     const q = searchQuery ? searchQuery.trim().toLocaleLowerCase('tr-TR') : '';
@@ -324,11 +335,57 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
         <div className="w-full max-w-[600px] shrink-0 space-y-6">
         {activeTab === 'create_post' && (
-          <div className="bg-white rounded-xl w-full p-4 sm:p-6 shadow-[var(--shadow-soft)] border border-[var(--border-soft)] animate-fade-in mb-6">
-             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-              <Star className="text-emerald-600 fill-current" size={24} /> Gönderi Paylaş & Düzenle
-             </h2>
-             <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
+          <div className="space-y-5 animate-fade-in mb-6">
+            <div className="bg-white dark:bg-[#131c31] rounded-2xl w-full p-4 sm:p-6 shadow-xs border border-slate-200/90 dark:border-slate-800">
+              <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3.5 mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                    <Star className="fill-current" size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 leading-tight">
+                      Gönderi Paylaş & Düzenle
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      Mezunlar ağıyla kariyer güncellemelerinizi, mentorluk ve iş fırsatlarını paylaşın.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('feed')}
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 transition cursor-pointer shrink-0"
+                >
+                  ← Akışa Dön
+                </button>
+              </div>
+              <PostComposer
+                currentUser={effectiveCurrentUser}
+                userRole={userRole}
+                posts={posts}
+                setPosts={setPosts}
+                defaultExpanded={true}
+                embedded={true}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Son Paylaşımlar ({filteredFeedItems.length})
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('feed')}
+                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                >
+                  Tüm Akışı Gör →
+                </button>
+              </div>
+              {filteredFeedItems.slice(0, 5).map(post => (
+                <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} setView={setView} setSelectedUserId={setSelectedUserId} />
+              ))}
+            </div>
           </div>
         )}
 
@@ -338,6 +395,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
 
         {activeTab === 'feed' && (
           <div className="w-full shrink-0 flex flex-col gap-6 animate-fade-in">
+          <PostComposer currentUser={effectiveCurrentUser} userRole={userRole} posts={posts} setPosts={setPosts} />
           {/* Mezun Hızlı Erişim & Ekosistem Araçları */}
           <div className="bg-white rounded-2xl p-4 sm:p-5 border border-emerald-100 shadow-xs">
             <div className="flex items-center justify-between mb-3 px-1">
@@ -389,8 +447,8 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
                 <div className="w-8 h-8 rounded-lg bg-cyan-100/70 text-cyan-600 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
                   <GraduationCap size={16} />
                 </div>
-                <span className="text-xs font-bold text-gray-800 group-hover:text-cyan-600 transition-colors leading-tight">Mezunlar Birliği</span>
-                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Dernek & projeler</span>
+                <span className="text-xs font-bold text-gray-800 group-hover:text-cyan-600 transition-colors leading-tight">İESÜ Mezunlar Portalı</span>
+                <span className="text-[11px] text-gray-500 mt-0.5 line-clamp-1">Topluluk & komiteler</span>
               </button>
 
               <button
@@ -501,7 +559,7 @@ export default function AlumniFeed({ setView, setSelectedUserId, currentUser, us
             ) : (
               <>
                 {filteredFeedItems.slice(0, visibleFeedCount).map(post => (
-                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} />
+                  <PostCard key={post.id} post={post} currentUser={effectiveCurrentUser} students={students || EMPTY_ARRAY} alumni={alumni || EMPTY_ARRAY} setPosts={setPosts} setView={setView} setSelectedUserId={setSelectedUserId} />
                 ))}
 
                 {visibleFeedCount < filteredFeedItems.length && (

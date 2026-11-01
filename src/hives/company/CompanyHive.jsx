@@ -27,6 +27,7 @@ const MessagingInterface = lazy(() => import('../../components/MessagingInterfac
 const CareerNetwork = lazy(() => import('../../components/CareerNetwork'));
 const GroupsPanel = lazy(() => import('../../components/GroupsPanel'));
 const GroupProfile = lazy(() => import('../../components/GroupProfile'));
+const StudentClubPortal = lazy(() => import('../../components/StudentClubPortal'));
 const ContactPage = lazy(() => import('../../components/ContactPage'));
 const AboutUsPage = lazy(() => import('../../components/AboutUsPage'));
 const ServicesPage = lazy(() => import('../../components/ServicesPage'));
@@ -114,6 +115,7 @@ export default function CompanyHive({ currentUser, setView }) {
       case 'post-job':
       case 'post_job':
       case 'create_job':
+      case 'job_creator':
         return <JobCreator setView={handleSetView} currentUser={effectiveCurrentUser} />;
       case 'jobs':
         return <JobsAndInternships setView={handleSetView} previousView={previousView || 'company'} currentUser={effectiveCurrentUser} userRole="company" />;
@@ -140,6 +142,9 @@ export default function CompanyHive({ currentUser, setView }) {
         return <CareerNetwork setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView={previousView || 'company'} setSelectedUserId={setSelectedUserId} academicStaff={useAppStore.getState().academicStaff || []} companies={useAppStore.getState().companies || []} />;
       case 'groups':
         return <GroupsPanel setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" />;
+      case 'clubs':
+      case 'club_portal':
+        return <StudentClubPortal setView={handleSetView} currentUser={effectiveCurrentUser} userRole="company" previousView={previousView || 'company'} setSelectedUserId={setSelectedUserId} />;
       case 'group_profile': {
         const groupData = groups.find(g => g.id === selectedGroupId) || {};
         return <GroupProfile 

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import SafeAvatar from './shared/SafeAvatar';
 import { 
   Users, Trophy, FileText, ChevronRight, CheckCircle2, 
@@ -17,6 +17,7 @@ import { toast } from './shared/Toast';
 import useAppStore from '../store/useAppStore';
 import { initialClubs, initialClubApplications } from '../data/mockClubsData';
 import eventBus from '../brain/eventBus';
+import { canManageClub, getClubMembershipState, processClubMembershipAction } from '../utils/clubSocialNetwork';
 
 export default function StudentClubPortal({ 
   currentUser, 
@@ -25,7 +26,16 @@ export default function StudentClubPortal({
   setSelectedUserId, 
   userRole = 'student' 
 }) {
-  const { clubs, setClubs, clubApplications, setClubApplications, activePortalBranch } = useAppStore();
+  const clubs = useAppStore(s => s.clubs);
+  const setClubs = useAppStore(s => s.setClubs);
+  const clubApplications = useAppStore(s => s.clubApplications);
+  const setClubApplications = useAppStore(s => s.setClubApplications);
+  const activePortalBranch = useAppStore(s => s.activePortalBranch);
+  const storeFollowedClubIds = useAppStore(s => s.followedClubIds);
+  const followedClubIds = Array.isArray(storeFollowedClubIds) ? storeFollowedClubIds : [];
+  const toggleFollowClub = useAppStore(s => s.toggleFollowClub);
+  const selectedClubId = useAppStore(s => s.selectedClubId);
+  const setSelectedClubId = useAppStore(s => s.setSelectedClubId);
   const backTarget = (
     previousView && ['student', 'alumni', 'academic', 'company', 'admin'].includes(previousView) ? previousView :
     activePortalBranch && ['student', 'alumni', 'academic', 'company', 'admin'].includes(activePortalBranch) ? activePortalBranch :
@@ -38,6 +48,7 @@ export default function StudentClubPortal({
 
   // Smart filters & discovery states
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
+  const [relationshipFilter, setRelationshipFilter] = useState('all'); // 'all' | 'joined' | 'followed' | 'pending'
   const [sortBy, setSortBy] = useState('members'); // 'members' | 'events' | 'alphabetical'
 
   // Live RSVP & QR Ticketing State
@@ -204,21 +215,33 @@ export default function StudentClubPortal({
   const clubList = useMemo(() => (clubs && clubs.length > 0) ? clubs : initialClubs, [clubs]);
   const applications = useMemo(() => (clubApplications && clubApplications.length > 0) ? clubApplications : initialClubApplications, [clubApplications]);
 
-  const myManagedClubs = useMemo(() => (clubList || []).filter(c => 
-    c.presidentId === currentUser?.id || 
-    c.president?.email === currentUser?.email ||
-    (c.authorizedOfficers || []).some(o => o.id === currentUser?.id || o.email === currentUser?.email) ||
-    (c.admins || []).includes(currentUser?.id)
-  ), [clubList, currentUser]);
+  // Deep-link support when navigating from StudentFeed, PostCard, or ExploreFeed
+  useEffect(() => {
+    if (selectedClubId && clubList && clubList.length > 0) {
+      const target = clubList.find(c => String(c.id) === String(selectedClubId));
+      if (target) {
+        setSelectedClub(target);
+      }
+      if (setSelectedClubId) setSelectedClubId(null);
+    }
+  }, [selectedClubId, clubList, setSelectedClubId]);
 
-  const myJoinedClubs = useMemo(() => (clubList || []).filter(c => 
-    (c.members || []).some(m => 
-      m.id === currentUser?.id || 
-      m.userId === currentUser?.id ||
-      m.email === currentUser?.email || 
-      m.name === currentUser?.name
-    )
-  ), [clubList, currentUser]);
+  const myManagedClubs = useMemo(() => (clubList || []).filter(c => canManageClub(c, currentUser)), [clubList, currentUser]);
+
+  const myJoinedClubs = useMemo(() => (clubList || []).filter(c => {
+    const st = getClubMembershipState(c, currentUser, followedClubIds);
+    return st.isMember;
+  }), [clubList, currentUser, followedClubIds]);
+
+  const myFollowedClubs = useMemo(() => (clubList || []).filter(c => {
+    const st = getClubMembershipState(c, currentUser, followedClubIds);
+    return st.isFollowing;
+  }), [clubList, currentUser, followedClubIds]);
+
+  const myPendingClubs = useMemo(() => (clubList || []).filter(c => {
+    const st = getClubMembershipState(c, currentUser, followedClubIds);
+    return st.hasPendingApplication;
+  }), [clubList, currentUser, followedClubIds]);
 
   const CLUB_CATEGORIES = [
     'Tümü',
@@ -250,8 +273,15 @@ export default function StudentClubPortal({
         c.name.toLowerCase().includes(q) || 
         (c.description && c.description.toLowerCase().includes(q)) || 
         (c.category && c.category.toLowerCase().includes(q));
-      
-      return matchesSearch && matchesCategory(c, selectedCategory);
+      if (!matchesSearch || !matchesCategory(c, selectedCategory)) return false;
+
+      if (relationshipFilter !== 'all') {
+        const st = getClubMembershipState(c, currentUser, followedClubIds);
+        if (relationshipFilter === 'joined' && !st.isMember) return false;
+        if (relationshipFilter === 'followed' && !st.isFollowing) return false;
+        if (relationshipFilter === 'pending' && !st.hasPendingApplication) return false;
+      }
+      return true;
     }).sort((a, b) => {
       if (sortBy === 'members') {
         const aMem = a.memberCount || a.members?.length || 0;
@@ -268,34 +298,16 @@ export default function StudentClubPortal({
       }
       return 0;
     });
-  }, [clubList, searchQuery, selectedCategory, sortBy]);
+  }, [clubList, searchQuery, selectedCategory, relationshipFilter, sortBy, currentUser, followedClubIds]);
 
   // Authorization Check: President, Vice President, Secretary, Financial Officer
-  const isAuthorizedOfficer = (club) => {
-    if (!club || !currentUser) return false;
-    if (currentUser.role === 'admin') return true;
-    if (club.presidentId === currentUser.id || club.president?.email === currentUser.email) return true;
-    if ((club.authorizedOfficers || []).some(o => 
-      (o.id === currentUser.id || o.email === currentUser.email) &&
-      o.role && o.role !== 'Aktif Üye'
-    )) return true;
-    if ((club.boardMembers || []).some(b => (b.id === currentUser.id || b.email === currentUser.email) && (
-      b.role?.toLowerCase().includes('başkan') || 
-      b.role?.toLowerCase().includes('sekreter') || 
-      b.role?.toLowerCase().includes('mali') || 
-      b.role?.toLowerCase().includes('sorumlu')
-    ))) return true;
-    return false;
-  };
+  const isAuthorizedOfficer = (club) => canManageClub(club, currentUser);
 
-  const isMemberOfClub = (club) => (club.members || []).some(m => 
-    m.id === currentUser?.id || m.userId === currentUser?.id || m.email === currentUser?.email || m.name === currentUser?.name
-  );
+  const isMemberOfClub = (club) => getClubMembershipState(club, currentUser, followedClubIds).isMember;
 
-  const hasPendingRequest = (club) => (
-    (club.memberRequests || []).some(r => r.userId === currentUser?.id && r.status === 'pending') ||
-    (club.memberApplications || []).some(a => (a.studentId === currentUser?.id || a.email === currentUser?.email) && a.status === 'pending')
-  );
+  const hasPendingRequest = (club) => getClubMembershipState(club, currentUser, followedClubIds).hasPendingApplication;
+
+  const isFollowingClub = (club) => getClubMembershipState(club, currentUser, followedClubIds).isFollowing;
 
   // Trigger Venue & Request Modal (with permission gate)
   const handleOpenVenueModal = () => {
@@ -856,7 +868,10 @@ export default function StudentClubPortal({
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               <button 
-                onClick={() => setSelectedClub(null)} 
+                onClick={() => {
+                  setSelectedClub(null);
+                  if (setSelectedClubId) setSelectedClubId(null);
+                }} 
                 className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-200 flex items-center justify-center text-slate-700 hover:text-[#990000] transition cursor-pointer shadow-2xs group shrink-0"
                 title="Kulüp Listesine Dön"
               >
@@ -865,8 +880,11 @@ export default function StudentClubPortal({
               <div 
                 role="button" 
                 tabIndex={0} 
-                onClick={() => setSelectedClub(null)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedClub(null); } }} 
+                onClick={() => {
+                  setSelectedClub(null);
+                  if (setSelectedClubId) setSelectedClubId(null);
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedClub(null); if (setSelectedClubId) setSelectedClubId(null); } }} 
                 className="flex items-center gap-3 cursor-pointer"
               >
                 <Logo className="h-8 w-auto text-[#990000]" />
@@ -918,7 +936,7 @@ export default function StudentClubPortal({
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 shrink-0 flex-wrap">
+              <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
                 {authorized && (
                   <button
                     onClick={() => { if (setView) setView('club_admin'); }}
@@ -929,20 +947,42 @@ export default function StudentClubPortal({
                   </button>
                 )}
 
+                {/* Follow / Unfollow Action (Distinct from official membership) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const wasFollowing = isFollowingClub(selectedClub);
+                    if (toggleFollowClub) toggleFollowClub(selectedClub.id);
+                    toast.success(
+                      wasFollowing
+                        ? `${selectedClub.name} takibi bırakıldı.`
+                        : `${selectedClub.name} takip ediliyor! Duyurular akışınızda önceliklendirilecek.`
+                    );
+                  }}
+                  className={`px-4 py-2.5 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer border ${
+                    isFollowingClub(selectedClub)
+                      ? 'bg-white/20 text-white border-white/40 hover:bg-white/30'
+                      : 'bg-slate-900/80 hover:bg-slate-900 text-white border-white/20 shadow-sm'
+                  }`}
+                >
+                  <Bell size={15} />
+                  {isFollowingClub(selectedClub) ? 'Takip Ediliyor ✓' : '+ Kulübü Takip Et'}
+                </button>
+
                 {/* Membership Action (Only for non-authorized students; officers/admins manage, they don't apply) */}
                 {!authorized && (
                   userIsMember ? (
                     <span className="px-5 py-2.5 bg-white text-emerald-800 font-bold text-xs rounded-xl shadow-sm flex items-center justify-center gap-1.5 border border-emerald-200">
-                      <CheckCircle2 size={16} className="text-emerald-600" /> Üyesiniz
+                      <CheckCircle2 size={16} className="text-emerald-600" /> Üyesisin
                     </span>
                   ) : userHasPending ? (
-                    <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md text-white border border-white/30 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed">
-                      <Clock size={16} /> Başvurunuz İncelemede
+                    <button className="px-5 py-2.5 bg-amber-400/25 backdrop-blur-md text-amber-100 border border-amber-300/40 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed">
+                      <Clock size={16} /> Başvurun İnceleniyor
                     </button>
                   ) : (
                     <button 
                       onClick={() => setShowApplyMemberModal(true)}
-                      className="px-6 py-2.5 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+                      className="px-6 py-2.5 bg-white hover:bg-red-50 text-[#990000] font-black text-xs rounded-xl transition shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
                     >
                       <Plus size={16} /> Kulübe Başvur & Katıl
                     </button>
@@ -952,7 +992,7 @@ export default function StudentClubPortal({
                 {/* Venue Request Action Button */}
                 <button
                   onClick={handleOpenVenueModal}
-                  className="px-5 py-2.5 bg-white hover:bg-red-50 text-[#990000] font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                  className="px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white border border-white/30 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer active:scale-95"
                 >
                   <Calendar size={16} /> Etkinlik & Yer Tahsis Talebi
                 </button>
@@ -1351,48 +1391,67 @@ export default function StudentClubPortal({
 
                   {(selectedClub.events || []).map(event => {
                     const isRegistered = registeredEventIds.has(event.id);
+                    const posterUrl = event.image || event.imageUrl;
                     return (
-                      <div key={event.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${event.status === 'Tamamlandı' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-800'}`}>
-                              {event.status}
-                            </span>
-                            <span className="text-xs font-bold text-slate-700">{event.category}</span>
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                              <Award size={12} className="text-amber-600" /> +5 KGB Puanı
-                            </span>
+                      <div key={event.id} className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col md:flex-row gap-5">
+                        {posterUrl && (
+                          <div className="w-full md:w-44 aspect-[4/5] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 shrink-0">
+                            <img
+                              src={posterUrl}
+                              alt={event.title}
+                              loading="lazy"
+                              className="w-full h-full object-cover object-top"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://www.esenyurt.edu.tr/uploads/2026/10/nz19buzmdccs4-mimari-kultur-ve-sanat-kulubunden-teknik-gezi-novawood-showroom-ziyareti.jpg';
+                              }}
+                            />
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
-                            <Users size={14} className="text-slate-600" />
-                            <span>{event.registeredCount || 0} / {event.quota || 100} Katılımcı</span>
-                          </div>
-                        </div>
+                        )}
+                        <div className="flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${event.status === 'Tamamlandı' ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-800'}`}>
+                                  {event.status}
+                                </span>
+                                <span className="text-xs font-bold text-slate-700">{event.category}</span>
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                  <Award size={12} className="text-amber-600" /> +5 KGB Puanı
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                                <Users size={14} className="text-slate-600" />
+                                <span>{event.registeredCount || 0} / {event.quota || 100} Katılımcı</span>
+                              </div>
+                            </div>
 
-                        <h4 className="text-lg font-black text-gray-900 mb-2">{event.title}</h4>
-                        <p className="text-xs text-slate-600 leading-relaxed mb-4">{event.description}</p>
-
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 pt-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
-                            <div className="flex items-center gap-1.5"><Calendar size={14} className="text-[#990000]" /> {event.date} • {event.time}</div>
-                            <div className="flex items-center gap-1.5"><MapPin size={14} className="text-[#990000]" /> {event.location}</div>
+                            <h4 className="text-lg font-black text-gray-900 mb-2">{event.title}</h4>
+                            <p className="text-xs text-slate-600 leading-relaxed mb-4">{event.description}</p>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            {isRegistered ? (
-                              <button
-                                onClick={() => setTicketModalEvent(event)}
-                                className="px-4 py-2 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
-                              >
-                                <Sparkles size={14} /> 🎟️ QR Giriş Biletim
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleRegisterEvent(event)}
-                                className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer active:scale-95"
-                              >
-                                <Calendar size={14} /> Bilet Al & Kaydol (+5 KGB)
-                              </button>
-                            )}
+
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 pt-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
+                              <div className="flex items-center gap-1.5"><Calendar size={14} className="text-[#990000]" /> {event.date} • {event.time}</div>
+                              <div className="flex items-center gap-1.5"><MapPin size={14} className="text-[#990000]" /> {event.location}</div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {isRegistered ? (
+                                <button
+                                  onClick={() => setTicketModalEvent(event)}
+                                  className="px-4 py-2 bg-[#990000] hover:bg-[#7f0000] text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                                >
+                                  <Sparkles size={14} /> 🎟️ QR Giriş Biletim
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleRegisterEvent(event)}
+                                  className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+                                >
+                                  <Calendar size={14} /> Bilet Al & Kaydol (+5 KGB)
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -2972,24 +3031,50 @@ export default function StudentClubPortal({
               </div>
             </div>
 
-            {/* SMART CATEGORY PILLS */}
-            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
-              {CLUB_CATEGORIES.map(cat => {
-                const isCatActive = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
-                      isCatActive
-                        ? 'bg-[#990000] text-white shadow-xs'
-                        : 'bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{cat}</span>
-                  </button>
-                );
-              })}
+            {/* SMART RELATIONSHIP & CATEGORY PILLS */}
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
+                {[
+                  { id: 'all', label: `Tüm Kulüpler (${clubList.length})` },
+                  { id: 'joined', label: `Üye Olduklarım (${myJoinedClubs.length})` },
+                  { id: 'followed', label: `Takip Ettiklerim (${myFollowedClubs.length})` },
+                  { id: 'pending', label: `Başvurularım (${myPendingClubs.length})` }
+                ].map(rel => {
+                  const isRelActive = relationshipFilter === rel.id;
+                  return (
+                    <button
+                      key={rel.id}
+                      onClick={() => setRelationshipFilter(rel.id)}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
+                        isRelActive
+                          ? 'bg-slate-900 text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{rel.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
+                {CLUB_CATEGORIES.map(cat => {
+                  const isCatActive = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
+                        isCatActive
+                          ? 'bg-[#990000] text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{cat}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* CLUBS DIRECTORY GRID */}
@@ -2998,9 +3083,9 @@ export default function StudentClubPortal({
                 <div className="w-16 h-16 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mx-auto mb-3 shadow-2xs">
                   <Building2 size={32} />
                 </div>
-                <p className="text-slate-700 font-bold">Aramanıza veya seçilen kategoriye uygun kulüp bulunamadı.</p>
+                <p className="text-slate-700 font-bold">Aramanıza veya seçilen filtreye uygun kulüp bulunamadı.</p>
                 <button
-                  onClick={() => { setSelectedCategory('Tümü'); setSearchQuery(''); }}
+                  onClick={() => { setSelectedCategory('Tümü'); setRelationshipFilter('all'); setSearchQuery(''); }}
                   className="mt-3 text-xs text-[#990000] font-bold hover:underline"
                 >
                   Filtreleri Temizle
@@ -3008,67 +3093,115 @@ export default function StudentClubPortal({
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredClubs.map(club => (
-                  <div 
-                    role="button" 
-                    tabIndex={0} 
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }}  
-                    key={club.id} 
-                    onClick={() => setSelectedClub(club)} 
-                    className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-red-200 transition-all cursor-pointer group flex flex-col justify-between"
-                  >
-                    <div>
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-16 h-16 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-white overflow-hidden">
-                          {club.logo ? <SafeAvatar src={club.logo} name={club.name} size={64} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 text-slate-500 flex items-center justify-center"><Building2 size={24} /></div>}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                            <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md uppercase tracking-wider truncate">
-                              {club.category || 'Genel'}
-                            </span>
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-0.5">
-                              <CheckCircle2 size={10} /> Resmî
-                            </span>
+                {filteredClubs.map(club => {
+                  const st = getClubMembershipState(club, currentUser, followedClubIds);
+                  return (
+                    <div 
+                      role="button" 
+                      tabIndex={0} 
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedClub(club); } }}  
+                      key={club.id} 
+                      onClick={() => {
+                        setSelectedClub(club);
+                      }} 
+                      className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-red-200 transition-all cursor-pointer group flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="w-16 h-16 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform bg-white overflow-hidden">
+                            {club.logo ? <SafeAvatar src={club.logo} name={club.name} size={64} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 text-slate-500 flex items-center justify-center"><Building2 size={24} /></div>}
                           </div>
-                          <h3 className="font-black text-gray-900 leading-snug group-hover:text-[#990000] transition-colors line-clamp-1">{club.name}</h3>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                              <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md uppercase tracking-wider truncate">
+                                {club.category || 'Genel'}
+                              </span>
+                              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-0.5">
+                                <CheckCircle2 size={10} /> Resmî
+                              </span>
+                            </div>
+                            <h3 className="font-black text-gray-900 leading-snug group-hover:text-[#990000] transition-colors line-clamp-1">{club.name}</h3>
+                          </div>
                         </div>
-                      </div>
 
-                      <p className="text-xs text-slate-600 line-clamp-3 mb-4 leading-relaxed font-medium">
-                        {club.description || 'Öğrencilerin akademik ve sosyal gelişimlerini desteklemeyi amaçlamaktadır.'}
-                      </p>
-                    </div>
+                        <p className="text-xs text-slate-600 line-clamp-2 mb-3 leading-relaxed font-medium">
+                          {club.description || 'Öğrencilerin akademik ve sosyal gelişimlerini desteklemeyi amaçlamaktadır.'}
+                        </p>
 
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                          <Award size={11} className="text-amber-600" /> 🎓 KGB +15 Puan
-                        </span>
-                        {isMemberOfClub(club) && (
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <CheckCircle2 size={10} /> Üyesiniz
-                          </span>
+                        {/* Upcoming active event preview if available */}
+                        {(club.events || []).length > 0 && (
+                          <div className="mb-3 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-2 text-[11px]">
+                            <div className="flex items-center gap-1.5 text-slate-700 font-bold truncate">
+                              <Calendar size={12} className="text-[#990000] shrink-0" />
+                              <span className="truncate">{club.events[0].title}</span>
+                            </div>
+                            <span className="text-[10px] font-bold text-slate-500 shrink-0">{club.events[0].date}</span>
+                          </div>
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between pt-3.5 border-t border-slate-100">
-                        <div className="flex items-center gap-3 text-xs font-bold text-slate-600">
-                          <span className="flex items-center gap-1.5">
-                            <Users size={14} className="text-[#990000]" /> {club.memberCount || club.members?.length || 45} Üye
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+                          <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                            <Award size={11} className="text-amber-600" /> 🎓 KGB +15 Puan
                           </span>
-                          <span className="flex items-center gap-1.5 text-slate-400">
-                            • <Calendar size={13} className="text-slate-500" /> {club.events?.length || 3} Etkinlik
-                          </span>
+                          {st.isMember && (
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <CheckCircle2 size={10} /> Üyesisin
+                            </span>
+                          )}
+                          {!st.isMember && st.hasPendingApplication && (
+                            <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <Clock size={10} /> Başvurun İnceleniyor
+                            </span>
+                          )}
+                          {st.isFollowing && (
+                            <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <Bell size={10} /> Takip Ediliyor
+                            </span>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1 text-xs font-bold text-[#990000] group-hover:translate-x-1 transition-transform">
-                          <span>Detayları Gör</span>
-                          <ChevronRight size={16} />
+
+                        <div className="flex items-center justify-between pt-3.5 border-t border-slate-100 gap-2">
+                          <div className="flex items-center gap-2.5 text-xs font-bold text-slate-600">
+                            <span className="flex items-center gap-1">
+                              <Users size={13} className="text-[#990000]" /> {club.memberCount || club.members?.length || 45} Üye
+                            </span>
+                            <span className="flex items-center gap-1 text-slate-400">
+                              • <Calendar size={12} className="text-slate-500" /> {club.events?.length || 0} Etkinlik
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (toggleFollowClub) toggleFollowClub(club.id);
+                                toast.success(
+                                  st.isFollowing
+                                    ? `${club.name} takibi bırakıldı.`
+                                    : `${club.name} takip ediliyor!`
+                                );
+                              }}
+                              className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition cursor-pointer border ${
+                                st.isFollowing
+                                  ? 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+                                  : 'bg-red-50 text-[#990000] border-red-200 hover:bg-red-100'
+                              }`}
+                            >
+                              {st.isFollowing ? 'Takipte ✓' : '+ Takip Et'}
+                            </button>
+                            <div className="flex items-center gap-0.5 text-xs font-bold text-[#990000] group-hover:translate-x-0.5 transition-transform">
+                              <span>İncele</span>
+                              <ChevronRight size={15} />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -3078,54 +3211,102 @@ export default function StudentClubPortal({
         {activeTab === 'my_clubs' && (
           <div className="animate-fade-in space-y-8">
             {myManagedClubs.length > 0 && (
-              <>
-                <h2 className="text-2xl font-black text-gray-900">Yönettiğim Kulüpler</h2>
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-black text-gray-900">Yönettiğim Kulüpler ({myManagedClubs.length})</h2>
+                  <button
+                    onClick={() => { if (setView) setView('club_admin'); }}
+                    className="px-4 py-2 bg-[#990000] hover:bg-red-800 text-white text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1.5"
+                  >
+                    <ShieldCheck size={14} /> Kulüp Yönetim Paneline Git
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {myManagedClubs.map(club => (
-                    <div key={club.id} className="bg-white rounded-xl p-6 border border-red-100 shadow-sm relative overflow-hidden">
-                      <div className="absolute top-0 right-0 bg-[#990000] text-white text-[10px] uppercase font-black px-4 py-1.5 rounded-bl-xl shadow-sm">Yönetici</div>
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center text-[#990000] border border-red-100"><Trophy size={24} /></div>
+                    <div key={club.id} className="bg-white rounded-2xl p-6 border border-red-100 shadow-sm relative overflow-hidden">
+                      <div className="absolute top-0 right-0 bg-[#990000] text-white text-[10px] uppercase font-black px-4 py-1.5 rounded-bl-xl shadow-sm">Kulüp Yöneticisi</div>
+                      <div className="flex items-center gap-4 mb-5">
+                        <SafeAvatar src={club.logo} name={club.name} size={56} className="w-14 h-14 rounded-xl object-cover border border-red-100" />
                         <div>
                           <h3 className="font-black text-lg text-gray-900">{club.name}</h3>
-                          <p className="text-sm text-slate-700 font-bold">{(club.memberApplications || []).filter(r => r.status === 'pending').length} Yeni Üyelik Başvurusu</p>
+                          <p className="text-xs text-slate-600 font-bold">
+                            {(club.memberApplications || []).filter(r => r.status === 'pending').length} Bekleyen Başvuru • {club.memberCount || club.members?.length || 0} Üye
+                          </p>
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <button onClick={() => setSelectedClub(club)} className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-[#990000] font-bold rounded-xl transition-colors text-sm cursor-pointer">Yönetim Panelini Aç</button>
-                        <button onClick={() => { setSelectedClub(club); setShowVenueModal(true); }} className="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm cursor-pointer">Yer & Donanım İste</button>
+                        <button onClick={() => { setSelectedClub(club); if (setSelectedClubId) setSelectedClubId(club.id); }} className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-[#990000] font-bold rounded-xl transition-colors text-xs cursor-pointer">Kulüp Sayfasını Aç</button>
+                        <button onClick={() => { if (setView) setView('club_admin'); }} className="flex-1 py-2.5 bg-[#990000] hover:bg-red-800 text-white font-bold rounded-xl transition-colors text-xs cursor-pointer">Başkan Panelini Aç</button>
                       </div>
                     </div>
                   ))}
                 </div>
-              </>
+              </div>
             )}
 
-            <h2 className="text-2xl font-black text-gray-900">Üye Olduğum Kulüpler</h2>
-            {myJoinedClubs.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {myJoinedClubs.map(club => (
-                  <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.currentTarget.click(); } }} key={club.id} onClick={() => setSelectedClub(club)} className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer group flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <SafeAvatar src={club.logo} name={club.name} size={48} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
-                      <div>
-                        <h3 className="font-black text-gray-900 group-hover:text-[#990000] transition-colors">{club.name}</h3>
-                        <p className="text-xs text-slate-700 font-semibold">{club.category || 'Genel'}</p>
+            <div>
+              <h2 className="text-xl font-black text-gray-900 mb-4">Üye Olduğum Kulüpler ({myJoinedClubs.length})</h2>
+              {myJoinedClubs.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {myJoinedClubs.map(club => (
+                    <div role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedClub(club); if (setSelectedClubId) setSelectedClubId(club.id); } }} key={club.id} onClick={() => { setSelectedClub(club); if (setSelectedClubId) setSelectedClubId(club.id); }} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer group flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <SafeAvatar src={club.logo} name={club.name} size={48} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
+                        <div>
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-1">Üyesisin</span>
+                          <h3 className="font-black text-gray-900 group-hover:text-[#990000] transition-colors text-sm">{club.name}</h3>
+                          <p className="text-xs text-slate-600 font-semibold">{club.category || 'Genel'}</p>
+                        </div>
                       </div>
+                      <ChevronRight size={18} className="text-slate-600 group-hover:text-[#990000]" />
                     </div>
-                    <ChevronRight size={18} className="text-slate-600 group-hover:text-[#990000]" />
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white p-8 rounded-2xl border border-dashed border-slate-200 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mx-auto mb-3 shadow-2xs">
+                    <Users size={28} />
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="col-span-full bg-white p-8 rounded-xl border border-dashed border-slate-200 text-center">
-                 <div className="w-14 h-14 rounded-2xl bg-red-50 text-[#990000] flex items-center justify-center mx-auto mb-3 shadow-2xs">
-                   <Bell size={28} />
-                 </div>
-                 <p className="text-slate-700 mb-4 font-medium">Henüz hiçbir kulübe üye değilsiniz.</p>
-                 <button onClick={() => setActiveTab('discover')} className="px-6 py-2.5 bg-[#990000] text-white font-bold rounded-xl hover:bg-red-800 transition-colors cursor-pointer">Kulüpleri Keşfet</button>
-              </div>
-            )}
+                  <p className="text-slate-700 mb-4 font-bold text-sm">Henüz hiçbir kulübe resmî üye değilsiniz.</p>
+                  <button onClick={() => setActiveTab('discover')} className="px-6 py-2.5 bg-[#990000] text-white font-bold text-xs rounded-xl hover:bg-red-800 transition-colors cursor-pointer">Kulüpleri Keşfet</button>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h2 className="text-xl font-black text-gray-900 mb-4">Takip Ettiğim Kulüpler ({myFollowedClubs.length})</h2>
+              {myFollowedClubs.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {myFollowedClubs.map(club => (
+                    <div key={club.id} onClick={() => { setSelectedClub(club); if (setSelectedClubId) setSelectedClubId(club.id); }} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer group flex items-center justify-between">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <SafeAvatar src={club.logo} name={club.name} size={48} className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0" />
+                        <div className="min-w-0">
+                          <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full inline-block mb-1">Takip Ediliyor</span>
+                          <h3 className="font-black text-gray-900 group-hover:text-[#990000] transition-colors text-sm truncate">{club.name}</h3>
+                          <p className="text-xs text-slate-600 font-semibold truncate">{club.category || 'Genel'}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (toggleFollowClub) toggleFollowClub(club.id);
+                          toast.info(`${club.name} takibi bırakıldı.`);
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 transition cursor-pointer shrink-0"
+                      >
+                        Takibi Bırak
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white p-6 rounded-2xl border border-dashed border-slate-200 text-center">
+                  <p className="text-slate-600 text-xs font-medium">Takip ettiğiniz kulüplerin duyuru ve etkinlikleri ana akışınızda öncelikli olarak gösterilir.</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

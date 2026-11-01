@@ -10,7 +10,9 @@ import Logo from './Logo';
 import TopProfileMenu from './TopProfileMenu';
 import ConnectionSuggestions from './ConnectionSuggestions';
 import SafeAvatar from './shared/SafeAvatar';
+import SafeEventImage from './shared/SafeEventImage';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
+import { cleanScrapedText, normalizeTitleForDedup, normalizeScrapedImageUrl } from '../services/scraper';
 
 export default function NewsEvents({ 
   setView, 
@@ -93,59 +95,50 @@ export default function NewsEvents({
   const [selectedNewsItem, setSelectedNewsItem] = useState(null);
   const [likedNews, setLikedNews] = useState({});
 
-  // Unified Store Automation Data Fetching
+  // Unified Store Automation Data Fetching with strict cross-category deduplication
   const allItems = useMemo(() => {
-    let list = [];
+    let rawList = [];
     if (news && news.length > 0) {
-      list = [...list, ...news.map((item, i) => ({ ...item, id: item.id || `n_${i}`, itemType: 'news' }))];
+      rawList = [...rawList, ...news.map((item, i) => ({ ...item, id: item.id || `n_${i}`, itemType: 'news' }))];
     }
     if (announcements && announcements.length > 0) {
-      list = [...list, ...announcements.map((item, i) => ({ ...item, id: item.id || `a_${i}`, itemType: 'announcement' }))];
+      rawList = [...rawList, ...announcements.map((item, i) => ({ ...item, id: item.id || `a_${i}`, itemType: 'announcement' }))];
     }
     if (events && events.length > 0) {
-      list = [...list, ...events.map((item, i) => ({ ...item, id: item.id || `e_${i}`, itemType: 'event' }))];
+      rawList = [...rawList, ...events.map((item, i) => ({ ...item, id: item.id || `e_${i}`, itemType: 'event' }))];
     }
 
-    // Fallback demo dataset if store is loading
-    if (list.length === 0) {
-      list = [
-        {
-          id: 'k1',
-          itemType: 'news',
-          category: 'Kariyer Fuarı',
-          title: '2026 Ulusal Kariyer & Sektör Buluşması Kayıtları Başladı',
-          date: '15 Nisan 2026',
-          time: '12 saat önce',
-          location: 'İESÜ Ana Kampüs Konferans Salonu',
-          readers: '4.2B Okuma',
-          imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
-          description: '50+ Lider savunma, bilişim ve sanayi kuruluşu kampüsümüzde öğrencilerimizle buluşuyor. Birebir staj mülakatları ve CV danışmanlık stantları açık olacaktır.'
-        },
-        {
-          id: 'k2',
-          itemType: 'announcement',
-          category: 'Rapor & Analiz',
-          title: 'Yapay Zeka ve İstihdam Raporu Yayımlandı',
-          date: '10 Nisan 2026',
-          time: '1 gün önce',
-          location: 'İESÜ Ar-Ge OS Merkezi',
-          readers: '3.1B Okuma',
-          imageUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80',
-          description: 'İESÜ Araştırma OS Merkezi tarafından yayımlanan 2026 raporuna göre yapay zeka entegrasyonu olan mezunların işe kabul oranı %45 arttı.'
-        },
-        {
-          id: 'k3',
-          itemType: 'event',
-          category: 'Zirve',
-          title: 'Geleneksel Hibrit Mezunlar ve Sektör Zirvesi',
-          date: '22 Nisan 2026',
-          time: '2 gün önce',
-          location: 'Kültür Merkezi & Canlı Stream',
-          readers: '8.4B Okuma',
-          imageUrl: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&q=80',
-          description: 'Global şirketlerde çalışan mezunlarımız aktif öğrencilerimizle buluşup birebir mentörlük ve yurt dışı staj tecrübelerini aktarıyor.'
-        }
-      ];
+    const seenTitles = new Set();
+    const seenImages = new Set();
+    const list = [];
+
+    for (const raw of rawList) {
+      if (!raw || !raw.title) continue;
+      const cleanTitle = cleanScrapedText(raw.title);
+      const normKey = normalizeTitleForDedup(cleanTitle);
+      if (!normKey || normKey.length < 6 || seenTitles.has(normKey)) continue;
+
+      const fallbackType = raw.itemType === 'event' ? 'event' : raw.itemType === 'announcement' ? 'announcement' : 'news';
+      const normalizedImg = normalizeScrapedImageUrl(raw.imageUrl || raw.image || '', fallbackType);
+      const isUniqueUpload =
+        normalizedImg.includes('/uploads/') &&
+        !normalizedImg.includes('bm3ic54a7zlig-2026-ozyes') &&
+        !normalizedImg.includes('ygwdtig4tykmo-cumhuriyetimizin-103-yil-donumu') &&
+        !normalizedImg.includes('nz19buzmdccs4-mimari-kultur-ve-sanat-kulubunden');
+
+      if (isUniqueUpload && seenImages.has(normalizedImg)) continue;
+
+      seenTitles.add(normKey);
+      if (isUniqueUpload) seenImages.add(normalizedImg);
+
+      const cleanDesc = cleanScrapedText(raw.description || raw.summary || raw.content || cleanTitle);
+      list.push({
+        ...raw,
+        title: cleanTitle,
+        description: cleanDesc,
+        summary: cleanDesc,
+        imageUrl: normalizedImg
+      });
     }
 
     return list;
@@ -170,18 +163,14 @@ export default function NewsEvents({
       
       {/* ─── 1. TOP HEADER BAR (SOL LOGO & ÜNİVERSİTE İSMİ, ORTA ARAMA, SAĞ PROFİL) ─── */}
       <header className="bg-white/90 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-40 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
-        {/* SOL: GERİ DÖNÜŞ, LOGO & ÜNİVERSİTE İSMİ */}
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setView ? setView(homeView) : null}
-            className="w-10 h-10 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center shadow-xs transition cursor-pointer shrink-0"
-            title="Geri Dön"
-          >
-            <ArrowLeft size={18} />
-          </button>
+        {/* SOL: LOGO & ÜNİVERSİTE İSMİ (Sol üst eski geri tuşu kaldırıldı) */}
+        <div
+          onClick={() => setView ? setView(homeView) : null}
+          className="flex items-center gap-3 cursor-pointer group"
+        >
           <Logo size="sm" />
           <div className="hidden sm:flex flex-col border-l border-slate-200 pl-3">
-            <span className="font-black text-slate-900 text-xs tracking-tight">İSTANBUL ESENYURT ÜNİVERSİTESİ</span>
+            <span className="font-black text-slate-900 text-xs tracking-tight group-hover:text-[#990000] transition-colors">İSTANBUL ESENYURT ÜNİVERSİTESİ</span>
             <span className={`text-[10px] font-bold uppercase tracking-wider ${activeIconColor}`}>Kariyer Geliştirme Merkezi</span>
           </div>
         </div>
@@ -312,14 +301,15 @@ export default function NewsEvents({
                 {(item.imageUrl || item.image) && (
                   <div 
                     onClick={() => setSelectedNewsItem(item)}
-                    className="w-full h-52 sm:h-64 bg-slate-950 relative overflow-hidden cursor-pointer group"
+                    className={`w-full ${item.itemType === 'event' ? 'aspect-[4/5] max-h-[520px]' : 'h-64 sm:h-72'} bg-slate-100 relative overflow-hidden cursor-pointer group`}
                   >
-                    <img 
-                      src={item.imageUrl || item.image} 
-                      alt={item.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    <SafeEventImage
+                      src={item.imageUrl || item.image}
+                      alt={item.title}
+                      fallbackType={item.itemType === 'event' ? 'event' : item.itemType === 'announcement' ? 'announcement' : 'news'}
+                      mode="poster"
+                      className="w-full h-full"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
                   </div>
                 )}
 

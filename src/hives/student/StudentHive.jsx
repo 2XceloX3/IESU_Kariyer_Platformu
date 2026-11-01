@@ -144,6 +144,8 @@ export default function StudentHive({ currentUser, setView }) {
   useEffect(() => {
     if (pathView && pathView !== 'student' && pathView !== 'feed') {
       setActiveView(pathView);
+    } else if (pathView === 'student' || pathView === 'feed') {
+      setActiveView('feed');
     }
   }, [pathView, setActiveView]);
 

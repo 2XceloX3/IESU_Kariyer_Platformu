@@ -73,7 +73,37 @@ export const liveSliderData = [
 
 export const liveNewsData = [
   {
-    id: "news-oryantasyon-2-2026",
+    id: "haber-2643",
+    title: "Cumhuriyetimizin 103. yıl dönümünü büyük bir coşku ve gururla kutluyoruz.",
+    date: "28 Ekim 2026",
+    category: "Kampüs Haberi",
+    description: "Şanlı tarihimizin en büyük gururu, egemenliğimizin sarsılmaz simgesi Cumhuriyetimizin 103. yıl dönümü üniversitemizde coşkuyla kutlandı.",
+    content: "Cumhuriyetimizin 103. yıl dönümünü büyük bir coşku ve gururla kutluyoruz.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/10/ygwdtig4tykmo-cumhuriyetimizin-103-yil-donumunu-buyuk-bir-cosku-ve-gururla-kutluyoruz.jpg",
+    url: "https://www.esenyurt.edu.tr/haber/2643-cumhuriyetimizin-103-yil-donumunu-buyuk-bir-cosku-ve-gururla-kutluyoruz"
+  },
+  {
+    id: "haber-2630",
+    title: "YÖKAK Kurumsal Akreditasyon Programı Hazırlıkları Değerlendirildi",
+    date: "26 Ekim 2026",
+    category: "Kalite & Akreditasyon",
+    description: "İstanbul Esenyurt Üniversitesinde, Yükseköğretim Kalite Kurulu (YÖKAK) Kurumsal Akreditasyon Programı hazırlıkları değerlendirildi.",
+    content: "İstanbul Esenyurt Üniversitesinde, Yükseköğretim Kalite Kurulu (YÖKAK) tarafından yürütülen Kurumsal Akreditasyon Programı hazırlıkları değerlendirildi.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/10/b23vlg8aq2o1g-yokak-kurumsal-akreditasyon-programi-hazirliklari-degerlendirildi-2.png",
+    url: "https://www.esenyurt.edu.tr/haber/2630-yokak-kurumsal-akreditasyon-programi-hazirliklari-degerlendirildi-2"
+  },
+  {
+    id: "haber-2625",
+    title: "İstanbul Esenyurt Üniversitesi’nde 2025-2026 Yılı En İyi Eğitim-Öğretim Ödülleri, düzenlenen törenle sahiplerine verildi.",
+    date: "26 Ekim 2026",
+    category: "Akademik Başarı",
+    description: "Prof. Dr. Fuat Sezgin Konferans Salonu’nda gerçekleştirilen törende 2025-2026 Yılı En İyi Eğitim-Öğretim Ödülleri sahiplerine verildi.",
+    content: "İstanbul Esenyurt Üniversitesi’nde 2025-2026 Yılı En İyi Eğitim-Öğretim Ödülleri, düzenlenen törenle sahiplerine verildi.",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/10/0lgzw00u11mr7-istanbul-esenyurt-universitesi’nde-2025-2026-yili-en-iyi-egitim-ogretim-odulleri-duzenlenen-torenle-sahiplerine-verildi.png",
+    url: "https://www.esenyurt.edu.tr/haber/2625-istanbul-esenyurt-universitesi’nde-2025-2026-yili-en-iyi-egitim-ogretim-odulleri-duzenlenen-torenle-sahiplerine-verildi"
+  },
+  {
+    id: "haber-2446",
     title: "2026-2027 Akademik Yılı Oryantasyon Programı İkinci Gününde de Yoğun İlgiyle Devam Etti",
     date: "30 Eylül 2026",
     category: "Kampüs Haberi",
@@ -184,16 +214,6 @@ export const liveNewsData = [
     url: "https://www.esenyurt.edu.tr/etkinlik/1648-iesu-bahar-senligi-26’-basliyor"
   },
   {
-    id: "news-veda-programi-2026",
-    title: "Esenyurt İlçe Milli Eğitim Müdürü Tayfun Özyolcu'ya Veda Programı",
-    date: "22 Temmuz 2026",
-    category: "Kurumsal Hizmet",
-    description: "Rektörümüz Prof. Dr. Süleyman Özdemir, Esenyurt Kaymakamı Sayın Fatih Çobanoğlu'nun ev sahipliğinde gerçekleşen veda programına katıldı.",
-    content: "Esenyurt Kaymakamlığı tarafından düzenlenen veda yemeğinde İlçe Milli Eğitim Müdürlüğü süresince eğitime katkılarından dolayı plaket takdim edildi.",
-    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/06/qd2nc7jccjlfr-universitemizin-14-yil-donumu-kutlu-olsun.jfif",
-    url: "https://www.esenyurt.edu.tr/haber/2213-esenyurt-ilce-milli-egitim-muduru-tayfun-ozyolcuya-veda-programi"
-  },
-  {
     id: "news-tavsiyeler-2026",
     title: "Rektörümüz Prof. Dr. Süleyman Özdemir'den Aday Öğrencilere Önemli Tavsiyeler",
     date: "21 Temmuz 2026",
@@ -202,26 +222,6 @@ export const liveNewsData = [
     content: "Üniversite tercih dönemi süresince aday öğrencilerimiz kampüsümüzde ağırlanarak uzman rehberler eşliğinde mesleki yönelim danışmanlığı alabilmektedir.",
     imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/v89a2fua3ovrw-rektorumuz-prof-dr-suleyman-ozdemir’den-universite-tercihi-yapacak-aday-ogrencilere-onemli-tavsiyeler-var.jpg",
     url: "https://www.esenyurt.edu.tr/haber/2169-rektorumuz-prof-dr-suleyman-ozdemir-universite-tercihi-yapacak-aday-ogrencilere-onemli-tavsiyeler-var"
-  },
-  {
-    id: "news-kalite-egitimi-2026",
-    title: "Kalite Koordinatörlüğümüz Tarafından Kalite Farkındalık Eğitimi Gerçekleştirildi",
-    date: "20 Temmuz 2026",
-    category: "Kalite Güvencesi",
-    description: "Üniversitemizde kalite kültürünü güçlendirme çalışmaları kapsamında akademik ve idari personele yönelik Kalite Farkındalık Eğitimi düzenlendi.",
-    content: "Kalite Koordinatörlüğü tarafından organize edilen seminerde akreditasyon standartları ve süreç iyileştirme yöntemleri aktarıldı.",
-    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/04/z6zk51zk7l2gc-.jpg",
-    url: "https://www.esenyurt.edu.tr/haber/2163-kalite-koordinatorlugumuz-tarafindan-kalite-farkindalik-egitimi-gerceklestirildi"
-  },
-  {
-    id: "news-15temmuz-2026",
-    title: "15 Temmuz Demokrasi ve Millî Birlik Günü Anma Törenine Katılım Sağladık 🇹🇷",
-    date: "18 Temmuz 2026",
-    category: "Kurumsal Etkinlik",
-    description: "İstanbul Esenyurt Üniversitesi olarak 15 Temmuz Demokrasi ve Millî Birlik Günü anma etkinlikleri kapsamında törene katılım gösterildi.",
-    content: "Üniversitemiz heyeti, milli irade ve demokrasi gününde düzenlenen törenlere katılarak anma programında yer almıştır.",
-    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/07/0jnmk9hfk7p3s-🇹🇷-karanlik-bir-geceyi-aydinlik-bir-gelecege-donusturenlerin-hikayesi.jpg",
-    url: "https://www.esenyurt.edu.tr/haber/2162-15-temmuz-demokrasi-ve-milli-birlik-gunu-anma-torenine-katilim-sagladik"
   }
 ];
 
@@ -337,7 +337,63 @@ export const liveStatsData = [
 
 export const liveEventData = [
   {
-    id: "event-real-gazze-2026",
+    id: "etkinlik-1840",
+    title: "Mimari Kültür ve Sanat Kulübü'nden Teknik Gezi: Novawood Showroom Ziyareti!",
+    date: "09 Kasım",
+    time: "11:00",
+    category: "Kültür & Sanat",
+    location: "Novawood Showroom",
+    speaker: "Mimari Kültür ve Sanat Kulübü",
+    description: "Mimari Kültür ve Sanat Kulübü teknik gezi programı kapsamında Novawood Showroom ziyareti.",
+    content: "Mimari Kültür ve Sanat Kulübü'nden Teknik Gezi: Novawood Showroom Ziyareti!",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/10/nz19buzmdccs4-mimari-kultur-ve-sanat-kulubunden-teknik-gezi-novawood-showroom-ziyareti.jpg",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1840-mimari-kultur-ve-sanat-kulubunden-teknik-gezi-novawood-showroom-ziyareti",
+    status: "Aktif"
+  },
+  {
+    id: "etkinlik-1839",
+    title: "29 Ekim Cumhuriyet Bayramı Kutlama Programı!",
+    date: "27 Ekim",
+    time: "13:30",
+    category: "Sosyal & Kurumsal",
+    location: "Prof. Dr. Fuat Sezgin Konferans Salonu",
+    speaker: "Rektörlük",
+    description: "Cumhuriyetimizin 103. yıl dönümü kapsamında düzenlenen kutlama programı.",
+    content: "29 Ekim Cumhuriyet Bayramı Kutlama Programı!",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/10/4fnkhf1c6hdhk-29-ekim-cumhuriyet-bayrami-kutlama-programi.jpg",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1839-29-ekim-cumhuriyet-bayrami-kutlama-programi",
+    status: "Aktif"
+  },
+  {
+    id: "etkinlik-1835",
+    title: "Gökyüzünün Geleceği: Uçaklarda Robotikleşme, Akıllı Teknolojiler ve Pilotajın Dönüşümü!",
+    date: "27 Ekim",
+    time: "13:00",
+    category: "Teknoloji & Bilim",
+    location: "Prof. Dr. Fuat Sezgin Konferans Salonu",
+    speaker: "Havacılık Kulübü",
+    description: "Havacılıkta robotik sistemler ve akıllı teknolojiler üzerine söyleşi.",
+    content: "Gökyüzünün Geleceği: Uçaklarda Robotikleşme, Akıllı Teknolojiler ve Pilotajın Dönüşümü!",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/10/a0ne1dli7schi-gokyuzunun-gelecegi-ucaklarda-robotiklesme-akilli-teknolojiler-ve-pilotajin-donusumu.png",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1835-gokyuzunun-gelecegi-ucaklarda-robotiklesme-akilli-teknolojiler-ve-pilotajin-donusumu",
+    status: "Aktif"
+  },
+  {
+    id: "etkinlik-1832",
+    title: "Fikirden Projeye: TÜBİTAK 2209-A ve 2209-B Eğitimi!",
+    date: "27 Ekim",
+    time: "11:00",
+    category: "Akademik",
+    location: "Merkez Kampüs Konferans Salonu",
+    speaker: "Proje ve Teknoloji Transfer Ofisi",
+    description: "TÜBİTAK 2209-A ve 2209-B öğrenci araştırma projeleri hazırlama eğitimi.",
+    content: "Fikirden Projeye: TÜBİTAK 2209-A ve 2209-B Eğitimi!",
+    imageUrl: "https://www.esenyurt.edu.tr/uploads/2026/10/jjx116fpj1fw4-fikirden-projeye-tubitak-2209-a-ve-2209-b-egitimi.png",
+    url: "https://www.esenyurt.edu.tr/etkinlik/1832-fikirden-projeye-tubitak-2209-a-ve-2209-b-egitimi",
+    status: "Aktif"
+  },
+  {
+    id: "etkinlik-1763",
     title: "Gazze'de Eğitim, Üniversite ve Gelecek",
     date: "22 Eylül 2026",
     time: "13:30",

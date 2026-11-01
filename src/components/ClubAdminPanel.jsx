@@ -4,12 +4,13 @@ import {
   Shield, Users, Check, X, Megaphone, MapPin, Send, FileText, 
   Image as ImageIcon, ArrowLeft, Building2, CheckCircle2, 
   Clock, Award, ChevronRight, UserCheck, AlertCircle, Sparkles,
-  Calendar, Lock, ExternalLink, HelpCircle
+  Calendar, Lock, ExternalLink, HelpCircle, Trash2, Edit3, Eye, Globe
 } from 'lucide-react';
 import Logo from './Logo';
 import SubPanelFloatingDock from './SubPanelFloatingDock';
 import useAppStore from '../store/useAppStore';
 import { toast } from './shared/Toast';
+import { canManageClub, syncClubEventAcrossSurfaces } from '../utils/clubSocialNetwork';
 
 export default function ClubAdminPanel({ 
   currentUser, 
@@ -17,17 +18,12 @@ export default function ClubAdminPanel({
   userRole = 'student', 
   previousView = 'club_portal' 
 }) {
-  const { clubs, setClubs, events, setEvents } = useAppStore();
+  const { clubs, setClubs, events, setEvents, posts, setPosts } = useAppStore();
   
   // 1. Yetkilendirme Mantık Kontrolü
-  // managedClubs içinde, kullanıcının id veya ismine göre başkan/admin olup olmadığını tam kontrol ediyoruz.
   const managedClubs = useMemo(() => {
     if (currentUser?.role === 'admin') return clubs || []; // Süper Admin tüm kulüpleri yönetebilir
-    return (clubs || []).filter(c => 
-      c.presidentId === currentUser?.id || 
-      c.president?.name === currentUser?.name || 
-      (c.admins && c.admins.includes(currentUser?.id))
-    );
+    return (clubs || []).filter(c => canManageClub(c, currentUser));
   }, [clubs, currentUser]);
 
   // 2. Stale State Düzeltmesi: managedClubs değiştiğinde selectedClubId güncellenir.
@@ -41,91 +37,51 @@ export default function ClubAdminPanel({
 
   const [activeTab, setActiveTab] = useState('requests');
   
-  // Post states
+  // Post & Event composer states
+  const [publishMode, setPublishMode] = useState('post'); // 'post' | 'event'
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postLocation, setPostLocation] = useState('');
   const [postImage, setPostImage] = useState('');
+  const [postVisibility, setPostVisibility] = useState('public'); // 'public' | 'members_only'
+  const [postStatus, setPostStatus] = useState('published'); // 'published' | 'draft'
+  const [eventDate, setEventDate] = useState(new Date().toISOString().split('T')[0]);
+  const [eventTime, setEventTime] = useState('14:00');
 
   const selectedClub = useMemo(() => {
     return (clubs || []).find(c => c.id === selectedClubId) || managedClubs[0] || {};
   }, [clubs, selectedClubId, managedClubs]);
 
-  if (managedClubs.length === 0) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-between font-sans">
-        {/* Navigation Header */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <button
-                onClick={() => {
-                  if (setView) setView(previousView || 'club_portal');
-                  else if (window?.history?.back) window.history.back();
-                }}
-                className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 hover:bg-red-50 hover:border-red-200 text-slate-700 hover:text-[#990000] flex items-center justify-center transition-all cursor-pointer shadow-2xs group"
-                title="Kulüpler Portalına Dön"
-              >
-                <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
-              </button>
-              
-              <div className="flex items-center gap-3">
-                <Logo className="h-8 w-auto hidden xs:block" />
-                <div className="hidden sm:block h-6 w-px bg-slate-200" />
-                <div>
-                  <h1 className="text-base font-black text-slate-900 leading-tight">Kulüp Yönetim Paneli</h1>
-                  <p className="text-[11px] font-bold text-slate-600">Öğrenci Kulüpleri & Topluluk İdaresi</p>
-                </div>
-              </div>
-            </div>
+  // Club Profile Edit State
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    category: '',
+    description: '',
+    purpose: '',
+    advisor: '',
+    email: '',
+    logo: '',
+    coverImage: ''
+  });
 
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <SafeAvatar 
-                  src={currentUser?.avatar} 
-                  name={currentUser?.name || 'Kulüp Yöneticisi'} 
-                  size={28} 
-                  className="w-7 h-7 rounded-full shadow-2xs" 
-                />
-                <div className="hidden sm:block text-left">
-                  <p className="text-xs font-bold text-slate-900 leading-none">{currentUser?.name || 'Kulüp Yöneticisi'}</p>
-                  <p className="text-[10px] font-bold text-emerald-700 mt-0.5">{currentUser?.role === 'admin' ? 'Süper Admin' : 'Öğrenci'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Empty State Body */}
-        <div className="flex-1 flex flex-col items-center justify-center py-20 px-4 animate-fade-in text-center">
-          <div className="w-20 h-20 bg-amber-50 rounded-3xl border border-amber-200 flex items-center justify-center text-amber-600 mb-5 shadow-sm">
-            <Shield size={40} />
-          </div>
-          <h2 className="text-2xl font-black text-slate-900">Yönetim Yetkiniz Bulunmuyor</h2>
-          <p className="text-sm font-medium text-slate-600 mt-2 max-w-md leading-relaxed">
-            Herhangi bir öğrenci kulübünün başkanı veya yetkili yöneticisi değilsiniz. Yeni bir kulüp kurmak için EK-1 başvurusunda bulunabilir veya mevcut kulüpleri inceleyebilirsiniz.
-          </p>
-          <button
-            onClick={() => {
-              if (setView) setView(previousView || 'club_portal');
-            }}
-            className="mt-6 px-6 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-md shadow-red-900/10 flex items-center gap-2"
-          >
-            <ArrowLeft size={16} /> Kulüpler Portalına Dön
-          </button>
-        </div>
-
-        {setView && (
-          <SubPanelFloatingDock currentView="club_admin" setView={setView} currentUser={currentUser} userRole={userRole} />
-        )}
-      </div>
-    );
-  }
-  
-  const isPresident = selectedClub.presidentId === currentUser?.id || selectedClub.president?.name === currentUser?.name;
+  useEffect(() => {
+    if (selectedClub && selectedClub.id) {
+      setProfileForm({
+        name: selectedClub.name || '',
+        category: selectedClub.category || 'Bilim & Teknoloji',
+        description: selectedClub.description || '',
+        purpose: selectedClub.purpose || '',
+        advisor: selectedClub.advisor || '',
+        email: selectedClub.email || selectedClub.president?.email || 'kulup@esenyurt.edu.tr',
+        logo: selectedClub.logo || '',
+        coverImage: selectedClub.coverImage || ''
+      });
+    }
+  }, [selectedClub?.id]);
 
   // Combined Membership Requests & Detailed Applications
   const combinedRequests = useMemo(() => {
+    if (!selectedClub) return [];
     const list = [...(selectedClub.memberRequests || [])];
     (selectedClub.memberApplications || []).forEach(app => {
       if (app.status === 'pending' && !list.some(r => r.id === app.id || r.userId === app.studentId)) {
@@ -145,6 +101,68 @@ export default function ClubAdminPanel({
     });
     return list;
   }, [selectedClub]);
+
+  if (managedClubs.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] flex flex-col justify-between font-sans">
+        {/* Navigation Header */}
+        <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-2xs">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex items-center gap-3">
+                <Logo className="h-8 w-auto hidden xs:block" />
+                <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-slate-700" />
+                <div>
+                  <h1 className="text-base font-black text-slate-900 dark:text-white leading-tight">Kulüp Yönetim Paneli</h1>
+                  <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Öğrenci Kulüpleri & Topluluk İdaresi</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <SafeAvatar 
+                  src={currentUser?.avatar} 
+                  name={currentUser?.name || 'Kulüp Yöneticisi'} 
+                  size={28} 
+                  className="w-7 h-7 rounded-full shadow-2xs" 
+                />
+                <div className="hidden sm:block text-left">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-none">{currentUser?.name || 'Kulüp Yöneticisi'}</p>
+                  <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">{currentUser?.role === 'admin' ? 'Süper Admin' : 'Öğrenci'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Empty State Body */}
+        <div className="flex-1 flex flex-col items-center justify-center py-20 px-4 animate-fade-in text-center">
+          <div className="w-20 h-20 bg-amber-50 dark:bg-amber-950/40 rounded-3xl border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-5 shadow-sm">
+            <Shield size={40} />
+          </div>
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">Yönetim Yetkiniz Bulunmuyor</h2>
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mt-2 max-w-md leading-relaxed">
+            Herhangi bir öğrenci kulübünün başkanı veya yetkili yöneticisi değilsiniz. Yeni bir kulüp kurmak için EK-1 başvurusunda bulunabilir veya mevcut kulüpleri inceleyebilirsiniz.
+          </p>
+          <button
+            onClick={() => {
+              if (setView) setView(previousView || 'club_portal');
+            }}
+            className="mt-6 px-6 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold text-sm rounded-xl transition-all cursor-pointer shadow-md shadow-red-900/10 flex items-center gap-2"
+          >
+            Kulüpler Portalına Geç
+          </button>
+        </div>
+
+        {setView && (
+          <SubPanelFloatingDock currentView="club_admin" setView={setView} currentUser={currentUser} userRole={userRole} />
+        )}
+      </div>
+    );
+  }
+  
+  const isPresident = selectedClub.presidentId === currentUser?.id || selectedClub.president?.name === currentUser?.name;
 
   const handleAcceptRequest = (req) => {
     const updatedClubs = (clubs || []).map(c => {
@@ -222,42 +240,171 @@ export default function ClubAdminPanel({
     setClubs(updatedClubs);
   };
 
+  const handleSaveClubProfile = (e) => {
+    e.preventDefault();
+    if (!profileForm.name.trim()) {
+      toast.error('Kulüp adı boş bırakılamaz.');
+      return;
+    }
+    const updatedClubs = (clubs || []).map(c => {
+      if (c.id === selectedClub.id) {
+        return {
+          ...c,
+          name: profileForm.name.trim(),
+          category: profileForm.category,
+          description: profileForm.description.trim(),
+          purpose: profileForm.purpose.trim(),
+          advisor: profileForm.advisor.trim(),
+          email: profileForm.email.trim(),
+          logo: profileForm.logo.trim() || c.logo,
+          coverImage: profileForm.coverImage.trim() || c.coverImage
+        };
+      }
+      return c;
+    });
+    setClubs(updatedClubs);
+    toast.success('Kulüp profili ve kurumsal bilgileri güncellendi!');
+  };
+
   const handleCreatePost = (e) => {
     e.preventDefault();
-    if (!postTitle || !postContent) {
+    if (!postTitle.trim() || !postContent.trim()) {
       toast.error('Lütfen başlık ve içerik alanlarını doldurun.');
       return;
     }
 
-    const newEvent = {
-      id: 'EVT-' + Date.now(),
-      title: postTitle,
-      description: postContent,
-      location: postLocation || 'Kampüs İçi',
-      date: new Date().toISOString().split('T')[0],
-      organizer: selectedClub.name,
-      organizerId: selectedClub.id,
-      image: postImage || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80',
-      attendees: 0
-    };
+    if (publishMode === 'event') {
+      const eventDraft = {
+        id: 'EVT-' + Date.now(),
+        title: postTitle.trim(),
+        description: postContent.trim(),
+        location: postLocation.trim() || 'Kampüs İçi Konferans Salonu',
+        date: eventDate || new Date().toISOString().split('T')[0],
+        time: eventTime || '14:00',
+        image: postImage.trim() || 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80',
+        visibility: postVisibility,
+        status: postStatus === 'draft' ? 'draft' : 'published',
+        approvalStatus: postStatus === 'draft' ? 'draft' : 'approved',
+        attendees: 0
+      };
 
-    const enrichedEvent = {
-      ...newEvent,
-      status: 'Öğrenci Dekanlığı Onayı Bekliyor',
-      approvalStatus: 'pending',
-      createdAt: new Date().toISOString()
-    };
-    if (typeof setEvents === 'function') {
-      const currentEvents = Array.isArray(events) ? events : [];
-      setEvents([enrichedEvent, ...currentEvents]);
+      const synced = syncClubEventAcrossSurfaces({
+        clubs: clubs || [],
+        globalEvents: events || [],
+        clubId: selectedClub.id,
+        eventPayload: eventDraft,
+        action: 'upsert'
+      });
+
+      setClubs(synced.clubs);
+      if (typeof setEvents === 'function') {
+        setEvents(synced.globalEvents);
+      }
+
+      toast.success(
+        postStatus === 'draft'
+          ? 'Kulüp etkinliği taslak olarak kaydedildi.'
+          : 'Kulüp etkinliği yayınlandı ve tüm kampüs yüzeyleriyle senkronize edildi!'
+      );
+    } else {
+      const newClubPost = {
+        id: 'CPOST-' + Date.now(),
+        title: postTitle.trim(),
+        caption: `${postTitle.trim()} — ${postContent.trim()}`,
+        content: postContent.trim(),
+        location: postLocation.trim() || 'İESÜ Merkez Kampüs',
+        images: postImage.trim() ? [postImage.trim()] : [],
+        visibility: postVisibility,
+        status: postStatus,
+        likes: 1,
+        comments: [],
+        createdAt: 'Az önce',
+        createdAtMs: Date.now()
+      };
+
+      const updatedClubs = (clubs || []).map(c => {
+        if (c.id === selectedClub.id) {
+          return {
+            ...c,
+            posts: [newClubPost, ...(c.posts || [])]
+          };
+        }
+        return c;
+      });
+      setClubs(updatedClubs);
+
+      if (postStatus === 'published' && postVisibility === 'public' && typeof setPosts === 'function') {
+        const globalPost = {
+          id: newClubPost.id,
+          clubId: selectedClub.id,
+          clubName: selectedClub.name,
+          visibility: postVisibility,
+          status: postStatus,
+          author: {
+            id: `club-${selectedClub.id}`,
+            name: selectedClub.name,
+            role: `${selectedClub.category || 'Öğrenci Kulübü'} • Resmî Kulüp Paylaşımı`,
+            avatar: selectedClub.logo || '/official_pdf_logo.png',
+            isClub: true,
+            clubId: selectedClub.id
+          },
+          content: `📢 **${postTitle.trim()}**\n\n${postContent.trim()}`,
+          image: postImage.trim() || null,
+          likes: 1,
+          comments: [],
+          shares: 0,
+          timestamp: 'Az önce',
+          createdAtMs: Date.now(),
+          category: 'Kulüp Duyurusu'
+        };
+        setPosts([globalPost, ...(posts || [])]);
+      }
+
+      toast.success(
+        postStatus === 'draft'
+          ? 'Kulüp paylaşımı taslak olarak kaydedildi.'
+          : postVisibility === 'members_only'
+          ? 'Kulüp paylaşımı sadece kulüp üyelerine özel olarak yayınlandı!'
+          : 'Kulüp paylaşımı yayınlandı ve sosyal akışa eklendi!'
+      );
     }
-    toast.success('Gönderi ve Etkinlik başarıyla paylaşıldı!');
     
     setPostTitle('');
     setPostContent('');
     setPostLocation('');
     setPostImage('');
-    setActiveTab('requests');
+  };
+
+  const handleDeleteClubPost = (postId) => {
+    const updatedClubs = (clubs || []).map(c => {
+      if (c.id === selectedClub.id) {
+        return {
+          ...c,
+          posts: (c.posts || []).filter(p => p.id !== postId)
+        };
+      }
+      return c;
+    });
+    setClubs(updatedClubs);
+    if (typeof setPosts === 'function') {
+      setPosts((posts || []).filter(p => p.id !== postId));
+    }
+    toast.info('Kulüp gönderisi silindi.');
+  };
+
+  const handleCancelClubEvent = (eventId) => {
+    const synced = syncClubEventAcrossSurfaces({
+      clubs: clubs || [],
+      globalEvents: events || [],
+      clubId: selectedClub.id,
+      eventPayload: { id: eventId },
+      action: 'cancel'
+    });
+    setClubs(synced.clubs);
+    if (typeof setEvents === 'function') {
+      setEvents(synced.globalEvents);
+    }
+    toast.info('Etkinlik iptal edildi ve öğrenci akışlarından kaldırıldı.');
   };
 
   const handleEKFormSubmit = (formType, successMsg) => {
@@ -367,42 +514,47 @@ export default function ClubAdminPanel({
           </div>
         </div>
 
-        {/* RESMÎ BAŞKAN YETKİLERİ VE MEVZUAT HARİTASI */}
-        <div className="mb-6 bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs">
-          <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-2.5">
-            <div className="flex items-center gap-2">
-              <Shield className="text-[#990000]" size={18} />
-              <h3 className="font-black text-slate-900 text-sm">Kulüp Başkanı Resmî Yetki Alanları & SKS İş Akışı</h3>
-            </div>
-            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">İESÜ Kulüpler Yönergesi</span>
+        {/* KULÜP BAŞKANI YETKİ ALANLARI & ETKİLEŞİM METRİKLERİ */}
+        <div className="mb-4 bg-white px-5 py-3.5 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs font-black text-slate-800">
+            <Shield size={16} className="text-[#990000]" />
+            <span>Kulüp Başkanı Resmî Yetki Alanları & SKS İş Akışı</span>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs mb-2">1</div>
-              <strong className="text-xs font-bold text-slate-900 block leading-tight">Üye İdaresi & Kabul</strong>
-              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Öğrenci No ve TC ile gelen başvuruları onaylama ve ihraç.</span>
-            </div>
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-              <div className="w-7 h-7 rounded-lg bg-red-100 text-[#990000] flex items-center justify-center font-bold text-xs mb-2">2</div>
-              <strong className="text-xs font-bold text-slate-900 block leading-tight">SKS Salon Tahsisi</strong>
-              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Ömer Halisdemir, amfi ve ses sistemi talep formu sunma.</span>
-            </div>
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-              <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs mb-2">3</div>
-              <strong className="text-xs font-bold text-slate-900 block leading-tight">Etkinlik & QR Bilet</strong>
-              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Kampüs etkinlik takvimine etkinlik girme ve bilet dağıtma.</span>
-            </div>
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-              <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center font-bold text-xs mb-2">4</div>
-              <strong className="text-xs font-bold text-slate-900 block leading-tight">Görev Masası (+10 KGB)</strong>
-              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">Üyelere görev atama, operasyonu koordine etme ve tamamlama.</span>
-            </div>
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-left">
-              <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs mb-2">5</div>
-              <strong className="text-xs font-bold text-slate-900 block leading-tight">Resmî EK Belgeleri</strong>
-              <span className="text-[10px] text-slate-500 font-medium block mt-1 leading-snug">EK-2, EK-3 (Yıllık Plan) ve Danışman onay formlarını iletme.</span>
-            </div>
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold text-slate-600">
+            <span className="px-2.5 py-1 rounded-lg bg-slate-100">Üye Onayı</span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-100">Duyuru & Etkinlik Yayını</span>
+            <span className="px-2.5 py-1 rounded-lg bg-red-50 text-[#990000]">SKS Salon Tahsisi</span>
+          </div>
+        </div>
+
+        <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Kayıtlı Üye</span>
+            <strong className="text-2xl font-black text-slate-900 mt-0.5 block">
+              {selectedClub.memberCount || selectedClub.members?.length || 0}
+            </strong>
+            <span className="text-[11px] text-emerald-700 font-semibold">Aktif öğrenci kadrosu</span>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Bekleyen Başvuru</span>
+            <strong className="text-2xl font-black text-amber-600 mt-0.5 block">
+              {combinedRequests.length}
+            </strong>
+            <span className="text-[11px] text-slate-600 font-semibold">Onay bekleyen aday</span>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Kulüp Gönderileri</span>
+            <strong className="text-2xl font-black text-[#990000] mt-0.5 block">
+              {(selectedClub.posts || []).length}
+            </strong>
+            <span className="text-[11px] text-slate-600 font-semibold">Duyuru & medya</span>
+          </div>
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Aktif Etkinlik</span>
+            <strong className="text-2xl font-black text-blue-700 mt-0.5 block">
+              {(selectedClub.events || []).filter(e => e.status !== 'cancelled').length}
+            </strong>
+            <span className="text-[11px] text-slate-600 font-semibold">Takvimde yayında</span>
           </div>
         </div>
 
@@ -413,7 +565,7 @@ export default function ClubAdminPanel({
           <div className="flex overflow-x-auto border-b border-slate-200 hide-scrollbar bg-slate-50/50">
             <button 
               onClick={() => setActiveTab('requests')} 
-              className={`whitespace-nowrap py-4 px-6 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`whitespace-nowrap py-4 px-5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'requests' 
                   ? 'border-[#990000] text-[#990000] bg-white font-black' 
                   : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
@@ -429,8 +581,30 @@ export default function ClubAdminPanel({
             </button>
 
             <button 
+              onClick={() => setActiveTab('post')} 
+              className={`whitespace-nowrap py-4 px-5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                activeTab === 'post' 
+                  ? 'border-[#990000] text-[#990000] bg-white font-black' 
+                  : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
+              }`}
+            >
+              <Send size={16}/> Gönderi & Etkinlik Yönetimi
+            </button>
+
+            <button 
+              onClick={() => setActiveTab('profile')} 
+              className={`whitespace-nowrap py-4 px-5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                activeTab === 'profile' 
+                  ? 'border-[#990000] text-[#990000] bg-white font-black' 
+                  : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
+              }`}
+            >
+              <Edit3 size={16}/> Kulüp Profili & Bilgileri
+            </button>
+
+            <button 
               onClick={() => setActiveTab('members')} 
-              className={`whitespace-nowrap py-4 px-6 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`whitespace-nowrap py-4 px-5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'members' 
                   ? 'border-[#990000] text-[#990000] bg-white font-black' 
                   : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
@@ -441,14 +615,14 @@ export default function ClubAdminPanel({
 
             <button 
               onClick={() => setActiveTab('venue_requests')} 
-              className={`whitespace-nowrap py-4 px-6 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`whitespace-nowrap py-4 px-5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'venue_requests' 
                   ? 'border-[#990000] text-[#990000] bg-white font-black' 
                   : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
               }`}
             >
               <Building2 size={16}/> 
-              SKS Mekan & Etkinlik Talepleri
+              SKS Mekan Talepleri
               {(selectedClub.budgetRequests?.length > 0) && (
                 <span className="bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded-full ml-1 font-bold">
                   {selectedClub.budgetRequests.length}
@@ -457,36 +631,14 @@ export default function ClubAdminPanel({
             </button>
 
             <button 
-              onClick={() => setActiveTab('documents')} 
-              className={`whitespace-nowrap py-4 px-6 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                activeTab === 'documents' 
-                  ? 'border-[#990000] text-[#990000] bg-white font-black' 
-                  : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
-              }`}
-            >
-              <FileText size={16}/> Belge Deposu
-            </button>
-
-            <button 
               onClick={() => setActiveTab('ek_forms')} 
-              className={`whitespace-nowrap py-4 px-6 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`whitespace-nowrap py-4 px-5 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === 'ek_forms' 
                   ? 'border-[#990000] text-[#990000] bg-white font-black' 
                   : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
               }`}
             >
-              <FileText size={16}/> Resmi Başvuru Formları (EK)
-            </button>
-
-            <button 
-              onClick={() => setActiveTab('post')} 
-              className={`whitespace-nowrap py-4 px-6 font-bold text-xs sm:text-sm border-b-2 transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                activeTab === 'post' 
-                  ? 'border-[#990000] text-[#990000] bg-white font-black' 
-                  : 'border-transparent text-slate-700 hover:text-slate-900 hover:bg-slate-100/70'
-              }`}
-            >
-              <Send size={16}/> Gönderi & Etkinlik Paylaş
+              <FileText size={16}/> Resmi Formlar (EK)
             </button>
           </div>
 
@@ -857,80 +1009,266 @@ export default function ClubAdminPanel({
               </div>
             )}
             
-            {/* 5. POST TAB */}
-            {activeTab === 'post' && (
-              <form onSubmit={handleCreatePost} className="animate-fade-in max-w-2xl">
-                <div className="flex items-center gap-3 mb-6">
+            {/* CLUB PROFILE & DETAILS EDIT TAB */}
+            {activeTab === 'profile' && (
+              <form onSubmit={handleSaveClubProfile} className="animate-fade-in max-w-3xl space-y-5">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-[#990000] border border-red-100">
-                    <Megaphone size={20} />
+                    <Edit3 size={20} />
                   </div>
-                  <div className="flex-1 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-black text-slate-900">Gönderi ve Etkinlik Paylaş</h3>
-                      <p className="text-xs text-slate-600 font-medium">Kulüp adına duyuru, etkinlik veya haber yayınlayın.</p>
-                    </div>
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        toast.info("Taslak Metin Oluşturuluyor...");
-                        setTimeout(() => {
-                          setPostTitle(prev => prev || 'Yeni Dönem Tanışma Toplantısı');
-                          setPostContent('Merhaba Değerli Üyelerimiz,\n\nYeni döneme harika bir başlangıç yapmak için bir araya geliyoruz! Bu toplantıda yıllık planlarımızı konuşacak, vizyonumuzu paylaşacak ve sürpriz etkinliklerimizi duyuracağız.\n\nHerkesi bekliyoruz!');
-                          setPostLocation('G Blok Konferans Salonu');
-                        }, 500);
-                      }}
-                      className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-xl hover:bg-emerald-100 transition flex items-center gap-1.5 border border-emerald-200 shadow-2xs cursor-pointer"
-                    >
-                      <Sparkles size={13} /> Şablon Doldur
-                    </button>
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900">Kulüp Profili & Kurumsal Bilgileri</h3>
+                    <p className="text-xs text-slate-600 font-medium">Kulübünüzün rehberde, profil sayfasında ve keşfet vitrininde görünen bilgilerini güncelleyin.</p>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">Gönderi Başlığı</label>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Kulüp Resmî Adı *</label>
+                    <input
+                      type="text"
+                      required
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Kategori</label>
+                    <select
+                      value={profileForm.category}
+                      onChange={(e) => setProfileForm({ ...profileForm, category: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none"
+                    >
+                      <option>Bilim & Teknoloji</option>
+                      <option>Girişimcilik & İnovasyon</option>
+                      <option>Kültür & Sanat</option>
+                      <option>Mühendislik & Robotik</option>
+                      <option>Sosyal Sorumluluk & Yaşam</option>
+                      <option>Spor & Sağlık</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Kulüp Açıklaması & Tanıtım Metni</label>
+                  <textarea
+                    rows={3}
+                    value={profileForm.description}
+                    onChange={(e) => setProfileForm({ ...profileForm, description: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Kuruluş Amacı & Misyon</label>
+                  <input
+                    type="text"
+                    value={profileForm.purpose}
+                    onChange={(e) => setProfileForm({ ...profileForm, purpose: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Akademik Danışman</label>
+                    <input
+                      type="text"
+                      value={profileForm.advisor}
+                      onChange={(e) => setProfileForm({ ...profileForm, advisor: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Kulüp İletişim E-postası</label>
+                    <input
+                      type="email"
+                      value={profileForm.email}
+                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Logo Görsel URL</label>
+                    <input
+                      type="url"
+                      value={profileForm.logo}
+                      onChange={(e) => setProfileForm({ ...profileForm, logo: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Kapak Görseli URL</label>
+                    <input
+                      type="url"
+                      value={profileForm.coverImage}
+                      onChange={(e) => setProfileForm({ ...profileForm, coverImage: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:bg-white focus:border-[#990000] outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-[#990000] hover:bg-red-800 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer"
+                  >
+                    <CheckCircle2 size={16} /> Kulüp Bilgilerini Kaydet
+                  </button>
+                </div>
+              </form>
+            )}
+            
+            {/* 5. POST & EVENT MANAGEMENT TAB */}
+            {activeTab === 'post' && (
+              <div className="animate-fade-in space-y-8">
+                <form onSubmit={handleCreatePost} className="max-w-3xl bg-slate-50/70 p-6 rounded-2xl border border-slate-200/90 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-[#990000] border border-red-100">
+                        <Megaphone size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-base sm:text-lg font-black text-slate-900">Yeni Kulüp Duyurusu veya Etkinlik Yayınla</h3>
+                        <p className="text-xs text-slate-600 font-medium">Yayınlanan içerikler kulüp sayfasında, üye akışlarında ve Keşfet vitrininde senkronize görünür.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+                      <button
+                        type="button"
+                        onClick={() => setPublishMode('post')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                          publishMode === 'post' ? 'bg-[#990000] text-white' : 'text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        Gönderi / Duyuru
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPublishMode('event')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                          publishMode === 'event' ? 'bg-[#990000] text-white' : 'text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        Takvim Etkinliği
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Görünürlük Kapsamı</label>
+                      <select
+                        value={postVisibility}
+                        onChange={(e) => setPostVisibility(e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-[#990000]"
+                      >
+                        <option value="public">🌐 Herkese Açık (Keşfet & Tüm Kampüs Akışı)</option>
+                        <option value="members_only">🔒 Sadece Kulüp Üyelerine Özel</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Yayın Durumu</label>
+                      <select
+                        value={postStatus}
+                        onChange={(e) => setPostStatus(e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-[#990000]"
+                      >
+                        <option value="published">✅ Hemen Yayınla</option>
+                        <option value="draft">📝 Taslak Olarak Kaydet (Akışta Gizli)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        {publishMode === 'event' ? 'Etkinlik Adı *' : 'Gönderi / Duyuru Başlığı *'}
+                      </label>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          setPostTitle(publishMode === 'event' ? 'Yeni Dönem Teknoloji & Kariyer Atölyesi' : 'Yeni Dönem Tanışma Toplantısı Duyurusu');
+                          setPostContent('Merhaba Değerli Üyelerimiz,\n\nYeni döneme harika bir başlangıç yapmak için bir araya geliyoruz! Bu etkinlikte yıllık proje takvimimizi paylaşacak ve çalışma takımlarımızı oluşturacağız.\n\nTüm üyelerimizi ve ilgilenen öğrenci arkadaşlarımızı bekliyoruz!');
+                          setPostLocation('Ömer Halisdemir Konferans Salonu');
+                        }}
+                        className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition flex items-center gap-1 border border-emerald-200 cursor-pointer"
+                      >
+                        <Sparkles size={12} /> Örnek Şablon Doldur
+                      </button>
+                    </div>
                     <input 
                       type="text" 
                       value={postTitle} 
                       onChange={(e) => setPostTitle(e.target.value)} 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] transition-all outline-none" 
-                      placeholder="Örn: Yeni Dönem Tanışma Toplantısı!" 
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-[#990000] outline-none" 
+                      placeholder={publishMode === 'event' ? 'Örn: Yapay Zeka & Prompt Mühendisliği Atölyesi' : 'Örn: Yeni Dönem Tanışma Toplantısı!'} 
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 ml-1">İçerik Metni</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">İçerik ve Detaylar *</label>
                     <textarea 
                       value={postContent} 
                       onChange={(e) => setPostContent(e.target.value)} 
-                      rows={5} 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] transition-all outline-none resize-none" 
-                      placeholder="Kulüp üyeleri ve öğrencilerle paylaşmak istediğiniz mesajınızı yazın..." 
+                      rows={4} 
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-[#990000] outline-none resize-none" 
+                      placeholder="Kulüp üyeleri ve öğrencilerle paylaşmak istediğiniz detayları yazın..." 
                     />
                   </div>
 
+                  {publishMode === 'event' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Etkinlik Tarihi</label>
+                        <input
+                          type="date"
+                          value={eventDate}
+                          onChange={(e) => setEventDate(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Başlangıç Saati</label>
+                        <input
+                          type="time"
+                          value={eventTime}
+                          onChange={(e) => setEventTime(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-900 outline-none focus:border-[#990000]"
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 ml-1 flex items-center gap-1">
-                        <MapPin size={13} className="text-[#990000]"/> Konum (Opsiyonel)
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <MapPin size={13} className="text-[#990000]"/> Konum / Salon
                       </label>
                       <input 
                         type="text" 
                         value={postLocation} 
                         onChange={(e) => setPostLocation(e.target.value)} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] transition-all outline-none" 
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-[#990000] outline-none" 
                         placeholder="Örn: C Blok Konferans Salonu" 
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 ml-1 flex items-center gap-1">
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
                         <ImageIcon size={13} className="text-[#990000]"/> Görsel URL (Opsiyonel)
                       </label>
                       <input 
                         type="url" 
                         value={postImage} 
                         onChange={(e) => setPostImage(e.target.value)} 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-red-500/20 focus:border-[#990000] transition-all outline-none" 
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-[#990000] outline-none" 
                         placeholder="https://images.unsplash.com/..." 
                       />
                     </div>
@@ -938,12 +1276,91 @@ export default function ClubAdminPanel({
 
                   <button 
                     type="submit" 
-                    className="w-full bg-[#990000] hover:bg-red-800 text-white rounded-2xl py-3.5 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-red-900/10 mt-3 cursor-pointer"
+                    className="w-full bg-[#990000] hover:bg-red-800 text-white rounded-xl py-3 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-red-900/10 cursor-pointer"
                   >
-                    <Send size={16} /> Gönderiyi Yayınla
+                    <Send size={16} />
+                    {publishMode === 'event' ? 'Etkinliği Yayınla & Takvime İşle' : 'Kulüp Gönderisini Yayınla'}
                   </button>
+                </form>
+
+                {/* EXISTING CLUB POSTS & EVENTS MANAGEMENT */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h4 className="font-black text-sm text-slate-900 flex items-center gap-2">
+                      <Megaphone size={16} className="text-[#990000]" />
+                      Kulüp Gönderileri & Duyuruları ({(selectedClub.posts || []).length})
+                    </h4>
+                    {(selectedClub.posts || []).length === 0 ? (
+                      <p className="text-xs text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-200">Henüz kulüp gönderisi paylaşılmamış.</p>
+                    ) : (
+                      (selectedClub.posts || []).map(p => (
+                        <div key={p.id} className="p-4 rounded-xl border border-slate-200 bg-white flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                p.visibility === 'members_only' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                              }`}>
+                                {p.visibility === 'members_only' ? 'Üyelere Özel' : 'Herkese Açık'}
+                              </span>
+                              {p.status === 'draft' && (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Taslak</span>
+                              )}
+                              <span className="text-[10px] text-slate-400 font-semibold">{p.createdAt || 'Yeni'}</span>
+                            </div>
+                            <p className="text-xs font-bold text-slate-900 line-clamp-2">{p.caption || p.content || p.title}</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteClubPost(p.id)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer shrink-0"
+                            title="Gönderiyi Sil"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-black text-sm text-slate-900 flex items-center gap-2">
+                      <Calendar size={16} className="text-[#990000]" />
+                      Kulüp Etkinlikleri ({(selectedClub.events || []).length})
+                    </h4>
+                    {(selectedClub.events || []).length === 0 ? (
+                      <p className="text-xs text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-200">Henüz kulüp etkinliği planlanmamış.</p>
+                    ) : (
+                      (selectedClub.events || []).map(ev => (
+                        <div key={ev.id} className="p-4 rounded-xl border border-slate-200 bg-white flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                ev.status === 'cancelled'
+                                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                  : 'bg-blue-50 text-blue-700 border border-blue-200'
+                              }`}>
+                                {ev.status === 'cancelled' ? 'İptal Edildi' : 'Aktif Etkinlik'}
+                              </span>
+                              <span className="text-[10px] text-slate-500 font-semibold">{ev.date} {ev.time ? `• ${ev.time}` : ''}</span>
+                            </div>
+                            <p className="text-xs font-bold text-slate-900 truncate">{ev.title}</p>
+                            <p className="text-[11px] text-slate-500 truncate">{ev.location || 'Kampüs'}</p>
+                          </div>
+                          {ev.status !== 'cancelled' && (
+                            <button
+                              type="button"
+                              onClick={() => handleCancelClubEvent(ev.id)}
+                              className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 transition cursor-pointer shrink-0"
+                            >
+                              İptal Et
+                            </button>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
-              </form>
+              </div>
             )}
 
           </div>

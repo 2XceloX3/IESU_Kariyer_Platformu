@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, afterEach, beforeAll, beforeEach, vi } from 'vitest';
 import App from '../App';
+import Logo from '../components/Logo';
 import useAppStore from '../store/useAppStore';
 
 const authState = vi.hoisted(() => ({ user: null }));
@@ -213,4 +214,38 @@ describe('App Component', () => {
       expect(document.body.textContent).toMatch(/Öğrenci|Kariyer|Portal/i);
     }, { timeout: 8000 });
   });
+
+  it('toggles global dark mode and syncs the dark class on document.documentElement', () => {
+    useAppStore.getState().setDarkMode(false);
+    expect(useAppStore.getState().darkMode).toBe(false);
+    expect(useAppStore.getState().theme).toBe('light');
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+
+    useAppStore.getState().toggleDarkMode();
+    expect(useAppStore.getState().darkMode).toBe(true);
+    expect(useAppStore.getState().theme).toBe('dark');
+    expect(window.localStorage.getItem('iesu_theme')).toBe('dark');
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+
+    useAppStore.getState().toggleDarkMode();
+    expect(useAppStore.getState().darkMode).toBe(false);
+    expect(useAppStore.getState().theme).toBe('light');
+    expect(window.localStorage.getItem('iesu_theme')).toBe('light');
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+  });
+
+  it('switches Logo component to white logo variant in dark mode', () => {
+    useAppStore.getState().setDarkMode(false);
+    const { container, rerender } = render(<Logo color="emerald" />);
+    const imgLight = container.querySelector('img[data-iesu-logo="true"]');
+    expect(imgLight).toHaveAttribute('data-logo-variant', 'emerald');
+
+    useAppStore.getState().setDarkMode(true);
+    rerender(<Logo color="emerald" />);
+    const imgDark = container.querySelector('img[data-iesu-logo="true"]');
+    expect(imgDark).toHaveAttribute('data-logo-variant', 'white');
+    expect(imgDark.className).toContain('brightness-0 invert');
+  });
 });
+
+

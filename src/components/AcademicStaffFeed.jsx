@@ -999,6 +999,7 @@ export default function AcademicStaffFeed({
         {/* --- AKIŞ (FEED) --- */}
         {!isRadarOpen && activeTab === 'dashboard' && (
           <div className="space-y-6">
+            <PostComposer currentUser={effectiveCurrentUser} userRole="academic" posts={posts} setPosts={setPosts} />
             <div className="space-y-6">
               {(() => {
                 const allItems = combineFeedItems(posts, events, news, announcements, jobs, generalEvents, careerOpportunities);

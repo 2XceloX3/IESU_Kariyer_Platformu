@@ -47,14 +47,14 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
   return (
     <div className={`mb-4 p-4 rounded-2xl border transition-all duration-300 shadow-sm ${
       publishStatus === 'error'
-        ? 'bg-red-50/90 border-red-200 text-red-900'
-        : 'bg-white border-slate-200 text-slate-800'
+        ? 'bg-red-50/90 dark:bg-rose-950/40 border-red-200 dark:border-rose-800 text-red-900 dark:text-rose-200'
+        : 'bg-white dark:bg-[#131c31] border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100'
     }`}>
       <div className="flex items-center justify-between gap-4">
         {/* Sol: İlerleme veya İkon */}
         <div className="flex items-center gap-3 min-w-0">
           {publishStatus === 'error' ? (
-            <div className="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center shrink-0 text-red-600">
+            <div className="w-11 h-11 rounded-full bg-red-100 dark:bg-rose-900/50 flex items-center justify-center shrink-0 text-red-600 dark:text-rose-400">
               <AlertCircle size={24} />
             </div>
           ) : (
@@ -67,7 +67,7 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
                   r={radius}
                   stroke="currentColor"
                   strokeWidth="3.5"
-                  className="text-slate-100"
+                  className="text-slate-100 dark:text-slate-800"
                   fill="transparent"
                 />
                 {/* Dinamik İlerleme Halkası */}
@@ -77,14 +77,14 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
                   r={radius}
                   stroke="currentColor"
                   strokeWidth="3.5"
-                  className="text-red-600 transition-all duration-300 ease-out"
+                  className="text-red-600 dark:text-rose-500 transition-all duration-300 ease-out"
                   fill="transparent"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="absolute font-mono text-[10px] font-extrabold text-slate-700">
+              <span className="absolute font-mono text-[10px] font-extrabold text-slate-700 dark:text-slate-200">
                 %{publishProgress}
               </span>
             </div>
@@ -97,10 +97,10 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
                 {publishStatus === 'error' ? (t('composer.failed') || 'Paylaşım Başarısız Oldu') : (t('composer.publishingTitle') || 'Gönderiniz Paylaşılıyor')}
               </p>
               {publishStatus !== 'error' && (
-                <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-red-600 dark:bg-rose-500 animate-pulse" />
               )}
             </div>
-            <p className="text-[11px] text-slate-500 truncate mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
               {getStatusLabel()}
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function OptimisticPublishCell({ onRetry, onSaveDraft }) {
                 reset();
                 if (window.toast?.success) window.toast.success(t('composer.draftSaved') || 'İçerik taslaklara kaydedildi.');
               })}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition shadow-xs cursor-pointer active:scale-95"
             >
               <Save size={12} />
               <span>{t('composer.saveDraft') || t('common.saveDraft') || 'Taslağa Kaydet'}</span>

@@ -91,7 +91,7 @@ export default function SafeAvatar({
 
   if (isInstitutional && (!safeSrc || isInvalidOrPlaceholder(safeSrc) || imgError)) {
     return (
-      <div className={`${sizeClass} ${rounded} bg-white flex items-center justify-center shrink-0 border border-slate-200 p-1 shadow-sm overflow-hidden ${safeClassName}`}>
+      <div className={`${sizeClass} ${rounded} bg-white dark:bg-slate-800 flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-700 p-1 shadow-sm overflow-hidden ${safeClassName}`}>
         <svg viewBox="0 0 40 40" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label={alt || "İESÜ Logo"}>
           <rect width="40" height="40" rx="8" fill="#990000" />
           <path d="M20 7L32 14L20 21L8 14L20 7Z" fill="#F8FAFC" />
@@ -109,12 +109,12 @@ export default function SafeAvatar({
   const textColorClass = isWhiteContainer ? 'text-slate-900 font-black' : 'text-white font-bold';
 
   return (
-    <div className={`${sizeClass} ${rounded} shrink-0 overflow-hidden flex items-center justify-center ${showImage ? 'bg-gray-100' : `${bg} ${textColorClass}`} ${safeClassName}`}>
+    <div className={`${sizeClass} ${rounded} shrink-0 overflow-hidden flex items-center justify-center ${showImage ? 'bg-gray-100 dark:bg-slate-800' : `${bg} ${textColorClass}`} ${safeClassName}`}>
       {showImage ? (
         <img 
           src={safeSrc} 
           alt={alt || safeName || 'Avatar'} 
-          className="w-full h-full object-cover" 
+          className={`w-full h-full ${safeSrc.includes('iesu-logo.svg') || safeSrc.includes('/logo.svg') ? 'object-contain p-0.5' : 'object-cover'}`} 
           loading="lazy"
           onError={() => setImgError(true)} 
         />

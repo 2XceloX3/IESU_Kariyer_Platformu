@@ -80,9 +80,9 @@ export default function LanguageSwitcher({ variant = 'default', className = '' }
         title="Dili değiştir (Çift tıkla: Hızlı geçiş)"
         className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
           variant === 'dark'
-            ? 'bg-slate-800/80 hover:bg-slate-700/80 text-cyan-300 border border-cyan-500/30 shadow-sm'
+            ? 'bg-slate-800/90 hover:bg-slate-700/90 text-slate-100 border border-slate-700 shadow-xs'
             : variant === 'compact' || variant === 'light'
-            ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 shadow-xs'
+            ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-100 border border-slate-200 dark:border-slate-700 shadow-xs'
             : 'bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-xs'
         } ${className}`}
       >
@@ -93,10 +93,10 @@ export default function LanguageSwitcher({ variant = 'default', className = '' }
 
       {isOpen && (
         <div 
-          className="absolute right-0 mt-2 w-44 rounded-2xl bg-white shadow-2xl border border-gray-100 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 text-gray-800"
+          className="absolute right-0 mt-2 w-44 rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-gray-100 dark:border-slate-700 py-1.5 z-[120] animate-in fade-in zoom-in-95 duration-150 text-gray-800 dark:text-slate-100"
           role="menu"
         >
-          <div className="px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 border-b border-gray-100">
+          <div className="px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 dark:text-slate-400 border-b border-gray-100 dark:border-slate-800">
             {t('common.language')}
           </div>
           {SUPPORTED_LANGUAGES.map((langItem) => {
@@ -110,15 +110,15 @@ export default function LanguageSwitcher({ variant = 'default', className = '' }
                   setLanguage(langItem.code);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold hover:bg-gray-50 transition-colors text-left ${
-                  isSelected ? 'text-[#990000] bg-red-50/50 font-bold' : 'text-gray-700'
+                className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors text-left cursor-pointer ${
+                  isSelected ? 'text-[#990000] dark:text-rose-400 bg-red-50/50 dark:bg-rose-950/30 font-bold' : 'text-gray-700 dark:text-slate-200'
                 }`}
               >
                 <span className="flex items-center gap-2">
                   <span className="text-base">{langItem.flag}</span>
                   <span>{langItem.nativeName}</span>
                 </span>
-                {isSelected && <Check size={14} className="text-[#990000]" />}
+                {isSelected && <Check size={14} className="text-[#990000] dark:text-rose-400" />}
               </button>
             );
           })}

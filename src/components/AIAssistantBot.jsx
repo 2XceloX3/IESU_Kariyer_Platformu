@@ -6,17 +6,20 @@ import { AIEngine, SelfLearningMemory } from '../data/AIEngine';
 import { generateAIResponse } from '../services/aiService';
 import { toast } from './shared/Toast';
 
+const EMPTY_ARRAY = [];
+const EMPTY_OBJECT = {};
+
 export default function AIAssistantBot({ currentUser }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const swarmMetrics = useAppStore(state => state.swarmMetrics);
   const incrementSwarmData = useAppStore(state => state.incrementSwarmData);
-  const events = useAppStore(state => state.events) || [];
-  const clubs = useAppStore(state => state.clubs) || [];
-  const jobs = useAppStore(state => state.jobs) || [];
-  const news = useAppStore(state => state.news) || [];
-  const liveRooms = useAppStore(state => state.liveRooms) || [];
-  const sharedBrainDictionary = useAppStore(state => state.sharedBrainDictionary) || {};
+  const events = useAppStore(state => state.events || EMPTY_ARRAY);
+  const clubs = useAppStore(state => state.clubs || EMPTY_ARRAY);
+  const jobs = useAppStore(state => state.jobs || EMPTY_ARRAY);
+  const news = useAppStore(state => state.news || EMPTY_ARRAY);
+  const liveRooms = useAppStore(state => state.liveRooms || EMPTY_ARRAY);
+  const sharedBrainDictionary = useAppStore(state => state.sharedBrainDictionary || EMPTY_OBJECT);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [learnedFacts, setLearnedFacts] = useState([]);

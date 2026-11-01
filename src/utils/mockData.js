@@ -344,6 +344,8 @@ export const initialEvents = [
     "date": "15/05/2026",
     "time": "14:00",
     "location": "Kampüs",
+    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/05/3fmhni1yzp4kx-heybemden-masallar-ile-masallarin-buyulu-dunyasina-yolculuga-cikiyoruz.jfif",
+    "status": "Aktif",
     "url": "https://www.esenyurt.edu.tr/etkinlik/1671-heybemden-masallar-ile-masallarin-buyulu-dunyasina-yolculuga-cikiyoruz"
   }
 ];
@@ -392,20 +394,6 @@ export const initialAnnouncements = [
     "isPremium": true
   },
   {
-    "id": "ann-5",
-    "title": "Tek Ders / Not Yükseltme Sınav Programları Hk.",
-    "date": "08/07/2026",
-    "content": "Bilişim Teknolojileri Meslek Yüksekokulu, Meslek Yüksekokulu ve Sağlık Hizmetleri Meslek Yüksekokulu Tek Ders sınav takvimi yayımlanmıştır.",
-    "isPremium": true
-  },
-  {
-    "id": "ann-6",
-    "title": "Düzeltme İlanı",
-    "date": "23/06/2026",
-    "content": "İstanbul Esenyurt Üniversitesi Rektörlüğünden Öğretim Elemanı Kadrolarına Personel Alımı Düzeltme İlanı yayımlanmıştır.",
-    "isPremium": true
-  },
-  {
     "id": "ann-7",
     "title": "2025-2026 Yaz Okulu Başvuruları Başladı!",
     "date": "24/06/2026",
@@ -437,11 +425,11 @@ export const initialSemCourses = [
 ];
 
 export const initialJobs = [
-  { id: "JOB-001", title: "Ulusal Staj Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Türkiye Geneli", description: "Cumhurbaşkanlığı himayesinde yürütülen Ulusal Staj Programı kapsamında çeşitli kurumlarda staj imkânı.", imageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
-  { id: "JOB-002", title: "Araştırma Faaliyetleri", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü bünyesinde yürütülen araştırma faaliyetleri ve projeler.", imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
-  { id: "JOB-003", title: "Akran Mentor Programı", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Deneyimli öğrencilerin yeni öğrencilere rehberlik ettiği Akran Mentor programı.", imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
-  { id: "JOB-004", title: "İş Arama Platformları Rehberi", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "Online", description: "Öğrencilere ve mezunlara yönelik iş arama platformları ve kariyer kaynakları rehberi.", imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
-  { id: "JOB-005", title: "İşbirliklerimiz — Sektör Ortaklıkları", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", location: "İstanbul Esenyurt Üniversitesi", description: "Kariyer Geliştirme Koordinatörlüğü'nin sektör liderleriyle kurduğu iş birliği protokolleri ve ortak projeler.", imageUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-001", title: "Ulusal Staj Programı 2026 Başvuruları", company: "İESÜ Kariyer Geliştirme Koordinatörlüğü", companyId: "admin_1513", type: "STAJ PROGRAMI", location: "Türkiye Geneli", description: "Cumhurbaşkanlığı himayesinde yürütülen Ulusal Staj Programı kapsamında kamu ve özel sektör kurumlarında sigortalı ve ücretli staj imkânı. Tüm fakülte ve MYO öğrencilerimiz başvurabilir.", imageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-002", title: "Trendyol — Yazılım ve Veri Mühendisliği Kampüs Staj Programı", company: "Trendyol", companyId: "CMP-001", type: "STAJ İLANI", location: "İstanbul Maslak (Hibrit)", description: "Trendyol Teknoloji ekibinde mikroservis mimarileri, büyük veri ve yapay zekâ projelerinde aktif rol alacak 3. ve 4. sınıf mühendislik öğrencileri aranıyor.", imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-003", title: "Aselsan — Aday Mühendislik ve Aviyonik Sistemler Programı", company: "Aselsan", companyId: "CMP-003", type: "ADAY MÜHENDİSLİK", location: "Ankara / İstanbul", description: "Savunma sanayii ve gömülü sistem projelerinde haftada 3 gün kısmi zamanlı çalışarak mezuniyet sonrası tam zamanlı mühendis kadrosuna geçiş fırsatı.", imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-004", title: "Baykar Teknoloji — Otonom Uçuş ve Yapay Zekâ Mühendisi", company: "Baykar Teknoloji", companyId: "CMP-006", type: "TAM ZAMANLI / STAJ", location: "İstanbul Özdemir Bayraktar Milli Teknoloji Merkezi", description: "Milli İHA/SİHA platformlarımızda bilgisayarlı görü, derin öğrenme ve uçuş kontrol algoritmaları üzerine çalışacak mühendis ve stajyer adayları arıyoruz.", imageUrl: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
+  { id: "JOB-005", title: "Türk Hava Yolları — Take-Off Genç Yetenek & Kabin/Kokpit Kariyer Programı", company: "Türk Hava Yolları", companyId: "CMP-008", type: "GENÇ YETENEK (MT)", location: "İstanbul Havalimanı Yerleşkesi", description: "Havacılık yönetimi, bilişim, lojistik ve mühendislik bölümlerinde okuyan son sınıf öğrencileri ile yeni mezunlar için global kariyer programı.", imageUrl: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80", status: "Aktif" },
 ];
 
 export const initialFeatured = [
@@ -742,8 +730,89 @@ export const initialSurveys = [
 ];
 
 export const initialPosts = [
-    { id: 'POST-001', author: { id: 'CMP-001', name: 'Trendyol', avatar: 'https://ui-avatars.com/api/?name=Trendyol&background=F97316&color=fff', title: 'Teknoloji Ekibi', role: 'employer' }, content: 'Yazılım Mühendisliği stajyer alımlarımız başlamıştır! Tüm İESÜ öğrencilerini bekliyoruz. 🚀 #trendyol #staj', likes: 145, comments: 23, time: '2 saat önce' },
-    { id: 'POST-002', author: { id: 'ALU-001', name: 'Caner Öztürk', avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff', title: 'Frontend Developer @ Trendyol', role: 'alumni' }, content: 'Mezun olduğum Esenyurt Üniversitesi Kariyer Fuarında şirketimi temsil etmek gurur verici. Harika yeteneklerle tanıştık! 🎓', likes: 89, comments: 12, time: '5 saat önce' },
-    { id: 'POST-003', author: { id: 'STU-002', name: 'Zeynep Kaya', avatar: 'https://ui-avatars.com/api/?name=Zeynep+Kaya&background=0A2342&color=fff', title: 'Bilgisayar Mühendisliği Öğrencisi', role: 'student' }, content: 'Bugün KGM tarafından düzenlenen Mülakat Teknikleri eğitimine katıldım. Eksiklerimi görmek için harika bir deneyimdi. Emeği geçenlere teşekkürler! 💼', likes: 45, comments: 5, time: '1 gün önce' },
-    { id: 'POST-004', author: { id: 'ACAD-001', name: 'Prof. Dr. Ahmet Yılmaz', avatar: 'https://ui-avatars.com/api/?name=Ahmet+Yılmaz&background=0EA5E9&color=fff', title: 'Dekan', role: 'academic' }, content: 'Fakültemiz öğrencilerinin bitirme projeleri sanayi odaklı olmaya devam ediyor. Bu yıl 15 projemiz TÜBİTAK desteği aldı.', likes: 210, comments: 18, time: '2 gün önce' }
-  ];
+  {
+    id: 'POST-001',
+    authorId: 'CMP-001',
+    author: { id: 'CMP-001', name: 'Trendyol', avatar: 'https://ui-avatars.com/api/?name=Trendyol&background=F97316&color=fff', title: 'Teknoloji & Kampüs İK Ekibi', role: 'company' },
+    title: '💼 YENİ İLAN: Trendyol Yazılım Mühendisliği Stajyer Alımı 2026',
+    content: 'Yazılım Mühendisliği ve Bilgisayar Mühendisliği stajyer alımlarımız başlamıştır! Mikroservis mimarileri, bulut bilişim ve büyük veri projelerimizde yer almak isteyen tüm İESÜ öğrencilerini başvuruya bekliyoruz. 🚀 #trendyol #staj #kariyer',
+    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80',
+    isJob: true,
+    jobData: {
+      id: 'JOB-002',
+      title: 'Yazılım Mühendisliği Kampüs Stajyer Programı',
+      company: 'Trendyol',
+      companyId: 'CMP-001',
+      location: 'İstanbul Maslak Kampüsü (Hibrit)',
+      type: 'STAJ İLANI'
+    },
+    likes: 145,
+    comments: 23,
+    time: '2 saat önce'
+  },
+  {
+    id: 'POST-002',
+    authorId: 'ALU-001',
+    author: { id: 'ALU-001', name: 'Caner Öztürk', avatar: 'https://ui-avatars.com/api/?name=Caner+Öztürk&background=EA580C&color=fff', title: 'Frontend Developer @ Trendyol', role: 'alumni' },
+    content: 'Mezun olduğum İstanbul Esenyurt Üniversitesi Kariyer Fuarında şirketimi temsil etmek ve öğrenci arkadaşlarımla bir araya gelmek gurur verici. Harika yeteneklerle tanıştık, CV incelemeleri ve mülakat simülasyonları gerçekleştirdik! 🎓✨',
+    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=80',
+    likes: 89,
+    comments: 12,
+    time: '4 saat önce'
+  },
+  {
+    id: 'POST-003',
+    authorId: 'STU-002',
+    author: { id: 'STU-002', name: 'Zeynep Kaya', avatar: 'https://ui-avatars.com/api/?name=Zeynep+Kaya&background=0A2342&color=fff', title: 'Bilgisayar Mühendisliği Öğrencisi', role: 'student' },
+    content: 'Bugün Kariyer Geliştirme Koordinatörlüğü tarafından düzenlenen Teknik Mülakat Simülasyonu ve CV Atölyesi etkinliğine katıldım. Eksiklerimi görmek ve sektör profesyonellerinden birebir geri bildirim almak harika bir deneyimdi! 💼👏',
+    likes: 45,
+    comments: 5,
+    time: '6 saat önce'
+  },
+  {
+    id: 'POST-004',
+    authorId: 'ACAD-001',
+    author: { id: 'ACAD-001', name: 'Prof. Dr. Ahmet Yılmaz', avatar: 'https://ui-avatars.com/api/?name=Ahmet+Yılmaz&background=0EA5E9&color=fff', title: 'Mühendislik ve Mimarlık Fakültesi Dekanı', role: 'academic' },
+    content: 'Fakültemiz öğrencilerinin bitirme projeleri sanayi odaklı olmaya devam ediyor. Bu dönem 15 öğrenci projemiz TÜBİTAK 2209-A ve 2209-B Sanayiye Yönelik Araştırma Projeleri desteği kazandı. Tüm öğrencilerimizi ve danışman hocalarımızı kutluyorum.',
+    likes: 210,
+    comments: 18,
+    time: '1 gün önce'
+  },
+  {
+    id: 'POST-005',
+    authorId: 'CMP-003',
+    author: { id: 'CMP-003', name: 'Aselsan', avatar: 'https://ui-avatars.com/api/?name=Aselsan&background=0A2342&color=fff', title: 'Savunma Sanayii & Yetenek Kazanımı', role: 'company' },
+    title: '🛡️ İŞ & ADAY MÜHENDİSLİK: Aselsan Savunma Teknolojileri Yetenek Havuzu',
+    content: 'Elektrik-Elektronik, Bilgisayar, Yazılım ve Makine Mühendisliği 3. ve 4. sınıf öğrencileri ile yeni mezunlar için Aselsan Aday Mühendislik ve Tam Zamanlı Mühendis başvurularımız açılmıştır. Doğrudan akış üzerinden başvurunuzu iletebilirsiniz.',
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1000&q=80',
+    isJob: true,
+    jobData: {
+      id: 'JOB-003',
+      title: 'Aselsan Aday Mühendislik ve Savunma Sanayii Programı',
+      company: 'Aselsan',
+      companyId: 'CMP-003',
+      location: 'Ankara / İstanbul AR-GE',
+      type: 'ADAY MÜHENDİSLİK'
+    },
+    likes: 194,
+    comments: 31,
+    time: '1 gün önce'
+  },
+  {
+    id: 'POST-006',
+    authorId: 'admin_1513',
+    author: { id: 'admin_1513', name: 'Kariyer Geliştirme Koordinatörlüğü', avatar: '/iesu-logo.svg', title: 'İstanbul Esenyurt Üniversitesi Resmî Birimi', role: 'admin' },
+    title: '🎉 Geleceğin Dünyasını Şekillendiren Teknolojiler ve Dijital Dönüşüm — Bilim Kafe',
+    content: 'YÖK ve Bilim İletişimi Ofisi iş birliğiyle düzenlenen Bilim Kafe etkinlik serimizde; akademisyenlerimiz, sektör liderlerimiz ve öğrencilerimizle Dijitalleşme ve Yapay Zekâ Odaklı Programlar üzerine buluşuyoruz. Tüm öğrencilerimiz ve mezunlarımız davetlidir!',
+    image: 'https://www.esenyurt.edu.tr/uploads/2026/07/tjb9hhos5ydrt-gelecegin-dunyasini-sekillendiren-teknolojiler-ve-dijital-donusum-bilim-kafe’de-konusuluyor.jfif',
+    eventPost: true,
+    isGeneralEvent: true,
+    eventTitle: 'Geleceğin Dünyasını Şekillendiren Teknolojiler: Bilim Kafe Buluşması',
+    eventDate: '23/07/2026 • 14:00',
+    eventLocation: 'Prof. Dr. Fuat Sezgin Konferans Salonu',
+    eventDesc: 'Sektör temsilcileri ve akademisyenlerle yapay zekâ, dijital dönüşüm ve kariyer fırsatları söyleşisi.',
+    likes: 168,
+    comments: 19,
+    time: '1 gün önce'
+  }
+];
