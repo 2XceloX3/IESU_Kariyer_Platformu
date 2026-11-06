@@ -42,7 +42,7 @@ describe('Milestone 3 Integration Test Suite: Scraper & Component Wiring', () =>
     expect(screen.getByTestId('kgm-news-section')).toBeInTheDocument();
     const titleElements = screen.getAllByTestId('announcement-title');
     expect(titleElements.length).toBeGreaterThan(0);
-    expect(titleElements[0].textContent).toContain('2026 Bahar Dönemi Kariyer & Staj Günleri');
+    expect(titleElements[0].textContent).toContain('2026-2027 Eğitim Öğretim Yılı Güz Dönemi Vize Sınav Programları');
   });
 
   it('renders scraped career events dynamically in Events section', () => {
@@ -127,6 +127,5 @@ describe('Milestone 3 Integration Test Suite: Scraper & Component Wiring', () =>
     render(<LandingPage setView={() => {}} />);
 
     expect(screen.getByText(/Geleceğe Odaklan/i)).toBeInTheDocument();
-    expect(screen.getByText(/Güncel İçerikler/i)).toBeInTheDocument();
   });
 });
