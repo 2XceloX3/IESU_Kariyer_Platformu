@@ -278,7 +278,7 @@ export const initialEvents = [
     "date": "05.10.2026",
     "time": "14:00",
     "location": "Kampüs",
-    "imageUrl": "https://www.esenyurt.edu.tr/uploads/2026/06/cm1fe1okvam3t-atik-malzemeler-muhendislik-ve-estetikle-bulusuyor;-saglam-kopruler-gelecege-uzaniyor.jpg",
+    "imageUrl": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
     "status": "Aktif",
     "url": "https://www.esenyurt.edu.tr/etkinlik/1687-atik-malzemeler-muhendislik-ve-estetikle-bulusuyor;-saglam-kopruler-gelecege-uzaniyor"
   },

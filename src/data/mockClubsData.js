@@ -125,8 +125,8 @@ export const initialClubs = [
         status: 'Yaklaşan',
         description: '24 saat kesintisiz kodlama maratonunda sürdürülebilir şehirler ve üretken yapay zeka alanında inovatif projeler yarışıyor. 60.000 ₺ toplam ödül!',
         speaker: 'Logo Yazılım & Trendyol Mühendislik Mentorları',
-        image: 'https://www.esenyurt.edu.tr/uploads/2026/05/mmfe36bkaqbg1-egitimin-gelecegini-yeniden-sekillendiren-iki-buyuk-guc-bir-arada-yapay-zekâ-ve-sosyal-ogrenme.jfif',
-        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/05/mmfe36bkaqbg1-egitimin-gelecegini-yeniden-sekillendiren-iki-buyuk-guc-bir-arada-yapay-zekâ-ve-sosyal-ogrenme.jfif',
+        image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
         certificate: true
       },
       {
@@ -387,8 +387,8 @@ export const initialClubs = [
         registeredCount: 74,
         status: 'Yaklaşan',
         description: '10 finalist öğrenci girişimi 5 yatırımcı jürisi önünde 3 dakikalık sunumlarını yapacak.',
-        image: 'https://www.esenyurt.edu.tr/uploads/2026/07/oh0lm0qvjbwgc-iii-yonetim-bilimleri-sempozyumu.jfif',
-        imageUrl: 'https://www.esenyurt.edu.tr/uploads/2026/07/oh0lm0qvjbwgc-iii-yonetim-bilimleri-sempozyumu.jfif'
+        image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=800&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=800&q=80'
       }
     ],
     announcements: [
